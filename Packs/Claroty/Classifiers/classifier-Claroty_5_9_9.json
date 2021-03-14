@@ -17,10 +17,6 @@
 					"complex": null,
 					"simple": "Resolved"
 				},
-				"Claroty Alert Status": {
-					"complex": null,
-					"simple": "Resolved"
-				},
 				"Claroty Alert Type": {
 					"complex": null,
 					"simple": "AlertType"
@@ -72,10 +68,6 @@
 					"complex": null,
 					"simple": "Resolved"
 				},
-				"Claroty Alert Status": {
-					"complex": null,
-					"simple": "Resolved"
-				},
 				"Claroty Alert Type": {
 					"complex": null,
 					"simple": "AlertType"
@@ -124,10 +116,6 @@
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Claroty Alert Resolved": {
-					"complex": null,
-					"simple": "Resolved"
-				},
-				"Claroty Alert Status": {
 					"complex": null,
 					"simple": "Resolved"
 				},

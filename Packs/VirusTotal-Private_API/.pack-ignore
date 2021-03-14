@@ -1,2 +1,5 @@
 [file:playbook-File_Enrichment_-_Virus_Total_Private_API.yml]
 ignore=BA101
+
+[file:VirusTotal-Private_API.yml]
+ignore=IN135

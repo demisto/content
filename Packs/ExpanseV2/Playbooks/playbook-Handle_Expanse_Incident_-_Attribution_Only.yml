@@ -1,5 +1,7 @@
 id: Handle Expanse Incident - Attribution Only
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Handle Expanse Incident - Attribution Only
 description: |2-
    Shorter version of Handle Expanse Incident playbook with only the Attribution part.
@@ -379,11 +381,9 @@ tasks:
     task:
       id: 48a88295-5fe8-4219-8bd2-61250b300ef0
       version: -1
-      name: Attribution
-      description: "Given an Expanse Asset, Issue IP, Issue Provider, Issue Domain,\
-        \ Issue Port and Issue Protocol hunts for internal activity on the detected\
-        \ service. \nReturns a list of potential owner BUs, owner Users, Device and\
-        \ Notes"
+      name: Expanse Attribution
+      description: |
+        Subplaybook for Handle Expanse Incident playbooks. Given an Expanse Issue IP, Issue Provider, Issue Domain, Issue Port and Issue Protocol hunts for internal activity related to the detected service. The playbook looks for logs on Splunk, Cortex Data Lake and Panorama. Returns a list of potential owner BUs, owner Users, Device and Notes.
       playbookName: Expanse Attribution
       type: playbook
       iscommand: false
@@ -2977,7 +2977,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -1650
+          "y": -1490
         }
       }
     note: false
@@ -3026,7 +3026,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -1490
+          "y": -1310
         }
       }
     note: false
@@ -4311,7 +4311,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "122"
+      - "206"
     separatecontext: false
     view: |-
       {
@@ -4933,7 +4933,7 @@ tasks:
     task:
       id: 8b176b68-4261-4fbf-81d4-ff6c9524ede7
       version: -1
-      name: Enrich Cloud Assets
+      name: Expanse Enrich Cloud Assets
       playbookName: Expanse Enrich Cloud Assets
       type: playbook
       iscommand: false
@@ -5343,11 +5343,53 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "206":
+    id: "206"
+    taskid: f097b9db-fb7b-4e2f-8bef-87158fd6eda4
+    type: condition
+    task:
+      id: f097b9db-fb7b-4e2f-8bef-87158fd6eda4
+      version: -1
+      name: Are there Expanse Asset Tags?
+      description: Check whether there are Expanse Asset Tags.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "122"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.expanseasset
+                accessor: tags
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "176_29_#default#": 0.25,
       "177_178_#default#": 0.62,
+      "206_28_#default#": 0.25,
       "36_147_#default#": 0.46,
       "73_86_#default#": 0.11,
       "96_166_#default#": 0.4

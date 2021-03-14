@@ -7,16 +7,16 @@ configuration:
   name: baseurl
   required: true
   type: 0
-- display: userName
+- display: User Name
   name: userName
   required: true
   type: 0
-- display: password
+- display: Password
   name: password
   required: true
   type: 4
 - defaultvalue: Policy
-  display: quarantineName
+  display: Quarantine Name
   name: quarantineName
   required: true
   type: 0
@@ -87,7 +87,7 @@ script:
       name: limit
     description: Genral search , can combine multiple parameters
     name: iron-port-search
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.15759
   runonce: false
   script: ''
   subtype: python3

@@ -8,7 +8,7 @@ from PhishTankV2 import phishtank_status_command, url_command
 
 
 def create_client(proxy: bool = False, verify: bool = False, fetch_interval_hours: str = "1"):
-    return Client(proxy=proxy, verify=verify, fetch_interval_hours=fetch_interval_hours)
+    return Client(proxy=proxy, verify=verify, fetch_interval_hours=fetch_interval_hours, use_https=False)
 
 
 @pytest.mark.parametrize('number, output', [("True", False), ('432', True), ("str", False),
@@ -46,12 +46,12 @@ def test_remove_last_slash(url, output):
 
 
 @pytest.mark.parametrize('client,data,output', [
-    (Client(False, False, "2"), {}, True),
-    (Client(False, False, "1"),
+    (Client(False, False, "2", False), {}, True),
+    (Client(False, False, "1", False),
      {"list": {"id": 200}, "timestamp": 1601542800000}, False),
-    (Client(False, False, "2"),
+    (Client(False, False, "2", False),
      {"list": {"id": 200}, "timestamp": 1601542800000}, False),
-    (Client(False, False, "0.5"),
+    (Client(False, False, "0.5", False),
      {"list": {"id": 200}, "timestamp": 1601542800000}, True),
 ])
 def test_is_reloaded_needed(client, data, output):
@@ -183,7 +183,7 @@ URL_COMMAND_LIST = [
         "### PhishTankV2 Database - URL Query \n#### Found matches for URL http://url.example1 \n|online"
         "|phish_id|submission_time|target|verification_time|verified|\n|---|---|---|---|---|---|\n| yes | 1 | "
         "2019-10-20T23:54:13+00:00 | Other | 2019-10-20T23:54:13+00:00 | yes |\nAdditional details at "
-        "http://www.phishtank.com/phish_detail.php?phish_id=1 \n"
+        "[http://www.phishtank.com/phish_detail.php?phish_id=1](http://www.phishtank.com/phish_detail.php?phish_id=1) \n"
     ),
     (  # no exists key verified
         {"phish_id": "1", "submission_time": "2019-10-20T23:54:13+00:00",
@@ -201,7 +201,7 @@ URL_COMMAND_LIST = [
         "### PhishTankV2 Database - URL Query \n#### Found matches for URL http://url.example1 \n|online"
         "|phish_id|submission_time|target|verification_time|verified|\n|---|---|---|---|---|---|\n| yes | 1 | "
         "2019-10-20T23:54:13+00:00 | Other | 2019-10-20T23:54:13+00:00 | no |\nAdditional details at "
-        "http://www.phishtank.com/phish_detail.php?phish_id=1 \n"
+        "[http://www.phishtank.com/phish_detail.php?phish_id=1](http://www.phishtank.com/phish_detail.php?phish_id=1) \n"
     ),
     (  # no data
         {}, ['http://url.example1'],

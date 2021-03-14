@@ -21,6 +21,7 @@ urllib3.disable_warnings()
 """ ADVANCED GLOBAL PARAMETERS """
 EVENTS_INTERVAL_SECS = 15           # interval between events polling
 EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
+FAILURE_SLEEP = 15           # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60                    # sleep between fetches
 BATCH_SIZE = 100                    # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10   # max amount of IPs to enrich per offense
@@ -28,16 +29,21 @@ LOCK_WAIT_TIME = 0.5                # time to wait for lock.acquire
 MAX_WORKERS = 8                     # max concurrent workers used for events enriching
 DOMAIN_ENRCH_FLG = "True"           # when set to true, will try to enrich offense and assets with domain names
 RULES_ENRCH_FLG = "True"            # when set to true, will try to enrich offense with rule names
+MAX_FETCH_EVENT_RETIRES = 3         # max iteration to try search the events of an offense
+SLEEP_FETCH_EVENT_RETIRES = 10      # sleep between iteration to try search the events of an offense
 
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
     "EVENTS_FAILURE_LIMIT",
+    "FAILURE_SLEEP",
     "FETCH_SLEEP",
     "BATCH_SIZE",
     "OFF_ENRCH_LIMIT",
     "MAX_WORKERS",
     "DOMAIN_ENRCH_FLG",
     "RULES_ENRCH_FLG",
+    "MAX_FETCH_EVENT_RETIRES",
+    "SLEEP_FETCH_EVENT_RETIRES",
 ]
 
 """ GLOBAL VARS """
@@ -805,12 +811,19 @@ def perform_offense_events_enrichment(
     events_query = {"headers": "", "query_expression": query_expression}
     print_debug_msg(f'Starting events fetch for offense {offense["id"]}.', client.lock)
     try:
-        query_status, search_id = try_create_search_with_retry(
-            client, events_query, offense
-        )
-        offense["events"] = try_poll_offense_events_with_retry(
-            client, offense["id"], query_status, search_id
-        )
+        # retry to check if we got all the event (its not an error retry)
+        for i in range(MAX_FETCH_EVENT_RETIRES):
+            query_status, search_id = try_create_search_with_retry(
+                client, events_query, offense
+            )
+            offense["events"] = try_poll_offense_events_with_retry(
+                client, offense["id"], query_status, search_id
+            )
+            if not len(offense["events"]) < min(offense['event_count'], client.offenses_per_fetch):
+                break
+            elif i == MAX_FETCH_EVENT_RETIRES:
+                break
+            time.sleep(SLEEP_FETCH_EVENT_RETIRES)
     except Exception as e:
         print_debug_msg(
             f'Failed fetching event for offense {offense["id"]}: {str(e)}.',
@@ -868,6 +881,8 @@ def try_poll_offense_events_with_retry(
             print_debug_msg(f"Error while fetching offense {offense_id} events, search_id: {search_id}. "
                             f"Error details: {str(e)}")
             failures += 1
+            if failures < max_retries:
+                time.sleep(FAILURE_SLEEP)
     return []
 
 
@@ -893,8 +908,11 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
         except Exception as e:
             err = str(e)
             failures += 1
+            if failures < max_retries:
+                time.sleep(FAILURE_SLEEP)
     if failures >= max_retries:
         raise DemistoException(f"Unable to create search for offense: {offense['id']}. Error: {err}")
+
     return query_status, search_id
 
 

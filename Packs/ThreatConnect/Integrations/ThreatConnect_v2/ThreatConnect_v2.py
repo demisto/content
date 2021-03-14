@@ -2022,7 +2022,7 @@ def create_document_group():
     if not owner:
         return_error('You must specify an owner in the command, or by using the Organization parameter.')
 
-    security_label = demisto.args().get('securityLabel')
+    security_label = demisto.args().get('security_label')
     description = demisto.args().get('description')
 
     # open a file handle for a local file and read the contents thereof

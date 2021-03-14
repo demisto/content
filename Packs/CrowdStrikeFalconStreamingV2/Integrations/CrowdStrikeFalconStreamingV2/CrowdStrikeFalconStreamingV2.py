@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 import requests
 import traceback
-from asyncio import Event, create_task, sleep, run, wait_for, TimeoutError
+from asyncio import create_task, sleep, run
 from contextlib import asynccontextmanager
 from aiohttp import ClientSession, TCPConnector, ClientTimeout
 from typing import Dict, AsyncGenerator, AsyncIterator
@@ -15,14 +15,14 @@ requests.packages.urllib3.disable_warnings()
 
 TOKEN_RETRIEVAL_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-MINUTES_25 = 25 * 60
 MINUTES_30 = 30 * 60
 TIME_BUFFER_1_MINUTE = 1 * 60
 OK_STATUS_CODE = 200
 CREATED_STATUS_CODE = 201
 UNAUTHORIZED_STATUS_CODE = 401
 TOO_MANY_REQUESTS_STATUS_CODE = 429
-NOT_FOUND_STATUS_CODE = 404
+
+CONTAINER_ID = os.environ.get('HOSTNAME')
 
 
 class Client(BaseClient):
@@ -77,7 +77,6 @@ class Client(BaseClient):
                         CREATED_STATUS_CODE,
                         UNAUTHORIZED_STATUS_CODE,
                         TOO_MANY_REQUESTS_STATUS_CODE,
-                        NOT_FOUND_STATUS_CODE,
                     ),
                 )
                 if res.ok:
@@ -107,13 +106,11 @@ class Client(BaseClient):
                     demisto.updateModuleHealth(
                         f'Rate limit exceeded, going to sleep for {time_to_wait} and then retry.'
                     )
-                    time.sleep(time_to_wait)
+                    await sleep(time_to_wait)
                     demisto.debug('Finished waiting - retrying')
-                elif res.status_code == NOT_FOUND_STATUS_CODE:
-                    demisto.debug(f'Got status code 404 - {str(res.content)}')
-                    return {}
             except Exception as e:
-                demisto.debug(f'Got unexpected exception in the API HTTP request - {str(e)}')
+                demisto.debug(str(e))
+                return {}
 
     async def discover_stream(self, refresh_token: 'RefreshToken') -> Dict:
         demisto.debug('Sending request to discover stream')
@@ -155,73 +152,61 @@ class EventStream:
         self.data_feed_url: str
         self.session_token: str
         self.refresh_token: RefreshToken
+        self.client: Client
 
     def set_refresh_token(self, refresh_token) -> None:
         self.refresh_token = refresh_token
 
-    async def _discover_refresh_stream(self, event: Event) -> None:
-        """Discovers or refreshes a discovered CrowdStrike Falcon stream in a loop.
+    async def _discover_stream(self) -> None:
+        """Discovers a CrowdStrike Falcon stream
+        and initializes the data feed URL and refresh session URL client resource attributes
 
-        Sleeps for 25 minutes (expiry time is 30 minutes) between operations.
+        Returns:
+            None: No data returned.
 
-        Args:
-            event (Event): Asynchronous event object to set or clear its internal flag.
-
-        Yields:
-            Iterator[Dict]: Event fetched from the stream.
+        Raises:
+            RuntimeError: In case stream discovery failed.
         """
-        client = Client(base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy)
-        while True:
-            refreshed = True
-            if client.refresh_stream_url:
-                # We already discovered an event stream, need to refresh it
-                demisto.debug('Starting stream refresh')
-                try:
-                    response = await client.refresh_stream_session(self.refresh_token)
-                    if not response:
-                        # Should get here in case we got 404 from the refresh stream query
-                        demisto.debug('Clearing refresh stream URL to trigger stream discovery.')
-                        client.refresh_stream_url = ''
-                        raise RuntimeError()
-                    else:
-                        demisto.debug(f'Refresh stream response: {response}')
-                except Exception as e:
-                    demisto.updateModuleHealth('Failed refreshing stream session, will retry in 30 seconds.')
-                    demisto.debug(f'Failed refreshing stream session: {e}')
-                    refreshed = False
-                else:
-                    demisto.updateModuleHealth('')
-                    demisto.debug('Finished stream refresh successfully')
-            else:
-                # We have no event stream, need to discover
-                await client.set_access_token(self.refresh_token)
-                demisto.debug('Starting stream discovery')
-                discover_stream_response = await client.discover_stream(self.refresh_token)
-                demisto.debug('Finished stream discovery')
-                resources = discover_stream_response.get('resources', [])
-                if not resources:
-                    # If we got here we will either timeout on the event 10 seconds timeout (from fetch_event)
-                    # or we are discovering a stream after we failed to refresh a stream cause we got 404
-                    demisto.updateModuleHealth('Did not discover event stream resources, verify the App ID is not used'
-                                               ' in another integration instance')
-                    demisto.error(f'Did not discover event stream resources - {str(discover_stream_response)}')
-                    await sleep(10)
-                    demisto.debug('Done sleeping for 10 seconds, will try to discover stream again.')
-                    continue
-                resource = resources[0]
-                self.data_feed_url = resource.get('dataFeedURL')
-                demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
-                self.session_token = resource.get('sessionToken', {}).get('token')
-                refresh_url = resource.get('refreshActiveSessionURL')
-                client.refresh_stream_url = refresh_url
-                event.set()
-            if refreshed:
-                demisto.debug('Discover/Refresh loop - going to sleep for 25 minutes')
-                await sleep(MINUTES_25)
-                event.clear()
-            else:
-                demisto.debug('Failed refreshing stream, going to sleep for 30 seconds and then retry')
-                await sleep(30)
+        await self.client.set_access_token(self.refresh_token)
+        demisto.debug(f'Starting stream discovery. Container ID: {CONTAINER_ID}')
+        discover_stream_response = await self.client.discover_stream(self.refresh_token)
+        resources = discover_stream_response.get('resources', [])
+        if not resources:
+            demisto.updateModuleHealth(
+                'Did not discover event stream resources, verify the App ID is not used'
+                ' in another integration instance')
+            raise RuntimeError(f'Did not discover event stream resources - {str(discover_stream_response)}')
+        resource = resources[0]
+        self.data_feed_url = resource.get('dataFeedURL')
+        demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
+        self.session_token = resource.get('sessionToken', {}).get('token')
+        refresh_url = resource.get('refreshActiveSessionURL')
+        self.client.refresh_stream_url = refresh_url
+        demisto.updateModuleHealth('')
+        demisto.debug('Finished stream discovery successfully')
+
+    async def _refresh_stream(self) -> None:
+        """Refreshes a CrowdStrike Falcon stream resource
+
+        Returns:
+            None: No data returned.
+
+        Raises:
+            RuntimeError: In case stream refresh failed.
+        """
+        demisto.debug(f'Starting stream refresh. Container ID: {CONTAINER_ID}')
+        response = await self.client.refresh_stream_session(self.refresh_token)
+        if not response:
+            # Should get here in case we got unexpected status code (e.g. 404) from the refresh stream query
+            demisto.updateModuleHealth('Failed refreshing stream session, will try to discover new stream.')
+            raise RuntimeError(
+                'Failed refreshing stream session. '
+                'More details about the failure reason should appear in the logs above.'
+            )
+        else:
+            demisto.debug(f'Refresh stream response: {response}')
+        demisto.updateModuleHealth('')
+        demisto.debug('Finished stream refresh successfully')
 
     async def fetch_event(
             self, first_fetch_time: datetime, initial_offset: int = 0, event_type: str = '', sock_read: int = 120
@@ -238,21 +223,16 @@ class EventStream:
             AsyncGenerator[Dict, None]: Event fetched from the stream.
         """
         while True:
-            demisto.debug('Fetching event')
             try:
-                event = Event()
-                create_task(self._discover_refresh_stream(event))
-                demisto.debug('Waiting for stream discovery with 10 seconds timeout')
-                await wait_for(event.wait(), 10)
-            except TimeoutError as e:
-                demisto.debug(f'Failed discovering stream: {e} - '
-                              f'Going to sleep for 30 seconds and then retry - {traceback.format_exc()}')
-                await sleep(30)
-            else:
-                demisto.debug('Done waiting for stream discovery')
+                demisto.debug(f'Starting event fetch loop. Container ID: {CONTAINER_ID}')
+                self.client = Client(
+                    base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy
+                )
+                await self._discover_stream()
                 events_fetched = 0
                 new_lines_fetched = 0
                 last_fetch_stats_print = datetime.utcnow()
+                last_refresh_stream = datetime.utcnow()
                 async with ClientSession(
                     connector=TCPConnector(ssl=self.verify_ssl),
                     headers={
@@ -262,54 +242,57 @@ class EventStream:
                     trust_env=self.proxy,
                     timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
                 ) as session:
-                    try:
-                        integration_context = get_integration_context()
-                        offset = integration_context.get('offset', 0) or initial_offset
-                        demisto.debug(f'Starting to fetch from offset {offset} events of type {event_type} '
-                                      f'from time {first_fetch_time}')
-                        async with session.get(
-                            self.data_feed_url,
-                            params={'offset': offset, 'eventType': event_type},
-                            timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
-                        ) as res:
-                            demisto.updateModuleHealth('')
-                            demisto.debug(f'Fetched event: {res.content}')
-                            async for line in res.content:
-                                stripped_line = line.strip()
-                                if stripped_line:
-                                    events_fetched += 1
-                                    try:
-                                        streaming_event = json.loads(stripped_line)
-                                        event_metadata = streaming_event.get('metadata', {})
-                                        event_creation_time = event_metadata.get('eventCreationTime', 0)
-                                        if not event_creation_time:
-                                            demisto.debug(
-                                                'Could not extract "eventCreationTime" field, using 0 instead. '
-                                                f'{streaming_event}')
-                                        else:
-                                            event_creation_time /= 1000
-                                        event_creation_time_dt = datetime.fromtimestamp(event_creation_time)
-                                        if event_creation_time_dt < first_fetch_time:
-                                            demisto.debug(f'Event with offset {event_metadata.get("offset")} '
-                                                          f'and creation time {event_creation_time} was skipped.')
-                                            continue
-                                        yield streaming_event
-                                    except json.decoder.JSONDecodeError:
-                                        demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
-                                else:
-                                    new_lines_fetched += 1
-                                if last_fetch_stats_print + timedelta(minutes=1) <= datetime.utcnow():
-                                    demisto.info(
-                                        f'Fetched {events_fetched} events and'
-                                        f' {new_lines_fetched} new lines'
-                                        f' from the stream in the last minute.')
-                                    events_fetched = 0
-                                    new_lines_fetched = 0
-                                    last_fetch_stats_print = datetime.utcnow()
-                    except Exception as e:
-                        demisto.debug(f'Failed to fetch event: {e} - Going to sleep for 10 seconds and then retry -'
-                                      f' {traceback.format_exc()}')
-                        await sleep(10)
+                    integration_context = get_integration_context()
+                    offset = integration_context.get('offset', 0) or initial_offset
+                    demisto.debug(f'Starting to fetch from offset {offset} events of type {event_type} '
+                                  f'from time {first_fetch_time}')
+                    async with session.get(
+                        self.data_feed_url,
+                        params={'offset': offset, 'eventType': event_type},
+                        timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
+                    ) as res:
+                        demisto.updateModuleHealth('')
+                        demisto.debug(f'Fetched event: {res.content}')
+                        async for line in res.content:
+                            stripped_line = line.strip()
+                            if stripped_line:
+                                events_fetched += 1
+                                try:
+                                    streaming_event = json.loads(stripped_line)
+                                    event_metadata = streaming_event.get('metadata', {})
+                                    event_creation_time = event_metadata.get('eventCreationTime', 0)
+                                    if not event_creation_time:
+                                        demisto.debug(
+                                            'Could not extract "eventCreationTime" field, using 0 instead. '
+                                            f'{streaming_event}')
+                                    else:
+                                        event_creation_time /= 1000
+                                    event_creation_time_dt = datetime.fromtimestamp(event_creation_time)
+                                    if event_creation_time_dt < first_fetch_time:
+                                        demisto.debug(f'Event with offset {event_metadata.get("offset")} '
+                                                      f'and creation time {event_creation_time} was skipped.')
+                                        continue
+                                    yield streaming_event
+                                except json.decoder.JSONDecodeError:
+                                    demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
+                            else:
+                                new_lines_fetched += 1
+                            if last_fetch_stats_print + timedelta(minutes=1) <= datetime.utcnow():
+                                demisto.info(
+                                    f'Fetched {events_fetched} events and'
+                                    f' {new_lines_fetched} new lines'
+                                    f' from the stream in the last minute.')
+                                events_fetched = 0
+                                new_lines_fetched = 0
+                                last_fetch_stats_print = datetime.utcnow()
+                            if last_refresh_stream + timedelta(minutes=25) <= datetime.utcnow():
+                                await self._refresh_stream()
+                                last_refresh_stream = datetime.utcnow()
+            except Exception as e:
+                demisto.debug(f'An error occurred in the fetch event loop: {e} - {traceback.format_exc()}. '
+                              f'Going to sleep for 10 seconds and then retry. '
+                              f'Container ID: {CONTAINER_ID}')
+                await sleep(10)
 
 
 class RefreshToken:
@@ -395,7 +378,7 @@ class RefreshToken:
             if not body:
                 raise RuntimeError(f'Failed to retrieve token - got empty response: {str(res.content)}')
             token = body.get('access_token')
-            self.expiry_time = body.get('expires_in', MINUTES_30) - TIME_BUFFER_1_MINUTE
+            self.expiry_time = max(body.get('expires_in', MINUTES_30) - TIME_BUFFER_1_MINUTE, TIME_BUFFER_1_MINUTE)
         if not token:
             raise RuntimeError('Failed to retrieve token')
         demisto.debug('Got access token successfully')

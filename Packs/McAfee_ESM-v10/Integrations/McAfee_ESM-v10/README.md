@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Use the McAfee ESM v10 integration to get actionable intelligence and integrations to prioritize, investigate, and respond to threats.</p>
+<p>Deprecated. Use the McAfee ESM v2 integration instead.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="configure-mcafee-esm-v10-on-demisto">Configure McAfee ESM-v10 on Demisto</h2>

@@ -2,7 +2,8 @@
     "name": "MobileIron-UEM",
     "description": "This MobileIron UEM Content Pack enables fetching device data and incidents from both MobileIron Core and Cloud. The integration, apart from providing custom commands helpful when doing data enrichment, includes sample playbooks and an incident layout to help analyst investigations",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "certification": "certified",
+    "currentVersion": "1.0.1",
     "author": "MobileIron Inc.",
     "url": "https://mobileiron.com",
     "email": "ecosystem@mobileiron.com",
@@ -12,6 +13,13 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["MobileIron", "UEM", "device management", "MDM"],
-    "githubUser": ["darko1002001"]
+    "keywords": [
+        "MobileIron",
+        "UEM",
+        "device management",
+        "MDM"
+    ],
+    "githubUser": [
+        "darko1002001"
+    ]
 }

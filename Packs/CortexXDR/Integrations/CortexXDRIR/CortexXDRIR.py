@@ -1077,7 +1077,10 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def run_script(self, script_uid, endpoint_ids: list, timeout: int, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    @logger
+    def run_script(self,
+                   script_uid: str, endpoint_ids: list, parameters: Dict[str, Any], timeout: int
+                   ) -> Dict[str, Any]:
         filters: list = [{
             'field': 'endpoint_id_list',
             'operator': 'in',
@@ -1086,28 +1089,76 @@ class Client(BaseClient):
         request_data: Dict[str, Any] = {'script_uid': script_uid, 'timeout': timeout, 'filters': filters,
                                         'parameters_values': parameters}
 
-        reply = self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/scripts/run_script/',
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
 
-        return reply.get('reply')
+    @logger
+    def run_snippet_code_script(self, snippet_code: str, endpoint_ids: list) -> Dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/scripts/run_snippet_code_script',
+            json_data={
+                'request_data': {
+                    'filters': [{
+                        'field': 'endpoint_id_list',
+                        'operator': 'in',
+                        'value': endpoint_ids
+                    }],
+                    'snippet_code': snippet_code
+                }
+            },
+            timeout=self.timeout,
+        )
 
-    def get_script_execution_status(self, action_id) -> Dict[str, Any]:
+    @logger
+    def get_script_execution_status(self, action_id: str) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
             'action_id': action_id
         }
 
-        reply = self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/scripts/get_script_execution_status/',
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
 
-        return reply.get('reply')
+    @logger
+    def get_script_execution_results(self, action_id: str) -> Dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_execution_results',
+            json_data={
+                'request_data': {
+                    'action_id': action_id
+                }
+            },
+            timeout=self.timeout,
+        )
+
+    @logger
+    def get_script_execution_result_files(self, action_id: str, endpoint_id: str) -> Dict[str, Any]:
+        response = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_execution_results_files',
+            json_data={
+                'request_data': {
+                    'action_id': action_id,
+                    'endpoint_id': endpoint_id,
+                }
+            },
+            timeout=self.timeout,
+        )
+        link = response.get('reply', {}).get('DATA')
+        return self._http_request(
+            method='GET',
+            full_url=link,
+            resp_type='response',
+        )
 
     def action_status_get(self, action_id) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
@@ -1124,7 +1175,7 @@ class Client(BaseClient):
 
     def get_file(self, file_link):
         reply = self._http_request(
-            method='POST',
+            method='GET',
             full_url=file_link,
             timeout=self.timeout,
             resp_type='content'
@@ -1228,11 +1279,13 @@ def create_account_context(endpoints):
     for endpoint in endpoints:
         domain = endpoint.get('domain')
         if domain:
-            for user in endpoint.get('users', []):
-                account_context.append({
-                    'Username': user,
-                    'Domain': domain,
-                })
+            users = endpoint.get('users', [])  # in case the value of 'users' is None
+            if users and isinstance(users, list):
+                for user in users:
+                    account_context.append({
+                        'Username': user,
+                        'Domain': domain,
+                    })
 
     return account_context
 
@@ -2734,6 +2787,143 @@ def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
     )
 
 
+def run_script_command(client: Client, args: Dict) -> CommandResults:
+    script_uid = args.get('script_uid')
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    if parameters := args.get('parameters'):
+        try:
+            parameters = json.loads(parameters)
+        except json.decoder.JSONDecodeError as e:
+            raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
+    response = client.run_script(script_uid, endpoint_ids, parameters, timeout)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def run_snippet_code_script_command(client: Client, args: Dict) -> CommandResults:
+    snippet_code = args.get('snippet_code')
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    response = client.run_snippet_code_script(snippet_code, endpoint_ids)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Snippet Code Script', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def get_script_execution_status_command(client: Client, args: Dict) -> CommandResults:
+    action_id = args.get('action_id', '')
+    response = client.get_script_execution_status(action_id)
+    reply = response.get('reply')
+    reply['action_id'] = int(action_id)
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Script Execution Status - {action_id}', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptStatus',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def get_script_execution_results_command(client: Client, args: Dict) -> CommandResults:
+    action_id = args.get('action_id', '')
+    response = client.get_script_execution_results(action_id)
+    results = response.get('reply', {}).get('results')
+    context = {
+        'action_id': int(action_id),
+        'results': results,
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Script Execution Results - {action_id}', results),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptResult',
+        outputs_key_field='action_id',
+        outputs=context,
+        raw_response=response,
+    )
+
+
+def get_script_execution_result_files_command(client: Client, args: Dict) -> Dict:
+    action_id = args.get('action_id', '')
+    endpoint_id = args.get('endpoint_id')
+    file_response = client.get_script_execution_result_files(action_id, endpoint_id)
+    try:
+        filename = file_response.headers.get('Content-Disposition').split('attachment; filename=')[1]
+    except Exception as e:
+        demisto.debug(f'Failed extracting filename from response headers - [{str(e)}]')
+        filename = action_id + '.zip'
+    return fileResult(filename, file_response.content)
+
+
+def run_script_execute_commands_command(client: Client, args: Dict) -> CommandResults:
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    parameters = {'commands_list': argToList(args.get('commands'))}
+    response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script Execute Commands', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def run_script_delete_file_command(client: Client, args: Dict) -> CommandResults:
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    parameters = {'file_path': args.get('file_path')}
+    response = client.run_script('548023b6e4a01ec51a495ba6e5d2a15d', endpoint_ids, parameters, timeout)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script Delete File', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def run_script_file_exists_command(client: Client, args: Dict) -> CommandResults:
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    parameters = {'path': args.get('file_path')}
+    response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script File Exists', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def run_script_kill_process_command(client: Client, args: Dict) -> CommandResults:
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    parameters = {'process_name': args.get('process_name')}
+    response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script Kill Process', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
 def main():
     """
     Executes an integration command
@@ -2757,7 +2947,6 @@ def main():
         demisto.debug(f'Failed casting max fetch parameter to int, falling back to 10 - {e}')
         max_fetch = 10
 
-    # nonce, timestamp, auth = create_auth(API_KEY)
     nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
     timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
     auth_key = "%s%s%s" % (api_key, nonce, timestamp)
@@ -2894,6 +3083,33 @@ def main():
 
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-run-script':
+            return_results(run_script_command(client, args))
+
+        elif demisto.command() == 'xdr-run-snippet-code-script':
+            return_results(run_snippet_code_script_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-execution-status':
+            return_results(get_script_execution_status_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-execution-results':
+            return_results(get_script_execution_results_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-execution-result-files':
+            return_results(get_script_execution_result_files_command(client, args))
+
+        elif demisto.command() == 'xdr-run-script-execute-commands':
+            return_results(run_script_execute_commands_command(client, args))
+
+        elif demisto.command() == 'xdr-run-script-delete-file':
+            return_results(run_script_delete_file_command(client, args))
+
+        elif demisto.command() == 'xdr-run-script-file-exists':
+            return_results(run_script_file_exists_command(client, args))
+
+        elif demisto.command() == 'xdr-run-script-kill-process':
+            return_results(run_script_kill_process_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':

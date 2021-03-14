@@ -74,7 +74,7 @@ class ServiceNowClient(BaseClient):
                                     f'\n{res}')
 
         except Exception as e:
-            if 'SSL Certificate Verification Failed' in e.args[0]:
+            if self._verify and 'SSL Certificate Verification Failed' in e.args[0]:
                 return_error('SSL Certificate Verification Failed - try selecting \'Trust any certificate\' '
                              'checkbox in the integration configuration.')
             raise DemistoException(e.args[0])

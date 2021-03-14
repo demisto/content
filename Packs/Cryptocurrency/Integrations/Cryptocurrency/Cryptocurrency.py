@@ -14,24 +14,22 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 BITCOIN = 'bitcoin'
 INTEGRATION_NAME = 'Cryptocurrency'
 SCORE = {
-    4: 'Critical',
-    3: 'Bad',
-    2: 'Suspicious',
-    1: 'Good',
-    0.5: 'Informational',
-    0: 'Unknown'
+    'None': 0,
+    'Good': 1,
+    'Suspicious': 2,
+    'Bad': 3,
 }
 
 
-def get_bitcoin_reputation(addresses) -> List[CommandResults]:
+def get_bitcoin_reputation(addresses, reliability, reputation, score) -> List[CommandResults]:
     command_results: List[CommandResults] = []
-    score = 2
     for address in addresses:
         dbot_score = Common.DBotScore(
             indicator=address,
             indicator_type=DBotScoreType.CRYPTOCURRENCY,
             integration_name=INTEGRATION_NAME,  # Vendor
-            score=score,  # Suspicious
+            score=score,
+            reliability=reliability,
         )
         crypto_context = Common.Cryptocurrency(
             address=address,
@@ -41,7 +39,7 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
         table_data = {
             'Address': address,
             'Cryptocurrency Address Type': BITCOIN,
-            'Reputation': SCORE[score],
+            'Reputation': reputation,
         }
         table_name = f'{INTEGRATION_NAME} reputation for {address}'
         hr = tableToMarkdown(table_name, table_data)
@@ -55,30 +53,35 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
     return command_results
 
 
-def crypto_reputation_command(args: Dict[str, str]):
+def crypto_reputation_command(args: Dict[str, str], reliability: str, reputation: str):
     crypto_addresses = argToList(args.get('crypto', ''))
 
     # For cases the command was executed by a playbook/user and the addresses received are verified
     # Stripping the `bitcoin` prefix from the given addresses (if exists) then add it to match the convention.
     if args.get('address_type') == BITCOIN:
-        bitcoin_addresses = [f'bitcoin-{address.lstrip("bitcoin-")}' for address in crypto_addresses]
+        bitcoin_addresses = [f'bitcoin:{address.lstrip("bitcoin:")}' for address in crypto_addresses]
 
     else:
         bitcoin_addresses = [address for address in crypto_addresses if BITCOIN in address]
 
-    result = get_bitcoin_reputation(bitcoin_addresses)
+    score = SCORE[reputation]
+    result = get_bitcoin_reputation(bitcoin_addresses, reliability, reputation, score)
 
     return result
 
 
 def main():
-    demisto.debug(f'Command being called is {demisto.command()}')
+    params = demisto.params()
+    reliability = params['reliability']
+    reputation = params['reputation']
+
+    demisto.info(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
             return_results('ok')
 
         elif demisto.command() == 'crypto':
-            return_results(crypto_reputation_command(demisto.args()))
+            return_results(crypto_reputation_command(demisto.args(), reliability, reputation))
 
     # Log exceptions and return errors
     except Exception as e:

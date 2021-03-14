@@ -1,14 +1,15 @@
 id: AutoFocus V2 test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: AutoFocus V2 test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 88351625-2312-4089-8895-3b660a462985
+    taskid: 022fa6c1-7e6e-4cbe-8747-7866991eb16e
     type: start
     task:
-      id: 88351625-2312-4089-8895-3b660a462985
+      id: 022fa6c1-7e6e-4cbe-8747-7866991eb16e
       version: -1
       name: ""
       iscommand: false
@@ -20,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
@@ -31,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 7915f300-1caf-4e89-8524-0a90823080e4
+    taskid: c71e20e5-40fa-45b9-892d-4f158b270e30
     type: regular
     task:
-      id: 7915f300-1caf-4e89-8524-0a90823080e4
+      id: c71e20e5-40fa-45b9-892d-4f158b270e30
       version: -1
       name: autofocus-search-samples
       description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
@@ -71,7 +72,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 3870
         }
       }
     note: false
@@ -81,10 +82,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: e5e1b281-cac3-4df2-8aa7-20fd3946a5b8
+    taskid: 8dae4d18-bff7-46ec-8c7c-b5164d30ff1b
     type: regular
     task:
-      id: e5e1b281-cac3-4df2-8aa7-20fd3946a5b8
+      id: 8dae4d18-bff7-46ec-8c7c-b5164d30ff1b
       version: -1
       name: autofocus-search-sessions
       description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
@@ -116,8 +117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1420
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
@@ -127,10 +128,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 1e3c827e-b337-4e6a-826a-0d729cf2aec1
+    taskid: a5d053e0-a944-4f69-83e1-d68a99c3d45c
     type: condition
     task:
-      id: 1e3c827e-b337-4e6a-826a-0d729cf2aec1
+      id: a5d053e0-a944-4f69-83e1-d68a99c3d45c
       version: -1
       name: Verify context
       type: condition
@@ -157,7 +158,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 4045
         }
       }
     note: false
@@ -167,10 +168,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: cd291e47-3054-48a3-8070-8a202fc127cb
+    taskid: 049ad7fc-fc07-46b3-8266-37aedf52ae4e
     type: condition
     task:
-      id: cd291e47-3054-48a3-8070-8a202fc127cb
+      id: 049ad7fc-fc07-46b3-8266-37aedf52ae4e
       version: -1
       name: Verify context
       type: condition
@@ -196,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1595
+          "x": 50,
+          "y": 2645
         }
       }
     note: false
@@ -207,10 +208,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 5c79948c-5be6-4b93-8d53-d6e1a0a34032
+    taskid: 446e3e50-755e-4052-84cb-7eafc2682893
     type: regular
     task:
-      id: 5c79948c-5be6-4b93-8d53-d6e1a0a34032
+      id: 446e3e50-755e-4052-84cb-7eafc2682893
       version: -1
       name: autofocus-samples-search-results
       description: Get results of a previous samples search
@@ -229,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 4395
         }
       }
     note: false
@@ -239,10 +240,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 668aaea6-2b5b-486a-8811-ad881f166adb
+    taskid: 0798a32d-e429-4132-8f09-b0ef6d514d2c
     type: regular
     task:
-      id: 668aaea6-2b5b-486a-8811-ad881f166adb
+      id: 0798a32d-e429-4132-8f09-b0ef6d514d2c
       version: -1
       name: autofocus-sessions-search-results
       description: Get results of a previous sessions search
@@ -260,8 +261,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1945
+          "x": 50,
+          "y": 2995
         }
       }
     note: false
@@ -271,10 +272,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 0816ce7e-a86c-4a85-82b8-b77e45ca24a6
+    taskid: b23a6fd8-6d1f-40e5-8ad0-b6c948de8e35
     type: condition
     task:
-      id: 0816ce7e-a86c-4a85-82b8-b77e45ca24a6
+      id: b23a6fd8-6d1f-40e5-8ad0-b6c948de8e35
       version: -1
       name: Verify context
       type: condition
@@ -379,7 +380,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 4570
         }
       }
     note: false
@@ -389,10 +390,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: e8c18e05-5daa-4ef2-808f-3c1563800256
+    taskid: e22a9a08-ee60-429a-87d4-f21c04b5b170
     type: condition
     task:
-      id: e8c18e05-5daa-4ef2-808f-3c1563800256
+      id: e22a9a08-ee60-429a-87d4-f21c04b5b170
       version: -1
       name: Verify context
       type: condition
@@ -467,8 +468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2120
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
@@ -478,10 +479,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 1c09cf83-e28c-470c-8019-8270ba1b3346
+    taskid: 359bd24d-a42d-40b4-8b5a-53dc47901df1
     type: regular
     task:
-      id: 1c09cf83-e28c-470c-8019-8270ba1b3346
+      id: 359bd24d-a42d-40b4-8b5a-53dc47901df1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -491,8 +492,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
-      - "29"
       - "26"
     scriptarguments:
       all:
@@ -505,7 +504,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
@@ -516,10 +515,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 4620e2b5-7b7f-42ef-8b52-305310171d0b
+    taskid: cf6edc27-6e4d-472f-8da4-24ba08145d97
     type: regular
     task:
-      id: 4620e2b5-7b7f-42ef-8b52-305310171d0b
+      id: cf6edc27-6e4d-472f-8da4-24ba08145d97
       version: -1
       name: autofocus-sample-analysis
       description: |-
@@ -546,7 +545,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 4745
         }
       }
     note: false
@@ -556,10 +555,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: c5a1a55f-9437-49cd-85f3-a2263bd3976f
+    taskid: 59fbbc52-7fc5-4f3a-8187-f2c1919c74a2
     type: regular
     task:
-      id: c5a1a55f-9437-49cd-85f3-a2263bd3976f
+      id: 59fbbc52-7fc5-4f3a-8187-f2c1919c74a2
       version: -1
       name: autofocus-get-session-details
       description: Get session details by session ID
@@ -585,8 +584,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2295
+          "x": 50,
+          "y": 3345
         }
       }
     note: false
@@ -596,10 +595,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 8dc50de4-fdec-49b9-8b62-b34d20c9674f
+    taskid: 4d70c6b4-634f-4565-816b-c5e45962cadc
     type: condition
     task:
-      id: 8dc50de4-fdec-49b9-8b62-b34d20c9674f
+      id: 4d70c6b4-634f-4565-816b-c5e45962cadc
       version: -1
       name: Verify context
       type: condition
@@ -646,7 +645,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 4920
         }
       }
     note: false
@@ -656,10 +655,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 870d8f72-5620-4a8d-8238-6375bd5d8326
+    taskid: 8475818c-84c1-4ae2-824a-68c632984803
     type: condition
     task:
-      id: 870d8f72-5620-4a8d-8238-6375bd5d8326
+      id: 8475818c-84c1-4ae2-824a-68c632984803
       version: -1
       name: Verify context
       type: condition
@@ -667,7 +666,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "52"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -676,11 +675,6 @@ tasks:
           left:
             value:
               simple: AutoFocus.Sessions.FileName
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: AutoFocus.Sessions.ID
             iscontext: true
       - - operator: isExists
           left:
@@ -724,8 +718,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2470
+          "x": 50,
+          "y": 3520
         }
       }
     note: false
@@ -735,10 +729,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: a6f4e804-949a-41cc-8cbb-6a802d7aca7a
+    taskid: 1f56dd2b-811e-403a-8157-0c3c8592d327
     type: regular
     task:
-      id: a6f4e804-949a-41cc-8cbb-6a802d7aca7a
+      id: 1f56dd2b-811e-403a-8157-0c3c8592d327
       version: -1
       name: autofocus-top-tags-search
       description: Perform a search to Identify the most popular tags
@@ -764,8 +758,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2645
+          "x": 50,
+          "y": 5095
         }
       }
     note: false
@@ -775,10 +769,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: d6182274-dbfd-4ebd-8f97-c595201af1fa
+    taskid: 2c2a6617-d136-454d-8c2a-283746e22491
     type: regular
     task:
-      id: d6182274-dbfd-4ebd-8f97-c595201af1fa
+      id: 2c2a6617-d136-454d-8c2a-283746e22491
       version: -1
       name: autofocus-top-tags-results
       description: Get the results of a previous top tags search
@@ -796,8 +790,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3170
+          "x": 50,
+          "y": 5620
         }
       }
     note: false
@@ -807,10 +801,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: f7957f31-89ee-4214-8652-a07a44667d92
+    taskid: 8a395acb-17ee-4a20-8721-b93a2b78b2fe
     type: regular
     task:
-      id: f7957f31-89ee-4214-8652-a07a44667d92
+      id: 8a395acb-17ee-4a20-8721-b93a2b78b2fe
       version: -1
       name: autofocus-tag-details
       description: Get details on a given tag
@@ -836,8 +830,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3520
+          "x": 50,
+          "y": 5970
         }
       }
     note: false
@@ -847,10 +841,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: b1e84b40-b075-421b-8345-c2bc0331a1c1
+    taskid: c3409bce-0a04-480d-85aa-cc4b4806caa9
     type: condition
     task:
-      id: b1e84b40-b075-421b-8345-c2bc0331a1c1
+      id: c3409bce-0a04-480d-85aa-cc4b4806caa9
       version: -1
       name: Verify context
       type: condition
@@ -876,8 +870,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2820
+          "x": 50,
+          "y": 5270
         }
       }
     note: false
@@ -887,10 +881,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 6c7de68d-c15e-4fb5-8e08-5e615fa18912
+    taskid: 7d6cbc13-991b-4908-8a3f-10fad5192818
     type: condition
     task:
-      id: 6c7de68d-c15e-4fb5-8e08-5e615fa18912
+      id: 7d6cbc13-991b-4908-8a3f-10fad5192818
       version: -1
       name: Verify context
       type: condition
@@ -926,8 +920,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3345
+          "x": 50,
+          "y": 5795
         }
       }
     note: false
@@ -937,10 +931,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: fe53649f-252e-4c46-8258-c60b90282789
+    taskid: 9bc916c1-9180-4b45-8b6c-8565c634cd28
     type: condition
     task:
-      id: fe53649f-252e-4c46-8258-c60b90282789
+      id: 9bc916c1-9180-4b45-8b6c-8565c634cd28
       version: -1
       name: Verify context
       type: condition
@@ -948,7 +942,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "21"
+      - "39"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -981,11 +975,6 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: AutoFocus.Tag.CustomerName
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
               simple: AutoFocus.Tag.Source
             iscontext: true
       - - operator: isExists
@@ -1006,32 +995,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3695
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "21":
-    id: "21"
-    taskid: b6dc462d-5556-40c5-8b56-899592170587
-    type: title
-    task:
-      id: b6dc462d-5556-40c5-8b56-899592170587
-      version: -1
-      name: DONE
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3870
+          "x": 50,
+          "y": 6145
         }
       }
     note: false
@@ -1041,10 +1006,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: a2d21069-b429-4c1b-82e4-84bff72590de
+    taskid: 068eb9b5-a4d6-44d9-8b8a-fa838863ab39
     type: regular
     task:
-      id: a2d21069-b429-4c1b-82e4-84bff72590de
+      id: 068eb9b5-a4d6-44d9-8b8a-fa838863ab39
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1063,7 +1028,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 4220
         }
       }
     note: false
@@ -1073,10 +1038,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: b17dbbfc-773f-4482-809b-c58763e0e2af
+    taskid: 7e541d88-19d3-4f31-84ea-4500803d6031
     type: regular
     task:
-      id: b17dbbfc-773f-4482-809b-c58763e0e2af
+      id: 7e541d88-19d3-4f31-84ea-4500803d6031
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1094,8 +1059,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1770
+          "x": 50,
+          "y": 2820
         }
       }
     note: false
@@ -1105,10 +1070,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 82e41583-c429-4712-87ac-9d7771f91a21
+    taskid: 6281f4f4-3a7c-47f0-8962-68c88f13afd3
     type: regular
     task:
-      id: 82e41583-c429-4712-87ac-9d7771f91a21
+      id: 6281f4f4-3a7c-47f0-8962-68c88f13afd3
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1126,8 +1091,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2995
+          "x": 50,
+          "y": 5445
         }
       }
     note: false
@@ -1137,10 +1102,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 6e5dddfb-6789-4c16-8453-34be4fcc18f9
+    taskid: 20f2658b-e715-4eea-800b-171966621059
     type: regular
     task:
-      id: 6e5dddfb-6789-4c16-8453-34be4fcc18f9
+      id: 20f2658b-e715-4eea-800b-171966621059
       version: -1
       name: autofocus-search-samples
       description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
@@ -1176,7 +1141,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 370
         }
       }
@@ -1187,10 +1152,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: a9b3b91f-9daf-4515-814e-0d59fdb852a2
+    taskid: d06ed6a5-dc18-4e58-8a1c-ee4c96f1db33
     type: regular
     task:
-      id: a9b3b91f-9daf-4515-814e-0d59fdb852a2
+      id: d06ed6a5-dc18-4e58-8a1c-ee4c96f1db33
       version: -1
       name: autofocus-search-sessions
       description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
@@ -1222,7 +1187,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 1420
         }
       }
     note: false
@@ -1232,10 +1197,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: f61bca98-d7c6-4af1-812f-b2e03543324a
+    taskid: 63b0fa15-c817-4544-8d4a-0614c14df704
     type: regular
     task:
-      id: f61bca98-d7c6-4af1-812f-b2e03543324a
+      id: 63b0fa15-c817-4544-8d4a-0614c14df704
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1253,7 +1218,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 720
         }
       }
@@ -1264,10 +1229,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: f1d9ab04-2351-4632-8803-425c0eae24a2
+    taskid: b646802b-6b03-4542-85e1-f64ecfcc56d0
     type: regular
     task:
-      id: f1d9ab04-2351-4632-8803-425c0eae24a2
+      id: b646802b-6b03-4542-85e1-f64ecfcc56d0
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1286,7 +1251,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1770
         }
       }
     note: false
@@ -1296,10 +1261,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: bcc170bf-e97e-408c-852d-b0e47c886dd7
+    taskid: 8ffb0465-2716-4924-83a6-0a6dec1eec0b
     type: regular
     task:
-      id: bcc170bf-e97e-408c-852d-b0e47c886dd7
+      id: 8ffb0465-2716-4924-83a6-0a6dec1eec0b
       version: -1
       name: autofocus-samples-search-results
       description: Returns results of a previous samples search. `Autofocus Query
@@ -1318,7 +1283,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 895
         }
       }
@@ -1329,10 +1294,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 210ffcde-4755-43cf-8367-30f7466a7620
+    taskid: b9b6ccda-0536-43db-8fc4-06481b4d0a59
     type: condition
     task:
-      id: 210ffcde-4755-43cf-8367-30f7466a7620
+      id: b9b6ccda-0536-43db-8fc4-06481b4d0a59
       version: -1
       name: Verify context
       type: condition
@@ -1358,7 +1323,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 545
         }
       }
@@ -1369,10 +1334,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 7720d808-6608-4b75-822a-ec0fe357196f
+    taskid: 2abf6b57-5d78-4298-8180-1d4db0065723
     type: condition
     task:
-      id: 7720d808-6608-4b75-822a-ec0fe357196f
+      id: 2abf6b57-5d78-4298-8180-1d4db0065723
       version: -1
       name: Verify context
       type: condition
@@ -1399,7 +1364,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 1595
         }
       }
     note: false
@@ -1409,10 +1374,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 671e9aa3-8be1-42a0-8d52-7a24f165097b
+    taskid: 88c8ab5c-a2f7-4a65-8a08-f9ea8371a87e
     type: regular
     task:
-      id: 671e9aa3-8be1-42a0-8d52-7a24f165097b
+      id: 88c8ab5c-a2f7-4a65-8a08-f9ea8371a87e
       version: -1
       name: autofocus-sessions-search-results
       description: Returns results of a previous sessions search. `Autofocus Query
@@ -1432,7 +1397,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1945
         }
       }
     note: false
@@ -1442,10 +1407,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: a9740271-785b-4448-8beb-a861a905b6b3
+    taskid: fbc7b3a3-7774-40ff-8a1a-1b64de601980
     type: condition
     task:
-      id: a9740271-785b-4448-8beb-a861a905b6b3
+      id: fbc7b3a3-7774-40ff-8a1a-1b64de601980
       version: -1
       name: Verify context
       type: condition
@@ -1453,7 +1418,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "38"
+      - "51"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1514,7 +1479,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 2120
         }
       }
     note: false
@@ -1524,10 +1489,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 43a144bf-2d99-4b57-8938-bc4ca069277d
+    taskid: effe0d50-d2f3-4d6a-8c58-8bd49a528515
     type: condition
     task:
-      id: 43a144bf-2d99-4b57-8938-bc4ca069277d
+      id: effe0d50-d2f3-4d6a-8c58-8bd49a528515
       version: -1
       name: Verify context
       type: condition
@@ -1606,17 +1571,10 @@ tasks:
                 root: File
                 accessor: Type
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: File
-                accessor: Tags
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1070
         }
       }
@@ -1627,10 +1585,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: c1bbe801-010e-400e-87b3-d7f88de86976
+    taskid: 500b7b3d-4c4d-4046-8aad-0681c8481626
     type: regular
     task:
-      id: c1bbe801-010e-400e-87b3-d7f88de86976
+      id: 500b7b3d-4c4d-4046-8aad-0681c8481626
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1640,8 +1598,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
-      - "1"
+      - "29"
     scriptarguments:
       all:
         simple: "yes"
@@ -1653,7 +1610,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 1245
         }
       }
@@ -1664,10 +1621,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 651c68a4-dfa5-44f8-8a6a-ee8f8c0258bb
+    taskid: 48ea6203-0cac-4ea0-80a0-747b658afa44
     type: title
     task:
-      id: 651c68a4-dfa5-44f8-8a6a-ee8f8c0258bb
+      id: 48ea6203-0cac-4ea0-80a0-747b658afa44
       version: -1
       name: Indicators Reputation
       type: title
@@ -1680,8 +1637,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 370
+          "x": 50,
+          "y": 6320
         }
       }
     note: false
@@ -1691,10 +1648,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 4465fa8b-53f5-4365-86d9-19ad9995bd42
+    taskid: 0b5e2960-63b5-41d2-8b20-4a5457a39517
     type: regular
     task:
-      id: 4465fa8b-53f5-4365-86d9-19ad9995bd42
+      id: 0b5e2960-63b5-41d2-8b20-4a5457a39517
       version: -1
       name: Check multiple URL Reputation
       description: Checks the reputation of the url in Autofocus.
@@ -1720,8 +1677,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 545
+          "x": 50,
+          "y": 6465
         }
       }
     note: false
@@ -1731,10 +1688,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 100c213e-a450-40b7-84ee-d0be41556120
+    taskid: 116bb6f3-bc9a-4a07-88d4-370ccc053421
     type: condition
     task:
-      id: 100c213e-a450-40b7-84ee-d0be41556120
+      id: 116bb6f3-bc9a-4a07-88d4-370ccc053421
       version: -1
       name: Validate URL Reputation
       type: condition
@@ -1768,8 +1725,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 720
+          "x": 50,
+          "y": 6640
         }
       }
     note: false
@@ -1779,10 +1736,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: dcc5dbc9-418a-4503-85e1-11b01f8a6692
+    taskid: 594d028f-36c9-4d7c-8476-37cfbc26ec32
     type: title
     task:
-      id: dcc5dbc9-418a-4503-85e1-11b01f8a6692
+      id: 594d028f-36c9-4d7c-8476-37cfbc26ec32
       version: -1
       name: done
       type: title
@@ -1792,8 +1749,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 2365
+          "x": 50,
+          "y": 8215
         }
       }
     note: false
@@ -1803,10 +1760,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 0e93c405-e49e-4994-88d4-74299daa7ab5
+    taskid: 94b09a20-e840-41c3-8666-1a29d0afa117
     type: regular
     task:
-      id: 0e93c405-e49e-4994-88d4-74299daa7ab5
+      id: 94b09a20-e840-41c3-8666-1a29d0afa117
       version: -1
       name: Check multiple IP Reputation
       description: Checks the reputation of an IP address in Autofocus.
@@ -1832,8 +1789,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 895
+          "x": 50,
+          "y": 6815
         }
       }
     note: false
@@ -1843,10 +1800,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: f06549ca-56cc-4cdc-8c37-79c6fa8537d5
+    taskid: 9baf1338-b656-42a6-80ca-21bf3f4491c5
     type: condition
     task:
-      id: f06549ca-56cc-4cdc-8c37-79c6fa8537d5
+      id: 9baf1338-b656-42a6-80ca-21bf3f4491c5
       version: -1
       name: Validate IP Reputation
       type: condition
@@ -1880,8 +1837,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 1070
+          "x": 50,
+          "y": 6990
         }
       }
     note: false
@@ -1891,10 +1848,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: bc7596fe-1002-41bc-82ab-0310b1afe5cf
+    taskid: 082331ac-931e-47af-82c5-cb44e3a99a7d
     type: regular
     task:
-      id: bc7596fe-1002-41bc-82ab-0310b1afe5cf
+      id: 082331ac-931e-47af-82c5-cb44e3a99a7d
       version: -1
       name: CheckFile Reputation
       description: Checks the reputation of a file in Autofocus.
@@ -1923,8 +1880,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 1245
+          "x": 50,
+          "y": 7165
         }
       }
     note: false
@@ -1934,10 +1891,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 1335fc5c-bdea-4b1f-8f82-90fc0319726b
+    taskid: 1d8f6973-930a-4529-8a68-568fd3302cd6
     type: condition
     task:
-      id: 1335fc5c-bdea-4b1f-8f82-90fc0319726b
+      id: 1d8f6973-930a-4529-8a68-568fd3302cd6
       version: -1
       name: Validate File Reputation
       type: condition
@@ -1965,11 +1922,16 @@ tasks:
             value:
               simple: File.SHA256
             iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Tags
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 1410
+          "x": 50,
+          "y": 7340
         }
       }
     note: false
@@ -1979,10 +1941,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 0695d5f6-ed27-45ca-8b20-d9eae1ebc2bd
+    taskid: 24faf599-27dd-46eb-805f-0c297777cc4f
     type: regular
     task:
-      id: 0695d5f6-ed27-45ca-8b20-d9eae1ebc2bd
+      id: 24faf599-27dd-46eb-805f-0c297777cc4f
       version: -1
       name: Check Multiple Domain Reputation
       description: Checks the reputation of a domain in Autofocus.
@@ -2008,8 +1970,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 1595
+          "x": 50,
+          "y": 7515
         }
       }
     note: false
@@ -2019,10 +1981,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 0c53f8d3-1670-4fb3-8461-28c172a53e9c
+    taskid: be83c19b-bd31-4576-8e2d-983e2dabd980
     type: condition
     task:
-      id: 0c53f8d3-1670-4fb3-8461-28c172a53e9c
+      id: be83c19b-bd31-4576-8e2d-983e2dabd980
       version: -1
       name: Validate Domain Reputation
       type: condition
@@ -2056,8 +2018,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 1770
+          "x": 50,
+          "y": 7690
         }
       }
     note: false
@@ -2067,10 +2029,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 25185d21-4172-4f7e-895e-aa79f5d23889
+    taskid: accf94d0-2e32-4bd2-8513-8caf7b29d7c6
     type: regular
     task:
-      id: 25185d21-4172-4f7e-895e-aa79f5d23889
+      id: accf94d0-2e32-4bd2-8513-8caf7b29d7c6
       version: -1
       name: Check Upper Case File Reputation
       description: Checks the reputation of a file in Autofocus.
@@ -2099,8 +2061,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 1970
+          "x": 50,
+          "y": 7865
         }
       }
     note: false
@@ -2110,10 +2072,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: deaa534e-56fe-4a56-8f3f-adc8c34486c8
+    taskid: 06782ebe-668c-4f31-82d8-31466874e21c
     type: condition
     task:
-      id: deaa534e-56fe-4a56-8f3f-adc8c34486c8
+      id: 06782ebe-668c-4f31-82d8-31466874e21c
       version: -1
       name: Validate Upper Case File Reputation
       type: condition
@@ -2144,8 +2106,80 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 2155
+          "x": 50,
+          "y": 8040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 0b201dd9-ea32-4bea-8db9-a3aa38d86796
+    type: regular
+    task:
+      id: 0b201dd9-ea32-4bea-8db9-a3aa38d86796
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: e745cd35-7cb2-4cb9-8dec-19d0cfa4a99d
+    type: regular
+    task:
+      id: e745cd35-7cb2-4cb9-8dec-19d0cfa4a99d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
         }
       }
     note: false
@@ -2158,9 +2192,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3885,
-        "width": 1420,
-        "x": -560,
+        "height": 8230,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
@@ -2168,3 +2202,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

@@ -393,5 +393,5 @@ def test_multiple_incidents_word_difference(mocker):
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
     assert duplicated_incidents_found(existing_incidents_list[0])
-    duplicate_ids_found = [res['id'] for res in RESULTS['Contents']['allDuplicateIncidents']]
+    duplicate_ids_found = [res['id'] for res in RESULTS['EntryContext']['allDuplicateIncidents']]
     assert all(inc['id'] in duplicate_ids_found for inc in existing_incidents_list)

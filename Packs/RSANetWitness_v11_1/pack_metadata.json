@@ -1,16 +1,16 @@
 {
-  "name": "RSA NetWitness v11.1",
-  "description": "RSA NetWitness Platform provides systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response with the Demisto Enterprise platform. Providing full session analysis, customers can extract critical data and effectively operate security operations automated playbook.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Analytics & SIEM"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "RSA NetWitness v11.1",
+    "description": "RSA NetWitness Platform provides systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response with the Demisto Enterprise platform. Providing full session analysis, customers can extract critical data and effectively operate security operations automated playbook.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }

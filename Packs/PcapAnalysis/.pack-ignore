@@ -1,2 +1,11 @@
+[file:PCAP_File_Carving_Test.yml]
+ignore=auto-test
+
+[file:PCAP_Parsing_And_Indicator_Enrichment_Test.yml]
+ignore=auto-test
+
+[file:PCAP_Search_test.yml]
+ignore=auto-test
+
 [file:PcapAnalysis]
 ignore=PA116

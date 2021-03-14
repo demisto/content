@@ -1,4 +1,7 @@
 import json
+import os
+import zipfile
+
 import pytest
 import copy
 import demistomock as demisto
@@ -873,7 +876,7 @@ def test_get_mapping_fields_command():
         - the result fits the expected mapping.
     """
     from CortexXDRIR import get_mapping_fields_command
-    expected_mapping = [{"Cortex XDR Incident": {
+    expected_mapping = {"Cortex XDR Incident": {
         "status": "Current status of the incident: \"new\",\"under_investigation\",\"resolved_threat_handled\","
                   "\"resolved_known_issue\",\"resolved_duplicate\",\"resolved_false_positive\",\"resolved_other\"",
         "assigned_user_mail": "Email address of the assigned user.",
@@ -881,7 +884,7 @@ def test_get_mapping_fields_command():
         "resolve_comment": "Comments entered by the user when the incident was resolved.",
         "manual_severity": "Incident severity assigned by the user. This does not "
                            "affect the calculated severity low medium high"
-    }}]
+    }}
     res = get_mapping_fields_command()
     assert expected_mapping == res.extract_mapping()
 
@@ -1295,7 +1298,7 @@ def test_retrieve_file_details_command(requests_mock):
     }
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
-    requests_mock.post(f'{XDR_URL}', json=data1)
+    requests_mock.get(f'{XDR_URL}', json=data1)
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -1728,3 +1731,504 @@ def test_get_modified_remote_data_command(requests_mock):
     response = get_modified_remote_data_command(client, args)
 
     assert response.modified_incident_ids == ['1', '2']
+
+
+def test_create_account_context_with_data():
+    """
+    Given:
+        - get_endpoints command
+    When
+        - creating the account context from the response succeeds - which means there exists both domain and user in the
+         response.
+    Then
+        - verify the context is created successfully.
+    """
+    from CortexXDRIR import create_account_context
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    endpoints_list = get_endpoints_response.get('reply').get('endpoints')
+    endpoints_list[0]['domain'] = 'test.domain'
+
+    account_context = create_account_context(endpoints_list)
+
+    assert account_context == [{'Username': 'ec2-user', 'Domain': 'test.domain'}]
+
+
+def test_create_account_context_no_domain():
+    """
+    Given:
+        - get_endpoints command
+    When
+        -  the endpoint is missing a domain - which means an account context can't be created.
+    Then
+        - verify the account context is an empty list and the method is finished with no errors.
+    """
+    from CortexXDRIR import create_account_context
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    endpoints_list = get_endpoints_response.get('reply').get('endpoints')
+    account_context = create_account_context(endpoints_list)
+
+    assert account_context == []
+
+
+def test_create_account_context_user_is_none():
+    """
+    Given:
+        - get_endpoints command
+    When
+        -  the user value is None - which means an account context can't be created.
+    Then
+        - verify the account context is an empty list and the method is finished with no errors.
+    """
+    from CortexXDRIR import create_account_context
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    endpoints_list = get_endpoints_response.get('reply').get('endpoints')
+    endpoints_list[0]['user'] = None
+
+    account_context = create_account_context(endpoints_list)
+
+    assert account_context == []
+
+
+def test_run_script_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs, script UID and script parameters
+    When
+        - Running run-script command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    script_uid = 'script_uid'
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    parameters = '{"param1":"value1","param2":2}'
+    args = {
+        'script_uid': script_uid,
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'parameters': parameters
+    }
+
+    response = run_script_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': script_uid,
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': json.loads(parameters)
+        }
+    }
+
+
+def test_run_script_command_empty_params(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs, script UID and empty params
+    When
+        - Running run-script command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    script_uid = 'script_uid'
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    parameters = ''
+    args = {
+        'script_uid': script_uid,
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'parameters': parameters
+    }
+
+    response = run_script_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': script_uid,
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': parameters
+        }
+    }
+
+
+def test_run_snippet_code_script_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs and snippet code
+    When
+        - Running run-snippet-code-script command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_snippet_code_script_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_snippet_code_script', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    snippet_code = 'print("hello world")'
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    args = {
+        'snippet_code': snippet_code,
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout
+    }
+
+    response = run_snippet_code_script_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'snippet_code': snippet_code,
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }]
+        }
+    }
+
+
+def test_get_script_execution_status_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Action ID
+    When
+        - Running get-script-execution-status command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import get_script_execution_status_command, Client
+
+    api_response = load_test_data('./test_data/get_script_execution_status.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_status/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    action_id = '1'
+    args = {
+        'action_id': action_id
+    }
+
+    response = get_script_execution_status_command(client, args)
+
+    api_response['reply']['action_id'] = int(action_id)
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'action_id': action_id
+        }
+    }
+
+
+def test_get_script_execution_results_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Action ID
+    When
+        - Running get-script-execution-results command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import get_script_execution_results_command, Client
+
+    api_response = load_test_data('./test_data/get_script_execution_results.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_execution_results', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    action_id = '1'
+    args = {
+        'action_id': action_id
+    }
+
+    response = get_script_execution_results_command(client, args)
+
+    expected_output = {
+        'action_id': int(action_id),
+        'results': api_response.get('reply').get('results')
+    }
+    assert response.outputs == expected_output
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'action_id': action_id
+        }
+    }
+
+
+def test_get_script_execution_files_command(requests_mock, mocker, request):
+    """
+    Given:
+        - XDR client
+        - Action ID and endpoint ID
+    When
+        - Running get-script-execution-files command
+    Then
+        - Verify file name is extracted
+        - Verify output ZIP file contains text file
+    """
+    from CortexXDRIR import get_script_execution_result_files_command, Client
+    mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
+    file_name = "1_test_file_result"
+
+    def cleanup():
+        try:
+            os.remove(file_name)
+        except OSError:
+            pass
+
+    request.addfinalizer(cleanup)
+    zip_link = 'https://example-link'
+    zip_filename = 'file.zip'
+    requests_mock.post(
+        f'{XDR_URL}/public_api/v1/scripts/get_script_execution_results_files',
+        json={'reply': {'DATA': zip_link}}
+    )
+    requests_mock.get(
+        zip_link,
+        content=b'PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\r\x00\x00'
+                b'\x00your_file.txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00'
+                b'\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file'
+                b'.txtPK\x05\x06\x00\x00\x00\x00\x01\x00\x01\x00;\x00\x00\x00+\x00\x00\x00\x00\x00',
+        headers={
+            'Content-Disposition': f'attachment; filename={zip_filename}'
+        }
+    )
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    action_id = 'action_id'
+    endpoint_id = 'endpoint_id'
+    args = {
+        'action_id': action_id,
+        'endpoint_id': endpoint_id
+    }
+
+    response = get_script_execution_result_files_command(client, args)
+    assert response['File'] == zip_filename
+    assert zipfile.ZipFile(file_name).namelist() == ['your_file.txt']
+
+
+def test_run_script_execute_commands_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs and shell commands
+    When
+        - Running run-script-execute-commands command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_execute_commands_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    commands = 'echo hi'
+    args = {
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'commands': commands
+    }
+
+    response = run_script_execute_commands_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': 'a6f7683c8e217d85bd3c398f0d3fb6bf',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': {'commands_list': commands.split(',')}
+        }
+    }
+
+
+def test_run_script_delete_file_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs and file path
+    When
+        - Running run-script-delete-file command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_delete_file_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    file_path = 'my_file.txt'
+    args = {
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'file_path': file_path
+    }
+
+    response = run_script_delete_file_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': {'file_path': args.get('file_path')}
+        }
+    }
+
+
+def test_run_script_file_exists_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs and file path
+    When
+        - Running run-script-file-exists command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_file_exists_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    file_path = 'my_file.txt'
+    args = {
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'file_path': file_path
+    }
+
+    response = run_script_file_exists_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': '414763381b5bfb7b05796c9fe690df46',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': {'path': args.get('file_path')}
+        }
+    }
+
+
+def test_run_script_kill_process_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs and process name
+    When
+        - Running run-script-kill-process command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_kill_process_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    process_name = 'process.exe'
+    args = {
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'process_name': process_name
+    }
+
+    response = run_script_kill_process_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': 'fd0a544a99a9421222b4f57a11839481',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': {'process_name': process_name}
+        }
+    }

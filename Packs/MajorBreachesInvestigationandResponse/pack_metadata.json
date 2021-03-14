@@ -1,8 +1,8 @@
 {
     "name": "Rapid Breach Response",
-    "description": "This content pack helps you collect, investigate, and remediate incident relate to major breaches.",
+    "description": "This content Pack helps you collect, investigate, and remediate incidents related to major breaches.",
     "support": "xsoar",
-    "currentVersion": "1.3.0",
+    "currentVersion": "1.4.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -20,7 +20,12 @@
     "keywords": [
         "SolarStorm",
         "SunBurst",
-        "SolarWinds"
+        "SolarWinds",
+        "Hafnium",
+        "zero-day",
+        "0-day",
+        "zero day",
+        "Exchange"
     ],
     "dependencies": {
         "CommonPlaybooks": {
