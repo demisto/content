@@ -567,9 +567,9 @@ def get_args():  # type: ignore
     """
     use_all_field = demisto.args().get('useAllFields')
     if use_all_field == 'True':
-        similar_text_field = ['details', 'name']
+        similar_text_field = []
         similar_json_field = ['CustomFields']
-        similar_categorical_field = ['sourceBrand', 'category']
+        similar_categorical_field = []
         exact_match_fields = ['type']
     else:
         similar_text_field = demisto.args().get('similarTextField', '').split(',')
@@ -688,6 +688,7 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
     :param similar_incidents: DataFrame of incidents with indicators
     :return: context
     """
+    similar_incidents = similar_incidents.replace(np.nan, '', regex=True)
     if len(similar_incidents) == 0:
         context = {
             'similarIncidentList': {},
@@ -781,7 +782,7 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
     :return:
     """
     incident_filter = incident_df[[x for x in
-                                   display_fields + similar_text_field + similar_json_field + similar_categorical_field
+                                   display_fields + similar_text_field + similar_categorical_field
                                    + exact_match_fields if x in incident_df.columns]]
     if COLUMN_TIME in incident_filter.columns.tolist():
         incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda timestamp: timestamp[:10])
