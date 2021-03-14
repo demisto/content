@@ -41,6 +41,7 @@ CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
                                       'debug': 'False',
                                       'maxIncidentsToDisplay': '3000'
                                       }
+KEYS_ARGS_INDICATORS = ['indicatorsTypes', 'maxIncidentsInIndicatorsForWhiteList', 'minNumberOfIndicators', 'incidentId']
 
 REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
                       re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
@@ -855,7 +856,8 @@ def main():
 
     # Get similarity based on indicators
     if include_indicators_similarity == "True":
-        full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **demisto.args()}
+        args_defined_by_user = {key: demisto.args().get(key) for key in KEYS_ARGS_INDICATORS}
+        full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **args_defined_by_user}
         similar_incidents = enriched_with_indicators_similarity(full_args_indicators_script, similar_incidents)
 
     similar_incidents = prepare_incidents_for_display(similar_incidents, confidence, show_distance, max_incidents,
