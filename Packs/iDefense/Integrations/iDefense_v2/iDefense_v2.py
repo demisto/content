@@ -319,12 +319,12 @@ def main():
     params = demisto.params()
     api_key = params.get('api_token', '')
     base_url = urljoin(params.get('url', ''))
-    reliability = params.get('integrationReliability')
+    reliability = params.get('integrationReliability', 'B - Usually reliable')
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
-        return_error("PhishTankV2 error: Please provide a valid value for source reliability")
+        Exception("IDefense error: Please provide a valid value for the Source Reliability parameter")
 
     commands = {
         'url': url_command,
