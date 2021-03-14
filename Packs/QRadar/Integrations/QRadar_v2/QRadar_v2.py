@@ -245,7 +245,7 @@ class QRadarClient:
         try:
             json_body = res.json()
         except ValueError:
-            raise DemistoException("Got unexpected response from QRadar")
+            raise DemistoException(f"Got unexpected response from QRadar. Raw response: {res.text}")
         return json_body
 
     def test_connection(self):
