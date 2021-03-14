@@ -2,7 +2,7 @@ args:
 - description: YAML formatted string
   name: string
   required: true
-comment: Parses a YAML string
+comment: Parses a YAML string into context
 commonfields:
   id: ParseYAML
   version: -1
