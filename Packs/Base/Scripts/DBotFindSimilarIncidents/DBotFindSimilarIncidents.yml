@@ -153,7 +153,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Comma-separated list of indicator types to take into account.
+  description: Comma-separated list of indicator types to take into account. 
     If empty, uses all indicators types. Relevant if includeIndicatorsSimilarity is
     "True".
   isArray: false
