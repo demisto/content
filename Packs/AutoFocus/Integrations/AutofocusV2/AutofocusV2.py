@@ -258,6 +258,13 @@ if PARAMS.get('mark_as_malicious'):
     for verdict in verdicts:
         VERDICTS_TO_DBOTSCORE[verdict] = 3
 
+reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
+
+if DBotScoreReliability.is_valid_type(reliability):
+    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+else:
+    Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1332,7 +1339,8 @@ def search_ip_command(ip):
             indicator=ip_address,
             indicator_type=DBotScoreType.IP,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
 
         ip = Common.IP(
@@ -1382,7 +1390,8 @@ def search_domain_command(args):
                 indicator=domain_name,
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name=VENDOR_NAME,
-                score=score
+                score=score,
+                reliability=reliability
             )
             domain = Common.Domain(
                 domain=domain_name,
@@ -1411,7 +1420,8 @@ def search_domain_command(args):
                 indicator=domain_name,
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name=VENDOR_NAME,
-                score=0
+                score=0,
+                reliability=reliability
             )
             domain = Common.Domain(
                 domain=domain_name,
@@ -1452,7 +1462,8 @@ def search_url_command(url):
             indicator=url_name,
             indicator_type=DBotScoreType.URL,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
 
         url = Common.URL(
@@ -1504,7 +1515,8 @@ def search_file_command(file):
             indicator=sha256,
             indicator_type=DBotScoreType.FILE,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
 
         autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1644,8 +1656,8 @@ def main():
         # Remove proxy if not set to true in params
         handle_proxy()
         active_command = demisto.command()
-
         args = {k: v for (k, v) in demisto.args().items() if v}
+
         if active_command == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
