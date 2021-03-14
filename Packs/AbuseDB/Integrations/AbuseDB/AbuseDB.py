@@ -295,7 +295,7 @@ try:
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
-        return_error("Please provide a valid value for the Source Reliability parameter.")
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     if demisto.command() == 'test-module':
         # Tests connectivity and credentails on login
