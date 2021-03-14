@@ -39,6 +39,6 @@ script:
   dockerimage: devdemisto/asana:1.0.0.17523
   runonce: false
   subtype: python3
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
