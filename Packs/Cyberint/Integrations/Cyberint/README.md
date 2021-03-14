@@ -24,14 +24,14 @@ This integration was integrated and tested with cyberint
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### cyberint-list-alerts
+### cyberint-alerts-fetch
 ***
 List alerts according to parameters
 
 
 #### Base Command
 
-`cyberint-list-alerts`
+`cyberint-alerts-fetch`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -107,7 +107,7 @@ List alerts according to parameters
 
 
 #### Command Example
-```!cyberint-list-alerts created_date_from="2020-01-07T00:00:00Z" page_size=100```
+```!cyberint-alerts-fetch created_date_from="2020-01-07T00:00:00Z" page_size=100```
 
 #### Context Example
 ```json
@@ -1817,14 +1817,14 @@ List alerts according to parameters
 >Total alerts: 30
 >Current page: 1
 
-### cyberint-update-alerts
+### cyberint-alerts-status-update
 ***
 Update the status of one or more alerts.
 
 
 #### Base Command
 
-`cyberint-update-alerts`
+`cyberint-alerts-status-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1844,7 +1844,7 @@ Update the status of one or more alerts.
 
 
 #### Command Example
-```!cyberint-update-alerts alert_ref_ids=ADS10-3 status=acknowledged```
+```!cyberint-alerts-status-update alert_ref_ids=ADS10-3 status=acknowledged```
 
 #### Context Example
 ```json

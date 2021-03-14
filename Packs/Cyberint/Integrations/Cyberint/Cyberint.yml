@@ -384,6 +384,9 @@ script:
     - contextPath: Cyberint.Alert.alert_data.blacklist_repository
       description: Blacklist repository name related to an event.
       type: String
+    - contextPath: Cyberint.Alert.alert_data.screenshot
+      description: Screenshot related to an event.
+      type: String
     - contextPath: Cyberint.Alert.alert_data.spf_records
       description: SPF records if applicable to the event.
       type: String
@@ -431,6 +434,9 @@ script:
       type: String
     - contextPath: Cyberint.Alert.tags
       description: Tags related to the alert
+      type: String
+    - contextPath: Cyberint.Alert.attachments
+      description: Attachments related to the alert
       type: String
   - arguments:
     - default: false
