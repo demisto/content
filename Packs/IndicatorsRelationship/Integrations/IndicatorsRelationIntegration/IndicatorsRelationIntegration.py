@@ -13,17 +13,20 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 def create_relation() -> EntityRelation:
-    return EntityRelation(name="Relation A -> B - Name",
-                          reverse_name="Relation B -> A - Name",
-                          relation_type="uses",
-                          entity_a="STIX Attack Pattern",
-                          entity_a_family="Bootstrap attack",
-                          object_type_a="Indicator",
-                          entity_b="10.140.50.9",
-                          entity_b_family="IP",
-                          object_type_b="Indicator",
-                          source_reliability="A+",
-                          fields={})
+    return EntityRelation(name=demisto.getArg("name"),
+                          reverse_name=demisto.getArg("reverse_name"),
+                          relation_type=demisto.getArg("relation_type"),
+                          entity_a=demisto.getArg("entity_a"),
+                          entity_a_family=demisto.getArg("entity_a_family"),
+                          object_type_a=demisto.getArg("object_type_a"),
+                          entity_b=demisto.getArg("entity_b"),
+                          entity_b_family=demisto.getArg("entity_b_family"),
+                          object_type_b=demisto.getArg("object_type_b"),
+                          source_reliability=demisto.getArg("source_reliability"),
+                          fields={
+                              "revoked": demisto.getArg("revoked")
+                          },
+                          brand=demisto.getArg("brand"))
 
 
 ''' COMMAND FUNCTIONS '''
@@ -33,24 +36,8 @@ def test_module() -> str:
     return 'ok'
 
 
-def fetch_indicators_command():
-    relation = create_relation()
-    indicators = [{
-            'Value': "10.140.50.9",
-            'Type': 'IP',
-            'rawJSON': {},
-            'fields': {},
-            'Relationships': relation.to_context()
-        }]
-    return indicators
-
-
-def create_relation_command(args: Dict[str, Any]) -> CommandResults:
-
-    return CommandResults(
-        relations=[create_relation()],
-        readable_output="Relation-created"
-    )
+def create_relation_command() -> CommandResults:
+    return CommandResults(readable_output=f"Relation {demisto.getArg('name')} updated.", relations=[create_relation()])
 
 
 ''' MAIN FUNCTION '''
@@ -59,16 +46,11 @@ def create_relation_command(args: Dict[str, Any]) -> CommandResults:
 def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command()
-            # we submit the indicators in batches
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
         if demisto.command() == 'test-module':
             return_results(test_module())
 
         elif demisto.command() == 'create-relation-integration':
-            return_results(create_relation_command(demisto.args()))
+            return_results(create_relation_command())
 
     # Log exceptions and return errors
     except Exception as e:

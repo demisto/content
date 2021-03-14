@@ -1,31 +1,32 @@
 
 from CommonServerPython import *
-
-from typing import Dict, Any
 import traceback
 
 ''' STANDALONE FUNCTION '''
 
 
 def create_relation():
-    return EntityRelation(name="Relation A -> B - Name",
-                          reverse_name="Relation B -> A - Name",
-                          relation_type="uses",
-                          entity_a="STIX Attack Pattern",
-                          entity_a_family="Bootstrap attack",
-                          object_type_a="Indicator",
-                          entity_b="10.140.50.9",
-                          entity_b_family="IP",
-                          object_type_b="Indicator",
-                          source_reliability="A+",
-                          fields={})
+    return EntityRelation(name=demisto.getArg("name"),
+                          reverse_name=demisto.getArg("reverse_name"),
+                          relation_type=demisto.getArg("relation_type"),
+                          entity_a=demisto.getArg("entity_a"),
+                          entity_a_family=demisto.getArg("entity_a_family"),
+                          object_type_a=demisto.getArg("object_type_a"),
+                          entity_b=demisto.getArg("entity_b"),
+                          entity_b_family=demisto.getArg("entity_b_family"),
+                          object_type_b=demisto.getArg("object_type_b"),
+                          source_reliability=demisto.getArg("source_reliability"),
+                          fields={
+                              "revoked": demisto.getArg("revoked")
+                          },
+                          brand=demisto.getArg("brand"))
 
 
 ''' COMMAND FUNCTION '''
 
 
-def create_relation_command(args: Dict[str, Any]) -> CommandResults:
-    return CommandResults(relations=[create_relation()])
+def create_relation_command() -> CommandResults:
+    return CommandResults(readable_output=f"Relation {demisto.getArg('name')} updated.", relations=[create_relation()])
 
 
 ''' MAIN FUNCTION '''
@@ -33,7 +34,7 @@ def create_relation_command(args: Dict[str, Any]) -> CommandResults:
 
 def main():
     try:
-        return_results(create_relation_command(demisto.args()))
+        return_results(create_relation_command())
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute create-relation automation. Error: {str(e)}')

@@ -4096,39 +4096,140 @@ class IndicatorsTimeline:
         self.indicators_timeline = timelines
 
 
+#############################
+######### Relations #########
+#############################
+
+
+class RelationsTypes(object):
+    """
+    Enum: Relations types
+    """
+
+    INDICATOR_TO_INDICATOR = "indicatorToIndicator"
+
+    def __init__(self):
+        # required to create __init__ for create_server_docs.py purpose
+        pass
+
+    @staticmethod
+    def is_valid_type(_type):
+        # type: (str) -> bool
+
+        return _type in (
+            RelationsTypes.INDICATOR_TO_INDICATOR
+        )
+
+
+class RelationsObjectType(object):
+    """
+    Enum: Relations object type.
+    """
+
+    INDICATOR = "Indicator"
+
+    def __init__(self):
+        # required to create __init__ for create_server_docs.py purpose
+        pass
+
+    @staticmethod
+    def is_valid_type(_type):
+        # type: (str) -> bool
+
+        return _type in (
+            RelationsObjectType.INDICATOR
+        )
+
 
 class EntityRelation:
     def __init__(self, name: str, reverse_name: str, entity_a: str, relation_type: str, entity_a_family: str, object_type_a: str,
-                 entity_b: str, entity_b_family: str, object_type_b: str, fields: dict, source_reliability: str):
+                 entity_b: str, entity_b_family: str, object_type_b: str, source_reliability: str, fields: dict = None,
+                 brand: str = ""):
+        """ XSOAR entity relation.
+
+        :type name: ``str``
+        :param name: Relation name.
+
+        :type reverse_name: ``str``
+        :param reverse_name: Relation reverse name.
+
+        :type relation_type: ``str``
+        :param relation_type: Relation type.
+
+        :type entity_a: ``str``
+        :param entity_a: A value, A aka Source of the relation.
+
+        :type entity_a_family: ``str``
+        :param entity_a_family: Entity family of type A, A aka Source of the relation. (e.g. IP/URL/...).
+
+        :type object_type_a: ``str``
+        :param object_type_a: Entity type B, B aka Source of the relation. (For future use).
+
+        :type entity_b: ``str``
+        :param entity_b: B value, B aka Source of the relation.
+
+        :type entity_b_family: ``str``
+        :param entity_b_family: Entity family of type B, B aka Source of the relation. (e.g. IP/URL/...)
+
+        :type object_type_b: ``str``
+        :param object_type_b: Entity type B, B aka Source of the relation. (For future use).
+
+        :type source_reliability: ``str``
+        :param source_reliability: Source_reliability.
+
+        :type fields: ``dict``
+        :param fields: Custom fields.
+
+        :type entity_a: ``str``
+        :param brand: Source brand name. (Optional)
         """
 
-        Args:
-            name:
-            reverse_name:
-            entity_a:
-            relation_type:
-            entity_a_family:
-            object_type_a:
-            entity_b:
-            entity_b_family:
-            object_type_b:
-            fields:
-            source_reliability:
-        """
+        # Relation
         self._name = name
         self._reverse_name = reverse_name
+        if not RelationsTypes.is_valid_type(relation_type):
+            raise ValueError(f"Invalid relation type: {relation_type}.")
         self._relation_type = relation_type
+
+        # Entity A - Source
         self._entity_a = entity_a
+        if not FeedIndicatorType.is_valid_type(entity_a_family):
+            raise ValueError(f"Invalid entity A family type: {entity_a_family}.")
         self._entity_a_family = entity_a_family
+        if not RelationsObjectType.is_valid_type(object_type_a):
+            raise ValueError(f"Invalid object type A: {object_type_a}.")
         self._object_type_a = object_type_a
+
+
+        # Entity B - Destination
         self._entity_b = entity_b
+        if not FeedIndicatorType.is_valid_type(entity_b_family):
+            raise ValueError(f"Invalid entity B family type: {entity_b_family}.")
         self._entity_b_family = entity_b_family
+        if not RelationsObjectType.is_valid_type(object_type_b):
+            raise ValueError(f"Invalid object type B: {object_type_b}.")
         self._object_type_b = object_type_b
-        self._fields = fields
+
+
+        # Custom fields
+        if fields:
+            self._fields = fields
+        else:
+            self._fields = {}
+
+        # Source
+        self._brand = brand
+        if not DBotScoreReliability.is_valid_type(source_reliability):
+            raise ValueError(f"Invalid source reliability value: {source_reliability}")
         self._source_reliability = source_reliability
 
-    def to_context(self):
-        return {
+    def to_entry(self):
+        """ Convert object to XSOAR entry
+
+        :rtype: ``dict``
+        :return: XSOAR entry representation.
+        """
+        entry =  {
             "name": self._name,
             "reverseName": self._reverse_name,
             "type": self._relation_type,
@@ -4141,6 +4242,10 @@ class EntityRelation:
             "fields": self._fields,
             "reliability": self._source_reliability
         }
+        if self._brand:
+            entry["brand"] = self._brand
+
+        return entry
 
 
 
@@ -4411,7 +4516,7 @@ class CommandResults:
             content_format = EntryFormat.TEXT
 
         if self.relations:
-            relations = [relation.to_context() for relation in self.relations]
+            relations = [relation.to_entry() for relation in self.relations]
 
         return_entry = {
             'Type': EntryType.NOTE,

@@ -2,19 +2,134 @@ category: Utilities
 commonfields:
   id: IndicatorsRelationIntegration
   version: -1
-configuration: []
-description: 'Create relations from integration'
+configuration:
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: sourceReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+description: Create relations from integration
 display: IndicatorsRelationIntegration
 name: IndicatorsRelationIntegration
 script:
   commands:
-  - arguments: []
-    deprecated: false
-    description: 'Create relation'
+  - deprecated: false
+    description: Create relation
     execution: false
     name: create-relation-integration
+    arguments:
+    - default: false
+      description: Relation name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Relation reverse name.
+      isArray: false
+      name: reverse_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Relation type.
+      isArray: false
+      name: relation_type
+      predefined:
+      - indicatorToIndicator
+      required: true
+      secret: false
+    - default: false
+      description: A value, A aka Source of the relation.
+      isArray: false
+      name: entity_a
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Entity family of type A, A aka Source of the relation. (e.g. IP/URL/...) '
+      isArray: false
+      name: entity_a_family
+      required: true
+      secret: false
+      predefined:
+        - IP
+        - URL
+        - Domain
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Indicator
+      description: Entity type B, B aka Source of the relation. (For future use)
+      isArray: false
+      name: object_type_a
+      predefined:
+      - Indicator
+      required: true
+      secret: false
+    - default: false
+      description: B value, B aka Source of the relation.
+      isArray: false
+      name: entity_b
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Entity family of type B, B aka Source of the relation. (e.g. IP/URL/...) '
+      isArray: false
+      name: entity_b_family
+      required: true
+      secret: false
+      predefined:
+        - IP
+        - URL
+        - Domain
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Indicator
+      description: Entity type B, B aka Source of the relation. (For future use)
+      isArray: false
+      name: object_type_b
+      predefined:
+      - Indicator
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Indicator
+      description: Source relability.
+      isArray: false
+      name: source_reliability
+      predefined:
+      - A - Completely reliable
+      - B - Usually reliable
+      - C - Fairly reliable
+      - D - Not usually reliable
+      - E - Unreliable
+      - F - Reliability cannot be judged
+      required: true
+      secret: false
+    - default: false
+      description: Relation custom field, revoked.
+      isArray: false
+      name: revoked
+      required: true
+      secret: false
+    - default: false
+      description: Brand name (Optional).
+      isArray: false
+      name: brand
+      required: false
+      secret: false
   dockerimage: demisto/python3:3.9.1.15759
-  feed: true
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
