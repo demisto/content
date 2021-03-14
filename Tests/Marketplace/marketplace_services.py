@@ -2243,7 +2243,7 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
         failed_packs_dict = stage.get(BucketUploadFlow.FAILED_PACKS, {})
         successful_private_packs_dict = stage.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
         images_data_dict = stage.get(BucketUploadFlow.IMAGES, {})
-        return successful_packs_dict, failed_packs_dict, successful_private_packs_dict,  images_data_dict
+        return successful_packs_dict, failed_packs_dict, successful_private_packs_dict, images_data_dict
     return {}, {}, {}, {}
 
 
