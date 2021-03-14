@@ -1152,7 +1152,7 @@ def delete_mail_command(client: MsGraphClient, args):
     return_outputs(human_readable, entry_context)
 
 
-def item_result_creator(raw_response, user_id):
+def item_result_creator(raw_response, user_id) -> CommandResults:
     item = raw_response.get('item', {})
     item_type = item.get('@odata.type', '')
     if 'message' in item_type:
@@ -1174,14 +1174,14 @@ def item_result_creator(raw_response, user_id):
         return CommandResults(readable_output=human_readable, raw_response=raw_response)
 
 
-def create_attachment(raw_response, user_id):
+def create_attachment(raw_response, user_id) -> Union[CommandResults, dict]:
     attachment_type = raw_response.get('@odata.type', '')
     # Documentation about the different attachment types
     # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
     if 'itemAttachment' in attachment_type:
-        return_results(item_result_creator(raw_response, user_id))
+        return item_result_creator(raw_response, user_id)
     elif 'fileAttachment' in attachment_type:
-        return demisto.results(file_result_creator(raw_response))
+        return file_result_creator(raw_response)
     else:
         demisto.debug(f"Unsupported attachment type: {attachment_type}. Attachment was not added to incident")
         return {}
@@ -1193,7 +1193,8 @@ def get_attachment_command(client: MsGraphClient, args):
     folder_id = args.get('folder_id')
     attachment_id = args.get('attachment_id')
     raw_response = client.get_attachment(message_id, user_id, folder_id=folder_id, attachment_id=attachment_id)
-    return create_attachment(raw_response, user_id)
+    attachment = create_attachment(raw_response, user_id)
+    return_results(attachment)
 
 
 def get_message_command(client: MsGraphClient, args):
