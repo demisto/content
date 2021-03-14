@@ -91,3 +91,65 @@ def test_return_campaign_details_entry(mocker):
         assert original_incident['emailto'] in context_incident['recipients']
         assert original_incident['fromdomain'] == context_incident['emailfromdomain']
         assert extract_domain(original_incident['emailto']) in context_incident['recipientsdomain']
+
+def test_return_campaign_details_entry_comma_seperated_recipients(mocker):
+    global RESULTS
+    RESULTS = []
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    inciddent1 = create_incident(subject='subject', body='email body', emailto='a@a.com, b@a.com')
+    incidents_list = [inciddent1]
+    data = pd.DataFrame(incidents_list)
+    return_campaign_details_entry(data, fields_to_display=[])
+    res = RESULTS[0]
+    context = res['EntryContext']
+    assert context['EmailCampaign.isCampaignFound']
+    assert context['EmailCampaign.involvedIncidentsCount'] == len(data)
+    for original_incident, context_incident in zip(incidents_list, context['EmailCampaign.incidents']):
+        for k in ['id', 'similarity', 'emailfrom']:
+            assert original_incident[k] == context_incident[k]
+        for recipient in original_incident['emailto'].split(','):
+            assert recipient.strip() in context_incident['recipients']
+            assert extract_domain(recipient) in context_incident['recipientsdomain']
+        assert original_incident['fromdomain'] == context_incident['emailfromdomain']
+
+
+def test_return_campaign_details_entry_list_dumped_recipients(mocker):
+    global RESULTS
+    RESULTS = []
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    inciddent1 = create_incident(subject='subject', body='email body', emailto='["a@a.com", "b@a.com"]')
+    incidents_list = [inciddent1]
+    data = pd.DataFrame(incidents_list)
+    return_campaign_details_entry(data, fields_to_display=[])
+    res = RESULTS[0]
+    context = res['EntryContext']
+    assert context['EmailCampaign.isCampaignFound']
+    assert context['EmailCampaign.involvedIncidentsCount'] == len(data)
+    for original_incident, context_incident in zip(incidents_list, context['EmailCampaign.incidents']):
+        for k in ['id', 'similarity', 'emailfrom']:
+            assert original_incident[k] == context_incident[k]
+        for recipient in json.loads(original_incident['emailto']):
+            assert recipient.strip() in context_incident['recipients']
+            assert extract_domain(recipient) in context_incident['recipientsdomain']
+        assert original_incident['fromdomain'] == context_incident['emailfromdomain']
+
+
+def test_return_campaign_details_entry_list_dumped_recipients_cc(mocker):
+    global RESULTS
+    RESULTS = []
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    inciddent1 = create_incident(subject='subject', body='email body', emailcc='["a@a.com", "b@a.com"]')
+    incidents_list = [inciddent1]
+    data = pd.DataFrame(incidents_list)
+    return_campaign_details_entry(data, fields_to_display=[])
+    res = RESULTS[0]
+    context = res['EntryContext']
+    assert context['EmailCampaign.isCampaignFound']
+    assert context['EmailCampaign.involvedIncidentsCount'] == len(data)
+    for original_incident, context_incident in zip(incidents_list, context['EmailCampaign.incidents']):
+        for k in ['id', 'similarity', 'emailfrom']:
+            assert original_incident[k] == context_incident[k]
+        for recipient in json.loads(original_incident['emailcc']):
+            assert recipient.strip() in context_incident['recipients']
+            assert extract_domain(recipient) in context_incident['recipientsdomain']
+        assert original_incident['fromdomain'] == context_incident['emailfromdomain']
