@@ -7,10 +7,12 @@ DEFAULT_SOURCE = 'Cortex XSOAR'
 INDICATOR_TYPES = {
     'IP': DBotScoreType.IP,
     'File SHA1': DBotScoreType.FILE,
+    'File SHA-1': DBotScoreType.FILE,
     'File MD5': DBotScoreType.FILE,
     'File SHA256': DBotScoreType.FILE,
-    'Email': DBotScoreType.URL,
-    'URL': DBotScoreType.URL
+    'File SHA-256': DBotScoreType.FILE,
+    'Email': DBotScoreType.EMAIL,
+    'URL': DBotScoreType.URL,
 }
 
 
