@@ -290,7 +290,7 @@ def get_categories_command():
 
 
 try:
-    reliability = demisto.params().get('integrationReliability')
+    reliability = demisto.params().get('integrationReliability', 'C - Fairly reliable')
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
