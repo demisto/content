@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 BRAND = "Demisto REST API"
 
+
 def get_rest_api_instance_to_use():
     """
         This function checks if there are more than one instance of demisto rest api.
@@ -143,7 +144,6 @@ def main():
     incidents_data = get_incidents_result[0]["Contents"]["data"]
     total_incidents = incidents_data if incidents_data else []
 
-
     demisto.debug(f'got {len(total_incidents)} incidents using {max_incidents} limit. '
                   f'Elapsed time: {time.time() - start_time}')
 
@@ -170,7 +170,7 @@ def main():
         readable_output=tableToMarkdown("GetFailedTasks:", incidents_output,
                                         ["Incident Created Date", "Incident ID", "Task Name", "Task ID",
                                          "Playbook Name",
-                                            "Command Name", "Error Entry ID"]),
+                                         "Command Name", "Error Entry ID"]),
         outputs={
             "GetFailedTasks": incidents_output,
             "NumberofFailedIncidents": total_failed_incidents,
