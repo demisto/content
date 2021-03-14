@@ -66,7 +66,7 @@ args:
   secret: false
 - default: false
   defaultValue: emailfrom
-  description: 'The name of the field that contains the email sender.'
+  description: The name of the field that contains the email sender.
   isArray: false
   name: emailFrom
   required: false
@@ -149,6 +149,12 @@ outputs:
   type: Unknown
 - contextPath: EmailCampaign.incidents.emailfromdomain
   description: The domains of the email senders involved in the campaign.
+  type: Unknown
+- contextPath: EmailCampaign.incidents.recipients
+  description: The recipients of the emails involved in the campaign.
+  type: Unknown
+- contextPath: EmailCampaign.incidents.recipientsdomain
+  description: The domains of the recipients of the emails involved in the campaign.
   type: Unknown
 - contextPath: EmailCampaign.indicators.id
   description: The IDs of the mututal indicators of the incidents invovled in the
