@@ -1,4 +1,4 @@
-This is a playbook which will handle the alerts coming from the Hello World service
+This is a playbook which will handle the alerts coming from the Hello World v2 service
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
