@@ -293,6 +293,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "17"
@@ -309,8 +310,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 773d2beb-d212-48b7-8f46-81ac7b5a7dd8
@@ -368,8 +367,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: be7464c6-2a91-4e03-81aa-a845d917428a
@@ -381,6 +378,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -394,8 +392,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 573f6a25-8084-4627-8065-cc7886ba57c6
@@ -433,8 +429,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 2ee715d2-81ac-46a4-85d9-18af60f8034e
@@ -480,8 +474,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 8b35672e-76c8-44b1-8f2d-24b230129bc4
@@ -520,8 +512,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 8be45e2b-6012-44ff-851a-5785612c58d4
@@ -584,8 +574,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: ae23c225-914f-4cf8-88fa-76bc1b5b02cb
@@ -597,6 +585,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "4"
@@ -627,8 +616,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 877404e3-7a2f-47d2-817e-db477bf4b028
@@ -690,8 +677,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: ff357573-90be-42f2-8617-324b91c1b2f8
@@ -728,8 +713,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 2f7d696d-8e45-4bbf-88bf-63eb8e11a268
@@ -773,8 +756,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 313cea7f-359a-4b74-8539-8b77ca1e8ca3
@@ -804,8 +785,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 885584ce-5a80-474f-8787-ae91b2038671
@@ -847,8 +826,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 19143fcf-285f-436a-87a5-facc61faf732
@@ -860,6 +837,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Determines search_name is defined.
     nexttasks:
       '#default#':
       - "8"
@@ -887,8 +865,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 60a9527a-9a63-4b2d-852e-030aeb25cb29
@@ -900,6 +876,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Determines if the O365 Search and Compliance integration is enabled.
     nexttasks:
       '#default#':
       - "4"
@@ -945,9 +922,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 system: true
+version: -1
 view: |-
   {
     "linkLabelsPosition": {
