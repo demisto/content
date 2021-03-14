@@ -246,8 +246,8 @@ class Client(BaseClient):
 def get_query_filter(context):
     application_ids = []
 
-    query_filter = 'eventType eq "user.account.update_profile or ((eventType eq "application.user_membership.add" ' \
-                   'or eventType eq "application.user_membership.remove") and)'
+    query_filter = '(eventType eq "application.user_membership.add" ' \
+                   'or eventType eq "application.user_membership.remove") and'
 
     iam_configuration = context.get('IAMConfiguration', [])
     if not iam_configuration:
@@ -256,7 +256,8 @@ def get_query_filter(context):
     for row in iam_configuration:
         application_ids.append(row['ApplicationID'])
 
-    query_suffix = '(' + ' or '.join([f'target.id co "{app_id}"' for app_id in application_ids]) + ')'
+    query_suffix = '(' + ' or '.join([f'target.id co "{app_id}"' for app_id in application_ids]) + \
+                   ') or (eventType eq "user.account.update_profile")'
 
     query_filter += query_suffix
 
