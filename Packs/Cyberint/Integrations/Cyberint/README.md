@@ -92,6 +92,13 @@ List alerts according to parameters
 | Cyberint.Alert.alert_data.mail_server | String | Mail server related to an event. | 
 | Cyberint.Alert.alert_data.blacklist_repository | String | Blacklist repository name related to an event. | 
 | Cyberint.Alert.alert_data.screenshot | String | Screenshot related to an event. | 
+| Cyberint.Alert.alert_data.csv.username | String | Username related to an event. |
+| Cyberint.Alert.alert_data.csv.password | String | Password related to an event. |
+| Cyberint.Alert.alert_data.storage_link | String | Storage link related to an event. |
+| Cyberint.Alert.alert_data.spf_records | String | Spf records related to an event. |
+| Cyberint.Alert.alert_data.interface_type | String | Interface type related to an event. |
+| Cyberint.Alert.alert_data.dmarc_record| String | Dmarc record related to an event. |
+| Cyberint.Alert.alert_data.vulnerable_cname_record| String | Vulnerable cname record related to an event. |
 | Cyberint.Alert.attachments | String | Attachments related to the alert. | 
 | Cyberint.Alert.ioc.type | String | Type of IOC related to the alert. | 
 | Cyberint.Alert.ioc.value | String | Value of the IOC related to the alert. | 

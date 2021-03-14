@@ -482,7 +482,7 @@ script:
     - contextPath: Cyberint.Alert.closure_reason
       description: Reason for updating the alert to closed if closed.
       type: String
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
   longRunning: false
