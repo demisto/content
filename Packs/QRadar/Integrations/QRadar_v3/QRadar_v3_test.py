@@ -1,5 +1,5 @@
 """
-    QRadar_V3 integration for Cortex XSOAR - Unit Tests file
+    QRadar v3 integration for Cortex XSOAR - Unit Tests file
 """
 import io
 import json
@@ -840,6 +840,7 @@ def test_commands_with_enrichment(mocker, command_func: Callable[[Client, Dict],
     """
     response = command_test_data[command_name]['response']
     expected = command_test_data[command_name]['expected']
+    args = command_test_data[command_name].get('args', dict())
     enriched_response = command_test_data[command_name][enrichment_func_name]
     expected_command_results = CommandResults(
         outputs_prefix=expected.get('outputs_prefix'),
@@ -850,7 +851,7 @@ def test_commands_with_enrichment(mocker, command_func: Callable[[Client, Dict],
     mocker.patch.object(client, command_name, return_value=response)
     mocked_enrich = mocker.patch.object(QRadar_v3, enrichment_func_name, return_value=enriched_response)
 
-    results = command_func(client, dict())
+    results = command_func(client, args)
 
     assert mocked_enrich.call_args[0][1] == response
 

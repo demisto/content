@@ -342,6 +342,9 @@
     }
   },
   "offense_update": {
+    "args": {
+      "offense_id": 0
+    },
     "response": {
       "username_count": 1,
       "description": "Session Closed\n",
@@ -526,6 +529,9 @@
     }
   },
   "offense_notes_list": {
+    "args": {
+      "offense_id": 0
+    },
     "response": [
       {
         "note_text": "test note",
@@ -560,6 +566,9 @@
     }
   },
   "offense_notes_create": {
+    "args": {
+      "offense_id": 0
+    },
     "response": {
       "note_text": "test text message",
       "create_time": 1614248976758,

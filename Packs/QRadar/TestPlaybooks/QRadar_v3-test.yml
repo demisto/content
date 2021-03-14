@@ -1,7 +1,7 @@
 id: QRadar_v3-test
 version: -1
 name: QRadar_v3-test
-description: QRadar_v3 test playbook. Tests commands of QRadar, validates outputs
+description: QRadar v3 test playbook. Tests commands of QRadar, validates outputs
   and expected behaviour.
 starttaskid: "0"
 tasks:
@@ -1420,10 +1420,10 @@ tasks:
       version: -1
       name: Delete Reference Set Value
       description: Remove a value from a reference set.
-      script: QRadar_v3|||qradar-reference-set-value-delete
+      script: QRadar v3|||qradar-reference-set-value-delete
       type: regular
       iscommand: true
-      brand: QRadar_v3
+      brand: QRadar v3
     nexttasks:
       '#none#':
       - "30"
@@ -1992,8 +1992,8 @@ tasks:
     task:
       id: 9337702c-d159-436a-8e8f-6c12fd6a89a1
       version: -1
-      name: QRadar_v3 Full Search
-      playbookName: QRadar_v3 Full Search
+      name: QRadar v3 Full Search
+      playbookName: QRadar v3 Full Search
       type: playbook
       iscommand: false
       brand: ""

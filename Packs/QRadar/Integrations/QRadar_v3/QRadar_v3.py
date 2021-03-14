@@ -12,7 +12,7 @@ from CommonServerUserPython import *  # noqa
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
-""" ADVANCED GLOBAL PARAMETERS """
+''' ADVANCED GLOBAL PARAMETERS '''
 EVENTS_INTERVAL_SECS = 15  # interval between events polling
 EVENTS_FAILURE_LIMIT = 3  # amount of consecutive failures events fetch will tolerate
 FAILURE_SLEEP = 15  # sleep between consecutive failures events fetch
@@ -26,7 +26,11 @@ RULES_ENRCH_FLG = 'true'  # when set to true, will try to enrich offense with ru
 MAX_FETCH_EVENT_RETIRES = 3  # max iteration to try search the events of an offense
 SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the events of an offense
 
-ADVANCED_PARAMETER_NAMES = [
+ADVANCED_PARAMETERS_STRING_NAMES = [
+    'DOMAIN_ENRCH_FLG',
+    'RULES_ENRCH_FLG'
+]
+ADVANCED_PARAMETER_INT_NAMES = [
     'EVENTS_INTERVAL_SECS',
     'EVENTS_FAILURE_LIMIT',
     'FAILURE_SLEEP',
@@ -35,8 +39,6 @@ ADVANCED_PARAMETER_NAMES = [
     'OFF_ENRCH_LIMIT',
     'LOCK_WAIT_TIME',
     'MAX_WORKERS',
-    'DOMAIN_ENRCH_FLG',
-    'RULES_ENRCH_FLG',
     'MAX_FETCH_EVENT_RETIRES',
     'SLEEP_FETCH_EVENT_RETIRES'
 ]
@@ -324,9 +326,38 @@ class Client(BaseClient):
             params=params,
             json_data=json_data,
             headers=headers,
-            error_handler=qradar_error_handler,
+            error_handler=self.qradar_error_handler,
             timeout=timeout
         )
+
+    @staticmethod
+    def qradar_error_handler(res: requests.Response):
+        """
+        QRadar error handler for any error occurred during the API request.
+        This function job is to translate the known exceptions returned by QRadar
+        to human readable exception to help the user understand why the request have failed.
+        If error returned is not in the expected error format, raises the exception as is.
+        Args:
+            res (Any): The error response returned by QRadar.
+
+        Returns:
+            - raises DemistoException.
+        """
+        err_msg = f'Error in API call [{res.status_code}] - {res.reason}'
+        try:
+            # Try to parse json error response
+            error_entry = res.json()
+            message = error_entry.get('message', '')
+            if 'items=x-y' in message:
+                message = 'Failed to parse Range argument. The syntax of the Range argument must follow this pattern:' \
+                          ' x-y'
+            elif 'unauthorized to access' in err_msg or 'No SEC header present in request' in err_msg:
+                message = 'Authorization Error: make sure credentials are correct.'
+            err_msg += f'\n{message}'
+            raise DemistoException(err_msg, res=res)
+        except ValueError:
+            err_msg += '\n{}'.format(res.text)
+            raise DemistoException(err_msg, res=res)
 
     def offenses_list(self, range_: Optional[str] = None, offense_id: Optional[int] = None,
                       filter_: Optional[str] = None, fields: Optional[str] = None, sort: Optional[str] = None):
@@ -573,34 +604,6 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def qradar_error_handler(res: Any):
-    """
-    QRadar error handler for any error occurred during the API request.
-    This function job is to translate the known exceptions returned by QRadar
-    to human readable exception to help the user understand why the request have failed.
-    If error returned is not in the expected error format, raises the exception as is.
-    Args:
-        res (Any): The error response returned by QRadar.
-
-    Returns:
-        - raises DemistoException.
-    """
-    err_msg = f'Error in API call [{res.status_code}] - {res.reason}'
-    try:
-        # Try to parse json error response
-        error_entry = res.json()
-        message = error_entry.get('message', '')
-        if 'items=x-y' in message:
-            message = 'Failed to parse Range argument. The syntax of the Range argument must follow this pattern: x-y'
-        elif 'unauthorized to access' in err_msg or 'No SEC header present in request' in err_msg:
-            message = 'Authorization Error: make sure credentials are correct.'
-        err_msg += f'\n{message}'
-        raise DemistoException(err_msg, res=res)
-    except ValueError:
-        err_msg += '\n{}'.format(res.text)
-        raise DemistoException(err_msg, res=res)
 
 
 def add_iso_entries_to_dict(dicts: List[Dict]) -> List[Dict]:
@@ -1079,8 +1082,6 @@ def print_debug_msg(msg: str):
     Args:
         msg (str): Message to be logged.
 
-    Returns:
-
     """
     debug_msg = f'QRadarMsg - {msg}'
     if lock.acquire(timeout=LOCK_WAIT_TIME):
@@ -1166,7 +1167,6 @@ def fetch_incidents_command() -> List[Dict]:
     """
     Fetch incidents implemented, for mapping purposes only.
     Returns list of samples saved by long running execution.
-    Args:
 
     Returns:
         (List[Dict]): List of incidents samples.
@@ -1399,8 +1399,6 @@ def long_running_execution_command(client: Client, params: Dict):
         client (Client): Client to perform API calls.
         params (Dict): Demisto params.
 
-    Returns:
-
     """
     fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
@@ -1436,9 +1434,11 @@ def long_running_execution_command(client: Client, params: Dict):
             set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample})
             demisto.createIncidents(incidents)
 
-            time.sleep(FETCH_SLEEP)
         except Exception as e:
             demisto.error(str(e))
+
+        finally:
+            time.sleep(FETCH_SLEEP)
 
 
 def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
@@ -1502,7 +1502,7 @@ def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    offense_id: int = arg_to_number(args.get('offense_id'))  # type: ignore
+    offense_id: int = int(args['offense_id'])
     protected = args.get('protected')
     follow_up = args.get('follow_up')
 
@@ -1595,7 +1595,7 @@ def qradar_offense_notes_list_command(client: Client, args: Dict) -> CommandResu
     Returns:
         CommandResults.
     """
-    offense_id: int = arg_to_number(args.get('offense_id'))  # type: ignore
+    offense_id: int = int(args['offense_id'])
     note_id = args.get('note_id')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
@@ -1632,8 +1632,8 @@ def qradar_offense_notes_create_command(client: Client, args: Dict) -> CommandRe
     Returns:
         CommandResults.
     """
-    offense_id: int = args.get('offense_id')  # type: ignore
-    note_text: str = args.get('note_text')  # type: ignore
+    offense_id: int = int(args['offense_id'])
+    note_text: str = args.get('note_text', '')
     fields = args.get('fields')
 
     response = client.offense_notes_create(offense_id, note_text, fields)
@@ -1796,7 +1796,7 @@ def qradar_saved_searches_list_command(client: Client, args: Dict) -> CommandRes
         CommandResults.
     """
     saved_search_id = args.get('saved_search_id')
-    timeout: int = arg_to_number(args.get('timeout'), DEFAULT_TIMEOUT_VALUE)  # type: ignore
+    timeout: int = int(args.get('timeout', DEFAULT_TIMEOUT_VALUE))
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
@@ -1884,7 +1884,7 @@ def qradar_search_status_get_command(client: Client, args: Dict) -> CommandResul
     Returns:
         CommandResults.
     """
-    search_id: str = args.get('search_id')  # type: ignore
+    search_id: str = args.get('search_id', '')
 
     response = client.search_status_get(search_id)
     outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
@@ -1912,7 +1912,7 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
     Returns:
         CommandResults.
     """
-    search_id: str = args.get('search_id')  # type: ignore
+    search_id: str = args.get('search_id', '')
     output_path = args.get('output_path')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
 
@@ -1981,8 +1981,8 @@ def qradar_reference_set_create_command(client: Client, args: Dict) -> CommandRe
                                ALNIC (alphanumeric ignore case), IP (IP address), NUM (numeric),
                                PORT (port number) or DATE.
     - timeout_type: Indicates if the time_to_live interval is based on when the data was first seen or last seen.
-                    The allowed values are "FIRST_SEEN", "LAST_SEEN" and "UNKNOWN". The default value is "UNKNOWN".
-    - time_to_live: The time to live interval, for example: "1 month" or "5 minutes".
+                    The allowed values are 'FIRST_SEEN', 'LAST_SEEN' and 'UNKNOWN'. The default value is 'UNKNOWN'.
+    - time_to_live: The time to live interval, for example: '1 month' or '5 minutes'.
     - fields: If used, will filter all fields except for the specified ones.
               Use this parameter to specify which fields you would like to get back in the
               response. Fields that are not explicitly named are excluded.
@@ -1993,8 +1993,8 @@ def qradar_reference_set_create_command(client: Client, args: Dict) -> CommandRe
     Returns:
         CommandResults.
     """
-    ref_name: str = args.get('ref_name')  # type: ignore
-    element_type: str = args.get('element_type')  # type: ignore
+    ref_name: str = args.get('ref_name', '')
+    element_type: str = args.get('element_type', '')
     timeout_type = args.get('timeout_type')
     time_to_live = args.get('time_to_live')
     fields = args.get('fields')
@@ -2032,7 +2032,7 @@ def qradar_reference_set_delete_command(client: Client, args: Dict) -> CommandRe
     Returns:
         CommandResults.
     """
-    ref_name: str = args.get('ref_name')  # type: ignore
+    ref_name: str = args.get('ref_name', '')
     purge_only = args.get('purge_only')
     fields = args.get('fields')
 
@@ -2062,8 +2062,8 @@ def qradar_reference_set_value_upsert_command(client: Client, args: Dict) -> Com
     Returns:
         CommandResults.
     """
-    ref_name: str = args.get('ref_name')  # type: ignore
-    values: List[str] = argToList(args.get('value'))  # type: ignore
+    ref_name: str = args.get('ref_name', '')
+    values: List[str] = argToList(args.get('value', ''))
     if not values:
         raise DemistoException('Value to insert must be given.')
     source = args.get('source')
@@ -2107,8 +2107,8 @@ def qradar_reference_set_value_delete_command(client: Client, args: Dict) -> Com
     Returns:
         CommandResults.
     """
-    ref_name: str = args.get('ref_name')  # type: ignore
-    value: str = args.get('value')  # type: ignore
+    ref_name: str = args.get('ref_name', '')
+    value: str = args.get('value', '')
     date_value = argToBoolean(args.get('date_value', False))
     original_value = value
 
@@ -2181,7 +2181,7 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
     Returns:
         CommandResults.
     """
-    ref_name: str = args.get('ref_name')  # type: ignore
+    ref_name: str = args.get('ref_name', '')
     query = args.get('query')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
     page = arg_to_number(args.get('page', 0))
@@ -2311,7 +2311,7 @@ def qradar_log_sources_list_command(client: Client, args: Dict) -> CommandResult
     Returns:
         CommandResults.
     """
-    qrd_encryption_algorithm: str = args.get('qrd_encryption_algorithm')  # type: ignore
+    qrd_encryption_algorithm: str = args.get('qrd_encryption_algorithm', '')
     qrd_encryption_password: str = args.get('qrd_encryption_password', client.password)
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
@@ -2561,7 +2561,6 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
     final_offense_data = sanitize_outputs(enriched_offense)[0]
 
-    demisto.debug(f'Pull result is {final_offense_data}')
     return GetRemoteDataResponse(final_offense_data, entries)
 
 
@@ -2580,7 +2579,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     """
     remote_args = GetModifiedRemoteDataArgs(args)
     highest_fetched_id = get_integration_context().get(LAST_FETCH_KEY, 0)
-    limit: int = arg_to_number(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))  # type: ignore
+    limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     range_ = f'items=0-{limit - 1}'
     last_update = get_time_parameter(remote_args.last_update, epoch_format=True)
 
@@ -2601,24 +2600,27 @@ def main() -> None:
     args = demisto.args()
 
     # handle allowed advanced parameters
-    adv_params = params.get("adv_params")
+    adv_params = params.get('adv_params')
     if adv_params:
-        globals_ = globals()
-        for adv_p in adv_params.split(","):
-            adv_p_kv = [item.strip() for item in adv_p.split("=")]
-            if len(adv_p_kv) != 2:
-                return_error(
-                    f"Could not read advanced parameter: {adv_p} - please make sure you entered it correctly."
-                )
-            if adv_p_kv[0] not in ADVANCED_PARAMETER_NAMES:
-                return_error(
-                    f"The parameter: {adv_p_kv[0]} is not a valid advanced parameter. Please remove it"
-                )
-            else:
-                try:
-                    globals_[adv_p_kv[0]] = int(adv_p_kv[1])
-                except (TypeError, ValueError):
+        try:
+            globals_ = globals()
+            for adv_p in adv_params.split(','):
+                adv_p_kv = [item.strip() for item in adv_p.split('=')]
+                if len(adv_p_kv) != 2:
+                    raise DemistoException(
+                        f'Failed to parse advanced parameter: {adv_p} - please make sure you entered it correctly.')
+                adv_param_name = adv_p_kv[0]
+                if adv_param_name in ADVANCED_PARAMETERS_STRING_NAMES:
                     globals_[adv_p_kv[0]] = adv_p_kv[1]
+                elif adv_param_name in ADVANCED_PARAMETER_INT_NAMES:
+                    globals_[adv_p_kv[0]] = int(adv_p_kv[1])
+                else:
+                    raise DemistoException(
+                        f'The parameter: {adv_p_kv[0]} is not a valid advanced parameter. Please remove it')
+        except DemistoException as e:
+            raise DemistoException(f'Failed to parse advanced params. Error: {e.message}')
+        except Exception as e:
+            raise DemistoException(f'Failed to parse advanced params. Error: {e}')
 
     server = urljoin(params.get('server'), '/api')
     verify_certificate = not params.get('insecure', False)

@@ -1,8 +1,8 @@
 commonfields:
-  id: QRadar_v3
+  id: QRadar v3
   version: -1
-name: QRadar_v3
-display: QRadar_v3
+name: QRadar v3
+display: IBM QRadar v3
 category: Analytics & SIEM
 description: IBM QRadar SIEM helps security teams accurately detect and prioritize
   threats across the enterprise, and it provides intelligent insights that enable
@@ -26,11 +26,6 @@ configuration:
   name: incident_type
   required: false
   type: 13
-- defaultvalue: '20'
-  display: Number of offenses to pull per API call (max 50)
-  name: offenses_per_fetch
-  required: false
-  type: 0
 - defaultvalue: Fetch With All Events
   display: Fetch mode
   hidden: false
@@ -41,11 +36,16 @@ configuration:
   - Fetch Correlation Events Only
   required: true
   type: 15
+- defaultvalue: '20'
+  display: Number of offenses to pull per API call (max 50)
+  name: offenses_per_fetch
+  required: false
+  type: 0
 - display: Query to fetch offenses
   name: query
   required: false
   type: 0
-  additionalinfo: Define a query to determine which offenses to fetch. e.g. status=OPEN.
+  additionalinfo: Define a query to determine which offenses to fetch. e.g. "severity >= 4 AND id > 5 AND status=OPEN."
 - defaultvalue: IPs And Assets
   display: Incidents Enrichment
   hidden: false
@@ -73,14 +73,6 @@ configuration:
   required: false
   additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html"
   type: 12
-- additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex
-    XSOAR.
-  defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
-  hidden: false
-  name: close_incident
-  required: false
-  type: 8
 - defaultvalue: No Mirroring
   display: Mirroring Options
   hidden: false
@@ -91,6 +83,14 @@ configuration:
   required: true
   type: 15
   additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done. For mirroring, this option
+- additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex
+    XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  hidden: false
+  name: close_incident
+  required: false
+  type: 8
 - additionalinfo: Maximum number of incidents  to mirror incoming each time.
   defaultvalue: '100'
   display: How many incidents to mirror incoming each time

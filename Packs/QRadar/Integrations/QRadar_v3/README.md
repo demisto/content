@@ -1,9 +1,9 @@
 IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, and it provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
-This integration was integrated and tested with API versions 10.1-14.0 xx of QRadar_v3
-## Configure QRadar_v3 on Cortex XSOAR
+This integration was integrated and tested with API versions 10.1-14.0 on QRadar platform 7.4.1.
+## Configure QRadar v3 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for QRadar_v3.
+2. Search for QRadar v3.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -2279,45 +2279,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 >fetch-incidents was reset successfully.
-
-### get-mapping-fields
-***
-Returns the list of fields for an incident type. This command should be used for debugging purposes.
-
-
-#### Base Command
-
-`get-mapping-fields`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-### get-remote-data
-***
-Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
-
-
-#### Base Command
-
-`get-remote-data`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | The ticket ID. | Required | 
-| lastUpdate | Retrieve entries that were created after lastUpdate. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.

@@ -1,6 +1,6 @@
-id: QRadar_v3 Full Search
+id: QRadar v3 Full Search
 version: -1
-name: QRadar_v3 Full Search
+name: QRadar v3 Full Search
 description: This playbook runs a QRadar query and return its results to the context.
 starttaskid: "0"
 tasks:
@@ -414,11 +414,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- test_Qradar
-- test_Qradar_v2
-- test_Qradar
-- test playbook - QRadarCorrelations For V2
 - QRadar_v3-test
-- QRadar Indicator Hunting Test
-- test playbook - QRadarCorrelations
 fromversion: 6.0.0
