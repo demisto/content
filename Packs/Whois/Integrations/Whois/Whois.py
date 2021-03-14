@@ -8,6 +8,7 @@ from codecs import encode, decode
 import socks
 import errno
 
+
 SHOULD_ERROR = demisto.params().get('with_error', False)
 
 # flake8: noqa
@@ -8383,37 +8384,50 @@ def domain_command():
 
 def ip_command(ips):
     try:
+        # from urllib2 import request
         from ipwhois import IPWhois
     except ImportError as e:
         return_error("The Docker needs to be updated to use an IP command")
 
     results = []
     for ip in argToList(ips):
-        ip_obj = IPWhois(ip)
+        if demisto.params().get('proxy'):
+            opener = request.build_opener(handle_proxy('system_http'))
+            ip_obj = IPWhois(ip, proxy_opener=opener)
+        else:
+            ip_obj = IPWhois(ip)
         response = ip_obj.lookup_rdap(depth=1)
 
         dbot_score = Common.DBotScore(
             indicator=ip,
             indicator_type=DBotScoreType.IP,
-            integration_name='whois',
+            integration_name='Whois',
             score=Common.DBotScore.NONE
+        )
+        related_feed = Common.FeedRelatedIndicators(
+            value=response.get('network', {}).get('cidr'),
+            indicator_type='IP'
+
         )
         ip_output = Common.IP(
             ip=ip,
             asn=response.get('asn'),
-            dbot_score=dbot_score
+            geo_country=response.get('asn_country_code'),
+            organization_mame=response.get('asn_description'),
+            dbot_score=dbot_score,
+            feed_related_indicators=related_feed
         )
         result = CommandResults(
             outputs_prefix='Whois.IP',
             outputs_key_field='query',
             outputs=response,
             readable_output=tableToMarkdown('Whois results:', response,
-                                            ['query', 'asn', 'asn_cidr', 'asn_country_code', 'asn_date', 'asn_description']),
+                                            ['query', 'asn', 'asn_cidr', 'asn_country_code', 'asn_date',
+                                             'asn_description']),
             raw_response=response,
             indicator=ip_output
         )
         results.append(result)
-        print('hii')
     return results
 
 
@@ -8474,11 +8488,11 @@ def setup_proxy():
     socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
     socket.socket = socks.socksocket  # type: ignore
 
-
 ''' EXECUTION CODE '''
 
 
 def main():
+
     LOG('command is {}'.format(str(demisto.command())))
     command = demisto.command()
     try:

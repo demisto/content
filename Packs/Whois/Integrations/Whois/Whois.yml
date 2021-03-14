@@ -1,19 +1,25 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Whois
+  id: Whois ip
   version: -1
 configuration:
 - display: Return Errors
   name: with_error
   required: false
   type: 8
-- display: Proxy URL. Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080)
+- display: Proxy URL. (for the Domain command) Supports socks4/socks5/http connect
+    proxies (e.g. socks5h://host:1080)
   name: proxy_url
   required: false
   type: 0
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
 description: Provides data enrichment for domains.
-display: Whois
-name: Whois
+display: Whois ip
+name: Whois ip
 script:
   commands:
   - arguments:
@@ -330,7 +336,7 @@ script:
     description: Provides data enrichment for ips.
     execution: false
     name: ip
-  dockerimage: demisto/ippysocks:1.0.0.13524
+  dockerimage: devdemisto/ippysocks:1.0.0.17516
   feed: false
   isfetch: false
   longRunning: false
