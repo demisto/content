@@ -1,0 +1,8 @@
+!wildfire-upload upload=<entry_id>
+!wildfire-upload-file-url upload=http://www.software995.net/bin/pdf995s.exe
+!wildfire-upload-url upload=https://www.demisto.com
+!wildfire-report url=https://www.demisto.com
+!file file=735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f
+!wildfire-get-sample sha256=afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc
+!wildfire-get-verdict hash=afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc
+!wildfire-get-url-webartifacts url=http://royalmail-login.com
