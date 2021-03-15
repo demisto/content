@@ -303,6 +303,11 @@
 <td style="width: 481px;">Maximum number of IPs to retrieve, default is 50</td>
 <td style="width: 90px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 169px;">confidence</td>
+<td style="width: 481px;">The Minimum confidence required for the retrieved IPs. Default is 100</td>
+<td style="width: 90px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>

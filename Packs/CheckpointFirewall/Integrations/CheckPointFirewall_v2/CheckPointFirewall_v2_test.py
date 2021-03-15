@@ -29,7 +29,7 @@ def test_checkpoint_get_host_command(mocker):
     assert result.get('name') == 'host 1'
     assert result.get('uid') == '1234'
     assert result.get('type') == 'host'
-    assert len(result) == 7
+    assert len(result) == 11
 
 
 def test_checkpoint_add_host_command(mocker):
@@ -74,7 +74,7 @@ def test_checkpoint_list_groups_command(mocker):
     assert result[0].get('name') == 'group1'
     assert result[0].get('uid') == '123'
     assert result[0].get('type') == 'group'
-    assert len(result[0]) == 4
+    assert len(result[0]) == 10
 
 
 def test_checkpoint_get_group_command(mocker):
@@ -127,7 +127,7 @@ def test_checkpoint_list_application_site_command(mocker):
     assert result[0].get('name') == 'application site 1'
     assert result[0].get('uid') == '1234'
     assert result[0].get('type') == 'application-site'
-    assert len(result[0]) == 3
+    assert len(result[0]) == 10
 
 
 def test_checkpoint_add_application_site_command(mocker):
@@ -174,7 +174,7 @@ def test_checkpoint_list_address_range_command(mocker):
     assert result[0].get('name') == 'address_range_test_1'
     assert result[0].get('uid') == '1234'
     assert result[0].get('type') == 'address-range'
-    assert len(result[0]) == 3
+    assert len(result[0]) == 10
 
 
 def test_checkpoint_get_address_range_command(mocker):
@@ -230,7 +230,7 @@ def test_checkpoint_list_threat_indicator_command(mocker):
     assert result[2].get('name') == 'threat_indicator_3'
     assert result[2].get('uid') == '9101'
     assert result[2].get('type') == 'threat-indicator'
-    assert len(result[2]) == 3
+    assert len(result[2]) == 10
 
 
 def test_checkpoint_get_threat_indicator_command(mocker):
@@ -281,7 +281,7 @@ def test_checkpoint_list_access_rule_command(mocker):
     assert result[0].get('name') == 'access_rule_1'
     assert result[0].get('uid') == '1234'
     assert result[0].get('type') == 'access-rule'
-    assert len(result[0]) == 3
+    assert len(result[0]) == 10
 
 
 def test_checkpoint_add_access_rule_command(mocker):
