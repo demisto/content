@@ -1,0 +1,190 @@
+id: ConfigureAzureApplicationAccessPolicy-Test
+version: -1
+name: ConfigureAzureApplicationAccessPolicy-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 35cee5da-895b-4c78-8e50-510547288e57
+    type: start
+    task:
+      id: 35cee5da-895b-4c78-8e50-510547288e57
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 9ada4354-1210-42d1-8bd2-a8fcf88c2caa
+    type: regular
+    task:
+      id: 9ada4354-1210-42d1-8bd2-a8fcf88c2caa
+      version: -1
+      name: Run ConfigureAzureApplicationAccessPolicy
+      description: This script is granting a user the necessary permissions in order
+        to create a Teams meeting. It's connecting to MS Teams, creating an application
+        access policy to a chosen application and then granting a user permissions.
+      scriptName: ConfigureAzureApplicationAccessPolicy
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      app_id:
+        simple: 37b5b9d5-af80-4043-a628-f566ac509b0b
+      identity:
+        simple: identity=avishai@demistodev.onmicrosoft.com
+      password:
+        simple: '{TOMMED}sZvJ6yDJ7mCBtJPF7hxT4/gKanYqO0mq1v1CbvNCULiPePQVhlbj2NscwJ0IBJr/AlPc/W0TAUKxZYXd0tjrYw=='
+      username:
+        simple: avishai@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: da18196f-12b8-4721-8b5f-cc198b8c7ac0
+    type: condition
+    task:
+      id: da18196f-12b8-4721-8b5f-cc198b8c7ac0
+      version: -1
+      name: Checked access was given
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ConfigureAzureApplicationAccessPolicy.Output
+            iscontext: true
+          right:
+            value:
+              simple: Access policy was given
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d33398fc-3f85-4472-8143-fce4baca3abe
+    type: regular
+    task:
+      id: d33398fc-3f85-4472-8143-fce4baca3abe
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 9f3d9b14-315d-4ae9-8d02-9021426dc14d
+    type: title
+    task:
+      id: 9f3d9b14-315d-4ae9-8d02-9021426dc14d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: CreateCertificate-Test
+fromversion: 5.0.0
+description: Granting a user the necessary permissions in order to create a Teams
+  meeting.

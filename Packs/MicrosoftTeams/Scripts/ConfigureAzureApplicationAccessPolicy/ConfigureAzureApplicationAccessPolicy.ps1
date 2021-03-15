@@ -19,7 +19,15 @@ function Main()
         New-CsApplicationAccessPolicy -Identity Test-policy -AppIds $app_id
         Grant-CsApplicationAccessPolicy -PolicyName Test-policy -Identity $identity
 
-        ReturnOutputs "Access policy was given"
+        $human_readable = "Access policy was given"
+        $context = @{
+            "ConfigureAzureApplicationAccessPolicy" = @{
+                "Output" = "Access policy was given"
+                "ConnectionInfo" = $connection_info.ToString()
+            }
+        }
+
+        ReturnOutputs $human_readable $context $null | Out-Null
     }
     finally
     {
