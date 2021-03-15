@@ -1,4 +1,4 @@
-BitSight Integration to get company guid, deatils, findings and to create Incidents. 
+BitSight Integration to get company guid, details, findings and to create Incidents. 
 This integration was integrated and tested with version 01 of BitSight for Security Performance Management
 ## Configure BitSight for Security Performance Management on Cortex XSOAR
 
