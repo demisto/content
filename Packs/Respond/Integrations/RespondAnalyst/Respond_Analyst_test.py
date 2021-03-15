@@ -9,11 +9,14 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = 'https://localhost:6078'
 API_TOKEN = 'apitoken'
 
+
 params = {
     'base_url': BASE_URL,
     'token': API_TOKEN,
     'insecure': True,
-    'mirror_direction': 'Both'
+    'mirror_direction': 'Both',
+    'first_fetch': '7 Days',
+    'max_fetch': '2'
 }
 
 
@@ -37,6 +40,7 @@ def mock_rest_client():
         verify=False
     )
 
+#todo test first fetch
 
 def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents
@@ -61,6 +65,7 @@ def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_m
                         return_value=get_ids_response)
     mocker.patch.object(client, 'construct_and_send_full_incidents_query',
                         return_value=get_full_incidents_response)
+
 
     next_run, incidents = fetch_incidents(client, last_run)
     assert len(incidents) == 0
@@ -132,8 +137,8 @@ def test_fetch_incidents(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents
 
     get_ids_response = [{
-        'id': '8'}, {
-        'id': '14'}]
+        'id': '8', 'dateCreated': '1234566789'}, {
+        'id': '14', 'dateCreated': '12345676789'}]
     get_full_incidents_response = load_test_data('test_data/full_incidents.json')
 
     client = mock_rest_client()

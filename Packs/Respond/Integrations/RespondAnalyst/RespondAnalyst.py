@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 import dateparser
 from typing import List, Dict
+from math import floor
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -229,9 +230,9 @@ class RestClient(BaseClient):
     def construct_and_send_get_incident_ids_query(self, tenant_id, from_time_str):
         if from_time_str == '':
             query = {"query": "query { incidents( statusFilters: [ { incidentStatus: Open } "
-                              " ] ){ id } }"}
+                              " ] ){ id dateCreated } }"}
         else:
-            query = {"query": "query { incidents( createdAfter:\"" + from_time_str + "\" ){ id } }"}
+            query = {"query": "query { incidents( createdAfter:\"" + from_time_str + "\" ){ id dateCreated } }"}
         res = self.send_graphql_request(tenant_id, query)
         return res.get('data').get('incidents')
 
@@ -521,15 +522,28 @@ def test_module(client):
     """
     client.get_tenant_mappings()
 
+def get_max_number_of_ids_by_least_recently_created(all_ids, max_fetch):
+    sorted_ids = sorted(all_ids, key=lambda x:x['dateCreated'])
+    for i in range(0, len(all_ids) - max_fetch):
+        sorted_ids.pop()
 
-def fetch_incidents_for_tenant(rest_client, internal_tenant_id, external_tenant_id, from_time):
+    return list(map(extract_id, sorted_ids))
+
+def fetch_incidents_for_tenant(rest_client, internal_tenant_id, external_tenant_id, from_time, max_fetch):
     # first time fetch is handled in query
     try:
         response = rest_client.construct_and_send_get_incident_ids_query(internal_tenant_id,
                                                                          from_time)
-        id_list = list(map(extract_id, response))
+        if len(response) > max_fetch:
+            id_list = get_max_number_of_ids_by_least_recently_created(response, max_fetch)
+        else:
+            id_list = list(map(extract_id, response))
+
+
         raw_incidents = rest_client.construct_and_send_full_incidents_query(internal_tenant_id,
                                                                             id_list)
+
+        # print(raw_incidents)
     except Exception as err:
         # log error but continue getting incidents for other tenants
         demisto.error(
@@ -1026,11 +1040,13 @@ def fetch_incidents(rest_client, last_run):
     incidents = []
     next_run = last_run
 
+    max_fetch = int(demisto.params()['max_fetch'])
+    max_fetch_per_tenant = floor(len(tenant_mappings) / max_fetch) if len(tenant_mappings) > max_fetch else 1
     # get incidents for each tenant
     for internal_tenant_id, external_tenant_id in tenant_mappings.items():
         # Get the last fetch time for tenant, if exists, which will be used as the 'search from here onward' time
         latest_time = None
-        from_time = ''
+        from_time = str(arg_to_datetime(demisto.params()['first_fetch'], 'first_fetch', True))
         if last_run.get(external_tenant_id) is not None:
             latest_time = last_run.get(external_tenant_id).get('time')
             if latest_time is not None:
@@ -1038,9 +1054,10 @@ def fetch_incidents(rest_client, last_run):
                 from_time = datetime.utcfromtimestamp((int(latest_time) + 1) / 1000).strftime(
                     '%Y-%m-%d %H:%M:%S.%f')
 
+        # arg, arg_name=None, is_utc=True, required=False, settings=None)
         # convert to utc datetime for incidents filter
         raw_incidents = fetch_incidents_for_tenant(rest_client, internal_tenant_id,
-                                                   external_tenant_id, from_time)
+                                                   external_tenant_id, from_time, max_fetch_per_tenant)
 
         raw_incidents.sort(key=lambda x: x.get('dateCreated'))
         for raw_incident in raw_incidents:

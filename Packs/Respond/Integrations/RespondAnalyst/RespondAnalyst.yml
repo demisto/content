@@ -34,6 +34,15 @@ configuration:
   name: token
   required: true
   type: 4
+- defaultvalue: '500'
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
 
 description: Respond Software Integration - fetches incidents with mirroring api enabled
 display: Respond Analyst
