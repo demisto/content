@@ -60,37 +60,37 @@
           {
             "hostname": "DESKTOP-F16FQS2",
             "macAddress": "02:50:41:00:00:01",
-            "address": "172.16.100.28",
+            "address": "1.1.1.1",
             "interfaceName": "PANGP Virtual Ethernet Adapter"
           },
           {
             "hostname": "DESKTOP-F16FQS2",
             "macAddress": "00:15:5D:D2:66:CB",
-            "address": "172.17.101.17",
+            "address": "1.1.1.1",
             "interfaceName": "Hyper-V Virtual Ethernet Adapter"
           },
           {
             "hostname": "DESKTOP-F16FQS2",
             "macAddress": "00:15:5D:CE:FC:42",
-            "address": "172.18.6.65",
+            "address": "1.1.1.1",
             "interfaceName": "Hyper-V Virtual Ethernet Adapter #2"
           },
           {
             "hostname": "",
             "macAddress": "00:15:5D:CE:FC:42",
-            "address": "fe80:0:0:0:6cb2:5076:fb34:1462",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
             "interfaceName": "Hyper-V Virtual Ethernet Adapter #2"
           },
           {
             "hostname": "",
             "macAddress": "00:15:5D:D2:66:CB",
-            "address": "fe80:0:0:0:6d0a:919b:395b:bb65",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
             "interfaceName": "Hyper-V Virtual Ethernet Adapter"
           },
           {
             "hostname": "DESKTOP-F16FQS2",
             "macAddress": "04:33:C2:64:45:B5",
-            "address": "fe80:0:0:0:fdbf:83bf:42bc:3426",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
             "interfaceName": "Intel(R) Dual Band Wireless-AC 8265"
           }
         ],
@@ -110,7 +110,7 @@
         "lastLoggedOnUser": ".\\Gill",
         "netbiosName": "DESKTOP-F16FQS2",
         "name": "DESKTOP-F16FQS2",
-        "agentVersion": "4.2.0.8",
+        "agentVersion": "1.1.1.1",
         "updated": "2021-01-10T11:58:40.980+0000"
       },
       "incidentId": "None",
@@ -176,37 +176,37 @@
           {
             "hostname": "DESKTOP-F16FQS2",
             "macAddress": "02:50:41:00:00:01",
-            "address": "172.16.100.28",
+            "address": "1.1.1.1",
             "interfaceName": "PANGP Virtual Ethernet Adapter"
           },
           {
             "hostname": "DESKTOP-F16FQS2",
             "macAddress": "00:15:5D:D2:66:CB",
-            "address": "172.17.101.17",
+            "address": "1.1.1.1",
             "interfaceName": "Hyper-V Virtual Ethernet Adapter"
           },
           {
             "hostname": "DESKTOP-F16FQS2",
             "macAddress": "00:15:5D:CE:FC:42",
-            "address": "172.18.6.65",
+            "address": "1.1.1.1",
             "interfaceName": "Hyper-V Virtual Ethernet Adapter #2"
           },
           {
             "hostname": "",
             "macAddress": "00:15:5D:CE:FC:42",
-            "address": "fe80:0:0:0:6cb2:5076:fb34:1462",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
             "interfaceName": "Hyper-V Virtual Ethernet Adapter #2"
           },
           {
             "hostname": "",
             "macAddress": "00:15:5D:D2:66:CB",
-            "address": "fe80:0:0:0:6d0a:919b:395b:bb65",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
             "interfaceName": "Hyper-V Virtual Ethernet Adapter"
           },
           {
             "hostname": "DESKTOP-F16FQS2",
             "macAddress": "04:33:C2:64:45:B5",
-            "address": "fe80:0:0:0:fdbf:83bf:42bc:3426",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
             "interfaceName": "Intel(R) Dual Band Wireless-AC 8265"
           }
         ],
@@ -226,7 +226,7 @@
         "lastLoggedOnUser": ".\\Gill",
         "netbiosName": "DESKTOP-F16FQS2",
         "name": "DESKTOP-F16FQS2",
-        "agentVersion": "4.2.0.8",
+        "agentVersion": "1.1.1.1",
         "updated": "2021-01-10T11:58:40.980+0000"
       },
       "incidentId": "None",

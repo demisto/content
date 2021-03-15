@@ -11,7 +11,7 @@
                 "updatedDate": 1612292820206
             },
             "agentUuid": "b1caea93-0d21-4343-801c-92009f036c79",
-            "agentVersion": "4.2.0.8",
+            "agentVersion": "1.1.1.1",
             "assetId": 20032549,
             "created": 1610279920980,
             "customerId": 524090,
@@ -21,37 +21,37 @@
             "id": "b1caea93-0d21-4343-801c-92009f036c79",
             "interfaces": [
                 {
-                    "address": "172.17.101.17",
+                    "address": "1.1.1.1",
                     "hostname": "DESKTOP-F16FQS2",
                     "interfaceName": "Hyper-V Virtual Ethernet Adapter",
                     "macAddress": "00:15:5D:DB:DA:B0"
                 },
                 {
-                    "address": "172.18.6.65",
+                    "address": "1.1.1.1",
                     "hostname": "DESKTOP-F16FQS2",
                     "interfaceName": "Hyper-V Virtual Ethernet Adapter #2",
                     "macAddress": "00:15:5D:C7:40:39"
                 },
                 {
-                    "address": "192.168.91.49",
+                    "address": "1.1.1.1",
                     "hostname": "DESKTOP-F16FQS2",
                     "interfaceName": "Intel(R) Dual Band Wireless-AC 8265",
                     "macAddress": "04:33:C2:64:45:B5"
                 },
                 {
-                    "address": "fe80:0:0:0:44e9:7e22:5c4f:9e29",
+                    "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
                     "hostname": "DESKTOP-F16FQS2",
                     "interfaceName": "Hyper-V Virtual Ethernet Adapter #2",
                     "macAddress": "00:15:5D:C7:40:39"
                 },
                 {
-                    "address": "fe80:0:0:0:c9b3:310d:e1f5:288e",
+                    "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
                     "hostname": "DESKTOP-F16FQS2",
                     "interfaceName": "Hyper-V Virtual Ethernet Adapter",
                     "macAddress": "00:15:5D:DB:DA:B0"
                 },
                 {
-                    "address": "fe80:0:0:0:fdbf:83bf:42bc:3426",
+                    "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
                     "hostname": "DESKTOP-F16FQS2",
                     "interfaceName": "Intel(R) Dual Band Wireless-AC 8265",
                     "macAddress": "04:33:C2:64:45:B5"
@@ -203,7 +203,7 @@
         "data": {
             "activationDate": 1610899301086,
             "agentService": {
-                "driverVersion": "2.2.0.104",
+                "driverVersion": "1.1.1.1",
                 "httpStatus": null,
                 "osStatus": null,
                 "status": "FIM_EVENTS_UPLOADED",
@@ -221,13 +221,13 @@
             "id": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
             "interfaces": [
                 {
-                    "address": "192.168.159.142",
+                    "address": "1.1.1.1",
                     "hostname": "DC",
                     "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
                     "macAddress": "00:0C:29:9B:A9:5E"
                 },
                 {
-                    "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                    "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
                     "hostname": "DC",
                     "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
                     "macAddress": "00:0C:29:9B:A9:5E"
