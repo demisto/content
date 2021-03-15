@@ -129,10 +129,10 @@ configuration:
   name: extensive_logs
   required: false
   type: 8
-- additionalinfo: When ever no incidents are found, the next search will start from
-    the same start time, up to a window of the size specified here.
+- additionalinfo: The fetch time range will be at least of the size specified here.
+    This will support events that have a gap between their occurrence time and their index time in Splunk.
   defaultvalue: '15'
-  display: Fetch backwardss window
+  display: Fetch backwards window
   hidden: false
   name: look_behind
   required: false
