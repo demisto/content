@@ -362,14 +362,16 @@ class Client(BaseClient):
     def offenses_list(self, range_: Optional[str] = None, offense_id: Optional[int] = None,
                       filter_: Optional[str] = None, fields: Optional[str] = None, sort: Optional[str] = None):
         id_suffix = f'/{offense_id}' if offense_id else ''
+        params = assign_params(fields=fields) if offense_id else assign_params(filter=filter_, fields=fields, sort=sort)
+        additional_headers = {'Range': range_} if not offense_id else None
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/offenses{id_suffix}',
-            params=assign_params(filter=filter_, fields=fields, sort=sort),
-            additional_headers={'Range': range_} if not offense_id else None
+            params=params,
+            additional_headers=additional_headers
         )
 
-    def offense_update(self, offense_id: int, protected: Optional[bool] = None, follow_up: Optional[bool] = None,
+    def offense_update(self, offense_id: int, protected: Optional[str] = None, follow_up: Optional[str] = None,
                        status: Optional[str] = None, closing_reason_id: Optional[int] = None,
                        assigned_to: Optional[str] = None, fields: Optional[str] = None):
         return self.http_request(
@@ -389,22 +391,27 @@ class Client(BaseClient):
                              include_deleted: Optional[bool] = None, range_: Optional[str] = None,
                              filter_: Optional[str] = None, fields: Optional[str] = None):
         id_suffix = f'/{closing_reason_id}' if closing_reason_id else ''
+        params = assign_params(fields=fields) if closing_reason_id else assign_params(include_reserved=include_reserved,
+                                                                                      include_deleted=include_deleted,
+                                                                                      filter=filter_, fields=fields)
+        additional_headers = {'Range': range_} if not closing_reason_id and range_ else None
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/offense_closing_reasons{id_suffix}',
-            additional_headers={'Range': range_} if not closing_reason_id and range_ else None,
-            params=assign_params(include_reserved=include_reserved, include_deleted=include_deleted, filter=filter_,
-                                 fields=fields)
+            additional_headers=additional_headers,
+            params=params
         )
 
     def offense_notes_list(self, offense_id: int, range_: str, note_id: Optional[int] = None,
                            filter_: Optional[str] = None, fields: Optional[str] = None):
         note_id_suffix = f'/{note_id}' if note_id else ''
+        params = assign_params(fields=fields) if note_id else assign_params(filter=filter_, fields=fields)
+        additional_headers = {'Range': range_} if not note_id else None
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/offenses/{offense_id}/notes{note_id_suffix}',
-            additional_headers={'Range': range_} if not note_id else None,
-            params=assign_params(filter=filter_, fields=fields)
+            additional_headers=additional_headers,
+            params=params
         )
 
     def offense_notes_create(self, offense_id: int, note_text: str, fields: Optional[str] = None):
@@ -414,24 +421,28 @@ class Client(BaseClient):
             params=assign_params(note_text=note_text, fields=fields)
         )
 
-    def rules_list(self, rule_id: Optional[int] = None, range_: Optional[str] = None, filter_: Optional[str] = None,
+    def rules_list(self, rule_id: Optional[str] = None, range_: Optional[str] = None, filter_: Optional[str] = None,
                    fields: Optional[str] = None):
         id_suffix = f'/{rule_id}' if rule_id else ''
+        params = assign_params(fields=fields) if rule_id else assign_params(filter=filter_, fields=fields)
+        additional_headers = {'Range': range_} if range_ and not rule_id else None
         return self.http_request(
             method='GET',
             url_suffix=f'/analytics/rules{id_suffix}',
-            params=assign_params(filter=filter_, fields=fields),
-            additional_headers={'Range': range_} if range_ and not rule_id else None
+            params=params,
+            additional_headers=additional_headers
         )
 
     def rule_groups_list(self, range_: str, rule_group_id: Optional[int] = None, filter_: Optional[str] = None,
                          fields: Optional[str] = None):
         id_suffix = f'/{rule_group_id}' if rule_group_id else ''
+        additional_headers = {'Range': range_} if not rule_group_id else None
+        params = assign_params(fields=fields) if rule_group_id else assign_params(filter=filter_, fields=fields)
         return self.http_request(
             method='GET',
             url_suffix=f'/analytics/rule_groups{id_suffix}',
-            additional_headers={'Range': range_} if not rule_group_id else None,
-            params=assign_params(filter=filter_, fields=fields)
+            additional_headers=additional_headers,
+            params=params
         )
 
     def assets_list(self, range_: Optional[str] = None, filter_: Optional[str] = None, fields: Optional[str] = None):
@@ -442,14 +453,16 @@ class Client(BaseClient):
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    def saved_searches_list(self, range_: str, timeout: int, saved_search_id: Optional[str] = None,
+    def saved_searches_list(self, range_: str, timeout: Optional[int], saved_search_id: Optional[str] = None,
                             filter_: Optional[str] = None, fields: Optional[str] = None):
         id_suffix = f'/{saved_search_id}' if saved_search_id else ''
+        params = assign_params(fields=fields) if saved_search_id else assign_params(filter=filter_, fields=fields)
+        additional_headers = {'Range': range_} if not saved_search_id else None
         return self.http_request(
             method='GET',
             url_suffix=f'/ariel/saved_searches{id_suffix}',
-            additional_headers={'Range': range_} if not saved_search_id else None,
-            params=assign_params(filter=filter_, fields=fields),
+            additional_headers=additional_headers,
+            params=params,
             timeout=timeout
         )
 
@@ -487,11 +500,13 @@ class Client(BaseClient):
     def reference_sets_list(self, range_: str, ref_name: Optional[str] = None, filter_: Optional[str] = None,
                             fields: Optional[str] = None):
         name_suffix = f'/{ref_name}' if ref_name else ''
+        params = assign_params(fields=fields) if ref_name else assign_params(filter=filter_, fields=fields)
+        additional_headers = {'Range': range_} if not ref_name else None
         return self.http_request(
             method='GET',
             url_suffix=f'/reference_data/sets{name_suffix}',
-            params=assign_params(filter=filter_, fields=fields),
-            additional_headers={'Range': range_} if not ref_name else None
+            params=params,
+            additional_headers=additional_headers
         )
 
     def reference_set_create(self, ref_name: str, element_type: str, timeout_type: Optional[str] = None,
@@ -532,11 +547,13 @@ class Client(BaseClient):
     def domains_list(self, domain_id: Optional[int] = None, range_: Optional[str] = None, filter_: Optional[str] = None,
                      fields: Optional[str] = None):
         id_suffix = f'/{domain_id}' if domain_id else ''
+        params = assign_params(fields=fields) if domain_id else assign_params(filter=filter_, fields=fields)
+        additional_headers = {'Range': range_} if not domain_id and range_ else None
         return self.http_request(
             method='GET',
             url_suffix=f'/config/domain_management/domains{id_suffix}',
-            additional_headers={'Range': range_} if not domain_id and range_ else None,
-            params=assign_params(filter=filter_, fields=fields)
+            additional_headers=additional_headers,
+            params=params
         )
 
     def indicators_upload(self, ref_name: str, indicators: Any, fields: Optional[str] = None):
@@ -1020,15 +1037,15 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
 
         domains_enrichment = {'Domain': domain_id_name_dict.get(domain_id)} if full_enrichment and domain_id else dict()
 
-        endpoint_dict = {'Endpoint': dict(ip_enrichment, **os_enrichment, **mac_enrichment, **domains_enrichment)}
-
         basic_properties_enrichment = enrich_asset_properties(properties, ASSET_PROPERTIES_NAME_MAP)
         full_properties_enrichment = enrich_asset_properties(properties,
                                                              FULL_ASSET_PROPERTIES_NAMES_MAP) \
             if full_enrichment else dict()
 
-        enriched_asset = dict(asset, **endpoint_dict, **basic_properties_enrichment, **full_properties_enrichment)
-        return add_iso_entries_to_asset(enriched_asset)
+        enriched_asset = dict(asset, **basic_properties_enrichment, **full_properties_enrichment)
+        return {'Asset': add_iso_entries_to_asset(enriched_asset),
+                'Endpoint': dict(ip_enrichment, **os_enrichment, **mac_enrichment,
+                                 **domains_enrichment)}
 
     return [enrich_single_asset(asset) for asset in assets]
 
@@ -1710,7 +1727,7 @@ def qradar_rule_groups_list_command(client: Client, args: Dict) -> CommandResult
     Returns:
         CommandResults.
     """
-    rule_group_id = args.get('rule_group_id')
+    rule_group_id = arg_to_number(args.get('rule_group_id'))
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
@@ -1760,18 +1777,24 @@ def qradar_assets_list_command(client: Client, args: Dict) -> CommandResults:
 
     response = client.assets_list(range_, filter_, fields)
     enriched_outputs = enrich_assets_results(client, response, full_enrichment)
+    assets = []
+    endpoints = []
     for output in enriched_outputs:
-        output['hostnames'] = add_iso_entries_to_dict(output.get('hostnames', []))
-        output['users'] = add_iso_entries_to_dict(output.get('users', []))
-        output['products'] = add_iso_entries_to_dict(output.get('products', []))
+        output['Asset']['hostnames'] = add_iso_entries_to_dict(output.get('Asset', dict()).get('hostnames', []))
+        output['Asset']['users'] = add_iso_entries_to_dict(output.get('Asset', dict()).get('users', []))
+        output['Asset']['products'] = add_iso_entries_to_dict(output.get('Asset', dict()).get('products', []))
+        output['Asset'] = sanitize_outputs(output.get('Asset'), ASSET_OLD_NEW_MAP)[0]
+        assets.append(output.get('Asset'))
+        endpoints.append(output.get('Endpoint'))
 
-    final_outputs = sanitize_outputs(enriched_outputs, ASSET_OLD_NEW_MAP)
+    asset_human_readable = tableToMarkdown('Assets List', assets, removeNull=True)
+    endpoints_human_readable = tableToMarkdown('Endpoints', endpoints, removeNull=True)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Assets List', final_outputs),
-        outputs_prefix='QRadar.Asset',
+        readable_output=asset_human_readable + endpoints_human_readable,
+        outputs_prefix='QRadar',
         outputs_key_field='ID',
-        outputs=final_outputs,
+        outputs=enriched_outputs,
         raw_response=response
     )
 
@@ -1796,7 +1819,7 @@ def qradar_saved_searches_list_command(client: Client, args: Dict) -> CommandRes
         CommandResults.
     """
     saved_search_id = args.get('saved_search_id')
-    timeout: int = int(args.get('timeout', DEFAULT_TIMEOUT_VALUE))
+    timeout: Optional[int] = arg_to_number(args.get('timeout', DEFAULT_TIMEOUT_VALUE))
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
@@ -1917,12 +1940,16 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
 
     response = client.search_results_get(search_id, range_)
+    if not response:
+        raise DemistoException('Unexpected response from QRadar service.')
     result_key = list(response.keys())[0]
     outputs = sanitize_outputs(response.get(result_key))
 
+    outputs_prefix = output_path if output_path else f'QRadar.Search(val.ID === "{search_id}").Result.{result_key}'
+
     return CommandResults(
         readable_output=tableToMarkdown(f'Search Results For Search ID {search_id}', outputs),
-        outputs_prefix=output_path if output_path else 'QRadar.SearchStatus',
+        outputs_prefix=outputs_prefix,
         outputs=outputs,
         raw_response=response
     )
@@ -2039,8 +2066,8 @@ def qradar_reference_set_delete_command(client: Client, args: Dict) -> CommandRe
     response = client.reference_set_delete(ref_name, purge_only, fields)
     return CommandResults(
         raw_response=response,
-        readable_output=f'''### Reference {ref_name} Was Asked To Be Deleted. Current Deletion Status: {response.get(
-            'status', 'Unknown')}''')
+        readable_output=f'Request to delete reference {ref_name} was submitted.'
+                        f''' Current deletion status: {response.get('status', 'Unknown')}''')
 
 
 def qradar_reference_set_value_upsert_command(client: Client, args: Dict) -> CommandResults:
@@ -2194,7 +2221,7 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
 
     if not indicators_data:
         return CommandResults(
-            readable_output=f'### No Indicators Were Found For Reference Set {ref_name}'
+            readable_output=f'No indicators were found for reference set {ref_name}'
         )
 
     response = client.indicators_upload(ref_name, indicator_values, fields)
@@ -2233,7 +2260,7 @@ def qradar_geolocations_for_ip_command(client: Client, args: Dict) -> CommandRes
     """
     Retrieves the MaxMind geoip data for the given IP addresses.
     possible arguments:
-    - ips (Required): Comma separated list. the IPs to retrieve data for.
+    - ip (Required): Comma separated list. the IPs to retrieve data for.
     - fields: If used, will filter all fields except for the specified ones.
               Use this parameter to specify which fields you would like to get back in the
               response. Fields that are not explicitly named are excluded.
@@ -2244,9 +2271,7 @@ def qradar_geolocations_for_ip_command(client: Client, args: Dict) -> CommandRes
     Returns:
         CommandResults.
     """
-    ips = argToList(args.get('ips'))
-    if not ips:
-        raise DemistoException('''IPs list cannot be empty for command 'qradar-geolocations-for-ip-get'.''')
+    ips = argToList(args.get('ip'))
     filter_ = f'''ip_address IN ({','.join(map(lambda ip: f'"{str(ip)}"', ips))})'''
     fields = args.get('fields')
 

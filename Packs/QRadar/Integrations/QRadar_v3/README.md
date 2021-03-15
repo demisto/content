@@ -93,10 +93,10 @@ Gets offenses from QRadar.
                 "Credibility": 2,
                 "Description": "Session Closed\n",
                 "DestinationAddress": [
-                    "172.21.54.153"
+                    "192.168.1.3"
                 ],
                 "DestinationHostname": [
-                    "Net-10-172-192.Net_172_26_1_1"
+                    "Net-10-172-192.Net_192_168_1_3"
                 ],
                 "EventCount": 1,
                 "FlowCount": 0,
@@ -105,7 +105,7 @@ Gets offenses from QRadar.
                 "LastUpdatedTime": "2021-02-15T14:24:11.536000+00:00",
                 "LinkToOffense": "https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16",
                 "Magnitude": 1,
-                "OffenseSource": "23.171.122.182",
+                "OffenseSource": "192.168.1.3",
                 "OffenseType": "Source IP",
                 "Protected": false,
                 "Relevance": 0,
@@ -119,7 +119,7 @@ Gets offenses from QRadar.
                 ],
                 "Severity": 2,
                 "SourceAddress": [
-                    "23.171.122.182"
+                    "192.168.1.3"
                 ],
                 "StartTime": "2021-02-15T14:24:11.536000+00:00",
                 "Status": "OPEN"
@@ -132,10 +132,10 @@ Gets offenses from QRadar.
                 "Credibility": 2,
                 "Description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
                 "DestinationAddress": [
-                    "172.21.54.153"
+                    "192.168.1.3"
                 ],
                 "DestinationHostname": [
-                    "Net-10-172-192.Net_172_26_1_1"
+                    "Net-10-172-192.Net_192_168_1_3"
                 ],
                 "EventCount": 15,
                 "FlowCount": 0,
@@ -158,7 +158,7 @@ Gets offenses from QRadar.
                 ],
                 "Severity": 3,
                 "SourceAddress": [
-                    "172.21.54.153",
+                    "192.168.1.3",
                     "::1"
                 ],
                 "StartTime": "2021-02-15T13:21:36.537000+00:00",
@@ -173,10 +173,10 @@ Gets offenses from QRadar.
                 "Credibility": 2,
                 "Description": "User Login Success\n and Session Opened\n and Session Closed\n",
                 "DestinationAddress": [
-                    "172.21.54.153"
+                    "192.168.1.3"
                 ],
                 "DestinationHostname": [
-                    "Net-10-172-192.Net_172_26_1_1"
+                    "Net-10-172-192.Net_192_168_1_3"
                 ],
                 "EventCount": 5,
                 "FlowCount": 0,
@@ -185,7 +185,7 @@ Gets offenses from QRadar.
                 "LastUpdatedTime": "2021-02-04T22:29:30.742000+00:00",
                 "LinkToOffense": "https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14",
                 "Magnitude": 1,
-                "OffenseSource": "23.12.272.124",
+                "OffenseSource": "192.168.1.3",
                 "OffenseType": "Source IP",
                 "Protected": false,
                 "Relevance": 0,
@@ -199,7 +199,7 @@ Gets offenses from QRadar.
                 ],
                 "Severity": 1,
                 "SourceAddress": [
-                    "23.12.272.124"
+                    "192.168.1.3"
                 ],
                 "StartTime": "2021-02-04T12:19:54.402000+00:00",
                 "Status": "OPEN"
@@ -214,9 +214,9 @@ Gets offenses from QRadar.
 >### Offenses List
 >|ID|Description|OffenseType|Status|Severity|LastUpdatedTime|EventCount|Categories|Protected|Relevance|LinkToOffense|OffenseSource|DestinationAddress|Rules|Magnitude|SourceAddress|DestinationHostname|Credibility|Followup|RemoteDestinationCount|FlowCount|StartTime|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 16 | Session Closed<br/> | Source IP | OPEN | 2 | 2021-02-15T14:24:11.536000+00:00 | 1 | Session Closed | false | 0 | https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16 | 23.171.122.182 | 172.21.54.153 | {'id': 100405, 'type': 'CRE_RULE', 'name': 'Fake port scan'} | 1 | 23.171.122.182 | Net-10-172-192.Net_172_26_1_1 | 2 | true | 0 | 0 | 2021-02-15T14:24:11.536000+00:00 |
->| 15 | Multiple Login Failures for the Same User<br/> containing Failure Audit: The domain controller failed to validate the credentials for an account<br/> | Username | OPEN | 3 | 2021-02-15T13:21:46.948000+00:00 | 15 | User Login Failure,<br/>General Authentication Failed | false | 0 | https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=15 | yarden | 172.21.54.153 | {'id': 100056, 'type': 'CRE_RULE', 'name': 'Multiple Login Failures for Single Username'} | 1 | 172.21.54.153,<br/>::1 | Net-10-172-192.Net_172_26_1_1 | 2 | false | 0 | 0 | 2021-02-15T13:21:36.537000+00:00 |
->| 14 | User Login Success<br/> and Session Opened<br/> and Session Closed<br/> | Source IP | OPEN | 1 | 2021-02-04T22:29:30.742000+00:00 | 5 | User Login Success,<br/>Session Opened,<br/>Session Closed | false | 0 | https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 23.12.272.124 | 172.21.54.153 | {'id': 100405, 'type': 'CRE_RULE', 'name': 'Fake port scan'} | 1 | 23.12.272.124 | Net-10-172-192.Net_172_26_1_1 | 2 | false | 0 | 0 | 2021-02-04T12:19:54.402000+00:00 |
+>| 16 | Session Closed<br/> | Source IP | OPEN | 2 | 2021-02-15T14:24:11.536000+00:00 | 1 | Session Closed | false | 0 | https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16 | 192.168.1.3 | 192.168.1.3 | {'id': 100405, 'type': 'CRE_RULE', 'name': 'Fake port scan'} | 1 | 192.168.1.3 | Net-10-172-192.Net_192_168_1_3 | 2 | true | 0 | 0 | 2021-02-15T14:24:11.536000+00:00 |
+>| 15 | Multiple Login Failures for the Same User<br/> containing Failure Audit: The domain controller failed to validate the credentials for an account<br/> | Username | OPEN | 3 | 2021-02-15T13:21:46.948000+00:00 | 15 | User Login Failure,<br/>General Authentication Failed | false | 0 | https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=15 | yarden | 192.168.1.3 | {'id': 100056, 'type': 'CRE_RULE', 'name': 'Multiple Login Failures for Single Username'} | 1 | 192.168.1.3,<br/>::1 | Net-10-172-192.Net_192_168_1_3 | 2 | false | 0 | 0 | 2021-02-15T13:21:36.537000+00:00 |
+>| 14 | User Login Success<br/> and Session Opened<br/> and Session Closed<br/> | Source IP | OPEN | 1 | 2021-02-04T22:29:30.742000+00:00 | 5 | User Login Success,<br/>Session Opened,<br/>Session Closed | false | 0 | https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 192.168.1.3 | 192.168.1.3 | {'id': 100405, 'type': 'CRE_RULE', 'name': 'Fake port scan'} | 1 | 192.168.1.3 | Net-10-172-192.Net_192_168_1_3 | 2 | false | 0 | 0 | 2021-02-04T12:19:54.402000+00:00 |
 
 
 ### qradar-offense-update
@@ -291,10 +291,10 @@ Update an offense.
             "Credibility": 3,
             "Description": "Fake port scan\n",
             "DestinationAddress": [
-                "172.21.54.153"
+                "192.168.1.3"
             ],
             "DestinationHostname": [
-                "Net-10-172-192.Net_172_26_1_1"
+                "Net-10-172-192.Net_192_168_1_3"
             ],
             "EventCount": 6553,
             "FlowCount": 0,
@@ -303,7 +303,7 @@ Update an offense.
             "LastUpdatedTime": "2021-03-02T13:38:32.438000+00:00",
             "LinkToOffense": "https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=6",
             "Magnitude": 6,
-            "OffenseSource": "172.22.53.255",
+            "OffenseSource": "192.168.1.3",
             "OffenseType": "Source IP",
             "Protected": false,
             "Relevance": 5,
@@ -317,7 +317,7 @@ Update an offense.
             ],
             "Severity": 9,
             "SourceAddress": [
-                "172.22.53.255"
+                "192.168.1.3"
             ],
             "StartTime": "2020-11-10T22:24:23.603000+00:00",
             "Status": "OPEN"
@@ -331,7 +331,7 @@ Update an offense.
 >### offense Update
 >|ID|Description|OffenseType|Status|Severity|SourceAddress|Relevance|LastUpdatedTime|OffenseSource|Magnitude|Followup|Rules|DestinationAddress|DestinationHostname|Categories|RemoteDestinationCount|Credibility|FlowCount|EventCount|AssignedTo|Protected|StartTime|LinkToOffense|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 6 | Fake port scan<br/> | Source IP | OPEN | 9 | 172.22.53.255 | 5 | 2021-03-02T13:38:32.438000+00:00 | 172.22.53.255 | 6 | true | {'id': 100405, 'type': 'CRE_RULE', 'name': 'Fake port scan'} | 172.21.54.153 | Net-10-172-192.Net_172_26_1_1 | Host Port Scan,<br/>Access Permitted | 0 | 3 | 0 | 6553 | demisto | false | 2020-11-10T22:24:23.603000+00:00 | https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=6 |
+>| 6 | Fake port scan<br/> | Source IP | OPEN | 9 | 192.168.1.3 | 5 | 2021-03-02T13:38:32.438000+00:00 | 192.168.1.3 | 6 | true | {'id': 100405, 'type': 'CRE_RULE', 'name': 'Fake port scan'} | 192.168.1.3 | Net-10-172-192.Net_192_168_1_3 | Host Port Scan,<br/>Access Permitted | 0 | 3 | 0 | 6553 | demisto | false | 2020-11-10T22:24:23.603000+00:00 | https://192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=6 |
 
 
 ### qradar-closing-reasons
@@ -830,6 +830,10 @@ Retrieves assets list.
 | QRadar.Asset.Properties.id | Number | ID of the property. | 
 | QRadar.Asset.Properties.last_reported_by | String | The source of the most recent update to this property. | 
 | QRadar.Asset.Properties.value | String | Property value. | 
+| Endpoint.OS | Number | Asset OS. | 
+| Endpoint.Domain | String | DNS name. | 
+| Endpoint.MACAddress | String | Asset MAC address. | 
+| Endpoint.IPAddress | Unknown | IP addresses of the endpoint. | 
 
 
 #### Command Example
@@ -848,7 +852,7 @@ Retrieves assets list.
                         "first_seen_profiler": "2021-02-02T19:05:12.138000+00:00",
                         "id": 1007,
                         "last_seen_profiler": "2021-02-15T13:20:23.530000+00:00",
-                        "name": "TLVWIN1293X15",
+                        "name": "HOST1233X11",
                         "type": "NETBIOS"
                     }
                 ],
@@ -860,7 +864,7 @@ Retrieves assets list.
                         "last_reported_by": "IDENTITY:112",
                         "name": "Unified Name",
                         "type_id": 1002,
-                        "value": "TLVWIN1293X15"
+                        "value": "HOST1233X11"
                     }
                 ],
                 "RiskScoreSum": 0,
@@ -952,7 +956,7 @@ Retrieves assets list.
 >### Assets List
 >|DomainID|Hostnames|ID|Properties|RiskScoreSum|Users|VulnerabilityCount|
 >|---|---|---|---|---|---|---|
->| 0 | {'last_seen_profiler': '2021-02-15T13:20:23.530000+00:00', 'created': '2021-02-02T19:05:12.138000+00:00', 'name': 'TLVWIN1293X15', 'id': 1007, 'type': 'NETBIOS', 'first_seen_profiler': '2021-02-02T19:05:12.138000+00:00'} | 1007 | {'last_reported': '2021-02-02T19:05:12.643000+00:00', 'name': 'Unified Name', 'type_id': 1002, 'id': 1006, 'last_reported_by': 'IDENTITY:112', 'value': 'TLVWIN1293X15'} | 0.0 | {'last_seen_profiler': '2021-02-15T13:20:23.530000+00:00', 'id': 1007, 'first_seen_profiler': '2021-02-02T19:05:12.138000+00:00', 'username': 'Administrator'} | 0 |
+>| 0 | {'last_seen_profiler': '2021-02-15T13:20:23.530000+00:00', 'created': '2021-02-02T19:05:12.138000+00:00', 'name': 'HOST1233X11', 'id': 1007, 'type': 'NETBIOS', 'first_seen_profiler': '2021-02-02T19:05:12.138000+00:00'} | 1007 | {'last_reported': '2021-02-02T19:05:12.643000+00:00', 'name': 'Unified Name', 'type_id': 1002, 'id': 1006, 'last_reported_by': 'IDENTITY:112', 'value': 'HOST1233X11'} | 0.0 | {'last_seen_profiler': '2021-02-15T13:20:23.530000+00:00', 'id': 1007, 'first_seen_profiler': '2021-02-02T19:05:12.138000+00:00', 'username': 'Administrator'} | 0 |
 >| 0 | {'last_seen_profiler': '2021-02-15T13:20:23.532000+00:00', 'created': '2021-02-02T19:05:12.139000+00:00', 'name': '-', 'id': 1008, 'type': 'NETBIOS', 'first_seen_profiler': '2021-02-02T19:05:12.139000+00:00'} | 1008 | {'last_reported': '2021-02-02T19:05:12.645000+00:00', 'name': 'Unified Name', 'type_id': 1002, 'id': 1007, 'last_reported_by': 'IDENTITY:112', 'value': '-'} | 0.0 | {'last_seen_profiler': '2021-02-15T13:20:23.532000+00:00', 'id': 1008, 'first_seen_profiler': '2021-02-02T19:05:12.139000+00:00', 'username': 'DWM-3'} | 0 |
 >| 0 | {'last_seen_profiler': '2021-02-15T13:20:23.532000+00:00', 'created': '2021-02-02T19:05:12.140000+00:00', 'name': 'EC2AMAZ-ETKN6IA', 'id': 1009, 'type': 'NETBIOS', 'first_seen_profiler': '2021-02-02T19:05:12.140000+00:00'} | 1009 | {'last_reported': '2021-02-02T19:05:12.646000+00:00', 'name': 'Unified Name', 'type_id': 1002, 'id': 1008, 'last_reported_by': 'IDENTITY:112', 'value': 'EC2AMAZ-ETKN6IA'} | 0.0 | {'last_seen_profiler': '2021-02-15T13:20:23.532000+00:00', 'id': 1009, 'first_seen_profiler': '2021-02-02T19:05:12.140000+00:00', 'username': 'Administrator'} | 0 |
 
@@ -1408,7 +1412,7 @@ Retrieves search results.
 ```json
 {
     "QRadar": {
-        "SearchStatus": [
+        "SearchResult": [
         {
             "Destination Port": 5123,
             "Source IP (Unique Count)": 1.0,
@@ -1679,7 +1683,7 @@ Add or update an element in a reference set.
 
 
 #### Command Example
-```!qradar-reference-set-value-upsert ref_name="Malicious IPs" value="1.2.3.4,1.2.3.5,1.2.3.6"```
+```!qradar-reference-set-value-upsert ref_name="Malicious IPs" value="1.2.3.4,1.2.3.5,192.168.1.3"```
 
 #### Context Example
 ```json
@@ -1860,7 +1864,7 @@ Uploads indicators from Demisto to QRadar.
 >|Indicator Type|Indicator Value|
 >|---|---|
 >| IP | 1.2.3.4 |
->| IP | 172.21.54.153 |
+>| IP | 192.168.1.3 |
 
 
 ### qradar-geolocations-for-ip
@@ -1875,7 +1879,7 @@ Retrieves the MaxMind geoip data for the given IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ips | Comma separated list of IPs to retrieve their geolocation. | Required | 
+| ip | Comma separated list of IPs to retrieve their geolocation. | Required | 
 | fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--services-geolocations-GET.html. | Optional | 
 
 
@@ -1912,7 +1916,7 @@ Retrieves the MaxMind geoip data for the given IP address.
 
 
 #### Command Example
-```!qradar-geolocations-for-ip ips="1.2.3.4,1.2.3.5" range=0-1```
+```!qradar-geolocations-for-ip ip="1.2.3.4,1.2.3.5" range=0-1```
 
 #### Context Example
 ```json
@@ -2035,7 +2039,7 @@ Retrieves a list of log sources.
                 "Internal": true,
                 "LastEventTime": "1970-01-01T00:00:00+00:00",
                 "ModifiedDate": "2020-10-18T19:40:19.701000+00:00",
-                "Name": "Anomaly Detection Engine-2 :: ip-172-63-12-76",
+                "Name": "Anomaly Detection Engine-2 :: ip-192.168.1.3",
                 "ProtocolParameters": [
                     {
                         "id": 0,
@@ -2069,7 +2073,7 @@ Retrieves a list of log sources.
                 "Internal": true,
                 "LastEventTime": "2020-10-18T20:44:40.857000+00:00",
                 "ModifiedDate": "2020-10-18T19:40:19.705000+00:00",
-                "Name": "Search Results-2 :: ip-172-63-12-76",
+                "Name": "Search Results-2 :: ip-192.168.1.3",
                 "ProtocolParameters": [
                     {
                         "id": 0,
@@ -2109,7 +2113,7 @@ Retrieves a list of log sources.
                 "Internal": true,
                 "LastEventTime": "2021-03-02T13:51:53.892000+00:00",
                 "ModifiedDate": "2020-10-18T19:40:19.703000+00:00",
-                "Name": "Asset Profiler-2 :: ip-172-63-12-76",
+                "Name": "Asset Profiler-2 :: ip-192.168.1.3",
                 "ProtocolParameters": [
                     {
                         "id": 0,
@@ -2145,9 +2149,9 @@ Retrieves a list of log sources.
 >### Log Sources List
 >|ID|Name|Description|SendingIP|LastEventTime|CreationDate|ProtocolParameters|TypeID|Internal|Gateway|ProtocolTypeID|Status|GroupIDs|Credibility|AutoDiscovered|ModifiedDate|Enabled|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 66 | Anomaly Detection Engine-2 :: ip-172-63-12-76 | Anomaly Detection Engine |  | 1970-01-01T00:00:00+00:00 | 2020-10-18T19:40:19.701000+00:00 | {'name': 'identifier', 'id': 0, 'value': '127.0.0.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 207 | true | false | 0 | last_updated: 0<br/>status: NA | 0 | 10 | false | 2020-10-18T19:40:19.701000+00:00 | true |
->| 68 | Search Results-2 :: ip-172-63-12-76 | Search Results |  | 2020-10-18T20:44:40.857000+00:00 | 2020-10-18T19:40:19.705000+00:00 | {'name': 'identifier', 'id': 0, 'value': '127.0.0.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 355 | true | false | 0 | last_updated: 0<br/>messages: {'severity': 'ERROR', 'text': 'Events have not been received from this Log Source in over 720 minutes.'}<br/>status: ERROR | 0 | 10 | false | 2020-10-18T19:40:19.705000+00:00 | true |
->| 67 | Asset Profiler-2 :: ip-172-63-12-76 | Asset Profiler |  | 2021-03-02T13:51:53.892000+00:00 | 2020-10-18T19:40:19.703000+00:00 | {'name': 'identifier', 'id': 0, 'value': '127.0.0.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 267 | true | false | 0 | last_updated: 0<br/>messages: {'severity': 'ERROR', 'text': 'Events have not been received from this Log Source in over 720 minutes.'}<br/>status: ERROR | 0 | 10 | false | 2020-10-18T19:40:19.703000+00:00 | true |
+>| 66 | Anomaly Detection Engine-2 :: ip-192.168.1.3 | Anomaly Detection Engine |  | 1970-01-01T00:00:00+00:00 | 2020-10-18T19:40:19.701000+00:00 | {'name': 'identifier', 'id': 0, 'value': '127.0.0.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 207 | true | false | 0 | last_updated: 0<br/>status: NA | 0 | 10 | false | 2020-10-18T19:40:19.701000+00:00 | true |
+>| 68 | Search Results-2 :: ip-192.168.1.3 | Search Results |  | 2020-10-18T20:44:40.857000+00:00 | 2020-10-18T19:40:19.705000+00:00 | {'name': 'identifier', 'id': 0, 'value': '127.0.0.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 355 | true | false | 0 | last_updated: 0<br/>messages: {'severity': 'ERROR', 'text': 'Events have not been received from this Log Source in over 720 minutes.'}<br/>status: ERROR | 0 | 10 | false | 2020-10-18T19:40:19.705000+00:00 | true |
+>| 67 | Asset Profiler-2 :: ip-192.168.1.3 | Asset Profiler |  | 2021-03-02T13:51:53.892000+00:00 | 2020-10-18T19:40:19.703000+00:00 | {'name': 'identifier', 'id': 0, 'value': '127.0.0.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 267 | true | false | 0 | last_updated: 0<br/>messages: {'severity': 'ERROR', 'text': 'Events have not been received from this Log Source in over 720 minutes.'}<br/>status: ERROR | 0 | 10 | false | 2020-10-18T19:40:19.703000+00:00 | true |
 
 ### qradar-get-custom-properties
 ***
