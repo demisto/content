@@ -3260,7 +3260,6 @@
         "Azure Compute - Test": "Issue 28056",
         "forcepoint test": "Issue 28043",
         "CanaryTools Test": "Issue 30796",
-        "Generic Webhook - Test": "Issue 30797",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "CuckooTest": "Issue 25601",
@@ -3287,7 +3286,8 @@
         "Azure SecurityCenter - Test": "Issue 27391",
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "Field polling test": "Issue 33951",
-        "palo_alto_panorama_test_pb": "Issue 34371"
+        "palo_alto_panorama_test_pb": "Issue 34371",
+        "Microsoft Defender - ATP - Indicators Test": "Issue 29279"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -3571,8 +3571,8 @@
                 "memory_threshold": 140
             },
             "demisto/powershell-ubuntu": {
-                "pid_threshold": 24,
-                "memory_threshold": 140
+                "pid_threshold": 30,
+                "memory_threshold": 155
             }
         }
     }
