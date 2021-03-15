@@ -40,7 +40,8 @@ def mock_rest_client():
         verify=False
     )
 
-#todo test first fetch
+# todo test first fetch
+
 
 def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents
@@ -65,7 +66,6 @@ def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_m
                         return_value=get_ids_response)
     mocker.patch.object(client, 'construct_and_send_full_incidents_query',
                         return_value=get_full_incidents_response)
-
 
     next_run, incidents = fetch_incidents(client, last_run)
     assert len(incidents) == 0
