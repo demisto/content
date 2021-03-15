@@ -82,7 +82,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrorred
+  additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored
     Argus Case'
 - display: Close XSOAR Incident
   name: close_incident
