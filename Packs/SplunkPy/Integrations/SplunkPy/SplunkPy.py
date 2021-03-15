@@ -87,48 +87,14 @@ TIME_IS_MISSING = 'time_is_missing'
 
 # =========== Regular Fetch Mechanism ===========
 
-def occurred_to_datetime(notable_occurred_time):
-    notable_occurred_time_without_timezone = notable_occurred_time.split('.')[0]
-    notable_occurred_time_datetime = datetime.strptime(notable_occurred_time_without_timezone, SPLUNK_TIME_FORMAT)
-    return notable_occurred_time_datetime
+def fetch_notables(service, cache_object=None, enrich_notables=False):
+    demisto.debug("Fetching new notables")
+    last_run_object = demisto.getLastRun()
+    last_run = last_run_object and 'time' in last_run_object and last_run_object['time']
+    search_offset = last_run_object.get('offset', 0)
 
-
-def get_latest_notable_occurred_time(notables):
-    latest_notable = max(notables, key=lambda n: occurred_to_datetime(n.occurred))
-    return latest_notable.occurred
-
-
-def get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_notables_found=True, max_window=20):
-    last_run_datetime = occurred_to_datetime(last_run)
-    if were_new_notables_found:
-        # Decreasing one minute to avoid missing notables that were indexed late
-        last_run_datetime = last_run_datetime - timedelta(minutes=1)
-
-    # keep last time max 20 minutes before current time, to avoid timeout
-    if fetches_with_same_start_time_count >= max_window and not were_new_notables_found:
-        last_run_datetime = last_run_datetime + timedelta(minutes=1)
-
-    next_run_without_milliseconds_and_tz = last_run_datetime.strftime(SPLUNK_TIME_FORMAT)
-    next_run = next_run_without_milliseconds_and_tz
-    return next_run
-
-
-def extensive_log(message):
-    if demisto.params().get('extensive_logs', False):
-        demisto.info(message)
-
-
-def remove_old_notable_ids(last_run_fetched_ids, current_epoch_time):
-    new_last_run_fetched_ids = {}
-    for notable_custom_id, time in last_run_fetched_ids.items():
-        if current_epoch_time - time < 3600:
-            new_last_run_fetched_ids[notable_custom_id] = time
-
-    return new_last_run_fetched_ids
-
-
-def get_last_run_time(dem_params, service, last_run):
     current_time_for_fetch = datetime.utcnow()
+    dem_params = demisto.params()
     if demisto.get(dem_params, 'timezone'):
         timezone = dem_params['timezone']
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
@@ -143,104 +109,48 @@ def get_last_run_time(dem_params, service, last_run):
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-        extensive_log('SplunkPy last run is None. Last run time is: {}'.format(last_run))
 
-    return last_run, now
-
-
-def build_fetch_kwargs(dem_params, last_run_time, now, search_offset):
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run_time,
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
-    return kwargs_oneshot
 
-
-def build_fetch_query(dem_params):
-    fetch_query = dem_params['fetchQuery']
+    searchquery_oneshot = dem_params['fetchQuery']
 
     if demisto.get(dem_params, 'extractFields'):
         extractFields = dem_params['extractFields']
         extra_raw_arr = extractFields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
-            fetch_query = fetch_query + ' | eval ' + field_trimmed + '=' + field_trimmed
+            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
 
-    return fetch_query
-
-
-def fetch_notables(service, cache_object=None, enrich_notables=False):
-    last_run_data = demisto.getLastRun()
-    last_run_time = last_run_data and 'time' in last_run_data and last_run_data['time']
-    extensive_log('SplunkPy last run is:\n {}'.format(last_run_data))
-
-    search_offset = last_run_data.get('offset', 0)
-
-    dem_params = demisto.params()
-    last_run_time, now = get_last_run_time(dem_params, service, last_run_time)
-    extensive_log('SplunkPy last run time: {}, now: {}'.format(last_run_time, now))
-
-    kwargs_oneshot = build_fetch_kwargs(dem_params, last_run_time, now, search_offset)
-    fetch_query = build_fetch_query(dem_params)
-
-    oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
-
-    last_run_fetched_custom_ids = last_run_data.get('found_incidents_ids', {})
-    current_epoch_time = int(time.time())
 
     notables = []
     for item in reader:
-        notable = Notable(data=item)
-        if notable.custom_id not in last_run_fetched_custom_ids:
-            last_run_fetched_custom_ids[notable.custom_id] = current_epoch_time
-            notables.append(notable)
-        else:
-            extensive_log('SplunkPy - Dropped notable {} due to duplication.'.format(notable.custom_id))
-
-    last_run_fetched_custom_ids = remove_old_notable_ids(last_run_fetched_custom_ids, current_epoch_time)
-    extensive_log('SplunkPy - notables fetched on last run = {}'.format(last_run_fetched_custom_ids))
-    extensive_log(
-        'SplunkPy - total number of notables found: from {}\n to {}\n with the ' 'query: {} is: {}.\n notables '
-        'found: {}'.format(last_run_time, now, fetch_query, len(notables), [n.data for n in notables])
-    )
-    fetches_with_same_start_time_count = last_run_data.get('fetch_start_update_count', 0) + 1
-    max_window = 20 if "backwards_fetch_window" not in params else int(params["backwards_fetch_window"] or 20)
+        notables.append(Notable(data=item))
 
     if not enrich_notables:
         incidents = [n.to_incident() for n in notables]
         demisto.incidents(incidents)
-        extensive_log('SplunkPy - Found incidents at the end of this run: {}'.format(incidents))
     else:
         cache_object.not_yet_submitted_notables += notables
-        extensive_log("Fetched {} notables.".format(len(notables)))
 
-    if len(notables) == 0:
-        next_run = get_next_start_time(last_run_time, fetches_with_same_start_time_count, False, max_window)
-        extensive_log('SplunkPy - Next run time with no notables found: {}'.format(next_run))
-        last_run_object = {'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_custom_ids,
-                           'fetch_start_update_count': fetches_with_same_start_time_count}
-    elif len(notables) < FETCH_LIMIT:
-        next_run = get_next_start_time(
-            get_latest_notable_occurred_time(notables), fetches_with_same_start_time_count, max_window=max_window
-        )
-        extensive_log('SplunkPy - Next run time with some incidents found: {}'.format(next_run))
-        last_run_object = {'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_custom_ids,
-                           'fetch_start_update_count': 0}
+    if len(notables) < FETCH_LIMIT:
+        updated_last_run_object = {'time': now, 'offset': 0}
     else:
-        extensive_log('SplunkPy - Next run time with too many incidents:  {}'.format(last_run_time))
-        last_run_object = {'time': last_run_time, 'offset': search_offset + FETCH_LIMIT,
-                           'fetch_start_update_count': 0, 'found_incidents_ids': last_run_fetched_custom_ids}
+        updated_last_run_object = {'time': last_run, 'offset': search_offset + FETCH_LIMIT}
 
-    if enrich_notables and DUMMY not in last_run_data:
+    if enrich_notables and DUMMY not in last_run_object:
         # we add dummy data to the last run to differentiate between the fetch-incidents triggered to the
         # fetch-incidents running as part of "Pull from instance" in Classification & Mapping, as we don't
         # want to add data to the integration context (which will ruin the logic of the cache object)
-        last_run_data.update({DUMMY: DUMMY})
+        last_run_object.update({DUMMY: DUMMY})
 
-    last_run_data.update(last_run_object)
-    demisto.setLastRun(last_run_data)
+    last_run_object.update(updated_last_run_object)
+    demisto.setLastRun(last_run_object)
 
 
 def fetch_incidents(service):
@@ -366,12 +276,6 @@ class Notable:
         incident = {}  # type: Dict[str,Any]
         rule_title, rule_name = '', ''
 
-        if isinstance(notable_data, results.Message):
-            if "Error in" in notable_data.message:
-                raise ValueError(notable_data.message)
-            else:
-                extensive_log('message in notable_to_incident is: {}'.format(convert_to_str(notable_data.message)))
-
         if demisto.get(notable_data, 'rule_title'):
             rule_title = notable_data['rule_title']
         if demisto.get(notable_data, 'rule_name'):
@@ -451,7 +355,7 @@ class Notable:
             # Use-cases where fetching non-notables from Splunk
             notable_occurred = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
             self.time_is_missing = True
-            extensive_log('\n\n occurred time in else: {} \n\n'.format(notable_occurred))
+            demisto.debug('\n\n occurred time in else: {} \n\n'.format(notable_occurred))
 
         return notable_occurred
 
@@ -465,7 +369,7 @@ class Notable:
 
         if self.time_is_missing and self.index_time:
             notable_custom_id = '{}_{}'.format(self.index_time, raw_hash)  # index_time stays in epoch to differentiate
-            extensive_log('Creating notable custom id using the index time')
+            demisto.debug('Creating notable custom id using the index time')
         else:
             notable_custom_id = '{}_{}'.format(self.occurred, raw_hash)
 

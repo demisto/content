@@ -77,14 +77,6 @@ configuration:
   name: extractFields
   required: false
   type: 12
-- additionalinfo: When ever no incidents are found, the next search will start from
-    the same start time, up to a window of the size specified here. (Window size is the number of fetch tries)
-  defaultvalue: '20'
-  display: Fetch backwardss window
-  hidden: false
-  name: backwards_fetch_window
-  required: false
-  type: 0
 - additionalinfo: Used only for Mapping with the Select Schema option. The name of
     the field that contains the type of the event or alert. The default value is "source",
     which is a good option for Notable Events, however, you may choose any custom field.
@@ -174,10 +166,6 @@ configuration:
   type: 0
   required: false
   additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset & Identity)
-- display: Extensive logging (for debugging purposes)
-  name: extensive_logs
-  required: false
-  type: 8
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
