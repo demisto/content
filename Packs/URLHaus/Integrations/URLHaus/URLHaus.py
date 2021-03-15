@@ -13,29 +13,6 @@ from datetime import datetime as dt
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
-
-# Remove trailing slash to prevent wrong URL path to service
-API_URL = demisto.params()['url'].rstrip('/')
-
-reliability = demisto.params().get('integrationReliability')
-
-if DBotScoreReliability.is_valid_type(reliability):
-    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-else:
-    Exception("Please provide a valid value for the Source Reliability parameter.")
-
-# Should we use SSL
-USE_SSL = not demisto.params().get('insecure', False)
-
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    os.environ.pop('HTTP_PROXY', None)
-    os.environ.pop('HTTPS_PROXY', None)
-    os.environ.pop('http_proxy', None)
-    os.environ.pop('https_proxy', None)
-
-THRESHOLD = int(demisto.params().get('threshold', 1))
 
 # disable-secrets-detection-start
 # Whether compromised websites are considered malicious or not. See the blacklists output in
@@ -52,16 +29,16 @@ HEADERS = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, command, data=None):
+def http_request(method, command, api_url, use_ssl, data=None):
     retry = int(demisto.params().get('retry', 3))
     try_num = 0
 
     while try_num < retry:
         try_num += 1
-        url = f'{API_URL}/{command}/'
+        url = f'{api_url}/{command}/'
         res = requests.request(method,
                                url,
-                               verify=USE_SSL,
+                               verify=use_ssl,
                                data=data,
                                headers=HEADERS)
 
@@ -85,37 +62,30 @@ def extract_zipped_buffer(buffer):
             return z.read(z.namelist()[0])
 
 
-def query_url_information(url):
-    return http_request('POST',
-                        'url',
-                        f'url={url}')
+def query_url_information(url, api_url, use_ssl):
+    return http_request('POST', 'url', api_url, use_ssl, f'url={url}')
 
 
-def query_host_information(host):
-    return http_request('POST',
-                        'host',
-                        f'host={host}')
+def query_host_information(host, api_url, use_ssl):
+    return http_request('POST', 'host', api_url, use_ssl, f'host={host}')
 
 
-def query_payload_information(hash_type, hash):
-    return http_request('POST',
-                        'payload',
-                        f'{hash_type}_hash={hash}')
+def query_payload_information(hash_type, api_url, use_ssl, hash):
+    return http_request('POST', 'payload', api_url, use_ssl, f'{hash_type}_hash={hash}')
 
 
-def download_malware_sample(sha256):
-    return http_request('GET',
-                        f'download/{sha256}')
+def download_malware_sample(sha256, api_url, use_ssl):
+    return http_request('GET', f'download/{sha256}', api_url=api_url, use_ssl=use_ssl,)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
+def test_module(**kwargs):
     """
     Performs basic get request to get item samples
     """
-    http_request('POST', 'url')
+    http_request('POST', 'url', kwargs.get('api_url'), kwargs.get('use_ssl'))
 
 
 def calculate_dbot_score(blacklists, threshold, compromised_is_malicious):
@@ -145,10 +115,11 @@ def calculate_dbot_score(blacklists, threshold, compromised_is_malicious):
     return dbot_score, description
 
 
-def url_command():
+def url_command(**kwargs):
     url = demisto.args().get('url')
+
     try:
-        url_information = query_url_information(url).json()
+        url_information = query_url_information(url, kwargs.get('api_url'), kwargs.get('use_ssl')).json()
 
         ec = {
             'URL': {
@@ -157,7 +128,8 @@ def url_command():
             'DBotScore': {
                 'Type': 'url',
                 'Vendor': 'URLhaus',
-                'Indicator': url
+                'Indicator': url,
+                'Reliability': kwargs.get('reliability')
             }
         }
 
@@ -199,8 +171,8 @@ def url_command():
             urlhaus_data['Payload'] = payloads
 
             # DBot score calculation
-            dbot_score, description = calculate_dbot_score(url_information.get('blacklists', {}), THRESHOLD,
-                                                           COMPROMISED_IS_MALICIOUS)
+            dbot_score, description = calculate_dbot_score(url_information.get('blacklists', {}),
+                                                           kwargs.get('threshold'), COMPROMISED_IS_MALICIOUS)
 
             ec['DBotScore']['Score'] = dbot_score
             if dbot_score == 3:
@@ -266,11 +238,11 @@ def url_command():
         return_error('Failed getting url data, please verify the arguments and parameters')
 
 
-def domain_command():
+def domain_command(**kwargs):
     domain = demisto.args()['domain']
 
     try:
-        domain_information = query_host_information(domain).json()
+        domain_information = query_host_information(domain, kwargs.get('api_url'), kwargs.get('use_ssl')).json()
 
         ec = {
             'Domain': {
@@ -279,7 +251,8 @@ def domain_command():
             'DBotScore': {
                 'Type': 'domain',
                 'Vendor': 'URLhaus',
-                'Indicator': domain
+                'Indicator': domain,
+                'Reliability': kwargs.get('reliability')
             }
         }
 
@@ -300,8 +273,8 @@ def domain_command():
             }
 
             # DBot score calculation
-            dbot_score, description = calculate_dbot_score(domain_information.get('blacklists', {}), THRESHOLD,
-                                                           COMPROMISED_IS_MALICIOUS)
+            dbot_score, description = calculate_dbot_score(domain_information.get('blacklists', {}),
+                                                           kwargs.get('threshold'), COMPROMISED_IS_MALICIOUS)
 
             ec['DBotScore']['Score'] = dbot_score
             if dbot_score == 3:
@@ -364,7 +337,7 @@ def domain_command():
         return_error('Failed getting domain data, please verify the arguments and parameters')
 
 
-def file_command():
+def file_command(**kwargs):
     hash = demisto.args()['file']
     if len(hash) == 32:
         hash_type = 'md5'
@@ -374,7 +347,7 @@ def file_command():
         return_error('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types')
 
     try:
-        file_information = query_payload_information(hash_type, hash).json()
+        file_information = query_payload_information(hash_type, kwargs.get('api_url'), kwargs.get('use_ssl'), hash).json()
 
         if file_information['query_status'] == 'ok' and file_information['md5_hash']:
             # URLhaus output
@@ -461,13 +434,13 @@ def file_command():
         return_error('Failed getting file data, please verify the arguments and parameters')
 
 
-def urlhaus_download_sample_command():
+def urlhaus_download_sample_command(**kwargs):
     """
     The response can be either the zipped sample (content-type = application/zip), or JSON (content-type = text/html)
     containing the query status.
     """
     file_sha256 = demisto.args()['file']
-    res = download_malware_sample(file_sha256)
+    res = download_malware_sample(file_sha256, kwargs.get('api_url'), kwargs.get('use_ssl'))
 
     try:
         if len(res.content) == 0:
@@ -503,18 +476,40 @@ def urlhaus_download_sample_command():
 LOG('Command being called is %s' % (demisto.command()))
 
 try:
+    params = demisto.params()
+
+    args = {
+        'api_url': params['url'].rstrip('/'),
+        'use_ssl': not params.get('insecure', False),
+        'threshold': int(params.get('threshold', 1))
+    }
+
+    reliability = params.get('integrationReliability')
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        args['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("Please provide a valid value for the Source Reliability parameter.")
+
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        os.environ.pop('HTTP_PROXY', None)
+        os.environ.pop('HTTPS_PROXY', None)
+        os.environ.pop('http_proxy', None)
+        os.environ.pop('https_proxy', None)
+
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        test_module()
+        test_module(**args)
         demisto.results('ok')
     elif demisto.command() == 'url':
-        url_command()
+        url_command(**args)
     elif demisto.command() == 'domain':
-        domain_command()
+        domain_command(**args)
     elif demisto.command() == 'file':
-        file_command()
+        file_command(**args)
     elif demisto.command() == 'urlhaus-download-sample':
-        urlhaus_download_sample_command()
+        urlhaus_download_sample_command(**args)
 
 # Log exceptions
 except Exception as e:
