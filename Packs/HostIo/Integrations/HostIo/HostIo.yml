@@ -52,20 +52,21 @@ script:
       description: The Value of the given field
     - name: limit
       required: false
-      description: The maximum number of domains to display, must be one of 0, 1, 5, 10, 25, 100, 250, or 1000, The default value is 25.
+      description: The maximum number of domains to display, must be one of 0, 1,
+        5, 10, 25, 100, 250, or 1000, The default value is 25.
     outputs:
-      - contextPath: HostIo.Search.Field
-        description: The field to look up.
-        type: String
-      - contextPath: HostIo.Search.Value
-        description: The value of the given field.
-        type: String
-      - contextPath: HostIo.Search.Domains
-        description: List of Domains associated with the given field.
-        type: Unknown
-      - contextPath: HostIo.Search.Total
-        description: The total amount of domains associated with the given field.
-        type: Number
+    - contextPath: HostIo.Search.Field
+      description: The field to look up.
+      type: String
+    - contextPath: HostIo.Search.Value
+      description: The value of the given field.
+      type: String
+    - contextPath: HostIo.Search.Domains
+      description: List of Domains associated with the given field.
+      type: Unknown
+    - contextPath: HostIo.Search.Total
+      description: The total amount of domains associated with the given field.
+      type: Number
     description: Returns a list of domains associated with a specific field, and the
       total amount of these domains
   - name: domain
@@ -111,9 +112,9 @@ script:
       description: Name of the server where the domain exist.
       type: String
     description: Returns Domain information.
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:
- - No tests
+- No tests
