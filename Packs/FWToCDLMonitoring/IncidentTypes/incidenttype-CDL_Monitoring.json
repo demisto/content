@@ -17,7 +17,7 @@
     "locked": false,
     "name": "CDL Monitoring",
     "onChangeRepAlg": 1,
-    "playbookId": "5809f6f1-7991-410c-87d4-cc7bccf9b7a4",
+    "playbookId": "CDL FW Monitoring - cron job",
     "readonly": false,
     "reputationCalc": 1,
     "system": false,
