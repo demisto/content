@@ -15,11 +15,7 @@ requests.packages.urllib3.disable_warnings()
 VERIFY_SSL = not demisto.params().get('insecure', False)
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+handle_proxy()
 
 
 def test_module() -> str:
@@ -181,13 +177,13 @@ def search_malicious_urls(client: Client, args: Dict[str, Any]) -> CommandResult
         :type end: ``str``
         :param - end: End parameter for analysis
         """
-    url = demisto.args().get('url')
-    is_domain = demisto.args().get('is_domain')
-    url_type = demisto.args().get('url_type')
-    tag = demisto.args().get('tag')
-    start = demisto.args().get('start')
-    end = demisto.args().get('end')
-    formatType = demisto.args().get('format')
+    url = args().get('url')
+    is_domain = args().get('is_domain')
+    url_type = args().get('url_type')
+    tag = args().get('tag')
+    start = args().get('start')
+    end = args().get('end')
+    formatType = args().get('format')
 
     param = {}
 
@@ -245,12 +241,12 @@ def search_malware_hashs(client: Client, args: Dict[str, Any]) -> CommandResults
         :type end: ``str``
         :param - end: End parameter for analysis
         """
-    md5 = demisto.args().get('md5')
-    sha1 = demisto.args().get('sha1')
-    tag = demisto.args().get('tag')
-    start = demisto.args().get('start')
-    end = demisto.args().get('end')
-    formatType = demisto.args().get('format')
+    md5 = args().get('md5')
+    sha1 = args().get('sha1')
+    tag = args().get('tag')
+    start = args().get('start')
+    end = args().get('end')
+    formatType = args().get('format')
 
     if start:
         startDate = timeToEpoch(start)
@@ -296,9 +292,9 @@ def search_phishing_sites(client: Client, args: Dict[str, Any]) -> CommandResult
         :type page: ``str``
         :param - page: For pagination
         """
-    status = demisto.args().get('status')
-    source = demisto.args().get('source')
-    page = demisto.args().get('page')
+    status = args().get('status')
+    source = args().get('source')
+    page = args().get('page')
 
     param = {
         'status': status,
@@ -327,8 +323,8 @@ def search_identity_leaks(client: Client, args: Dict[str, Any]) -> CommandResult
         :type end: ``str``
         :param - end: End parameter for analysis
         """
-    start = demisto.args().get('start')
-    end = demisto.args().get('end')
+    start = args().get('start')
+    end = args().get('end')
 
     if start:
         startDate = timeToEpoch(start)
@@ -375,11 +371,11 @@ def search_stolen_client_accounts(client: Client, args: Dict[str, Any]) -> Comma
         :type end: ``str``
         :param - end: End parameter for analysis
         """
-    username = demisto.args().get('username')
-    password = demisto.args().get('password')
-    source = demisto.args().get('source')
-    start = demisto.args().get('start')
-    end = demisto.args().get('end')
+    username = args().get('username')
+    password = args().get('password')
+    source = args().get('source')
+    start = args().get('start')
+    end = args().get('end')
 
     if start:
         startDate = timeToEpoch(start)
@@ -413,7 +409,7 @@ def search_stolen_client_accounts(client: Client, args: Dict[str, Any]) -> Comma
 
 def search_domain(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    domain = demisto.args().get('domain')
+    domain = args().get('domain')
 
     param = {
         'domain': domain
@@ -433,7 +429,7 @@ def search_domain(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def search_ip_address(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    ip_address = demisto.args().get('ip_address')
+    ip_address = args().get('ip_address')
 
     param = {
         'ip_address': ip_address
@@ -622,7 +618,6 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        LOG('Command being called is {command}'.format(command=demisto.command()))
         if demisto.command() == 'test-module':
             demisto.results(test_module())
         elif demisto.command() == 'usta-get-malicious-urls':
