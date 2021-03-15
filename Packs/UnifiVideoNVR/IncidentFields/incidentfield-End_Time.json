@@ -4,7 +4,7 @@
     "modified": "2021-03-02T10:39:21.481066745+01:00",
     "name": "End Time",
     "ownerOnly": false,
-    "cliName": "unifivideo_endtime",
+    "cliName": "unifivideoendtime",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

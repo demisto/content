@@ -553,7 +553,7 @@ tasks:
       employeedisplayname: {}
       employeeemail: {}
       employeemanageremail: {}
-      endtime: {}
+      unifivideoendtime: {}
       escalation: {}
       eventaction: {}
       eventid: {}
@@ -875,7 +875,7 @@ tasks:
       srcntdomain: {}
       srcos: {}
       srcuser: {}
-      starttime: {}
+      unifivideostarttime: {}
       state: {}
       statecisonotification: {}
       statewherethebreachtookplace: {}
@@ -1186,7 +1186,7 @@ tasks:
       employeedisplayname: {}
       employeeemail: {}
       employeemanageremail: {}
-      endtime: {}
+      unifivideoendtime: {}
       escalation: {}
       eventaction: {}
       eventid: {}
@@ -1508,7 +1508,7 @@ tasks:
       srcntdomain: {}
       srcos: {}
       srcuser: {}
-      starttime: {}
+      unifivideostarttime: {}
       state: {}
       statecisonotification: {}
       statewherethebreachtookplace: {}
@@ -1809,7 +1809,7 @@ tasks:
       employeedisplayname: {}
       employeeemail: {}
       employeemanageremail: {}
-      endtime: {}
+      unifivideoendtime: {}
       escalation: {}
       eventid: {}
       eventtype: {}
@@ -2114,7 +2114,7 @@ tasks:
       srcntdomain: {}
       srcos: {}
       srcuser: {}
-      starttime: {}
+      unifivideostarttime: {}
       state: {}
       statecisonotification: {}
       statewherethebreachtookplace: {}

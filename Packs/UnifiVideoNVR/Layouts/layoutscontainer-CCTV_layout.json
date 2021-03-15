@@ -29,7 +29,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "starttime",
+                                "fieldId": "unifivideostarttime",
                                 "height": 22,
                                 "id": "d8bd3920-b20d-11ea-8ca4-79c773a6df8b",
                                 "index": 1,
@@ -40,7 +40,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "endtime",
+                                "fieldId": "unifivideoendtime",
                                 "height": 22,
                                 "id": "dcdcac70-b20d-11ea-8ca4-79c773a6df8b",
                                 "index": 2,
