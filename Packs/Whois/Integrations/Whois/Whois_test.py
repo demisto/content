@@ -150,3 +150,5 @@ def test_query_result(whois_result, domain, reliability, expected):
     from Whois import create_outputs
     md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
     assert standard_ec['Whois']['QueryResult'] == expected
+    assert dbot_score.get('DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && '
+                          'val.Type == obj.Type)').get('Reliability') == 'A - Completely reliable'
