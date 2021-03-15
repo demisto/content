@@ -726,13 +726,11 @@
         "startCol": 0
        },
        {
-        "dropEffect": "move",
         "endCol": 2,
-        "fieldId": "cymulatesha1",
+        "fieldId": "sha1",
         "height": 53,
         "id": "32c8b230-754c-11eb-abd1-d3793bf04866",
         "index": 2,
-        "listId": "caseinfoid-20767310-754c-11eb-abd1-d3793bf04866",
         "sectionItemType": "field",
         "startCol": 0
        }
