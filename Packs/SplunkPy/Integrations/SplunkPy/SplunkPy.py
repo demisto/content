@@ -523,7 +523,9 @@ def extensive_log(message):
 def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, look_behind):
     new_last_run_fetched_ids = {}
     for inc_id, time in last_run_fetched_ids.items():
-        if current_epoch_time - time < look_behind:
+        look_behind_in_seconds = look_behind * 60
+        deletion_threshold_in_seconds = look_behind_in_seconds * 2
+        if current_epoch_time - time < deletion_threshold_in_seconds:
             new_last_run_fetched_ids[inc_id] = time
 
     return new_last_run_fetched_ids
