@@ -323,8 +323,8 @@ def search_identity_leaks(client: Client, args: Dict[str, Any]) -> CommandResult
         :type end: ``str``
         :param - end: End parameter for analysis
         """
-    start = args().get('start')
-    end = args().get('end')
+    start = args.get('start')
+    end = args.get('end')
 
     if start:
         startDate = timeToEpoch(start)
