@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+import datetime
+
 # Cortex Data Lake FW log monitoring monitoring
 # PRE_REQUISITE: Enable CDL integration and/or Panorama integration (if the automated creation of a FW list is expected)
 
@@ -50,7 +52,7 @@ if not fw_monitor_list:
 
     if panorama_integration in allInstances:
         if not allInstances[panorama_integration]['state'] == 'active' and \
-        allInstances[panorama_integration]['brand'] == 'Panorama':
+            allInstances[panorama_integration]['brand'] == 'Panorama':
             return_error("Integration %s is not active or is not a Panorama integration." % panorama_integration)
     else:
         return_error(
