@@ -3,7 +3,7 @@ import datetime
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-### Cortex Data Lake FW log monitoring monitoring ###
+# Cortex Data Lake FW log monitoring monitoring
 # PRE_REQUISITE: Enable CDL integration and/or Panorama integration (if the automated creation of a FW list is expected)
 
 
@@ -41,11 +41,11 @@ if serial_string:
     fw_monitor_list = list(dict.fromkeys(fw_monitor_list))
 
 if not fw_monitor_list:
-    ### List of FW to monitor is empty, try to get it from Panorama ###
+    # List of FW to monitor is empty, get it from Panorama
 
     panorama_integration = demisto.args().get('panorama')
     if not panorama_integration:
-        return_error("Either a FW serial list or a proper Panorama integration needs to be provided, none of them is available, exiting...")
+        return_error("A FW serial list or a Panorama integration needed, none of them is available, exiting...")
 
     # Verify if proposed Panorama integration exists and is active
     allInstances = demisto.getModules()
@@ -55,7 +55,7 @@ if not fw_monitor_list:
             return_error("Integration %s is not active or is not a Panorama integration." % panorama_integration)
     else:
         return_error(
-            "Your Panorama integration has not been found sorry... Cloud you please verify your spelling or provide a list of FW serials to monitor?")
+            "Panorama integration not found. Cloud you please verify your spelling or provide a list of FW serials to monitor?")
 
     fw_query = {}
     fw_query['type'] = 'op'
@@ -96,10 +96,8 @@ for current_fw in fw_monitor_list:
 
     if query_result:
         if query_result[0]['HumanReadable'] == NO_LOG_ANSWER:
-            #monitoring_result.append({ 'FW serial' : current_fw , 'Log upload to CDL' : 'KO' })
             FW_KO.append(current_fw)
         else:
-            #monitoring_result.append({ 'FW serial' : current_fw , 'Log upload to CDL' : 'OK' })
             FW_OK.append(current_fw)
 
 
