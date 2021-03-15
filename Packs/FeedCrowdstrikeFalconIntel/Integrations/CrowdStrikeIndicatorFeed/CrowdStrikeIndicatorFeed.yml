@@ -43,12 +43,12 @@ configuration:
   type: 0
   additionalinfo: The time range to consider for the initial data fetch. Leave empty to fetch from the first indicator available.
 - display: Max. indicators per fetch
-  defaultvalue: 10000
+  defaultvalue: 5000
   hidden: false
   name: max_indicator_to_fetch
   required: false
   type: 0
-  additionalinfo: Max. indicators per fetch should be between 1 - 10000.
+  additionalinfo: Max. indicators per fetch should be between 1 - 10000. Big numbers might result in timeout.
 - additionalinfo: Malicious confidence level to filter by.
   display: Malicious confidence
   hidden: false
