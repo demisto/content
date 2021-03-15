@@ -594,7 +594,7 @@ def fetch_incidents(service):
     search_offset = last_run_data.get('offset', 0)
 
     dem_params = demisto.params()
-    look_behind = dem_params['look_behind']
+    look_behind = int(dem_params['look_behind']) if 'look_behind' in dem_params else 15
     last_run_time, now = get_last_run_time(dem_params, service, last_run_time, look_behind)
     extensive_log('SplunkPy last run time: {}, now: {}'.format(last_run_time, now))
 
