@@ -1,8 +1,5 @@
 # coding=utf-8
 from __future__ import print_function
-
-import chardet
-
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
     data_to_md, create_headers_map
 from CommonServerPython import entryTypes
