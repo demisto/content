@@ -31,5 +31,5 @@ def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_user)
     client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
 
-    fetch_events = fetch_incidents(client, {}, "")
+    fetch_events = fetch_incidents(client, {}, "", "")
     assert fetch_events == EVENT_RESULTS

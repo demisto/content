@@ -134,12 +134,18 @@ class MsGraphClient:
         return users.get('value', '')
 
     def get_user(self, user, properties):
-        user_data = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'users/{user}',
-            params={'$select': properties})
-        user_data.pop('@odata.context', None)
-        return user_data
+        try:
+            user_data = self.ms_client.http_request(
+                method='GET',
+                url_suffix=f'users/{user}',
+                params={'$select': properties})
+            user_data.pop('@odata.context', None)
+            return user_data
+        except NotFoundError as e:
+            LOG(f'User {user} was not found')
+            return {'NotFound': e.message}
+        except Exception as e:
+            raise e
 
     def list_users(self, properties, page_url):
         if page_url:
@@ -246,6 +252,7 @@ def create_user_command(client: MsGraphClient, args: Dict):
     # display the new user and it's properties
     user = required_properties.get('userPrincipalName')
     user_data = client.get_user(user, '*')
+
     user_readable, user_outputs = parse_outputs(user_data)
     human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
@@ -286,6 +293,12 @@ def get_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     properties = args.get('properties', '*')
     user_data = client.get_user(user, properties)
+
+    # In case the request returned a 404 error display a proper message to the war room
+    if user_data.get('NotFound', ''):
+        error_message = user_data.get('NotFound')
+        human_readable = f'### User {user} was not found.\nMicrosoft Graph Response: {error_message}'
+        return human_readable, {}, error_message
 
     user_readable, user_outputs = parse_outputs(user_data)
     human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
