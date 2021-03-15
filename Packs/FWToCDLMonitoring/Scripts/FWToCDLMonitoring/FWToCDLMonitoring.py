@@ -1,6 +1,7 @@
-import datetime
 import demistomock as demisto
 from CommonServerPython import *
+
+import datetime as dt
 
 # Cortex Data Lake FW log monitoring monitoring
 # PRE_REQUISITE: Enable CDL integration and/or Panorama integration (if the automated creation of a FW list is expected)
@@ -23,8 +24,8 @@ for instance in allInstances:
 if not cortex_found:
     return_error("Sorry, no active Cortex Data Lake integration found, please configure one.")
 
-now = datetime.datetime.utcnow()
-start_time = now - datetime.timedelta(hours=LOG_MONITORING_PERIOD)
+now = dt.datetime.utcnow()
+start_time = now - dt.timedelta(hours=LOG_MONITORING_PERIOD)
 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
 
 fw_monitor_list = []
