@@ -76,14 +76,13 @@ if not fw_monitor_list:
 # Uncomment to verify the list of FW to be monitored
 # demisto.log(fw_monitor_list)
 
-monitoring_result = []
 FW_OK = []
 FW_KO = []
 
 query = {}
 query['fields'] = 'all'
 query['time_range'] = '1 day'
-query['limit'] = 1
+query['limit'] = str(1)
 query['start_time'] = start_time
 
 for current_fw in fw_monitor_list:
@@ -105,7 +104,7 @@ all_results = {'FW OK': FW_OK, 'FW KO': FW_KO}
 
 command_results = CommandResults(
     outputs_prefix='CDL.monitoring',
-    ignore_auto_extract='True',
+    ignore_auto_extract=True,
     outputs=all_results
 )
 
