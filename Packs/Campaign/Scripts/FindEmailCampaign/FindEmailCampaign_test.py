@@ -74,10 +74,14 @@ def results(arg):
     RESULTS.append(arg)
 
 
+def mock_sent_tokenize(text):
+    return text
+
 def test_return_campaign_details_entry(mocker):
     global RESULTS
     RESULTS = []
     mocker.patch.object(demisto, 'results', side_effect=results)
+    mocker.patch('FindEmailCampaign.sent_tokenize', mock_sent_tokenize)
     inciddent1 = create_incident(subject='subject', body='email body')
     incidents_list = [inciddent1]
     data = pd.DataFrame(incidents_list)
@@ -98,6 +102,7 @@ def test_return_campaign_details_entry_comma_seperated_recipients(mocker):
     global RESULTS
     RESULTS = []
     mocker.patch.object(demisto, 'results', side_effect=results)
+    mocker.patch('FindEmailCampaign.sent_tokenize', mock_sent_tokenize)
     inciddent1 = create_incident(subject='subject', body='email body', emailto='a@a.com, b@a.com')
     incidents_list = [inciddent1]
     data = pd.DataFrame(incidents_list)
@@ -119,6 +124,7 @@ def test_return_campaign_details_entry_list_dumped_recipients(mocker):
     global RESULTS
     RESULTS = []
     mocker.patch.object(demisto, 'results', side_effect=results)
+    mocker.patch('FindEmailCampaign.sent_tokenize', mock_sent_tokenize)
     inciddent1 = create_incident(subject='subject', body='email body', emailto='["a@a.com", "b@a.com"]')
     incidents_list = [inciddent1]
     data = pd.DataFrame(incidents_list)
@@ -140,6 +146,7 @@ def test_return_campaign_details_entry_list_dumped_recipients_cc(mocker):
     global RESULTS
     RESULTS = []
     mocker.patch.object(demisto, 'results', side_effect=results)
+    mocker.patch('FindEmailCampaign.sent_tokenize', mock_sent_tokenize)
     inciddent1 = create_incident(subject='subject', body='email body', emailcc='["a@a.com", "b@a.com"]')
     incidents_list = [inciddent1]
     data = pd.DataFrame(incidents_list)
