@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy_dominik
+  id: SplunkPy
   version: -1
 configuration:
 - display: Host - ip (x.x.x.x)
@@ -138,8 +138,8 @@ configuration:
   required: false
   type: 0
 description: Run queries on Splunk servers.
-display: SplunkPy_dominik
-name: SplunkPy_dominik
+display: SplunkPy
+name: SplunkPy
 script:
   commands:
   - arguments:
