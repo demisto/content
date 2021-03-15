@@ -120,6 +120,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Any Log connection issue?"
       id: 40cc284d-59c9-4d83-8402-589979310bc4
       iscommand: false
       name: Any Log connection issue?
