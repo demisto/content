@@ -425,6 +425,23 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     assert output == expected_output
 
 
+def test_fetch_incidents(mocker):
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    splunk.fetch_incidents(service)
+    incidents = demisto.incidents.call_args[0][0]
+    assert demisto.incidents.call_count == 1
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
+                                   "Recurring Malware Infection - Rule"
+
+
 SPLUNK_RESULTS = [
     {
         "rawJSON":
