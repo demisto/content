@@ -1,50 +1,130 @@
+from dateutil import parser
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+INCIDENTS_QUERY = 'status:Active or status:Pending and type:"Cortex XDR Incident"'
+
+QUERY_TYPE_TO_FIELD = {
+    'Categories': {'cliName': 'xdralerts', 'fieldName': 'category'},
+    'Users': {'cliName': 'xdralerts', 'fieldName': 'username'},
+    'Hosts': {'cliName': 'xdralerts', 'fieldName': 'hostname'},
+    'Alerts': {'cliName': 'xdralerts', 'fieldName': 'name'},
+    'MitreTactic': {'cliName': 'xdralerts', 'fieldName': 'mitretacticidandname'},
+    'MitreTechnique': {'cliName': 'xdralerts', 'fieldName': 'mitretechniqueidandname'},
+    'FileSHA2': {'cliName': 'xdrfileartifacts', 'fieldName': 'file_sha256'},
+    'File': {'cliName': 'xdrfileartifacts', 'fieldName': 'file_name'},
+}
+
+
+def update_result_dict(val: str, res_dict: dict, query_type: str):
+    """
+    Updated the result dict counters with the current context values.
+    :param context: List of values from the incident context key.
+    :param res_dict: The result dictionary that contains the counters of the query.
+    :param query_type: The item to gets the result in the incident(users/hosts/alarms/e.g).
+    """
+
+    if val == 'null':
+        return
+
+    if 'This alert from content' in val:
+        return
+
+    if query_type == 'Users' and val.partition('\\')[2]:
+        val = val.partition('\\')[2]
+
+    if query_type == 'Hosts':
+        val = val.partition(':')[0]
+
+    if not val:
+        return
+
+    val = val.capitalize()
+
+    if res_dict.get(val):
+        res_dict[val] = res_dict[val] + 1
+    else:
+        res_dict[val] = 1
+
+
+def get_demisto_datetme_format(date_string):
+    if date_string:
+        date_object = None
+        # try to parse date string
+        try:
+            date_object = parser.parse(date_string)
+        except Exception:
+            pass
+        # try to parse relative time
+        if date_object is None and date_string.strip().endswith("ago"):
+            date_object = parse_relative_time(date_string)
+
+        if date_object:
+            return date_object.astimezone().isoformat('T')
+        else:
+            return None
+
+
+def get_incidents_by_page(args, page):
+    args['page'] = page
+    incidents_res = demisto.executeCommand("getIncidents", args)
+    return incidents_res[0]['Contents'].get('data') or []
+
+
+def get_incidents(args, limit):
+    incident_list = []
+    page = 0
+    while len(incident_list) < limit:
+        incidents = get_incidents_by_page(args, page)
+        if not incidents:
+            break
+        incident_list += incidents
+        page += 1
+    return incident_list[:limit]
+
 
 def main():
+
     try:
-        res_type = demisto.getArg('reultType')
-        query_type = demisto.getArg('queryType')
-        to_date = demisto.getArg('to')
-        from_date = demisto.getArg('from')
-        list_name = f'xdrIncidents_{query_type}'
-
-        # parse time arguments
-        date_pattern = re.compile('\d{4}[-/]\d{2}[-/]\d{2}T\d{2}:\d{2}:\d{2}')
-
-        if to_date and to_date != '0001-01-01T00:00:00Z':
-            result = date_pattern.findall(to_date)[0]
-            to_date = datetime.strptime(result, '%Y-%m-%dT%H:%M:%S')
-        else:
-            to_date = datetime.max
-
-        if from_date and from_date != '0001-01-01T00:00:00Z':
-            result = date_pattern.findall(from_date)[0]
-            from_date = datetime.strptime(result, '%Y-%m-%dT%H:%M:%S')
-        else:
-            from_date = datetime.min
-
-        incidents = []
-        list_res = demisto.executeCommand("getList", {"listName": list_name})
-        if isError(list_res):
-            return_error(f'Error occurred while trying to get the list {list_name}: {get_error(list_res)}')
-
-        try:
-            incidents = json.loads(list_res[0]["Contents"])
-        except ValueError as e:
-            return_error(
-                f'Unable to parse JSON string from {list_name} list. Please verify the JSON is valid. - ' + str(e))
-
+        args = demisto.args()
         res_dict = {}  # type:dict
-        for incident in incidents:
-            creation_date = datetime.strptime(incident.get('created'), '%Y-%m-%dT%H:%M:%S')
-            if from_date <= creation_date <= to_date:
-                for key, val in incident.get('data').items():
-                    if res_dict.get(key):
-                        res_dict[key] = res_dict[key] + val
-                    else:
-                        res_dict[key] = val
+        res_type = args.get('reultType')
+        query_type = args.get('queryType')
+        from_date = args.get('from')
+        to_date = args.get('to')
+        page_size = args.get('pageSize')
+        limit = int(args.get('limit'))
+
+        incidents_args = {}
+        incidents_args['type'] = 'Cortex XDR Incident'
+        incidents_args['size'] = int(page_size)
+        incidents_args['status'] = 'Active or Pending'
+
+        if from_date:
+            from_datetime = get_demisto_datetme_format(from_date)
+            if from_datetime:
+                incidents_args['fromdate'] = from_datetime
+            else:
+                demisto.results("did not set from date due to a wrong format: " + from_date)
+
+        if to_date:
+            to_datetime = get_demisto_datetme_format(to_date)
+            if to_datetime:
+                incidents_args['todate'] = to_datetime
+            else:
+                demisto.results("did not set to date due to a wrong format: " + from_date)
+
+        incidents = get_incidents(incidents_args, limit)
+
+        if QUERY_TYPE_TO_FIELD.get(query_type):
+            cli_name = QUERY_TYPE_TO_FIELD[query_type]['cliName']
+            field_name = QUERY_TYPE_TO_FIELD[query_type]['fieldName']
+            for incident in incidents:
+                for item in incident['CustomFields'][cli_name]:
+                    val = item.get(field_name)
+                    if val:
+                        update_result_dict(val, res_dict, query_type)
 
         if res_type == 'Top10':
             res = sorted(res_dict.items(), key=lambda x: x[1], reverse=True)[:10]

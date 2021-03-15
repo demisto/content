@@ -28,6 +28,12 @@ args:
   - FileSHA2
   - File
   required: true
+- name: pageSize
+  description: Incidents query batch size
+  defaultValue: "50"
+- name: limit
+  description: The maximum number of incidents to fetch. The default value is 3000.
+  defaultValue: "1000"
 commonfields:
   id: XDRIncidentWidgetBase
   version: -1
