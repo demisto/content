@@ -17,7 +17,7 @@ from CyrenThreatInDepth import (
 pytestmark = pytest.mark.usefixtures("clean_integration_context")
 
 API_TOKEN = "12345"
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 
 
 def _load_file(file_name):

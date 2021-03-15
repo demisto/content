@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 MAX_API_COUNT: int = 100000
 BASE_URL = "https://api-feeds.cyren.com/v1/feed"
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 BAD_IP_RISK_BOUNDARY = 80
 
 
