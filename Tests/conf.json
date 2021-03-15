@@ -3281,7 +3281,8 @@
         "Azure SecurityCenter - Test": "Issue 27391",
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "Field polling test": "Issue 33951",
-        "palo_alto_panorama_test_pb": "Issue 34371"
+        "palo_alto_panorama_test_pb": "Issue 34371",
+        "Microsoft Defender - ATP - Indicators Test": "Issue 29279"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
