@@ -286,7 +286,8 @@ def main() -> None:
     credentials = params.get('credentials')
     proxy = params.get('proxy', False)
     insecure = params.get('insecure', False)
-    first_fetch = arg_to_datetime(params.get('first_fetch')).timestamp() if params.get('first_fetch') else None
+    first_fetch_datetime = arg_to_datetime(params.get('first_fetch'))
+    first_fetch = first_fetch_datetime.timestamp() if first_fetch_datetime else None
     base_url = params.get('base_url')
     tlp_color = params.get('tlp_color')
     include_deleted = params.get('include_deleted', False)
