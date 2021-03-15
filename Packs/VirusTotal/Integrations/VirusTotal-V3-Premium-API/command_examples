@@ -1,0 +1,19 @@
+!vt-premium-file-download 0f555ed56bb78c5511f4e488cd37f24d1425fcfa
+!vt-premium-file-sandbox-pcap 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3_VirusTotal Jujubox
+!vt-premium-intelligence-search 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3
+!vt-premium-livehunt-notifications-files-list limit=1
+!vt-premium-livehunt-notifications-list filter=malicious_executables limit=1
+!vt-premium-livehunt-rule-list-files 5988042761601024 limit=1
+!vt-premium-livehunt-rules-create limit=100 name="a new rule" yara_rule=`rule foobar { strings: $ = "foobar" condition: all of them }`
+!vt-premium-livehunt-rules-delete 5670140172337152
+!vt-premium-livehunt-rules-get-by-id 6360290934161408
+!vt-premium-livehunt-rules-list limit=1 enabled=false order="modification_date-"
+!vt-premium-livehunt-rules-update id=6360290934161408 enabled=false
+!vt-premium-quota-limits-list
+!vt-premium-retrohunt-jobs-get-by-id id=akrupnik_panw-1610969096
+!vt-premium-retrohunt-jobs-get-matching-files akrupnik_panw-1610969096
+!vt-premium-retrohunt-jobs-create rules=`rule foobar { strings: $ = "foobar" condition: all of them }` corpus=goodware start_time="3 days"
+!vt-premium-retrohunt-jobs-list limit=1
+!vt-premium-zip-create files=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f password=apassword
+!vt-premium-zip-get 5548746369433600
+!vt-premium-zip-download 5548746369433600
