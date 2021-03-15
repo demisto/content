@@ -1,0 +1,36 @@
+args:
+- description: Comma separated list of FW serial numbers to monitor.
+  name: fw_serials
+- description: Panorama integration name to retrieve FW list
+  name: panorama
+comment: "Verify that all firewalls successfully pushed logs to the Cortex Data Lake\
+  \ for the last 12 hours. It's an easy way to do monitoring of the FW connection\
+  \ to CDL.\nYou can use either a manual list of FW serials or a Panorama integration\
+  \ to get the list of equipment to monitor. "
+commonfields:
+  id: FW-to-CDL-monitoring
+  version: -1
+dependson:
+  must:
+  - Panorama|||panorama
+  - Cortex Data Lake|||cdl-query-traffic-logs
+dockerimage: demisto/python3:3.9.2.17246
+enabled: true
+name: FW-to-CDL-monitoring
+outputs:
+- contextPath: monitoring_result
+  description: Monitoring results sorted per FW serial
+  type: unknown
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- CDL
+- Panw
+- xdr
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

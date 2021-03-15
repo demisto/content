@@ -1,0 +1,28 @@
+{
+    "autorun": false,
+    "color": "#D74315",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "CDL Monitoring",
+    "layout": "c2f2f3cb-b676-41c0-89b2-711746352d59",
+    "locked": false,
+    "name": "CDL Monitoring",
+    "onChangeRepAlg": 1,
+    "playbookId": "5809f6f1-7991-410c-87d4-cc7bccf9b7a4",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}
