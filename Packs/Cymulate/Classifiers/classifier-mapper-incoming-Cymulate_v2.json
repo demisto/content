@@ -41,10 +41,6 @@
      "complex": null,
      "simple": "module"
     },
-    "Cymulate SHA1": {
-     "complex": null,
-     "simple": "sha1"
-    },
     "Cymulate Source": {
      "complex": null,
      "simple": "source"
@@ -88,6 +84,10 @@
     "SHA256": {
      "complex": null,
      "simple": "sha256"
+    },
+    "SHA1": {
+     "complex": null,
+     "simple": "sha1"
     },
     "Source Username": {
      "complex": null,
