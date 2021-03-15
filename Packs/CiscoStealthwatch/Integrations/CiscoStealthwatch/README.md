@@ -1,4 +1,4 @@
-Scalable visibility and security analytics
+Scalable visibility and security analytics.
 This integration was integrated and tested with version 1.0.0 of Cisco Stealthwatch
 ## Configure Cisco Stealthwatch on Cortex XSOAR
 
@@ -8,7 +8,7 @@ This integration was integrated and tested with version 1.0.0 of Cisco Stealthwa
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL | Server URL for Cisco Stealthwatch console. e.g: https://ip:port/ | True |
+    | Server URL | Server URL for Cisco Stealthwatch console e.g.: https://ip:port/. | True |
     | User Credentials |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -19,7 +19,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cisco-stealthwatch-query-flows-initialize
 ***
-Initialize flow search based on parameters. Please provide start time, time range, or start time and end time.
+Initializes the flow search based on specified arguments. Must provide a start time, time range, or start time and end time.
 
 
 #### Base Command
@@ -29,21 +29,21 @@ Initialize flow search based on parameters. Please provide start time, time rang
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant we want to initialize its flow search. | Required | 
-| start_time | Start time. format: YYYY-mm-ddTHH:MM:SSZ.Given only start_time, end_time will be set to the current time. | Optional | 
-| end_time | End time. format: YYYY-mm-ddTHH:MM:SSZ. | Optional | 
-| time_range | An optional time range. i.e: 3 months, 1 week, 1 day ago, etc. | Optional | 
-| limit | Record limit. Default is 20. | Optional | 
-| ip_addresses | Filter based on IP Address. | Optional | 
+| tenant_id | The ID of the tenant for which to initialize its flow search. | Required | 
+| start_time | Start time in the format: YYYY-mm-ddTHH:MM:SSZ. If start_time is provided but end_time is not provided, the end_time will be set to the current time. | Optional | 
+| end_time | End time in the format: YYYY-mm-ddTHH:MM:SSZ. . | Optional | 
+| time_range | An optional time range, for example: 3 months, 1 week, 1 day ago, etc. | Optional | 
+| limit | The maximum number of records to retrieve. Default is 20. | Optional | 
+| ip_addresses | The IP address by which to filter the results. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.FlowStatus.id | str | The id of the flow | 
-| CiscoStealthwatch.FlowStatus.searchJobStatus | str | The searchJobStatus of the flow | 
-| CiscoStealthwatch.FlowStatus.percentComplete | str | The percentComplete of the flow | 
+| CiscoStealthwatch.FlowStatus.id | str | The ID of the flow. | 
+| CiscoStealthwatch.FlowStatus.searchJobStatus | str | The search job status of the flow. | 
+| CiscoStealthwatch.FlowStatus.percentComplete | str | The percent of the flow that was completed. | 
 
 
 #### Command Example
@@ -55,7 +55,7 @@ Initialize flow search based on parameters. Please provide start time, time rang
     "CiscoStealthwatch": {
         "FlowStatus": {
             "domainId": "102",
-            "id": "603b47e0e4b0d6d2a2037b37",
+            "id": "604f7115e4b0bbedc8c77d8d",
             "percentComplete": 100,
             "status": "IN_PROGRESS"
         }
@@ -66,14 +66,14 @@ Initialize flow search based on parameters. Please provide start time, time rang
 #### Human Readable Output
 
 >### Query Flows Initializing Information:
->|id|status|percentComplete|
+>|Id|Status|Percent Complete|
 >|---|---|---|
->| 603b47e0e4b0d6d2a2037b37 | IN_PROGRESS | 100.0 |
+>| 604f7115e4b0bbedc8c77d8d | IN_PROGRESS | 100.0 |
 
 
 ### cisco-stealthwatch-query-flows-status
 ***
-Flow search check status
+Checks the flow search status.
 
 
 #### Base Command
@@ -83,20 +83,20 @@ Flow search check status
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant we want to check its flow search status. | Required | 
-| search_id | The id of the search from the initialize command. | Required | 
+| tenant_id | The ID of the tenant for which to check its flow search status. | Required | 
+| search_id | The ID of the search from the cisco-stealthwatch-query-flows-initialize command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.FlowStatus.id | str | The id of the flow | 
-| CiscoStealthwatch.FlowStatus.percentComplete | str | The percentComplete of the flow | 
+| CiscoStealthwatch.FlowStatus.id | str | The ID of the flow. | 
+| CiscoStealthwatch.FlowStatus.percentComplete | str | The percent of the flow that was completed. | 
 
 
 #### Command Example
-```!cisco-stealthwatch-query-flows-status tenant_id=102 search_id=603b4667e4b0d6d2a2037973```
+```!cisco-stealthwatch-query-flows-status tenant_id=102 search_id=604f64afe4b0bbedc8c77a9d```
 
 #### Context Example
 ```json
@@ -104,7 +104,7 @@ Flow search check status
     "CiscoStealthwatch": {
         "FlowStatus": {
             "domainId": "102",
-            "id": "603b4667e4b0d6d2a2037973",
+            "id": "604f64afe4b0bbedc8c77a9d",
             "percentComplete": 100,
             "status": "COMPLETED"
         }
@@ -115,14 +115,14 @@ Flow search check status
 #### Human Readable Output
 
 >### Query Flows Status Information:
->|id|percentComplete|
+>|Id|Percent Complete|
 >|---|---|
->| 603b4667e4b0d6d2a2037973 | 100.0 |
+>| 604f64afe4b0bbedc8c77a9d | 100.0 |
 
 
 ### cisco-stealthwatch-query-flows-results
 ***
-Flow search results, use this command after the search job is over.
+Retrieves the flow search results. Use this command after the search job completes.
 
 
 #### Base Command
@@ -132,26 +132,26 @@ Flow search results, use this command after the search job is over.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant we want to retrieve its flow search results. | Required | 
-| search_id | The id of the search from the initialize command. | Required | 
+| tenant_id | The ID of the tenant for which to retrieve its flow search results. | Required | 
+| search_id | The ID of the search from the cisco-stealthwatch-query-flows-initialize command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.FlowResults.id | str | The id of the flow | 
-| CiscoStealthwatch.FlowResults.tenantId | str | The tenant id of the flow | 
-| CiscoStealthwatch.FlowResults.flowCollectorId | str | The collector id of the flow | 
-| CiscoStealthwatch.FlowResults.protocol | str | The protocol of the flow | 
-| CiscoStealthwatch.FlowResults.serviceId | str | The service id of the flow | 
-| CiscoStealthwatch.FlowResults.statistics | str | The statistics of the flow | 
-| CiscoStealthwatch.FlowResults.peer | str | The peer of the flow | 
-| CiscoStealthwatch.FlowResults.subject | str | The subject of the flow | 
+| CiscoStealthwatch.FlowResults.id | str | The ID of the flow. | 
+| CiscoStealthwatch.FlowResults.tenantId | str | The tenant ID of the flow. | 
+| CiscoStealthwatch.FlowResults.flowCollectorId | str | The collector ID of the flow. | 
+| CiscoStealthwatch.FlowResults.protocol | str | The protocol of the flow. | 
+| CiscoStealthwatch.FlowResults.serviceId | str | The service ID of the flow. | 
+| CiscoStealthwatch.FlowResults.statistics | str | The statistics of the flow. | 
+| CiscoStealthwatch.FlowResults.peer | str | The peer of the flow. | 
+| CiscoStealthwatch.FlowResults.subject | str | The subject of the flow. | 
 
 
 #### Command Example
-```!cisco-stealthwatch-query-flows-results tenant_id=102 search_id=603b4667e4b0d6d2a2037973```
+```!cisco-stealthwatch-query-flows-results tenant_id=102 search_id=604f64afe4b0bbedc8c77a9d```
 
 #### Context Example
 ```json
@@ -159,7 +159,7 @@ Flow search results, use this command after the search job is over.
     "CiscoStealthwatch": {
         "FlowResults": [
             {
-                "applicationId": 169,
+                "applicationId": 170,
                 "cipherSuite": {
                     "authAlgorithm": "N/A",
                     "encAlgorithm": "N/A",
@@ -171,25 +171,25 @@ Flow search results, use this command after the search job is over.
                     "protocol": "N/A"
                 },
                 "flowCollectorId": 121,
-                "id": 1837284,
+                "id": 10142775,
                 "mplsLabel": -1,
                 "peer": {
                     "byteRate": 0,
                     "bytes": 0,
-                    "countryCode": "US",
+                    "countryCode": "XR",
                     "finPackets": 0,
                     "hostGroupIds": [
-                        61627
+                        65534
                     ],
-                    "ipAddress": "157.240.1.54",
+                    "ipAddress": "x.x.x.x",
                     "natPort": -1,
                     "orientation": "server",
                     "packetRate": 0,
                     "packets": 0,
                     "percentBytes": 0,
                     "portProtocol": {
-                        "port": 5222,
-                        "protocol": "TCP",
+                        "port": 2055,
+                        "protocol": "UDP",
                         "serviceId": 0
                     },
                     "rstPackets": 0,
@@ -198,18 +198,18 @@ Flow search results, use this command after the search job is over.
                     "tlsVersion": "NONE",
                     "trustSecId": -1
                 },
-                "protocol": "TCP",
-                "serviceId": 128,
+                "protocol": "UDP",
+                "serviceId": 38,
                 "statistics": {
-                    "activeDuration": 200000,
-                    "byteCount": 1814323,
-                    "byteRate": 23562.6363636364,
-                    "firstActiveTime": "2021-02-28T07:23:39.000+0000",
-                    "flowTimeSinceStart": 241376,
-                    "lastActiveTime": "2021-02-28T07:26:59.000+0000",
-                    "numCombinedFlowRecords": 1,
-                    "packetCount": 1340,
-                    "packetRate": 17.4025974025974,
+                    "activeDuration": 320000,
+                    "byteCount": 21403751,
+                    "byteRate": 267546.8875,
+                    "firstActiveTime": "2021-03-15T13:36:15.000+0000",
+                    "flowTimeSinceStart": 240673,
+                    "lastActiveTime": "2021-03-15T13:41:35.000+0000",
+                    "numCombinedFlowRecords": 2,
+                    "packetCount": 15667,
+                    "packetRate": 195.8375,
                     "roundTripTime": 0,
                     "rttAverage": -1,
                     "rttMaximum": -1,
@@ -221,27 +221,25 @@ Flow search results, use this command after the search job is over.
                     "subjectPeerRatio": 100,
                     "tcpConnections": 0,
                     "tcpRetransmissions": -1,
-                    "tcpRetransmissionsRatio": -0.07462686567164178
+                    "tcpRetransmissionsRatio": -0.006382842918235782
                 },
                 "subject": {
-                    "byteRate": 23562.6363636364,
-                    "bytes": 1814323,
+                    "byteRate": 267546.8875,
+                    "bytes": 21403751,
                     "countryCode": "XR",
                     "finPackets": 0,
                     "hostGroupIds": [
                         65534
                     ],
-                    "ipAddress": "192.168.91.2",
-                    "natAddress": "192.117.142.58",
-                    "natHostName": "mail.team3.co.il",
-                    "natPort": 7513,
+                    "ipAddress": "x.x.x.x",
+                    "natPort": -1,
                     "orientation": "client",
-                    "packetRate": 17.4025974025974,
-                    "packets": 1340,
+                    "packetRate": 195.8375,
+                    "packets": 15667,
                     "percentBytes": 100,
                     "portProtocol": {
-                        "port": 37310,
-                        "protocol": "TCP",
+                        "port": 59315,
+                        "protocol": "UDP",
                         "serviceId": 0
                     },
                     "rstPackets": 0,
@@ -255,7 +253,7 @@ Flow search results, use this command after the search job is over.
                 "vlanId": -1
             },
             {
-                "applicationId": 190,
+                "applicationId": 170,
                 "cipherSuite": {
                     "authAlgorithm": "N/A",
                     "encAlgorithm": "N/A",
@@ -267,25 +265,24 @@ Flow search results, use this command after the search job is over.
                     "protocol": "N/A"
                 },
                 "flowCollectorId": 121,
-                "id": 592310,
+                "id": 10142776,
                 "mplsLabel": -1,
                 "peer": {
-                    "byteRate": 40701.7662337662,
-                    "bytes": 3134036,
+                    "byteRate": 0,
+                    "bytes": 0,
                     "countryCode": "XR",
                     "finPackets": 0,
                     "hostGroupIds": [
-                        38,
-                        27
+                        65534
                     ],
-                    "ipAddress": "192.168.10.1",
+                    "ipAddress": "x.x.x.x",
                     "natPort": -1,
                     "orientation": "server",
-                    "packetRate": 678.909090909091,
-                    "packets": 52276,
-                    "percentBytes": 50,
+                    "packetRate": 0,
+                    "packets": 0,
+                    "percentBytes": 0,
                     "portProtocol": {
-                        "port": 53,
+                        "port": 2055,
                         "protocol": "UDP",
                         "serviceId": 0
                     },
@@ -296,17 +293,17 @@ Flow search results, use this command after the search job is over.
                     "trustSecId": -1
                 },
                 "protocol": "UDP",
-                "serviceId": 1,
+                "serviceId": 38,
                 "statistics": {
-                    "activeDuration": 1456213000,
-                    "byteCount": 6268072,
-                    "byteRate": 81403.5324675325,
-                    "firstActiveTime": "2021-02-11T10:56:46.000+0000",
-                    "flowTimeSinceStart": 241376,
-                    "lastActiveTime": "2021-02-28T07:26:59.000+0000",
+                    "activeDuration": 320000,
+                    "byteCount": 21403751,
+                    "byteRate": 267546.8875,
+                    "firstActiveTime": "2021-03-15T13:36:15.000+0000",
+                    "flowTimeSinceStart": 240673,
+                    "lastActiveTime": "2021-03-15T13:41:35.000+0000",
                     "numCombinedFlowRecords": 2,
-                    "packetCount": 104552,
-                    "packetRate": 1357.81818181818,
+                    "packetCount": 15667,
+                    "packetRate": 195.8375,
                     "roundTripTime": 0,
                     "rttAverage": -1,
                     "rttMaximum": -1,
@@ -315,27 +312,27 @@ Flow search results, use this command after the search job is over.
                     "srtAverage": -1,
                     "srtMaximum": -1,
                     "srtMinimum": -1,
-                    "subjectPeerRatio": 50,
+                    "subjectPeerRatio": 100,
                     "tcpConnections": 0,
                     "tcpRetransmissions": -1,
-                    "tcpRetransmissionsRatio": -0.0009564618563011707
+                    "tcpRetransmissionsRatio": -0.006382842918235782
                 },
                 "subject": {
-                    "byteRate": 40701.7662337662,
-                    "bytes": 3134036,
+                    "byteRate": 267546.8875,
+                    "bytes": 21403751,
                     "countryCode": "XR",
                     "finPackets": 0,
                     "hostGroupIds": [
                         65534
                     ],
-                    "ipAddress": "192.168.30.19",
+                    "ipAddress": "x.x.x.x",
                     "natPort": -1,
                     "orientation": "client",
-                    "packetRate": 678.909090909091,
-                    "packets": 52276,
-                    "percentBytes": 50,
+                    "packetRate": 195.8375,
+                    "packets": 15667,
+                    "percentBytes": 100,
                     "portProtocol": {
-                        "port": 35219,
+                        "port": 52656,
                         "protocol": "UDP",
                         "serviceId": 0
                     },
@@ -362,25 +359,25 @@ Flow search results, use this command after the search job is over.
                     "protocol": "N/A"
                 },
                 "flowCollectorId": 121,
-                "id": 1837567,
+                "id": 10142778,
                 "mplsLabel": -1,
                 "peer": {
-                    "byteRate": 48693.6470588235,
-                    "bytes": 827792,
+                    "byteRate": 0,
+                    "bytes": 0,
                     "countryCode": "XR",
                     "finPackets": 0,
                     "hostGroupIds": [
                         65534
                     ],
-                    "ipAddress": "192.168.30.2",
+                    "ipAddress": "x.x.x.x",
                     "natPort": -1,
                     "orientation": "server",
-                    "packetRate": 45.1764705882353,
-                    "packets": 768,
-                    "percentBytes": 50,
+                    "packetRate": 0,
+                    "packets": 0,
+                    "percentBytes": 0,
                     "portProtocol": {
                         "port": 514,
-                        "protocol": "TCP",
+                        "protocol": "UDP",
                         "serviceId": 0
                     },
                     "rstPackets": 0,
@@ -389,18 +386,18 @@ Flow search results, use this command after the search job is over.
                     "tlsVersion": "NONE",
                     "trustSecId": -1
                 },
-                "protocol": "TCP",
-                "serviceId": 543,
+                "protocol": "UDP",
+                "serviceId": 73,
                 "statistics": {
-                    "activeDuration": 326000,
-                    "byteCount": 1655584,
-                    "byteRate": 97387.2941176471,
-                    "firstActiveTime": "2021-02-28T07:20:33.000+0000",
-                    "flowTimeSinceStart": 241376,
-                    "lastActiveTime": "2021-02-28T07:25:59.000+0000",
+                    "activeDuration": 320000,
+                    "byteCount": 213807311,
+                    "byteRate": 2672591.3875,
+                    "firstActiveTime": "2021-03-15T13:36:15.000+0000",
+                    "flowTimeSinceStart": 240673,
+                    "lastActiveTime": "2021-03-15T13:41:35.000+0000",
                     "numCombinedFlowRecords": 2,
-                    "packetCount": 1536,
-                    "packetRate": 90.3529411764706,
+                    "packetCount": 173345,
+                    "packetRate": 2166.8125,
                     "roundTripTime": 0,
                     "rttAverage": -1,
                     "rttMaximum": -1,
@@ -409,29 +406,28 @@ Flow search results, use this command after the search job is over.
                     "srtAverage": -1,
                     "srtMaximum": -1,
                     "srtMinimum": -1,
-                    "subjectPeerRatio": 50,
+                    "subjectPeerRatio": 100,
                     "tcpConnections": 0,
                     "tcpRetransmissions": -1,
-                    "tcpRetransmissionsRatio": -0.06510416666666667
+                    "tcpRetransmissionsRatio": -0.0005768842481756036
                 },
                 "subject": {
-                    "byteRate": 48693.6470588235,
-                    "bytes": 827792,
+                    "byteRate": 2672591.3875,
+                    "bytes": 213807311,
                     "countryCode": "XR",
                     "finPackets": 0,
                     "hostGroupIds": [
-                        38,
-                        27
+                        65534
                     ],
-                    "ipAddress": "192.168.10.1",
+                    "ipAddress": "x.x.x.x",
                     "natPort": -1,
                     "orientation": "client",
-                    "packetRate": 45.1764705882353,
-                    "packets": 768,
-                    "percentBytes": 50,
+                    "packetRate": 2166.8125,
+                    "packets": 173345,
+                    "percentBytes": 100,
                     "portProtocol": {
-                        "port": 54793,
-                        "protocol": "TCP",
+                        "port": 48861,
+                        "protocol": "UDP",
                         "serviceId": 0
                     },
                     "rstPackets": 0,
@@ -452,16 +448,16 @@ Flow search results, use this command after the search job is over.
 #### Human Readable Output
 
 >### Query Flows Results Information:
->|id|tenantId|flowCollectorId|protocol|serviceId|statistics|peer|subject|
+>|Id|Tenant Id|Flow Collector Id|Protocol|Service Id|Statistics|Peer|Subject|
 >|---|---|---|---|---|---|---|---|
->| 1837284 | 102 | 121 | TCP | 128 | activeDuration: 200000<br/>numCombinedFlowRecords: 1<br/>firstActiveTime: 2021-02-28T07:23:39.000+0000<br/>lastActiveTime: 2021-02-28T07:26:59.000+0000<br/>tcpRetransmissions: -1<br/>byteCount: 1814323<br/>packetCount: 1340<br/>byteRate: 23562.6363636364<br/>packetRate: 17.4025974025974<br/>tcpConnections: 0<br/>roundTripTime: 0<br/>serverResponseTime: 0<br/>subjectPeerRatio: 100.0<br/>rttAverage: -1<br/>rttMaximum: -1<br/>rttMinimum: -1<br/>srtAverage: -1<br/>srtMaximum: -1<br/>srtMinimum: -1<br/>flowTimeSinceStart: 241376<br/>tcpRetransmissionsRatio: -0.07462686567164178 | hostGroupIds: 61627<br/>countryCode: US<br/>ipAddress: 157.240.1.54<br/>natPort: -1<br/>portProtocol: {"port": 5222, "protocol": "TCP", "serviceId": 0}<br/>percentBytes: 0.0<br/>bytes: 0<br/>packets: 0<br/>byteRate: 0.0<br/>packetRate: 0.0<br/>orientation: server<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: 192.168.91.2<br/>natAddress: 192.117.142.58<br/>natHostName: mail.team3.co.il<br/>natPort: 7513<br/>portProtocol: {"port": 37310, "protocol": "TCP", "serviceId": 0}<br/>percentBytes: 100.0<br/>bytes: 1814323<br/>packets: 1340<br/>byteRate: 23562.6363636364<br/>packetRate: 17.4025974025974<br/>orientation: client<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 |
->| 592310 | 102 | 121 | UDP | 1 | activeDuration: 1456213000<br/>numCombinedFlowRecords: 2<br/>firstActiveTime: 2021-02-11T10:56:46.000+0000<br/>lastActiveTime: 2021-02-28T07:26:59.000+0000<br/>tcpRetransmissions: -1<br/>byteCount: 6268072<br/>packetCount: 104552<br/>byteRate: 81403.5324675325<br/>packetRate: 1357.81818181818<br/>tcpConnections: 0<br/>roundTripTime: 0<br/>serverResponseTime: 0<br/>subjectPeerRatio: 50.0<br/>rttAverage: -1<br/>rttMaximum: -1<br/>rttMinimum: -1<br/>srtAverage: -1<br/>srtMaximum: -1<br/>srtMinimum: -1<br/>flowTimeSinceStart: 241376<br/>tcpRetransmissionsRatio: -0.0009564618563011707 | hostGroupIds: 38,<br/>27<br/>countryCode: XR<br/>ipAddress: 192.168.10.1<br/>natPort: -1<br/>portProtocol: {"port": 53, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 50.0<br/>bytes: 3134036<br/>packets: 52276<br/>byteRate: 40701.7662337662<br/>packetRate: 678.909090909091<br/>orientation: server<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: 192.168.30.19<br/>natPort: -1<br/>portProtocol: {"port": 35219, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 50.0<br/>bytes: 3134036<br/>packets: 52276<br/>byteRate: 40701.7662337662<br/>packetRate: 678.909090909091<br/>orientation: client<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 |
->| 1837567 | 102 | 121 | TCP | 543 | activeDuration: 326000<br/>numCombinedFlowRecords: 2<br/>firstActiveTime: 2021-02-28T07:20:33.000+0000<br/>lastActiveTime: 2021-02-28T07:25:59.000+0000<br/>tcpRetransmissions: -1<br/>byteCount: 1655584<br/>packetCount: 1536<br/>byteRate: 97387.2941176471<br/>packetRate: 90.3529411764706<br/>tcpConnections: 0<br/>roundTripTime: 0<br/>serverResponseTime: 0<br/>subjectPeerRatio: 50.0<br/>rttAverage: -1<br/>rttMaximum: -1<br/>rttMinimum: -1<br/>srtAverage: -1<br/>srtMaximum: -1<br/>srtMinimum: -1<br/>flowTimeSinceStart: 241376<br/>tcpRetransmissionsRatio: -0.06510416666666667 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: 192.168.30.2<br/>natPort: -1<br/>portProtocol: {"port": 514, "protocol": "TCP", "serviceId": 0}<br/>percentBytes: 50.0<br/>bytes: 827792<br/>packets: 768<br/>byteRate: 48693.6470588235<br/>packetRate: 45.1764705882353<br/>orientation: server<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 | hostGroupIds: 38,<br/>27<br/>countryCode: XR<br/>ipAddress: 192.168.10.1<br/>natPort: -1<br/>portProtocol: {"port": 54793, "protocol": "TCP", "serviceId": 0}<br/>percentBytes: 50.0<br/>bytes: 827792<br/>packets: 768<br/>byteRate: 48693.6470588235<br/>packetRate: 45.1764705882353<br/>orientation: client<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 |
+>| 10142775 | 102 | 121 | UDP | 38 | activeDuration: 320000<br/>numCombinedFlowRecords: 2<br/>firstActiveTime: 2021-03-15T13:36:15.000+0000<br/>lastActiveTime: 2021-03-15T13:41:35.000+0000<br/>tcpRetransmissions: -1<br/>byteCount: 21403751<br/>packetCount: 15667<br/>byteRate: 267546.8875<br/>packetRate: 195.8375<br/>tcpConnections: 0<br/>roundTripTime: 0<br/>serverResponseTime: 0<br/>subjectPeerRatio: 100.0<br/>rttAverage: -1<br/>rttMaximum: -1<br/>rttMinimum: -1<br/>srtAverage: -1<br/>srtMaximum: -1<br/>srtMinimum: -1<br/>flowTimeSinceStart: 240673<br/>tcpRetransmissionsRatio: -0.006382842918235782 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 2055, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 0.0<br/>bytes: 0<br/>packets: 0<br/>byteRate: 0.0<br/>packetRate: 0.0<br/>orientation: server<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 59315, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 100.0<br/>bytes: 21403751<br/>packets: 15667<br/>byteRate: 267546.8875<br/>packetRate: 195.8375<br/>orientation: client<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 |
+>| 10142776 | 102 | 121 | UDP | 38 | activeDuration: 320000<br/>numCombinedFlowRecords: 2<br/>firstActiveTime: 2021-03-15T13:36:15.000+0000<br/>lastActiveTime: 2021-03-15T13:41:35.000+0000<br/>tcpRetransmissions: -1<br/>byteCount: 21403751<br/>packetCount: 15667<br/>byteRate: 267546.8875<br/>packetRate: 195.8375<br/>tcpConnections: 0<br/>roundTripTime: 0<br/>serverResponseTime: 0<br/>subjectPeerRatio: 100.0<br/>rttAverage: -1<br/>rttMaximum: -1<br/>rttMinimum: -1<br/>srtAverage: -1<br/>srtMaximum: -1<br/>srtMinimum: -1<br/>flowTimeSinceStart: 240673<br/>tcpRetransmissionsRatio: -0.006382842918235782 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 2055, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 0.0<br/>bytes: 0<br/>packets: 0<br/>byteRate: 0.0<br/>packetRate: 0.0<br/>orientation: server<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 52656, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 100.0<br/>bytes: 21403751<br/>packets: 15667<br/>byteRate: 267546.8875<br/>packetRate: 195.8375<br/>orientation: client<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 |
+>| 10142778 | 102 | 121 | UDP | 73 | activeDuration: 320000<br/>numCombinedFlowRecords: 2<br/>firstActiveTime: 2021-03-15T13:36:15.000+0000<br/>lastActiveTime: 2021-03-15T13:41:35.000+0000<br/>tcpRetransmissions: -1<br/>byteCount: 213807311<br/>packetCount: 173345<br/>byteRate: 2672591.3875<br/>packetRate: 2166.8125<br/>tcpConnections: 0<br/>roundTripTime: 0<br/>serverResponseTime: 0<br/>subjectPeerRatio: 100.0<br/>rttAverage: -1<br/>rttMaximum: -1<br/>rttMinimum: -1<br/>srtAverage: -1<br/>srtMaximum: -1<br/>srtMinimum: -1<br/>flowTimeSinceStart: 240673<br/>tcpRetransmissionsRatio: -0.0005768842481756036 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 514, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 0.0<br/>bytes: 0<br/>packets: 0<br/>byteRate: 0.0<br/>packetRate: 0.0<br/>orientation: server<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 48861, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 100.0<br/>bytes: 213807311<br/>packets: 173345<br/>byteRate: 2672591.3875<br/>packetRate: 2166.8125<br/>orientation: client<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 |
 
 
 ### cisco-stealthwatch-list-tags
 ***
-List host groups (called Tags on the API)
+Lists the host groups (called tags in the API).
 
 
 #### Base Command
@@ -471,15 +467,15 @@ List host groups (called Tags on the API)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant which we want to get its tags. | Required | 
+| tenant_id | The ID of the tenant for which to get its tags. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.Tag.id | str | The id of the tag | 
-| CiscoStealthwatch.Tag.displayName | str | The displayName of the tag | 
+| CiscoStealthwatch.Tag.id | str | The ID of the tag. | 
+| CiscoStealthwatch.Tag.displayName | str | The display name of the tag. | 
 
 
 #### Command Example
@@ -661,8 +657,8 @@ List host groups (called Tags on the API)
 
 #### Human Readable Output
 
->### Tags (for tenant_id: 102):
->|displayName|id|
+>### Tags for tenant_id: 102:
+>|Display Name|Id|
 >|---|---|
 >| Internal Host Tags | 1 |
 >| Servers | 2 |
@@ -709,7 +705,7 @@ List host groups (called Tags on the API)
 
 ### cisco-stealthwatch-get-tag
 ***
-Get a single host group (called Tag on the API)
+Gets a single host group (called tag in the API).
 
 
 #### Base Command
@@ -719,18 +715,18 @@ Get a single host group (called Tag on the API)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant which we want to get its tag. | Required | 
-| tag_id | The tag we want to get more information about. | Required | 
+| tenant_id | The ID of the tenant for which to get its tag. | Required | 
+| tag_id | The tag for which to get more information. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.Tag.id | str | The name of the tag | 
-| CiscoStealthwatch.Tag.name | str | The id of the tag | 
-| CiscoStealthwatch.Tag.location | str | The location of the tag | 
-| CiscoStealthwatch.Tag.domainId | str | The domainId of the tag | 
+| CiscoStealthwatch.Tag.id | str | The name of the tag. | 
+| CiscoStealthwatch.Tag.name | str | The ID of the tag. | 
+| CiscoStealthwatch.Tag.location | str | The location of the tag. | 
+| CiscoStealthwatch.Tag.domainId | str | The domain ID of the tag. | 
 
 
 #### Command Example
@@ -770,15 +766,15 @@ Get a single host group (called Tag on the API)
 
 #### Human Readable Output
 
->### Tag (tenant_id: 102, tag_id: 1):
->|id|name|location|domainId|
+>### Tag 1 with tenant id 102 results:
+>|Id|Name|Location|Domain Id|
 >|---|---|---|---|
 >| 1 | Inside Hosts | INSIDE | 102 |
 
 
 ### cisco-stealthwatch-list-tenants
 ***
-List all domains or Get a single domain (called Tenant(s) on the API)
+Lists all domains if no domain is specified or gets a specified domain (called tenant(s) in the API).
 
 
 #### Base Command
@@ -788,15 +784,15 @@ List all domains or Get a single domain (called Tenant(s) on the API)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant which we want to retrieve information about. | Optional | 
+| tenant_id | The ID of the tenant for which to retrieve information. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.Tenant.id | str | The id of the tenant | 
-| CiscoStealthwatch.Tenant.displayName | str | The displayName of the tenant | 
+| CiscoStealthwatch.Tenant.id | str | The ID of the tenant. | 
+| CiscoStealthwatch.Tenant.displayName | str | The display name of the tenant. | 
 
 
 #### Command Example
@@ -807,7 +803,7 @@ List all domains or Get a single domain (called Tenant(s) on the API)
 {
     "CiscoStealthwatch": {
         "Tenant": {
-            "displayName": "qmasters",
+            "displayName": "companyname",
             "id": 102
         }
     }
@@ -817,14 +813,14 @@ List all domains or Get a single domain (called Tenant(s) on the API)
 #### Human Readable Output
 
 >### Tenants:
->|id|displayName|
+>|Id|Display Name|
 >|---|---|
->| 102 | qmasters |
+>| 102 | companyname |
 
 
 ### cisco-stealthwatch-get-tag-hourly-traffic-report
 ***
-Hourly traffic summary of ByteCount for a single host group (called Tenent on the API)
+Gets the hourly traffic summary of the byte count for a single host group (called tenant in the API).
 
 
 #### Base Command
@@ -834,20 +830,20 @@ Hourly traffic summary of ByteCount for a single host group (called Tenent on th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant which we want to get its host information. | Required | 
-| tag_id | The tag we want to get its information . | Required | 
+| tenant_id | The ID of the tenant for which to get its host information. | Required | 
+| tag_id | The ID of the tag for which to get its information. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.TagHourlyTraffic.timestamp | str | The timestamp of the TagHourlyTraffic | 
-| CiscoStealthwatch.TagHourlyTraffic.inboundByteCount | str | The inboundByteCount of the TagHourlyTraffic | 
-| CiscoStealthwatch.TagHourlyTraffic.outboundByteCount | str | The outboundByteCount of the TagHourlyTraffic | 
-| CiscoStealthwatch.TagHourlyTraffic.withinByteCount | str | The withinByteCount of the TagHourlyTraffic | 
-| CiscoStealthwatch.TagHourlyTraffic.tenant_id | str | The tenant_idof the TagHourlyTraffic | 
-| CiscoStealthwatch.TagHourlyTraffic.tag_id | str | The tag_id of the TagHourlyTraffic | 
+| CiscoStealthwatch.TagHourlyTraffic.timestamp | str | Timestamp of the hourly traffic summary for a single host group \(called tag on the API\). | 
+| CiscoStealthwatch.TagHourlyTraffic.inboundByteCount | str | Inbound byte count of the hourly traffic summary for a single host group \(called tag on the API\). | 
+| CiscoStealthwatch.TagHourlyTraffic.outboundByteCount | str | Outbound byte count of the hourly traffic summary for a single host group \(called tag on the API\). | 
+| CiscoStealthwatch.TagHourlyTraffic.withinByteCount | str | Within the byte count of the hourly traffic summary for a single host group \(called tag on the API\). | 
+| CiscoStealthwatch.TagHourlyTraffic.tenant_id | str | The tenant ID of the hourly traffic summary for a single host group \(called tag on the API\). | 
+| CiscoStealthwatch.TagHourlyTraffic.tag_id | str | The tag ID of the hourly traffic summary for a single host group \(called tag on the API\). | 
 
 
 #### Command Example
@@ -860,203 +856,203 @@ Hourly traffic summary of ByteCount for a single host group (called Tenent on th
         "TagHourlyTraffic": [
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 291048598,
+                "outboundByteCount": 150258936,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-28T07:00:00Z",
-                "withinByteCount": 1567052996
+                "timestamp": "2021-03-15T14:00:00Z",
+                "withinByteCount": 1945701335
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 203032760,
+                "outboundByteCount": 463352098,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-28T06:00:00Z",
-                "withinByteCount": 3436018534
+                "timestamp": "2021-03-15T13:00:00Z",
+                "withinByteCount": 3505279985
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 47538899,
+                "outboundByteCount": 262327649,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-28T05:00:00Z",
-                "withinByteCount": 3603501448
+                "timestamp": "2021-03-15T12:00:00Z",
+                "withinByteCount": 3529956221
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 49114086,
+                "outboundByteCount": 1122353436,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-28T04:00:00Z",
-                "withinByteCount": 3406898697
+                "timestamp": "2021-03-15T11:00:00Z",
+                "withinByteCount": 3457833934
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 45791660,
+                "outboundByteCount": 984529611,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-28T03:00:00Z",
-                "withinByteCount": 3270417523
+                "timestamp": "2021-03-15T10:00:00Z",
+                "withinByteCount": 3386016372
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 47745710,
+                "outboundByteCount": 733104221,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-28T02:00:00Z",
-                "withinByteCount": 3487003235
+                "timestamp": "2021-03-15T09:00:00Z",
+                "withinByteCount": 3412418846
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 46587449,
+                "outboundByteCount": 1918126235,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-28T01:00:00Z",
-                "withinByteCount": 3647554497
+                "timestamp": "2021-03-15T08:00:00Z",
+                "withinByteCount": 3637012947
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 47360587,
+                "outboundByteCount": 237026285,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-28T00:00:00Z",
-                "withinByteCount": 3407208147
+                "timestamp": "2021-03-15T07:00:00Z",
+                "withinByteCount": 3280803860
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 47293648,
+                "outboundByteCount": 72918411,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T23:00:00Z",
-                "withinByteCount": 3351739160
+                "timestamp": "2021-03-15T06:00:00Z",
+                "withinByteCount": 3192625646
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 151106736,
+                "outboundByteCount": 41484822,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T22:00:00Z",
-                "withinByteCount": 3325365484
+                "timestamp": "2021-03-15T05:00:00Z",
+                "withinByteCount": 3562885609
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 60103310,
+                "outboundByteCount": 35827947,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T21:00:00Z",
-                "withinByteCount": 3871282272
+                "timestamp": "2021-03-15T04:00:00Z",
+                "withinByteCount": 3164436072
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 53440498,
+                "outboundByteCount": 38951660,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T20:00:00Z",
-                "withinByteCount": 3606645372
+                "timestamp": "2021-03-15T03:00:00Z",
+                "withinByteCount": 3157242110
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 50552248,
+                "outboundByteCount": 45113923,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T19:00:00Z",
-                "withinByteCount": 3395068198
+                "timestamp": "2021-03-15T02:00:00Z",
+                "withinByteCount": 3198141336
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 54788099,
+                "outboundByteCount": 41711097,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T18:00:00Z",
-                "withinByteCount": 3443621209
+                "timestamp": "2021-03-15T01:00:00Z",
+                "withinByteCount": 3494995049
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 51259347,
+                "outboundByteCount": 37973773,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T17:00:00Z",
-                "withinByteCount": 3699318523
+                "timestamp": "2021-03-15T00:00:00Z",
+                "withinByteCount": 3107836498
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 51617923,
+                "outboundByteCount": 140825173,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T16:00:00Z",
-                "withinByteCount": 3453042484
+                "timestamp": "2021-03-14T23:00:00Z",
+                "withinByteCount": 3101452647
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 56498548,
+                "outboundByteCount": 41105061,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T15:00:00Z",
-                "withinByteCount": 3396818922
+                "timestamp": "2021-03-14T22:00:00Z",
+                "withinByteCount": 3076750873
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 56778747,
+                "outboundByteCount": 43776335,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T14:00:00Z",
-                "withinByteCount": 3489771709
+                "timestamp": "2021-03-14T21:00:00Z",
+                "withinByteCount": 3467001185
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 62141472,
+                "outboundByteCount": 41122986,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T13:00:00Z",
-                "withinByteCount": 3750390108
+                "timestamp": "2021-03-14T20:00:00Z",
+                "withinByteCount": 3158945548
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 64282723,
+                "outboundByteCount": 42376273,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T12:00:00Z",
-                "withinByteCount": 3661873084
+                "timestamp": "2021-03-14T19:00:00Z",
+                "withinByteCount": 3231715048
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 65242422,
+                "outboundByteCount": 44179386,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T11:00:00Z",
-                "withinByteCount": 3483765523
+                "timestamp": "2021-03-14T18:00:00Z",
+                "withinByteCount": 3205740036
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 72138185,
+                "outboundByteCount": 120232010,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T10:00:00Z",
-                "withinByteCount": 3455481561
+                "timestamp": "2021-03-14T17:00:00Z",
+                "withinByteCount": 3668568860
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 47761348,
+                "outboundByteCount": 163284711,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T09:00:00Z",
-                "withinByteCount": 3732010759
+                "timestamp": "2021-03-14T16:00:00Z",
+                "withinByteCount": 3246202946
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 49763585,
+                "outboundByteCount": 674875684,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T08:00:00Z",
-                "withinByteCount": 3488886111
+                "timestamp": "2021-03-14T15:00:00Z",
+                "withinByteCount": 3313179934
             },
             {
                 "inboundByteCount": 0,
-                "outboundByteCount": 63774449,
+                "outboundByteCount": 2049252448,
                 "tag_id": "1",
                 "tenant_id": "102",
-                "timestamp": "2021-02-27T07:00:00Z",
-                "withinByteCount": 3476653122
+                "timestamp": "2021-03-14T14:00:00Z",
+                "withinByteCount": 3410264173
             }
         ]
     }
@@ -1065,39 +1061,39 @@ Hourly traffic summary of ByteCount for a single host group (called Tenent on th
 
 #### Human Readable Output
 
->### Hourly Tag Traffic Report (tenant_id: 102, tag_id: 1):
->|timestamp|inboundByteCount|outboundByteCount|withinByteCount|
+>### Hourly Tag Traffic Report for tenant id 102 and tag id 1:
+>|Timestamp|Inbound Byte Count|Outbound Byte Count|Within Byte Count|
 >|---|---|---|---|
->| 2021-02-28T07:00:00Z | 0 | 291048598 | 1567052996 |
->| 2021-02-28T06:00:00Z | 0 | 203032760 | 3436018534 |
->| 2021-02-28T05:00:00Z | 0 | 47538899 | 3603501448 |
->| 2021-02-28T04:00:00Z | 0 | 49114086 | 3406898697 |
->| 2021-02-28T03:00:00Z | 0 | 45791660 | 3270417523 |
->| 2021-02-28T02:00:00Z | 0 | 47745710 | 3487003235 |
->| 2021-02-28T01:00:00Z | 0 | 46587449 | 3647554497 |
->| 2021-02-28T00:00:00Z | 0 | 47360587 | 3407208147 |
->| 2021-02-27T23:00:00Z | 0 | 47293648 | 3351739160 |
->| 2021-02-27T22:00:00Z | 0 | 151106736 | 3325365484 |
->| 2021-02-27T21:00:00Z | 0 | 60103310 | 3871282272 |
->| 2021-02-27T20:00:00Z | 0 | 53440498 | 3606645372 |
->| 2021-02-27T19:00:00Z | 0 | 50552248 | 3395068198 |
->| 2021-02-27T18:00:00Z | 0 | 54788099 | 3443621209 |
->| 2021-02-27T17:00:00Z | 0 | 51259347 | 3699318523 |
->| 2021-02-27T16:00:00Z | 0 | 51617923 | 3453042484 |
->| 2021-02-27T15:00:00Z | 0 | 56498548 | 3396818922 |
->| 2021-02-27T14:00:00Z | 0 | 56778747 | 3489771709 |
->| 2021-02-27T13:00:00Z | 0 | 62141472 | 3750390108 |
->| 2021-02-27T12:00:00Z | 0 | 64282723 | 3661873084 |
->| 2021-02-27T11:00:00Z | 0 | 65242422 | 3483765523 |
->| 2021-02-27T10:00:00Z | 0 | 72138185 | 3455481561 |
->| 2021-02-27T09:00:00Z | 0 | 47761348 | 3732010759 |
->| 2021-02-27T08:00:00Z | 0 | 49763585 | 3488886111 |
->| 2021-02-27T07:00:00Z | 0 | 63774449 | 3476653122 |
+>| 2021-03-15T14:00:00Z | 0 | 150258936 | 1945701335 |
+>| 2021-03-15T13:00:00Z | 0 | 463352098 | 3505279985 |
+>| 2021-03-15T12:00:00Z | 0 | 262327649 | 3529956221 |
+>| 2021-03-15T11:00:00Z | 0 | 1122353436 | 3457833934 |
+>| 2021-03-15T10:00:00Z | 0 | 984529611 | 3386016372 |
+>| 2021-03-15T09:00:00Z | 0 | 733104221 | 3412418846 |
+>| 2021-03-15T08:00:00Z | 0 | 1918126235 | 3637012947 |
+>| 2021-03-15T07:00:00Z | 0 | 237026285 | 3280803860 |
+>| 2021-03-15T06:00:00Z | 0 | 72918411 | 3192625646 |
+>| 2021-03-15T05:00:00Z | 0 | 41484822 | 3562885609 |
+>| 2021-03-15T04:00:00Z | 0 | 35827947 | 3164436072 |
+>| 2021-03-15T03:00:00Z | 0 | 38951660 | 3157242110 |
+>| 2021-03-15T02:00:00Z | 0 | 45113923 | 3198141336 |
+>| 2021-03-15T01:00:00Z | 0 | 41711097 | 3494995049 |
+>| 2021-03-15T00:00:00Z | 0 | 37973773 | 3107836498 |
+>| 2021-03-14T23:00:00Z | 0 | 140825173 | 3101452647 |
+>| 2021-03-14T22:00:00Z | 0 | 41105061 | 3076750873 |
+>| 2021-03-14T21:00:00Z | 0 | 43776335 | 3467001185 |
+>| 2021-03-14T20:00:00Z | 0 | 41122986 | 3158945548 |
+>| 2021-03-14T19:00:00Z | 0 | 42376273 | 3231715048 |
+>| 2021-03-14T18:00:00Z | 0 | 44179386 | 3205740036 |
+>| 2021-03-14T17:00:00Z | 0 | 120232010 | 3668568860 |
+>| 2021-03-14T16:00:00Z | 0 | 163284711 | 3246202946 |
+>| 2021-03-14T15:00:00Z | 0 | 674875684 | 3313179934 |
+>| 2021-03-14T14:00:00Z | 0 | 2049252448 | 3410264173 |
 
 
 ### cisco-stealthwatch-get-top-alarming-tags
 ***
-Get top alarming host groups (called Tags on the API) for a specific domain (called Tenent on the API)
+Gets the top alarming host groups (called tags on the API) for a specific domain (called tenant in the API).
 
 
 #### Base Command
@@ -1107,32 +1103,659 @@ Get top alarming host groups (called Tags on the API) for a specific domain (cal
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant which we want to get its top alarming hosts. | Required | 
+| tenant_id | The ID of the tenant for which to get its top alarming hosts. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.AlarmingTag.ipAddress | str | The IP address of the AlarmingTag | 
-| CiscoStealthwatch.AlarmingTag.hostGroupIds | str | The hostGroupIds of the AlarmingTag | 
-| CiscoStealthwatch.AlarmingTag.typeId | str | The typeId of the AlarmingTag | 
-| CiscoStealthwatch.AlarmingTag.severity | str | The severity of the AlarmingTag | 
-| CiscoStealthwatch.AlarmingTag.alwaysBadCount | str | The alwaysBadCount of the AlarmingTag | 
+| CiscoStealthwatch.AlarmingTag.ipAddress | str | The IP address of the alarming tag. | 
+| CiscoStealthwatch.AlarmingTag.hostGroupIds | str | The host group IDs of the alarming tag. | 
+| CiscoStealthwatch.AlarmingTag.typeId | str | The type ID of the alarming tag. | 
+| CiscoStealthwatch.AlarmingTag.severity | str | The severity of the alarming tag. | 
+| CiscoStealthwatch.AlarmingTag.alwaysBadCount | str | The always bad count of the alarming tag. | 
 
 
 #### Command Example
 ```!cisco-stealthwatch-get-top-alarming-tags tenant_id=102```
 
+#### Context Example
+```json
+{
+    "CiscoStealthwatch": {
+        "AlarmingTag": [
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.058823529411764705,
+                        "typeId": 1028
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.058823529411764705,
+                        "typeId": 1028
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.058823529411764705,
+                        "typeId": 1028
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.3333333333333333,
+                        "typeId": 1028
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 286
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.058823529411764705,
+                        "typeId": 1028
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 286
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.058823529411764705,
+                        "typeId": 1028
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 286
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.058823529411764705,
+                        "typeId": 1028
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.058823529411764705,
+                        "typeId": 1028
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 286
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.058823529411764705,
+                        "typeId": 1028
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 286
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 286
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 286
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 286
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.058823529411764705,
+                        "typeId": 1028
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0.058823529411764705,
+                        "typeId": 1028
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 286
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    },
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 286
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [],
+                "sourceSecurityEvents": [
+                    {
+                        "alwaysBadCount": 0,
+                        "severity": 0,
+                        "typeId": 276
+                    }
+                ],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": [],
+                "tenant_id": "102"
+            }
+        ]
+    }
+}
+```
+
 #### Human Readable Output
 
->### Top Alarming Tags (tenant_id: 102):
->**No entries.**
+>### Top Alarming Tags for tenant id 102:
+>|Host Group Ids|Ip Address|
+>|---|---|
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
+>| 1,<br/>65534 | x.x.x.x |
 
 
 ### cisco-stealthwatch-list-security-events-initialize
 ***
-Initialize listing security events for a domain (called Tenant on the API)
+Initializes the list of security events for a domain (called tenant on the API).
 
 
 #### Base Command
@@ -1142,30 +1765,30 @@ Initialize listing security events for a domain (called Tenant on the API)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant we want to initialize its list security events . | Required | 
-| start_time | Start time. format: YYYY-mm-ddTHH:MM:SSZ.Given only start_time, end_time will be set to the current time. | Optional | 
-| end_time | End time. format: YYYY-mm-ddTHH:MM:SSZ. | Optional | 
-| time_range | An optional time range. i.e: 3 months, 1 week, 1 day ago, etc. | Optional | 
+| tenant_id | The ID of the tenant for which to initialize its list security events. | Required | 
+| start_time | Start time. Format: YYYY-mm-ddTHH:MM:SSZ. Given only the start_time, the end_time will be set to the current time. | Optional | 
+| end_time | End time. Format: YYYY-mm-ddTHH:MM:SSZ. | Optional | 
+| time_range | An optional time range. For example: 3 months, 1 week, 1 day ago, etc. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.SecurityEventStatus.id | str | The id of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventStatus.searchJobStatus | str | The searchJobStatusof the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventStatus.percentComplete  | str | The percentComplete of the SecurityEvent | 
+| CiscoStealthwatch.SecurityEventStatus.id | str | The ID of the security event. | 
+| CiscoStealthwatch.SecurityEventStatus.searchJobStatus | str | The status of the search job for the security event. | 
+| CiscoStealthwatch.SecurityEventStatus.percentComplete  | str | The percent of the security event that is completed. | 
 
 
 #### Command Example
-```!cisco-stealthwatch-list-security-events-initialize tenant_id=102 time_range="1 minute"```
+```!cisco-stealthwatch-list-security-events-initialize tenant_id=102 time_range="5 minute"```
 
 #### Context Example
 ```json
 {
     "CiscoStealthwatch": {
         "SecurityEventStatus": {
-            "id": "603b47f2e4b0d6d2a2037b3c",
+            "id": "604f7130e4b0bbedc8c77d92",
             "percentComplete": 0,
             "searchJobStatus": "IN_PROGRESS"
         }
@@ -1176,14 +1799,14 @@ Initialize listing security events for a domain (called Tenant on the API)
 #### Human Readable Output
 
 >### Security Events Initializing Information:
->|id|searchJobStatus|percentComplete|
+>|Id|Search Job Status|Percent Complete|
 >|---|---|---|
->| 603b47f2e4b0d6d2a2037b3c | IN_PROGRESS | 0 |
+>| 604f7130e4b0bbedc8c77d92 | IN_PROGRESS | 0 |
 
 
 ### cisco-stealthwatch-list-security-events-status
 ***
-List security events status
+Lists the security events status.
 
 
 #### Base Command
@@ -1193,27 +1816,27 @@ List security events status
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant we want to get its list security events status. | Required | 
-| search_id | The id of the search from the initialize command. | Required | 
+| tenant_id | The ID of the tenant for which to get its list of security events status. | Required | 
+| search_id | The ID of the search from the initialize command. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.SecurityEventStatus.id | str | The id of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventStatus.percentComplete | str | The percentCompleteof the SecurityEvent | 
+| CiscoStealthwatch.SecurityEventStatus.id | str | The ID of the security event. | 
+| CiscoStealthwatch.SecurityEventStatus.percentComplete | str | The percent of the security event that is completed. | 
 
 
 #### Command Example
-```!cisco-stealthwatch-list-security-events-status tenant_id=102 search_id=603b4696e4b0d6d2a203797a```
+```!cisco-stealthwatch-list-security-events-status tenant_id=102 search_id=604f64e1e4b0bbedc8c77aa4```
 
 #### Context Example
 ```json
 {
     "CiscoStealthwatch": {
         "SecurityEventStatus": {
-            "id": "603b4696e4b0d6d2a203797a",
+            "id": "604f64e1e4b0bbedc8c77aa4",
             "percentComplete": 100,
             "status": "COMPLETED"
         }
@@ -1224,14 +1847,14 @@ List security events status
 #### Human Readable Output
 
 >### Security Events Status Information:
->|id|percentComplete|
+>|Id|Percent Complete|
 >|---|---|
->| 603b4696e4b0d6d2a203797a | 100.0 |
+>| 604f64e1e4b0bbedc8c77aa4 | 100.0 |
 
 
 ### cisco-stealthwatch-list-security-events-results
 ***
-List security events results, use this command after the search job is over.
+Lists the security events results. Use this command after the search job completes.
 
 
 #### Base Command
@@ -1241,29 +1864,29 @@ List security events results, use this command after the search job is over.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The tenant we want to retrieve its list security events results. | Required | 
-| search_id | The id of the search from the initialize command. | Required | 
-| limit | security events limit. Default is 50. | Required | 
+| tenant_id | The ID of the tenant for which to retrieve its list security events results. | Required | 
+| search_id | The ID of the search from the initialize command. | Required | 
+| limit | The maximum number of security events. Default is 50. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.SecurityEventResults.id | str | The id of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventResults.domainId | str | The domainId of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventResults.deviceId | str | The deviceId of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventResults.securityEventType | str | The securityEventType of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventResults.firstActiveTime | str | The firstActiveTime of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventResults.lastActiveTime | str | The lastActiveTime of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventResults.source | str | The source of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventResults.target | str | The target of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventResults.details | str | The details of the SecurityEvent | 
-| CiscoStealthwatch.SecurityEventResults.hitCount | str | The hitCount of the SecurityEvent | 
+| CiscoStealthwatch.SecurityEventResults.id | str | The ID of the security event. | 
+| CiscoStealthwatch.SecurityEventResults.domainId | str | The domain ID of the security event. | 
+| CiscoStealthwatch.SecurityEventResults.deviceId | str | The device ID of the security event. | 
+| CiscoStealthwatch.SecurityEventResults.securityEventType | str | The type of the security event. | 
+| CiscoStealthwatch.SecurityEventResults.firstActiveTime | str | The first active time of the security event. | 
+| CiscoStealthwatch.SecurityEventResults.lastActiveTime | str | The last active time of the security event. | 
+| CiscoStealthwatch.SecurityEventResults.source | str | The source of the security event. | 
+| CiscoStealthwatch.SecurityEventResults.target | str | The target of the security event. | 
+| CiscoStealthwatch.SecurityEventResults.details | str | The details of the security event. | 
+| CiscoStealthwatch.SecurityEventResults.hitCount | str | The hit count of the security event. | 
 
 
 #### Command Example
-```!cisco-stealthwatch-list-security-events-results tenant_id=102 limit=5 search_id=603b4696e4b0d6d2a203797a```
+```!cisco-stealthwatch-list-security-events-results tenant_id=102 limit=5 search_id=604f64e1e4b0bbedc8c77aa4```
 
 #### Context Example
 ```json
@@ -1354,7 +1977,7 @@ List security events results, use this command after the search job is over.
                     },
                     {
                         "key": "targetIPAddress",
-                        "value": "40.101.121.34"
+                        "value": "x.x.x.x"
                     },
                     {
                         "key": "points",
@@ -1363,13 +1986,13 @@ List security events results, use this command after the search job is over.
                 ],
                 "deviceId": 121,
                 "domainId": 102,
-                "firstActiveTime": "2021-02-28T06:32:21.000+0000",
+                "firstActiveTime": "2021-03-15T13:44:29.000+0000",
                 "hitCount": 1,
-                "id": 52573,
-                "lastActiveTime": "2021-02-28T06:32:21.000+0000",
+                "id": 88195,
+                "lastActiveTime": "2021-03-15T13:44:29.000+0000",
                 "securityEventType": 310,
                 "source": {
-                    "ipAddress": "192.168.91.7",
+                    "ipAddress": "x.x.x.x",
                     "port": 0,
                     "protocol": "udp",
                     "tags": [
@@ -1380,128 +2003,7 @@ List security events results, use this command after the search job is over.
                     ]
                 },
                 "target": {
-                    "ipAddress": "40.101.121.34",
-                    "port": 137,
-                    "protocol": "udp",
-                    "tags": [
-                        {
-                            "id": 61319,
-                            "name": "Netherlands"
-                        }
-                    ]
-                }
-            },
-            {
-                "details": [
-                    {
-                        "key": "source_host@username",
-                        "value": ""
-                    },
-                    {
-                        "key": "source_host@policy_id",
-                        "value": "1"
-                    },
-                    {
-                        "key": "source_host@mac_address",
-                        "value": ""
-                    },
-                    {
-                        "key": "target_host@username",
-                        "value": ""
-                    },
-                    {
-                        "key": "target_host@policy_id",
-                        "value": "0"
-                    },
-                    {
-                        "key": "target_host@mac_address",
-                        "value": ""
-                    },
-                    {
-                        "key": "category_points@high-concern-index",
-                        "value": "162"
-                    },
-                    {
-                        "key": "category_points@high-target-index",
-                        "value": "162"
-                    },
-                    {
-                        "key": "category_points@high-recon-index",
-                        "value": "162"
-                    },
-                    {
-                        "key": "baseline@baseline",
-                        "value": "0"
-                    },
-                    {
-                        "key": "baseline@threshold",
-                        "value": "0"
-                    },
-                    {
-                        "key": "baseline@current_value",
-                        "value": "0"
-                    },
-                    {
-                        "key": "baseline@tolerance",
-                        "value": "0"
-                    },
-                    {
-                        "key": "flow@protocol",
-                        "value": "17"
-                    },
-                    {
-                        "key": "flow@service",
-                        "value": "16"
-                    },
-                    {
-                        "key": "flow@source_port",
-                        "value": "0"
-                    },
-                    {
-                        "key": "flow@target_port",
-                        "value": "137"
-                    },
-                    {
-                        "key": "flow@event_port",
-                        "value": "137"
-                    },
-                    {
-                        "key": "flow@flow_id",
-                        "value": "0"
-                    },
-                    {
-                        "key": "flow@source_is_server",
-                        "value": "false"
-                    },
-                    {
-                        "key": "targetIPAddress",
-                        "value": "52.97.201.114"
-                    },
-                    {
-                        "key": "points",
-                        "value": "162"
-                    }
-                ],
-                "deviceId": 121,
-                "domainId": 102,
-                "firstActiveTime": "2021-02-28T06:32:46.000+0000",
-                "hitCount": 1,
-                "id": 52574,
-                "lastActiveTime": "2021-02-28T06:32:46.000+0000",
-                "securityEventType": 310,
-                "source": {
-                    "ipAddress": "192.168.91.7",
-                    "port": 0,
-                    "protocol": "udp",
-                    "tags": [
-                        {
-                            "id": 65534,
-                            "name": "Catch All"
-                        }
-                    ]
-                },
-                "target": {
-                    "ipAddress": "52.97.201.114",
+                    "ipAddress": "x.x.x.x",
                     "port": 137,
                     "protocol": "udp",
                     "tags": [
@@ -1596,7 +2098,7 @@ List security events results, use this command after the search job is over.
                     },
                     {
                         "key": "targetIPAddress",
-                        "value": "52.114.159.33"
+                        "value": "x.x.x.x"
                     },
                     {
                         "key": "points",
@@ -1605,13 +2107,13 @@ List security events results, use this command after the search job is over.
                 ],
                 "deviceId": 121,
                 "domainId": 102,
-                "firstActiveTime": "2021-02-28T06:32:54.000+0000",
+                "firstActiveTime": "2021-03-15T13:44:27.000+0000",
                 "hitCount": 1,
-                "id": 52575,
-                "lastActiveTime": "2021-02-28T06:32:54.000+0000",
+                "id": 88194,
+                "lastActiveTime": "2021-03-15T13:44:27.000+0000",
                 "securityEventType": 310,
                 "source": {
-                    "ipAddress": "192.168.91.7",
+                    "ipAddress": "x.x.x.x",
                     "port": 0,
                     "protocol": "udp",
                     "tags": [
@@ -1622,7 +2124,7 @@ List security events results, use this command after the search job is over.
                     ]
                 },
                 "target": {
-                    "ipAddress": "52.114.159.33",
+                    "ipAddress": "x.x.x.x",
                     "port": 137,
                     "protocol": "udp",
                     "tags": [
@@ -1717,7 +2219,7 @@ List security events results, use this command after the search job is over.
                     },
                     {
                         "key": "targetIPAddress",
-                        "value": "52.109.12.19"
+                        "value": "x.x.x.x"
                     },
                     {
                         "key": "points",
@@ -1726,13 +2228,13 @@ List security events results, use this command after the search job is over.
                 ],
                 "deviceId": 121,
                 "domainId": 102,
-                "firstActiveTime": "2021-02-28T06:33:07.000+0000",
+                "firstActiveTime": "2021-03-15T13:44:26.000+0000",
                 "hitCount": 1,
-                "id": 52576,
-                "lastActiveTime": "2021-02-28T06:33:07.000+0000",
+                "id": 88193,
+                "lastActiveTime": "2021-03-15T13:44:26.000+0000",
                 "securityEventType": 310,
                 "source": {
-                    "ipAddress": "192.168.91.7",
+                    "ipAddress": "x.x.x.x",
                     "port": 0,
                     "protocol": "udp",
                     "tags": [
@@ -1743,7 +2245,7 @@ List security events results, use this command after the search job is over.
                     ]
                 },
                 "target": {
-                    "ipAddress": "52.109.12.19",
+                    "ipAddress": "x.x.x.x",
                     "port": 137,
                     "protocol": "udp",
                     "tags": [
@@ -1838,7 +2340,7 @@ List security events results, use this command after the search job is over.
                     },
                     {
                         "key": "targetIPAddress",
-                        "value": "40.77.18.167"
+                        "value": "x.x.x.x"
                     },
                     {
                         "key": "points",
@@ -1847,13 +2349,13 @@ List security events results, use this command after the search job is over.
                 ],
                 "deviceId": 121,
                 "domainId": 102,
-                "firstActiveTime": "2021-02-28T06:33:51.000+0000",
+                "firstActiveTime": "2021-03-15T13:44:25.000+0000",
                 "hitCount": 1,
-                "id": 52577,
-                "lastActiveTime": "2021-02-28T06:33:51.000+0000",
+                "id": 88192,
+                "lastActiveTime": "2021-03-15T13:44:25.000+0000",
                 "securityEventType": 310,
                 "source": {
-                    "ipAddress": "192.168.91.7",
+                    "ipAddress": "x.x.x.x",
                     "port": 0,
                     "protocol": "udp",
                     "tags": [
@@ -1864,7 +2366,128 @@ List security events results, use this command after the search job is over.
                     ]
                 },
                 "target": {
-                    "ipAddress": "40.77.18.167",
+                    "ipAddress": "x.x.x.x",
+                    "port": 137,
+                    "protocol": "udp",
+                    "tags": [
+                        {
+                            "id": 61627,
+                            "name": "United States"
+                        }
+                    ]
+                }
+            },
+            {
+                "details": [
+                    {
+                        "key": "source_host@username",
+                        "value": ""
+                    },
+                    {
+                        "key": "source_host@policy_id",
+                        "value": "1"
+                    },
+                    {
+                        "key": "source_host@mac_address",
+                        "value": ""
+                    },
+                    {
+                        "key": "target_host@username",
+                        "value": ""
+                    },
+                    {
+                        "key": "target_host@policy_id",
+                        "value": "0"
+                    },
+                    {
+                        "key": "target_host@mac_address",
+                        "value": ""
+                    },
+                    {
+                        "key": "category_points@high-concern-index",
+                        "value": "162"
+                    },
+                    {
+                        "key": "category_points@high-target-index",
+                        "value": "162"
+                    },
+                    {
+                        "key": "category_points@high-recon-index",
+                        "value": "162"
+                    },
+                    {
+                        "key": "baseline@baseline",
+                        "value": "0"
+                    },
+                    {
+                        "key": "baseline@threshold",
+                        "value": "0"
+                    },
+                    {
+                        "key": "baseline@current_value",
+                        "value": "0"
+                    },
+                    {
+                        "key": "baseline@tolerance",
+                        "value": "0"
+                    },
+                    {
+                        "key": "flow@protocol",
+                        "value": "17"
+                    },
+                    {
+                        "key": "flow@service",
+                        "value": "16"
+                    },
+                    {
+                        "key": "flow@source_port",
+                        "value": "0"
+                    },
+                    {
+                        "key": "flow@target_port",
+                        "value": "137"
+                    },
+                    {
+                        "key": "flow@event_port",
+                        "value": "137"
+                    },
+                    {
+                        "key": "flow@flow_id",
+                        "value": "0"
+                    },
+                    {
+                        "key": "flow@source_is_server",
+                        "value": "false"
+                    },
+                    {
+                        "key": "targetIPAddress",
+                        "value": "x.x.x.x"
+                    },
+                    {
+                        "key": "points",
+                        "value": "162"
+                    }
+                ],
+                "deviceId": 121,
+                "domainId": 102,
+                "firstActiveTime": "2021-03-15T13:44:25.000+0000",
+                "hitCount": 1,
+                "id": 88191,
+                "lastActiveTime": "2021-03-15T13:44:25.000+0000",
+                "securityEventType": 310,
+                "source": {
+                    "ipAddress": "x.x.x.x",
+                    "port": 0,
+                    "protocol": "udp",
+                    "tags": [
+                        {
+                            "id": 65534,
+                            "name": "Catch All"
+                        }
+                    ]
+                },
+                "target": {
+                    "ipAddress": "x.x.x.x",
                     "port": 137,
                     "protocol": "udp",
                     "tags": [
@@ -1883,11 +2506,11 @@ List security events results, use this command after the search job is over.
 #### Human Readable Output
 
 >### Showing 5 Security Events:
->|id|domainId|deviceId|securityEventType|firstActiveTime|lastActiveTime|source|target|details|hitCount|
+>|Id|Domain Id|Device Id|Security Event Type|First Active Time|Last Active Time|Source|Target|Details|Hit Count|
 >|---|---|---|---|---|---|---|---|---|---|
->| 52573 | 102 | 121 | 310 | 2021-02-28T06:32:21.000+0000 | 2021-02-28T06:32:21.000+0000 | ipAddress: 192.168.91.7<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: 40.101.121.34<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'Netherlands', 'id': 61319} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': '40.101.121.34'},<br/>{'key': 'points', 'value': '162'} | 1 |
->| 52574 | 102 | 121 | 310 | 2021-02-28T06:32:46.000+0000 | 2021-02-28T06:32:46.000+0000 | ipAddress: 192.168.91.7<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: 52.97.201.114<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': '52.97.201.114'},<br/>{'key': 'points', 'value': '162'} | 1 |
->| 52575 | 102 | 121 | 310 | 2021-02-28T06:32:54.000+0000 | 2021-02-28T06:32:54.000+0000 | ipAddress: 192.168.91.7<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: 52.114.159.33<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': '52.114.159.33'},<br/>{'key': 'points', 'value': '162'} | 1 |
->| 52576 | 102 | 121 | 310 | 2021-02-28T06:33:07.000+0000 | 2021-02-28T06:33:07.000+0000 | ipAddress: 192.168.91.7<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: 52.109.12.19<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': '52.109.12.19'},<br/>{'key': 'points', 'value': '162'} | 1 |
->| 52577 | 102 | 121 | 310 | 2021-02-28T06:33:51.000+0000 | 2021-02-28T06:33:51.000+0000 | ipAddress: 192.168.91.7<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: 40.77.18.167<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': '40.77.18.167'},<br/>{'key': 'points', 'value': '162'} | 1 |
+>| 88195 | 102 | 121 | 310 | 2021-03-15T13:44:29.000+0000 | 2021-03-15T13:44:29.000+0000 | ipAddress: x.x.x.x<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: x.x.x.x<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': 'x.x.x.x'},<br/>{'key': 'points', 'value': '162'} | 1 |
+>| 88194 | 102 | 121 | 310 | 2021-03-15T13:44:27.000+0000 | 2021-03-15T13:44:27.000+0000 | ipAddress: x.x.x.x<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: x.x.x.x<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': 'x.x.x.x'},<br/>{'key': 'points', 'value': '162'} | 1 |
+>| 88193 | 102 | 121 | 310 | 2021-03-15T13:44:26.000+0000 | 2021-03-15T13:44:26.000+0000 | ipAddress: x.x.x.x<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: x.x.x.x<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': 'x.x.x.x'},<br/>{'key': 'points', 'value': '162'} | 1 |
+>| 88192 | 102 | 121 | 310 | 2021-03-15T13:44:25.000+0000 | 2021-03-15T13:44:25.000+0000 | ipAddress: x.x.x.x<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: x.x.x.x<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': 'x.x.x.x'},<br/>{'key': 'points', 'value': '162'} | 1 |
+>| 88191 | 102 | 121 | 310 | 2021-03-15T13:44:25.000+0000 | 2021-03-15T13:44:25.000+0000 | ipAddress: x.x.x.x<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: x.x.x.x<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': 'x.x.x.x'},<br/>{'key': 'points', 'value': '162'} | 1 |
 
