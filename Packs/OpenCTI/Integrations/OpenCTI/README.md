@@ -1,29 +1,17 @@
-Ingest indicator feeds from OpenCTI. 
-This integration was integrated and tested with version v4.0.7 of OpenCTI Feed.
-Compatible with OpenCTI v4 instances. For v3.* and lower OpenCTI versions use the OpenCTI Feed v3 integration.
-## Configure OpenCTI Feed v4 on Cortex XSOAR
+Manages indicators from OpenCTI. Compatible with OpenCTI v4.* instances.
+This integration was integrated and tested with version v4.0.7 of OpenCTI
+## Configure OpenCTI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OpenCTI Feed v4.
+2. Search for OpenCTI.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL |  | True |
-    | API Key |  | True |
-    | Indicators Type to fetch | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File", "Host", "IP", "IPv6", "Registry Key", and "URL". The rest will not cause automatic indicator creation in XSOAR. The default is "ALL". | True |
-    | Max. indicators per fetch |  | False |
-    | Fetch indicators |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    |  |  | False |
-    |  |  | False |
-    | Feed Fetch Interval |  | False |
-    | Tags | Supports CSV values. | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Base URL | True |
+    | API Key | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -31,7 +19,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### opencti-get-indicators
 ***
-Gets indicators from the feed.
+Gets indicators from OpenCTI.
 
 
 #### Base Command
@@ -41,8 +29,10 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return per fetch. The default value is "50". Maximum value is "500". | Optional | 
-| indicator_types | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File", "Host", "IP", "IPv6", "Registry Key", and "URL". The rest will not cause automatic indicator creation in XSOAR. The default is "ALL". Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
+| limit | The maximum number of indicators to return. The default value is "50". Maximum value is "500". | Optional | 
+| score_start | Score range start to filter by. Possible range is 1-100. . | Optional | 
+| score_end | Score range end to filter by. Possible range is 1-100. . | Optional | 
+| indicator_types | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File", "Host", "IP", "IPv6", "Registry Key", and "URL". The default is "ALL". Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
 | last_run_id | The last ID from the previous call from which to begin pagination for this call. You can find this value at OpenCTI.IndicatorsList.LastRunID context path. | Optional | 
 
 
@@ -53,12 +43,12 @@ Gets indicators from the feed.
 | OpenCTI.Indicators.IndicatorsList.type | String | Indicator type. | 
 | OpenCTI.Indicators.IndicatorsList.value | String | Indicator value. | 
 | OpenCTI.Indicators.IndicatorsList.id | String | Indicator id. | 
-| OpenCTI.Indicators.IndicatorsList.rawJSON.createdBy | Unknown | The creator of indicator. | 
-| OpenCTI.Indicators.IndicatorsList.rawJSON.score | Number | Indicator score. | 
-| OpenCTI.Indicators.IndicatorsList.rawJSON.description | String | Indicator Description. | 
-| OpenCTI.Indicators.IndicatorsList.rawJSON.objectLabel | Unknown | Indicator labels. | 
-| OpenCTI.Indicators.IndicatorsList.rawJSON.objectMarking | Unknown | Indicator marking definitions. | 
-| OpenCTI.Indicators.IndicatorsList.rawJSON.externalReferences | Unknown | Indicator external references. | 
+| OpenCTI.Indicators.IndicatorsList.createdBy | Unknown | The creator of indicator. | 
+| OpenCTI.Indicators.IndicatorsList.score | Number | Indicator score. | 
+| OpenCTI.Indicators.IndicatorsList.description | String | Indicator Description. | 
+| OpenCTI.Indicators.IndicatorsList.labels | Unknown | Indicator labels. | 
+| OpenCTI.Indicators.IndicatorsList.marking | Unknown | Indicator marking definitions. | 
+| OpenCTI.Indicators.IndicatorsList.externalReferences | Unknown | Indicator external references. | 
 | OpenCTI.Indicators.LastRunID | String | the id of the last fetch to use pagination. | 
 
 
@@ -72,171 +62,33 @@ Gets indicators from the feed.
         "Indicators": {
             "IndicatorsList": [
                 {
-                    "id": "33bd535b-fa1c-41e2-a6f9-80d82dd29a9b",
-                    "rawJSON": {
-                        "createdBy": {
-                            "contact_information": null,
-                            "created": "2021-02-14T11:57:57.259Z",
-                            "description": "test playbook organization",
-                            "entity_type": "Organization",
-                            "id": "1e12fe87-db3e-4838-8391-6910547bf60d",
-                            "modified": "2021-02-14T11:57:57.259Z",
-                            "name": "Test_Organization",
-                            "objectLabel": [],
-                            "objectLabelIds": [],
-                            "parent_types": [
-                                "Basic-Object",
-                                "Stix-Object",
-                                "Stix-Core-Object",
-                                "Stix-Domain-Object",
-                                "Identity"
-                            ],
-                            "roles": null,
-                            "spec_version": "2.1",
-                            "standard_id": "identity--b3d82735-562e-5641-add7-1b45adf8fba2",
-                            "x_opencti_aliases": null,
-                            "x_opencti_organization_type": null,
-                            "x_opencti_reliability": "B"
-                        },
-                        "createdById": "1e12fe87-db3e-4838-8391-6910547bf60d",
-                        "created_at": "2021-02-18T08:04:10.997Z",
-                        "entity_type": "IPv4-Addr",
-                        "externalReferences": [],
-                        "externalReferencesIds": [],
-                        "id": "33bd535b-fa1c-41e2-a6f9-80d82dd29a9b",
-                        "indicators": [],
-                        "indicatorsIds": [],
-                        "objectLabel": [
-                            {
-                                "color": "#7ed321",
-                                "createdById": null,
-                                "id": "fa57f98e-f2f5-45fd-97f2-bf2c53119044",
-                                "value": "devdemisto"
-                            },
-                            {
-                                "color": "#5d0d8a",
-                                "createdById": null,
-                                "id": "07cfae2d-6cc9-42c5-9fd0-32eff8142404",
-                                "value": "test-label-1"
-                            }
-                        ],
-                        "objectLabelIds": [
-                            "fa57f98e-f2f5-45fd-97f2-bf2c53119044",
-                            "07cfae2d-6cc9-42c5-9fd0-32eff8142404"
-                        ],
-                        "objectMarking": [
-                            {
-                                "created": "2021-01-26T11:31:07.317Z",
-                                "createdById": null,
-                                "definition": "TLP:RED",
-                                "definition_type": "TLP",
-                                "entity_type": "Marking-Definition",
-                                "id": "c9819001-c80c-45e1-8edb-e543e350f195",
-                                "modified": "2021-01-26T11:31:07.317Z",
-                                "standard_id": "marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed",
-                                "x_opencti_color": "#c62828",
-                                "x_opencti_order": 4
-                            }
-                        ],
-                        "objectMarkingIds": [
-                            "c9819001-c80c-45e1-8edb-e543e350f195"
-                        ],
-                        "observable_value": "1.1.1.1",
-                        "parent_types": [
-                            "Basic-Object",
-                            "Stix-Object",
-                            "Stix-Core-Object",
-                            "Stix-Cyber-Observable"
-                        ],
-                        "spec_version": "2.1",
-                        "standard_id": "ipv4-addr--1d5586d0-4327-5e1c-9317-19c1e0cf8ec0",
-                        "updated_at": "2021-02-18T08:04:10.997Z",
-                        "value": "1.1.1.1",
-                        "x_opencti_description": "test fetch one",
-                        "x_opencti_score": 100
-                    },
-                    "type": "IP",
-                    "value": "1.1.1.1"
-                },
-                {
+                    "createdBy": "1e12fe87-db3e-4838-8391-6910547bf60d",
+                    "description": "test_desc",
+                    "externalReferences": [],
                     "id": "700c8187-2dce-4aeb-bf3a-0864cb7b02c7",
-                    "rawJSON": {
-                        "createdBy": {
-                            "contact_information": null,
-                            "created": "2021-02-14T11:57:57.259Z",
-                            "description": "test playbook organization",
-                            "entity_type": "Organization",
-                            "id": "1e12fe87-db3e-4838-8391-6910547bf60d",
-                            "modified": "2021-02-14T11:57:57.259Z",
-                            "name": "Test_Organization",
-                            "objectLabel": [],
-                            "objectLabelIds": [],
-                            "parent_types": [
-                                "Basic-Object",
-                                "Stix-Object",
-                                "Stix-Core-Object",
-                                "Stix-Domain-Object",
-                                "Identity"
-                            ],
-                            "roles": null,
-                            "spec_version": "2.1",
-                            "standard_id": "identity--b3d82735-562e-5641-add7-1b45adf8fba2",
-                            "x_opencti_aliases": null,
-                            "x_opencti_organization_type": null,
-                            "x_opencti_reliability": "B"
-                        },
-                        "createdById": "1e12fe87-db3e-4838-8391-6910547bf60d",
-                        "created_at": "2021-02-22T08:45:48.778Z",
-                        "entity_type": "IPv4-Addr",
-                        "externalReferences": [],
-                        "externalReferencesIds": [],
-                        "id": "700c8187-2dce-4aeb-bf3a-0864cb7b02c7",
-                        "indicators": [],
-                        "indicatorsIds": [],
-                        "objectLabel": [
-                            {
-                                "color": "#7ed321",
-                                "createdById": null,
-                                "id": "fa57f98e-f2f5-45fd-97f2-bf2c53119044",
-                                "value": "devdemisto"
-                            }
-                        ],
-                        "objectLabelIds": [
-                            "fa57f98e-f2f5-45fd-97f2-bf2c53119044"
-                        ],
-                        "objectMarking": [
-                            {
-                                "created": "2021-01-26T11:31:07.238Z",
-                                "createdById": null,
-                                "definition": "TLP:AMBER",
-                                "definition_type": "TLP",
-                                "entity_type": "Marking-Definition",
-                                "id": "9128e411-c759-4af0-aeb0-b65f12082648",
-                                "modified": "2021-01-26T11:31:07.238Z",
-                                "standard_id": "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82",
-                                "x_opencti_color": "#d84315",
-                                "x_opencti_order": 3
-                            }
-                        ],
-                        "objectMarkingIds": [
-                            "9128e411-c759-4af0-aeb0-b65f12082648"
-                        ],
-                        "observable_value": "1.2.3.4",
-                        "parent_types": [
-                            "Basic-Object",
-                            "Stix-Object",
-                            "Stix-Core-Object",
-                            "Stix-Cyber-Observable"
-                        ],
-                        "spec_version": "2.1",
-                        "standard_id": "ipv4-addr--0198f97b-e65d-5025-87e5-58bc39d4bdb4",
-                        "updated_at": "2021-02-22T08:45:48.778Z",
-                        "value": "1.2.3.4",
-                        "x_opencti_description": "test_desc",
-                        "x_opencti_score": 70
-                    },
+                    "labels": [
+                        "devdemisto"
+                    ],
+                    "marking": [
+                        "TLP:AMBER"
+                    ],
+                    "score": 70,
                     "type": "IP",
                     "value": "1.2.3.4"
+                },
+                {
+                    "createdBy": "1e12fe87-db3e-4838-8391-6910547bf60d",
+                    "description": "test fetch one",
+                    "externalReferences": [],
+                    "id": "33bd535b-fa1c-41e2-a6f9-80d82dd29a9b",
+                    "labels": [
+                        "devdemisto",
+                        "test-label-1"
+                    ],
+                    "marking": [],
+                    "score": 100,
+                    "type": "IP",
+                    "value": "1.1.1.1"
                 }
             ],
             "lastRunID": "YXJyYXljb25uZWN0aW9uOjI="
@@ -250,8 +102,8 @@ Gets indicators from the feed.
 >### Indicators
 >|type|value|id|
 >|---|---|---|
->| IP | 1.1.1.1 | 33bd535b-fa1c-41e2-a6f9-80d82dd29a9b |
 >| IP | 1.2.3.4 | 700c8187-2dce-4aeb-bf3a-0864cb7b02c7 |
+>| IP | 1.1.1.1 | 33bd535b-fa1c-41e2-a6f9-80d82dd29a9b |
 
 
 ### opencti-indicator-delete
@@ -274,7 +126,7 @@ Delete indicator.
 There is no context output for this command.
 
 #### Command Example
-```!opencti-indicator-delete id=20cb3239-9165-4b24-a16a-b1083524980b```
+```!opencti-indicator-delete id=1fc593e8-2c7e-45a3-bc08-976db9ae54d7```
 
 #### Human Readable Output
 
@@ -334,14 +186,14 @@ Create new indicator.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The indicator type to create. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File-md5", "File-sha1", "File-sha256", "Host", "IP", "IPV6", "Registry Key", and "URL". The rest will not cause automatic indicator creation in XSOAR. Possible values are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPv6, Registry Key, URL. | Required | 
+| type | The indicator type to create. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File-md5", "File-sha1", "File-sha256", "Host", "IP", "IPV6", "Registry Key", and "URL". Possible values are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPv6, Registry Key, URL. | Required | 
 | created_by | Organization id. Use opencti-organization-list to find all organizations id at opencti, or use opencti-organization-create to create new organization id. | Optional | 
 | marking_id | Indicator marking id. Use opencti-marking-definition-list to find all marking definitions id at opencti. | Optional | 
 | label_id | Indicator label id. Use opencti-label-list to find all labels id at opencti, or use opencti-label-create to create new label. | Optional | 
 | external_references_id | External References URL. Use opencti-external-reference-create to create new external reference. | Optional | 
 | description | Indicator description. | Optional | 
 | score | Indicator score - number between 0 - 100. Default score value 50. | Optional | 
-| data | Indicator data - json. Mandatory Data fields are: value - value of the indicator, mandatory for the following types: Domain, Email, IP, IPV6-Addr, URL, Host. For file-md5, file-sha1, file-sha256 data argument should contain hash. For Account type data should contain account_login. Registry Key data json should contain key "key". | Optional | 
+| value | Indicator value. | Optional | 
 
 
 #### Context Output
@@ -349,22 +201,21 @@ Create new indicator.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | OpenCTI.Indicator.id | String | New indicator id. | 
-| OpenCTI.Indicator.data | Unknown | New indicator data. | 
+| OpenCTI.Indicator.value | String | New indicator value. | 
+| OpenCTI.Indicator.type | String | New indicator type. | 
 
 
 #### Command Example
-```!opencti-indicator-create type=Domain created_by=0c7cb378-64c3-4809-b423-986ac7cecf91 description=test data="{\"value\": \"TestDomainDocs.com\"}" score=70 label_id=fa57f98e-f2f5-45fd-97f2-bf2c53119044 marking_id=9128e411-c759-4af0-aeb0-b65f12082648```
+```!opencti-indicator-create type=Domain created_by=0c7cb378-64c3-4809-b423-986ac7cecf91 description=test value="TestDomainDocs.com" score=70 label_id=fa57f98e-f2f5-45fd-97f2-bf2c53119044 marking_id=9128e411-c759-4af0-aeb0-b65f12082648```
 
 #### Context Example
 ```json
 {
     "OpenCTI": {
         "Indicator": {
-            "data": {
-                "type": "Domain-Name",
-                "value": "TestDomainDocs.com"
-            },
-            "id": "7ed5946a-81a2-4490-8be8-06d3633a41fb"
+            "id": "7ed5946a-81a2-4490-8be8-06d3633a41fb",
+            "type": "Domain",
+            "value": "TestDomainDocs.com"
         }
     }
 }
@@ -530,29 +381,6 @@ Create organization.
 
 >Organization ExampleOrganization was created successfully with id: 11ddff08-8933-46d7-ab22-31f49496499f.
 
-### opencti-reset-fetch-indicators
-***
-WARNING: This command will reset your fetch history.
-
-
-#### Base Command
-
-`opencti-reset-fetch-indicators`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-```!opencti-reset-fetch-indicators```
-
-#### Human Readable Output
-
->Fetch history deleted successfully
-
 ### opencti-label-list
 ***
 Get list of all labels.
@@ -585,23 +413,19 @@ Get list of all labels.
 ```json
 {
     "OpenCTI": {
-        "Labels": [
-            {
-                "LabelsList": [
-                    {
-                        "id": "7ba41668-1594-4a09-9be5-3640f2c2d253",
-                        "value": "demisto_lablel"
-                    },
-                    {
-                        "id": "fa57f98e-f2f5-45fd-97f2-bf2c53119044",
-                        "value": "devdemisto"
-                    }
-                ]
-            },
-            {
-                "labelsLastRun": "YXJyYXljb25uZWN0aW9uOjI="
-            }
-        ]
+        "Labels": {
+            "LabelsList": [
+                {
+                    "id": "7ba41668-1594-4a09-9be5-3640f2c2d253",
+                    "value": "demisto_lablel"
+                },
+                {
+                    "id": "fa57f98e-f2f5-45fd-97f2-bf2c53119044",
+                    "value": "devdemisto"
+                }
+            ],
+            "labelsLastRun": "YXJyYXljb25uZWN0aW9uOjI="
+        }
     }
 }
 ```
@@ -752,3 +576,4 @@ Get list of all marking definitions.
 >|---|---|
 >| TLP:GREEN | dc911977-796a-4d96-95e4-615bd1c41263 |
 >| TLP:AMBER | 9128e411-c759-4af0-aeb0-b65f12082648 |
+

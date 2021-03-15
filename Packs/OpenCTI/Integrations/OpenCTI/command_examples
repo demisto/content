@@ -10,4 +10,3 @@
 !opencti-organization-list limit=2
 !opencti-label-list limit=2
 !opencti-organization-create name=ExampleOrganization description="create organization" reliability="C"
-!opencti-reset-fetch-indicators
