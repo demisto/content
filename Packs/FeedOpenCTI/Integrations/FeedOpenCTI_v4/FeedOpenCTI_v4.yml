@@ -48,13 +48,12 @@ configuration:
     reputation
   display: Indicator Reputation
   name: feedReputation
-  defaultvalue: According to indicator
+  defaultvalue: None
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  - According to indicator
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
