@@ -177,13 +177,13 @@ def search_malicious_urls(client: Client, args: Dict[str, Any]) -> CommandResult
         :type end: ``str``
         :param - end: End parameter for analysis
         """
-    url = args().get('url')
-    is_domain = args().get('is_domain')
-    url_type = args().get('url_type')
-    tag = args().get('tag')
-    start = args().get('start')
-    end = args().get('end')
-    formatType = args().get('format')
+    url = args.get('url')
+    is_domain = args.get('is_domain')
+    url_type = args.get('url_type')
+    tag = args.get('tag')
+    start = args.get('start')
+    end = args.get('end')
+    formatType = args.get('format')
 
     param = {}
 
@@ -241,12 +241,12 @@ def search_malware_hashs(client: Client, args: Dict[str, Any]) -> CommandResults
         :type end: ``str``
         :param - end: End parameter for analysis
         """
-    md5 = args().get('md5')
-    sha1 = args().get('sha1')
-    tag = args().get('tag')
-    start = args().get('start')
-    end = args().get('end')
-    formatType = args().get('format')
+    md5 = args.get('md5')
+    sha1 = args.get('sha1')
+    tag = args.get('tag')
+    start = args.get('start')
+    end = args.get('end')
+    formatType = args.get('format')
 
     if start:
         startDate = timeToEpoch(start)
@@ -292,9 +292,9 @@ def search_phishing_sites(client: Client, args: Dict[str, Any]) -> CommandResult
         :type page: ``str``
         :param - page: For pagination
         """
-    status = args().get('status')
-    source = args().get('source')
-    page = args().get('page')
+    status = args.get('status')
+    source = args.get('source')
+    page = args.get('page')
 
     param = {
         'status': status,
@@ -371,11 +371,11 @@ def search_stolen_client_accounts(client: Client, args: Dict[str, Any]) -> Comma
         :type end: ``str``
         :param - end: End parameter for analysis
         """
-    username = args().get('username')
-    password = args().get('password')
-    source = args().get('source')
-    start = args().get('start')
-    end = args().get('end')
+    username = args.get('username')
+    password = args.get('password')
+    source = args.get('source')
+    start = args.get('start')
+    end = args.get('end')
 
     if start:
         startDate = timeToEpoch(start)
@@ -409,7 +409,7 @@ def search_stolen_client_accounts(client: Client, args: Dict[str, Any]) -> Comma
 
 def search_domain(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    domain = args().get('domain')
+    domain = args.get('domain')
 
     param = {
         'domain': domain
@@ -429,7 +429,7 @@ def search_domain(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def search_ip_address(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    ip_address = args().get('ip_address')
+    ip_address = args.get('ip_address')
 
     param = {
         'ip_address': ip_address
