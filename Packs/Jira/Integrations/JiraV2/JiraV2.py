@@ -1,3 +1,5 @@
+from typing import Union
+
 from requests_oauthlib import OAuth1
 from dateparser import parse
 import pytz
@@ -197,7 +199,7 @@ def search_user(query: str, max_results: str = '50'):
     Returns:
         List of users.
     """
-    url = f"rest/api/latest/users/search?query={query}&maxResults={max_results}"
+    url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
     res = jira_req('GET', url, resp_type='json')
     return res
 
