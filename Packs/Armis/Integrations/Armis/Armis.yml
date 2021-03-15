@@ -104,19 +104,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of alert severity levels by which to filter the search results. Possible values: "Low", "Medium", and "High".'
+      description: 'A comma-separated list of alert severity levels by which to filter
+        the search results. Possible values: "Low", "Medium", and "High".'
       isArray: true
       name: severity
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of alert statuses by which to filter the search results. Possible values: "UNHANDLED", "SUPPRESSED", and "RESOLVED".'
+      description: 'A comma-separated list of alert statuses by which to filter the
+        search results. Possible values: "UNHANDLED", "SUPPRESSED", and "RESOLVED".'
       isArray: true
       name: status
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of alert types by which to filter the search results. Possible values: "Policy Violation", "System Policy Violation", and "Anomaly Detection".'
+      description: 'A comma-separated list of alert types by which to filter the search
+        results. Possible values: "Policy Violation", "System Policy Violation", and
+        "Anomaly Detection".'
       isArray: true
       name: alert_type
       required: false
@@ -168,7 +172,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'New status of the alert. Possible values: "UNHANDLED", "RESOLVED", and "SUPPRESSED".'
+      description: 'New status of the alert. Possible values: "UNHANDLED", "RESOLVED",
+        and "SUPPRESSED".'
       isArray: false
       name: status
       predefined:
@@ -293,7 +298,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The device type to search for.
+      description: A comma-separated list of device types by which to filter the results.
+        for example "Routers", "Laptops", "IP Cameras" (there are many device types.
+        for a full list access your Armis instance).
       isArray: true
       name: device_type
       required: false
@@ -312,7 +319,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of device risk levels by which to filter the results. Possible values: "Low", "Medium", and "High".'
+      description: 'A comma-separated list of device risk levels by which to filter
+        the results. Possible values: "Low", "Medium", and "High".'
       isArray: true
       name: risk_level
       required: false
