@@ -1,10 +1,10 @@
 {
-    "id": "incident_cameraname",
+    "id": "incident_unifivideocameraname",
     "version": -1,
     "modified": "2021-03-02T10:31:56.501918803+01:00",
-    "name": "Camera Name",
+    "name": "UnifiVideo Camera Name",
     "ownerOnly": false,
-    "cliName": "cameraname",
+    "cliName": "unifivideocameraname",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

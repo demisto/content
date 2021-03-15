@@ -19,7 +19,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "cameraname",
+                                "fieldId": "unifivideocameraname",
                                 "height": 22,
                                 "id": "e1e5e380-b20d-11ea-8ca4-79c773a6df8b",
                                 "index": 0,
@@ -104,7 +104,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "ubntid",
+                                "fieldId": "unifivideoubntid",
                                 "height": 22,
                                 "id": "d19f2bd0-b20d-11ea-8ca4-79c773a6df8b",
                                 "index": 9,

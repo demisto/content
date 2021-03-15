@@ -405,7 +405,7 @@ tasks:
       breachconfirmation: {}
       bugtraq: {}
       caller: {}
-      cameraname: {}
+      unifivideocameraname: {}
       city: {}
       clarotyalertresolved: {}
       clarotyalerttype: {}
@@ -921,7 +921,7 @@ tasks:
       travelmaplink: {}
       triggeredsecurityprofile: {}
       type: {}
-      ubntid: {}
+      unifivideoubntid: {}
       uniquebiometricdatabreached: {}
       uniqueidentificationnumberbreached: {}
       uniqueports: {}
@@ -1038,7 +1038,7 @@ tasks:
       breachconfirmation: {}
       bugtraq: {}
       caller: {}
-      cameraname: {}
+      unifivideocameraname: {}
       city: {}
       clarotyalertresolved: {}
       clarotyalerttype: {}
@@ -1554,7 +1554,7 @@ tasks:
       travelmaplink: {}
       triggeredsecurityprofile: {}
       type: {}
-      ubntid: {}
+      unifivideoubntid: {}
       uniquebiometricdatabreached: {}
       uniqueidentificationnumberbreached: {}
       uniqueports: {}
@@ -1670,7 +1670,7 @@ tasks:
       breachconfirmation: {}
       bugtraq: {}
       caller: {}
-      cameraname: {}
+      unifivideocameraname: {}
       city: {}
       clarotyalertresolved: {}
       clarotyalerttype: {}
@@ -2157,7 +2157,7 @@ tasks:
       travelmaplink: {}
       triggeredsecurityprofile: {}
       type: {}
-      ubntid: {}
+      unifivideoubntid: {}
       uniquebiometricdatabreached: {}
       uniqueidentificationnumberbreached: {}
       uniqueports: {}
