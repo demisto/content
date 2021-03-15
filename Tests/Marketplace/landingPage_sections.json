@@ -1,14 +1,21 @@
 {
   "description": "LandingPage sections. The banners will show all packs with matching tag. When adding a section, add also the corresponding section entry with the relevant Pack IDs",
   "sections": [
-    "Trending",
     "Featured",
     "New",
-    "Getting Started"
+    "Threat Intelligence",
+    "Compliance"
   ],
   "Featured": [
-    "MajorBreachesInvestigationandResponse"
-  ],
-  "Trending": [],
-  "Getting Started": []
+    "MajorBreachesInvestigationandResponse",
+    "ML",
+    "Ransomware",
+    "ShiftManagement",
+    "CrisisManagement",
+    "BruteForce",
+    "NIST",
+    "GenericWebhook",
+    "GraphQL",
+    "GenericSQL"
+  ]    
 }
