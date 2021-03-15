@@ -841,33 +841,6 @@ def test_fetch_incidents_next_fetch_start_update_count(mocker):
     assert next_run["fetch_start_update_count"] == 0
 
 
-def test_fetch_incidents_time_relapse(mocker):
-    """
-    Given:
-    - No new incidents were found on a "Fetch Incidents" run.
-    When:
-    - The next run's "last run" values are set.
-    Then:
-    - No incidents are returned.
-    - The next run's start time will be the same as the current run's start time.
-    - The "fetch_start_update_count" was increased by one.
-    """
-    mocker.patch.object(demisto, 'incidents')
-    mocker.patch.object(demisto, 'setLastRun')
-    mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
-    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
-    mocker.patch('demistomock.params', return_value=mock_params)
-    service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.ResultsReader', return_value=[])
-    splunk.fetch_incidents(service)
-    next_run = demisto.setLastRun.call_args[0][0]
-    incidents = demisto.incidents.call_args[0][0]
-    assert len(incidents) == 0
-    assert next_run["time"] == '2018-10-24T14:13:20'
-    assert next_run["fetch_start_update_count"] == 1
-
-
 def test_fetch_incidents_incident_next_run_calculation(mocker):
     """
     Given:
