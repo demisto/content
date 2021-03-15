@@ -321,7 +321,7 @@ Returns a list of Okta applications data.
 ``` !okta-iam-list-user-applications user_id=00ux9v19bvTfQIjur0h7" ```
 
 #### Human Readable Output
-### Okta Applications (1 - 3)
+### Okta User Applications
 |ID|Name|Label|Status|
 |---|---|---|---|
 | 0ob8zlypk6GVPRr2T0h7 | active_directory | pantest.local | ACTIVE|
