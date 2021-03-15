@@ -170,14 +170,26 @@ def test_data_filtering(mocker):
 
 
 def test_limit_data(mocker):
+    """
+   Scenario: Create context for misp event with limiting the amount of attributes
+
+   Given:
+   - event with 10 attributes
+   - configuration to limit attributes to 3
+   - attribute fields filter to 'EventID', 'Timestamp'.
+
+   When:
+   - Creating context for event
+
+   Then:
+   - only 3 of the most recent attributes are created for context
+   """
     mock_misp(mocker)
-    mocker.patch('MISP_V2.DATA_KEYS_TO_SAVE', ['Category', 'EventID', 'UUID'])
+    mocker.patch('MISP_V2.DATA_KEYS_TO_SAVE', ['EventID', 'Timestamp'])
     mocker.patch('MISP_V2.MAX_ATTRIBUTES', 3)
 
     from test_data import test_constants
     from MISP_V2 import build_context
 
     full_response = test_constants.full_response_before_filtering
-    filtered_response = test_constants.response_after_filtering_category_eventid_uuid
-    print(build_context(full_response))
-    assert build_context(full_response) == filtered_response
+    assert build_context(full_response)[0]['Attribute'] == test_constants.filtered_recent_attributes

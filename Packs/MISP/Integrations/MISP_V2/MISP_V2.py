@@ -242,12 +242,17 @@ def remove_unselected_context_keys(context_data):
                 del attribute[key]
 
 
-def limit_attributes_in_events(events):
-    return [limit_attributes_count(event) for event in events]
+def limit_attributes_count(event: dict) -> dict:
+    """
+    Gets a MISP's event and limiting the amount of attributes to MAX_ATTRIBUTES
 
+    Args:
+       event (dict): MISP's event
+    Returns:
+        dict: context output
+    """
 
-def limit_attributes_count(event):
-    if 'Attribute' in event and len(event['Attribute']) > MAX_ATTRIBUTES:
+    if event and 'Attribute' in event and len(event['Attribute']) > MAX_ATTRIBUTES:
         attributes = event['Attribute']
         attributes_num = len(attributes)
         event_id = event.get('id', '')
@@ -257,9 +262,10 @@ def limit_attributes_count(event):
                      f'this limit can be changed in the integration configuration. '
                      f'Event ID:{event_id}, event UUID:{event_uuid}, Attributes in event:{attributes_num}')
         sorted_attributes = sorted(attributes, key=lambda at: int(at.get('timestamp', 0)))
-        #dropping oldest attributes
         event['Attribute'] = sorted_attributes[attributes_num - MAX_ATTRIBUTES:]
         return event
+    return event
+
 
 def arrange_context_according_to_user_selection(context_data):
     if not DATA_KEYS_TO_SAVE:
@@ -268,7 +274,7 @@ def arrange_context_according_to_user_selection(context_data):
     # each related event has it's own attributes
     for event in context_data:
         # Limit amount of attributes in event
-        limit_attributes_count(event)
+        #limit_attributes_count(event)
         # Remove filtered fields in event
         remove_unselected_context_keys(event)
         # Remove filtered fields in object
@@ -316,6 +322,8 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
     # Remove 'Event' keyword
     events = [event.get('Event') for event in response]  # type: ignore
     for i in range(0, len(events)):
+        events[i] = limit_attributes_count(events[i])
+
         # Filter object from keys in event_args
         events[i] = {
             key: events[i].get(key)
@@ -350,7 +358,6 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
             events[i]['Tag'] = [
                 {'Name': tag.get('name')} for tag in events[i].get('Tag')
             ]
-    events = limit_attributes_in_events(events)
     events = replace_keys(events)  # type: ignore
     arrange_context_according_to_user_selection(events)  # type: ignore
     return events  # type: ignore
