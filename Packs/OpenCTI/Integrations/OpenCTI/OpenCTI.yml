@@ -62,7 +62,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets indicators from the feed.
+    description: Gets indicators from OpenCTI.
     execution: false
     name: opencti-get-indicators
     outputs:
