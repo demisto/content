@@ -602,8 +602,8 @@ def test_remove_old_incident_ids():
 
     assert "incident_under_one_hour_old" in incident_ids
     assert "incident_over_one_hour_old" in incident_ids
-
-    new_incident_ids = remove_old_incident_ids(incident_ids, cur_time)
+    look_behind = 60
+    new_incident_ids = remove_old_incident_ids(incident_ids, cur_time, look_behind)
 
     assert "incident_under_one_hour_old" in new_incident_ids
     assert "incident_over_one_hour_old" not in new_incident_ids
@@ -635,38 +635,6 @@ def test_create_incident_custom_id_creates_different_ids():
     first_incident_custom_id = create_incident_custom_id(first_incident)
     second_incident_custom_id = create_incident_custom_id(second_incident)
     assert first_incident_custom_id != second_incident_custom_id
-
-
-test_get_next_start_time_over_20_minutes = (21, False, '2020-08-04T05:46:16')
-test_get_next_start_time_under_20_minutes = (17, False, '2020-08-04T05:45:16')
-test_get_next_start_time_under_20_minutes_and_incidents_found = (21, True, '2020-08-04T05:44:16')
-
-get_next_start_time_test_data = [
-    test_get_next_start_time_over_20_minutes,
-    test_get_next_start_time_under_20_minutes,
-    test_get_next_start_time_under_20_minutes_and_incidents_found
-]
-
-
-@pytest.mark.parametrize('same_start_time_count, were_new_incidents_found, expected', get_next_start_time_test_data)
-def test_get_next_start_time_over_20_minutes(same_start_time_count, were_new_incidents_found, expected):
-    """
-    Given:
-    - Over 20 minutes have passed since the last incident was found, no incidents were found on this fetch
-    - Less than 20 minutes have passed since the last incident was found, no incidents were found on this fetch
-    - Over 20 minutes have passed since the last incident was found, some incidents were found on this fetch
-    When:
-    - Using "get_next_start_time" to calculate the start time of the next fetch.
-    Then:
-    - The next start time will be one minute later than the current start time.
-    - The next start time will be the same as the current start time.
-    - The next start time will be one minute earlier than the time supplied to the function,
-    which is the time of the latest incident found.
-    """
-    from SplunkPy import get_next_start_time
-    last_run = '2020-08-04T05:45:16.000-07:00'
-    next_run = get_next_start_time(last_run, same_start_time_count, were_new_incidents_found)
-    assert next_run == expected
 
 
 incidents_with_minutes_difference = (
@@ -821,33 +789,6 @@ response_with_late_incident = [{
 }]
 
 
-def test_fetch_incidents_pre_indexing_scenario(mocker):
-    """
-    Given:
-    - Two different incidents, one of which occurred seconds earlier than the other,
-    but was indexed later so was not fetched on the first run.
-    When:
-    - Running "Fetch Incidents" and the more recent incident returns.
-    Then:
-    - The next fetch will start from a time that will allow getting the earlier incident as well,
-    even though it was indexed later.
-    """
-    mocker.patch.object(demisto, 'incidents')
-    mocker.patch.object(demisto, 'setLastRun')
-    mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
-    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
-    mocker.patch('demistomock.params', return_value=mock_params)
-    service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.ResultsReader', return_value=response_with_late_incident)
-    splunk.fetch_incidents(service)
-    next_run = demisto.setLastRun.call_args[0][0]
-    next_run_timestamp = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
-    earlier_incident_time = response_with_late_incident[0]["_time"].split('.')[0]
-    earlier_incident_time = datetime.strptime(earlier_incident_time, SPLUNK_TIME_FORMAT)
-    assert earlier_incident_time > next_run_timestamp
-
-
 def test_fetch_incidents_deduping(mocker):
     """
     Given:
@@ -955,4 +896,4 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     found_incident_time = occurred_to_datetime(incident_found['occurred'])
     next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
 
-    assert next_run_time == found_incident_time - timedelta(minutes=1)
+    assert next_run_time == found_incident_time
