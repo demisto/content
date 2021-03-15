@@ -8319,6 +8319,7 @@ def create_outputs(whois_result, domain, query=None):
     if 'registrar' in whois_result:
         ec.update({'Registrar': {'Name': whois_result.get('registrar')}})
         standard_ec['WHOIS']['Registrar'] = whois_result.get('registrar')
+        standard_ec['Registrar'] = {'Name': whois_result.get('registrar')}
         md['Registrar'] = whois_result.get('registrar')
     if 'id' in whois_result:
         ec['ID'] = whois_result.get('id')
@@ -8327,24 +8328,38 @@ def create_outputs(whois_result, domain, query=None):
         contacts = whois_result['contacts']
         if 'registrant' in contacts and contacts['registrant'] is not None:
             md['Registrant'] = contacts['registrant']
-            standard_ec['Registrant'] = contacts['registrant']
+            standard_ec['Registrant'] = contacts['registrant'].copy()
+            for key, val in contacts['registrant'].items():
+                standard_ec['Registrant'][key.capitalize()] = val
             ec['Registrant'] = contacts['registrant']
+            if 'organization' in contacts['registrant']:
+                standard_ec['Organization'] = contacts['registrant']['organization']
         if 'admin' in contacts and contacts['admin'] is not None:
             md['Administrator'] = contacts['admin']
             ec['Administrator'] = contacts['admin']
-            standard_ec['Admin'] = {key.capitalize(): val for key, val in contacts['admin'].items()}
-            standard_ec['Admin'] = contacts['admin']
+            standard_ec['Admin'] = contacts['admin'].copy()
+            for key, val in contacts['admin'].items():
+                standard_ec['Admin'][key.capitalize()] = val
             standard_ec['WHOIS']['Admin'] = contacts['admin']
         if 'tech' in contacts and contacts['tech'] is not None:
             md['Tech Admin'] = contacts['tech']
             ec['TechAdmin'] = contacts['tech']
+            standard_ec['Tech'] = {}
+            if 'country' in contacts['tech']:
+                standard_ec['Tech']['Country'] = contacts['tech']['country']
+            if 'email' in contacts['tech']:
+                standard_ec['Tech']['Email'] = contacts['tech']['email']
+            if 'organization' in contacts['tech']:
+                standard_ec['Tech']['Organization'] = contacts['tech']['organization']
         if 'billing' in contacts and contacts['billing'] is not None:
             md['Billing Admin'] = contacts['billing']
             ec['BillingAdmin'] = contacts['billing']
+            standard_ec['Billing'] = contacts['billing']
     if 'emails' in whois_result:
         ec['Emails'] = whois_result.get('emails')
         md['Emails'] = whois_result.get('emails')
-
+        standard_ec['FeedRelatedIndicators'] = [{'type': 'Email', 'value': email}
+                                                for email in whois_result.get('emails')]
     ec['QueryStatus'] = 'Success'
     md['QueryStatus'] = 'Success'
 
