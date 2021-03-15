@@ -30,14 +30,6 @@
             ],
             "index": "pypi",
             "version": "==0.46"
-        },
-        "extract-msg": {
-            "hashes": [
-                "sha256:6ad2702bef86e6c1b8505e2993c7f3d37a1f3d140903138ee2df4a299dd2a29c",
-                "sha256:7ebdbd7863a3699080a69f71ec0cd30ed9bfee70bad9acc6a8e6abe9523c78c0"
-            ],
-            "index": "pypi",
-            "version": "==0.28.7"
         }
     },
     "develop": {
