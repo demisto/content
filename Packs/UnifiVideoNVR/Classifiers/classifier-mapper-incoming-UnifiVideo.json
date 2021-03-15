@@ -35,19 +35,19 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Camera Name": {
+                "UnifiVideo Camera Name": {
                     "complex": null,
                     "simple": "camera_name"
                 },
-                "End Time": {
+                "UnifiVideo End Time": {
                     "complex": null,
                     "simple": "stop_time"
                 },
-                "Start Time": {
+                "UnifiVideo Start Time": {
                     "complex": null,
                     "simple": "start_time"
                 },
-                "Ubnt ID": {
+                "UnifiVideo Ubnt ID": {
                     "complex": null,
                     "simple": "ubnt_id"
                 }
