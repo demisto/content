@@ -131,7 +131,7 @@ def test_indicator_create_command(mocker):
     args = {
         'score': '20',
         'type': 'Domain',
-        'data': "{\"value\": \"devtest.com\"}"
+        'value': 'devtest.com'
     }
     mocker.patch.object(client.stix_cyber_observable, 'create', return_value={'id': '123456'})
     results: CommandResults = indicator_create_command(client, args)

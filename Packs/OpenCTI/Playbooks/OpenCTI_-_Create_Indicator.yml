@@ -108,10 +108,10 @@ tasks:
       id: 2317fbed-8bfb-4bc9-83cb-bc7e2ac77e12
       version: -1
       name: Verify Output
+      description: Verify Output
       type: condition
       iscommand: false
       brand: ""
-      description: 'Verify Output'
     nexttasks:
       "yes":
       - "7"
@@ -144,10 +144,10 @@ tasks:
       id: 8fe0a73f-f9b6-417b-809d-86a4083ef96e
       version: -1
       name: Check if external reference provided?
+      description: Check if external reference provided?
       type: condition
       iscommand: false
       brand: ""
-      description: "Check if external reference provided?"
     nexttasks:
       '#default#':
       - "10"
@@ -221,10 +221,10 @@ tasks:
       id: 5b6f679f-8931-4d43-8ab6-c13ab3f5f8b4
       version: -1
       name: Verify Output
+      description: Verify Output
       type: condition
       iscommand: false
       brand: ""
-      description: "Verify Output"
     nexttasks:
       "yes":
       - "10"
@@ -282,6 +282,8 @@ tasks:
         simple: ${inputs.score}
       type:
         simple: ${inputs.type}
+      value:
+        simple: ${inputs.value}
     separatecontext: false
     view: |-
       {
@@ -303,10 +305,10 @@ tasks:
       id: a50a3d95-af54-4b06-86f6-10dfb831a548
       version: -1
       name: 'Check if indicator created? '
+      description: 'Check if indicator created? '
       type: condition
       iscommand: false
       brand: ""
-      description: 'Check if indicator created? '
     nexttasks:
       "yes":
       - "12"
@@ -373,58 +375,54 @@ inputs:
   value: {}
   required: false
   description: Label name to add to new indicator.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: type
   value: {}
   required: true
   description: 'The indicator type to create. Possible values:  "Account", "Domain",
     "Email", "File-md5", "File-sha1", "File-sha256", "Host", "IP", "IPV6", "Registry
     Key" and "URL".'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: marking_definition_id
   value: {}
   required: false
   description: 'Marking definition id to add to new indicator. Use opencti-marking-definition-list
     to get marking id. '
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: created_by_id
   value: {}
   required: false
   description: Creator of the new indicator. Use opencti-organization-list to find
     all organizations id at opencti, or use  opencti-organization-create to create
     new organization id.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: external_reference_source_name
   value: {}
   required: false
   description: External References Source Name. In order to use external references,
     external_reference_url and external_reference_source_name are mandatory.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: external_reference_url
   value: {}
   required: false
   description: External References URL. In order to use external references, external_reference_url
     and external_reference_source_name are mandatory.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: description
   value: {}
   required: false
   description: New indicator description.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: score
   value: {}
   required: false
   description: 'New indicator score. Valid value: number between 0 to 100.'
-  playbookInputQuery:
-- key: data
+  playbookInputQuery: null
+- key: value
   value: {}
   required: false
-  description: 'Indicator data - json. Mandatory Data fields are: value - value of
-    the indicator, mandatory for the following types: Domain, Email, IP, IPV6-Addr,
-    URL, Host. For file-md5, file-sha1, file-sha256 data argument should contain hash.
-    For Account type data should contain account_login. Registry Key data json should
-    contain key "key".'
-  playbookInputQuery:
+  description: Indicator value.
+  playbookInputQuery: null
 outputs:
 - contextPath: OpenCTI.Indicator.id
   description: New indicator id.

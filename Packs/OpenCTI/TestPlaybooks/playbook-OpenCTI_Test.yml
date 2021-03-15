@@ -6,15 +6,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bde27f9d-c151-42a6-8a5f-57d7c96eed79
+    taskid: 4fea5773-8777-4852-8f04-6904d23e38fb
     type: start
     task:
-      id: bde27f9d-c151-42a6-8a5f-57d7c96eed79
+      id: 4fea5773-8777-4852-8f04-6904d23e38fb
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -33,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: eec4f919-1b4c-4f45-8766-45340fa7791e
+    taskid: e1bffe06-a98d-4076-884d-820d73d87197
     type: regular
     task:
-      id: eec4f919-1b4c-4f45-8766-45340fa7791e
+      id: e1bffe06-a98d-4076-884d-820d73d87197
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -64,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: f44f8c64-e439-46e3-8de0-afd1915e5db8
+    taskid: 02f9dd89-9194-4825-8caf-9527de731ba9
     type: regular
     task:
-      id: f44f8c64-e439-46e3-8de0-afd1915e5db8
+      id: 02f9dd89-9194-4825-8caf-9527de731ba9
       version: -1
       name: opencti-get-indicators
       script: '|||opencti-get-indicators'
@@ -80,7 +79,6 @@ tasks:
     scriptarguments:
       indicator_types:
         simple: ALL
-      last_id: {}
       limit:
         simple: "10"
     separatecontext: false
@@ -98,10 +96,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: b7801b36-7255-4f68-8148-42fe680ba973
+    taskid: 632fc48a-f0ad-43c5-81c9-e40502a7058f
     type: condition
     task:
-      id: b7801b36-7255-4f68-8148-42fe680ba973
+      id: 632fc48a-f0ad-43c5-81c9-e40502a7058f
       version: -1
       name: Verify Outputs
       type: condition
@@ -143,10 +141,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 9dedfb91-adce-4c4c-823d-fec1368526f1
+    taskid: 248a0aba-7a19-4ab0-8c5b-af4fa3217e20
     type: regular
     task:
-      id: 9dedfb91-adce-4c4c-823d-fec1368526f1
+      id: 248a0aba-7a19-4ab0-8c5b-af4fa3217e20
       version: -1
       name: opencti-indicator-delete
       script: '|||opencti-indicator-delete'
@@ -174,10 +172,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 2c092f08-988e-45a7-8bfe-23c0c3934b1f
+    taskid: f7c3bfe5-9cf9-46ea-880a-f166e9c7b561
     type: regular
     task:
-      id: 2c092f08-988e-45a7-8bfe-23c0c3934b1f
+      id: f7c3bfe5-9cf9-46ea-880a-f166e9c7b561
       version: -1
       name: opencti-indicator-field-update
       script: '|||opencti-indicator-field-update'
@@ -209,10 +207,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: ce44eeff-331b-4b40-8771-971593e18dba
+    taskid: 53ddfa25-f24b-4b7a-806a-5c1bcb26e526
     type: condition
     task:
-      id: ce44eeff-331b-4b40-8771-971593e18dba
+      id: 53ddfa25-f24b-4b7a-806a-5c1bcb26e526
       version: -1
       name: Verify Outputs
       type: condition
@@ -244,10 +242,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: e38f25eb-e57d-4955-8fd8-ce745614c077
+    taskid: 7c46339a-2b25-435b-891b-bc80de02fea4
     type: regular
     task:
-      id: e38f25eb-e57d-4955-8fd8-ce745614c077
+      id: 7c46339a-2b25-435b-891b-bc80de02fea4
       version: -1
       name: opencti-indicator-create
       description: Create new indicator.
@@ -273,11 +271,12 @@ tasks:
         simple: ${OpenCTI.Label.id}
       marking:
         simple: TLP:GREEN
-      marking_id: {}
       score:
         simple: "70"
       type:
         simple: Host
+      value:
+        simple: BadHost-TestPlaybook
     separatecontext: false
     view: |-
       {
@@ -293,10 +292,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 2ba1c542-b019-46aa-898d-cb29e909b479
+    taskid: abc3cb4f-5d22-4ca9-8cf4-6d15d683df94
     type: condition
     task:
-      id: 2ba1c542-b019-46aa-898d-cb29e909b479
+      id: abc3cb4f-5d22-4ca9-8cf4-6d15d683df94
       version: -1
       name: Verify Outputs
       type: condition
@@ -317,7 +316,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpenCTI.Indicator.data
+              simple: OpenCTI.Indicator.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Indicator.type
             iscontext: true
     view: |-
       {
@@ -333,10 +337,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: bb9c8b06-9209-4c4c-856c-a68160bb3490
+    taskid: 1758b875-b085-4c75-83e4-b841dabcd508
     type: title
     task:
-      id: bb9c8b06-9209-4c4c-856c-a68160bb3490
+      id: 1758b875-b085-4c75-83e4-b841dabcd508
       version: -1
       name: Test Done
       type: title
@@ -358,10 +362,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 6280a15c-d119-4e7b-8eeb-d58b650396ac
+    taskid: 35b1d239-88c8-473c-814a-565158a1283f
     type: regular
     task:
-      id: 6280a15c-d119-4e7b-8eeb-d58b650396ac
+      id: 35b1d239-88c8-473c-814a-565158a1283f
       version: -1
       name: opencti-indicator-field-remove
       description: Remove field from indicator. Avalible fields to remove - marking
@@ -395,10 +399,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 65dff41e-1cc1-4d54-8a9a-fbac8891f3e0
+    taskid: d605456e-ce31-4f76-8383-52a134992c9e
     type: regular
     task:
-      id: 65dff41e-1cc1-4d54-8a9a-fbac8891f3e0
+      id: d605456e-ce31-4f76-8383-52a134992c9e
       version: -1
       name: opencti-indicator-field-add
       description: Add field to indicator. Avalible fields to add - marking defenition,
@@ -432,10 +436,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 8001849e-5a79-48e5-8de8-5cc7331c2bca
+    taskid: d3f97710-90d7-4ee9-811a-a676a5c08e1f
     type: regular
     task:
-      id: 8001849e-5a79-48e5-8de8-5cc7331c2bca
+      id: d3f97710-90d7-4ee9-811a-a676a5c08e1f
       version: -1
       name: opencti-organization-list
       description: Get list of all organizations.
@@ -461,10 +465,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 95aa73fa-8523-4909-82d2-d4108bc8a166
+    taskid: 40bd4f72-9c28-4b2c-8728-053500abafc0
     type: regular
     task:
-      id: 95aa73fa-8523-4909-82d2-d4108bc8a166
+      id: 40bd4f72-9c28-4b2c-8728-053500abafc0
       version: -1
       name: opencti-organization-create
       description: Create organization.
@@ -497,10 +501,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: d1a5d47b-1d3f-4108-81db-08793afbb7ba
+    taskid: 4886c291-5b9f-4727-8006-e260bd6b2cc9
     type: condition
     task:
-      id: d1a5d47b-1d3f-4108-81db-08793afbb7ba
+      id: 4886c291-5b9f-4727-8006-e260bd6b2cc9
       version: -1
       name: Verify Outputs
       type: condition
@@ -537,10 +541,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 5f71c9f3-9764-479d-866f-ba08143b1f46
+    taskid: 4c00ae48-06a8-4f4e-8083-20142c7ff045
     type: condition
     task:
-      id: 5f71c9f3-9764-479d-866f-ba08143b1f46
+      id: 4c00ae48-06a8-4f4e-8083-20142c7ff045
       version: -1
       name: Verify Outputs
       type: condition
@@ -573,10 +577,10 @@ tasks:
     isoversize: false
   "18":
     id: "18"
-    taskid: 5268780d-acd9-4e59-85b0-b2f7abdedb29
+    taskid: 610d174f-ee03-4f54-8503-ffd30f8eb797
     type: regular
     task:
-      id: 5268780d-acd9-4e59-85b0-b2f7abdedb29
+      id: 610d174f-ee03-4f54-8503-ffd30f8eb797
       version: -1
       name: opencti-label-list
       description: Get list of all labels.
@@ -588,7 +592,6 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      last_run_id: {}
       limit:
         simple: "1"
     separatecontext: false
@@ -607,10 +610,10 @@ tasks:
     isoversize: false
   "19":
     id: "19"
-    taskid: e8281939-c385-41f2-8f07-35b4dc6adbc4
+    taskid: 1c0f5425-38d8-4baf-8078-b167859f7c38
     type: condition
     task:
-      id: e8281939-c385-41f2-8f07-35b4dc6adbc4
+      id: 1c0f5425-38d8-4baf-8078-b167859f7c38
       version: -1
       name: Verify Outputs
       type: condition
@@ -648,10 +651,10 @@ tasks:
     isoversize: false
   "20":
     id: "20"
-    taskid: a5416f7a-2046-4d58-80ee-63b9b62aadd3
+    taskid: 7eb819a9-5640-4bd3-8c77-1e27455de121
     type: regular
     task:
-      id: a5416f7a-2046-4d58-80ee-63b9b62aadd3
+      id: 7eb819a9-5640-4bd3-8c77-1e27455de121
       version: -1
       name: opencti-marking-definition-list
       description: Get list of all marking definitions.
@@ -663,7 +666,6 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      last_run_id: {}
       limit:
         simple: "1"
     separatecontext: false
@@ -682,10 +684,10 @@ tasks:
     isoversize: false
   "21":
     id: "21"
-    taskid: e85ab24e-79d2-4307-8c12-049ef7d82eaa
+    taskid: 341ffb86-b1e0-429c-8719-1f3f97a87fa4
     type: condition
     task:
-      id: e85ab24e-79d2-4307-8c12-049ef7d82eaa
+      id: 341ffb86-b1e0-429c-8719-1f3f97a87fa4
       version: -1
       name: Verify Outputs
       type: condition
@@ -723,10 +725,10 @@ tasks:
     isoversize: false
   "22":
     id: "22"
-    taskid: ebd558a9-0b3d-43ff-87fc-fc589c0ed393
+    taskid: 1fa3bd59-eccf-4457-860b-4a872135ff1f
     type: regular
     task:
-      id: ebd558a9-0b3d-43ff-87fc-fc589c0ed393
+      id: 1fa3bd59-eccf-4457-860b-4a872135ff1f
       version: -1
       name: opencti-external-reference-create
       description: Create external reference.
@@ -758,10 +760,10 @@ tasks:
     isoversize: false
   "23":
     id: "23"
-    taskid: 29a8a9a7-ef79-4da9-83d1-a8d4fad94f3a
+    taskid: 1f70e7ce-3e37-4644-8687-d395dea808aa
     type: condition
     task:
-      id: 29a8a9a7-ef79-4da9-83d1-a8d4fad94f3a
+      id: 1f70e7ce-3e37-4644-8687-d395dea808aa
       version: -1
       name: Verify Outputs
       type: condition
@@ -879,8 +881,6 @@ tasks:
     scriptarguments:
       created_by_id:
         simple: ${OpenCTI.Organizations.OrganizationsList.id}
-      data:
-        simple: '{"value":"TestPlaybookIncidentCreate"}'
       description:
         simple: test description
       external_reference_source_name:
@@ -895,6 +895,8 @@ tasks:
         simple: "90"
       type:
         simple: Domain
+      value:
+        simple: TestPlaybookIncidentCreate
     separatecontext: true
     loop:
       iscommand: false
