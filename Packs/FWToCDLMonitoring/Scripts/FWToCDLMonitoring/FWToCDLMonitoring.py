@@ -51,7 +51,8 @@ if not fw_monitor_list:
     allInstances = demisto.getModules()
 
     if panorama_integration in allInstances:
-        if not allInstances[panorama_integration]['state'] == 'active' and allInstances[panorama_integration]['brand'] == 'Panorama':
+        if not allInstances[panorama_integration]['state'] == 'active' and \
+        allInstances[panorama_integration]['brand'] == 'Panorama':
             return_error("Integration %s is not active or is not a Panorama integration." % panorama_integration)
     else:
         return_error(
@@ -63,15 +64,12 @@ if not fw_monitor_list:
     fw_query['raw-response'] = 'true'
     fw_query['using'] = panorama_integration
 
-    try:
-        fw_query_result = demisto.executeCommand("panorama", fw_query)
-        if fw_query_result:
-            for fw in fw_query_result[0]['Contents']['response']['result']['devices']['entry']:
-                fw_monitor_list.append(fw['serial'])
-        else:
-            return_error("Failed to retrieve FW list from Panorama, try to specify manually a list of serials.")
-    except:
-        return_error("Failed to query Panorama, is your Panorama integration functionnal?")
+    fw_query_result = demisto.executeCommand("panorama", fw_query)
+    if fw_query_result:
+        for fw in fw_query_result[0]['Contents']['response']['result']['devices']['entry']:
+            fw_monitor_list.append(fw['serial'])
+    else:
+        return_error("Failed to retrieve FW list from Panorama, try to specify manually a list of serials.")
 
 # Uncomment to verify the list of FW to be monitored
 # demisto.log(fw_monitor_list)
