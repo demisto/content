@@ -14,7 +14,7 @@
    "filters": [
 
    ],
-   "root": "Module",
+   "root": "module",
    "transformers": [
 
    ]

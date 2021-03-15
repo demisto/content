@@ -807,7 +807,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'End date to fetch data. format: YYYY-MM-DD, for example: March
+      description: 'End date to fetch data. Format: YYYY-MM-DD, for example: March
         1st 2021 should be written: 2021-03-01. If no argument is given, default is
         now.'
       isArray: false

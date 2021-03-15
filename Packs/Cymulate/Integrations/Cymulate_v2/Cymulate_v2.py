@@ -242,7 +242,7 @@ def extract_template_output(raw_response: dict):
     """
     outputs = copy.deepcopy(raw_response)
     for dictionary in outputs:
-        dictionary['id'] = dictionary.pop('_id')
+        dictionary['id'] = dictionary.pop('_id', None)
     return outputs
 
 
@@ -632,8 +632,8 @@ def convert_to_xsoar_severity(severity: Optional[Any]) -> int:
             'medium': IncidentSeverity.MEDIUM,
             'high': IncidentSeverity.HIGH,
             'critical': IncidentSeverity.CRITICAL
-        }.get(severity.lower(), 0)
-    return 0
+        }.get(severity.lower(), IncidentSeverity.UNKNOWN)
+    return IncidentSeverity.UNKNOWN
 
 
 ''' COMMAND FUNCTIONS '''
@@ -907,9 +907,7 @@ def list_endpoint_security_template_command(client: Client) -> CommandResults:
                         containing the list of all endpoint security templates.
     """
     raw_response = client.list_templates(ENDPOINT_DICT.get('endpoint-security'))
-    outputs = copy.deepcopy(raw_response)
-    for dictionary in outputs:
-        dictionary['id'] = dictionary.pop('_id')
+    outputs = extract_template_output(raw_response)
 
     readable_output = tableToMarkdown('Endpoint security templates list:',
                                       outputs,
@@ -1591,10 +1589,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         incidents, offset, creation_time, total_simulated_events = [], 0, last_fetch, 0
 
     # current_time will help us save current's module time, and update next_run accordingly.
-    if creation_time > context.get('current_time'):
+    if creation_time > context.get('current_time', last_fetch):
         current_time = creation_time
     else:
-        current_time = context.get('current_time')
+        current_time = context.get('current_time', last_fetch)
 
     # There are alerts left to fetch
     if total_simulated_events > offset:
@@ -1672,7 +1670,7 @@ def main() -> None:
             if get_integration_context() is None:
                 set_integration_context({'offset': 0,
                                          'current_module': None,
-                                         'modules': fetch_categories
+                                         'modules': fetch_categories,
                                          })
 
             next_run, incidents = fetch_incidents(client=client,

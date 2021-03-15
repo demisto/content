@@ -1,5 +1,5 @@
 Multi-Vector Cyber Attack, Breach and Attack Simulation.
-This integration was integrated and tested with API version 1 of cymulate_v2
+This integration was integrated and tested with API version 1 of cymulate
 ## Configure cymulate_v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -1240,7 +1240,7 @@ Get contacts group using a group ID.
 
 
 #### Command Example
-```!cymulate-phishing-awareness-contacts-get group_id="5d7f43b497177063b8ceff92"```
+```!cymulate-phishing-awareness-contacts-get group_id="id_abcd"```
 
 #### Context Example
 ```json
@@ -1249,25 +1249,25 @@ Get contacts group using a group ID.
         "Phishing": {
             "Groups": [
                 {
-                    "address": "noamg@cymulate.com",
+                    "address": "jamesb@cymulate.com",
                     "color": "#ffbb00",
-                    "firstName": "noam",
-                    "id": "5de7d927a2fe6d5a55ecb204",
-                    "lastName": "gavih"
+                    "firstName": "James",
+                    "id": "id_1a",
+                    "lastName": "Bond"
                 },
                 {
-                    "address": "yahavl@cymulate.com",
+                    "address": "Billg@cymulate.com",
                     "color": "#34a853",
-                    "firstName": "Yahav",
-                    "id": "5dee525a9fc24a3f3b71f629",
-                    "lastName": "Levin"
+                    "firstName": "Bill",
+                    "id": "id_a2",
+                    "lastName": "Gates"
                 },
                 {
-                    "address": "davidk@cymulate.com",
+                    "address": "davidb@cymulate.com",
                     "color": "#00a1f1",
                     "firstName": "David ",
-                    "id": "601a80744c9554499e1b9ae6",
-                    "lastName": "K"
+                    "id": "id_a3",
+                    "lastName": "Ben-Gurion"
                 }
             ]
         }
@@ -1280,9 +1280,9 @@ Get contacts group using a group ID.
 >### Phishing awareness contact groups:
 >|address|color|firstName|id|lastName|
 >|---|---|---|---|---|
->| noamg@cymulate.com | #ffbb00 | noam | 5de7d927a2fe6d5a55ecb204 | gavih |
->| yahavl@cymulate.com | #34a853 | Yahav | 5dee525a9fc24a3f3b71f629 | Levin |
->| davidk@cymulate.com | #00a1f1 | David  | 601a80744c9554499e1b9ae6 | K |
+>| jamesb@cymulate.com | #ffbb00 | James | id_1a | Bond |
+>| Billg@cymulate.com | #34a853 | Bill | id_a2 | Gates |
+>| davidb@cymulate.com | #00a1f1 | David  | id_a3 | Ben-Gurion |
 
 
 ### cymulate-lateral-movement-template-list
@@ -1341,42 +1341,6 @@ There are no input arguments for this command.
                 {
                     "id": "5e4a5792b1bdb606ed1f9407",
                     "name": "lab1"
-                },
-                {
-                    "id": "5e4a70ca15265b06a80392f5",
-                    "name": "asdasd"
-                },
-                {
-                    "id": "5e5e8dc716ba9917ae7fa87a",
-                    "name": "123453"
-                },
-                {
-                    "id": "5ea741d78770861ba32efa43",
-                    "name": "mdlintest1"
-                },
-                {
-                    "id": "5ea9af59cf32a43593811fc7",
-                    "name": "avi-test23344"
-                },
-                {
-                    "id": "5ebbf7c35a3bea46a7467836",
-                    "name": "test-avihai-test-avihai"
-                },
-                {
-                    "id": "5fc388664f5f685108af9845",
-                    "name": "test123"
-                },
-                {
-                    "id": "5fdbc509ec985f7a7d4a2bd7",
-                    "name": "Arien-test"
-                },
-                {
-                    "id": "5ffc107a571da927bed3503f",
-                    "name": "avi-test-ps"
-                },
-                {
-                    "id": "60227eda3d301e5f81b5156c",
-                    "name": "tetete"
                 }
             ]
         }
@@ -1396,15 +1360,6 @@ There are no input arguments for this command.
 >| 5e41746171895006ef394607 | test1 |
 >| 5e44020d3f46e106e9ec706c | Prueba completa |
 >| 5e4a5792b1bdb606ed1f9407 | lab1 |
->| 5e4a70ca15265b06a80392f5 | asdasd |
->| 5e5e8dc716ba9917ae7fa87a | 123453 |
->| 5ea741d78770861ba32efa43 | mdlintest1 |
->| 5ea9af59cf32a43593811fc7 | avi-test23344 |
->| 5ebbf7c35a3bea46a7467836 | test-avihai-test-avihai |
->| 5fc388664f5f685108af9845 | test123 |
->| 5fdbc509ec985f7a7d4a2bd7 | Arien-test |
->| 5ffc107a571da927bed3503f | avi-test-ps |
->| 60227eda3d301e5f81b5156c | tetete |
 
 
 ### cymulate-lateral-movement-start
@@ -1442,7 +1397,7 @@ Create a new lateral movement assessment.
 {
     "Cymulate": {
         "LateralMovement": {
-            "id": "604630ece09a2e0a31c01373",
+            "id": "id_987",
             "success": true
         }
     }
@@ -1454,7 +1409,7 @@ Create a new lateral movement assessment.
 >### Starting lateral movement assessment:
 >|id|success|
 >|---|---|
->| 604630ece09a2e0a31c01373 | true |
+>| id_987 | true |
 
 
 ### cymulate-lateral-movement-stop
@@ -1523,14 +1478,14 @@ Get lateral movement assessment status.
 
 
 #### Command Example
-```!cymulate-lateral-movement-status assessment_id="6037e9bec3d4b76ab14cc9fd"```
+```!cymulate-lateral-movement-status assessment_id="id_876"```
 
 #### Context Example
 ```json
 {
     "Cymulate": {
         "LateralMovement": {
-            "id": "6037e9bec3d4b76ab14cc9fd",
+            "id": "id_876",
             "inProgress": false
         }
     }
@@ -1542,7 +1497,7 @@ Get lateral movement assessment status.
 >### Lateral movement assessment status:
 >|id|inProgress|
 >|---|---|
->| 6037e9bec3d4b76ab14cc9fd | false |
+>| id_876 | false |
 
 
 ### cymulate-agent-list
@@ -1716,7 +1671,7 @@ Retrieve a list of all simulations IDs.
 | --- | --- | --- |
 | module | Module to retrieve simulations IDs to. Possible values are: web-gateway, exfiltration, email-gateway, endpoint-security, waf, kill-chain, immediate-threats, phishing-awareness, lateral-movement. | Required | 
 | from_date | From which date to fetch data. Format: YYYY-MM-DD, for example: March 1st 2021 should be written: 2021-03-01. . | Required | 
-| to_date | End date to fetch data. format: YYYY-MM-DD, for example: March 1st 2021 should be written: 2021-03-01. If no argument is given, default is now. | Optional | 
+| to_date | End date to fetch data. Format: YYYY-MM-DD, for example: March 1st 2021 should be written: 2021-03-01. If no argument is given, default is now. | Optional | 
 
 
 #### Context Output
@@ -1739,19 +1694,19 @@ Retrieve a list of all simulations IDs.
         "Simulations": [
             {
                 "Agent": "Cymulate_agent_2",
-                "ID": "603cbedea873f53d0c81a734",
+                "ID": "id_b1",
                 "Template": "Cobalt Group",
                 "Timestamp": "2021-03-01 10:15:58.230000"
             },
             {
                 "Agent": "Cymulate_agent_2",
-                "ID": "6037d6c1c3d4b76ab14cc40d",
+                "ID": "id_b2",
                 "Template": "Cobalt Group",
                 "Timestamp": "2021-02-25 16:56:33.871000"
             },
             {
                 "Agent": "info@cymulate.com",
-                "ID": "6034e062b862ca5d6ad4af79",
+                "ID": "id_b3",
                 "Template": "Cobalt Group",
                 "Timestamp": "2021-02-23 11:00:50.988000"
             }
@@ -1765,6 +1720,6 @@ Retrieve a list of all simulations IDs.
 >### Displaying 3/3 Attack IDs:
 >|Agent|ID|Template|Timestamp|
 >|---|---|---|---|
->| Cymulate_agent_2 | 603cbedea873f53d0c81a734 | Cobalt Group | 2021-03-01 10:15:58.230000 |
->| Cymulate_agent_2 | 6037d6c1c3d4b76ab14cc40d | Cobalt Group | 2021-02-25 16:56:33.871000 |
->| info@cymulate.com | 6034e062b862ca5d6ad4af79 | Cobalt Group | 2021-02-23 11:00:50.988000 |
+>| Cymulate_agent_2 | id_b1 | Cobalt Group | 2021-03-01 10:15:58.230000 |
+>| Cymulate_agent_2 | id_b2 | Cobalt Group | 2021-02-25 16:56:33.871000 |
+>| info@cymulate.com | id_b3 | Cobalt Group | 2021-02-23 11:00:50.988000 |
