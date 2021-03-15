@@ -414,7 +414,7 @@ script:
     - contextPath: Perch.Indicator.CreatedBy
       description: ID of user that created the incident.
       type: Number
-  dockerimage: demisto/python3:3.7.2.214
+  dockerimage: demisto/python3:3.9.2.17246
   subtype: python3
   isfetch: true
   runonce: false

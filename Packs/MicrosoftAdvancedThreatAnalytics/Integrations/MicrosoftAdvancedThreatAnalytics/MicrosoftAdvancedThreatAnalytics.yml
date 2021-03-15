@@ -61,7 +61,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use Microsoft Advanced Threat Analytics integration to manage suspicious activities, 
+description: Use Microsoft Advanced Threat Analytics integration to manage suspicious activities,
   monitoring alerts and entities.
 display: Microsoft Advanced Threat Analytics
 name: Microsoft Advanced Threat Analytics
@@ -502,7 +502,7 @@ script:
     - contextPath: MicrosoftATA.Entity.Profile.UpdateTime
       description: The update time of the entity profile.
       type: Date
-  dockerimage: demisto/ntlm:1.0.0.10980
+  dockerimage: demisto/ntlm:1.0.0.17343
   feed: false
   isfetch: true
   longRunning: false
