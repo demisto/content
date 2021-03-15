@@ -3,7 +3,7 @@
 from DBotFindSimilarIncidents import normalize_command_line, main, demisto, keep_high_level_field, \
     preprocess_incidents_field, PREFIXES_TO_REMOVE, check_list_of_dict, REGEX_IP, match_one_regex, \
     SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, euclidian_similarity_capped, find_incorrect_fields, \
-    MESSAGE_NO_INCIDENT_FETCHED, MESSAGE_INCORRECT_FIELD, MESSAGE_WARNING_TRUNCATED
+    MESSAGE_NO_INCIDENT_FETCHED, MESSAGE_INCORRECT_FIELD, MESSAGE_WARNING_TRUNCATED, COLUMN_ID, COLUMN_TIME
 
 import json
 import numpy as np
@@ -110,7 +110,7 @@ def test_main_regular(mocker):
                             'fieldExactMatch': '',
                             'fieldsToDisplay': 'filehash, destinationip, closeNotes, sourceip, alertdescription',
                             'showIncidentSimilarityForAllFields': True,
-                            'MinimunIncidentSimilarity': 0.2,
+                            'minimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
                             'aggreagateIncidentsDifferentDate': 'False',
@@ -122,8 +122,8 @@ def test_main_regular(mocker):
     assert ('empty_current_incident_field' not in res.columns)
     assert (res.loc['3', 'Identical indicators'] == 'ind_2')
     assert (res.loc['2', 'Identical indicators'] == "")
-    assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, 'ID', 'created',
-                                         'name', df=res)
+    assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME,
+                                         COLUMN_ID, COLUMN_TIME, 'name', df=res)
     assert res.loc['3', 'similarity indicators'] == 0.4
     assert res.loc['2', 'similarity indicators'] == 0.0
 
@@ -149,7 +149,7 @@ def test_main_no_indicators_found(mocker):
                             'fieldExactMatch': '',
                             'fieldsToDisplay': 'filehash, destinationip, closeNotes, sourceip, alertdescription',
                             'showIncidentSimilarityForAllFields': True,
-                            'MinimunIncidentSimilarity': 0.2,
+                            'minimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
                             'aggreagateIncidentsDifferentDate': 'False',
@@ -160,8 +160,8 @@ def test_main_no_indicators_found(mocker):
     res, msg = main()
     assert ('empty_current_incident_field' not in res.columns)
     assert (res['Identical indicators'] == ["", "", ""]).all()
-    assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, 'ID', 'created',
-                                         'name', df=res)
+    assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME,  COLUMN_ID,
+                                         COLUMN_TIME, 'name', df=res)
     assert (res['similarity indicators'] == [0.0, 0.0, 0.0]).all()
 
 
@@ -186,7 +186,7 @@ def test_main_no_fetched_incidents_found(mocker):
                             'fieldExactMatch': '',
                             'fieldsToDisplay': 'filehash, destinationip, closeNotes, sourceip, alertdescription',
                             'showIncidentSimilarityForAllFields': True,
-                            'MinimunIncidentSimilarity': 0.2,
+                            'minimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
                             'aggreagateIncidentsDifferentDate': 'False',
@@ -236,7 +236,7 @@ def test_main_all_incorrect_field(mocker):
                             'fieldExactMatch': '',
                             'fieldsToDisplay': wrong_field_4,
                             'showIncidentSimilarityForAllFields': True,
-                            'MinimunIncidentSimilarity': 0.2,
+                            'minimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
                             'aggreagateIncidentsDifferentDate': 'False',
@@ -274,7 +274,7 @@ def test_main_incident_truncated(mocker):
                             'fieldExactMatch': '',
                             'fieldsToDisplay': wrong_field_4,
                             'showIncidentSimilarityForAllFields': True,
-                            'MinimunIncidentSimilarity': 0.2,
+                            'minimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
                             'aggreagateIncidentsDifferentDate': 'False',
