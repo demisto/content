@@ -574,7 +574,7 @@ def encodeData(identities: list) -> list:
 def timeToEpoch(time: str):
     timeParameterList = time.split("-")
     if len(timeParameterList) != 5:
-        error_message = "Time paremeter is wrong"
+        error_message = "Time arguments is wrong, be sure to enter as in the example."
         return_error(error_message)
     else:
         epochTime = datetime.datetime(int(timeParameterList[0]), int(timeParameterList[1]), int(timeParameterList[2]),
