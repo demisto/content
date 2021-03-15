@@ -1,0 +1,55 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: aaa"><img src=1 onerror=alert(origin)>
+id: aaa"><img src=1 onerror=alert(origin)>
+inputs: []
+name: aaa"><img src=1 onerror=alert(origin)>
+outputs: []
+rolename:
+- Administrator
+- Analyst
+- Read-Only
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8774394a-ca13-4f5d-880a-49eb729e0305
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 8774394a-ca13-4f5d-880a-49eb729e0305
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 65,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
