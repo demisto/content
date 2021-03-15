@@ -1,10 +1,10 @@
 {
-    "id": "incident_endtime",
+    "id": "incident_unifivideo_endtime",
     "version": -1,
     "modified": "2021-03-02T10:39:21.481066745+01:00",
     "name": "End Time",
     "ownerOnly": false,
-    "cliName": "endtime",
+    "cliName": "unifivideo_endtime",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
