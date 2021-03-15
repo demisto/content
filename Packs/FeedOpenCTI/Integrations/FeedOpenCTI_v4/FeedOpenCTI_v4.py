@@ -62,7 +62,7 @@ def reset_last_run():
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
-def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: List[str] =None,
+def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: List[str] = None,
                    limit: Optional[int] = 500, last_run_id: Optional[str] = None,
                    tlp_color: Optional[str] = None) -> Tuple[str, list]:
     """ Retrieving indicators from the API
@@ -109,16 +109,17 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
             if object_marking := item.get('objectMarking', []):
                 new_tlp_color = object_marking[0].get('definition', '').split(':')
                 indicator['fields']['trafficlightprotocol'] = new_tlp_color[1]
+                demisto.info(f'tlp_color: {new_tlp_color}')
         else:
             indicator['fields']['trafficlightprotocol'] = tlp_color
 
         score = item.get('x_opencti_score')
-        if score in [*range(0-21)]:
-            indicator['reputation'] = 'Good'
-        elif score in [*range(21-71)]:
-            indicator['reputation'] = 'Suspicious'
-        elif score in [*range(71-101)]:
-            indicator['reputation'] = 'Malicious'
+        if score in [*range(0, 21)]:
+            indicator['fields']['reputation'] = 'Good'
+        elif score in [*range(21, 71)]:
+            indicator['fields']['reputation'] = 'Suspicious'
+        elif score in [*range(71, 101)]:
+            indicator['fields']['reputation'] = 'Malicious'
 
         indicators.append(indicator)
     return new_last_run, indicators
@@ -168,10 +169,10 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
     last_run_id = args.get("last_run_id")
     limit = arg_to_number(args.get('limit', 50))
     start = arg_to_number(args.get('score_start', 1))
-    end = arg_to_number(args.get('score_end', 100)) + 1
+    end = arg_to_number(args.get('score_end', 100)) + 1  # type:ignore
     score = None
     if start or end:
-        score = [str(i) for i in range(start, end)]
+        score = [str(i) for i in range(start, end)]  # type:ignore
     last_run_id, indicators_list = get_indicators(
         client=client,
         indicator_types=indicator_types,
@@ -211,10 +212,10 @@ def main():
     else:
         max_fetch = 500
     start = arg_to_number(args.get('score_start', 1))
-    end = arg_to_number(args.get('score_end', 100)) + 1
+    end = arg_to_number(args.get('score_end', 100)) + 1  # type:ignore
     score = None
     if start or end:
-        score = [str(i) for i in range(start, end)]
+        score = [str(i) for i in range(start, end)]  # type:ignore
     try:
         client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error')
         command = demisto.command()
