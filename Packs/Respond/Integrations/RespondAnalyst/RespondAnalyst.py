@@ -522,12 +522,14 @@ def test_module(client):
     """
     client.get_tenant_mappings()
 
+
 def get_max_number_of_ids_by_least_recently_created(all_ids, max_fetch):
-    sorted_ids = sorted(all_ids, key=lambda x:x['dateCreated'])
+    sorted_ids = sorted(all_ids, key=lambda x: x['dateCreated'])
     for i in range(0, len(all_ids) - max_fetch):
         sorted_ids.pop()
 
     return list(map(extract_id, sorted_ids))
+
 
 def fetch_incidents_for_tenant(rest_client, internal_tenant_id, external_tenant_id, from_time, max_fetch):
     # first time fetch is handled in query
@@ -538,7 +540,6 @@ def fetch_incidents_for_tenant(rest_client, internal_tenant_id, external_tenant_
             id_list = get_max_number_of_ids_by_least_recently_created(response, max_fetch)
         else:
             id_list = list(map(extract_id, response))
-
 
         raw_incidents = rest_client.construct_and_send_full_incidents_query(internal_tenant_id,
                                                                             id_list)
