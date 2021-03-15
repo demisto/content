@@ -699,6 +699,6 @@ tests:
   - SplunkPy-Test-V2
   - SplunkPy KV commands
   - SplunkPy parse-raw - Test
-defaultmapperin: SplunkPy-mapper
 defaultclassifier: SplunkPy
+defaultmapperin: SplunkPy-mapper
 fromversion: 5.0.0
