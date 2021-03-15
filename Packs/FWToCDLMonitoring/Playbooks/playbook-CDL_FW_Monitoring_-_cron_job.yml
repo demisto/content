@@ -104,6 +104,7 @@ tasks:
       - - left:
             value:
               simple: ${CDL.monitoring.FW KO}
+            iscontext: true
           operator: isNotEmpty
       label: "yes"
     id: "3"
