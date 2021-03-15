@@ -12,9 +12,9 @@ This integration was integrated and tested with version 2.6.0.0-23 of qualys_fim
     | --- | --- | --- |
     | Username | Username for authentication | True |
     | Password | Password for authentication | True |
-    | Qualys API Platform URL | The Qualys API server URL that you should use for API requests depends on the platform where your account is located.  Platforms and URLS: Qualys US Platform 1: https://gateway.qg1.apps.qualys.com Qualys US Platform 2: https://gateway.qg2.apps.qualys.com Qualys US Platform 3: https://gateway.qg3.apps.qualys.com Qualys EU Platform 1: https://gateway.qg1.apps.qualys.eu Qualys EU Platform 2: https://gateway.qg2.apps.qualys.eu Qualys India Platform 1: https://gateway.qg1.apps.qualys.in Qualys Private Cloud Platform\(Custom Platform\): https://gateway.&amp;lt;customer_base_url&amp;gt; | True |
+    | Qualys API Platform URL | The Qualys API server URL that you should use for API requests depends on the platform where your account is located.  Platforms and URLS: Qualys US Platform 1: https://gateway.qg1.apps.qualys.com Qualys US Platform 2: https://gateway.qg2.apps.qualys.com Qualys US Platform 3: https://gateway.qg3.apps.qualys.com Qualys EU Platform 1: https://gateway.qg1.apps.qualys.eu Qualys EU Platform 2: https://gateway.qg2.apps.qualys.eu Qualys India Platform 1: https://gateway.qg1.apps.qualys.in Qualys Private Cloud Platform\(Custom Platform\): https://gateway.\<customer_base_url\> | True |
     | Fetch incidents | Fetch incidents| False |
-    | Fetch time | First fetch timestamp (<number> <time unit>) e.g., 12 hours, 7 days | False |
+    | Fetch time | First fetch timestamp (\<number\> \<time unit\>) e.g., 12 hours, 7 days | False |
     | Incident Type | Incident type | False |
     | Max Fetch | Max Fetch is limited to 200 incidents per fetch. Choose a value lower than 200. | False |
     | Fetch Filter | Filter the incidents fetching by providing a query using Qualys syntax i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm | False |
