@@ -62,11 +62,13 @@ def reset_last_run():
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
-def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], limit: Optional[int] = 500,
-                   last_run_id: Optional[str] = None, tlp_color: Optional[str] = None) -> Tuple[str, list]:
+def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: List[str] =None,
+                   limit: Optional[int] = 500, last_run_id: Optional[str] = None,
+                   tlp_color: Optional[str] = None) -> Tuple[str, list]:
     """ Retrieving indicators from the API
 
     Args:
+        score: Range of scores to filter by.
         client: OpenCTI Client object.
         indicator_types: List of indicators types to return.
         last_run_id: The last id from the previous call to use pagination.
@@ -78,8 +80,17 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], limit: 
         indicators: list of indicators
     """
     indicator_type = build_indicator_list(indicator_types)
+    filters = [{
+        'key': 'entity_type',
+        'values': indicator_type
+    }]
+    if score:
+        filters.append({
+            'key': 'x_opencti_score',
+            'values': score
+        })
 
-    observables = client.stix_cyber_observable.list(types=indicator_type, after=last_run_id, first=limit,
+    observables = client.stix_cyber_observable.list(filters=filters, after=last_run_id, first=limit,
                                                     withPagination=True)
     new_last_run = observables.get('pagination').get('endCursor')
 
@@ -94,21 +105,31 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], limit: 
                 "description": item.get('x_opencti_description')
             }
         }
-        if tlp_color == 'According to indicator':
+        if not tlp_color:
             if object_marking := item.get('objectMarking', []):
                 new_tlp_color = object_marking[0].get('definition', '').split(':')
                 indicator['fields']['trafficlightprotocol'] = new_tlp_color[1]
-        elif tlp_color:
+        else:
             indicator['fields']['trafficlightprotocol'] = tlp_color
+
+        score = item.get('x_opencti_score')
+        if score in [*range(0-21)]:
+            indicator['reputation'] = 'Good'
+        elif score in [*range(21-71)]:
+            indicator['reputation'] = 'Suspicious'
+        elif score in [*range(71-101)]:
+            indicator['reputation'] = 'Malicious'
+
         indicators.append(indicator)
     return new_last_run, indicators
 
 
-def fetch_indicators_command(client: OpenCTIApiClient, indicator_types: list, max_fetch: int, tlp_color=None,
-                             is_test=False) -> list:
+def fetch_indicators_command(client: OpenCTIApiClient, indicator_types: list, max_fetch: int, score: list = None,
+                             tlp_color=None, is_test=False) -> list:
     """ fetch indicators from the OpenCTI
 
     Args:
+        score: Range of scores to filter by.
         client: OpenCTI Client object
         indicator_types(list): List of indicators types to get.
         max_fetch: (int) max indicators to fetch.
@@ -118,12 +139,14 @@ def fetch_indicators_command(client: OpenCTIApiClient, indicator_types: list, ma
         list of indicators(list)
     """
     last_run_id = demisto.getIntegrationContext().get('last_run_id')
+    demisto.info(f'get last run {last_run_id}')
 
     new_last_run, indicators_list = get_indicators(client, indicator_types, limit=max_fetch, last_run_id=last_run_id,
-                                                   tlp_color=tlp_color)
+                                                   tlp_color=tlp_color, score=score)
 
     if new_last_run and not is_test:
         demisto.setIntegrationContext({'last_run_id': new_last_run})
+        demisto.info(f'set last run {new_last_run}')
         # we submit the indicators in batches
         for b in batch(indicators_list, batch_size=2000):
             demisto.createIndicators(b)
@@ -144,11 +167,17 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
     indicator_types = argToList(args.get("indicator_types"))
     last_run_id = args.get("last_run_id")
     limit = arg_to_number(args.get('limit', 50))
+    start = arg_to_number(args.get('score_start', 1))
+    end = arg_to_number(args.get('score_end', 100)) + 1
+    score = None
+    if start or end:
+        score = [str(i) for i in range(start, end)]
     last_run_id, indicators_list = get_indicators(
         client=client,
         indicator_types=indicator_types,
         limit=limit,
-        last_run_id=last_run_id
+        last_run_id=last_run_id,
+        score=score
     )
 
     if indicators_list:
@@ -181,7 +210,11 @@ def main():
         max_fetch = arg_to_number(max_fetch)
     else:
         max_fetch = 500
-
+    start = arg_to_number(args.get('score_start', 1))
+    end = arg_to_number(args.get('score_end', 100)) + 1
+    score = None
+    if start or end:
+        score = [str(i) for i in range(start, end)]
     try:
         client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error')
         command = demisto.command()
@@ -189,7 +222,7 @@ def main():
 
         # Switch case
         if command == "fetch-indicators":
-            fetch_indicators_command(client, indicator_types, max_fetch, tlp_color=tlp_color)
+            fetch_indicators_command(client, indicator_types, max_fetch, tlp_color=tlp_color, score=score)
 
         elif command == "test-module":
             '''When setting up an OpenCTI Client it is checked that it is valid and allows requests to be sent.

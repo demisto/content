@@ -92,11 +92,12 @@ def reset_last_run():
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
-def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], limit: Optional[int] = 500,
+def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: List[str] = None, limit: Optional[int] = 500,
                    last_run_id: Optional[str] = None) -> dict:
     """ Retrieving indicators from the API
 
     Args:
+        score: Range of scores to filter by.
         client: OpenCTI Client object.
         indicator_types: List of indicators types to return.
         last_run_id: The last id from the previous call to use pagination.
@@ -106,9 +107,18 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], limit: 
         indicators: dict of indicators
     """
     indicator_type = build_indicator_list(indicator_types)
+    filters = [{
+            'key': 'entity_type',
+            'values': indicator_type
+        }]
+    if score:
+        filters.append({
+            'key': 'x_opencti_score',
+            'values': score
+        })
 
-    indicators = client.stix_cyber_observable.list(types=indicator_type, after=last_run_id, first=limit,
-                                                   withPagination=True)
+    indicators = client.stix_cyber_observable.list(after=last_run_id, first=limit,
+                                                   withPagination=True, filters=filters)
     return indicators
 
 
@@ -125,11 +135,18 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
     indicator_types = argToList(args.get("indicator_types"))
     last_run_id = args.get("last_run_id")
     limit = arg_to_number(args.get('limit', 50))
+    start = arg_to_number(args.get('score_start', 1))
+    end = arg_to_number(args.get('score_end', 100)) + 1
+    score = None
+    if start or end:
+        score = [str(i) for i in range(start, end)]
+
     raw_response = get_indicators(
         client=client,
         indicator_types=indicator_types,
         limit=limit,
-        last_run_id=last_run_id
+        last_run_id=last_run_id,
+        score=score
     )
 
     last_run = raw_response.get('pagination', {}).get('endCursor')  # type: ignore

@@ -48,7 +48,6 @@ configuration:
     reputation
   display: Indicator Reputation
   name: feedReputation
-  defaultvalue: None
   options:
   - None
   - Good
@@ -71,7 +70,6 @@ configuration:
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
-  defaultvalue: According to indicator
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -79,7 +77,6 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  - According to indicator
   required: false
   type: 15
 - defaultvalue: indicatorType
@@ -122,6 +119,18 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Score start value
+  hidden: false
+  name: score_start
+  required: false
+  additionalinfo: 'Score range start to filter by. Possible range is 1-100. '
+  type: 0
+- display: Score start value
+  hidden: false
+  name: score_end
+  required: false
+  additionalinfo: 'Score range end to filter by. Possible range is 1-100. '
+  type: 0
 description: Ingest indicator feeds from OpenCTI. Compatible with OpenCTI v4.* instances.
 display: OpenCTI Feed 4.X
 name: OpenCTI Feed v4
@@ -165,6 +174,18 @@ script:
       description: The last ID from the previous call from which to begin pagination for this call. You can find this value at OpenCTI.IndicatorsList.LastRunID context path.
       isArray: false
       name: last_run_id
+      required: false
+      secret: false
+    - default: false
+      description: 'Score range start to filter by. Possible range is 1-100. '
+      isArray: false
+      name: score_start
+      required: false
+      secret: false
+    - default: false
+      description: 'Score range end to filter by. Possible range is 1-100. '
+      isArray: false
+      name: score_end
       required: false
       secret: false
     deprecated: false
