@@ -231,7 +231,7 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
     description = args.get("description")
     score = arg_to_number(args.get("score", '50'))
     value = args.get("value")
-    data = {'type': XSOAR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type),
+    data = {'type': XSOAR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type),  # type:ignore
             'value': value}
     if indicator_type == 'Registry Key':
         data['key'] = value
