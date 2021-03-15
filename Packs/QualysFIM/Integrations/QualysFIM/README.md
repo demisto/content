@@ -14,11 +14,10 @@ This integration was integrated and tested with version 2.6.0.0-23 of qualys_fim
     | Password | Password for authentication | True |
     | Qualys API Platform URL | The Qualys API server URL that you should use for API requests depends on the platform where your account is located.  Platforms and URLS: Qualys US Platform 1: https://gateway.qg1.apps.qualys.com Qualys US Platform 2: https://gateway.qg2.apps.qualys.com Qualys US Platform 3: https://gateway.qg3.apps.qualys.com Qualys EU Platform 1: https://gateway.qg1.apps.qualys.eu Qualys EU Platform 2: https://gateway.qg2.apps.qualys.eu Qualys India Platform 1: https://gateway.qg1.apps.qualys.in Qualys Private Cloud Platform\(Custom Platform\): https://gateway.&amp;lt;customer_base_url&amp;gt; | True |
     | Fetch incidents | Fetch incidents| False |
-    | Fetch time | First fetch timestamp e.g 12 hours, 7 days etc. | False |
+    | Fetch time | First fetch timestamp (<number> <time unit>) e.g., 12 hours, 7 days | False |
     | Incident Type | Incident type | False |
-    | Max Fetch | Maximum number of incidents per fetch| False |
-    | Fetch Filter | Filter the incidents fetching by providing a query using Qualys syntax.
-   i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm | False |
+    | Max Fetch | Max Fetch is limited to 200 incidents per fetch. Choose a value lower than 200. | False |
+    | Fetch Filter | Filter the incidents fetching by providing a query using Qualys syntax i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm | False |
     | Insecure | Trust any certificate (not secure) | False |
     | Proxy | Use system proxy settings | False |
 
@@ -38,11 +37,11 @@ Retrieve a list of all FIM events from the current user account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter the events list by providing a query using Qualys syntax. i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"  Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
-| page_number | Page number(index) to list items from. "Limit" argument defines page size (how many items in a page). Default is zero. Default is 0. | Optional | 
-| limit | The number of records to include. Default is 10. Default is 10. | Optional | 
-| incident_ids | List of incident IDs (comma seperated) to be included while searching for events in incidents. | Optional | 
-| sort | Sort the requested events by - most_recent or least_recent. Possible values are: most_recent, least_recent. Default is most_recent. | Optional | 
+| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
+| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional | 
+| limit | The number of records to include. | Optional | 
+| incident_ids | Comma-separated list of incident IDs to be included while searching for events in incidents. | Optional | 
+| sort | The method by which to sort the requested events. Possible values: "most_recent" and "least_recent". | Optional | 
 
 
 #### Context Output
@@ -50,8 +49,8 @@ Retrieve a list of all FIM events from the current user account.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QualysFIM.Events.id | str | Event ID. | 
-| QualysFIM.Events.fullPath | str | Event full path. | 
-| QualysFIM.Events.dateTime | str | Date time the event occurred.  | 
+| QualysFIM.Events.fullPath | str | Full path of the event. | 
+| QualysFIM.Events.dateTime | str | Date/time the event occurred.  | 
 | QualysFIM.Events.severity | int | Event severity. | 
 | QualysFIM.Events.agentId | str | Agent ID. | 
 
@@ -1058,7 +1057,7 @@ Retrieve a list of all FIM events from the current user account.
 
 ### qualys-fim-event-get
 ***
-Retrieve information on a given event, by event ID.
+Retrieve information about a given event, by event ID.
 
 
 #### Base Command
@@ -1076,8 +1075,8 @@ Retrieve information on a given event, by event ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QualysFIM.Event.id | str | Event ID. | 
-| QualysFIM.Event.fullPath | str | Event full path. | 
-| QualysFIM.Event.dateTime | str | Date time the event occurred.  | 
+| QualysFIM.Event.fullPath | str | Full path of the event. | 
+| QualysFIM.Event.dateTime | str | Date/time the event occurred.  | 
 | QualysFIM.Event.name | str | Event name. | 
 | QualysFIM.Event.severity | int | Event severity. | 
 | QualysFIM.Event.action | str | Event action. | 
@@ -1196,11 +1195,11 @@ Retrieve a list of all FIM incidents from the current user account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter the events list by providing a query using Qualys syntax. i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"  Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
-| page_number | Page number(index) to list items from. "Limit" argument defines page size (how many items in a page). Default is zero. Default is 0. | Optional | 
-| limit | The number of records to include. Default is 10. Default is 10. | Optional | 
-| attributes | The list of comma-separated attributes that you want to include in the response. By default, all attributes will be returned in the result. i.e: attributes="attributes=name,id". | Optional | 
-| sort | Sort the requested events by - most_recent or least_recent. Possible values are: most_recent, least_recent. Default is most_recent. | Optional | 
+| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
+| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional | 
+| limit | The number of records to include. | Optional | 
+| attributes | Comma-separated list of attributes to include in the response. By default, all attributes will be returned in the result, i.e., attributes="attributes=name,id". | Optional | 
+| sort | The method by which to sort the requested events. Possible values: "most_recent" and "least_recent". | Optional | 
 
 
 #### Context Output
@@ -1338,10 +1337,10 @@ Retrieve a list of the events logged under an incident.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | ID of the incident to retrieve the events for. | Required | 
-| filter | Filter the events list by providing a query using Qualys syntax. i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"  Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
-| page_number | Page number(index) to list items from. "Limit" argument defines page size (how many items in a page). Default is zero. Default is 0. | Optional | 
-| limit | The number of records to include. Default is 10. Default is 10. | Optional | 
-| attributes | The list of comma-separated attributes that you want to include in the response. By default, all attributes will be returned in the result. i.e: attributes="attributes=name,id". | Optional | 
+| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
+| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional | 
+| limit | The number of records to include. | Optional | 
+| attributes | Comma-separated list of attributes to include in the response. By default, all attributes will be returned in the result, i.e., attributes="attributes=name,id". | Optional | 
 
 
 #### Context Output
@@ -1422,7 +1421,7 @@ Retrieve a list of the events logged under an incident.
 
 ### qualys-fim-incident-create
 ***
-Create a new manual FIM incident of type "DEFAULT".
+Create a manual FIM incident of type "DEFAULT".
 
 
 #### Base Command
@@ -1432,22 +1431,22 @@ Create a new manual FIM incident of type "DEFAULT".
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from_date | Date to start the event search from. Example format: yyyy-mm-dd, 2021-01-01. Possible values are: . | Optional | 
-| to_date | Date to stop the event search at, Example format: yyyy-mm-dd, 2021-02-30. | Optional | 
-| filters | Filter the events list by providing a query using Qualys syntax. i.e: "dateTime : ['2021-01-01'..'2021-03-29'] When you use this argument it will overwrite "from_date" &amp; "to_date" arguments. If you don't use filter, Query will be last 24 hours events.  Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
-| name | The name of the incident.Accepted length: Between 1 to 128 characters. | Required | 
+| from_date | Date from which to start the event search. Example format: yyyy-mm-dd, 2021-01-01. | Optional | 
+| to_date | Date at which to stop the event search. Example format: yyyy-mm-dd, 2021-02-30. | Optional | 
+| filters | Filter the events list by providing a query using Qualys syntax. i.e., "dateTime : ['2021-01-01'..'2021-03-29']. When you use this argument it will overwrite the "from_date" and "to_date" arguments. If you don't use the filter, the query will include the events from the last 24 hours. Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
+| name | The name of the incident. Must be less than 128 characters. | Required | 
 | reviewers | Reviewers who will approve the incident. | Optional | 
-| comment | Comments for approval of the Incidents. | Optional | 
+| comment | Comments for approval of the incident. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QualysFIM.CreatedIncident.id | str | incident ID. | 
+| QualysFIM.CreatedIncident.id | str | Incident ID. | 
 | QualysFIM.CreatedIncident.name | str | Incident name. | 
 | QualysFIM.CreatedIncident.occurred | str | Indicates when the incident was created. | 
-| QualysFIM.CreatedIncident.username | str | Name of the user who created this incident. | 
+| QualysFIM.CreatedIncident.username | str | Name of the user who created the incident. | 
 | QualysFIM.CreatedIncident.status | str | Incident status. | 
 | QualysFIM.CreatedIncident.reviewers | str | List of reviewers who will approve the incident. | 
 
@@ -1503,25 +1502,25 @@ Mark an existing FIM incident as approved.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| approval_status | The approval status of the incident created by the rule. Possible values are: APPROVED, POLICY_VIOLATION, UNAPPROVED. | Required | 
-| change_type | Type of Incidents created by the rule. Possible values are: MANUAL, AUTOMATED, COMPROMISE, OTHER. | Required | 
-| comment | Comments for Incidents created by the rule. | Required | 
+| approval_status | The approval status of the incident. Possible values: "APPROVED", "POLICY_VIOLATION", "UNAPPROVED". | Required | 
+| change_type | Type of incidents. Possible values: "MANUAL", "AUTOMATED", "COMPROMISE", "OTHER". | Required | 
+| comment | Comments for the incidents. | Required | 
 | incident_id | incident ID to approve. | Required | 
-| disposition_category | The category of the incident created by the rule. Possible values are: PATCHING, PRE_APPROVED_CHANGE_CONTROL, CONFIGURATION_CHANGE, HUMAN_ERROR, DATA_CORRUPTION, EMERGENCY_CHANGE, CHANGE_CONTROL_VIOLATION, GENERAL_HACKING, MALWARE. | Required | 
+| disposition_category | The category of the incident created by the rule. Possible values: "PATCHING", "PRE_APPROVED_CHANGE_CONTROL", "CONFIGURATION_CHANGE", "HUMAN_ERROR", "DATA_CORRUPTION", "EMERGENCY_CHANGE", "CHANGE_CONTROL_VIOLATION", "GENERAL_HACKING", "MALWARE". | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QualysFIM.ApprovedIncident.id | str | incident ID. | 
+| QualysFIM.ApprovedIncident.id | str | Incident ID. | 
 | QualysFIM.ApprovedIncident.name | str | Incident name. | 
 | QualysFIM.ApprovedIncident.type | str | Incident type. | 
-| QualysFIM.ApprovedIncident.filterFromDate | str | From date filtration. | 
-| QualysFIM.ApprovedIncident.filterToDate | str | From date filtration. | 
-| QualysFIM.ApprovedIncident.approvalDate | str | Approval date. | 
-| QualysFIM.ApprovedIncident.approvalStatus | str | Approval status. | 
-| QualysFIM.ApprovedIncident.comment | str | Comments for Incidents created by the rule. | 
+| QualysFIM.ApprovedIncident.filterFromDate | str | The date from which to filter the approved incident. | 
+| QualysFIM.ApprovedIncident.filterToDate | str | The date until when to filter the approved incident. | 
+| QualysFIM.ApprovedIncident.approvalDate | str | Approval date of the incident. | 
+| QualysFIM.ApprovedIncident.approvalStatus | str | Approval status of the incident. | 
+| QualysFIM.ApprovedIncident.comment | str | Comments for incidents created by the rule. | 
 | QualysFIM.ApprovedIncident.username | str | Name of the user who created this incident. | 
 | QualysFIM.ApprovedIncident.status | str | Incident status. | 
 | QualysFIM.ApprovedIncident.reviewers | str | List of reviewers who will approve the incident. | 
@@ -1594,9 +1593,9 @@ Retrieve a list of all FIM assets.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | attributes | The list of comma-separated attributes that you want to include in the response. By default, all attributes will be returned in the result. i.e: attributes="attributes=interfaces.hostname". | Optional | 
-| filter | Filter the events list by providing a query using Qualys syntax. i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"  Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
-| page_number | Page number(index) to list items from. "Limit" argument defines page size (how many items in a page). Default is zero. Default is 0. | Optional | 
-| limit | The number of records to include. Default is 10. Default is 10. | Optional | 
+| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
+| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional | 
+| limit | The number of records to include. | Optional | 
 
 
 #### Context Output
@@ -1604,8 +1603,8 @@ Retrieve a list of all FIM assets.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QualysFIM.Assets.hostname | str | Asset hostname. | 
-| QualysFIM.Assets.lastCheckedIn | str | Asset last checked in date. | 
-| QualysFIM.Assets.created | str | Asset creation date.  | 
+| QualysFIM.Assets.lastCheckedIn | str | Date the asset was last checked. | 
+| QualysFIM.Assets.created | str | Date the asset was created.  | 
 
 
 #### Command Example

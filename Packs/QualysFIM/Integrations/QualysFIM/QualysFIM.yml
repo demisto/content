@@ -326,8 +326,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Filter the events list by providing a query using Qualys syntax.
-        i.e., "dateTime : ['2021-01-01'..'2021-03-29']
+        Filter the events list by providing a query using Qualys syntax. i.e., "dateTime : ['2021-01-01'..'2021-03-29']
         When you use this argument it will overwrite the "from_date" and "to_date" arguments.
         If you don't use the filter, the query will include the events from the last 24 hours.
         Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax:
