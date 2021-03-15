@@ -273,8 +273,6 @@ def arrange_context_according_to_user_selection(context_data):
 
     # each related event has it's own attributes
     for event in context_data:
-        # Limit amount of attributes in event
-        #limit_attributes_count(event)
         # Remove filtered fields in event
         remove_unselected_context_keys(event)
         # Remove filtered fields in object
