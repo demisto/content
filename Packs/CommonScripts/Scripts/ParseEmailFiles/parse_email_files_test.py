@@ -1,5 +1,8 @@
 # coding=utf-8
 from __future__ import print_function
+
+import chardet
+
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
     data_to_md, create_headers_map
 from CommonServerPython import entryTypes
@@ -579,6 +582,12 @@ def test_msg_headers_map():
     assert '2eWTrUmQCI=; 20:7yMOvCHfrNUNaJIus4SbwkpcSids8EscckQZzX/oGEwux6FJcH42uCQd9tNH8gmDkvPw' \
            in email_data['HeadersMap']['X-Microsoft-Exchange-Diagnostics'][2]
     assert 'text/plain' in email_data['Format']
+
+
+def test_parse_body_with_russian_language():
+    email_data, ignore = handle_msg('test_data/Phishing_TEST.msg', 'Phishing_TEST.msg')
+    assert str(email_data['Text']).startswith('\xd0\xa3')
+    assert str(email_data['HTML']).startswith('\xd0\xa3')
 
 
 def test_unknown_file_type(mocker):
