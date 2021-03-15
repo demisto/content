@@ -3202,6 +3202,10 @@
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
+        },
+        {
+            "playbookID": "CreateCertificate-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3251,7 +3255,6 @@
         "Azure Compute - Test": "Issue 28056",
         "forcepoint test": "Issue 28043",
         "CanaryTools Test": "Issue 30796",
-        "Generic Webhook - Test": "Issue 30797",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "CuckooTest": "Issue 25601",
@@ -3562,8 +3565,8 @@
                 "memory_threshold": 140
             },
             "demisto/powershell-ubuntu": {
-                "pid_threshold": 24,
-                "memory_threshold": 140
+                "pid_threshold": 30,
+                "memory_threshold": 155
             }
         }
     }
