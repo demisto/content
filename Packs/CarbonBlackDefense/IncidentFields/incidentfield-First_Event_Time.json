@@ -1,11 +1,11 @@
 {
-    "id": "incident_reputation",
+    "id": "incident_firsteventtime",
     "version": -1,
-    "name": "Reputation",
+    "name": "First Event Time",
     "ownerOnly": false,
-    "description": "Reputation",
-    "cliName": "reputation",
-    "type": "shortText",
+    "description": "First Event Time",
+    "cliName": "firsteventtime",
+    "type": "date",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -17,7 +17,10 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "Carbon Black Endpoint Standard Incident"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,

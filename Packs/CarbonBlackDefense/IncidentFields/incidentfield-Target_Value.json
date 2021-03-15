@@ -1,10 +1,10 @@
 {
-    "id": "incident_vector",
+    "id": "incident_targetvalue",
     "version": -1,
-    "name": "Vector",
+    "name": "Target Value",
     "ownerOnly": false,
-    "description": "vector",
-    "cliName": "vector",
+    "description": "Target Value",
+    "cliName": "targetvalue",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -17,7 +17,10 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "Carbon Black Endpoint Standard Incident"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,

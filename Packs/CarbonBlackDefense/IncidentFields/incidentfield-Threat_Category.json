@@ -1,11 +1,11 @@
 {
-    "id": "incident_firsteventtime",
+    "id": "incident_threatcategory",
     "version": -1,
-    "name": "First Event Time",
+    "name": "Threat Category",
     "ownerOnly": false,
-    "description": "First Event Time",
-    "cliName": "firsteventtime",
-    "type": "date",
+    "description": "Threat Category",
+    "cliName": "threatcategory",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -17,7 +17,10 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "Carbon Black Endpoint Standard Incident"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,

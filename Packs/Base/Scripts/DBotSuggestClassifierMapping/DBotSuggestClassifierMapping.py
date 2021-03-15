@@ -703,7 +703,7 @@ def init():
 
     SCHEME_ONLY = demisto.args().get('incidentSamplesType') in [SAMPLES_OUTGOING, SAMPLES_SCHEME]
 
-    fields = demisto.args().get('incidentFields', {})
+    fields = demisto.args().get('IncidentFields', {})
     if fields and len(fields) > 0:
         fields_names = map(lambda x: x['name'], fields)
         SIEM_FIELDS = filter_by_dict_by_keys(SIEM_FIELDS, fields_names)

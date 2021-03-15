@@ -1,10 +1,10 @@
 {
-    "id": "incident_processname",
+    "id": "incident_threatid",
     "version": -1,
-    "name": "Process Name",
+    "name": "Threat Id",
     "ownerOnly": false,
-    "description": "Process Name",
-    "cliName": "processname",
+    "description": "Threat Id",
+    "cliName": "threatid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -17,7 +17,10 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "Carbon Black Endpoint Standard Incident"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,

@@ -8,7 +8,7 @@ args:
   - default: false
     description: Incidents fields to consider on matching.
     isArray: false
-    name: incidentFields
+    name: IncidentFields
     required: false
     secret: false
   - default: false
