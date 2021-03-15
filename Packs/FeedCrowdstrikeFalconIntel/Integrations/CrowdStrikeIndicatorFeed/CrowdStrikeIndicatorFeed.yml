@@ -15,7 +15,7 @@ configuration:
   defaultvalue: "https://api.crowdstrike.com/"
 - display: CrowdStrike API Client ID
   displaypassword: CrowdStrike API Client Secret
-  additionalinfo: 'For non 6.1 users username is CrowdStrike API Client ID, password is CrowdStrike API Client Secret.'
+  additionalinfo: 'For non 6.1 users - enter your CrowdStrike API Client Secret in the password field.'
   name: credentials
   type: 9
   required: true
