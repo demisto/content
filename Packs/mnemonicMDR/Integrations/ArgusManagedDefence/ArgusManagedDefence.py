@@ -525,7 +525,7 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> N
         comment += str(entry.get("contents"))
         add_comment(caseID=case_id, comment=comment)
     elif entry.get("type") == 3:  # type file
-        add_attachment_helper(case_id, entry.get("id"))
+        add_attachment_helper(case_id, str(entry.get("id")))
 
 
 def add_attachment_command(args: Dict[str, Any]) -> CommandResults:
