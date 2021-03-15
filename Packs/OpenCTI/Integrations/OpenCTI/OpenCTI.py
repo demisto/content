@@ -135,7 +135,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
     last_run = raw_response.get('pagination', {}).get('endCursor')  # type: ignore
 
     if indicators_list := copy.deepcopy(raw_response.get('entities')):
-        indicators = [{'type': indicator.get('entity_type'),
+        indicators = [{'type': OPENCTI_TYPES_TO_XSOAR.get(indicator['entity_type'], indicator['entity_type']),
                        'value': indicator.get('observable_value'),
                        'id': indicator.get('id'),
                        'createdBy': indicator.get('createdBy').get('id')
