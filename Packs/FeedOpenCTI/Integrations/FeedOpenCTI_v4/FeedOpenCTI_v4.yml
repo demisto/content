@@ -45,7 +45,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+    reputation. If no option was chosen, the default Indicator Reputation will be taken from the Indicator data.
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -69,7 +69,7 @@ configuration:
   required: true
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed. If no option was chosen the default TLP color will be taken from the Indicator data.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:

@@ -109,17 +109,16 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
             if object_marking := item.get('objectMarking', []):
                 new_tlp_color = object_marking[0].get('definition', '').split(':')
                 indicator['fields']['trafficlightprotocol'] = new_tlp_color[1]
-                demisto.info(f'tlp_color: {new_tlp_color}')
         else:
             indicator['fields']['trafficlightprotocol'] = tlp_color
 
         score = item.get('x_opencti_score')
         if score in [*range(0, 21)]:
-            indicator['fields']['reputation'] = 'Good'
+            indicator['score'] = 1
         elif score in [*range(21, 71)]:
-            indicator['fields']['reputation'] = 'Suspicious'
+            indicator['score'] = 2
         elif score in [*range(71, 101)]:
-            indicator['fields']['reputation'] = 'Malicious'
+            indicator['score'] = 3
 
         indicators.append(indicator)
     return new_last_run, indicators
