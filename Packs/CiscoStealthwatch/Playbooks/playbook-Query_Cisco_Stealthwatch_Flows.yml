@@ -44,7 +44,6 @@ tasks:
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
         The remote action should have the following structure:
-
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
@@ -98,7 +97,7 @@ tasks:
       id: 172877e1-d636-4b2a-8b3e-70dddf7ea585
       version: -1
       name: Done
-      description: Playbook is done
+      description: Playbook is done.
       type: title
       iscommand: false
       brand: ""
@@ -123,7 +122,7 @@ tasks:
       id: d5413bce-fc23-4193-8f07-af3ecd0393ad
       version: -1
       name: Is search completed?
-      description: Checks whether the search is completed
+      description: Checks whether the search is completed.
       type: condition
       iscommand: false
       brand: ""
@@ -164,7 +163,7 @@ tasks:
       id: cb63f126-e616-466a-814d-90169463f29d
       version: -1
       name: cisco-stealthwatch-query-flows-initialize
-      description: Initialize flow search based on parameters. Please provide start
+      description: Initialize flow search based on parameters. Provide the start
         time, time range, or start time and end time.
       script: Cisco Stealthwatch|||cisco-stealthwatch-query-flows-initialize
       type: regular
@@ -204,7 +203,7 @@ tasks:
       id: e0e12b8e-168d-4c1f-82a3-db7397726f71
       version: -1
       name: cisco-stealthwatch-query-flows-status
-      description: Flow search check status
+      description: Check the status of the flow search.
       script: Cisco Stealthwatch|||cisco-stealthwatch-query-flows-status
       type: regular
       iscommand: true
@@ -238,7 +237,7 @@ tasks:
       id: 0daa60f3-885a-4055-811c-1fb467e9acb3
       version: -1
       name: cisco-stealthwatch-query-flows-results
-      description: Flow search results, use this command after the search job is over.
+      description: Flow search results. Use this command after the search job completes.
       script: Cisco Stealthwatch|||cisco-stealthwatch-query-flows-results
       type: regular
       iscommand: true
@@ -283,25 +282,25 @@ inputs:
   value:
     simple: "600"
   required: false
-  description: How much time to wait before a timeout occurs (minutes)
+  description: The amount to wait before a timeout occurs (in minutes).
   playbookInputQuery: null
 - key: interval
   value:
     simple: "1"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (in minutes).
   playbookInputQuery: null
 - key: range
   value:
     simple: 0-20
   required: false
-  description: Range of results to return (e.g. 0-20)
+  description: Range of results to return (e.g., 0-20).
   playbookInputQuery: null
 - key: tenant_id
   value:
     simple: "102"
   required: true
-  description: Tenant ID represents the Domain on Cisco Stealthwatch
+  description: Tenant ID represents the domain on Cisco Stealthwatch.
   playbookInputQuery: null
 - key: time_range
   value:
@@ -311,7 +310,7 @@ inputs:
   playbookInputQuery: null
 outputs:
 - contextPath: CiscoStealthwatch.FlowResults
-  description: The result of the search
+  description: The results of the search.
 sourceplaybookid: QRadarFullSearch
 tests:
  -  No tests

@@ -1,7 +1,7 @@
 id: List Cisco Stealthwatch Security Events
 version: -1
 name: List Cisco Stealthwatch Security Events
-description: This playbook list security events and return the results to the context.
+description: This playbook lists security events and returns the results to the context.
 fromversion: 5.5.0
 starttaskid: "0"
 tasks:
@@ -13,7 +13,7 @@ tasks:
       id: 230a5fa5-ffb2-4d27-857f-647083ec27dc
       version: -1
       name: ""
-      description: Start of playbook
+      description: Start of the playbook.
       iscommand: false
       brand: ""
     nexttasks:
@@ -44,7 +44,6 @@ tasks:
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
         The remote action should have the following structure:
-
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
@@ -98,7 +97,7 @@ tasks:
       id: 172877e1-d636-4b2a-8b3e-70dddf7ea585
       version: -1
       name: Done
-      description: Playbook is done
+      description: Playbook is done.
       type: title
       iscommand: false
       brand: ""
@@ -123,7 +122,7 @@ tasks:
       id: a8b2bf9c-7b4a-41a8-8a4f-ee76977ba683
       version: -1
       name: Is search completed?
-      description: Checks whether the search is completed
+      description: Checks whether the search is completed.
       type: condition
       iscommand: false
       brand: ""
@@ -165,7 +164,7 @@ tasks:
       version: -1
       name: cisco-stealthwatch-list-security-events-initialize
       description: Initialize listing security events for a domain (called Tenant
-        on the API)
+        on the API).
       script: Cisco Stealthwatch|||cisco-stealthwatch-list-security-events-initialize
       type: regular
       iscommand: true
@@ -201,7 +200,7 @@ tasks:
       id: f47572d3-fd0c-4b51-86c1-3db195ff12af
       version: -1
       name: cisco-stealthwatch-list-security-events-status
-      description: List security events status
+      description: List security events status.
       script: Cisco Stealthwatch|||cisco-stealthwatch-list-security-events-status
       type: regular
       iscommand: true
@@ -235,8 +234,8 @@ tasks:
       id: bbe619ad-2f54-44a1-8a9f-73007aa0fe83
       version: -1
       name: cisco-stealthwatch-list-security-events-results
-      description: List security events results, use this command after the search
-        job is over.
+      description: List security events results. Use this command after the search
+        job completes.
       script: Cisco Stealthwatch|||cisco-stealthwatch-list-security-events-results
       type: regular
       iscommand: true
@@ -281,25 +280,25 @@ inputs:
   value:
     simple: "600"
   required: false
-  description: How much time to wait before a timeout occurs (minutes)
+  description: The amount of time to wait before a timeout occurs (in minutes).
   playbookInputQuery: null
 - key: interval
   value:
     simple: "1"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (in minutes).
   playbookInputQuery: null
 - key: range
   value:
     simple: 0-20
   required: false
-  description: Range of results to return (e.g. 0-20)
+  description: Range of results to return (e.g., 0-20).
   playbookInputQuery: null
 - key: tenant_id
   value:
     simple: "102"
   required: true
-  description: Tenant ID represents the Domain on Cisco Stealthwatch
+  description: Tenant ID represents the domain on Cisco Stealthwatch.
   playbookInputQuery: null
 - key: time_range
   value:
@@ -309,7 +308,7 @@ inputs:
   playbookInputQuery: null
 outputs:
 - contextPath: CiscoStealthwatch.SecurityEventResults
-  description: The result of the search
+  description: The results of the search.
 sourceplaybookid: QRadarFullSearch
 tests:
  -  No tests

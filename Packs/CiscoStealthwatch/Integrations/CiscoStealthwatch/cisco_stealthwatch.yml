@@ -3,7 +3,7 @@ commonfields:
   id: Cisco Stealthwatch
   version: -1
 configuration:
-- additionalinfo: 'Server URL for Cisco Stealthwatch console. e.g: https://ip:port/'
+- additionalinfo: 'Server URL for Cisco Stealthwatch console e.g.: https://ip:port/.'
   display: Server URL
   name: server_url
   required: true
@@ -20,383 +20,382 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Scalable visibility and security analytics
+description: Scalable visibility and security analytics.
 display: Cisco Stealthwatch
 name: Cisco Stealthwatch
 script:
   commands:
   - arguments:
     - default: false
-      description: The tenant we want to initialize its flow search
+      description: The ID of the tenant for which to initialize its flow search.
       isArray: false
       name: tenant_id
       required: true
       secret: false
     - default: false
-      description: 'Start time. format: YYYY-mm-ddTHH:MM:SSZ.Given only start_time,
-        end_time will be set to the current time.'
+      description: 'Start time in the format: YYYY-mm-ddTHH:MM:SSZ. If start_time is provided but end_time is not provided, the end_time will be set to the current time.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'End time. format: YYYY-mm-ddTHH:MM:SSZ'
+      description: 'End time in the format: YYYY-mm-ddTHH:MM:SSZ. '
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
-      description: 'An optional time range. i.e: 3 months, 1 week, 1 day ago, etc.'
+      description: 'An optional time range, for example: 3 months, 1 week, 1 day ago, etc.'
       isArray: false
       name: time_range
       required: false
       secret: false
     - default: true
       defaultValue: '20'
-      description: Record limit
+      description: The maximum number of records to retrieve.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Filter based on IP Address.
+      description: The IP address by which to filter the results.
       isArray: false
       name: ip_addresses
       required: false
       secret: false
     deprecated: false
-    description: Initialize flow search based on parameters. Please provide start
+    description: Initializes the flow search based on specified arguments. Must provide a start
       time, time range, or start time and end time.
     execution: false
     name: cisco-stealthwatch-query-flows-initialize
     outputs:
     - contextPath: CiscoStealthwatch.FlowStatus.id
-      description: The id of the flow
+      description: The ID of the flow.
       type: str
     - contextPath: CiscoStealthwatch.FlowStatus.searchJobStatus
-      description: The searchJobStatus of the flow
+      description: The search job status of the flow.
       type: str
     - contextPath: CiscoStealthwatch.FlowStatus.percentComplete
-      description: The percentComplete of the flow
+      description: The percent of the flow that was completed.
       type: str
   - arguments:
     - default: false
-      description: The tenant we want to check its flow search status
+      description: The ID of the tenant for which to check its flow search status.
       isArray: false
       name: tenant_id
       required: true
       secret: false
     - default: false
-      description: The id of the search from the initialize command
+      description: The ID of the search from the cisco-stealthwatch-query-flows-initialize command.
       isArray: false
       name: search_id
       required: true
       secret: false
     deprecated: false
-    description: Flow search check status
+    description: Checks the flow search status.
     execution: false
     name: cisco-stealthwatch-query-flows-status
     outputs:
     - contextPath: CiscoStealthwatch.FlowStatus.id
-      description: The id of the flow
+      description: The ID of the flow.
       type: str
     - contextPath: CiscoStealthwatch.FlowStatus.percentComplete
-      description: The percentComplete of the flow
+      description: The percent of the flow that was completed.
       type: str
   - arguments:
     - default: false
-      description: The tenant we want to retrieve its flow search results
+      description: The ID of the tenant for which to retrieve its flow search results.
       isArray: false
       name: tenant_id
       required: true
       secret: false
     - default: false
-      description: The id of the search from the initialize command
+      description: The ID of the search from the cisco-stealthwatch-query-flows-initialize command.
       isArray: false
       name: search_id
       required: true
       secret: false
     deprecated: false
-    description: Flow search results, use this command after the search job is over.
+    description: Retrieves the flow search results. Use this command after the search job completes.
     execution: false
     name: cisco-stealthwatch-query-flows-results
     outputs:
     - contextPath: CiscoStealthwatch.FlowResults.id
-      description: The id of the flow
+      description: The ID of the flow.
       type: str
     - contextPath: CiscoStealthwatch.FlowResults.tenantId
-      description: The tenant id of the flow
+      description: The tenant ID of the flow.
       type: str
     - contextPath: CiscoStealthwatch.FlowResults.flowCollectorId
-      description: The collector id of the flow
+      description: The collector ID of the flow.
       type: str
     - contextPath: CiscoStealthwatch.FlowResults.protocol
-      description: The protocol of the flow
+      description: The protocol of the flow.
       type: str
     - contextPath: CiscoStealthwatch.FlowResults.serviceId
-      description: The service id of the flow
+      description: The service ID of the flow.
       type: str
     - contextPath: CiscoStealthwatch.FlowResults.statistics
-      description: The statistics of the flow
+      description: The statistics of the flow.
       type: str
     - contextPath: CiscoStealthwatch.FlowResults.peer
-      description: The peer of the flow
+      description: The peer of the flow.
       type: str
     - contextPath: CiscoStealthwatch.FlowResults.subject
-      description: The subject of the flow
+      description: The subject of the flow.
       type: str
   - arguments:
     - default: false
-      description: The tenant which we want to get its tags
+      description: The ID of the tenant for which to get its tags.
       isArray: false
       name: tenant_id
       required: true
       secret: false
     deprecated: false
-    description: List host groups (called Tags on the API)
+    description: Lists the host groups (called tags in the API).
     execution: false
     name: cisco-stealthwatch-list-tags
     outputs:
     - contextPath: CiscoStealthwatch.Tag.id
-      description: The id of the tag
+      description: The ID of the tag.
       type: str
     - contextPath: CiscoStealthwatch.Tag.displayName
-      description: The displayName of the tag
+      description: The display name of the tag.
       type: str
   - arguments:
     - default: false
-      description: The tenant which we want to get its tag
+      description: The ID of the tenant for which to get its tag.
       isArray: false
       name: tenant_id
       required: true
       secret: false
     - default: false
-      description: The tag we want to get more information about
+      description: The tag for which to get more information.
       isArray: false
       name: tag_id
       required: true
       secret: false
     deprecated: false
-    description: Get a single host group (called Tag on the API)
+    description: Gets a single host group (called tag in the API).
     execution: false
     name: cisco-stealthwatch-get-tag
     outputs:
     - contextPath: CiscoStealthwatch.Tag.id
-      description: The name of the tag
+      description: The name of the tag.
       type: str
     - contextPath: CiscoStealthwatch.Tag.name
-      description: The id of the tag
+      description: The ID of the tag.
       type: str
     - contextPath: CiscoStealthwatch.Tag.location
-      description: The location of the tag
+      description: The location of the tag.
       type: str
     - contextPath: CiscoStealthwatch.Tag.domainId
-      description: The domainId of the tag
+      description: The domain ID of the tag.
       type: str
   - arguments:
     - default: false
-      description: The tenant which we want to retrieve information about
+      description: The ID of the tenant for which to retrieve information.
       isArray: false
       name: tenant_id
       required: false
       secret: false
     deprecated: false
-    description: List all domains or Get a single domain (called Tenant(s) on the
-      API)
+    description: Lists all domains if no domain is specified or gets a specified domain (called tenant(s) in the
+      API).
     execution: false
     name: cisco-stealthwatch-list-tenants
     outputs:
     - contextPath: CiscoStealthwatch.Tenant.id
-      description: The id of the tenant
+      description: The ID of the tenant.
       type: str
     - contextPath: CiscoStealthwatch.Tenant.displayName
-      description: The displayName of the tenant
+      description: The display name of the tenant.
       type: str
   - arguments:
     - default: false
-      description: The tenant which we want to get its host information
+      description: The ID of the tenant for which to get its host information.
       isArray: false
       name: tenant_id
       required: true
       secret: false
     - default: false
-      description: 'The tag we want to get its information '
+      description: The ID of the tag for which to get its information.
       isArray: false
       name: tag_id
       required: true
       secret: false
     deprecated: false
-    description: Hourly traffic summary of ByteCount for a single host group (called
-      Tenent on the API)
+    description: Gets the hourly traffic summary of the byte count for a single host group (called
+      tenant in the API).
     execution: false
     name: cisco-stealthwatch-get-tag-hourly-traffic-report
     outputs:
     - contextPath: CiscoStealthwatch.TagHourlyTraffic.timestamp
-      description: The timestamp of the TagHourlyTraffic
+      description: Timestamp of the hourly traffic summary for a single host group (called tag on the API).
       type: str
     - contextPath: CiscoStealthwatch.TagHourlyTraffic.inboundByteCount
-      description: The inboundByteCount of the TagHourlyTraffic
+      description: Inbound byte count of the hourly traffic summary for a single host group (called tag on the API).
       type: str
     - contextPath: CiscoStealthwatch.TagHourlyTraffic.outboundByteCount
-      description: The outboundByteCount of the TagHourlyTraffic
+      description: Outbound byte count of the hourly traffic summary for a single host group (called tag on the API).
       type: str
     - contextPath: CiscoStealthwatch.TagHourlyTraffic.withinByteCount
-      description: The withinByteCount of the TagHourlyTraffic
+      description: Within the byte count of the hourly traffic summary for a single host group (called tag on the API).
       type: str
     - contextPath: CiscoStealthwatch.TagHourlyTraffic.tenant_id
-      description: The tenant_idof the TagHourlyTraffic
+      description: The tenant ID of the hourly traffic summary for a single host group (called tag on the API). 
       type: str
     - contextPath: CiscoStealthwatch.TagHourlyTraffic.tag_id
-      description: The tag_id of the TagHourlyTraffic
+      description: The tag ID of the hourly traffic summary for a single host group (called tag on the API). 
       type: str
   - arguments:
     - default: false
-      description: The tenant which we want to get its top alarming hosts
+      description: The ID of the tenant for which to get its top alarming hosts.
       isArray: false
       name: tenant_id
       required: true
       secret: false
     deprecated: false
-    description: Get top alarming host groups (called Tags on the API) for a specific
-      domain (called Tenent on the API)
+    description: Gets the top alarming host groups (called tags on the API) for a specific
+      domain (called tenant in the API).
     execution: false
     name: cisco-stealthwatch-get-top-alarming-tags
     outputs:
     - contextPath: CiscoStealthwatch.AlarmingTag.ipAddress
-      description: The IP address of the AlarmingTag
+      description: The IP address of the alarming tag.
       type: str
     - contextPath: CiscoStealthwatch.AlarmingTag.hostGroupIds
-      description: The hostGroupIds of the AlarmingTag
+      description: The host group IDs of the alarming tag.
       type: str
     - contextPath: CiscoStealthwatch.AlarmingTag.typeId
-      description: The typeId of the AlarmingTag
+      description: The type ID of the alarming tag.
       type: str
     - contextPath: CiscoStealthwatch.AlarmingTag.severity
-      description: The severity of the AlarmingTag
+      description: The severity of the alarming tag.
       type: str
     - contextPath: CiscoStealthwatch.AlarmingTag.alwaysBadCount
-      description: The alwaysBadCount of the AlarmingTag
+      description: The always bad count of the alarming tag.
       type: str
   - arguments:
     - default: false
-      description: 'The tenant we want to initialize its list security events '
+      description: The ID of the tenant for which to initialize its list security events.
       isArray: false
       name: tenant_id
       required: true
       secret: false
     - default: false
-      description: 'Start time. format: YYYY-mm-ddTHH:MM:SSZ.Given only start_time,
-        end_time will be set to the current time.'
+      description: 'Start time. Format: YYYY-mm-ddTHH:MM:SSZ. Given only the start_time,
+        the end_time will be set to the current time.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'End time. format: YYYY-mm-ddTHH:MM:SSZ'
+      description: 'End time. Format: YYYY-mm-ddTHH:MM:SSZ.'
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
-      description: 'An optional time range. i.e: 3 months, 1 week, 1 day ago, etc.'
+      description: 'An optional time range. For example: 3 months, 1 week, 1 day ago, etc.'
       isArray: false
       name: time_range
       required: false
       secret: false
     deprecated: false
-    description: Initialize listing security events for a domain (called Tenant on
-      the API)
+    description: Initializes the list of security events for a domain (called tenant on
+      the API).
     execution: false
     name: cisco-stealthwatch-list-security-events-initialize
     outputs:
     - contextPath: CiscoStealthwatch.SecurityEventStatus.id
-      description: The id of the SecurityEvent
+      description: The ID of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventStatus.searchJobStatus
-      description: The searchJobStatusof the SecurityEvent
+      description: The status of the search job for the security event.
       type: str
     - contextPath: 'CiscoStealthwatch.SecurityEventStatus.percentComplete '
-      description: The percentComplete of the SecurityEvent
+      description: The percent of the security event that is completed.
       type: str
   - arguments:
     - default: false
-      description: The tenant we want to get its list security events status
+      description: The ID of the tenant for which to get its list of security events status.
       isArray: false
       name: tenant_id
       required: true
       secret: false
     - default: false
-      description: The id of the search from the initialize command
+      description: The ID of the search from the initialize command.
       isArray: false
       name: search_id
       required: true
       secret: false
     deprecated: false
-    description: List security events status
+    description: Lists the security events status.
     execution: false
     name: cisco-stealthwatch-list-security-events-status
     outputs:
     - contextPath: CiscoStealthwatch.SecurityEventStatus.id
-      description: The id of the SecurityEvent
+      description: The ID of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventStatus.percentComplete
-      description: The percentCompleteof the SecurityEvent
+      description: The percent of the security event that is completed.
       type: str
   - arguments:
     - default: false
-      description: The tenant we want to retrieve its list security events results
+      description: The ID of the tenant for which to retrieve its list security events results.
       isArray: false
       name: tenant_id
       required: true
       secret: false
     - default: false
-      description: The id of the search from the initialize command
+      description: The ID of the search from the initialize command.
       isArray: false
       name: search_id
       required: true
       secret: false
     - default: true
       defaultValue: '50'
-      description: security events limit
+      description: The maximum number of security events.
       isArray: false
       name: limit
       required: true
       secret: false
     deprecated: false
-    description: List security events results, use this command after the search job
-      is over.
+    description: Lists the security events results. Use this command after the search job
+      completes.
     execution: false
     name: cisco-stealthwatch-list-security-events-results
     outputs:
     - contextPath: CiscoStealthwatch.SecurityEventResults.id
-      description: The id of the SecurityEvent
+      description: The ID of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventResults.domainId
-      description: The domainId of the SecurityEvent
+      description: The domain ID of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventResults.deviceId
-      description: The deviceId of the SecurityEvent
+      description: The device ID of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventResults.securityEventType
-      description: The securityEventType of the SecurityEvent
+      description: The type of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventResults.firstActiveTime
-      description: The firstActiveTime of the SecurityEvent
+      description: The first active time of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventResults.lastActiveTime
-      description: The lastActiveTime of the SecurityEvent
+      description: The last active time of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventResults.source
-      description: The source of the SecurityEvent
+      description: The source of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventResults.target
-      description: The target of the SecurityEvent
+      description: The target of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventResults.details
-      description: The details of the SecurityEvent
+      description: The details of the security event.
       type: str
     - contextPath: CiscoStealthwatch.SecurityEventResults.hitCount
-      description: The hitCount of the SecurityEvent
+      description: The hit count of the security event.
       type: str
   dockerimage: demisto/python3:3.9.2.17246
   feed: false
