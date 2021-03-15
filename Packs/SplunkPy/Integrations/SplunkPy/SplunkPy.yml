@@ -215,8 +215,8 @@ script:
       isArray: false
       name: update_context
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -294,11 +294,11 @@ script:
       isArray: false
       name: urgency
       predefined:
-        - critical
-        - high
-        - medium
-        - low
-        - informational
+      - critical
+      - high
+      - medium
+      - low
+      - informational
       required: false
       secret: false
     - default: false
@@ -615,8 +615,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Complex query to search in the store with operators such as "and",
-    "or", "not", etc. For more information see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore'
+      description: |-
+        Complex query to search in the store with operators such as "and",
+        "or", "not", etc. For more information see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore
       isArray: false
       name: query
       required: false
@@ -696,9 +697,9 @@ script:
   subtype: python2
   type: python
 tests:
-  - SplunkPy-Test-V2
-  - SplunkPy KV commands
-  - SplunkPy parse-raw - Test
+- SplunkPy-Test-V2
+- SplunkPy KV commands
+- SplunkPy parse-raw - Test
 defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper
 fromversion: 5.0.0
