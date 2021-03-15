@@ -53,9 +53,9 @@ script:
       name: url_type
     - description: 'Filtering by tags. Example: tag=Keitaro'
       name: tag
-    - description: Starting date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)
+    - description: 'Starting date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
       name: start
-    - description: End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)
+    - description: 'End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
       name: end
     description: You can get malicious URLs with this command
     outputs:
@@ -93,9 +93,9 @@ script:
       name: sha1
     - description: 'Filtering by tags. Example: tag=Keitaro'
       name: tag
-    - description: Starting Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)
+    - description: 'Starting Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
       name: start
-    - description: End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)
+    - description: 'End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
       name: end
     description: You can get malware hashs with this command
     outputs:
@@ -144,9 +144,9 @@ script:
       description: Total Page
     name: usta-get-phishing-sites
   - arguments:
-    - description: Staring Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)
+    - description: 'Staring Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
       name: start
-    - description: End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)
+    - description: 'End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
       name: end
     description: With the Identity Leak API, you can access the hashed version of
       the credentials added to the platform.SHA256(MD5(Identity_Number))
@@ -170,9 +170,9 @@ script:
       - phishing_site
       - data_leak
       - clients
-    - description: Starting Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)
+    - description: 'Starting Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
       name: start
-    - description: End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)
+    - description: 'End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
       name: end
     description: You can access stolen customer accounts via Stolen-Client-accounts
       API.
