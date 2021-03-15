@@ -538,7 +538,7 @@ def add_attachment_command(args: Dict[str, Any]) -> CommandResults:
 
     result = add_attachment_helper(case_id, file_id)
     if "error" in result.keys():
-        return_error(result["error"])
+        raise Exception(result["error"])
 
     readable_output = pretty_print_attachment_metadata(
         result, f"# #{case_id}: attachment metadata\n"
