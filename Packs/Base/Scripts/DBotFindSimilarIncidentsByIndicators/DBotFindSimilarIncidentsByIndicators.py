@@ -17,9 +17,8 @@ STATUS_DICT = {
 }
 
 ROUND_SCORING = 2
-COMMON_FIELDS = ['id', 'created', 'name']
 PLAYGROUND_PATTERN = '[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}'
-FIRST_COLUMNS_INCIDENTS_DISPLAY = ['ID', 'created', 'name']
+FIRST_COLUMNS_INCIDENTS_DISPLAY = ['Incident ID', 'created', 'name']
 FIELDS_TO_REMOVE_TO_DISPLAY = ['id']
 INCIDENT_FIELDS_TO_USE = ['indicators']
 FIELD_INDICATOR_TYPE = 'indicator_type'
@@ -363,12 +362,12 @@ def organize_data(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dic
     :return: Clean DataFrame of incident
     """
     similar_incidents = similar_incidents.reset_index().rename(columns={'index': 'id'})
-    similar_incidents['ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
+    similar_incidents['Incident ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     similar_incidents['Identical indicators'] = similar_incidents['Identical indicators'].apply(
         lambda _ids: '\n'.join(
             [indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in  # type: ignore
              _ids.split(',')]))  # type: ignore
-    similar_incidents = similar_incidents[['ID', 'id', 'Identical indicators', 'similarity indicators']]
+    similar_incidents = similar_incidents[['Incident ID', 'id', 'Identical indicators', 'similarity indicators']]
     similar_incidents = similar_incidents[similar_incidents['similarity indicators'] > threshold]
     similar_incidents.sort_values(['similarity indicators'], inplace=True, ascending=False)
     return similar_incidents.head(max_incidents_to_display)
@@ -410,10 +409,13 @@ def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_
     """
     incident_df['id'] = [incident_id]
     incident_df = enriched_incidents(incident_df, fields_incident_to_display)
-    incident_json = incident_df.to_dict(orient='records')
+    incident_df['Incident ID'] = incident_df['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     col_incident = incident_df.columns.tolist()
-    col_incident = COMMON_FIELDS + [x for x in col_incident if
-                                    x not in ['id', 'created', 'name', 'indicators']]
+    col_incident = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in col_incident if
+                                    x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + ['id', 'indicators']]
+    col_incident = [x.title() for x in col_incident]
+    incident_df = incident_df.rename(str.title, axis='columns')
+    incident_json = incident_df.to_dict(orient='records')
     return_outputs(readable_output=tableToMarkdown("Actual Incident", incident_json,
                                                    col_incident))
 
@@ -500,6 +502,25 @@ def organize_current_incident(current_incident_df, indicators_map):
     return current_incident_df
 
 
+def return_outputs_tagged(similar_incidents: pd.DataFrame, context: Dict, tag: Optional[str] = None):
+    colums_to_display = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in similar_incidents.columns.tolist() if
+                                             x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + FIELDS_TO_REMOVE_TO_DISPLAY]
+    similar_incidents_renamed = similar_incidents.rename(str.title, axis='columns')
+    similar_incidents_json = similar_incidents_renamed.to_dict(orient='records')
+    colums_to_display = [x.title() for x in colums_to_display]
+    readable_output = tableToMarkdown("Similar incidents", similar_incidents_json, colums_to_display)
+    return_entry = {
+        "Type": entryTypes["note"],
+        "HumanReadable": readable_output,
+        "ContentsFormat": formats['json'],
+        "Contents": similar_incidents.to_dict(orient='records'),
+        "EntryContext": {'DBotFindSimilarIncidents': context},
+    }
+    if tag is not None:
+        return_entry["Tags"] = [tag]
+    demisto.results(return_entry)
+
+
 def main():
     max_indicators_for_white_list = int(demisto.args()['maxIncidentsInIndicatorsForWhiteList'])
     min_nb_of_indicators = int(demisto.args()['minNumberOfIndicators'])
@@ -556,22 +577,16 @@ def main():
 
     incident_found_bool = (len(similar_incidents) > 0)
 
-    # Outputs
-    similar_incidents_json = similar_incidents.to_dict(orient='records')
-    col = similar_incidents.columns.tolist()
-    col = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in col if
-                                             x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + FIELDS_TO_REMOVE_TO_DISPLAY]
-
     if show_actual_incident == 'True':
         display_actual_incident(current_incident_df, incident_id, fields_incident_to_display)
 
     if incident_found_bool:
         context = create_context_for_incidents(similar_incidents)
-        return_outputs(readable_output=tableToMarkdown("Similar incidents", similar_incidents_json, col),
-                       outputs={'DBotFindSimilarIncidentsByIndicators': context}, raw_response=similar_incidents_json)
+        return_outputs_tagged(similar_incidents, context, 'similarIncidents')
     else:
         return_no_similar_incident_found_entry()
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+
