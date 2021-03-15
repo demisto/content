@@ -109,6 +109,27 @@ def get_pack_name(zip_fp: str) -> str:
     return metadata.get('name', 'ServerSidePackValidationDefaultName')
 
 
+def adjust_linter_row_and_col(
+        error_output: Dict, row_offset: int = 2, row_start: int = 1, col_offset: int = 1, col_start: int = 0
+) -> None:
+    """Update the linter errors row and column numbering
+
+    Accounts for lines inserted during demisto-sdk extract, and that column numbering starts with one
+
+    Args:
+        error_output (Dict): A single validation result dictionary (validate and lint) from the total list
+        row_offset (int): The number of rows to adjust by
+        row_start (int): The lowest allowable number for rows
+        col_offset (int): The number of columns to adjust by
+        col_start (int): The lowest allowable number for columns
+    """
+    row, col = 'row', 'col'
+    if row in error_output:
+        error_output[row] = str(max(int(error_output.get(row)) - row_offset, row_start))
+    if col in error_output:
+        error_output[col] = str(max(int(error_output.get(col)) - col_offset, col_start))
+
+
 def run_validate(file_path: str, json_output_file: str) -> None:
     os.environ['DEMISTO_SDK_SKIP_VERSION_CHECK'] = '1'
     tests_dir = 'Tests'
@@ -325,14 +346,13 @@ def main():
         result = validate_content(filename, file_contents, content_tmp_dir.name)
         outputs = []
         for validation in result:
-            for item in validation.values():
-                for error in item.get('outputs', []):
-                    if error.get('ui') or item.get('file-type') in {'py', 'ps1'}:
-                        outputs.append({
-                            'Name': item.get('display-name'),
-                            'Error': error.get('message'),
-                            'Line': error.get('line-number'),
-                        })
+            adjust_linter_row_and_col(validation)
+            if validation.get('ui') or validation.get('fileType') in {'py', 'ps1'}:
+                outputs.append({
+                    'Name': validation.get('name'),
+                    'Error': validation.get('message'),
+                    'Line': validation.get('row'),
+                })
         return_results(CommandResults(
             readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Line']),
             outputs_prefix='ValidationResult',
