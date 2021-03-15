@@ -206,7 +206,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         'found: {}'.format(last_run_time, now, fetch_query, len(notables), [n.data for n in notables])
     )
     fetches_with_same_start_time_count = last_run_data.get('fetch_start_update_count', 0) + 1
-    max_window = 20 if "backwards_fetch_window" not in params else int(params["backwards_fetch_window"])
+    max_window = 20 if "backwards_fetch_window" not in params else int(params["backwards_fetch_window"] or 20)
 
     if not enrich_notables:
         incidents = [n.to_incident() for n in notables]
@@ -243,7 +243,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     demisto.setLastRun(last_run_data)
 
 
-def fetch_incidents(service, enrichment_timeout, num_enrichment_events):
+def fetch_incidents(service):
     if ENABLED_ENRICHMENTS:
         integration_context = get_integration_context()
         if not demisto.getLastRun() and integration_context:
@@ -252,7 +252,7 @@ def fetch_incidents(service, enrichment_timeout, num_enrichment_events):
             # in the last run object to avoid entering this case
             fetch_incidents_for_mapping(integration_context)
         else:
-            run_enrichment_mechanism(service, enrichment_timeout, integration_context, num_enrichment_events)
+            run_enrichment_mechanism(service, integration_context)
     else:
         fetch_notables(service=service, enrich_notables=False)
 
@@ -826,18 +826,18 @@ def asset_enrichment(service, notable_data, num_enrichment_events):
     return job
 
 
-def handle_submitted_notables(service, enrichment_timeout, incidents, cache_object):
+def handle_submitted_notables(service, incidents, cache_object):
     """ Handles submitted notables. For each submitted notable, tries to retrieve its results, if results aren't ready,
      it moves to the next submitted notable.
 
     Args:
         service (splunklib.client.Service): Splunk service object.
-        enrichment_timeout (int): The timeout for the enrichment process.
         incidents (list): The incident to be submitted at the end of the run.
         cache_object (Cache): The enrichment mechanism cache object
 
     """
     handled_notables = []
+    enrichment_timeout = arg_to_number(str(demisto.params().get('enrichment_timeout', '5')))
     notables = cache_object.submitted_notables
     total = len(notables)
     demisto.info("Trying to handle {}/{} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES]), total))
@@ -893,17 +893,17 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
     return task_status
 
 
-def submit_notables(service, incidents, num_enrichment_events, cache_object):
+def submit_notables(service, incidents, cache_object):
     """ Submits fetched notables to Splunk for an enrichment.
 
     Args:
         service (splunklib.client.Service): Splunk service object
         incidents (list): The incident to be submitted at the end of the run.
-        num_enrichment_events (int): The maximal number of events to return per enrichment type.
         cache_object (Cache): The enrichment mechanism cache object
 
     """
     failed_notables, submitted_notables = [], []
+    num_enrichment_events = arg_to_number(str(demisto.params().get('num_enrichment_events', '20')))
     notables = cache_object.not_yet_submitted_notables
     total = len(notables)
     if notables:
@@ -959,7 +959,7 @@ def submit_notable(service, notable, num_enrichment_events):
     return notable.submitted()
 
 
-def run_enrichment_mechanism(service, enrichment_timeout, integration_context, num_enrichment_events):
+def run_enrichment_mechanism(service, integration_context):
     """ Execute the enriching fetch mechanism
     1. We first handle submitted notables that have not been handled in the last fetch run
     2. If we finished handling and submitting all fetched notables, we fetch new notables
@@ -969,19 +969,17 @@ def run_enrichment_mechanism(service, enrichment_timeout, integration_context, n
 
     Args:
         service (splunklib.client.Service): Splunk service object.
-        enrichment_timeout (int): The timeout for the enrichment process.
         integration_context (dict): The integration context
-        num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
     """
     incidents = []  # type: list
     cache_object = Cache.load_from_integration_context(integration_context)
 
     try:
-        handle_submitted_notables(service, enrichment_timeout, incidents, cache_object)
+        handle_submitted_notables(service, incidents, cache_object)
         if cache_object.done_submitting() and cache_object.done_handling():
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True)
-        submit_notables(service, incidents, num_enrichment_events, cache_object)
+        submit_notables(service, incidents, cache_object)
 
     except Exception as e:
         err = 'Caught an exception while executing the enriching fetch mechanism. Additional Info: {}'.format(str(e))
@@ -2295,10 +2293,7 @@ def main():
     elif command == 'splunk-get-indexes':
         splunk_get_indexes_command(service)
     elif command == 'fetch-incidents':
-        params = demisto.params()
-        enrichment_timeout = arg_to_number(str(params.get('enrichment_timeout')))
-        num_enrichment_events = arg_to_number(str(params.get('num_enrichment_events')))
-        fetch_incidents(service, enrichment_timeout, num_enrichment_events)
+        fetch_incidents(service)
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service)
     elif command == 'splunk-notable-event-edit':
