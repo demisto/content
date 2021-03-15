@@ -131,10 +131,10 @@ configuration:
   type: 8
 - additionalinfo: When ever no incidents are found, the next search will start from
     the same start time, up to a window of the size specified here.
-  defaultvalue: '20'
+  defaultvalue: '15'
   display: Fetch backwardss window
   hidden: false
-  name: backwards_fetch_window
+  name: look_behind
   required: false
   type: 0
 description: Run queries on Splunk servers.
@@ -690,7 +690,6 @@ script:
   isfetch: true
   longRunning: false
   longRunningPort: false
-  ismappable: true
   runonce: false
   script: '-'
   subtype: python2
