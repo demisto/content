@@ -102,9 +102,7 @@ def controlQRadarXSOAR(qradar_offenses, mismatched_incidents, matched_incidents)
         demisto.results(mismatched_incident)
         return difference_incident
     else:
-        return_messages = "No inconsistencies between QRadar and XSOAR"
-        return_results(return_messages)
-        sys.exit(1)
+        return None
 
 
 def synchronizationQRadarXSOAR(difference_incident):
@@ -127,7 +125,11 @@ def main():
     qradar_offenses = getQRadarOffenses()
     mismatched_incidents, matched_incidents = getXSOARIncidents()
     difference_incident = controlQRadarXSOAR(qradar_offenses, mismatched_incidents, matched_incidents)
-    synchronizationQRadarXSOAR(difference_incident)
+    if difference_incident:
+        synchronizationQRadarXSOAR(difference_incident)
+    else:
+        return_messages = "No inconsistencies between QRadar and XSOAR"
+        return_results(return_messages)
 
 
 # python2 uses __builtin__ python3 uses builtins
