@@ -3,7 +3,6 @@
 
 import demistomock as demisto
 from CommonServerPython import *
-import extract_msg
 from email import message_from_string
 from email.header import decode_header
 import base64
@@ -194,11 +193,11 @@ class DataModel(object):
     def PtypString(data_value):
         if data_value:
             try:
+                data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
+            except UnicodeDecodeError:
                 res = chardet.detect(data_value)
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
                 data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
-            except UnicodeDecodeError:
-                data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
 
         return data_value
 
@@ -3404,9 +3403,6 @@ def convert_to_unicode(s):
 
 
 def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
-    # msg = extract_msg.Message(file_path)
-    # message_body = msg.body
-
     if max_depth == 0:
         return None, []
 
@@ -3424,16 +3420,13 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'From': msg_dict['From'],
         'Subject': headers_map.get('Subject'),
         'HTML': msg_dict['HTML'],
-        'Text': unicode(str(msg_dict['Text']), 'utf-16-le'),
+        'Text': msg_dict['Text'],
         'Headers': headers,
         'HeadersMap': headers_map,
         'Attachments': '',
         'Format': mail_format_type,
         'Depth': MAX_DEPTH_CONST - max_depth
     }
-
-    if msg_dict['HTML'] == msg_dict['Text']:
-        email_data['HTML'] = email_data['Text']
 
     if parse_only_headers:
         return {"HeadersMap": email_data.get("HeadersMap")}, []
@@ -3725,17 +3718,16 @@ def main():
         if is_error(result):
             return_error(get_error(result))
 
-        file_path = '/Users/cshayner/Downloads/Опрос.msg'
-        # file_path = '/Users/cshayner/dev/demisto/content/Packs/CommonScripts/Scripts/ParseEmailFiles/test_data/utf_subject.msg'
-        file_name = 'Опрос.msg'
+        file_path = result[0]['Contents']['path']
+        file_name = result[0]['Contents']['name']
         result = demisto.executeCommand('getEntry', {'id': entry_id})
         if is_error(result):
             return_error(get_error(result))
 
-        # file_metadata = result[0]['FileMetadata']
-        # file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
-        # if 'MIME entity text, ISO-8859 text' in file_type:
-        #     file_type = 'application/pkcs7-mime'
+        file_metadata = result[0]['FileMetadata']
+        file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
+        if 'MIME entity text, ISO-8859 text' in file_type:
+            file_type = 'application/pkcs7-mime'
 
     except Exception as ex:
         return_error(
@@ -3743,7 +3735,7 @@ def main():
                 entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
 
     try:
-        file_type_lower = 'cdfv2 microsoft outlook message'
+        file_type_lower = file_type.lower()
         if 'composite document file v2 document' in file_type_lower \
                 or 'cdfv2 microsoft outlook message' in file_type_lower:
             email_data, attached_emails = handle_msg(file_path, file_name, parse_only_headers, max_depth)
