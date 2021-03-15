@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import demistomock as demisto
 from CommonServerPython import *
 from email import message_from_string
@@ -3103,7 +3100,7 @@ class MsOxMessage(object):
 
         ole_file = None
         try:
-            ole_file = OleFileIO(msg_file_path, path_encoding=None)
+            ole_file = OleFileIO(msg_file_path)
 
             # process directory entries
             ole_root = ole_file.root
