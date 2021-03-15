@@ -845,7 +845,9 @@ def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
     result = get_attachment(caseID=case_id, attachmentID=attachment_id)
 
     return CommandResults(
-        readable_output=pretty_print_attachment_metadata(result, f"# #{case_id}: attachment metadata\n"),
+        readable_output=pretty_print_attachment_metadata(
+            result, f"# #{case_id}: attachment metadata\n"
+        ),
         outputs_prefix="Argus.Attachments",
         outputs=result,
         raw_response=result,
