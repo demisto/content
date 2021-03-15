@@ -18,6 +18,13 @@ requests.packages.urllib3.disable_warnings()
 # Remove trailing slash to prevent wrong URL path to service
 API_URL = demisto.params()['url'].rstrip('/')
 
+reliability = demisto.params().get('integrationReliability')
+
+if DBotScoreReliability.is_valid_type(reliability):
+    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+else:
+    Exception("Please provide a valid value for the Source Reliability parameter.")
+
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 
