@@ -221,7 +221,7 @@ def test_main_outgoing(mocker):
     args = {
         'incidentSamples': incidents,
         'incidentSamplesType': 'outgoingSamples',
-        'IncidentFields': all_incident_fields,
+        'incidentFields': all_incident_fields,
     }
     mocker.patch.object(demisto, 'args', return_value=args)
     mapper = main()
@@ -236,7 +236,7 @@ def test_main_splunk_schemes(mocker, capfd):
     args = {
         'incidentSamples': incidents,
         'incidentSamplesType': 'scheme',
-        'IncidentFields': all_incident_fields,
+        'incidentFields': all_incident_fields,
     }
     mocker.patch.object(demisto, 'args', return_value=args)
     mapper = main()
@@ -260,7 +260,7 @@ def test_custom_field(mocker, capfd):
     args = {
         'incidentSamples': incidents,
         'incidentSamplesType': 'scheme',
-        'IncidentFields': fields,
+        'incidentFields': fields,
     }
     mocker.patch.object(demisto, 'args', return_value=args)
     mapper = main()
