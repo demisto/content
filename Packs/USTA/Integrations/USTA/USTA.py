@@ -1,7 +1,5 @@
-import datetime
 import hashlib
 import json
-import os
 import traceback
 
 import demistomock as demisto  # noqa: F401
