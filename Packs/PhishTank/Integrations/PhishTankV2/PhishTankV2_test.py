@@ -238,6 +238,7 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
     dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
                ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     assert output.get(dbot_key, [])[0].get('Score') == expected_score
+    assert output.get(dbot_key, [])[0].get('Reliability') == DBotScoreReliability.C
 
     # validate human readable
     hr_ = command_results[0].to_context().get('HumanReadable', {})
