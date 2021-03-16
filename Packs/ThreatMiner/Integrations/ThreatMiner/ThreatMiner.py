@@ -681,49 +681,53 @@ def delete_proxy_if_asked():
     ''' EXECUTION CODE '''
 
 
-try:
+def main():
+    try:
 
-    params = demisto.params()
+        params = demisto.params()
 
-    args = {
-        'threat_miner_url': params.get('threatminer_url'),
-        'verify_certificates': False if params.get('insecure') else True,
-    }
+        args = {
+            'threat_miner_url': params.get('threatminer_url'),
+            'verify_certificates': False if params.get('insecure') else True,
+        }
 
-    reliability = params.get('integrationReliability')
+        reliability = params.get('integrationReliability')
 
-    if DBotScoreReliability.is_valid_type(reliability):
-        args['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        Exception("Please provide a valid value for the Source Reliability parameter.")
-
-    delete_proxy_if_asked()
-    demisto_command = demisto.command()
-    if demisto_command == 'test-module':
-        report = get_ip_whois_rawdata('8.8.8.8', args['threat_miner_url'], args['verify_certificates'])
-
-        if 'asn' in report:
-            demisto.results('ok')
+        if DBotScoreReliability.is_valid_type(reliability):
+            args['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         else:
-            demisto.results('test failed')
+            Exception("Please provide a valid value for the Source Reliability parameter.")
 
-    if params.get('limit_results').lower() == 'all':
-        args['max_array_size'] = -1
-    else:
-        args['max_array_size'] = int(demisto.params().get('limit_results', 30))
+        delete_proxy_if_asked()
+        demisto_command = demisto.command()
+        if demisto_command == 'test-module':
+            report = get_ip_whois_rawdata('8.8.8.8', args['threat_miner_url'], args['verify_certificates'])
 
-    if demisto_command == 'domain':
-        domain_command(**args)
+            if 'asn' in report:
+                demisto.results('ok')
+            else:
+                demisto.results('test failed')
 
-    if demisto_command == 'ip':
-        ip_command(**args)
+        if params.get('limit_results').lower() == 'all':
+            args['max_array_size'] = -1
+        else:
+            args['max_array_size'] = int(demisto.params().get('limit_results', 30))
 
-    if demisto_command == 'file':
-        file_command(**args)
+        if demisto_command == 'domain':
+            domain_command(**args)
 
-except Exception as e:
-    demisto.results({
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': 'error has occured: %s' % (e.message, ),
-    })
+        if demisto_command == 'ip':
+            ip_command(**args)
+
+        if demisto_command == 'file':
+            file_command(**args)
+
+    except Exception as e:
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'error has occured: %s' % (e.message, ),
+        })
+
+if __name__ == "__main__":
+    main()
