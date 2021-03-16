@@ -130,6 +130,7 @@ def create_context(indicators, include_dbot_score=False):
                     'Type': indicator_type,
                     'Vendor': 'ThreatConnect'
                 }
+            indicators_dbot_score[value]['Reliability'] = params.get('integrationReliability')
 
         context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
             'ID': ind['id'],

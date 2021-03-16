@@ -312,6 +312,7 @@ def test_create_context_debotscore_samilar_indicator(mocker):
     indicator.extend(deepcopy(IP_INDICATOR))
     indicator[0]['confidence'] = 0
     mocker.patch.object(demisto, 'params', return_value={"defaultOrg": "Demisto Inc.",
+                                                         "integrationReliability": "B - Usually reliable",
                                                          "freshness": 7, "rating": 0, "confidence": 50})
 
     # passing 2 ip indicators with the same address, one of them should gets the score 2 and the second one the score 3
@@ -321,3 +322,4 @@ def test_create_context_debotscore_samilar_indicator(mocker):
     assert len(context['DBotScore']) == 1
     assert context['DBotScore'][0]['Indicator'] == '88.88.88.88'
     assert context['DBotScore'][0]['Score'] == 3
+    assert context['DBotScore'][0]['Reliability'] == 'B - Usually reliable'
