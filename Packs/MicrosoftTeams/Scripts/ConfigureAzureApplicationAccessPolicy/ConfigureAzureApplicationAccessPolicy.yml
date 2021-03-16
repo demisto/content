@@ -35,6 +35,6 @@ system: false
 timeout: '0'
 type: powershell
 dockerimage: demisto/powershell-teams:1.0.0.17428
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
 - No Tests

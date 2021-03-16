@@ -185,6 +185,6 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: ConfigureAzureApplicationAccessPolicy-Test
-fromversion: 5.0.0
+fromversion: 5.5.0
 description: Granting a user the necessary permissions in order to create a Teams
   meeting.
