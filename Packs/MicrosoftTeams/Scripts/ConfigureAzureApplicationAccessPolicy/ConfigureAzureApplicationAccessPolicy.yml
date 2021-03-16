@@ -30,6 +30,10 @@ commonfields:
   version: -1
 enabled: false
 name: ConfigureAzureApplicationAccessPolicy
+outputs:
+- contextPath: ConfigureAzureApplicationAccessPolicy.Status
+  description: Whether the access policy was given.
+  type: String
 script: '-'
 system: false
 timeout: '0'

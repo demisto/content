@@ -22,8 +22,7 @@ function Main()
         $human_readable = "Access policy was given"
         $context = @{
             "ConfigureAzureApplicationAccessPolicy" = @{
-                "Output" = "Access policy was given"
-                "ConnectionInfo" = $connection_info.ToString()
+                "Status" = "Access policy was given"
             }
         }
 

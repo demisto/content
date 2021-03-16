@@ -92,7 +92,7 @@ tasks:
           left:
             value:
               complex:
-                root: ConfigureAzureApplicationAccessPolicy.Output
+                root: ConfigureAzureApplicationAccessPolicy.Status
             iscontext: true
           right:
             value:
@@ -184,7 +184,6 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: ConfigureAzureApplicationAccessPolicy-Test
 fromversion: 5.5.0
 description: Granting a user the necessary permissions in order to create a Teams
   meeting.
