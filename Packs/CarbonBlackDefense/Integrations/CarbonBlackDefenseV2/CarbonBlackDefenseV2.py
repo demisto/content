@@ -127,15 +127,13 @@ class Client(BaseClient):
         suffix_url = f'integrationServices/v3/policy/{policy_id}'
         return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers)
 
-    def add_rule_to_policy(self, policy_id: int, action: str, operation: str, required: str, rule_id: int, type: str,
-                           value: str):
+    def add_rule_to_policy(self, policy_id: int, action: str, operation: str, required: str, type: str, value: str):
         suffix_url = f'integrationServices/v3/policy/{policy_id}/rule'
         body = {
             'ruleInfo': assign_params(
                 action=action,
                 operation=operation,
                 required=required,
-                id=rule_id,
                 application=assign_params(
                     type=type,
                     value=value
@@ -564,13 +562,12 @@ def add_rule_to_policy_command(client: Client, args: dict):
     action = args.get('action')
     operation = args.get('operation')
     required = args.get('required')
-    rule_id = args.get('id')
     type = args.get('type')
     value = args.get('value')
 
-    if not policy_id or not action or not operation or not required or not rule_id or not type or not value:
+    if not policy_id or not action or not operation or not required or not type or not value:
         return "Missing required arguments."
-    res = client.add_rule_to_policy(policy_id, action, operation, required, rule_id, type, value)
+    res = client.add_rule_to_policy(policy_id, action, operation, required, type, value)
 
     if res.get('message') == 'Success':
         return get_policy_command(client, {'policyId': policy_id})
