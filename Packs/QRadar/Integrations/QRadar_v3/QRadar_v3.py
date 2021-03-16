@@ -1153,23 +1153,24 @@ def test_module_command(client: Client, params: Dict) -> str:
         - raises DemistoException if something had failed the test.
     """
     try:
-        client.test_connection()
         is_long_running = params.get('longRunning')
         if is_long_running:
             ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
             get_incidents_long_running_execution(
                 client=client,
-                offenses_per_fetch=int(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH)),
+                offenses_per_fetch=1,
                 user_query=params.get('query', ''),
                 fetch_mode=params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE),
                 events_columns=params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE),
-                events_limit=int(params.get('events_limit', DEFAULT_EVENTS_LIMIT)),
+                events_limit=1,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
                 last_highest_id=get_integration_context().get(LAST_FETCH_KEY, 0),
                 incident_type=params.get('incident_type'),
                 mirror_direction=MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
             )
+        else:
+            client.offenses_list(range_="items=0-0")
         message = 'ok'
     except DemistoException as e:
         err_msg = str(e)
