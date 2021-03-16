@@ -4,7 +4,7 @@
     "cliName": "fwserials",
     "closeForm": false,
     "content": true,
-    "description": "comma-separated list of FWs",
+    "description": "comma-separated list of PANOS FW serial numbers",
     "editForm": true,
     "group": 0,
     "hidden": false,
