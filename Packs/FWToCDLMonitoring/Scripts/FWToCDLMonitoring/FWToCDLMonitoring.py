@@ -35,11 +35,7 @@ fw_monitor_list = []
 serial_string = demisto.args().get('fw_serials')
 
 if serial_string:
-    # Remove any space from the string
-    serial_string = serial_string.replace(" ", "")
-    fw_monitor_list = serial_string.split(',')
-    # Remove any duplicate from the manual list
-    fw_monitor_list = list(dict.fromkeys(fw_monitor_list))
+    fw_monitor_list = argToList(serial_string)
 
 if not fw_monitor_list:
     # List of FW to monitor is empty, get it from Panorama
@@ -72,8 +68,8 @@ if not fw_monitor_list:
     else:
         return_error("Failed to retrieve FW list from Panorama, try to specify manually a list of serials.")
 
-# Uncomment to verify the list of FW to be monitored
-# demisto.log(fw_monitor_list)
+# Log the list of firewalls to be monitored
+demisto.debug(fw_monitor_list)
 
 FW_OK = []
 FW_KO = []
