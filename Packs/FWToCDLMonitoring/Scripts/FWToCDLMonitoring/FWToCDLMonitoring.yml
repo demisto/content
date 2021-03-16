@@ -12,8 +12,8 @@ commonfields:
   version: -1
 dependson:
   must:
-  - Panorama|||panorama
-  - Cortex Data Lake|||cdl-query-traffic-logs
+  - panorama
+  - cdl-query-traffic-logs
 dockerimage: demisto/python3:3.9.2.17246
 enabled: true
 name: FW-to-CDL-monitoring
