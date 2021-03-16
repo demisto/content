@@ -44,7 +44,7 @@ configuration:
   type: 16
 - additionalinfo: This field limits the amount of attributes in every event that will be written to context. Raising it above 1000 may result in high memory and disk usage. Please contact Cortex XSOAR support before attempting to do so.
   defaultvalue: '1000'
-  display: Maximum attributes in event
+  display: Maximum attributes in the event
   hidden: false
   name: attributes_limit
   required: false
