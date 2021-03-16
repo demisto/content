@@ -1527,7 +1527,7 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 | windows_file_paths | A comma-separated list of file paths on the Windows platform.  | Optional | 
 | linux_file_paths | A comma-separated list of file paths on the Linux platform.  | Optional | 
 | mac_file_paths | A comma-separated list of file paths on the Mac platform.  | Optional | 
-| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.  | Optional | 
+| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on, e.g.,"C:\Users\demisto\Desktop\CortexXSOAR.txt".  | Optional | 
 
 
 #### Context Output
