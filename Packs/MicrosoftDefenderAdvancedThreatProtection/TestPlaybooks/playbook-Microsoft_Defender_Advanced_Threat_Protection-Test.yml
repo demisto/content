@@ -996,7 +996,7 @@ tasks:
       id: 240b6d06-4b68-4ed3-85c2-87970c011250
       version: -1
       name: List investigations
-      description: Retrieves a collection of investigations or retrieves specific
+      description: Retrieves a collection of investigations or retrieves a specific
         investigation by its ID.
       script: '|||microsoft-atp-list-investigations'
       type: regular
