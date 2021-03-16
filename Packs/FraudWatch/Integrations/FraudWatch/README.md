@@ -56,7 +56,7 @@ Get a list of incidents from FraudWatch service.
 | brand | Retrieve incidents that match the specified brand. An error is encountered if the brand does not exist. A list of the existing brands can be retrieved by the 'fraudwatch-brands-list' command. | Optional | 
 | status | Retrieve incidents that have the specified status. Possible values are: active, new, monitor, reactive, onhold, closed, closedmonitor, rejected, duplicate. | Optional | 
 | limit | Number of incidents to retrieve. | Optional | 
-| page_size | The number of incidents in a page. Maximum value is 200. | Optional | 
+| page_size | The number of incidents in a page. Maximum value is 200.  If page is given, defaults of this argument will be 50. | Optional | 
 | page | Retrieve incidents by the given page number. | Optional | 
 | from | Retrieve alerts for which 'date opened' is higher or equal to the 'from' value. Supports ISO and time range (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) formats. If not specified, the default value of 'to' is the current time. | Optional | 
 | to | Retrieve alerts for which 'date opened' is lower or equal to the 'to' value. Supports ISO and time range (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) formats. If not specified, the default value of 'from' is 12 months before 'to'. | Optional | 
@@ -104,7 +104,7 @@ Get a list of incidents from FraudWatch service.
                     "http://www.malicious5.com"
                 ],
                 "brand": "Testing Brand 2",
-                "client": "***REMOVED*** - Palo Alto",
+                "client": "Palo Alto",
                 "content_ip": null,
                 "created_by": "Client",
                 "current_duration": "85882",
@@ -130,7 +130,7 @@ Get a list of incidents from FraudWatch service.
                     "http://www.malicious5.com"
                 ],
                 "brand": "Testing Brand 2",
-                "client": "***REMOVED*** - Palo Alto",
+                "client": "Palo Alto",
                 "content_ip": null,
                 "created_by": "Client",
                 "current_duration": "86649",
@@ -153,7 +153,7 @@ Get a list of incidents from FraudWatch service.
                     "abuse.com"
                 ],
                 "brand": "Testing Brand 2",
-                "client": "***REMOVED*** - Palo Alto",
+                "client": "Palo Alto",
                 "content_ip": "192.168.0.1",
                 "created_by": "Client",
                 "current_duration": "340758",
@@ -180,9 +180,9 @@ Get a list of incidents from FraudWatch service.
 >### FraudWatch Incidents
 >|identifier|reference_id|url|status|type|brand|client|content_ip|created_by|discovered_by|current_duration|date_opened|additional_urls|link|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| JJJ-595483 | abc1234 | http://www.malicious.com | monitor | Vishing | Testing Brand 2 | ***REMOVED*** - Palo Alto |  | Client | client | 85882 | 2021-02-07T15:37:12.000Z | http://www.malicious2.com,<br/>http://www.malicious3.com,<br/>http://www.malicious4.com,<br/>http://www.malicious5.com | https://www.phishportal.com/client/incident/JJJ-595483 |
->| JJJ-992295 | abc1234 | http://www.malicious.com | monitor | Vishing | Testing Brand 2 | ***REMOVED*** - Palo Alto |  | Client | client | 86649 | 2021-02-07T15:24:25.000Z | http://www.malicious2.com,<br/>http://www.malicious3.com,<br/>http://www.malicious4.com,<br/>http://www.malicious5.com | https://www.phishportal.com/client/incident/JJJ-992295 |
->| JJJ-302171 | malicious1 | http://malicious.com | monitor | Brand Abuse | Testing Brand 2 | ***REMOVED*** - Palo Alto | 192.168.0.1 | Client | client | 340758 | 2021-02-04T16:49:16.000Z | abuse.com | https://www.phishportal.com/client/incident/JJJ-302171 |
+>| JJJ-595483 | abc1234 | http://www.malicious.com | monitor | Vishing | Testing Brand 2 | Palo Alto |  | Client | client | 85882 | 2021-02-07T15:37:12.000Z | http://www.malicious2.com,<br/>http://www.malicious3.com,<br/>http://www.malicious4.com,<br/>http://www.malicious5.com | https://www.phishportal.com/client/incident/JJJ-595483 |
+>| JJJ-992295 | abc1234 | http://www.malicious.com | monitor | Vishing | Testing Brand 2 | Palo Alto |  | Client | client | 86649 | 2021-02-07T15:24:25.000Z | http://www.malicious2.com,<br/>http://www.malicious3.com,<br/>http://www.malicious4.com,<br/>http://www.malicious5.com | https://www.phishportal.com/client/incident/JJJ-992295 |
+>| JJJ-302171 | malicious1 | http://malicious.com | monitor | Brand Abuse | Testing Brand 2 | Palo Alto | 192.168.0.1 | Client | client | 340758 | 2021-02-04T16:49:16.000Z | abuse.com | https://www.phishportal.com/client/incident/JJJ-302171 |
 
 
 ### fraudwatch-incident-report
@@ -244,7 +244,7 @@ Report an incident to FraudWatch service.
                 "http://abuse.com"
             ],
             "brand": "Testing Brand 1",
-            "client": "***REMOVED*** - Palo Alto",
+            "client": "Palo Alto",
             "content_ip": null,
             "created_by": "FraudWatch",
             "current_duration": "0",
@@ -270,7 +270,7 @@ Report an incident to FraudWatch service.
 >### Created FraudWatch Incident
 >|additional_urls|brand|client|created_by|current_duration|date_opened|discovered_by|identifier|link|reference_id|status|type|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| http://abuse.com | Testing Brand 1 | ***REMOVED*** - Palo Alto | FraudWatch | 0 | 2021-02-08T15:28:37.000Z | client | JJJ-358877 | https://www.phishportal.com/client/incident/JJJ-358877 | abc123 | monitor | Vishing | http://www.maliciousaddress.com |
+>| http://abuse.com | Testing Brand 1 | Palo Alto | FraudWatch | 0 | 2021-02-08T15:28:37.000Z | client | JJJ-358877 | https://www.phishportal.com/client/incident/JJJ-358877 | abc123 | monitor | Vishing | http://www.maliciousaddress.com |
 
 
 ### fraudwatch-incident-update
@@ -358,7 +358,7 @@ Gets an incident from FraudWatch service by its reference ID or incident ID. Sin
                 "http://malicious2.com"
             ],
             "brand": "Testing Brand 1",
-            "client": "***REMOVED*** - Palo Alto",
+            "client": "Palo Alto",
             "content_ip": null,
             "created_by": "Client",
             "current_duration": "514313",
@@ -384,7 +384,7 @@ Gets an incident from FraudWatch service by its reference ID or incident ID. Sin
 >### FraudWatch Incident
 >|additional_urls|brand|client|created_by|current_duration|date_opened|discovered_by|identifier|link|status|type|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| http://malicious1.com,<br/>http://malicious2.com | Testing Brand 1 | ***REMOVED*** - Palo Alto | Client | 514313 | 2021-02-02T16:36:50.000Z | client | JJJ-168840 | https://www.phishportal.com/client/incident/JJJ-168840 | monitor | Vishing | test.com |
+>| http://malicious1.com,<br/>http://malicious2.com | Testing Brand 1 | Palo Alto | Client | 514313 | 2021-02-02T16:36:50.000Z | client | JJJ-168840 | https://www.phishportal.com/client/incident/JJJ-168840 | monitor | Vishing | test.com |
 
 
 ### fraudwatch-incident-forensic-get
@@ -464,7 +464,7 @@ Provides a list of the messages related to the incident associated with the spec
 | --- | --- | --- |
 | incident_id | The ID of the incident for which to retrieve the related messages. Incident ID is the 'identifier' field returned by the 'fraudwatch-incidents-list' command. | Required | 
 | limit | Number of related messages to retrieve. | Optional | 
-| page_size | Maximum number of related messages in a page. Maximum value is 200. | Optional | 
+| page_size | Maximum number of related messages in a page. Maximum value is 200.  If page is given, defaults of this argument will be 50. | Optional | 
 | page | Retrieve related messages by the specified page number. | Optional | 
 
 
@@ -632,7 +632,7 @@ Gets a list of brands from FraudWatch service.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | Number of brands to retrieve. | Optional | 
-| page_size | Total number of brands in a page. Values range: 20-100. | Optional | 
+| page_size | Total number of brands in a page. Values range: 20-100.  If page is given, defaults of this argument will be 50. | Optional | 
 | page | Retrieve brands by the specified page number. | Optional | 
 
 
@@ -659,7 +659,7 @@ Gets a list of brands from FraudWatch service.
             {
                 "active": true,
                 "alternate business name": "",
-                "client": "***REMOVED*** - Palo Alto",
+                "client": "Palo Alto",
                 "name": "Testing Brand 1",
                 "services": [
                     {
@@ -703,7 +703,7 @@ Gets a list of brands from FraudWatch service.
             {
                 "active": true,
                 "alternate business name": "",
-                "client": "***REMOVED*** - Palo Alto",
+                "client": "Palo Alto",
                 "name": "Testing Brand 2",
                 "services": [
                     {
@@ -754,6 +754,6 @@ Gets a list of brands from FraudWatch service.
 >### FraudWatch Brands
 >|name|active|client|
 >|---|---|---|
->| Testing Brand 1 | true | ***REMOVED*** - Palo Alto |
->| Testing Brand 2 | true | ***REMOVED*** - Palo Alto |
+>| Testing Brand 1 | true | Palo Alto |
+>| Testing Brand 2 | true | Palo Alto |
 
