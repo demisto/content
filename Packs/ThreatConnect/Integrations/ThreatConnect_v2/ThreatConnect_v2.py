@@ -17,10 +17,10 @@ import copy
 FRESHNESS = int(demisto.params().get('freshness', 0))
 MAX_CONTEXT = 100
 
-reliability = demisto.params().get('integrationReliability')
+RELIABILITY = demisto.params().get('integrationReliability', 'B - Usually reliable')
 
-if DBotScoreReliability.is_valid_type(reliability):
-    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+if DBotScoreReliability.is_valid_type(RELIABILITY):
+    RELIABILITY = DBotScoreReliability.get_dbot_score_reliability_from_str(RELIABILITY)
 else:
     raise Exception("Please provide a valid value for the Source Reliability parameter.")
 ''' HELPER FUNCTIONS '''
@@ -137,7 +137,7 @@ def create_context(indicators, include_dbot_score=False):
                     'Type': indicator_type,
                     'Vendor': 'ThreatConnect'
                 }
-            indicators_dbot_score[value]['Reliability'] = reliability
+            indicators_dbot_score[value]['Reliability'] = RELIABILITY
 
         context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
             'ID': ind['id'],
