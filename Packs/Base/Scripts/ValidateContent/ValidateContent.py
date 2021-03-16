@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from shutil import copy
 from tempfile import TemporaryDirectory
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 
 import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
@@ -135,7 +135,9 @@ def adjust_linter_row_and_col(
     try:
         for vector, offset, start in vector_details:
             if vector in error_output:
-                error_output[vector] = str(max(int(error_output.get(vector)) - offset, start))
+                original_vector_value: Optional[Any] = error_output.get(vector)
+                if original_vector_value:
+                    error_output[vector] = str(max(int(original_vector_value) - offset, start))
     except ValueError as e:
         demisto.debug(f'Failed adjusting "{vector}" on validation result {error_output}'
                       f'\n{e}')
