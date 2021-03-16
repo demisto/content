@@ -12,19 +12,19 @@ from scipy.spatial.distance import cdist
 
 warnings.simplefilter("ignore")
 
-MESSAGE_NO_FIELDS_USED = "No field are used to find similarity. Possible reasons: 1) No field selected  " \
+MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reasons: 1) No field selected  " \
                          " 2) Selected field are empty for this incident  3) Fields are misspelled"
 
-MESSAGE_NO_INCIDENT_FETCHED = "0 incidents found with these exact match for the given dates."
+MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 
-MESSAGE_WARNING_TRUNCATED = "Incidents fetched have been truncated to %s, please either add incident fields in " \
+MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either add incident fields in " \
                             "fieldExactMatch, enlarge the time period or increase the limit argument " \
                             "to more than %s."
 
-MESSAGE_NO_CURRENT_INCIDENT = "Incident %s does not exist. Please check incidentId value or that you are running " \
+MESSAGE_NO_CURRENT_INCIDENT = "- Incident %s does not exist. Please check incidentId value or that you are running " \
                               "the command within an incident."
 MESSAGE_NO_FIELD = "- %s field(s) does not exist in the current incident."
-MESSAGE_INCORRECT_FIELD = "%s field(s) don't/doesn't exist within the fetched incidents."
+MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents."
 
 SIMILARITY_COLUNM_NAME = 'similarity incident'
 SIMILARITY_COLUNM_NAME_INDICATOR = 'similarity indicators'
@@ -39,6 +39,7 @@ REMOVE_COLUMNS_INCIDENTS_DISPLAY = ['id', 'Id']
 FIELDS_NO_AGGREGATION = ['id', 'created', COLUMN_ID]
 COLUMN_TIME = 'created'
 TAG_INCIDENT = 'incidents'
+TAG_SCRIPT_INDICATORS = "similarIncidents"
 
 PREFIXES_TO_REMOVE = ['incident.']
 CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
@@ -388,7 +389,7 @@ class Model:
         self.get_score()
         self.compute_final_score()
         return self.prepare_for_display(), self.field_for_command_line + self.field_for_potential_exact_match + \
-               self.field_for_json
+            self.field_for_json
 
     def remove_empty_field(self):
         """
@@ -400,7 +401,7 @@ class Model:
             if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
                 0] or not isinstance(self.incident_to_match[field].values[0], str) or \
                     self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
-                0] == 'N/A':
+                    0] == 'N/A':
                 remove_list.append(field)
         self.field_for_command_line = [x for x in self.field_for_command_line if x not in remove_list]
 
@@ -652,7 +653,15 @@ def get_similar_incidents_by_indicators(args: Dict):
     res = demisto.executeCommand('DBotFindSimilarIncidentsByIndicators', args)
     if is_error(res):
         return_error(get_error(res))
-    return res[1]['Contents']
+    res = get_data_from_indicators_automation(res, TAG_SCRIPT_INDICATORS)
+    return res
+
+
+def get_data_from_indicators_automation(res, TAG_SCRIPT_INDICATORS_VALUE):
+    for entry in res:
+        if entry and entry.get('Tags') and TAG_SCRIPT_INDICATORS_VALUE in entry.get('Tags'):
+            return entry['Contents']
+    return None
 
 
 def dumps_json_field_in_incident(incident: Dict):
@@ -709,8 +718,8 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
 
 
 def return_outputs_similar_incidents(show_actual_incident: bool, current_incident: pd.DataFrame,
-                                     similar_incidents: pd.DataFrame, colums_to_display: List[str], context: Dict,
-                                     tag: Optional[str] = None):
+                                     similar_incidents: pd.DataFrame, context: Dict,
+                                     tag: Union[str, None] = None):
     """
     Return entry and context for similar incidents
     :param show_actual_incident: Boolean if showing the current incident
@@ -723,10 +732,9 @@ def return_outputs_similar_incidents(show_actual_incident: bool, current_inciden
     """
     # Columns to show for outputs
     colums_to_display = similar_incidents.columns.tolist()
-    colums_to_display = [x for x in FIRST_COLUMNS_INCIDENTS_DISPLAY if x in similar_incidents.columns] + [x for x in
-                                                                                                          colums_to_display
-                                                                                                          if (
-                                                                                                                  x not in FIRST_COLUMNS_INCIDENTS_DISPLAY and x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
+    colums_to_display = [x for x in FIRST_COLUMNS_INCIDENTS_DISPLAY if x in similar_incidents.columns] + \
+                        [x for x in colums_to_display if (x not in FIRST_COLUMNS_INCIDENTS_DISPLAY and x not in
+                                                          REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
 
     first_col = [x for x in colums_to_display if x in current_incident.columns]
     col_current_incident_to_display = first_col + [x for x in current_incident.columns if
@@ -865,7 +873,6 @@ def main():
     global_msg += "%s \n" % msg
 
     if not incidents:
-        global_msg += "%s \n" % msg
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return None, global_msg

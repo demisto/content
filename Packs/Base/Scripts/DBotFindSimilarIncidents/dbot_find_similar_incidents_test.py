@@ -3,7 +3,8 @@
 from DBotFindSimilarIncidents import normalize_command_line, main, demisto, keep_high_level_field, \
     preprocess_incidents_field, PREFIXES_TO_REMOVE, check_list_of_dict, REGEX_IP, match_one_regex, \
     SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, euclidian_similarity_capped, find_incorrect_fields, \
-    MESSAGE_NO_INCIDENT_FETCHED, MESSAGE_INCORRECT_FIELD, MESSAGE_WARNING_TRUNCATED, COLUMN_ID, COLUMN_TIME
+    MESSAGE_NO_INCIDENT_FETCHED, MESSAGE_INCORRECT_FIELD, MESSAGE_WARNING_TRUNCATED, COLUMN_ID, COLUMN_TIME, \
+    TAG_SCRIPT_INDICATORS
 
 import json
 import numpy as np
@@ -43,7 +44,7 @@ SIMILAR_INDICATORS_EMPTY = []
 def executeCommand(command, args):
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     if command == 'DBotFindSimilarIncidentsByIndicators':
-        return [[], {'Contents': SIMILAR_INDICATORS, 'Type': 'note'}]
+        return [[], {'Contents': SIMILAR_INDICATORS, 'Type': 'note', 'Tags': [TAG_SCRIPT_INDICATORS]}]
     if command == 'GetIncidentsByQuery':
         if 'limit' in args:
             return [{'Contents': json.dumps(FETCHED_INCIDENT), 'Type': 'note'}]
@@ -160,7 +161,7 @@ def test_main_no_indicators_found(mocker):
     res, msg = main()
     assert ('empty_current_incident_field' not in res.columns)
     assert (res['Identical indicators'] == ["", "", ""]).all()
-    assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME,  COLUMN_ID,
+    assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, COLUMN_ID,
                                          COLUMN_TIME, 'name', df=res)
     assert (res['similarity indicators'] == [0.0, 0.0, 0.0]).all()
 
