@@ -1,0 +1,652 @@
+id: Armis_test
+name: Armis_test
+description: Armis_test
+version: -1
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 'd391b729-190c-4cfa-a643-60202c90199d'
+    type: start
+    task:
+      id: 'd391b729-190c-4cfa-a643-60202c90199d'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 'e1aa65d5-4534-4147-a8e5-f7a671673e23'
+    type: regular
+    task:
+      id: 'e1aa65d5-4534-4147-a8e5-f7a671673e23'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: 'b79970c0-ac9e-4a94-8eba-152dc3101124'
+    type: regular
+    task:
+      id: 'b79970c0-ac9e-4a94-8eba-152dc3101124'
+      version: -1
+      name: armis-search-alerts
+      description: ''
+      script: '|||armis-search-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '69bf44ec-6797-4fef-b82c-e1cd60586ab6'
+    type: condition
+    task:
+      id: '69bf44ec-6797-4fef-b82c-e1cd60586ab6'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.activityIds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.activityUUIDs
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.connectionIds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.deviceIds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '2d708755-8d45-4310-8b6a-bb9d31f7359e'
+    type: regular
+    task:
+      id: '2d708755-8d45-4310-8b6a-bb9d31f7359e'
+      version: -1
+      name: armis-update-alert-status
+      description: ''
+      script: '|||armis-update-alert-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: 'da88e7a7-bf16-4bc4-9659-ce8792801676'
+    type: regular
+    task:
+      id: 'da88e7a7-bf16-4bc4-9659-ce8792801676'
+      version: -1
+      name: armis-search-alerts-by-aql-string
+      description: ''
+      script: '|||armis-search-alerts-by-aql-string'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: '6'
+    taskid: '94420940-aace-49fd-9dad-2857ec3ec6b7'
+    type: condition
+    task:
+      id: '94420940-aace-49fd-9dad-2857ec3ec6b7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.activityIds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.activityUUIDs
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.connectionIds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.deviceIds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: 7
+    taskid: '58f929dc-765e-4e3d-883a-606427973aee'
+    type: regular
+    task:
+      id: '58f929dc-765e-4e3d-883a-606427973aee'
+      version: -1
+      name: armis-tag-device
+      description: ''
+      script: '|||armis-tag-device'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '893c0d83-adf5-4767-9024-ba5fcf57bae1'
+    type: regular
+    task:
+      id: '893c0d83-adf5-4767-9024-ba5fcf57bae1'
+      version: -1
+      name: armis-untag-device
+      description: ''
+      script: '|||armis-untag-device'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: '938fd639-3f50-4850-90f7-38dcf5d088ea'
+    type: regular
+    task:
+      id: '938fd639-3f50-4850-90f7-38dcf5d088ea'
+      version: -1
+      name: armis-search-devices
+      description: ''
+      script: '|||armis-search-devices'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: '10'
+    taskid: '294f2249-ce58-413c-9b1f-55f982680259'
+    type: condition
+    task:
+      id: '294f2249-ce58-413c-9b1f-55f982680259'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.accessSwitch
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.ipaddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.ipv6
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.macAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.manufacturer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.model
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.operatingSystem
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.operatingSystemVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.purdueLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.sensor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.site
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.visibility
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: '86bfd490-b484-4c52-b43d-5e8443af3ad0'
+    type: regular
+    task:
+      id: '86bfd490-b484-4c52-b43d-5e8443af3ad0'
+      version: -1
+      name: armis-search-devices-by-aql
+      description: ''
+      script: '|||armis-search-devices-by-aql'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: '12'
+    taskid: '84548d6f-1570-4bf7-8c74-d367af903773'
+    type: condition
+    task:
+      id: '84548d6f-1570-4bf7-8c74-d367af903773'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.accessSwitch
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.firstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.ipaddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.ipv6
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.lastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.macAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.manufacturer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.model
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.operatingSystem
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.operatingSystemVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.purdueLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.sensor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.site
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.visibility
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '823e8ac6-b19f-4069-a6d3-f3e97ff05ba5'
+    type: title
+    task:
+      id: '823e8ac6-b19f-4069-a6d3-f3e97ff05ba5'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

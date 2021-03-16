@@ -50,8 +50,6 @@ class Client(BaseClient):
             response = self._http_request('POST', '/access_token/', params={'secret_key': self._secret})
             token = response.get('data', {}).get('access_token')
             expiration = response.get('data', {}).get('expiration_utc')
-            if not token:
-                raise DemistoException('Token not returned from Armis')
             self._token = AccessToken(token, dateparser.parse(expiration))
         return self._token
 
@@ -344,6 +342,9 @@ def fetch_incidents(client: Client,
     requested_severities = severities_in_order[severities_in_order.index(minimum_severity):]
     incidents = []
 
+    # when the previous fetch returned more than max_results alerts, the same query is made again and max_results alerts
+    # are skipped using the page_from parameter. in a case where multiple fetches were incomplete max_results times the
+    # number of incomplete fetches must be skipped in order to prevent duplicating incidents
     page_from = max_results * incomplete_fetches or None
     if free_search_string:
         data = client.free_string_search_alerts(
@@ -379,6 +380,8 @@ def fetch_incidents(client: Client,
             latest_created_time = incident_created_time
 
     if data.get('next'):
+        # if more than max_results alerts were returned, this fetch is incomplete and the extra results must be fetched
+        # next time
         next_run = {'last_fetch': last_fetch.strftime(DATE_FORMAT), 'incomplete_fetches': incomplete_fetches + 1}
     else:
         next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT), 'incomplete_fetches': 0}
