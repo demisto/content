@@ -1,4 +1,5 @@
 import os
+import pytest
 
 from ValidateContent import get_content_modules, adjust_linter_row_and_col
 
@@ -80,4 +81,6 @@ row_and_column_adjustment_test_data = [
 
 @pytest.mark.parametrize('original_validation_result,expected_output', row_and_column_adjustment_test_data)
 def test_adjust_linter_row_and_col(original_validation_result, expected_output):
-    assert adjust_linter_row_and_col(original_validation_result) == expected_output
+    adjust_linter_row_and_col(original_validation_result)
+    # after adjustment, the original validation result should match the expected
+    assert original_validation_result == expected_output
