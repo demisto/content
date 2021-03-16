@@ -10,23 +10,24 @@ CrowdStrike Falcon Intel Indicator Feed
     | --- | --- | --- |
     | Fetch indicators |  | False |
     | CrowdStrike Base URL |  | True |
-    | CrowdStrike API Client ID | For non 6.1 users username is CrowdStrike API Client ID, password is CrowdStrike API Client Secret. | True |
-    | Type | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File md5", "File sha256", "IP", "Registry Key", and "URL". The default is "ALL". | False |
-    | First fetch time | The time range to consider for the initial data fetch. Leave empty to fetch from the first indicator available. | False |
-    | Max. indicators per fetch | Max. indicators per fetch should be between 1 - 10000. | False |
+    | CrowdStrike API Client ID | For non 6.1 - enter your CrowdStrike API Client Secret in the password field. | True |
+    | Type | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File MD5", "File SHA256", "IP", "Registry Key", and "URL". The default is "ALL". | False |
+    | First fetch time | The time range to consider for the initial data fetch. Leave empty to fetch from the first available indicator. | False |
+    | Max. indicators per fetch | Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout. | False |
     | Malicious confidence | Malicious confidence level to filter by. | False |
     | Include deleted indicators |  | False |
-    | Filter | Advanced: FQL query. For more information visit CrowdStrike documentation. | False |
-    | Generic phrase match | Generic phrase match search across all indicators fields. | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    | Feed Fetch Interval |  | False |
+    | Filter | Advanced: FQL query. For more information visit the CrowdStrike documentation. | False |
+    | Generic phrase match | Generic phrase match search across all indicator fields. | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+    | Indicator Expiration Method | The feed's expiration method. | False |
+    | Feed Fetch Interval | The interval after which the feed expires. | False |
     | Tags | Supports CSV values. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-
+    
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 
@@ -35,7 +36,7 @@ successfully execute a command, a DBot message appears in the War Room with the 
 
 ### crowdstrike-indicators-list
 ***
-Gets indicators from Crowdstrike Falcon Intel Feed.
+Gets indicators from the CrowdStrike Falcon Intel Feed.
 
 #### Base Command
 
@@ -55,15 +56,15 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
 | CrowdStrikeFalconIntel.Indicators.value | String | Indicator value. | 
 | CrowdStrikeFalconIntel.Indicators.type | String | Indicator type. | 
 | CrowdStrikeFalconIntel.Indicators.fields.reports | Unknown | Indicator reports. | 
-| CrowdStrikeFalconIntel.Indicators.fields.actors | Unknown | Actors related to indicator. | 
+| CrowdStrikeFalconIntel.Indicators.fields.actors | Unknown | Actors related to the indicator. | 
 | CrowdStrikeFalconIntel.Indicators.fields.malwarefamily | Unknown | Indicator malware families. | 
 | CrowdStrikeFalconIntel.Indicators.fields.stixkillchainphases | Unknown | Indicator kill chains. | 
 | CrowdStrikeFalconIntel.Indicators.fields.maliciousconfidence | String | Indicator malicious confidence. | 
 | CrowdStrikeFalconIntel.Indicators.fields.tags | Unknown | Indicator labels. | 
-| CrowdStrikeFalconIntel.Indicators.fields.targets | Unknown | Targets of indicator. | 
+| CrowdStrikeFalconIntel.Indicators.fields.targets | Unknown | Targets of the indicator. | 
 | CrowdStrikeFalconIntel.Indicators.fields.threattypes | Unknown | Indicator threat types. | 
 | CrowdStrikeFalconIntel.Indicators.fields.vulnerabilities | Unknown | Indicator vulnerabilities. | 
-| CrowdStrikeFalconIntel.Indicators.fields.ipaddress | Unknown | Indicator related ip address. | 
+| CrowdStrikeFalconIntel.Indicators.fields.ipaddress | Unknown | Indicator related IP address. | 
 | CrowdStrikeFalconIntel.Indicators.fields.domainname | Unknown | Indicator related domains. | 
 | CrowdStrikeFalconIntel.Indicators.fields.updateddate | Date | Indicator update date. | 
 | CrowdStrikeFalconIntel.Indicators.fields.creationdate | Unknown | Indicator creation date. | 
