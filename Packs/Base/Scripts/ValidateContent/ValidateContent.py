@@ -114,7 +114,11 @@ def adjust_linter_row_and_col(
 ) -> None:
     """Update the linter errors row and column numbering
 
-    Accounts for lines inserted during demisto-sdk extract, and that column numbering starts with one
+    Accounts for lines inserted during demisto-sdk extract, and that row numbering starts with one. We
+    take the max between the adjusted vector number and the vector start because the lowest the adjusted
+    vector number should be is its associated vector start number. e.g. the adjusted column number should
+    never be less than the column start number aka zero - so if the adjusted column number is -1, we set
+    it to the column start number instead, aka zero.
 
     Args:
         error_output (Dict): A single validation result dictionary (validate and lint) from the total list
@@ -124,10 +128,18 @@ def adjust_linter_row_and_col(
         col_start (int): The lowest allowable number for columns
     """
     row, col = 'row', 'col'
-    if row in error_output:
-        error_output[row] = str(max(int(error_output.get(row)) - row_offset, row_start))
-    if col in error_output:
-        error_output[col] = str(max(int(error_output.get(col)) - col_offset, col_start))
+    vector_details = [
+        (row, row_offset, row_start),
+        (col, col_offset, col_start)
+    ]
+    try:
+        for vector, offset, start in vector_details:
+            if vector in error_output:
+                error_output[vector] = str(max(int(error_output.get(vector)) - offset, start))
+    except ValueError as e:
+        demisto.debug(f'Failed adjusting "{vector}" on validation result {error_output}'
+                      f'\n{e}')
+        raise e
 
 
 def run_validate(file_path: str, json_output_file: str) -> None:
