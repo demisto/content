@@ -23,6 +23,7 @@ FIELDS_TO_REMOVE_TO_DISPLAY = ['id']
 INCIDENT_FIELDS_TO_USE = ['indicators']
 FIELD_INDICATOR_TYPE = 'indicator_type'
 
+
 def normalize(x: List[str]) -> str:
     """
     Normalize function for indicators
@@ -282,6 +283,7 @@ def return_outputs_custom(readable_output, outputs=None):
     }
     demisto.results(return_entry)
 
+
 def return_no_mututal_indicators_found_entry():
     hr = '### Mutual Indicators' + '\n'
     hr += 'No mutual indicators were found.'
@@ -377,7 +379,7 @@ def return_no_similar_incident_found_entry():
     hr = '### No Similar indicators' + '\n'
     hr += 'No Similar indicators were found.'
     return_outputs(readable_output=hr, outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()},
-        raw_response={})
+                   raw_response={})
 
 
 def create_context_for_incidents(similar_incidents=pd.DataFrame()):
@@ -412,7 +414,7 @@ def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_
     incident_df['Incident ID'] = incident_df['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     col_incident = incident_df.columns.tolist()
     col_incident = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in col_incident if
-                                    x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + ['id', 'indicators']]
+                                                      x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + ['id', 'indicators']]
     col_incident = [x.title() for x in col_incident]
     incident_df = incident_df.rename(str.title, axis='columns')
     incident_json = incident_df.to_dict(orient='records')
@@ -504,7 +506,7 @@ def organize_current_incident(current_incident_df, indicators_map):
 
 def return_outputs_tagged(similar_incidents: pd.DataFrame, context: Dict, tag: Optional[str] = None):
     colums_to_display = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in similar_incidents.columns.tolist() if
-                                             x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + FIELDS_TO_REMOVE_TO_DISPLAY]
+                                                           x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + FIELDS_TO_REMOVE_TO_DISPLAY]
     similar_incidents_renamed = similar_incidents.rename(str.title, axis='columns')
     similar_incidents_json = similar_incidents_renamed.to_dict(orient='records')
     colums_to_display = [x.title() for x in colums_to_display]
@@ -589,4 +591,3 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
-
