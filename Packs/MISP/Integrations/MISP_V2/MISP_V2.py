@@ -263,9 +263,9 @@ def limit_attributes_count(event: dict) -> dict:
         event_id = event.get('id', '')
         event_uuid = event.get('uuid')
         demisto.info(f'Limiting amount of attributes in event to {MAX_ATTRIBUTES} '
-                     f'to keep context from being overwhelmed, '
-                     f'this limit can be changed in the integration configuration. '
-                     f'Event ID:{event_id}, event UUID:{event_uuid}, Attributes in event:{attributes_num}')
+                     f'to keep context from being overwhelmed. '
+                     f'This limit can be changed in the integration configuration. '
+                     f'Event ID: {event_id}, Event UUID: {event_uuid}, Attributes in event: {attributes_num}')
         sorted_attributes = sorted(attributes, key=lambda at: int(at.get('timestamp', 0)))
         event['Attribute'] = sorted_attributes[attributes_num - MAX_ATTRIBUTES:]
         return event
