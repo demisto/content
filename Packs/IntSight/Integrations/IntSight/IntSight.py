@@ -871,7 +871,7 @@ def request_for_ioc_enrichment():
                     },
                 },
                 'Contents': response,
-                'ContentsFormat': formats['json']
+                'ContentsFormat': formats['json'] 
             }
         )
     elif status == 'QuotaExceeded':
