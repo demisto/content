@@ -516,7 +516,7 @@ def create_incident_custom_id(incident):
 
 def extensive_log(message):
     if demisto.params().get('extensive_logs', False):
-        demisto.info(message)
+        demisto.info("\n\n {} \n\n".format(message))
 
 
 def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, look_behind):
