@@ -3290,7 +3290,6 @@
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279"
     },
     "skipped_integrations": {
-        "Carbon Black Defense v2": "Over the policies quota",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
