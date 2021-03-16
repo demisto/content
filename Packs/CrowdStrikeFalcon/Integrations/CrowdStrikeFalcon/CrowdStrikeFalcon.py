@@ -95,7 +95,7 @@ SEARCH_DEVICE_KEY_MAP = {
     'mac_address': 'MacAddress',
     'first_seen': 'FirstSeen',
     'last_seen': 'LastSeen',
-    'status': 'Status'
+    'status': 'Status',
 }
 
 ''' SPLIT KEY DICTIONARY '''
