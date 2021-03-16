@@ -1,7 +1,7 @@
 import pytest
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    add_second_to_str_date, list_mails_command
+    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment
 import demistomock as demisto
 
 
@@ -277,3 +277,72 @@ def test_build_message(client):
     result_message = client.build_message(**message_input)
 
     assert result_message == expected_message
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachment(client):
+    """
+    Given:
+        - raw response returned from get_attachment_command
+
+    When:
+        - response type is itemAttachment and 'item_result_creator' is called
+
+    Then:
+        - Validate that the message object created successfully
+
+    """
+    output_prefix = 'MSGraphMail(val.ID == obj.ID)'
+    with open('test_data/mail_with_attachment') as mail_json:
+        user_id = 'ex@example.com'
+        raw_response = json.load(mail_json)
+        res = item_result_creator(raw_response, user_id)
+        assert isinstance(res, CommandResults)
+        output = res.to_context().get('EntryContext', {})
+        assert output.get(output_prefix).get('ID') == 'exampleID'
+        assert output.get(output_prefix).get('Subject') == 'Test it'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachment_unsupported_type(client):
+    """
+    Given:
+        - raw response returned from get_attachment_command
+
+    When:
+        - response type is itemAttachment with attachment that is not supported
+
+    Then:
+        - Validate the human readable which explain we do not support the type
+
+    """
+    with open('test_data/mail_with_unsupported_attachment') as mail_json:
+        user_id = 'ex@example.com'
+        raw_response = json.load(mail_json)
+        res = item_result_creator(raw_response, user_id)
+        assert isinstance(res, CommandResults)
+        output = res.to_context().get('HumanReadable', '')
+        assert 'Integration does not support attachments from type #microsoft.graph.contact' in output
+
+
+@pytest.mark.parametrize('function_name, attachment_type', [('file_result_creator', 'fileAttachment'),
+                                                            ('item_result_creator', 'itemAttachment')])
+def test_create_attachment(mocker, function_name, attachment_type):
+    """
+    Given:
+        - raw response returned from api:
+            1. @odata.type is fileAttachment
+            2. @odata.type is itemAttachment
+
+    When:
+        - create_attachment checks the attachment type and decide which function will handle the response
+
+    Then:
+        - item_result_creator and file_result_creator called respectively to the type
+
+    """
+    mocked_function = mocker.patch(f'MicrosoftGraphMail.{function_name}', return_value={})
+    raw_response = {'@odata.type': f'#microsoft.graph.{attachment_type}'}
+    user_id = 'ex@example.com'
+    create_attachment(raw_response, user_id)
+    assert mocked_function.called
