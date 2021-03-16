@@ -20,6 +20,7 @@ cortex_found = 0
 for instance in allInstances:
     if allInstances[instance]['brand'] == CORTEX_BRAND and allInstances[instance]['state'] == 'active':
         cortex_found = 1
+        break
 
 if not cortex_found:
     return_error("Sorry, no active Cortex Data Lake integration found, please configure one.")
