@@ -1028,4 +1028,3 @@ def test_enforce_look_behind_time(end_time, start_time, expected):
     from SplunkPy import enforce_look_behind_time
     look_behind_time = 15
     assert enforce_look_behind_time(start_time, end_time, look_behind_time) == expected
-
