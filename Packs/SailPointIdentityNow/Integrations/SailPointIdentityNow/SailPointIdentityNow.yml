@@ -36,11 +36,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '50'
-  display: Maximum number of incidents per fetch
-  name: max_fetch
-  required: false
-  type: 0
 description: The SailPoint Identity Security platform can be configured either on-prem/single
   tenant SaaS, or multi-tenant. This package is intended to be used with the SaaS,
   multi-tenant solution, IdentityNow.
