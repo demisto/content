@@ -275,7 +275,7 @@ data_test_create_context_debotscore = [
 
 @ pytest.mark.parametrize('params, rate, expected_score', data_test_create_context_debotscore)
 def test_create_context_debotscore(params, rate, expected_score, mocker):
-    expected_output = {'Indicator': '88.88.88.88', 'Score': expected_score, 'Type': 'ip', 'Vendor': 'ThreatConnect'}
+    expected_output = {'Indicator': '88.88.88.88', 'Score': expected_score, 'Type': 'ip', 'Vendor': 'ThreatConnect', 'Reliability': 'B - Usually reliable'}
     indicator = deepcopy(IP_INDICATOR)
     indicator[0]['rating'] = float(rate)
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -312,7 +312,6 @@ def test_create_context_debotscore_samilar_indicator(mocker):
     indicator.extend(deepcopy(IP_INDICATOR))
     indicator[0]['confidence'] = 0
     mocker.patch.object(demisto, 'params', return_value={"defaultOrg": "Demisto Inc.",
-                                                         "integrationReliability": "B - Usually reliable",
                                                          "freshness": 7, "rating": 0, "confidence": 50})
 
     # passing 2 ip indicators with the same address, one of them should gets the score 2 and the second one the score 3
