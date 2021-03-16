@@ -1,10 +1,10 @@
-import hashlib
-import json
-import traceback
-
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
+
+import hashlib
+import json
+import traceback
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -575,8 +575,8 @@ def timeToEpoch(time: str):
         error_message = "Time arguments is wrong, be sure to enter as in the example."
         return_error(error_message)
     else:
-        epochTime = datetime.datetime(int(timeParameterList[0]), int(timeParameterList[1]), int(timeParameterList[2]),
-                                      int(timeParameterList[3]), int(timeParameterList[4])).strftime('%s')
+        epochTime = datetime(int(timeParameterList[0]), int(timeParameterList[1]), int(timeParameterList[2]),
+                             int(timeParameterList[3]), int(timeParameterList[4])).strftime('%s')
         return epochTime
 
 
