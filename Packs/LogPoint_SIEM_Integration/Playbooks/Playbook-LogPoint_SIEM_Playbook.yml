@@ -235,10 +235,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 43d3cb4f-daa9-4fe1-8b06-368b5435beb5
+    taskid: f8e2d278-204a-4a2e-8716-f701b2a13ca3
     type: regular
     task:
-      id: 43d3cb4f-daa9-4fe1-8b06-368b5435beb5
+      id: f8e2d278-204a-4a2e-8716-f701b2a13ca3
       version: -1
       name: Assign Incident to Analyst
       description: Assigning/Re-assigning Incidents
@@ -251,7 +251,8 @@ tasks:
       - "13"
     scriptarguments:
       incident_obj_ids:
-        simple: ${incident.logpointobjectid}
+        complex:
+          root: incident.logpointobjectid
       new_assignee:
         simple: ${incident.logpointassignedto}
     separatecontext: false
@@ -269,10 +270,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 53e7cef1-6d76-4f9c-80d9-6ccb9395ff0a
+    taskid: 5de06b05-47c8-43a3-8d38-2b8d866723a8
     type: regular
     task:
-      id: 53e7cef1-6d76-4f9c-80d9-6ccb9395ff0a
+      id: 5de06b05-47c8-43a3-8d38-2b8d866723a8
       version: -1
       name: Add Comment about Incident Investigation
       description: Add comments to the incidents
@@ -287,7 +288,8 @@ tasks:
       comment:
         simple: Incident processed by LogPoint SIEM Playbook on XSOAR.
       incident_obj_id:
-        simple: ${incident.logpointobjectid}
+        complex:
+          root: incident.logpointobjectid
     separatecontext: false
     view: |-
       {
@@ -1459,10 +1461,10 @@ tasks:
     quietmode: 0
   "78":
     id: "78"
-    taskid: 1adbe20b-4419-4541-847c-b9a07cae821b
+    taskid: ff7d78a5-f0ed-4ac1-8249-bbd6f594444a
     type: regular
     task:
-      id: 1adbe20b-4419-4541-847c-b9a07cae821b
+      id: ff7d78a5-f0ed-4ac1-8249-bbd6f594444a
       version: -1
       name: Add Comment for administrator
       description: Add comments to the incidents
@@ -1479,7 +1481,7 @@ tasks:
           Kindly review the issue.
       incident_obj_id:
         complex:
-          root: incident.logpointincidentid
+          root: incident.logpointobjectid
     separatecontext: false
     view: |-
       {
@@ -1736,10 +1738,10 @@ tasks:
     quietmode: 0
   "86":
     id: "86"
-    taskid: 446501d9-6e10-4266-852e-d76748f86032
+    taskid: 46ddb1ed-ef21-43c0-8908-b56c0cead3eb
     type: regular
     task:
-      id: 446501d9-6e10-4266-852e-d76748f86032
+      id: 46ddb1ed-ef21-43c0-8908-b56c0cead3eb
       version: -1
       name: Add the policy
       description: Creates a new access rule.
@@ -1756,7 +1758,7 @@ tasks:
         complex:
           root: CheckPoint.Objects
           filters:
-          - - operator: isEqualString
+          - - operator: containsGeneral
               left:
                 value:
                   simple: CheckPoint.Objects.ipv4-address
@@ -1768,7 +1770,8 @@ tasks:
           accessor: name
       layer:
         simple: network
-      name: {}
+      name:
+        simple: XSOAR-BLOCK- ${incident.malwarename}
       position:
         simple: top
       service: {}
@@ -1974,10 +1977,10 @@ tasks:
     quietmode: 0
   "93":
     id: "93"
-    taskid: c5840290-d0eb-4643-8674-1a7611bb4ec8
+    taskid: dd75aa65-04b9-4543-89e4-f9c9c766fda9
     type: regular
     task:
-      id: c5840290-d0eb-4643-8674-1a7611bb4ec8
+      id: dd75aa65-04b9-4543-89e4-f9c9c766fda9
       version: -1
       name: Install the policy
       description: Intsalls an Access Control policy.
@@ -1989,7 +1992,8 @@ tasks:
       '#none#':
       - "94"
     scriptarguments:
-      access: {}
+      access:
+        simple: "true"
       policy_package:
         complex:
           root: CheckPoint.Packages.name
@@ -2053,10 +2057,10 @@ tasks:
     quietmode: 0
   "95":
     id: "95"
-    taskid: c27f42a0-9eda-408d-8307-d418b168ddf8
+    taskid: becd0355-8307-428c-87da-4b6cfd484908
     type: regular
     task:
-      id: c27f42a0-9eda-408d-8307-d418b168ddf8
+      id: becd0355-8307-428c-87da-4b6cfd484908
       version: -1
       name: Waiting for the task to complete
       description: Sleep for X seconds
@@ -2069,7 +2073,7 @@ tasks:
       - "97"
     scriptarguments:
       seconds:
-        simple: "120"
+        simple: "15"
     separatecontext: false
     view: |-
       {
@@ -2085,10 +2089,10 @@ tasks:
     quietmode: 0
   "96":
     id: "96"
-    taskid: 3721f1a8-99bc-42fd-8185-8421e37903d0
+    taskid: f37185ee-339c-4495-8fdd-64918e10dd32
     type: regular
     task:
-      id: 3721f1a8-99bc-42fd-8185-8421e37903d0
+      id: f37185ee-339c-4495-8fdd-64918e10dd32
       version: -1
       name: Waiting for the task to complete
       description: Sleep for X seconds
@@ -2101,7 +2105,7 @@ tasks:
       - "90"
     scriptarguments:
       seconds:
-        simple: "90"
+        simple: "10"
     separatecontext: false
     view: |-
       {
@@ -2270,10 +2274,10 @@ tasks:
     quietmode: 0
   "102":
     id: "102"
-    taskid: 5928c7f5-3ca7-4fc4-86eb-378c1885d90e
+    taskid: 8c4b5bb5-246f-4428-8d6b-52ae6bfa1689
     type: regular
     task:
-      id: 5928c7f5-3ca7-4fc4-86eb-378c1885d90e
+      id: 8c4b5bb5-246f-4428-8d6b-52ae6bfa1689
       version: -1
       name: Add comment for issues
       description: Add comments to the incidents
@@ -2290,7 +2294,7 @@ tasks:
           kindly review.
       incident_obj_id:
         complex:
-          root: incident.logpointincidentid
+          root: incident.logpointobjectid
     separatecontext: false
     view: |-
       {
@@ -2306,10 +2310,10 @@ tasks:
     quietmode: 0
   "103":
     id: "103"
-    taskid: 44318c82-23c0-46f6-89ac-162cb8a2bf95
+    taskid: 2581388b-665f-418f-8f00-98f75006631b
     type: regular
     task:
-      id: 44318c82-23c0-46f6-89ac-162cb8a2bf95
+      id: 2581388b-665f-418f-8f00-98f75006631b
       version: -1
       name: Add successful comment
       description: Add comments to the incidents
@@ -2326,7 +2330,7 @@ tasks:
           Please verify.
       incident_obj_id:
         complex:
-          root: incident.logpointincidentid
+          root: incident.logpointobjectid
     separatecontext: false
     view: |-
       {
