@@ -258,12 +258,6 @@ if PARAMS.get('mark_as_malicious'):
     for verdict in verdicts:
         VERDICTS_TO_DBOTSCORE[verdict] = 3
 
-reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
-
-if DBotScoreReliability.is_valid_type(reliability):
-    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-else:
-    Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
 ''' HELPER FUNCTIONS '''
 
@@ -1320,7 +1314,7 @@ def top_tags_results_command():
     })
 
 
-def search_ip_command(ip):
+def search_ip_command(ip, reliability):
     indicator_type = 'IP'
     ip_list = argToList(ip)
 
@@ -1373,7 +1367,7 @@ def search_ip_command(ip):
     return command_results
 
 
-def search_domain_command(args):
+def search_domain_command(args, reliability):
     indicator_type = 'Domain'
     domain_name_list = argToList(args.get('domain'))
 
@@ -1441,7 +1435,7 @@ def search_domain_command(args):
     return command_results
 
 
-def search_url_command(url):
+def search_url_command(url, reliability):
     indicator_type = 'URL'
     url_list = argToList(url)
 
@@ -1496,7 +1490,7 @@ def search_url_command(url):
     return command_results
 
 
-def search_file_command(file):
+def search_file_command(file, reliability):
     indicator_type = 'File'
     file_list = argToList(file)
 
@@ -1651,6 +1645,12 @@ def get_export_list_command(args):
 
 def main():
     demisto.debug('Command being called is %s' % (demisto.command()))
+    reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
     try:
         # Remove proxy if not set to true in params
@@ -1685,7 +1685,7 @@ def main():
         elif active_command == 'ip':
             return_results(search_ip_command(**args))
         elif active_command == 'domain':
-            return_results(search_domain_command(args))
+            return_results(search_domain_command(args, reliability))
         elif active_command == 'url':
             return_results(search_url_command(**args))
         elif active_command == 'file':
