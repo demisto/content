@@ -29,6 +29,18 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: None
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 15
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -102,17 +114,6 @@ configuration:
   name: feed
   type: 8
   required: false
-- display: Indicator Reputation
-  name: feedReputation
-  type: 18
-  required: false
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
