@@ -308,7 +308,7 @@ TRANSFORMATION = {
                        },
     'json': {'transformer': Tfidf,
              'normalize': normalize_json,
-             'params': {'analyzer': 'word', 'max_features': 5000, 'ngram_range': (1, 5)},
+             'params': {'analyzer': 'char', 'max_features': 5000, 'ngram_range': (1, 5)},
              'scoring_function': euclidian_similarity_capped
              }
 }
@@ -690,8 +690,8 @@ def return_outputs_summary(confidence: float, number_incident_fetched: int, numb
     """
     summary = {
         'Confidence': str(confidence),
-        'Incident fetched with exact match': number_incident_fetched,
-        'Number of similar incident found ': number_incidents_found,
+        'Number of incidents fetched with exact match ': number_incident_fetched,
+        'Number of similar incidents found ': number_incidents_found,
         'Valid fields used for similarity': ', '.join(fields_used),
     }
     return_outputs(readable_output=global_msg + tableToMarkdown("Summary", summary))
