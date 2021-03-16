@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -52,7 +52,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -85,7 +85,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 370
         }
       }
@@ -109,7 +109,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "10"
     scriptarguments:
       asc_location: {}
       expand: {}
@@ -121,7 +121,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 545
         }
       }
@@ -154,8 +154,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 162.5,
+          "y": 1070
         }
       }
     note: false
@@ -185,8 +185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 162.5,
+          "y": 1245
         }
       }
     note: false
@@ -216,8 +216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 162.5,
+          "y": 1420
         }
       }
     note: false
@@ -251,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 162.5,
+          "y": 1595
         }
       }
     note: false
@@ -277,8 +277,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 162.5,
+          "y": 1770
         }
       }
     note: false
@@ -317,6 +317,43 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 5cbf3ab8-2440-4969-8561-37fef2dcae1b
+    type: condition
+    task:
+      id: 5cbf3ab8-2440-4969-8561-37fef2dcae1b
+      version: -1
+      name: check if existing alerts were found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureSecurityCenter.Alert.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
           "y": 720
         }
       }
@@ -330,8 +367,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1640,
-        "width": 380,
+        "height": 1815,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
