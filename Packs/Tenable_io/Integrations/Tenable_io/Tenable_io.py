@@ -496,9 +496,7 @@ def get_scan_status_command():
 
 
 def is_valid_scan_id(scan_id):
-    if scan_id == "" or scan_id.isalpha():
-        return False
-    return True
+    return not (scan_id == "" or scan_id.isalpha())
 
 
 def pause_scan_command():
@@ -506,8 +504,8 @@ def pause_scan_command():
 
     results = []
 
-    for i in scan_ids:
-        scan_id = i.strip()
+    for scan_id in scan_ids:
+        scan_id = scan_id.strip()
         if not is_valid_scan_id(scan_id):
             results.append(
                 "Command 'tenable-io-pause-scan' cannot be called cause scan ID '{}' was blank or "
@@ -542,8 +540,8 @@ def resume_scan_command():
 
     results = []
 
-    for i in scan_ids:
-        scan_id = i.strip()
+    for scan_id in scan_ids:
+        scan_id = scan_id.strip()
         if not is_valid_scan_id(scan_id):
             results.append(
                 "Command 'tenable-io-resume-scan' cannot be called cause scan ID '{}' was blank or "
