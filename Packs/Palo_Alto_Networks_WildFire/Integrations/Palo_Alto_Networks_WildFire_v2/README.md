@@ -1,1005 +1,776 @@
-<!-- HTML_DOC -->
-<div class="cl-preview-section">
-<p>Use the Palo Alto Networks Wildfire integration to automatically identify unknown threats and stop attackers in their tracks.</p>
-</div>
-<div class="cl-preview-section">
-<h2 id="palo-alto-networks-wildfire-v2-playbook">Palo Alto Networks WildFire v2 Playbooks</h2>
-</div>
-<div class="cl-preview-section">
-<ul>
-<li>WildFire - Detonate File</li>
-<li>Detonate URL - WildFire-v2</li>
-</ul>
-</div>
-<div class="cl-preview-section">
-<h2 id="use-cases">Use Cases</h2>
-</div>
-<div class="cl-preview-section">
-<ul>
-<li>Send a File sample to WildFire.</li>
-<li>Upload a file hosted on a website to WildFire.</li>
-<li>Submit a webpage to WildFire.</li>
-<li>Get a report regarding the sent samples using file hash.</li>
-<li>Get sample file from WildFire.</li>
-<li>Get verdict regarding multiple hashes(up to 500) using the wildfire-get-verdicts command.</li>
-</ul>
-</div>
-<div class="cl-preview-section">
-<h2 id="configure-palo-alto-networks-wildfire-v2-on-demisto">Configure Palo Alto Networks WildFire v2 on Demisto</h2>
-</div>
-<div class="cl-preview-section">
-<ol>
-<li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
-<li>Search for Palo Alto Networks WildFire v2.</li>
-<li>Click<span> </span><strong>Add instance</strong><span> </span>to create and configure a new integration instance.
-<ul>
-<li>
-<strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Server URL (e.g.,<span> </span>https://192.168.0.1/publicapi)</strong></li>
-<li><strong>API Key</strong></li>
-<li><strong>Return warning entry for unsupported file types</strong></li>
-<li><strong>Trust any certificate (not secure)</strong></li>
-<li><strong>Use system proxy settings</strong></li>
-</ul>
-</li>
-<li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
-</ol>
-</div>
-<div class="cl-preview-section">
-<h2 id="commands">Commands</h2>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-</div>
-<div class="cl-preview-section">
-<ol>
-<li>Get results for a file hash: file</li>
-<li>Upload a file for analysis: wildfire-upload</li>
-<li>Upload the URL of a remote file for analysis: wildfire-upload-file-url</li>
-<li>Get results of a file hash analysis wildfire-report</li>
-<li>Get the verdict of a file hash: wildfire-get-verdict</li>
-<li>Get the verdicts for multiple file hashes: wildfire-get-verdicts</li>
-<li>Upload a URL for analysis: wildfire-upload-url</li>
-<li>Get a sample: wildfire-get-sample</li>
-</ol>
-</div>
-<div class="cl-preview-section">
-<h3 id="get-results-for-a-file-hash">1. Get results for a file hash</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Retrieves results for a file hash using WildFire.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>file</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 256px;"><strong>Argument Name</strong></th>
-<th style="width: 338px;"><strong>Description</strong></th>
-<th style="width: 146px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 256px;">file</td>
-<td style="width: 338px;">File hash to check.</td>
-<td style="width: 146px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 256px;">md5</td>
-<td style="width: 338px;">MD5 hash to check.</td>
-<td style="width: 146px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 256px;">sha256</td>
-<td style="width: 338px;">SHA256 hash to check.</td>
-<td style="width: 146px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 210px;"><strong>Path</strong></th>
-<th style="width: 72px;"><strong>Type</strong></th>
-<th style="width: 458px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 210px;">File.Name</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">Name of the file.</td>
-</tr>
-<tr>
-<td style="width: 210px;">File.Type</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">File type, for example: “PE”.</td>
-</tr>
-<tr>
-<td style="width: 210px;">File.Size</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">Size of the file.</td>
-</tr>
-<tr>
-<td style="width: 210px;">File.MD5</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">MD5 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 210px;">File.SHA1</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">SHA1 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 210px;">File.SHA256</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">SHA256 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 210px;">File.Malicious.Vendor</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">For malicious files, the vendor that made the decision.</td>
-</tr>
-<tr>
-<td style="width: 210px;">DBotScore.Indicator</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">The indicator that was tested.</td>
-</tr>
-<tr>
-<td style="width: 210px;">DBotScore.Type</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">The indicator type.</td>
-</tr>
-<tr>
-<td style="width: 210px;">DBotScore.Vendor</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">Vendor used to calculate the score.</td>
-</tr>
-<tr>
-<td style="width: 210px;">DBotScore.Score</td>
-<td style="width: 72px;">number</td>
-<td style="width: 458px;">The actual score.</td>
-</tr>
-<tr>
-<td style="width: 210px;">WildFire.Report.Status</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">The status of the submission.</td>
-</tr>
-<tr>
-<td style="width: 210px;">WildFire.Report.SHA256</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">SHA256 hash of the submission.</td>
-</tr>
-<tr>
-<td style="width: 210px;">InfoFile.EntryID</td>
-<td style="width: 72px;">Unknown</td>
-<td style="width: 458px;">The EntryID of the report file.</td>
-</tr>
-<tr>
-<td style="width: 210px;">InfoFile.Extension</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">Extension of the report file.</td>
-</tr>
-<tr>
-<td style="width: 210px;">InfoFile.Name</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">Name of the report file.</td>
-</tr>
-<tr>
-<td style="width: 210px;">InfoFile.Info</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">Details of the report file.</td>
-</tr>
-<tr>
-<td style="width: 210px;">InfoFile.Size</td>
-<td style="width: 72px;">number</td>
-<td style="width: 458px;">Size of the report file.</td>
-</tr>
-<tr>
-<td style="width: 210px;">InfoFile.Type</td>
-<td style="width: 72px;">string</td>
-<td style="width: 458px;">The report file type.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>!file file=1d457069cb511af47a587287d59817148d404a2a7f39e1032d16094811f648e3</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/57465993-6bba4900-7288-11e9-945b-d7da8540789e.png" alt="Screen Shot 2019-05-09 at 18 29 10" width="700"></div>
-<div class="cl-preview-section"></div>
-<div class="cl-preview-section">
-<h3 id="upload-a-file-for-analysis">2. Upload a file for analysis</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Uploads a file to WildFire for analysis.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-1">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>wildfire-upload</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-1">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 195px;"><strong>Argument Name</strong></th>
-<th style="width: 440px;"><strong>Description</strong></th>
-<th style="width: 105px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 195px;">upload</td>
-<td style="width: 440px;">ID of the entry containing the file to upload</td>
-<td style="width: 105px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-1">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 263px;"><strong>Path</strong></th>
-<th style="width: 104px;"><strong>Type</strong></th>
-<th style="width: 373px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 263px;">WildFire.Report.MD5</td>
-<td style="width: 104px;">string</td>
-<td style="width: 373px;">MD5 hash of the submission.</td>
-</tr>
-<tr>
-<td style="width: 263px;">WildFire.Report.SHA256</td>
-<td style="width: 104px;">string</td>
-<td style="width: 373px;">SHA256 hash of the submission.</td>
-</tr>
-<tr>
-<td style="width: 263px;">WildFire.Report.FileType</td>
-<td style="width: 104px;">string</td>
-<td style="width: 373px;">The submission type.</td>
-</tr>
-<tr>
-<td style="width: 263px;">WildFire.Report.Size</td>
-<td style="width: 104px;">number</td>
-<td style="width: 373px;">The size of the submission.</td>
-</tr>
-<tr>
-<td style="width: 263px;">WildFire.Report.Status</td>
-<td style="width: 104px;">string</td>
-<td style="width: 373px;">The status of the submission.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-1">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>!wildfire-upload upload="1740@24"</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-1">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/57465419-3e20d000-7287-11e9-8c5d-46f4484d73cc.png" alt="Screen Shot 2019-05-09 at 18 20 53" width="1261"></div>
-<div class="cl-preview-section"></div>
-<div class="cl-preview-section">
-<h3 id="upload-the-url-of-a-remote-file-for-analysis">3. Upload the URL of a remote file for analysis</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Uploads the URL of a remote file to WildFire for analysis.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-2">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>wildfire-upload-file-url</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-2">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 227px;"><strong>Argument Name</strong></th>
-<th style="width: 389px;"><strong>Description</strong></th>
-<th style="width: 124px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 227px;">upload</td>
-<td style="width: 389px;">URL of the remote file to upload.</td>
-<td style="width: 124px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-2">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 294px;"><strong>Path</strong></th>
-<th style="width: 61px;"><strong>Type</strong></th>
-<th style="width: 385px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 294px;">WildFire.Report.MD5</td>
-<td style="width: 61px;">string</td>
-<td style="width: 385px;">MD5 hash of the submission.</td>
-</tr>
-<tr>
-<td style="width: 294px;">WildFire.Report.SHA256</td>
-<td style="width: 61px;">string</td>
-<td style="width: 385px;">SHA256 hash of the submission.</td>
-</tr>
-<tr>
-<td style="width: 294px;">WildFire.Report.Status</td>
-<td style="width: 61px;">string</td>
-<td style="width: 385px;">The status of the submission.</td>
-</tr>
-<tr>
-<td style="width: 294px;">WildFire.Report.URL</td>
-<td style="width: 61px;">string</td>
-<td style="width: 385px;">URL of the submission.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-2">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>!wildfire-upload-file-url upload="http://www.pdf995.com/samples/pdf.pdf"</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-2">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/57465358-20536b00-7287-11e9-84c4-50d1c37bf943.png" alt="Screen Shot 2019-05-09 at 18 19 31" width="1309"></div>
-<div class="cl-preview-section"></div>
-<div class="cl-preview-section">
-<h3 id="get-results-of-a-file-hash-analysis">4. Get results of a file hash analysis</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Retrieves results for a file hash using WildFire.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-3">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>wildfire-report</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-3">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 185px;"><strong>Argument Name</strong></th>
-<th style="width: 457px;"><strong>Description</strong></th>
-<th style="width: 98px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 185px;">md5</td>
-<td style="width: 457px;">MD5 hash to check.</td>
-<td style="width: 98px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 185px;">sha256</td>
-<td style="width: 457px;">SHA256 hash to check</td>
-<td style="width: 98px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 185px;">hash</td>
-<td style="width: 457px;">Deprecated - Use the sha256 argument instead.</td>
-<td style="width: 98px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 185px;">format</td>
-<td style="width: 457px;">Request a structured report (XML PDF).</td>
-<td style="width: 98px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 185px;">verbose</td>
-<td style="width: 457px;">Receive extended information from WildFire.</td>
-<td style="width: 98px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-3">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 285px;"><strong>Path</strong></th>
-<th style="width: 59px;"><strong>Type</strong></th>
-<th style="width: 396px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 285px;">File.Name</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Name of the file.</td>
-</tr>
-<tr>
-<td style="width: 285px;">File.Type</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">File type, for example: “PE”</td>
-</tr>
-<tr>
-<td style="width: 285px;">File.Size</td>
-<td style="width: 59px;">number</td>
-<td style="width: 396px;">Size of the file.</td>
-</tr>
-<tr>
-<td style="width: 285px;">File.MD5</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">MD5 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 285px;">File.SHA1</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">SHA1 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 285px;">File.SHA256</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">SHA256 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 285px;">File.Malicious.Vendor</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">For malicious files, the vendor that made the decision.</td>
-</tr>
-<tr>
-<td style="width: 285px;">DBotScore.Indicator</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">The indicator that was tested.</td>
-</tr>
-<tr>
-<td style="width: 285px;">DBotScore.Type</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">The indicator type.</td>
-</tr>
-<tr>
-<td style="width: 285px;">DBotScore.Vendor</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Vendor used to calculate the score.</td>
-</tr>
-<tr>
-<td style="width: 285px;">DBotScore.Score</td>
-<td style="width: 59px;">number</td>
-<td style="width: 396px;">The actual score.</td>
-</tr>
-<tr>
-<td style="width: 285px;">WildFire.Report.Status</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">The status of the submission.</td>
-</tr>
-<tr>
-<td style="width: 285px;">WildFire.Report.SHA256</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">SHA256 hash of the submission.</td>
-</tr>
-<tr>
-<td style="width: 285px;">InfoFile.EntryID</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">The EntryID of the report file.</td>
-</tr>
-<tr>
-<td style="width: 285px;">InfoFile.Extension</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">The extension of the report file.</td>
-</tr>
-<tr>
-<td style="width: 285px;">InfoFile.Name</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">The name of the report file.</td>
-</tr>
-<tr>
-<td style="width: 285px;">InfoFile.Info</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Details of the report file.</td>
-</tr>
-<tr>
-<td style="width: 285px;">InfoFile.Size</td>
-<td style="width: 59px;">number</td>
-<td style="width: 396px;">The size of the report file.</td>
-</tr>
-<tr>
-<td style="width: 285px;">InfoFile.Type</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">The report file type.</td>
-</tr>
-<tr>
-<td style="width: 285px;">WildFire.Report.Network.UDP.IP</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Submission related IPs, in UDP protocol.</td>
-</tr>
-<tr>
-<td style="width: 285px;">WildFire.Report.Network.UDP.Port</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Submission related ports, in UDP protocol.</td>
-</tr>
-<tr>
-<td style="width: 285px;">WildFire.Report.Network.TCP.IP</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Submission related IPs, in TCP protocol.</td>
-</tr>
-<tr>
-<td style="width: 285px;">WildFire.Report.Network.TCP.Port</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Submission related ports, in TCP protocol.</td>
-</tr>
-<tr>
-<td style="width: 285px;">WildFire.Report.Network.DNS.Query</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Submission DNS queries.</td>
-</tr>
-<tr>
-<td style="width: 285px;">WildFire.Report.Network.DNS.Response</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Submission DNS responses.</td>
-</tr>
-<tr>
-<td style="width: 285px;">WildFire.Report.Evidence.md5</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Submission evidence MD5 hash.</td>
-</tr>
-<tr>
-<td style="width: 285px;">WildFire.Report.Evidence.Text</td>
-<td style="width: 59px;">string</td>
-<td style="width: 396px;">Submission evidence text.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-3">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>!wildfire-report hash="ebb031c3945e884e695dbc63c52a5efcd075375046c49729980073585ee13c52"</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-3">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/57465509-70cac880-7287-11e9-8bd3-3808be763ce8.png" alt="Screen Shot 2019-05-09 at 18 21 41" width="1058"></div>
-<div class="cl-preview-section"></div>
-<div class="cl-preview-section">
-<h3 id="get-the-verdict-of-a-file-hash">5. Get the verdict of a file hash</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Returns a verdict for a hash.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-4">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>wildfire-get-verdict</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-4">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 250px;"><strong>Argument Name</strong></th>
-<th style="width: 353px;"><strong>Description</strong></th>
-<th style="width: 137px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 250px;">hash</td>
-<td style="width: 353px;">Hash to get the verdict for.</td>
-<td style="width: 137px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-4">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 329px;"><strong>Path</strong></th>
-<th style="width: 79px;"><strong>Type</strong></th>
-<th style="width: 332px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 329px;">WildFire.Verdicts.MD5</td>
-<td style="width: 79px;">string</td>
-<td style="width: 332px;">MD5 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 329px;">WildFire.Verdicts.SHA256</td>
-<td style="width: 79px;">string</td>
-<td style="width: 332px;">SHA256 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 329px;">WildFire.Verdicts.Verdict</td>
-<td style="width: 79px;">number</td>
-<td style="width: 332px;">Verdict of the file.</td>
-</tr>
-<tr>
-<td style="width: 329px;">WildFire.Verdicts.VerdictDescription</td>
-<td style="width: 79px;">string</td>
-<td style="width: 332px;">Description of the file verdict.</td>
-</tr>
-<tr>
-<td style="width: 329px;">DBotScore.Indicator</td>
-<td style="width: 79px;">string</td>
-<td style="width: 332px;">The indicator that was tested.</td>
-</tr>
-<tr>
-<td style="width: 329px;">DBotScore.Type</td>
-<td style="width: 79px;">string</td>
-<td style="width: 332px;">The indicator type.</td>
-</tr>
-<tr>
-<td style="width: 329px;">DBotScore.Vendor</td>
-<td style="width: 79px;">string</td>
-<td style="width: 332px;">Vendor used to calculate the score.</td>
-</tr>
-<tr>
-<td style="width: 329px;">DBotScore.Score</td>
-<td style="width: 79px;">number</td>
-<td style="width: 332px;">The actual score.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-4">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>!wildfire-get-verdict hash="afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc"</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-4">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/57465590-9a83ef80-7287-11e9-964c-7c28c539ffb9.png" alt="Screen Shot 2019-05-09 at 18 23 30" width="1274"></div>
-<div class="cl-preview-section"></div>
-<div class="cl-preview-section">
-<h3 id="get-the-verdicts-for-multiple-file-hashes">6. Get the verdicts for multiple file hashes</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Returns a verdict regarding multiple hashes, stored in a TXT file or given as list. The maximum number of verdicts is 500, and can be given as an EntryID of a file in the specified format, or in the hash_list argument. For more information, see the <a href="https://docs.paloaltonetworks.com/wildfire/7-1/wildfire-api/get-wildfire-information-through-the-wildfire-api/get-multiple-wildfire-verdicts-wildfire-api.html" target="_blank" rel="noopener">WildFire documentation</a>.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-5">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>wildfire-get-verdicts</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-5">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 137px;"><strong>Argument Name</strong></th>
-<th style="width: 530px;"><strong>Description</strong></th>
-<th style="width: 73px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 137px;">EntryID</td>
-<td style="width: 530px;">EntryID of the text file that contains multiple hashes. Limit is 500 hashes.</td>
-<td style="width: 73px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 137px;">hash_list</td>
-<td style="width: 530px;">A list of hashes to get verdicts for.</td>
-<td style="width: 73px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-5">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 338px;"><strong>Path</strong></th>
-<th style="width: 70px;"><strong>Type</strong></th>
-<th style="width: 332px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 338px;">WildFire.Verdicts.MD5</td>
-<td style="width: 70px;">string</td>
-<td style="width: 332px;">MD5 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 338px;">WildFire.Verdicts.SHA256</td>
-<td style="width: 70px;">string</td>
-<td style="width: 332px;">SHA256 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 338px;">WildFire.Verdicts.Verdict</td>
-<td style="width: 70px;">number</td>
-<td style="width: 332px;">Verdict of the file.</td>
-</tr>
-<tr>
-<td style="width: 338px;">WildFire.Verdicts.VerdictDescription</td>
-<td style="width: 70px;">string</td>
-<td style="width: 332px;">Description of the file verdict.</td>
-</tr>
-<tr>
-<td style="width: 338px;">DBotScore.Indicator</td>
-<td style="width: 70px;">string</td>
-<td style="width: 332px;">The indicator that was tested.</td>
-</tr>
-<tr>
-<td style="width: 338px;">DBotScore.Type</td>
-<td style="width: 70px;">string</td>
-<td style="width: 332px;">The indicator type.</td>
-</tr>
-<tr>
-<td style="width: 338px;">DBotScore.Vendor</td>
-<td style="width: 70px;">string</td>
-<td style="width: 332px;">Vendor used to calculate the score.</td>
-</tr>
-<tr>
-<td style="width: 338px;">DBotScore.Score</td>
-<td style="width: 70px;">number</td>
-<td style="width: 332px;">The actual score.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-5">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>!wildfire-get-verdicts EntryID="1770@24"</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-5">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/57465676-c69f7080-7287-11e9-9910-4a97a4d5cd92.png" alt="Screen Shot 2019-05-09 at 18 24 31" width="1277"></div>
-<div class="cl-preview-section"></div>
-<div class="cl-preview-section">
-<h3 id="upload-the-url-of-a-webpage-for-analysis">7. Upload a URL for analysis</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Uploads a URL to WildFire for analysis. </p>
-<p><strong>Note</strong>: Only malicious URLs will be included and displayed in the report. There will be no record of non-malicious URLs.</p>
-<p> </p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-6">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>wildfire-upload-url</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-6">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 245px;"><strong>Argument Name</strong></th>
-<th style="width: 357px;"><strong>Description</strong></th>
-<th style="width: 138px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 245px;">upload</td>
-<td style="width: 357px;">URL to submit to WildFire.</td>
-<td style="width: 138px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-6">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 293px;"><strong>Path</strong></th>
-<th style="width: 80px;"><strong>Type</strong></th>
-<th style="width: 367px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 293px;">WildFire.Report.MD5</td>
-<td style="width: 80px;">string</td>
-<td style="width: 367px;">MD5 of the submission.</td>
-</tr>
-<tr>
-<td style="width: 293px;">WildFire.Report.SHA256</td>
-<td style="width: 80px;">string</td>
-<td style="width: 367px;">SHA256 of the submission.</td>
-</tr>
-<tr>
-<td style="width: 293px;">WildFire.Report.Status</td>
-<td style="width: 80px;">string</td>
-<td style="width: 367px;">The status of the submission.</td>
-</tr>
-<tr>
-<td style="width: 293px;">WildFire.Report.URL</td>
-<td style="width: 80px;">string</td>
-<td style="width: 367px;">URL of the submission.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-6">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>!wildfire-upload-url upload=https://moviepropit.com/eas/chase/home/</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-6">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/57466328-10d52180-7289-11e9-9057-04884f531366.png" alt="Screen Shot 2019-05-09 at 18 33 44" width="1315"></div>
-<div class="cl-preview-section"></div>
-<div class="cl-preview-section">
-<h3 id="get-a-sample">8. Get a sample</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Retrieves a sample. Malicious files are saved indefinitely. Non-malicious files are saved for 14 days.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-7">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>wildfire-get-sample</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-7">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 246px;"><strong>Argument Name</strong></th>
-<th style="width: 361px;"><strong>Description</strong></th>
-<th style="width: 133px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 246px;">md5</td>
-<td style="width: 361px;">MD5 hash of the sample.</td>
-<td style="width: 133px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 246px;">sha256</td>
-<td style="width: 361px;">SHA256 hash of the sample.</td>
-<td style="width: 133px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-</div>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-7">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<p>There is no context output for this command.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="command-example-7">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>!wildfire-get-sample md5=5af84a3db5883627bfdff909e210634e</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-7">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/57466126-b045e480-7288-11e9-983c-8910a76a8d00.png" alt="Screen Shot 2019-05-09 at 18 30 35" width="1300"></div>
+Use the Palo Alto Networks Wildfire integration to automatically identify unknown threats and stop attackers in their tracks by performing malware dynamic analysis.
+
+## Palo Alto Networks WildFire v2 Playbooks
+
+1. WildFire - Detonate File
+2. Detonate URL - WildFire v2.1
+
+##Use Cases
+
+1. Send a File sample to WildFire.
+2. Upload a file hosted on a website to WildFire.
+3. Submit a webpage to WildFire.
+4. Get a report regarding the sent samples using file hash.
+5. Get sample file from WildFire.
+6. Get verdict regarding multiple hashes(up to 500) using the wildfire-get-verdicts command.
+
+## Configure WildFire v2 on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for WildFire v2.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server base URL (e.g. https://192.168.0.1/publicapi) | True |
+    | API Key | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Return warning entry for unsupported file types | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### file
+***
+Retrieve results for a file hash using WildFire
+
+
+#### Base Command
+
+`file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | File hash to check. | Optional | 
+| md5 | MD5 hash to check. | Optional | 
+| sha256 | SHA256 hash to check. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Name | string | Name of the file. | 
+| File.Type | string | File type, for example: "PE" | 
+| File.Size | string | Size of the file. | 
+| File.MD5 | string | MD5 hash of the file. | 
+| File.SHA1 | string | SHA1 hash of the file. | 
+| File.SHA256 | string | SHA256 hash of the file. | 
+| File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+| WildFire.Report.Status | string | The status of the submission. | 
+| WildFire.Report.SHA256 | string | SHA256 hash of the submission. | 
+| InfoFile.EntryID | Unknown | The EntryID of the report file. | 
+| InfoFile.Extension | string | Extension of the report file. | 
+| InfoFile.Name | string | Name of the report file. | 
+| InfoFile.Info | string | Details of the report file. | 
+| InfoFile.Size | number | Size of the report file. | 
+| InfoFile.Type | string | The report file type. | 
+
+
+#### Command Example
+```!file file=735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f```
+
+#### Context Example
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f",
+            "Score": 1,
+            "Type": "hash",
+            "Vendor": "WildFire"
+        },
+        {
+            "Indicator": "735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f",
+            "Score": 1,
+            "Type": "file",
+            "Vendor": "WildFire"
+        }
+    ],
+    "WildFire": {
+        "Report": {
+            "SHA256": "735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f",
+            "Status": "Success"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### WildFire File Report
+>|FileType|MD5|SHA256|Size|Status|
+>|---|---|---|---|---|
+>| JScript | ccdb1053f56a2d297906746bc720ef2a | 735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f | 12 | Completed |
+
+
+### wildfire-upload
+***
+Uploads a file to WildFire for analysis.
+
+
+#### Base Command
+
+`wildfire-upload`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| upload | ID of the entry containing the file to upload. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WildFire.Report.MD5 | string | MD5 hash of the submission. | 
+| WildFire.Report.SHA256 | string | SHA256 hash of the submission. | 
+| WildFire.Report.FileType | string | The submission type. | 
+| WildFire.Report.Size | number | The size of the submission. | 
+| WildFire.Report.Status | string | The status of the submission. | 
+
+
+#### Command Example
+```!wildfire-upload upload=294@675f238c-ed75-4cae-83d2-02b6b820168b```
+
+#### Context Example
+```json
+{
+    "WildFire": {
+        "Report": {
+            "FileType": "Jscript for WSH",
+            "MD5": "ccdb1053f56a2d297906746bc720ef2a",
+            "SHA256": "735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f",
+            "Size": "12",
+            "Status": "Pending",
+            "URL": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### WildFire Upload File
+>|FileType|MD5|SHA256|Size|Status|
+>|---|---|---|---|---|
+>| Jscript for WSH | ccdb1053f56a2d297906746bc720ef2a | 735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f | 12 | Pending |
+
+
+### wildfire-upload-file-url
+***
+Uploads the URL of a remote file to WildFire for analysis.
+
+
+#### Base Command
+
+`wildfire-upload-file-url`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| upload | URL of the remote file to upload. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WildFire.Report.MD5 | string | MD5 hash of the submission. | 
+| WildFire.Report.SHA256 | string | SHA256 hash of the submission. | 
+| WildFire.Report.Status | string | The status of the submission. | 
+| WildFire.Report.URL | string | URL of the submission. | 
+
+
+#### Command Example
+```!wildfire-upload-file-url upload=http://www.software995.net/bin/pdf995s.exe```
+
+#### Context Example
+```json
+{
+    "WildFire": {
+        "Report": {
+            "FileType": "PE32 executable",
+            "MD5": "891b77e864c88881ea98be867e74177f",
+            "SHA256": "555092d994b8838b8fa18d59df4fdb26289d146e071e831fcf0c6851b5fb04f8",
+            "Size": "5958304",
+            "Status": "Pending",
+            "URL": "http://www.software995.net/bin/pdf995s.exe"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### WildFire Upload File URL
+>|FileType|MD5|SHA256|Size|Status|URL|
+>|---|---|---|---|---|---|
+>| PE32 executable | 891b77e864c88881ea98be867e74177f | 555092d994b8838b8fa18d59df4fdb26289d146e071e831fcf0c6851b5fb04f8 | 5958304 | Pending | http://www.software995.net/bin/pdf995s.exe |
+
+
+### wildfire-report
+***
+Retrieves results for a file hash using WildFire.
+
+
+#### Base Command
+
+`wildfire-report`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| md5 | MD5 hash to check. | Optional | 
+| sha256 | SHA256 hash to check. | Optional | 
+| hash | Deprecated - Use the sha256 argument instead. | Optional | 
+| format | Request a structured report (XML or PDF). Possible values are: xml, pdf. Default is pdf. | Optional | 
+| verbose | Receive extended information from WildFire. Possible values are: true, false. Default is false. | Optional | 
+| url | Retrieves results for a URL using WildFire. The report format is in JSON. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Name | string | Name of the file. | 
+| File.Type | string | File type, for example: "PE" | 
+| File.Size | number | Size of the file. | 
+| File.MD5 | string | MD5 hash of the file. | 
+| File.SHA1 | string | SHA1 hash of the file. | 
+| File.SHA256 | string | SHA256 hash of the file. | 
+| File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | Vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+| WildFire.Report.Status | string | The status of the submissiom. | 
+| WildFire.Report.SHA256 | string | SHA256 hash of the submission. | 
+| InfoFile.EntryID | string | The EntryID of the report file. | 
+| InfoFile.Extension | string | The extension of the report file. | 
+| InfoFile.Name | string | The name of the report file. | 
+| InfoFile.Info | string | Details of the report file. | 
+| InfoFile.Size | number | The size of the report file. | 
+| InfoFile.Type | string | The report file type. | 
+| WildFire.Report.Network.UDP.IP | string | Submission related IPs, in UDP protocol. | 
+| WildFire.Report.Network.UDP.Port | string | Submission related ports, in UDP protocol. | 
+| WildFire.Report.Network.TCP.IP | string | Submission related IPs, in TCP protocol. | 
+| WildFire.Report.Network.TCP.Port | string | Submission related ports, in TCP protocol. | 
+| WildFire.Report.Network.DNS.Query | string | Submission DNS queries. | 
+| WildFire.Report.Network.DNS.Response | string | Submission DNS responses. | 
+| WildFire.Report.Evidence.md5 | string | Submission evidence MD5 hash. | 
+| WildFire.Report.Evidence.Text | string | Submission evidence text. | 
+| WildFire.Report.detection_reasons.description | string | Reason for the detection verdict. | 
+| WildFire.Report.detection_reasons.name | string | Name of the detection. | 
+| WildFire.Report.detection_reasons.type | string | Type of the detection. | 
+| WildFire.Report.detection_reasons.verdict | string | Verdict of the detection. | 
+| WildFire.Report.detection_reasons.artifacts | unknown | Artifacts of the detection reasons. | 
+| WildFire.Report.iocs | unknown | Associated IOCs. | 
+| WildFire.Report.verdict | string | The verdict of the report. | 
+
+
+#### Command Example
+```!wildfire-report url=https://www.demisto.com```
+
+#### Context Example
+```json
+{
+    "WildFire": {
+        "Report": {
+            "Status": "Success",
+            "URL": "https://www.demisto.com",
+            "da_packages": [
+                "package--5420f34e-5eb9-499b-c6a3-5f34abd73232",
+                "package--36e99aa9-abc1-468a-7035-e43756ce9250"
+            ],
+            "detection_reasons": [
+                {
+                    "artifacts": [
+                        {
+                            "entity_id": "malware-instance--4c958c0e-0cd1-4749-c887-a0372acfe8fc",
+                            "package": "package--903b10d4-d6b9-4a99-f09f-576dd0b36d51",
+                            "type": "artifact-ref"
+                        }
+                    ],
+                    "description": "Known benign by a trusted source",
+                    "name": "trusted_list",
+                    "type": "detection-reason",
+                    "verdict": "benign"
+                }
+            ],
+            "iocs": [],
+            "maec_packages": [
+                {
+                    "id": "package--5420f34e-5eb9-499b-c6a3-5f34abd73232",
+                    "maec_objects": [
+                        {
+                            "analysis_metadata": [
+                                {
+                                    "analysis_type": "combination",
+                                    "conclusion": "unknown",
+                                    "description": "Automated analysis inside a web browser",
+                                    "end_time": "2021-03-10T16:59:49.910871563Z",
+                                    "is_automated": true,
+                                    "start_time": "2021-03-10T16:58:50.614000082Z",
+                                    "tool_refs": [
+                                        "382"
+                                    ]
+                                }
+                            ],
+                            "id": "malware-instance--df22b5b9-22b5-490a-9535-4f5ba7663455",
+                            "instance_object_refs": [
+                                "381"
+                            ],
+                            "type": "malware-instance"
+                        }
+                    ],
+                    "observable_objects": {
+                        "0": {
+                            "type": "ipv4-addr",
+                            "value": "1.1.1.1"
+                        },
+                        "1": {
+                            "resolves_to_refs": [
+                                "0"
+                            ],
+                            "type": "domain-name",
+                            "value": "www.demisto.com"
+                        },
+                        "10": {
+                            "global_variable_refs": [
+                                "7"
+                            ],
+                            "is_main": true,
+                            "observed_alert_refs": [
+                                "8"
+                            ],
+                            "request_ref": "6",
+                            "type": "x-wf-url-page-frame",
+                            "url_ref": "9"
+                        },
+                        "100": {
+                            "artifact_ref": "99",
+                            "type": "x-wf-url-resource"
+                        },
+                        "148": {
+                            "extensions": {
+                                "x-wf-content-description": {
+                                    "content_size_bytes": 86,
+                                    "sniffed_mime_type": "text/plain"
+                                }
+                            },
+                            "hashes": {
+                                "SHA-256": "56006cc15834ed33e0e22a69039a4c8f61502a536d05986e455680456686ca52"
+                            },
+                            "type": "artifact"
+                        },
+                        "149": {
+                            "dst_ref": "4",
+                            "end": "2021-03-10T16:58:32.855999Z",
+                            "extensions": {
+                                "http-request-ext": {
+                                    "request_header": {
+                                        "Accept-Language": "en-US,en;q=0.9",
+                                        "Referer": "https://www.paloaltonetworks.com/cortex/xsoar",
+                                        "Sec-Fetch-Mode": "no-cors",
+                                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.71 Safari/537.36"
+                                    },
+                                    "request_method": "get",
+                                    "request_value": "/apps/pan/public/singlePageReactModel?pageId=/content/pan/en_US/cortex/xsoar"
+                                },
+                                "x-wf-http-response-ext": {
+                                    "message_body_data_ref": "148",
+                                    "response_code": 200,
+                                    "response_header": {
+                                        "access-control-allow-credentials": "true",
+                                        "cache-control": "max-age=0, no-cache, no-store",
+                                        "content-encoding": "gzip",
+                                        "content-length": "91",
+                                        "content-type": "application/javascript;charset=iso-8859-1",
+                                        "date": "Wed, 10 Mar 2021 16:58:32 GMT",
+                                        "expires": "Wed, 10 Mar 2021 16:58:32 GMT",
+                                        "pragma": "no-cache",
+                                        "server": "Apache",
+                                        "server-timing": "edge; dur=1, origin; dur=50, cdn-cache; desc=MISS",
+                                        "status": "200",
+                                        "strict-transport-security": "max-age=15811200",
+                                        "vary": "Accept-Encoding",
+                                        "x-content-type-options": "nosniff",
+                                        "x-frame-options": "SAMEORIGIN",
+                                        "x-robots-tag": "noindex"
+                                    }
+                                }
+                            },
+                            "protocols": [
+                                "ipv4",
+                                "tcp",
+                                "https"
+                            ],
+                            "type": "network-traffic"
+                        }
+                        
+                    },
+                    "schema_version": "5.0",
+                    "type": "package"
+                },
+                {
+                    "id": "package--36e99aa9-abc1-468a-7035-e43756ce9250",
+                    "maec_objects": [
+                        {
+                            "analysis_metadata": [
+                                {
+                                    "analysis_type": "combined",
+                                    "conclusion": "unknown",
+                                    "description": "Automated phishing analysis inside a custom web browser",
+                                    "end_time": "2021-03-10T01:20:37.126363Z",
+                                    "is_automated": true,
+                                    "tool_refs": [
+                                        "1"
+                                    ]
+                                }
+                            ],
+                            "id": "malware-instance--b9bcff27-b691-4040-55bb-a3620f2231ce",
+                            "instance_object_refs": [
+                                "0"
+                            ],
+                            "type": "malware-instance"
+                        }
+                    ],
+                    "observable_objects": {
+                        "0": {
+                            "type": "url",
+                            "value": "https://www.demisto.com"
+                        },
+                        "1": {
+                            "name": "HtmlUnit v2.35",
+                            "type": "software",
+                            "vendor": "SourceForge Media, LLC dba Slashdot Media"
+                        }
+                    },
+                    "schema_version": "5.0",
+                    "type": "package"
+                },
+                {
+                    "id": "package--903b10d4-d6b9-4a99-f09f-576dd0b36d51",
+                    "maec_objects": [
+                        {
+                            "analysis_metadata": [
+                                {
+                                    "analysis_type": "static",
+                                    "conclusion": "unknown",
+                                    "description": "Automated static URL analysis",
+                                    "end_time": "2021-03-10T15:43:25.604059Z",
+                                    "is_automated": true
+                                },
+                                {
+                                    "analysis_type": "static",
+                                    "conclusion": "benign",
+                                    "is_automated": true
+                                }
+                            ],
+                            "dynamic_features": {
+                                "behavior_refs": [
+                                    "behavior--77aa4e6e-d9d1-46d6-1fc7-86ec1b24cd84"
+                                ]
+                            },
+                            "id": "malware-instance--4c958c0e-0cd1-4749-c887-a0372acfe8fc",
+                            "instance_object_refs": [
+                                "0"
+                            ],
+                            "type": "malware-instance"
+                        },
+                        {
+                            "description": "Known benign by a trusted source",
+                            "id": "behavior--77aa4e6e-d9d1-46d6-1fc7-86ec1b24cd84",
+                            "name": "trusted_list",
+                            "type": "behavior"
+                        }
+                    ],
+                    "observable_objects": {
+                        "0": {
+                            "type": "url",
+                            "value": "https://www.demisto.com"
+                        }
+                    },
+                    "schema_version": "5.0",
+                    "type": "package"
+                }
+            ],
+            "primary_malware_instances": {
+                "package--36e99aa9-abc1-468a-7035-e43756ce9250": "malware-instance--b9bcff27-b691-4040-55bb-a3620f2231ce",
+                "package--5420f34e-5eb9-499b-c6a3-5f34abd73232": "malware-instance--df22b5b9-22b5-490a-9535-4f5ba7663455",
+                "package--903b10d4-d6b9-4a99-f09f-576dd0b36d51": "malware-instance--4c958c0e-0cd1-4749-c887-a0372acfe8fc"
+            },
+            "sa_package": "package--903b10d4-d6b9-4a99-f09f-576dd0b36d51",
+            "schema_version": "1.0",
+            "sha256": "288cd35401e334a2defc0b428d709f58d4ea28c8e9c6e47fdba88da2d6bc88a7",
+            "type": "wf-report",
+            "verdict": "benign"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Wildfire URL report for https://www.demisto.com
+>|sha256|type|verdict|
+>|---|---|---|
+>| 288cd35401e334a2defc0b428d709f58d4ea28c8e9c6e47fdba88da2d6bc88a7 | wf-report | benign |
+
+
+### wildfire-get-verdict
+***
+Returns a verdict for a hash.
+
+
+#### Base Command
+
+`wildfire-get-verdict`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hash | Hash to get the verdict for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WildFire.Verdicts.MD5 | string | MD5 hash of the file. | 
+| WildFire.Verdicts.SHA256 | string | SHA256 hash of the file. | 
+| WildFire.Verdicts.Verdict | number | Verdict of the file. | 
+| WildFire.Verdicts.VerdictDescription | string | Description of the file verdict. | 
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | Vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+
+
+#### Command Example
+```!wildfire-get-verdict hash=afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc```
+
+#### Context Example
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc",
+            "Score": 3,
+            "Type": "hash",
+            "Vendor": "WildFire"
+        },
+        {
+            "Indicator": "afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc",
+            "Score": 3,
+            "Type": "file",
+            "Vendor": "WildFire"
+        }
+    ],
+    "WildFire": {
+        "Verdicts": {
+            "MD5": "0e4e3c2d84a9bc726a50b3c91346fbb1",
+            "SHA256": "afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc",
+            "Verdict": "1",
+            "VerdictDescription": "malware"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### WildFire Verdict
+>|MD5|SHA256|Verdict|VerdictDescription|
+>|---|---|---|---|
+>| 0e4e3c2d84a9bc726a50b3c91346fbb1 | afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc | 1 | malware |
+
+
+### wildfire-get-verdicts
+***
+Returns a verdict regarding multiple hashes, stored in a TXT file or given as list.
+
+
+#### Base Command
+
+`wildfire-get-verdicts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| EntryID | EntryID of the text file that contains multiple hashes. Limit is 500 hashes. | Optional | 
+| hash_list | A list of hashes to get verdicts for. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WildFire.Verdicts.MD5 | string | MD5 hash of the file. | 
+| WildFire.Verdicts.SHA256 | string | SHA256 hash of the file. | 
+| WildFire.Verdicts.Verdict | number | Verdict of the file. | 
+| WildFire.Verdicts.VerdictDescription | string | Description of the file verdict. | 
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | Vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### wildfire-upload-url
+***
+Uploads a URL of a webpage to WildFire for analysis.
+
+
+#### Base Command
+
+`wildfire-upload-url`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| upload | URL to submit to WildFire. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WildFire.Report.MD5 | string | MD5 of the submission. | 
+| WildFire.Report.SHA256 | string | SHA256 of the submission. | 
+| WildFire.Report.Status | string | The status of the submission. | 
+| WildFire.Report.URL | string | URL of the submission. | 
+
+
+#### Command Example
+```!wildfire-upload-url upload=https://www.demisto.com```
+
+#### Context Example
+```json
+{
+    "WildFire": {
+        "Report": {
+            "MD5": "67632f32e6af123aa8ffd1fe8765a783",
+            "SHA256": "c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb",
+            "Status": "Pending",
+            "URL": "https://www.demisto.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### WildFire Upload URL
+>|MD5|SHA256|Status|URL|
+>|---|---|---|---|
+>| 67632f32e6af123aa8ffd1fe8765a783 | c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb | Pending | https://www.demisto.com |
+
+
+### wildfire-get-sample
+***
+Retrieves a sample.
+
+
+#### Base Command
+
+`wildfire-get-sample`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| md5 | MD5 hash of the sample. | Optional | 
+| sha256 | SHA256 hash of the sample. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!wildfire-get-sample sha256=afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc```
+
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "318@675f238c-ed75-4cae-83d2-02b6b820168b",
+        "Extension": "xls",
+        "Info": "application/vnd.ms-excel",
+        "MD5": "0e4e3c2d84a9bc726a50b3c91346fbb1",
+        "Name": "afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc.xls",
+        "SHA1": "52eb16966670b76f8728fda28c48bc6c49f20e07",
+        "SHA256": "afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc",
+        "SHA512": "4634c1e7ae6526527167682a8b5f0aa6d0e5a17c7bd3b8ee6ac81b9f306577e543a89afbcbfe2a5a6178e7225fe35aa01a49ab814dc5d4917b2312787bb3c165",
+        "SSDeep": "1536:zeeeqopd5TCMWNo/QXo3VjgvRjha2wnLW8W:odpCMW6QIFAf8W",
+        "Size": 86016,
+        "Type": "Composite Document File V2 Document, Little Endian, Os: Windows, Version 5.2, Code page: 936, Name of Creating Application: Microsoft Excel, Create Time/Date: Tue Dec 17 01:32:42 1996, Last Saved Time/Date: Mon May 11 03:39:41 2009, Security: 0"
+    }
+}
+```
+
+#### Human Readable Output
+
+
+
+### wildfire-get-url-webartifacts
+***
+Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict, or even if the URL is malformed.
+
+
+#### Base Command
+
+`wildfire-get-url-webartifacts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | URL of the webpage. | Required | 
+| types | Whether to download as screenshots or as downloadable files. if not specified, both will be downloaded. Possible values are: download_files, screenshot. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.EntryID | Unknown | The EntryID of the webartifacts. | 
+| InfoFile.Extension | string | Extension of the webartifacts. | 
+| InfoFile.Name | string | Name of the webartifacts. | 
+| InfoFile.Info | string | Details of the webartifacts. | 
+| InfoFile.Size | number | Size of the webartifacts. | 
+| InfoFile.Type | string | The webartifacts file type. | 
+
+#### Command Example
+```!wildfire-get-url-webartifacts url=http://royalmail-login.com```
+
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "326@675f238c-ed75-4cae-83d2-02b6b820168b",
+        "Extension": "tgz",
+        "Info": "tgz",
+        "Name": "http://royalmail-login.com_webartifacts.tgz",
+        "Size": 619775,
+        "Type": "gzip compressed data, original size modulo 2^32 1828864"
+    }
+}
+```
+
+#### Human Readable Output
+
+
