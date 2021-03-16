@@ -866,8 +866,8 @@ def request_for_ioc_enrichment():
                 'Type': entryTypes['note'],
                 'EntryContext': {
                     'IntSights.Iocs(val.ID === obj.ID)': {
-                        'Value': demisto.get(ioc_data, 'Data.Value'),
-                        'Status': demisto.get(ioc_data, 'Status'),
+                        'Value': demisto.get(response, 'OriginalValue'),
+                        'Status': demisto.get(response, 'Status'),
                     },
                 },
                 'Contents': response,
@@ -878,7 +878,7 @@ def request_for_ioc_enrichment():
         raise Exception('Could not get any results. Reason: Quota exceded.')
     else:
         reason = response.get('FailedReason', '')
-        raise Exception('Could not get any results. Reason: {}.'.format(reason))
+        raise Exception('Could not get any results. Reason: {}.'.format(ioc_value))
 
 
 def translate_severity(sev):
