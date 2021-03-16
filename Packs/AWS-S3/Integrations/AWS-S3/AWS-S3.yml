@@ -2,6 +2,7 @@ category: IT Services
 commonfields:
   id: AWS - S3
   version: -1
+
 configuration:
 - display: Role Arn
   name: roleArn

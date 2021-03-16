@@ -2,6 +2,7 @@ category: IT Services
 commonfields:
   id: AWS - EC2
   version: -1
+
 configuration:
 - display: AWS Default Region
   name: defaultRegion
