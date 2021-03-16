@@ -75,14 +75,14 @@ TEST_QUERY_RESULT_INPUT = [
         {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None},
          'raw': ['NOT FOUND\n>>> Last update of WHOIS database: 2020-05-07T13:55:34Z <<<']},
         'rsqupuo.info',
-        DBotScoreReliability.A,
+        DBotScoreReliability.B,
         False
     ),
     (
         {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None},
          'raw': ['No match for "BLABLA43213422342AS.COM".>>> Last update of whois database: 2020-05-20T08:39:17Z <<<']},
         "BLABLA43213422342AS.COM",
-        DBotScoreReliability.A, False
+        DBotScoreReliability.B, False
     ),
     (
         {'status': ['clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)'],
@@ -96,13 +96,13 @@ TEST_QUERY_RESULT_INPUT = [
          'raw': ['Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN'],
          'creation_date': [datetime.datetime(1997, 9, 15, 0, 0)], 'id': ['2138514_DOMAIN_COM-VRSN']},
         'google.com',
-        DBotScoreReliability.A,
+        DBotScoreReliability.B,
         True
     ),
     (
         {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None}},
         'rsqupuo.info',
-        DBotScoreReliability.A,
+        DBotScoreReliability.B,
         False
     ),
     (
@@ -117,7 +117,7 @@ TEST_QUERY_RESULT_INPUT = [
          'raw': 'Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN',
          'creation_date': [datetime.datetime(1997, 9, 15, 0, 0)], 'id': ['2138514_DOMAIN_COM-VRSN']},
         'google.com',
-        DBotScoreReliability.A,
+        DBotScoreReliability.B,
         True
     ),
     (
@@ -132,14 +132,14 @@ TEST_QUERY_RESULT_INPUT = [
          'raw': {'data': 'Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN'},
          'creation_date': [datetime.datetime(1997, 9, 15, 0, 0)], 'id': ['2138514_DOMAIN_COM-VRSN']},
         'google.com',
-        DBotScoreReliability.A,
+        DBotScoreReliability.B,
         True
     ),
     (
         {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None},
          'raw': {'data': 'Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN'}},
         'rsqupuo.info',
-        DBotScoreReliability.A,
+        DBotScoreReliability.B,
         True
     ),
 ]
@@ -151,4 +151,4 @@ def test_query_result(whois_result, domain, reliability, expected):
     md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
     assert standard_ec['Whois']['QueryResult'] == expected
     assert dbot_score.get('DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && '
-                          'val.Type == obj.Type)').get('Reliability') == 'A - Completely reliable'
+                          'val.Type == obj.Type)').get('Reliability') == 'B - Usually reliable'
