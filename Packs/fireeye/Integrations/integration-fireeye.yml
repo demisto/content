@@ -365,6 +365,7 @@ script:
                 if (contentType && contentType.indexOf('application/xml') !== -1) {
                   status_result = JSON.parse(x2j(response.Body));
                 }
+                status_result['submission_Key'] = submissionKeyList[i];
                 result.push(status_result)
             }
             break;
@@ -382,7 +383,8 @@ script:
     }
     sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
 
-    if (typeof result === 'object' && !result['submission_Key']) {
+
+    if (typeof result === 'object' && !result['submission_Key'] && command != 'fe-submit-status') {
       result['submission_Key'] = submissionKey;
     }
 
@@ -530,8 +532,8 @@ script:
   - name: fe-submit
     arguments:
     - name: upload
-      deprecated: true
       description: commands.server.feSubmit.arguments.upload.description
+      deprecated: true
     - name: uploadFile
       description: commands.server.feSubmit.arguments.uploadFile.description
     - name: analysistype
