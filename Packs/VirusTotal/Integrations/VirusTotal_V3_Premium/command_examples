@@ -1,6 +1,6 @@
 !vt-premium-file-download 0f555ed56bb78c5511f4e488cd37f24d1425fcfa
 !vt-premium-file-sandbox-pcap 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3_VirusTotal Jujubox
-!vt-premium-intelligence-search 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3
+!vt-premium-intelligence-search query=699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3
 !vt-premium-livehunt-notifications-files-list limit=1
 !vt-premium-livehunt-notifications-list filter=malicious_executables limit=1
 !vt-premium-livehunt-rule-list-files 5988042761601024 limit=1

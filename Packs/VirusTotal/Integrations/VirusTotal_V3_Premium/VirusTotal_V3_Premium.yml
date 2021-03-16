@@ -1,0 +1,1835 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: VirusTotal - Premium API - V3
+  version: -1
+configuration:
+- display: ""
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '40'
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) or a date or epoch timestamp.
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Analyze suspicious hashes, URLs, domains, and IP addresses
+display: VirusTotal - Premium API - V3
+name: VirusTotal - Premium API - V3
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: SHA-256, SHA-1 or MD5 identifying the file.
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    outputs:
+      - contextPath: File
+        description: The file details command results.
+        type: Unknown
+      - contextPath: File.Name
+        description: The full file name (including the file extension).
+        type: String
+      - contextPath: File.EntryID
+        description: The ID for locating the file in the War Room.
+        type: String
+      - contextPath: File.Size
+        description: The size of the file in bytes.
+        type: Number
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: File.SHA512
+        description: The SHA512 hash of the file.
+        type: String
+      - contextPath: File.Extension
+        description: 'The file extension. For example: "xls".'
+        type: String
+      - contextPath: File.Type
+        description: The file type, as determined by libmagic (same as displayed in
+          file entries).
+        type: String
+    deprecated: false
+    description: Downloads file from VirusTotal
+    execution: false
+    name: vt-premium-file-download
+  - arguments:
+    - default: true
+      description: A commma separated list of hashes (SHA-256, SHA-1, or MD5) for
+        the files included in the ZIP.
+      isArray: true
+      name: file
+      required: true
+      secret: false
+    - default: false
+      description: A password to protect the zip.
+      isArray: true
+      name: password
+      required: false
+      secret: true
+    outputs:
+    - contextPath: VirusTotal.Zip.id
+      description: ID of the zip
+      type: String
+    - contextPath: VirusTotal.Zip.type
+      description: Type of the ID (zip_file)
+      type: String
+    - contextPath: VirusTotal.Zip.links.self
+      description: Self link to file
+      type: String
+    - contextPath: VirusTotal.Zip.attributes.files_error
+      description: The number of files resulted in error
+      type: Number
+    - contextPath: VirusTotal.Zip.attributes.files_ok
+      description: The number of files resulted in success zipped.
+      type: Number
+    - contextPath: VirusTotal.Zip.attributes.progress
+      description: Progress of the zipping command in percentage.
+      type: Number
+    - contextPath: VirusTotal.Zip.attributes.status
+      description: The status of the zip process. "finished" is the state when finished.
+      type: String
+    deprecated: false
+    description: Creates a password-protected ZIP file containing files from VirusTotal.
+    execution: false
+    name: vt-premium-zip-create
+  - arguments:
+    - default: true
+      description: A zip ID. Can be retrieved from the output of vt-premium-zip-create.
+      isArray: false
+      name: zip_id
+      required: true
+      secret: false
+    outputs:
+    - contextPath: VirusTotal.Zip.id
+      description: ID of the zip
+      type: String
+    - contextPath: VirusTotal.Zip.type
+      description: Type of the ID (zip_file)
+      type: String
+    - contextPath: VirusTotal.Zip.links.self
+      description: Self link to file
+      type: String
+    - contextPath: VirusTotal.Zip.attributes.files_error
+      description: The number of files resulted in error
+      type: Number
+    - contextPath: VirusTotal.Zip.attributes.files_ok
+      description: The number of files resulted in success zipped.
+      type: Number
+    - contextPath: VirusTotal.Zip.attributes.progress
+      description: Progress of the zipping command in percentage.
+      type: Number
+    - contextPath: VirusTotal.Zip.attributes.status
+      description: The status of the zip process. "finished" is the state when finished.
+      type: String
+    deprecated: false
+    description: Retrieve information about a ZIP file.
+    execution: false
+    name: vt-premium-zip-get
+  - arguments:
+    - default: true
+      description: A zip ID. Can be retrieved from the output of vt-premium-zip-create.
+      isArray: false
+      name: zip_id
+      required: true
+      secret: false
+    outputs:
+      - contextPath: File
+        description: The file details command results.
+        type: Unknown
+      - contextPath: File.Name
+        description: The full file name (including the file extension).
+        type: String
+      - contextPath: File.EntryID
+        description: The ID for locating the file in the War Room.
+        type: String
+      - contextPath: File.Size
+        description: The size of the file in bytes.
+        type: Number
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: File.SHA512
+        description: The SHA512 hash of the file.
+        type: String
+      - contextPath: File.Extension
+        description: 'The file extension. For example: "xls".'
+        type: String
+      - contextPath: File.Type
+        description: The file type, as determined by libmagic (same as displayed in
+          file entries).
+        type: String
+    deprecated: false
+    description: Download a ZIP file.
+    execution: false
+    name: vt-premium-zip-download
+  - arguments:
+    - default: true
+      description: Sandbox report ID. Can be aquired from vt-file-sandbox-report.
+      isArray: false
+      name: report_id
+      required: true
+      secret: false
+    outputs:
+      - contextPath: File
+        description: The file details command results.
+        type: Unknown
+      - contextPath: File.Name
+        description: The full file name (including the file extension).
+        type: String
+      - contextPath: File.EntryID
+        description: The ID for locating the file in the War Room.
+        type: String
+      - contextPath: File.Size
+        description: The size of the file in bytes.
+        type: Number
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: File.SHA512
+        description: The SHA512 hash of the file.
+        type: String
+      - contextPath: File.Extension
+        description: 'The file extension. For example: "xls".'
+        type: String
+      - contextPath: File.Type
+        description: The file type, as determined by libmagic (same as displayed in
+          file entries).
+        type: String
+    deprecated: false
+    description: Extracted PCAP from a sandbox analysis.
+    execution: false
+    name: vt-premium-file-sandbox-pcap
+  - arguments:
+    - default: false
+      description: Search query.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of results.
+      defaultValue: '10'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The order value can be sorted depends on the query type. See documentation.
+      isArray: false
+      name: order
+      required: false
+      secret: false
+    - default: false
+      description: Continuation cursor.
+      isArray: false
+      name: cursor
+      required: false
+      secret: false
+    - default: false
+      description: Whether to return full object information or just object descriptors.
+      isArray: false
+      name: descriptors_only
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    - default: false
+      description: Whether to return full data information.
+      isArray: false
+      name: extended_data
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      required: false
+      secret: false
+    outputs:
+      - contextPath: VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.harmless
+        description: Number of engines found the indicator harmless.
+        type: Number
+      - contextPath: VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.malicious
+        description: Number of engines found the indicator malicious.
+        type: Number
+      - contextPath: VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.suspicious
+        description: Number of engines found the indicator suspicious.
+        type: Number
+      - contextPath: VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.undetected
+        description: Number of engines the could not detect the indicator.
+        type: Number
+      - contextPath: VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.timeout
+        description: Number of engines got timeout.
+        type: Number
+      - contextPath: VirusTotal.IntelligenceSearch.attributes.reputation
+        description: indicator's reputation
+        type: Number
+      - contextPath: VirusTotal.IntelligenceSearch.attributes.last_modification_date
+        description: The last modification date in epoch.
+        type: Number
+      - contextPath: VirusTotal.IntelligenceSearch.attributes.total_votes.harmless
+        description: Total votes of harmless.
+        type: Number
+      - contextPath: VirusTotal.IntelligenceSearch.attributes.total_votes.malicious
+        description: Total votes of malicious.
+        type: Number
+      - contextPath: VirusTotal.IntelligenceSearch.type
+        description: The type of the indicator (ip_address, domain, url, file)
+        type: String
+      - contextPath: VirusTotal.IntelligenceSearch.id
+        description: ID of the indicator
+        type: String
+      - contextPath: VirusTotal.IntelligenceSearch.links.self
+        description: Link to the response
+        type: String
+    deprecated: false
+    description: Search for files.
+    execution: false
+    name: vt-premium-intelligence-search
+  - arguments:
+    - default: true
+      description: Ruleset identifier. Can be retreived from the vt-premium-livehunt-rules-list command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    outputs:
+      - contextPath: VirusTotal.LiveHuntRule.attributes.name
+        description: The rule's name
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.modification_date
+        description: Last time modified in epoch time
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.rules
+        description: The rule code
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.enabled
+        description: Is the rule enabled
+        type: Boolean
+      - contextPath: VirusTotal.LiveHuntRule.attributes.creation_date
+        description: Creation time in epoch time
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.rule_names
+        description: The rule names
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.limit
+        description: The ruleset limit
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.number_of_rules
+        description: Number of rules presented in the set
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.type
+        description: The type of the entry (hunting_ruleset)
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.id
+        description: ID of the ruleset
+        type: Date
+      - contextPath: VirusTotal.LiveHuntRule.links.self
+        description: Link to the ruleset
+        type: String
+    deprecated: false
+    description: Retrieve VT Hunting livehunt rulesets.
+    execution: false
+    name: vt-premium-livehunt-rules-get-by-id
+  - arguments:
+    - default: false
+      description: Return the rulesets matching the given criteria only.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of results.
+      defaultValue: '10'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Sort order.
+      auto: PREDEFINED
+      predefined:
+      - "name-"
+      - "creation_date-"
+      - "modification_date-"
+      - "name+"
+      - "creation_date+"
+      - "modification_date+"
+      isArray: false
+      name: order
+      required: false
+      secret: false
+    - default: false
+      description: Continuation cursor.
+      isArray: false
+      name: cursor
+      required: false
+      secret: false
+    - default: false
+      description: Should list only enabled or disabled rules.
+      isArray: false
+      name: enabled
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    outputs:
+      - contextPath: VirusTotal.LiveHuntRule.attributes.name
+        description: The rule's name
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.modification_date
+        description: Last time modified in epoch time
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.rules
+        description: The rule code
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.enabled
+        description: Is the rule enabled
+        type: Boolean
+      - contextPath: VirusTotal.LiveHuntRule.attributes.creation_date
+        description: Creation time in epoch time
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.rule_names
+        description: The rule names
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.limit
+        description: The ruleset limit
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.number_of_rules
+        description: Number of rules presented in the set
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.type
+        description: The type of the entry (hunting_ruleset)
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.id
+        description: ID of the ruleset
+        type: Date
+      - contextPath: VirusTotal.LiveHuntRule.links.self
+        description: Link to the ruleset
+        type: String
+    deprecated: false
+    description: Retrieve VT Hunting livehunt rulesets.
+    execution: false
+    name: vt-premium-livehunt-rules-list
+  - arguments:
+    - default: false
+      description: Name of the rule.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The rule itself.
+      isArray: false
+      name: yara_rule
+      required: true
+      secret: false
+    - default: false
+      description: Whatever to enable the rule.
+      isArray: false
+      name: enabled
+      required: false
+      secret: false
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - default: false
+      description: A comma-separated list of emails to notify.
+      isArray: false
+      name: notification_emails
+      required: false
+      secret: false
+    - default: false
+      description: Limit of the rule.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    outputs:
+      - contextPath: VirusTotal.LiveHuntRule.attributes.name
+        description: The rule's name
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.modification_date
+        description: Last time modified in epoch time
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.rules
+        description: The rule code
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.enabled
+        description: Is the rule enabled
+        type: Boolean
+      - contextPath: VirusTotal.LiveHuntRule.attributes.creation_date
+        description: Creation time in epoch time
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.rule_names
+        description: The rule names
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.limit
+        description: The ruleset limit
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.number_of_rules
+        description: Number of rules presented in the set
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.type
+        description: The type of the entry (hunting_ruleset)
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.id
+        description: ID of the ruleset
+        type: Date
+      - contextPath: VirusTotal.LiveHuntRule.links.self
+        description: Link to the ruleset
+        type: String
+    deprecated: false
+    description: Create a new VT Hunting Livehunt ruleset.
+    execution: false
+    name: vt-premium-livehunt-rules-create
+  - arguments:
+    - default: true
+      description: Rule identifier. Can be retrieved from the vt-premium-livehunt-rules-list command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The rule itself.
+      isArray: false
+      name: yara_rule
+      required: false
+      secret: false
+    - default: false
+      description: Whatever to enable the rule.
+      isArray: false
+      name: enabled
+      required: false
+      secret: false
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - default: false
+      description: A comma-separated list of emails to notify.
+      isArray: false
+      name: notification_emails
+      required: false
+      secret: false
+    - default: false
+      description: Limit of the rule.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    outputs:
+      - contextPath: VirusTotal.LiveHuntRule.attributes.name
+        description: The rule's name
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.modification_date
+        description: Last time modified in epoch time
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.rules
+        description: The rule code
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.enabled
+        description: Is the rule enabled
+        type: Boolean
+      - contextPath: VirusTotal.LiveHuntRule.attributes.creation_date
+        description: Creation time in epoch time
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.rule_names
+        description: The rule names
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.attributes.limit
+        description: The ruleset limit
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.attributes.number_of_rules
+        description: Number of rules presented in the set
+        type: Number
+      - contextPath: VirusTotal.LiveHuntRule.type
+        description: The type of the entry (hunting_ruleset)
+        type: String
+      - contextPath: VirusTotal.LiveHuntRule.id
+        description: ID of the ruleset
+        type: Date
+      - contextPath: VirusTotal.LiveHuntRule.links.self
+        description: Link to the ruleset
+        type: String
+    deprecated: false
+    description: Update a VT Hunting Livehunt ruleset.
+    execution: false
+    name: vt-premium-livehunt-rules-update
+  - arguments:
+    - default: true
+      description: Ruleset identifier
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a VT Hunting Livehunt ruleset.
+    execution: false
+    name: vt-premium-livehunt-rules-delete
+  - arguments:
+    - default: false
+      description: Maximum number of notifications to retrieve. Maximum can be up
+        to 40.
+      defaultValue: "10"
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Fetch notification from given time. Can be epoch time, a date or
+        time range (3 days, 1 year)
+      isArray: false
+      name: from_time
+      required: false
+      secret: false
+    - default: false
+      description: Fetch notification from given time. Can be epoch time or a date.
+      isArray: false
+      name: to_time
+      required: false
+      secret: false
+    - default: false
+      description: Continuation cursor.
+      isArray: false
+      name: cursor
+      required: false
+      secret: false
+    - default: false
+      description: Filter notifications by tag.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    outputs:
+    - contextPath: VirusTotal.LiveHuntNotification.meta.count
+      description: Notification count
+      type: Number
+    - contextPath: VirusTotal.LiveHuntNotification.meta.cursor
+      description: The cursor of the list
+      type: String
+    - contextPath: VirusTotal.LiveHuntNotification.data.attributes.tags
+      description: Tags of the notification
+      type: String
+    - contextPath: VirusTotal.LiveHuntNotification.data.attributes.source_country
+      description: Source country of the notification
+      type: String
+    - contextPath: VirusTotal.LiveHuntNotification.data.attributes.source_key
+      description: Source key of the notificaton
+      type: String
+    - contextPath: VirusTotal.LiveHuntNotification.data.attributes.snippet
+      description: The snippet ID (if exists)
+      type: String
+    - contextPath: VirusTotal.LiveHuntNotification.data.attributes.rule_name
+      description: The name of the rule in the notification
+      type: String
+    - contextPath: VirusTotal.LiveHuntNotification.data.attributes.date
+      description: The date of the notification in epoch
+      type: Number
+    - contextPath: VirusTotal.LiveHuntNotification.data.attributes.match_in_subfile
+      description: If matched in subfile
+      type: Boolean
+    - contextPath: VirusTotal.LiveHuntNotification.data.type
+      description: Type of the notification (hunting_notification)
+      type: String
+    - contextPath: VirusTotal.LiveHuntNotification.data.id
+      description: The ID of the notification
+      type: String
+    - contextPath: VirusTotal.LiveHuntNotification.data.links.self
+      description: The link to the notificaton
+      type: String
+    - contextPath: VirusTotal.LiveHuntNotification.links.self
+      description: The link to the current page
+      type: String
+    - contextPath: VirusTotal.LiveHuntNotification.links.next
+      description: The link to the next page
+      type: String
+    deprecated: false
+    description: Retrieve VT Hunting Livehunt notifications.
+    execution: false
+    name: vt-premium-livehunt-notifications-list
+  - arguments:
+    - default: false
+      description: String to search with in the hunting notification tags.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: Continuation cursor.
+      isArray: false
+      name: cursor
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of notifications to retrieve.
+      isArray: false
+      defaultValue: "10"
+      name: limit
+      required: false
+      secret: false
+    outputs:
+      - contextPath: VirusTotal.LiveHuntFiles.meta.count
+        description: Total file's count.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.meta.cursor
+        description: Cursor of the call
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.type_description
+        description: The type description
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.tlsh
+        description: File's TLSH
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.vhash
+        description: File's vhash
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.MIMEType
+        description: EXIF Tool MIME type
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.CompObjUserTypeLen
+        description: Length of EXIF Tool comp obj user type
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.CompObjUserType
+        description: EXIF Tool comp obj user type
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.Company
+        description: EXIF Tool company
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.ModifyDate
+        description: EXIF Tool modified date
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.TitleOfParts
+        description: EXIF tool title of parts
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.SharedDoc
+        description: EXIF tool shared doc
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.Author
+        description: EXIF tool author
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.CodePage
+        description: EXIF tool code page
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.AppVersion
+        description: The EXIF tool app version
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.LinksUpToDate
+        description: EXIF Tool links up to date
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.ScaleCrop
+        description: EXIF Tool scale crop
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.LastModifiedBy
+        description: The name of the user last modified the file
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.HeadingPairs
+        description: Heading pairs
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.FileType
+        description: The file type
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.FileTypeExtension
+        description: The file type extension
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.HyperlinksChanged
+        description: Which hyper links changed
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.LastPrinted
+        description: The last time printed
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.Security
+        description: Security of the gile
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.CreateDate
+        description: EXIF tools Creation date
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool.Software
+        description: EXIF tools Tool software
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.trid.file_type
+        description: TRID file type
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.trid.probability
+        description: TRID probability
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.creation_date
+        description: The creation date of the file in epoch.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.reputation
+        description: Reputation of the file
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.names
+        description: The file names
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_modification_date
+        description: The last modification date in epoch.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.type_tag
+        description: Type tag of the file
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.times_submitted
+        description: The total number of votes submitted.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.total_votes.harmless
+        description: Number of votes found the file harmless.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.total_votes.malicious
+        description: Number of votes found the file malicious.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.size
+        description: Size of the file.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.type_extension
+        description: The type extension.
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_submission_date
+        description: The last submission date of the file in epoch.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.downloadable
+        description: Is the file downloadable? (use vt-premium-file-download to download the file)
+        type: Boolean
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.sha256
+        description: SHA-256 of the file.
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.tags
+        description: The file's tags.
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_date
+        description: The date of the last analysis in epch.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.unique_sources
+        description:
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.first_submission_date
+        description: The first submission date in epoch.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.ssdeep
+        description: SSDeep of the file.
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.md5
+        description: MD5 of the file.
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.sha1
+        description: SHA-1 if the file
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.magic
+        description: Magic's file type
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.main_icon.raw_md5
+        description: MD5 of the file's icon.
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.main_icon.dhash
+        description: The dhash of the file's icon
+        type: Date
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.harmless
+        description: Number of engines found the file harmless.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.type-unsupported
+        description: Number of engines found the file type-unsupported.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.suspicious
+        description: Number of engines found the file suspicious.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.confirmed-timeout
+        description: Number of engines confirmed the file timeouted.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.timeout
+        description: Number of engines found the file timeouted.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.failure
+        description: Number of engines failed while analyzing the file.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.malicious
+        description: Number of engines found the file malicious.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.undetected
+        description: Number of engines found the file undetected.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.attributes.meaningful_name
+        description: Meaningful name of the file
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.type
+        description: Type of the entry (file)
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.id
+        description: file ID
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.links.self
+        description: link to the file
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_id
+        description: The notification ID the file is connected to
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_key
+        description: The notification's source key
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_tags
+        description: The notification's source tags
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_name
+        description: The notification's name of the ruleset
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_country
+        description: The notification's source country of the notification
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.rule_name
+        description: The name of the rule
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_snippet
+        description: The notification snippet ID
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_id
+        description: The ruleset ID
+        type: Date
+      - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_date
+        description: The notification date in epch.
+        type: Number
+      - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.match_in_subfile
+        description: If matched in subfile
+        type: Boolean
+      - contextPath: VirusTotal.LiveHuntFiles.links.self
+        description: Link to the current apge
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.links.next
+        description: Link to the next page
+        type: String
+    deprecated: false
+    description: Retrieve file objects for VT Hunting Livehunt notifications.
+    execution: false
+    name: vt-premium-livehunt-notifications-files-list
+  - arguments:
+    - default: true
+      description: Rule identifier. Can be retrieved from the vt-premium-livehunt-rules-list command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Continuation cursor.
+      isArray: false
+      name: cursor
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of notifications to retrieve.
+      isArray: false
+      defaultValue: "10"
+      name: limit
+      required: false
+      secret: false
+    outputs:
+      - contextPath: VirusTotal.LiveHuntFiles.id
+        description: ID of the file
+        type: String
+      - contextPath: VirusTotal.LiveHuntFiles.type
+        description: Type of the entry (file)
+        type: String
+    deprecated: false
+    description: Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
+    execution: false
+    name: vt-premium-livehunt-rule-list-files
+  - arguments:
+    - default: false
+      description: Return the jobs matching the given criteria only.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: Continuation cursor.
+      isArray: false
+      name: cursor
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number jobs to retrieve.
+      isArray: false
+      defaultValue: "10"
+      name: limit
+      required: false
+      secret: false
+    outputs:
+      - contextPath: VirusTotal.RetroHuntJob.attributes.status
+        description: Status of the job. "finished" when the job is done.
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.attributes.finish_date
+        description: Date of job finish in epoch
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.rules
+        description: The ruleset in the job
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range
+        description: Matches outside time range
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.scanned_bytes
+        description: Total scanned bytes
+        type: Date
+      - contextPath: VirusTotal.RetroHuntJob.attributes.time_range.start
+        description: Start of job's time range
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.time_range.end
+        description: End of job's time range
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.num_matches
+        description: Number of matches.
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.progress
+        description: The progress in percentage
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.corpus
+        description: Corpus of the job (main/goodware)
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.attributes.creation_date
+        description: The start date of the job in epch.
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.start_date
+        description: The start date of the job in epch.
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.type
+        description: Type of the entry (retrohunt_job)
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.id
+        description: ID of the retro job.
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.links.self
+        description: Link to the entry
+        type: String
+    deprecated: false
+    description: Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
+    execution: false
+    name: vt-premium-retrohunt-jobs-list
+  - arguments:
+    - default: true
+      description: Job identifier
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    outputs:
+      - contextPath: VirusTotal.RetroHuntJob.attributes.status
+        description: Status of the job. "finished" when the job is done.
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.attributes.finish_date
+        description: Date of job finish in epoch
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.rules
+        description: The ruleset in the job
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range
+        description: Matches outside time range
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.scanned_bytes
+        description: Total scanned bytes
+        type: Date
+      - contextPath: VirusTotal.RetroHuntJob.attributes.time_range.start
+        description: Start of job's time range
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.time_range.end
+        description: End of job's time range
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.num_matches
+        description: Number of matches.
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.progress
+        description: The progress in percentage
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.corpus
+        description: Corpus of the job (main/goodware)
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.attributes.creation_date
+        description: The start date of the job in epch.
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.start_date
+        description: The start date of the job in epch.
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.type
+        description: Type of the entry (retrohunt_job)
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.id
+        description: ID of the retro job.
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.links.self
+        description: Link to the entry
+        type: String
+    deprecated: false
+    description: Retrieve a retrohunt job.
+    execution: false
+    name: vt-premium-retrohunt-jobs-get-by-id
+  - arguments:
+    - default: true
+      description: Job identifier
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Whether to return full data information.
+      isArray: false
+      name: extended_data
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      required: false
+      secret: false
+    outputs:
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.type_description
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.tlsh
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.vhash
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.MIMEType
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.Subsystem
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.MachineType
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.TimeStamp
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.FileType
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.PEType
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.CodeSize
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.LinkerVersion
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.ImageFileCharacteristics
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.FileTypeExtension
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.InitializedDataSize
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.SubsystemVersion
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.ImageVersion
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.OSVersion
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.EntryPoint
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.exiftool.UninitializedDataSize
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.trid.file_type
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.trid.probability
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.rule_name
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.description
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.author
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.ruleset_id
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.ruleset_name
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.match_in_subfile
+        description: ''
+        type: Boolean
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.crowdsourced_yara_results.source
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.creation_date
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.names
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_modification_date
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.type_tag
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.capabilities_tags
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.total_votes.harmless
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.total_votes.malicious
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.size
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.popular_threat_classification.suggested_threat_label
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.popular_threat_classification.popular_threat_category
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.popular_threat_classification.popular_threat_name
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.authentihash
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.times_submitted
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_submission_date
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.meaningful_name
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.downloadable
+        description: ''
+        type: Boolean
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_summary.Sigma
+          Integrated Rule Set (GitHub).high
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_summary.Sigma
+          Integrated Rule Set (GitHub).medium
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_summary.Sigma
+          Integrated Rule Set (GitHub).critical
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_summary.Sigma
+          Integrated Rule Set (GitHub).low
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sandbox_verdicts.C2AE.category
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sandbox_verdicts.C2AE.confidence
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sandbox_verdicts.C2AE.sandbox_name
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sandbox_verdicts.C2AE.malware_classification
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sandbox_verdicts.C2AE.malware_names
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sandbox_verdicts.Lastline.category
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sandbox_verdicts.Lastline.sandbox_name
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sandbox_verdicts.Lastline.malware_classification
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sha256
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.type_extension
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.tags
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_analysis_date
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.unique_sources
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.first_submission_date
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sha1
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.magic
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.ssdeep
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.packers.PEiD
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.md5
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.resource_details.lang
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.resource_details.entropy
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.resource_details.chi2
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.resource_details.filetype
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.resource_details.sha256
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.resource_details.type
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.resource_types.RT_ICON
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.resource_types.RT_GROUP_ICON
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.resource_types.RT_RCDATA
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.imphash
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.resource_langs.NEUTRAL
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.machine_type
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.timestamp
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.entry_point
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.sections.name
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.sections.chi2
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.sections.virtual_address
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.sections.flags
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.sections.raw_size
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.sections.entropy
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.sections.virtual_size
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.sections.md5
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.import_list.library_name
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.pe_info.import_list.imported_functions
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.meltfile
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.ftpaddress
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.domain
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.regkeyhklm
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.installflag
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.startuppolicies
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.activexstartup
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.usbspread
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.installmessagebox
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.changecreationdate
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.keyloggerbackspace
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.persistance
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.ftpdirectory
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.installfilename
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.enablemessagebox
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.password
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.installdir
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.port
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.ftpinterval
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.family
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.campaignid
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.ftpport
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.ftpusername
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.mutex
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.activatekeylogger
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.regkeyhkcu
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.installmessagetitle
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.keyloggerenableftp
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.hidefile
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.malware_config.messageboxicon
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.harmless
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.type-unsupported
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.suspicious
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.confirmed-timeout
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.timeout
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.failure
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.malicious
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.last_analysis_stats.undetected
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.reputation
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.high
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.medium
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.critical
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.attributes.sigma_analysis_stats.low
+        description: ''
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJobFiles.type
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.id
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.links.self
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.context_attributes.rule_name
+        description: ''
+        type: String
+      - contextPath: VirusTotal.RetroHuntJobFiles.context_attributes.match_in_subfile
+        description: ''
+        type: Boolean
+    deprecated: false
+    description: Retrieve matches for a retrohunt job matching file relationship.
+    execution: false
+    name: vt-premium-retrohunt-jobs-get-matching-files
+  - arguments:
+    - default: false
+      description: The rules to create.
+      isArray: false
+      name: rules
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of emails to notify.
+      isArray: false
+      name: notification_email
+      required: false
+      secret: false
+    - default: false
+      description: The "main" corpus is a composition of files sent to VirusTotal
+        during the last few months. The "goodware" corpus is a random selection of
+        ~1.000.000 files from the NSRL that are not detected by any antivirus engine.
+      isArray: false
+      name: corpus
+      defaultValue: "main"
+      auto: PREDEFINED
+      predefined:
+      - "main"
+      - "goodware"
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of emails to notify.
+      isArray: false
+      name: notification_email
+      required: false
+      secret: false
+    - default: false
+      description: Fetch retrohunt jobs from given time. Can be epoch time, a date
+        or time range (3 days, 1 year)
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: Fetch retrohunt jobs to given time. Can be epoch time, a date or
+        time range. If start_time supplied and not end_time, end_time will be the
+        current time.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    outputs:
+      - contextPath: VirusTotal.RetroHuntJob.attributes.status
+        description: Status of the job. "finished" when the job is done.
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.attributes.finish_date
+        description: Date of job finish in epoch
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.rules
+        description: The ruleset in the job
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.attributes.num_matches_outside_time_range
+        description: Matches outside time range
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.scanned_bytes
+        description: Total scanned bytes
+        type: Date
+      - contextPath: VirusTotal.RetroHuntJob.attributes.time_range.start
+        description: Start of job's time range
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.time_range.end
+        description: End of job's time range
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.num_matches
+        description: Number of matches.
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.progress
+        description: The progress in percentage
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.corpus
+        description: Corpus of the job (main/goodware)
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.attributes.creation_date
+        description: The start date of the job in epch.
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.attributes.start_date
+        description: The start date of the job in epch.
+        type: Number
+      - contextPath: VirusTotal.RetroHuntJob.type
+        description: Type of the entry (retrohunt_job)
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.id
+        description: ID of the retro job.
+        type: String
+      - contextPath: VirusTotal.RetroHuntJob.links.self
+        description: Link to the entry
+        type: String
+    deprecated: false
+    description: Create a new retrohunt job.
+    execution: false
+    name: vt-premium-retrohunt-jobs-create
+  - arguments:
+    - default: true
+      description: User ID or API key. If not supplied, will use the API Key configured
+        in the integration.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve user's API usage.
+    execution: false
+    name: vt-premium-quota-limits-list
+  outputs:
+    - contextPath: VirusTotal.QuotaLimits.cases_creation_monthly.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.cases_creation_monthly.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.group.inherited_from
+      description: ''
+      type: String
+    - contextPath: VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.group.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.group.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_vtdiff_creation_monthly.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.monitor_uploaded_files.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.monitor_uploaded_files.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.monitor_uploaded_bytes.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.monitor_uploaded_bytes.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.monitor_storage_files.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.monitor_storage_files.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_monthly.group.inherited_from
+      description: ''
+      type: String
+    - contextPath: VirusTotal.QuotaLimits.api_requests_monthly.group.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_monthly.group.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_monthly.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_monthly.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_downloads_monthly.group.inherited_from
+      description: ''
+      type: String
+    - contextPath: VirusTotal.QuotaLimits.intelligence_downloads_monthly.group.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_downloads_monthly.group.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_downloads_monthly.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_downloads_monthly.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_hourly.group.inherited_from
+      description: ''
+      type: String
+    - contextPath: VirusTotal.QuotaLimits.api_requests_hourly.group.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_hourly.group.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_hourly.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_hourly.user.allowed
+      description: ''
+      type: Date
+    - contextPath: VirusTotal.QuotaLimits.intelligence_hunting_rules.group.inherited_from
+      description: ''
+      type: String
+    - contextPath: VirusTotal.QuotaLimits.intelligence_hunting_rules.group.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_hunting_rules.group.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_hunting_rules.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_hunting_rules.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_graphs_private.group.inherited_from
+      description: ''
+      type: String
+    - contextPath: VirusTotal.QuotaLimits.intelligence_graphs_private.group.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_graphs_private.group.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_graphs_private.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_graphs_private.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_daily.group.inherited_from
+      description: ''
+      type: String
+    - contextPath: VirusTotal.QuotaLimits.api_requests_daily.group.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_daily.group.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_daily.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.api_requests_daily.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.monitor_storage_bytes.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.monitor_storage_bytes.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.group.inherited_from
+      description: ''
+      type: String
+    - contextPath: VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.group.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.group.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_retrohunt_jobs_monthly.user.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_searches_monthly.group.inherited_from
+      description: ''
+      type: String
+    - contextPath: VirusTotal.QuotaLimits.intelligence_searches_monthly.group.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_searches_monthly.group.allowed
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_searches_monthly.user.used
+      description: ''
+      type: Number
+    - contextPath: VirusTotal.QuotaLimits.intelligence_searches_monthly.user.allowed
+      description: ''
+      type: Number
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.2.17246
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

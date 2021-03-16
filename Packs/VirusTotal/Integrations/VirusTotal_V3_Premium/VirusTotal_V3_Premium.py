@@ -24,6 +24,34 @@ INTEGRATION_ENTRY_CONTEXT = "VirusTotal"
 # endregion
 
 # region Helper functions
+def decrease_data_size(data: Union[dict, list]) -> Union[dict, list]:
+    """ Minifying data size.
+    Args:
+        data: the data object from raw response
+    Returns:
+        the same data without:
+            data['attributes']['last_analysis_results']
+            data['attributes']['pe_info']
+            data['attributes']['crowdsourced_ids_results']
+            data['attributes']['autostart_locations']
+            data['attributes']['sandbox_verdicts']
+            data['attributes']['sigma_analysis_summary']
+    """
+    attributes_to_remove = [
+        'last_analysis_results', 'pe_info', 'crowdsourced_ids_results', 'autostart_locations', 'sandbox_verdicts',
+        'sigma_analysis_summary'
+    ]
+    if isinstance(data, list):
+        data = [decrease_data_size(item) for item in data]
+    else:
+        for attribute in attributes_to_remove:
+            try:
+                del data['attributes'][attribute]
+            except KeyError:
+                pass
+    return data
+
+
 def arg_to_boolean_can_be_none(arg: Optional[Union[bool, str]]) -> Optional[bool]:
     """A wrapper of argToBool that can return None if arg is None or an empty string"""
     if arg in (None, ''):
@@ -32,23 +60,29 @@ def arg_to_boolean_can_be_none(arg: Optional[Union[bool, str]]) -> Optional[bool
         return argToBoolean(arg)
 
 
-def get_last_run_time() -> datetime:
+def get_last_run_time(params: Optional[dict] = None, last_run: Optional[dict] = None) -> datetime:
     """getting the last run time.
+    Args:
+        params: Demisto params. Must contain the `first_fetch` key.
+        last_run: if exists, should contain the `date` key.
 
     Returns:
         A datetime object of the fetch time
     """
-    last_run = demisto.getLastRun()
+    if last_run is None:
+        last_run = demisto.getLastRun()
+    if params is None:
+        params = demisto.params()
     if last_run:
         last_run_date = parse(last_run.get('date'))
     else:  # first run
-        first_fetch = demisto.params().get('first_fetch')
+        first_fetch = params.get('first_fetch')
         try:
             last_run_date = parse(first_fetch)
             if not last_run_date:
                 raise TypeError
         except TypeError:
-            raise DemistoException(f'The fetch time is not valid! "{first_fetch=}"')
+            raise DemistoException(f'The first fetch time is invalid "{first_fetch=}"')
 
     return last_run_date
 
@@ -74,29 +108,26 @@ def get_time_range_object(start_time: Optional[str] = None, end_time: Optional[s
     start_date: datetime
     end_date: datetime
     if start_time and end_time:
-        try:
-            start_date = parse(start_time)
-        except ParserError:
-            raise DemistoException(f'Could not parse start_date argument. {start_time=}')
-        try:
-            end_date = parse(end_time)
-        except ParserError:
-            raise DemistoException(f'Could not parse end_time argument. {end_time=}')
+        start_date = parse(start_time)
+        assert start_date, f'Could not parse start_date argument. {start_time=}'
+        end_date = parse(end_time)
+        assert end_date, f'Could not parse end_time argument. {end_time=}'
+
         time_range = {
             'start': int(start_date.timestamp()),
             'end': int(end_date.timestamp())
         }
     elif start_time:
-        try:
-            start_date, end_date = parse(start_time), datetime.now()
-        except ParserError:
-            start_date, end_date = parse_date_range(start_time)
+        start_date, end_date = parse(start_time), datetime.now()
+        assert start_date, f'Could not parse start_date argument. {start_time=}'
+        assert end_date, f'Could not parse end_time argument. {end_time=}'
+
         time_range = {
             'start': int(start_date.timestamp()),
             'end': int(end_date.timestamp())
         }
     elif end_time:
-        raise DemistoException('Found end_time argument without start_time.')
+        raise AssertionError('Found end_time argument without start_time.')
     return time_range
 
 
@@ -278,7 +309,8 @@ class Client(BaseClient):
                 query=query,
                 cursor=cursor,
                 order=order,
-                limit=limit
+                limit=limit,
+                descriptors_only=descriptors_only
             )
         )
 
@@ -428,7 +460,8 @@ class Client(BaseClient):
             )
         )
 
-    def list_notifications_files(self, filter_: Optional[str], cursor: Optional[str] = None, limit: Optional[int] = None):
+    def list_notifications_files(self, filter_: Optional[str], cursor: Optional[str] = None,
+                                 limit: Optional[int] = None):
         """Retrieve file objects for VT Hunting Livehunt notifications.
 
         See Also:
@@ -542,7 +575,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client, *args) -> str:
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
     A simple call to list_livehunt_rules
 
@@ -566,7 +599,9 @@ def download_file(client: Client, args: dict) -> dict:
 
 def create_zip(client: Client, args: dict) -> CommandResults:
     """Creates a password-protected ZIP file containing files from VirusTotal."""
-    hashes = argToList(args['files'])
+    hashes = argToList(args['file'])
+    for hash_ in hashes:
+        raise_if_hash_not_valid(hash_)
     password = args.get('password')
     raw_response = client.create_zip(hashes, password)
     data = raw_response.get('data', {})
@@ -575,7 +610,7 @@ def create_zip(client: Client, args: dict) -> CommandResults:
         'id',
         outputs=data,
         readable_output=tableToMarkdown(
-            'Zipping command sent!',
+            'The request to create the ZIP was submitted successfully!',
             {
                 **data,
                 **data.get('attributes', {})
@@ -595,7 +630,7 @@ def get_zip(client: Client, args: dict) -> CommandResults:
         f'{INTEGRATION_ENTRY_CONTEXT}.Zip',
         'id',
         outputs=data,
-        readable_output=f'Zipping status is "{status}"!',
+        readable_output=f'ZIP creation status is "{status}"',
         raw_response=raw_response
     )
 
@@ -625,8 +660,10 @@ def search_intelligence(client: Client, args: dict) -> CommandResults:
     cursor = args.get('cursor')
     descriptors_only = arg_to_boolean_can_be_none(args.get('descriptors_only'))
     raw_response = client.search_intelligence(query, order, limit, cursor, descriptors_only)
+    if not arg_to_boolean_can_be_none(args.get('extended_data')):
+        raw_response['data'] = decrease_data_size(raw_response.get('data', []))
     data = raw_response['data']
-    # TODO human readable
+
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.IntelligenceSearch',
         'id',
@@ -647,7 +684,7 @@ def get_livehunt_rule(client: Client, args: dict) -> CommandResults:
         outputs=data,
         raw_response=raw_response,
         readable_output=tableToMarkdown(
-            'Presented rules:',
+            f'Livehunt Ruleset {id_}',
             readable_output,
             headers=['name', 'enabled', 'rule_names']
         )
@@ -656,7 +693,7 @@ def get_livehunt_rule(client: Client, args: dict) -> CommandResults:
 
 def list_livehunt_rules(client: Client, args: dict) -> CommandResults:
     """Retrieve a VT Hunting Livehunt rulesets."""
-    enabled = None if args.get('enabled') == "None" else arg_to_boolean_can_be_none(args.get('enabled'))
+    enabled = None if not args.get('enabled') else arg_to_boolean_can_be_none(args.get('enabled'))
     rule_content = args.get('rule_content')
     name = args.get('name')
     order = args.get('order')
@@ -665,16 +702,18 @@ def list_livehunt_rules(client: Client, args: dict) -> CommandResults:
         limit=limit, name=name, enabled=enabled, rule_content=rule_content, order=order
     )
     data = raw_response.get('data', [])
-    readable_output = [item.get('attributes', {}) for item in data]
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.LiveHuntRule',
         'id',
         outputs=data,
         raw_response=raw_response,
         readable_output=tableToMarkdown(
-            'Presented rules:',
-            readable_output,
-            headers=['name', 'enabled', 'rule_names']
+            'VT Hunting Livehunt rulesets',
+            [{
+                **item.get('attributes', {}),
+                'id': item.get('id')
+            } for item in data],
+            headers=['id', 'name', 'enabled', 'rule_names']
         )
     )
 
@@ -695,7 +734,7 @@ def create_livehunt_rule(client: Client, args: dict) -> CommandResults:
         outputs=outputs,
         raw_response=raw_response,
         readable_output=tableToMarkdown(
-            f'New rule "{name}" has been created!',
+            f'New rule "{name}" was created successfully',
             {
                 **outputs,
                 **outputs.get('attributes', {})
@@ -735,7 +774,7 @@ def delete_livehunt_rules(client: Client, args: dict) -> CommandResults:
     id_ = args['id']
     client.delete_livehunt_rule(id_)
     return CommandResults(
-        readable_output=f'Rule ID: "{id_}" has been successfully deleted.'
+        readable_output=f'Rule "{id_}" was deleted successfully'
     )
 
 
@@ -759,6 +798,11 @@ def list_notifications(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.LiveHuntNotification',
         'id',
+        readable_output=tableToMarkdown(
+            'Search results:',
+            outputs.get('data', {}),
+            headers=['id']
+        ),
         outputs=outputs,
         raw_response=raw_response
     )
@@ -780,7 +824,8 @@ def list_notifications_files_list(client: Client, args: dict) -> CommandResults:
             'Notifications file listed:',
             [
                 {**item.get('attributes', {}), 'id': item.get('id')} for item in raw_response.get('data', [])
-            ]
+            ],
+            headers=['id', 'meaningful_name', 'last_analysis_stats']
         ),
         outputs=outputs,
         raw_response=raw_response
@@ -876,6 +921,8 @@ def get_retrohunt_job_matching_files(client: Client, args: dict) -> CommandResul
     """Retrieve matches for a retrohunt job matching file relationship."""
     id_ = args['id']
     raw_response = client.get_retrohunt_job_matching_files(id_)
+    if not arg_to_boolean_can_be_none(args.get('extended_data')):
+        raw_response['data'] = decrease_data_size(raw_response.get('data', []))
     data = raw_response.get('data', [])
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.RetroHuntJobFiles',
@@ -904,7 +951,7 @@ def get_quota_limits(client: Client, args: dict) -> CommandResults:
         f'{INTEGRATION_ENTRY_CONTEXT}.QuotaLimits',
         readable_output=tableToMarkdown(
             'Monthly quota data: More data can be found in the Context.',
-            {key: value for key, value in data if 'monthly' in key}
+            {key: value for key, value in data.items() if 'monthly' in key}
         ),
         outputs=data,
         raw_response=raw_response
@@ -931,7 +978,7 @@ def fetch_incidents(client: Client, last_run_date: datetime) -> Tuple[List[dict]
     return incidents, last_run_date
 
 
-def main() -> None:
+def main():
     """main function, parses params and runs command functions
     """
     results: Union[str, CommandResults, dict]
@@ -940,6 +987,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         params = demisto.params()
+        handle_proxy()
         client = Client(params)
         if command == 'fetch-incidents':
             incidents, run_date = fetch_incidents(client, get_last_run_time())
