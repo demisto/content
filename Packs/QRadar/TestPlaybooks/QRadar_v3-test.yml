@@ -1638,10 +1638,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: b5affa87-6bd1-47b8-8499-18e7b9682e39
+    taskid: f2181ccd-13ba-4691-865c-ddac33aab408
     type: regular
     task:
-      id: b5affa87-6bd1-47b8-8499-18e7b9682e39
+      id: f2181ccd-13ba-4691-865c-ddac33aab408
       version: -1
       name: Geolocations For IPs
       description: Retrieves the MaxMind geoip data for the given IP address.
@@ -1654,6 +1654,8 @@ tasks:
       - "37"
     scriptarguments:
       fields: {}
+      ip:
+        simple: 1.2.3.4,1.2.3.5
       ips:
         simple: 1.2.3.4,1.2.3.5
     separatecontext: false
