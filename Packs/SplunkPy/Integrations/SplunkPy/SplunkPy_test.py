@@ -609,34 +609,6 @@ def test_remove_old_incident_ids():
     assert "incident_over_one_hour_old" not in new_incident_ids
 
 
-occurred_time = str(int(time.time()) - 300)
-
-first_incident = {
-    'rawJSON': '{"_raw": "first incident"}',
-    'occurred': occurred_time
-}
-
-second_incident = {
-    'rawJSON': '{"_raw": "second incident"}',
-    'occurred': occurred_time
-}
-
-
-def test_create_incident_custom_id_creates_different_ids():
-    """
-    Given:
-    - Two different incidents
-    When:
-    - Creating a custom ID for the incidents using "create_incident_custom_id"
-    Then:
-    - The IDs of the two incidents are unique.
-    """
-    from SplunkPy import create_incident_custom_id
-    first_incident_custom_id = create_incident_custom_id(first_incident)
-    second_incident_custom_id = create_incident_custom_id(second_incident)
-    assert first_incident_custom_id != second_incident_custom_id
-
-
 incidents_with_minutes_difference = (
     [
         {'occurred': '2020-08-04T05:44:16.000-07:00'},
@@ -852,8 +824,6 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     """
     from SplunkPy import occurred_to_datetime
 
-    from datetime import timedelta
-
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -870,3 +840,192 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
 
     assert next_run_time == found_incident_time
+
+
+response_without_raw = [{
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-04T05:45:17.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}]
+
+
+def test_ingesting_incident_without_raw(mocker):
+    """
+    Given:
+    - An event is retrieved from Splunk during the fetch.
+    When:
+    - The event has no '_raw' field.
+    Then:
+    - An incident is successfully created and returned from the event.
+    """
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_without_raw)
+    splunk.fetch_incidents(service)
+    incidents = demisto.incidents.call_args[0][0]
+    assert len(incidents) == 1
+
+
+occurred_time = str(int(time.time()) - 300)
+
+first_incident = {
+    'rawJSON': '{"_raw": "first incident"}',
+    'occurred': occurred_time
+}
+
+second_incident = {
+    'rawJSON': '{"_raw": "second incident"}',
+    'occurred': occurred_time
+}
+
+third_incident = {
+    'a': 'b',
+    'field_with_inner_dict': {
+        'k1': 'k2',
+        'test1': '1test',
+        'k3': 'k4',
+        'test2': '2test'
+    },
+    'c': 'd',
+    'g': 'h',
+    'dummy_field': 'is_dummy',
+    'e': 'f',
+    'occurred': occurred_time
+}
+
+fourth_incident = {
+    'field_with_inner_dict': {
+        'test1': '1test',
+        'test2': '2test',
+        'k1': 'k2',
+        'k3': 'k4'
+    },
+    'dummy_field': 'is_dummy',
+    'a': 'b',
+    'c': 'd',
+    'e': 'f',
+    'g': 'h',
+    'occurred': occurred_time
+}
+
+
+def test_create_incident_custom_id_creates_different_ids():
+    """
+    Given:
+    - Two different incidents
+    When:
+    - Creating a custom ID for the incidents using "create_incident_custom_id"
+    Then:
+    - The IDs of the two incidents are unique.
+    """
+    from SplunkPy import create_incident_custom_id
+    first_incident_custom_id = create_incident_custom_id(first_incident)
+    second_incident_custom_id = create_incident_custom_id(second_incident)
+    assert first_incident_custom_id != second_incident_custom_id
+
+
+def test_custom_ids_with_inner_dict():
+    """
+    Given:
+    - Two identical incidents, with many fields, some of them in nested dictionaries.
+    When:
+    - Creating a custom ID for the incidents using "create_incident_custom_id".
+    Then:
+    - The IDs of the two incidents are identical.
+    """
+    from SplunkPy import create_incident_custom_id
+    third_incident_custom_id = create_incident_custom_id(third_incident)
+    fourth_incident_custom_id = create_incident_custom_id(fourth_incident)
+    assert third_incident_custom_id == fourth_incident_custom_id
+
+
+def test_get_next_run_time():
+    """
+    Given:
+    - No incidents were found on the fetch.
+    - Some incidents were found on the fetch.
+    When:
+    - Determining the start time of the next run.
+    Then:
+    - The end time of the current run is used as the start time of the next run.
+    - The occurrence time of the latest incident is used as the start time of the next run.
+    """
+    from SplunkPy import get_next_start_time
+    current_run_end_time = '2020-08-04T05:45:17'
+    latest_found_incident_time = '2020-08-05T05:45:17'
+    assert get_next_start_time(latest_found_incident_time, current_run_end_time, were_new_incidents_found=True) == \
+           latest_found_incident_time
+    assert get_next_start_time(latest_found_incident_time, current_run_end_time, were_new_incidents_found=False) == \
+           current_run_end_time
+
+
+start_time_over_15_minutes_from_end_time = ('2020-08-05T05:45:17', '2020-08-05T05:15:17', '2020-08-05T05:15:17')
+start_time_under_15_minutes_from_end_time = ('2020-08-05T05:45:17', '2020-08-05T05:42:17', '2020-08-05T05:30:17')
+enforce_look_behind_time_test_data = [start_time_over_15_minutes_from_end_time,
+                                      start_time_under_15_minutes_from_end_time]
+
+
+@pytest.mark.parametrize('end_time, start_time, expected', enforce_look_behind_time_test_data)
+def test_enforce_look_behind_time(end_time, start_time, expected):
+    """
+    Given:
+    - An end time for the run, ad a start time that is less than 15 minutes (the specified look behind)
+      before the end time.
+    - An end time for the run, ad a start time that is more than 15 minutes (the specified look behind)
+      before the end time.
+    When:
+    - Determining the start time of the current run.
+    Then:
+    - The start time of the current run will be the end time minus 15 minutes.
+    - The start time of the current run will be the original start time.
+    """
+    from SplunkPy import enforce_look_behind_time
+    look_behind_time = 15
+    assert enforce_look_behind_time(start_time, end_time, look_behind_time) == expected
+

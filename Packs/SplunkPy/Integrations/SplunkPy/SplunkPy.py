@@ -498,7 +498,6 @@ def get_latest_incident_time(incidents):
 def get_next_start_time(latests_incident_fetched_time, now, were_new_incidents_found=True):
     latest_incident_datetime = occurred_to_datetime(latests_incident_fetched_time)
     if were_new_incidents_found:
-        # Decreasing one minute to avoid missing incidents that were indexed late
         next_run_without_miliseconds_and_tz = latest_incident_datetime.strftime(SPLUNK_TIME_FORMAT)
         next_run = next_run_without_miliseconds_and_tz
         return next_run
@@ -532,6 +531,21 @@ def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, look_behin
 
 
 def enforce_look_behind_time(last_run, now, look_behind_time):
+    """ Verifies that the start time of the fetch is at X minutes before
+    the end time, X being the number of minutes specified in the look_behind parameter.
+    The reason this is needed is eo ensure that events that have a significant difference
+    between their index time and occurrence time in Splunk are still fetched and are not missed.
+
+    Args:
+        last_run (str): The current start time of the fetch.
+        now (str): The current end time of the fetch.
+        look_behind_time (int): The minimal difference (in minutes) that should be enforced between
+                                the start time and end time.
+
+    Returns:
+        last_run (str): The new start time for the fetch.
+
+    """
     last_run_datetime = datetime.strptime(last_run, SPLUNK_TIME_FORMAT)
     now_datetime = datetime.strptime(now, SPLUNK_TIME_FORMAT)
     if now_datetime - last_run_datetime < timedelta(minutes=look_behind_time):
@@ -597,6 +611,7 @@ def fetch_incidents(service):
 
     dem_params = demisto.params()
     look_behind = int(dem_params['look_behind']) if 'look_behind' in dem_params else 15
+    extensive_log('Look behind is: {}'.format(look_behind))
     last_run_time, now = get_last_run_time(dem_params, service, last_run_time, look_behind)
     extensive_log('SplunkPy last run time: {}, now: {}'.format(last_run_time, now))
 
@@ -607,7 +622,6 @@ def fetch_incidents(service):
     reader = results.ResultsReader(oneshotsearch_results)
 
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
-
 
     incidents = []
     incident_ids_to_add = []
@@ -623,10 +637,12 @@ def fetch_incidents(service):
             extensive_log('SplunkPy - Dropped incident {} due to duplication.'.format(incident_id))
 
     current_epoch_time = int(time.time())
+    extensive_log('Size of last_run_fetched_ids before adding new IDs: {}'.format(len(last_run_fetched_ids)))
     for incident_id in incident_ids_to_add:
         last_run_fetched_ids[incident_id] = current_epoch_time
-
+    extensive_log('Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
     last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, look_behind)
+    extensive_log('Size of last_run_fetched_ids after removing old IDs: {}'.format(len(last_run_fetched_ids)))
     extensive_log('SplunkPy - incidents fetched on last run = {}'.format(last_run_fetched_ids))
 
     debug_message = 'SplunkPy - total number of incidents found: from {}\n to {}\n with the ' \
