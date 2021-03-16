@@ -242,10 +242,7 @@ script:
         number with "," '
       name: identity_number
       required: true
-      auto: PREDEFINED
-      predefined:
-      - ""
-      - ""
+      isArray: true
     description: 'With this command, you can search specific identity number that
       hashed in leaks '
     outputs:
