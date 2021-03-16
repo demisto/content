@@ -3281,7 +3281,8 @@
         "Azure SecurityCenter - Test": "Issue 27391",
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "Field polling test": "Issue 33951",
-        "palo_alto_panorama_test_pb": "Issue 34371"
+        "palo_alto_panorama_test_pb": "Issue 34371",
+        "Microsoft Defender - ATP - Indicators Test": "Issue 29279"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -3358,6 +3359,8 @@
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
         "Akamai WAF": "Issue 32318",
+        "FraudWatch": "Issue 34299",
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
@@ -3565,8 +3568,8 @@
                 "memory_threshold": 140
             },
             "demisto/powershell-ubuntu": {
-                "pid_threshold": 24,
-                "memory_threshold": 140
+                "pid_threshold": 30,
+                "memory_threshold": 155
             }
         }
     }
