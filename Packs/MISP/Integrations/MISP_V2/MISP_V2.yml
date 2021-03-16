@@ -42,13 +42,12 @@ configuration:
   - Value
   required: false
   type: 16
-- additionalinfo: Atribute number per event in the context will be limited by this
-    parameter in order to keep incident or indicator context from being overwhelmed.
+- additionalinfo: This field limits the amount of attributes in every event that will be written to context. Raising it above 1000 may result in high memory and disk usage. Please contact Cortex XSOAR support before attempting to do so.
   defaultvalue: '1000'
   display: Maximum attributes in event
   hidden: false
   name: attributes_limit
-  required: true
+  required: false
   type: 0
 description: Malware information sharing platform and threat sharing.
 display: MISP v2

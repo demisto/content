@@ -35,7 +35,12 @@ proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
 MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
 DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
-MAX_ATTRIBUTES = int(demisto.params().get('attributes_limit', 1000))
+try:
+    MAX_ATTRIBUTES = int(demisto.params().get('attributes_limit', 1000))
+except ValueError:
+    return_error("Maximum attributes in event must be a positive number")
+if MAX_ATTRIBUTES < 1:
+    return_error("Maximum attributes in event must be a positive number")
 
 """
 dict format :
