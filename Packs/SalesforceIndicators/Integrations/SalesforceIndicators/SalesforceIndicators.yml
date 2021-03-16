@@ -40,7 +40,7 @@ configuration:
   - Suspicious
   - Bad
   required: false
-  type: 15
+  type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
