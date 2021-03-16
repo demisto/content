@@ -15,13 +15,13 @@ configuration:
   defaultvalue: "https://api.crowdstrike.com/"
 - display: CrowdStrike API Client ID
   displaypassword: CrowdStrike API Client Secret
-  additionalinfo: 'For non 6.1 users - enter your CrowdStrike API Client Secret in the password field.'
+  additionalinfo: 'For non 6.1 - enter your CrowdStrike API Client Secret in the password field.'
   name: credentials
   type: 9
   required: true
-- additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
-    in XSOAR are: "Account", "Domain", "Email", "File md5",
-    "File sha256", "IP", "Registry Key", and "URL". The default is "ALL".'
+- additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported
+    in XSOAR are: "Account", "Domain", "Email", "File MD5",
+    "File SHA-256", "IP", "Registry Key", and "URL". The default is "ALL".'
   display: Type
   hidden: false
   name: type
@@ -41,14 +41,14 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-  additionalinfo: The time range to consider for the initial data fetch. Leave empty to fetch from the first indicator available.
+  additionalinfo: The time range to consider for the initial data fetch. Leave empty to fetch from the first available indicator.
 - display: Max. indicators per fetch
   defaultvalue: 5000
   hidden: false
   name: max_indicator_to_fetch
   required: false
   type: 0
-  additionalinfo: Max. indicators per fetch should be between 1 - 10000. Big numbers might result in timeout.
+  additionalinfo: Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout.
 - additionalinfo: Malicious confidence level to filter by.
   display: Malicious confidence
   hidden: false
@@ -64,20 +64,20 @@ configuration:
   name: include_deleted
   required: false
   type: 8
-- additionalinfo: "Advanced: FQL query. For more information visit CrowdStrike documentation."
+- additionalinfo: "Advanced: FQL query. For more information visit the CrowdStrike documentation."
   display: Filter
   hidden: false
   name: filter
   required: false
   type: 0
 - display: Generic phrase match
-  additionalinfo: Generic phrase match search across all indicators fields.
+  additionalinfo: Generic phrase match search across all indicator fields.
   hidden: false
   name: generic_phrase
   required: false
   type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+    reputation.
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -88,7 +88,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -102,7 +102,7 @@ configuration:
   required: true
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed.
   defaultvalue: GREEN
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -153,7 +153,7 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-description: CrowdStrike Falcon Intel Indicator Feed
+description: Retrieves indicators from the CrowdStrike Falcon Intel Feed.
 display: CrowdStrike Indicator Feed
 name: CrowdStrike Indicator Feed
 script:
@@ -172,7 +172,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets indicators from Crowdstrike Falcon Intel Feed.
+    description: Gets indicators from the CrowdStrike Falcon Intel Feed.
     execution: false
     name: crowdstrike-indicators-list
     outputs:
@@ -189,7 +189,7 @@ script:
       description: Indicator reports.
       type: Unknown
     - contextPath: CrowdStrikeFalconIntel.Indicators.fields.actors
-      description: Actors related to indicator.
+      description: Actors related to the indicator.
       type: Unknown
     - contextPath: CrowdStrikeFalconIntel.Indicators.fields.malwarefamily
       description: Indicator malware families.
@@ -204,7 +204,7 @@ script:
       description: Indicator labels.
       type: Unknown
     - contextPath: CrowdStrikeFalconIntel.Indicators.fields.targets
-      description: Targets of indicator.
+      description: Targets of the indicator.
       type: Unknown
     - contextPath: CrowdStrikeFalconIntel.Indicators.fields.threattypes
       description: Indicator threat types.
@@ -213,7 +213,7 @@ script:
       description: Indicator vulnerabilities.
       type: Unknown
     - contextPath: CrowdStrikeFalconIntel.Indicators.fields.ipaddress
-      description: Indicator related ip address.
+      description: Indicator related IP address.
       type: Unknown
     - contextPath: CrowdStrikeFalconIntel.Indicators.fields.domainname
       description: Indicator related domains.
