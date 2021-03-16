@@ -83,7 +83,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '3000'
+  defaultValue: '1500'
   description: The maximum number of incidents to query.
   isArray: false
   name: limit
@@ -145,7 +145,7 @@ args:
   name: includeIndicatorsSimilarity
   predefined:
   - 'True'
-  - ' False'
+  - 'False'
   required: false
   secret: false
 - default: false
