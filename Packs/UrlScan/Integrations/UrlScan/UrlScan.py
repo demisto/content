@@ -22,35 +22,35 @@ requests.packages.urllib3.disable_warnings()
 
 
 '''GLOBAL VARS'''
-BASE_URL = 'https://urlscan.io/api/v1/'
-APIKEY = demisto.params().get('apikey')
-THRESHOLD = int(demisto.params().get('url_threshold', '1'))
-USE_SSL = not demisto.params().get('insecure', False)
-reliability = demisto.params().get('integrationReliability')
 BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
                                 'For your own safety we did not perform this scan...'
 
-if DBotScoreReliability.is_valid_type(reliability):
-    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-else:
-    Exception("Please provide a valid value for the Source Reliability parameter.")
+
+class Client:
+    def __init__(self, api_key='', threshold=None, use_ssl=False, reliability='C - Fairly reliable'):
+        self.base_url = 'https://urlscan.io/api/v1/'
+        self.api_key = api_key
+        self.threshold = threshold
+        self.use_ssl = use_ssl
+        self.reliability = reliability
+
 
 '''HELPER FUNCTIONS'''
 
 
-def http_request(method, url_suffix, json=None, wait=0, retries=0):
-    headers = {'API-Key': APIKEY,
+def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
+    headers = {'API-Key': client.api_key,
                'Accept': 'application/json'}
     if method == 'POST':
         headers.update({'Content-Type': 'application/json'})
     demisto.debug(
-        'requesting https request with method: {}, url: {}, data: {}'.format(method, BASE_URL + url_suffix, json))
+        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_url + url_suffix, json))
     r = requests.request(
         method,
-        BASE_URL + url_suffix,
+        client.base_url + url_suffix,
         data=json,
         headers=headers,
-        verify=USE_SSL
+        verify=client.use_ssl
     )
 
     rate_limit_remaining = int(r.headers.get('X-Rate-Limit-Remaining', 99))
@@ -88,18 +88,18 @@ def makehash():
     return collections.defaultdict(makehash)
 
 
-def get_result_page():
+def get_result_page(client):
     uuid = demisto.args().get('uuid')
-    uri = BASE_URL + 'result/{}'.format(uuid)
+    uri = client.base_url + 'result/{}'.format(uuid)
     return uri
 
 
-def polling(uuid):
+def polling(client, uuid):
     TIMEOUT = int(demisto.args().get('timeout', 60))
-    uri = BASE_URL + 'result/{}'.format(uuid)
+    uri = client.base_url + 'result/{}'.format(uuid)
 
     ready = poll(
-        lambda: requests.get(uri, headers={'API-Key': APIKEY}, verify=USE_SSL).status_code == 200,
+        lambda: requests.get(uri, headers={'API-Key': client.api_key}, verify=client.use_ssl).status_code == 200,
         step=5,
         ignore_exceptions=(requests.exceptions.ConnectionError),
         timeout=int(TIMEOUT)
@@ -107,9 +107,9 @@ def polling(uuid):
     return ready
 
 
-def poll_uri():
+def poll_uri(client):
     uri = demisto.args().get('uri')
-    demisto.results(requests.get(uri, verify=USE_SSL).status_code)
+    demisto.results(requests.get(uri, verify=client.use_ssl).status_code)
 
 
 def step_constant(step):
@@ -156,7 +156,7 @@ def poll(target, step, args=(), kwargs=None, timeout=60,
 '''MAIN FUNCTIONS'''
 
 
-def urlscan_submit_url():
+def urlscan_submit_url(client):
     submission_dict = {}
     if demisto.args().get('public'):
         if demisto.args().get('public') == 'public':
@@ -169,20 +169,20 @@ def urlscan_submit_url():
     sub_json = json.dumps(submission_dict)
     wait = int(demisto.args().get('wait', 5))
     retries = int(demisto.args().get('retries', 0))
-    r = http_request('POST', 'scan/', sub_json, wait, retries)
+    r = http_request(client, 'POST', 'scan/', sub_json, wait, retries)
     return r
 
 
-def format_results(uuid):
+def format_results(client, uuid):
     # Scan Lists sometimes returns empty
     num_of_attempts = 0
-    response = urlscan_submit_request(uuid)
+    response = urlscan_submit_request(client, uuid)
     scan_lists = response.get('lists')
     while scan_lists is None:
         try:
             num_of_attempts += 1
             demisto.debug('Attempting to get scan lists {} times'.format(num_of_attempts))
-            response = urlscan_submit_request(uuid)
+            response = urlscan_submit_request(client, uuid)
             scan_lists = response.get('lists')
         except Exception:
             if num_of_attempts == 5:
@@ -290,7 +290,7 @@ def format_results(uuid):
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
             human_readable['Malicious'] = 'Benign'
-        dbot_score['Reliability'] = reliability
+        dbot_score['Reliability'] = client.reliability
     processors_data = scan_meta['processors']
     if 'download' in processors_data and len(scan_meta['processors']['download']['data']) > 0:
         meta_data = processors_data['download']['data'][0]
@@ -322,7 +322,7 @@ def format_results(uuid):
     if 'screenshotURL' in scan_tasks:
         human_readable['Screenshot'] = scan_tasks['screenshotURL']
         screen_path = scan_tasks['screenshotURL']
-        response_img = requests.request("GET", screen_path, verify=USE_SSL)
+        response_img = requests.request("GET", screen_path, verify=client.use_ssl)
         stored_img = fileResult('screenshot.png', response_img.content)
 
     demisto.results({
@@ -358,30 +358,30 @@ def format_results(uuid):
         })
 
 
-def urlscan_submit_request(uuid):
-    response = http_request('GET', 'result/{}'.format(uuid))
+def urlscan_submit_request(client, uuid):
+    response = http_request(client, 'GET', 'result/{}'.format(uuid))
     return response
 
 
-def get_urlscan_submit_results_polling(uuid):
-    ready = polling(uuid)
+def get_urlscan_submit_results_polling(client, uuid):
+    ready = polling(client, uuid)
     if ready is True:
-        format_results(uuid)
+        format_results(client, uuid)
 
 
-def urlscan_submit_command():
+def urlscan_submit_command(client):
     urls = argToList(demisto.args().get('url'))
     for url in urls:
         demisto.args()['url'] = url
-        response = urlscan_submit_url()
+        response = urlscan_submit_url(client)
         if response.get('url_is_blacklisted'):
             pass
         uuid = response.get('uuid')
-        get_urlscan_submit_results_polling(uuid)
+        get_urlscan_submit_results_polling(client, uuid)
 
 
-def urlscan_search(search_type, query):
-    r = http_request('GET', 'search/?q=' + search_type + ':"' + query + '"')
+def urlscan_search(client, search_type, query):
+    r = http_request(client, 'GET', 'search/?q=' + search_type + ':"' + query + '"')
     return r
 
 
@@ -402,7 +402,7 @@ def cert_format(x):
     return info, ec_info
 
 
-def urlscan_search_command():
+def urlscan_search_command(client):
     LIMIT = int(demisto.args().get('limit'))
     HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date']
     raw_query = demisto.args().get('searchParameter', '')
@@ -420,7 +420,7 @@ def urlscan_search_command():
     # Making the query string safe for Elastic Search
     query = quote(raw_query, safe='')
 
-    r = urlscan_search(search_type, query)
+    r = urlscan_search(client, search_type, query)
 
     if r['total'] == 0:
         demisto.results('No results found for {}'.format(raw_query))
@@ -528,14 +528,14 @@ def urlscan_search_command():
     })
 
 
-def format_http_transaction_list():
+def format_http_transaction_list(client):
     url = demisto.args().get('url')
     uuid = demisto.args().get('uuid')
 
     # Scan Lists sometimes returns empty
     scan_lists = {}  # type: dict
     while not scan_lists:
-        response = urlscan_submit_request(uuid)
+        response = urlscan_submit_request(client, uuid)
         scan_lists = response.get('lists', {})
 
     limit = int(demisto.args().get('limit'))
@@ -563,25 +563,45 @@ def format_http_transaction_list():
 
 
 def main():
+
+    params = demisto.params()
+
+    api_key = params.get('apikey')
+    threshold = int(params.get('url_threshold', '1'))
+    use_ssl = not params.get('insecure', False)
+    reliability = params.get('integrationReliability')
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("Please provide a valid value for the Source Reliability parameter.")
+
+    client = Client(
+        api_key=api_key,
+        threshold=threshold,
+        use_ssl=use_ssl,
+        reliability=reliability
+    )
+
     try:
         handle_proxy()
         if demisto.command() == 'test-module':
             search_type = 'ip'
             query = '8.8.8.8'
-            urlscan_search(search_type, query)
+            urlscan_search(client, search_type, query)
             demisto.results('ok')
         if demisto.command() in {'urlscan-submit', 'url'}:
-            urlscan_submit_command()
+            urlscan_submit_command(client)
         if demisto.command() == 'urlscan-search':
-            urlscan_search_command()
+            urlscan_search_command(client)
         if demisto.command() == 'urlscan-submit-url-command':
-            demisto.results(urlscan_submit_url().get('uuid'))
+            demisto.results(urlscan_submit_url(client).get('uuid'))
         if demisto.command() == 'urlscan-get-http-transaction-list':
-            format_http_transaction_list()
+            format_http_transaction_list(client)
         if demisto.command() == 'urlscan-get-result-page':
-            demisto.results(get_result_page())
+            demisto.results(get_result_page(client))
         if demisto.command() == 'urlscan-poll-uri':
-            poll_uri()
+            poll_uri(client)
 
     except Exception as e:
         LOG(e)
