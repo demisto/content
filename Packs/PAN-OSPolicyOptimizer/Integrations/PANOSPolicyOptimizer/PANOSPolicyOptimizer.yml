@@ -7,7 +7,7 @@ configuration:
   name: server
   required: true
   type: 0
-- defaultvalue: "443"
+- defaultvalue: '443'
   display: Port (e.g 443)
   name: port
   required: false
@@ -42,8 +42,9 @@ display: PAN-OS Policy Optimizer
 name: PAN-OS Policy Optimizer
 script:
   commands:
-  - arguments: []
+  - deprecated: false
     description: Gets the Policy Optimizer statistics
+    execution: false
     name: pan-os-po-getstats
     outputs:
     - contextPath: PanOS.PolicyOptimizer.Stats.no_app_specified
@@ -61,38 +62,53 @@ script:
     - contextPath: PanOS.PolicyOptimizer.Stats.unused_in_90_days
       description: Number of unused security policies in 90 days
       type: Number
-  - arguments: []
+  - deprecated: false
     description: Shows all security policies with no apps specified
+    execution: false
     name: pan-os-po-noapps
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
       description: Contains informatios about the rules that have no apps specified.
         i.e Source, Destination etc.
       type: Unknown
-  - arguments: []
+  - deprecated: false
+    description: Get the unused apps
+    execution: false
     name: pan-os-po-unusedapps
     outputs:
     - contextPath: PanOS.PolicyOptimizer.UnusedApps
       description: Shows all security polices with unused apps
       type: Unknown
   - arguments:
-    - defaultValue: "30"
+    - default: false
+      defaultValue: '30'
       description: The timeframe in days to show the unused rules for
+      isArray: false
       name: timeframe
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: unused
       description: Rule usage type. Which values you want to filter by.
+      isArray: false
       name: usage
       predefined:
       - Unused
       - Used
       - Any
       required: true
-    - description: Exclude rules reset during the last x days. It will not exclude
+      secret: false
+    - default: false
+      description: Exclude rules reset during the last x days. It will not exclude
         if argument is empty
+      isArray: false
       name: exclude
+      required: false
+      secret: false
+    deprecated: false
     description: Gets unused, used or any rules
+    execution: false
     name: pan-os-po-getrules
     outputs:
     - contextPath: PanOS.PolicyOptimizer.UnusedRules
@@ -105,25 +121,40 @@ script:
       description: Shows all Used Rules
       type: Unknown
   - arguments:
-    - description: The uuid of the security policy
+    - default: false
+      description: The uuid of the security policy
+      isArray: false
       name: rule_uuid
       required: true
+      secret: false
+    deprecated: false
     description: Gets the App usage statistics for a specific security policy
+    execution: false
     name: pan-os-po-appandusage
     outputs:
     - contextPath: PanOS.PolicyOptimizer.AppsAndUsage
       description: Shows detailed App Usage statistics for specific rules
       type: Unknown
   - arguments:
-    - description: Dynamic Address Group Name
+    - default: false
+      description: Dynamic Address Group Name
+      isArray: false
       name: dag
       required: true
+      secret: false
+    deprecated: false
+    description: Get a specific dynamic address group
+    execution: false
     name: pan-os-get-dag
   dockerimage: demisto/python3:3.9.2.17246
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0
