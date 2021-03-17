@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
+import re
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -32,11 +33,13 @@ COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', '
 
 ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel API version, the retention period ' \
                                     'for GetEntityByID is 30 days.'
+REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 
 
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
-                 subscription_id, resource_group_name, workspace_name, verify, proxy):
+                 subscription_id, resource_group_name, workspace_name, verify, proxy,
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
@@ -59,7 +62,8 @@ class Client:
             scope='',
             tenant_id=tenant_id,
             auth_code=auth_code,
-            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404)
+            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
+            azure_ad_endpoint=azure_ad_endpoint
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, is_get_entity_cmd=False):
@@ -635,7 +639,8 @@ def main():
             resource_group_name=params.get('resourceGroupName', ''),
             workspace_name=params.get('workspaceName', ''),
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False)
+            proxy=params.get('proxy', False),
+            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
         )
 
         commands = {

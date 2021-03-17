@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 from typing import Any, Union
 from MicrosoftApiModule import *
 import urllib3
+import re
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,12 +22,15 @@ BASE_URL = 'https://management.azure.com'
 SUBSCRIPTION_PATH = 'subscriptions/{}'
 RESOURCE_PATH = 'resourceGroups/{}'
 POLICY_PATH = 'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies'
+REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
+
 ''' CLIENT CLASS '''
 
 
 class AzureWAFClient:
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy):
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy,
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
 
         # for dev environment use:
         if '@' in app_id:
@@ -49,7 +53,8 @@ class AzureWAFClient:
             'proxy': proxy,
             'resource': 'https://management.core.windows.net',  # disable-secrets-detection
             'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
-            'ok_codes': (200, 201, 202, 204)
+            'ok_codes': (200, 201, 202, 204),
+            'azure_ad_endpoint': azure_ad_endpoint
         }
 
         self.ms_client = MicrosoftClient(**client_args)
@@ -119,12 +124,14 @@ def test_connection(client: AzureWAFClient, params: Dict):
 
 @logger
 def start_auth(client: AzureWAFClient) -> CommandResults:
-    user_code = client.ms_client.device_auth_request()
+    response = client.ms_client.device_auth_request()
+    message = response.get('message')
+    url = re.search(REGEX_SEARCH_URL, message).group("url")  # type:ignore
+    user_code = response.get('user_code')
     return CommandResults(readable_output=f"""### Authorization instructions
-        1. To sign in, use a web browser to open the page:
-            [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
-           and enter the code **{user_code}** to authenticate.
-        2. Run the **!azure-waf-auth-complete** command in the War Room.""")
+1. To sign in, use a web browser to open the page [{url}]({url})
+and enter the code **{user_code}** to authenticate.
+2. Run the **!azure-waf-auth-complete** command in the War Room.""")
 
 
 @logger
@@ -358,6 +365,7 @@ def main() -> None:
         resource_group_name=params.get('resource_group_name', ''),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
+        azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
     )
 
     demisto.debug(f'Command being called in Azure WAF is {command}')

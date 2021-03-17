@@ -5,12 +5,16 @@ from CommonServerUserPython import *
 from typing import Dict, Optional
 
 import urllib3
+import re
 
 urllib3.disable_warnings()
 
+REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
+
 
 class Client:
-    def __init__(self, app_id: str, verify: bool, proxy: bool):
+    def __init__(self, app_id: str, verify: bool, proxy: bool,
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -25,7 +29,8 @@ class Client:
             base_url='https://graph.microsoft.com',
             verify=verify,
             proxy=proxy,
-            scope='offline_access Group.ReadWrite.All TeamMember.ReadWrite.All Team.ReadBasic.All'
+            scope='offline_access Group.ReadWrite.All TeamMember.ReadWrite.All Team.ReadBasic.All',
+            azure_ad_endpoint=azure_ad_endpoint
         )
 
     @logger
@@ -546,9 +551,12 @@ def list_joined_teams(client: Client, args: Dict) -> CommandResults:
 
 
 def start_auth(client: Client) -> CommandResults:
-    user_code = client.ms_client.device_auth_request()
+    response = client.ms_client.device_auth_request()
+    message = response.get('message')
+    url = re.search(REGEX_SEARCH_URL, message).group("url")  # type:ignore
+    user_code = response.get('user_code')
     return CommandResults(readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
+1. To sign in, use a web browser to open the page [{url}]({url})
  and enter the code **{user_code}** to authenticate.
 2. Run the **!microsoft-teams-auth-complete** command in the War Room.""")
 
@@ -582,6 +590,7 @@ def main() -> None:
             app_id=params.get('app_id', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
+            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
         )
         if command == 'test-module':
             return_results('The test module is not functional, run the microsoft-teams-auth-start command instead.')

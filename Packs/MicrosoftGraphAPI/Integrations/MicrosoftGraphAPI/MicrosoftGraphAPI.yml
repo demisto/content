@@ -16,6 +16,18 @@ configuration:
   name: tenant_id
   required: false
   type: 0
+- defaultvalue: https://login.microsoftonline.com
+  display: Azure AD endpoint
+  hidden: false
+  name: azure_ad_endpoint
+  options:
+  - https://login.microsoftonline.com
+  - https://login.microsoftonline.us
+  - https://login.microsoftonline.de
+  - https://login.chinacloudapi.cn
+  required: true
+  type: 15
+  additionalinfo: Azure AD endpoint associated with national cloud.
 - additionalinfo: A space-separated list of scopes that you want to consent to.
   defaultvalue: User.Read
   display: Scope (Required for using Cortex XSOAR Azure app)
