@@ -10,6 +10,7 @@ urllib3.disable_warnings()
 API_VERSION = '2020-09-01'
 REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 
+
 class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str):
@@ -138,7 +139,7 @@ def clusters_addon_update(client: AKSClient, args: Dict) -> str:
 def start_auth(client: AKSClient) -> CommandResults:
     response = client.ms_client.device_auth_request()
     message = response.get('message')
-    url = re.search(REGEX_SEARCH_URL, message).group("url")
+    url = re.search(REGEX_SEARCH_URL, message).group("url")  # type:ignore
     user_code = response.get('user_code')
 
     return CommandResults(readable_output=f"""### Authorization instructions

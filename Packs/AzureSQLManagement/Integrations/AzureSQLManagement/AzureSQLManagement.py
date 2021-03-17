@@ -423,7 +423,7 @@ def test_connection(client: Client) -> CommandResults:
 def start_auth(client: Client) -> CommandResults:
     response = client.ms_client.device_auth_request()
     message = response.get('message')
-    url = re.search(REGEX_SEARCH_URL, message).group("url")
+    url = re.search(REGEX_SEARCH_URL, message).group("url")  # type:ignore
     user_code = response.get('user_code')
 
     return CommandResults(readable_output=f"""### Authorization instructions
