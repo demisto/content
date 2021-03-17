@@ -566,6 +566,41 @@
           }
         ],
         "type": "custom"
+      },
+      {
+          "hidden": false,
+          "id": "neyse5txkx",
+          "name": "Additional Details",
+          "sections": [
+              {
+                  "displayType": "ROW",
+                  "h": 5,
+                  "hideItemTitleOnlyOne": true,
+                  "hideName": false,
+                  "i": "neyse5txkx-4cf747c0-755b-11eb-ba8c-334a57af273a",
+                  "items": [
+                      {
+                          "endCol": 6,
+                          "fieldId": "mitrecourseofaction",
+                          "height": 106,
+                          "id": "628550f0-755b-11eb-ba8c-334a57af273a",
+                          "index": 0,
+                          "sectionItemType": "field",
+                          "startCol": 0
+                      }
+                  ],
+                  "maxW": 3,
+                  "minH": 1,
+                  "minW": 1,
+                  "moved": false,
+                  "name": "Courses of action",
+                  "static": false,
+                  "w": 3,
+                  "x": 0,
+                  "y": 0
+              }
+          ],
+          "type": "custom"
       }
     ],
     "typeId": "MITRE ATT&CK",
