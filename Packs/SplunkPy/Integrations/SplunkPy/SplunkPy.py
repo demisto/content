@@ -505,13 +505,33 @@ def get_next_start_time(latests_incident_fetched_time, now, were_new_incidents_f
         return now
 
 
+def is_internal_splunk_field(field_name):
+    return field_name.startswith('_')
+
+
+def clear_internal_fields(incident):
+    """Removes all the internal fields from the incident, except for several specific fields.
+    The fields we do not remove are helpful in distinguishing between events,
+    and help us make sure the hash will be unique even between events that return very little non-internal fields.
+
+    Args:
+        incident (dict): An incident parsed from a Splunk event.
+    """
+    internal_fields_to_delete = []
+    needed_internal_fields = ['_bkt', '_cd', '_time', '_indextime', '_raw']
+    for field_name, _ in incident.items():
+        if is_internal_splunk_field(field_name) and field_name not in needed_internal_fields:
+            internal_fields_to_delete.append(field_name)
+
+    for internal_field in internal_fields_to_delete:
+        del incident[internal_field]
+
+
 def create_incident_custom_id(incident):
     # The '_serial' indicates the index of the event in the results returned from Splunk.
     # Therefore, it might be different on different runs for the same event.
     # Thus, it must be deleted to preserve the consistency of the custom IDs.
-    if '_serial' in incident:
-        del incident['_serial']
-
+    clear_internal_fields(incident)
     incident_full_data = json.dumps(incident, sort_keys=True)
     incident_occurred = incident['occurred']
     raw_hash = hashlib.md5(incident_full_data).hexdigest()
