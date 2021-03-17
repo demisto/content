@@ -181,7 +181,8 @@ def normalize_command_line(command: str) -> str:
         return ''
 
 
-def fill_nested_fields(incidents_df: pd.DataFrame, incidents: pd.DataFrame, *list_of_field_list: List[str]) -> pd.DataFrame:
+def fill_nested_fields(incidents_df: pd.DataFrame, incidents: pd.DataFrame, *list_of_field_list: List[str]) -> \
+        pd.DataFrame:
     for field_type in list_of_field_list:
         for field in field_type:
             if '.' in field:
@@ -474,12 +475,13 @@ def prepare_incidents_for_display(similar_incidents: pd.DataFrame, confidence: f
     if 'id' in similar_incidents.columns.tolist():
         similar_incidents[COLUMN_ID] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     if COLUMN_TIME in similar_incidents.columns:
-        similar_incidents[COLUMN_TIME] = similar_incidents[COLUMN_TIME].apply(lambda timestamp: timestamp[:10])
+        similar_incidents[COLUMN_TIME] = similar_incidents[COLUMN_TIME].apply(lambda timestamp: timestamp[:10] if
+        (timestamp and len(timestamp)) else '')
     if aggregate == 'True':
         agg_fields = [x for x in similar_incidents.columns if x not in FIELDS_NO_AGGREGATION]
         similar_incidents = similar_incidents.groupby(agg_fields, as_index=False, dropna=False).agg(
             {
-                'created': lambda x: "%s -> %s" % (min(x), max(x)) if len(x) > 1 else x,
+                COLUMN_TIME: lambda x: "%s -> %s" % (min(filter(None, x)), max(filter(None, x))) if len(x) > 1 else x,
                 'id': lambda x: ' , '.join(x),
                 COLUMN_ID: lambda x: ' , '.join(x),
             }
@@ -843,7 +845,8 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
                                    display_fields + similar_text_field + similar_categorical_field
                                    + exact_match_fields if x in incident_df.columns]]
     if COLUMN_TIME in incident_filter.columns.tolist():
-        incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda timestamp: timestamp[:10])
+        incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda timestamp: timestamp[:10] if
+        (timestamp and len(timestamp)) else '')
     if 'id' in incident_filter.columns.tolist():
         incident_filter[COLUMN_ID] = incident_filter['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     return incident_filter
@@ -893,6 +896,7 @@ def main():
 
     # Dumps all dict in the current incident
     incident_df = dumps_json_field_in_incident(incident)
+    incident_df = fill_nested_fields(incident_df, incident, similar_text_field, similar_categorical_field)
 
     # Model prediction
     model = Model(p_transformation=TRANSFORMATION)
