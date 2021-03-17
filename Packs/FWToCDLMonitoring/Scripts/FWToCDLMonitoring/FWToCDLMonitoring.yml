@@ -18,7 +18,7 @@ dockerimage: demisto/python3:3.9.2.17246
 enabled: true
 name: FW-to-CDL-monitoring
 outputs:
-- contextPath: monitoring_result
+- contextPath: CDL.monitoring
   description: Monitoring results sorted per FW serial
   type: unknown
 runas: DBotWeakRole
