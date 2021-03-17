@@ -506,6 +506,12 @@ def get_next_start_time(latests_incident_fetched_time, now, were_new_incidents_f
 
 
 def create_incident_custom_id(incident):
+    # The '_serial' indicates the index of the event in the results returned from Splunk.
+    # Therefore, it might be different on different runs for the same event.
+    # Thus, it must be deleted to preserve the consistency of the custom IDs.
+    if '_serial' in incident:
+        del incident['_serial']
+
     incident_full_data = json.dumps(incident, sort_keys=True)
     incident_occurred = incident['occurred']
     raw_hash = hashlib.md5(incident_full_data).hexdigest()
@@ -516,7 +522,7 @@ def create_incident_custom_id(incident):
 
 def extensive_log(message):
     if demisto.params().get('extensive_logs', False):
-        demisto.info("\n\n {} \n\n".format(message))
+        demisto.info(message)
 
 
 def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, look_behind):
@@ -646,12 +652,10 @@ def fetch_incidents(service):
     extensive_log('SplunkPy - incidents fetched on last run = {}'.format(last_run_fetched_ids))
 
     debug_message = 'SplunkPy - total number of incidents found: from {}\n to {}\n with the ' \
-                    'query: {} is: {}.\n incidents found: {}'.format(last_run_time, now, fetch_query,
-                                                                     len(incidents), incidents)
+                    'query: {} is: {}.'.format(last_run_time, now, fetch_query, len(incidents))
     extensive_log(debug_message)
 
     demisto.incidents(incidents)
-    extensive_log('SplunkPy - Found incidents at the end of this run: {}'.format(incidents))
 
     if len(incidents) == 0:
         next_run = get_next_start_time(last_run_time, now, False)
