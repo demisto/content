@@ -1,0 +1,38 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "a4ceaa46-4d59-4c5a-8e46-1d3bdca18076",
+ "mapping": {
+  "Splunk Incident Type": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "comment": {
+     "complex": null,
+     "simple": "splunkcomment"
+    },
+    "owner": {
+     "complex": null,
+     "simple": "splunkowner"
+    },
+    "status": {
+     "complex": null,
+     "simple": "splunkstatus"
+    },
+    "urgency": {
+     "complex": null,
+     "simple": "splunkurgency"
+    }
+   }
+  },
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+
+   }
+  }
+ },
+ "name": "Splunk Outgoing Mapper",
+ "type": "mapping-outgoing",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

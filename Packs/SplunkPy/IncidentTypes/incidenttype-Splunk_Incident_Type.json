@@ -1,0 +1,28 @@
+{
+ "autorun": false,
+ "color": "#039BE5",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "detached": false,
+ "disabled": false,
+ "extractSettings": {
+  "fieldCliNameToExtractSettings": {
+
+  }
+ },
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Splunk Incident Type",
+ "layout": "65681f15-5e0b-45ef-86e0-f7263b2f13e4",
+ "locked": false,
+ "name": "Splunk Incident Type",
+ "onChangeRepAlg": 0,
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}
