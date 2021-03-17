@@ -214,18 +214,14 @@ class Client:
         :param comment: a descriptive comment to identify the file for other users
         :return: http response
         """
-        file_bytes = None
         get_file_path_res = demisto.getFilePath(file)
         file_path = get_file_path_res["path"]
         file_name = get_file_path_res["name"]
-        demisto.log(str(file_name))
-        with open(file_path, 'rb') as f:
-            file_bytes = f.read()
 
         url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
                      f"&comment={comment}"
         self._headers['Content-Type'] = 'application/octet-stream'
-        return self._http_request("POST", url_suffix, files={'file': (file_name, file_bytes)})
+        return self._http_request("POST", url_suffix, data=open(file_path, 'rb'))
 
     def send_uploaded_file_to_sandbox_analysis(
             self,
