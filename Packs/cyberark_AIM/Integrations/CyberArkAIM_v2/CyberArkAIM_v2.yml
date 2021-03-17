@@ -39,14 +39,14 @@ configuration:
   hidden: false
   name: cert_text
   required: false
-  type: 12
+  type: 4
 - additionalinfo: Add a key file in text format to use to connect to the CyberArk
     AIM server.
   display: Key File as Text
   hidden: false
   name: key_text
   required: false
-  type: 0
+  type: 4
 - defaultvalue: 'true'
   display: Fetch credentials
   name: isFetchCredentials
