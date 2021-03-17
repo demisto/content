@@ -74,16 +74,16 @@ script:
     name: topdesk-subcategories-list
     outputs:
     - contextPath: TOPdesk.Subcategory.Id
-      description: ''
+      description: Subcategory id.
       type: String
     - contextPath: TOPdesk.Subcategory.Name
-      description: ''
+      description: Subcategory name.
       type: String
     - contextPath: TOPdesk.Subcategory.Category.Id
-      description: ''
+      description: Category id of the subcategory.
       type: String
     - contextPath: TOPdesk.Subcategory.Category.Name
-      description: ''
+      description: Category name of the subcategory.
       type: String
   - arguments: []
     deprecated: false
@@ -91,10 +91,10 @@ script:
     name: topdesk-categories-list
     outputs:
     - contextPath: TOPdesk.Category.Id
-      description: ''
+      description: Category id.
       type: String
     - contextPath: TOPdesk.Category.Name
-      description: ''
+      description: Category name.
       type: String
   - arguments: []
     deprecated: false
@@ -102,10 +102,10 @@ script:
     name: topdesk-entry-types-list
     outputs:
     - contextPath: TOPdesk.EntryType.Id
-      description: ''
+      description: EntryType id.
       type: String
     - contextPath: TOPdesk.EntryType.Name
-      description: ''
+      description: EntryType name.
       type: String
   - arguments: []
     deprecated: false
@@ -114,10 +114,10 @@ script:
     name: topdesk-call-types-list
     outputs:
     - contextPath: TOPdesk.CallType.Id
-      description: ''
+      description: CallType id.
       type: String
     - contextPath: TOPdesk.CallType.Name
-      description: ''
+      description: CallType name.
       type: String
   - arguments: []
     deprecated: false
@@ -125,10 +125,10 @@ script:
     name: topdesk-deescalation-reasons-list
     outputs:
     - contextPath: TOPdesk.DeescalationReason.Id
-      description: ''
+      description: Deescalation reason id.
       type: String
     - contextPath: TOPdesk.DeescalationReason.Name
-      description: ''
+      description: Deescalation reason name.
       type: String
   - arguments: []
     deprecated: false
@@ -136,10 +136,10 @@ script:
     name: topdesk-escalation-reasons-list
     outputs:
     - contextPath: TOPdesk.EscalationReason.Id
-      description: ''
+      description: Escalation reason id.
       type: String
     - contextPath: TOPdesk.EscalationReason.Name
-      description: ''
+      description: Escalation reason name.
       type: String
   - arguments: []
     deprecated: false
@@ -147,10 +147,10 @@ script:
     name: topdesk-archiving-reasons-list
     outputs:
     - contextPath: TOPdesk.ArchiveReason.Id
-      description: ''
+      description: Archiving reason id.
       type: String
     - contextPath: TOPdesk.ArchiveReason.Name
-      description: ''
+      description: Archiving reason name.
       type: String
   - arguments:
     - description: The offset at which to start listing the persons at. Must be greater
