@@ -1,6 +1,6 @@
 {
-    "name": "SailPointIdentityNow",
-    "description": "The SailPoint Identity Security platform can be configured either on-prem/single tenant SaaS, or multi-tenant. This package is intended to be used with the SaaS, multi-tenant solution, IdentityNow.",
+    "name": "SailPoint IdentityNow",
+    "description": "SailPoint IdentityNow content pack enables XSOAR customers to utilize the deep, enriched contextual data in the SailPoint IdentityNow platform to better drive identity-aware security practices.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "SailPoint",
