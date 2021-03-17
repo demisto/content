@@ -303,6 +303,7 @@ def fetch_incidents(client, headers):
     response = client.http_request("POST", url, data, headers)
     if response.status_code == 200:
         response_data = response.json()
+
         for result in response_data:
             ts = int(result.get("@timestamp", backup_ts))
             if ts > max_ts:
