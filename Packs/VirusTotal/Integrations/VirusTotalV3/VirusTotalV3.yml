@@ -63,7 +63,7 @@ configuration:
   defaultvalue: "5"
   type: 0
   required: false
-- display: Enable score analyzing by Crowdsourced Yara Rules
+- display: Enable score analyzing by Crowdsourced Yara Rules, Sigma and IDS
   name: crowdsourced_yara_rules_enabled
   defaultvalue: 'true'
   type: 8

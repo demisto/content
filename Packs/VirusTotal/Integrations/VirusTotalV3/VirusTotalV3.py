@@ -1728,13 +1728,13 @@ def main(params: dict, args: dict, command: str):
         results = add_comments_command(client, args)
     elif command == f'{COMMAND_PREFIX}-comments-get-by-id':
         results = get_comments_by_id_command(client, args)
-    elif command in (f'{COMMAND_PREFIX}-file-rescan', 'file-rescan'):
+    elif command == f'{COMMAND_PREFIX}-file-rescan':
         results = file_rescan_command(client, args)
-    elif command in (f'{COMMAND_PREFIX}-file-scan', 'file-scan'):
+    elif command == f'{COMMAND_PREFIX}-file-scan':
         results = file_scan(client, args)
     elif command == f'{COMMAND_PREFIX}-file-scan-upload-url':
         results = get_upload_url(client)
-    elif command in (f'{COMMAND_PREFIX}-url-scan', 'url-scan'):
+    elif command == f'{COMMAND_PREFIX}-url-scan':
         results = scan_url_command(client, args)
     elif command == f'{COMMAND_PREFIX}-search':
         results = search_command(client, args)
