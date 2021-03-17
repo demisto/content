@@ -133,7 +133,7 @@ def updateNotableEvents(baseurl, comment, status=None, urgency=None, owner=None,
     """
 
     # Make sure that the session ID was provided
-    if sessionKey is None and not auth_token or auth_token is None and not sessionKey:
+    if not sessionKey and not auth_token:
         raise Exception("A session_key/auth_token was not provided")
 
     # Make sure that rule IDs and/or a search ID is provided
@@ -621,7 +621,7 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def splunk_edit_notable_event_command(proxy, service, auth_token):
+def splunk_edit_notable_event_command(service, auth_token):
     params = demisto.params()
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
     sessionKey = service.token if not auth_token else None
@@ -643,8 +643,8 @@ def splunk_edit_notable_event_command(proxy, service, auth_token):
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Could not update notable "
                                      "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
-    if 'message' in response_info:
-        demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
+
+    demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
 def splunk_job_status(service):
@@ -1129,7 +1129,7 @@ def main():
     if demisto.command() == 'splunk-submit-event':
         splunk_submit_event_command(service)
     if demisto.command() == 'splunk-notable-event-edit':
-        splunk_edit_notable_event_command(proxy, service, auth_token)
+        splunk_edit_notable_event_command(service, auth_token)
     if demisto.command() == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     if demisto.command() == 'splunk-job-status':
