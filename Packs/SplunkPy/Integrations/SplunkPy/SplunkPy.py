@@ -623,21 +623,22 @@ def splunk_edit_notable_event_command(proxy):
         os.environ["HTTP_PROXY"] = ""
         os.environ["https_proxy"] = ""
         os.environ["http_proxy"] = ""
+
     baseurl = 'https://' + demisto.params()['host'] + ':' + demisto.params()['port'] + '/'
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
-    if username == '_token':
-        headers = {"Authorization": "Bearer {}".format(password)}
-        auth_req = requests.post(
-            baseurl + 'services/auth/login', data={'output_mode': 'json'}, headers=headers, verify=VERIFY_CERTIFICATE
-        )
-    else:
-        auth_req = requests.post(
-            baseurl + 'services/auth/login', data={'username': username, 'password': password, 'output_mode': 'json'},
-            verify=VERIFY_CERTIFICATE
-        )
+    data = {'output_mode': 'json'}
+    headers = {}
 
+    if username == '_token':
+        headers['Authorization'] = 'Bearer {}'.format(password)
+    else:
+        data['username'] = username
+        data['password'] = password
+
+    auth_req = requests.post(baseurl + 'services/auth/login', data=data, verify=VERIFY_CERTIFICATE, headers=headers)
     sessionKey = auth_req.json()['sessionKey']
+
     eventIDs = None
     if demisto.get(demisto.args(), 'eventIDs'):
         eventIDsStr = demisto.args()['eventIDs']
