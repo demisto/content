@@ -14,7 +14,7 @@ function Main()
     {
         $credential = New-Object System.Management.Automation.PSCredential($plain_username, $password)
 
-        $connection_info = Connect-MicrosoftTeams -Credential $credential
+        Connect-MicrosoftTeams -Credential $credential
 
         New-CsApplicationAccessPolicy -Identity Test-policy -AppIds $app_id
         Grant-CsApplicationAccessPolicy -PolicyName Test-policy -Identity $identity
