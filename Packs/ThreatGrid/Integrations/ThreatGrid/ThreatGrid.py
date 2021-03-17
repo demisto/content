@@ -410,6 +410,8 @@ def get_threat_summary_by_id():
 
     r = request.json()
     demisto.debug("r: {0}".format(r))
+    print(f'request: {request}')
+    print(f'r: {r}')
 
     sample = {
         'ID': sample_id,
