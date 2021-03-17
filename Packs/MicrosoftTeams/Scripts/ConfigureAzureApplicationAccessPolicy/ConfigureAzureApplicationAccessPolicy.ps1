@@ -23,6 +23,8 @@ function Main()
         $context = @{
             "ConfigureAzureApplicationAccessPolicy" = @{
                 "Status" = "Access policy was given"
+                "Account" = $identity
+                "AppID" = $app_id
             }
         }
 

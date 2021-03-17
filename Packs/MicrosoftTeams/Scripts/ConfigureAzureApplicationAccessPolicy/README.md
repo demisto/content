@@ -26,6 +26,8 @@ For more information look at [Microsoft documentation - Allow applications to ac
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | ConfigureAzureApplicationAccessPolicy.Status | Whether the access policy was given. | String |
+| ConfigureAzureApplicationAccessPolicy.Account | The email of the user that got permissions to create a meeting. | String |
+| ConfigureAzureApplicationAccessPolicy.AppID | The relevant app's ID from the app studio. | String |
 
 ## Script Example
 ```!ConfigureAzureApplicationAccessPolicy app_id="37b5b9d5" identity="demisto@palo.com" username="admin@palo.com" password="12345"```
@@ -34,7 +36,9 @@ For more information look at [Microsoft documentation - Allow applications to ac
 ```json
 {
     "ConfigureAzureApplicationAccessPolicy": {
-        "Status": "Access policy was given"
+        "Status": "Access policy was given",
+        "Account": "demisto@palo.com",
+        "AppID": "37b5b9d5"
     }
 }
 ```

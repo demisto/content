@@ -34,6 +34,12 @@ outputs:
 - contextPath: ConfigureAzureApplicationAccessPolicy.Status
   description: Whether the access policy was given.
   type: String
+- contextPath: ConfigureAzureApplicationAccessPolicy.Account
+  description: The email of the user that got permissions to create a meeting.
+  type: String
+- contextPath: ConfigureAzureApplicationAccessPolicy.AppID
+  description: The relevant app's ID from the app studio.
+  type: String
 script: '-'
 system: false
 timeout: '0'
