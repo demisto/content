@@ -528,7 +528,6 @@ def clear_internal_fields(incident):
         del incident[internal_field]
 
 
-
 def create_incident_custom_id(incident):
     # The '_serial' indicates the index of the event in the results returned from Splunk.
     # Therefore, it might be different on different runs for the same event.
