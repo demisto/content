@@ -534,9 +534,9 @@ def create_incident_custom_id(incident):
     # Thus, it must be deleted to preserve the consistency of the custom IDs.
     incident_raw_data = json.loads(incident["rawJSON"])
     clear_internal_fields(incident_raw_data)
-    incident_full_data = json.dumps(incident_raw_data, sort_keys=True)
+    incident_raw_data = json.dumps(incident_raw_data, sort_keys=True)
     incident_occurred = incident['occurred']
-    raw_hash = hashlib.md5(incident_full_data).hexdigest()
+    raw_hash = hashlib.md5(incident_raw_data).hexdigest()
     incident_custom_id = '{}_{}'.format(incident_occurred, raw_hash)
     extensive_log('Found incident ID is: {}'.format(incident_custom_id))
     return incident_custom_id
