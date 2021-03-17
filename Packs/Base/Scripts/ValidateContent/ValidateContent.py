@@ -166,7 +166,6 @@ def adjust_linter_row_and_col(
     except ValueError as e:
         demisto.debug(f'Failed adjusting "{vector}" on validation result {error_output}'
                       f'\n{e}')
-        raise e
 
 
 def run_validate(file_path: str, json_output_file: str) -> None:
