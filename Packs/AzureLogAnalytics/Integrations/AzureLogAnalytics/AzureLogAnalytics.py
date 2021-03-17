@@ -28,7 +28,8 @@ REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
-                 subscription_id, resource_group_name, workspace_name, verify, proxy, azure_ad_endpoint):
+                 subscription_id, resource_group_name, workspace_name, verify, proxy,
+                 azure_ad_endpoint='https://login.microsoftonline.com'):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
