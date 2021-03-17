@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import urllib3
 import traceback
 from typing import List, Union
-
+import re
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -15,13 +15,15 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2020-05-01'
+REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 
 ''' CLIENT CLASS '''
 
 
 class AzureNSGClient:
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy):
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy,
+                 azure_ad_endpoint='https://login.microsoftonline.com'):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -42,6 +44,7 @@ class AzureNSGClient:
             'resource': 'https://management.core.windows.net',   # disable-secrets-detection
             'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
             'ok_codes': (200, 201, 202, 204),
+            'azure_ad_endpoint': azure_ad_endpoint
         }
         self.ms_client = MicrosoftClient(**client_args)
 
@@ -320,9 +323,12 @@ def test_connection(client: AzureNSGClient, params: dict) -> str:
 
 @logger
 def start_auth(client: AzureNSGClient) -> CommandResults:
-    user_code = client.ms_client.device_auth_request()
+    response = client.ms_client.device_auth_request()
+    message = response.get('message')
+    url = re.search(REGEX_SEARCH_URL, message).group("url")
+    user_code = response.get('user_code')
     return CommandResults(readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
+1. To sign in, use a web browser to open the page [{url}]({url})
  and enter the code **{user_code}** to authenticate.
 2. Run the **!azure-nsg-auth-complete** command in the War Room.""")
 
@@ -356,6 +362,7 @@ def main() -> None:
             resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
+            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
         )
         commands = {
             'azure-nsg-security-groups-list': list_groups_command,

@@ -23,7 +23,8 @@ class Client:
     """
 
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, azure_ad_endpoint):
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy,
+                 azure_ad_endpoint='https://login.microsoftonline.com'):
         self.resource_group_name = resource_group_name
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')

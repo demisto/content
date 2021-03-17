@@ -13,7 +13,7 @@ REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 
 class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
-                 azure_ad_endpoint: str):
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
