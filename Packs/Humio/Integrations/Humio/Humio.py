@@ -309,8 +309,8 @@ def fetch_incidents(client, headers):
                 max_ts = ts
 
         # Ensures that max_ts gets a reasonable value if no events were returned on first run
-        if(not response_data): 
-            max_ts = backup_ts 
+        if (not response_data):
+            max_ts = backup_ts
         else:
             max_ts += 1
         demisto.setLastRun({"time": max_ts})
