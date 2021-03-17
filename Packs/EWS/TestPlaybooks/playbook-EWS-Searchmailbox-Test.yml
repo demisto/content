@@ -172,7 +172,7 @@ tasks:
       id: 54c87061-98b7-4036-8609-e0a0a3f1162b
       version: -1
       name: Send Email
-      script: '|||send-mail'
+      script: 'EWSO365|||send-mail'
       type: regular
       iscommand: true
       brand: ""

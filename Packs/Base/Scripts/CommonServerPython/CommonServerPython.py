@@ -285,6 +285,24 @@ class DBotScoreReliability(object):
             DBotScoreReliability.F,
         )
 
+    @staticmethod
+    def get_dbot_score_reliability_from_str(reliability_str):
+        if reliability_str == DBotScoreReliability.A_PLUS:
+            return DBotScoreReliability.A_PLUS
+        elif reliability_str == DBotScoreReliability.A:
+            return DBotScoreReliability.A
+        elif reliability_str == DBotScoreReliability.B:
+            return DBotScoreReliability.B
+        elif reliability_str == DBotScoreReliability.C:
+            return DBotScoreReliability.C
+        elif reliability_str == DBotScoreReliability.D:
+            return DBotScoreReliability.D
+        elif reliability_str == DBotScoreReliability.E:
+            return DBotScoreReliability.E
+        elif reliability_str == DBotScoreReliability.F:
+            return DBotScoreReliability.F
+        raise Exception("Please use supported reliability only.")
+
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
@@ -1593,9 +1611,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
     if removeNull:
         headers_aux = headers[:]
-        for header in headers_aux:
+        for header in headers:
             if all(obj.get(header) in ('', None, [], {}) for obj in t):
-                headers.remove(header)
+                headers_aux.remove(header)
+        headers = headers_aux
 
     if t and len(headers) > 0:
         newHeaders = []
