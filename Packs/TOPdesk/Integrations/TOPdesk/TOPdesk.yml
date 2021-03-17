@@ -177,355 +177,361 @@ script:
     name: topdesk-persons-list
     outputs:
     - contextPath: TOPdesk.Person.Id
-      description: ''
+      description: Person id.
       type: String
     - contextPath: TOPdesk.Person.Status
-      description: ''
+      description: Person status.
       type: String
     - contextPath: TOPdesk.Person.SurName
-      description: ''
+      description: Person's surname.
       type: String
     - contextPath: TOPdesk.Person.FirstName
-      description: ''
+      description: Person's first name.
       type: String
     - contextPath: TOPdesk.Person.DynamicName
-      description: ''
+      description: Person's dynamic name (firstName SecondName).
       type: String
     - contextPath: TOPdesk.Person.FirstInitials
-      description: ''
+      description: Person's first initials.
       type: String
     - contextPath: TOPdesk.Person.Prefixes
-      description: ''
+      description: Person's prefixes (e.g. DR, MR)
       type: String
     - contextPath: TOPdesk.Person.BirthName
-      description: ''
+      description: Person's birth name.
       type: String
     - contextPath: TOPdesk.Person.Title
-      description: ''
+      description: Person's title.
       type: String
     - contextPath: TOPdesk.Person.Gender
-      description: ''
+      description: Person's gender.
       type: String
     - contextPath: TOPdesk.Person.Language.Id
-      description: ''
+      description: Person's language id.
       type: String
     - contextPath: TOPdesk.Person.Language.Name
-      description: ''
+      description: Person's language name.
       type: String
     - contextPath: TOPdesk.Person.PhoneNumber
-      description: ''
+      description: Person's phone number.
       type: String
     - contextPath: TOPdesk.Person.MobileNumber
-      description: ''
+      description: Person's mobile number.
       type: String
     - contextPath: TOPdesk.Person.Fax
-      description: ''
+      description: Person's fax.
       type: String
     - contextPath: TOPdesk.Person.Email
-      description: ''
+      description: Person's email.
       type: String
     - contextPath: TOPdesk.Person.JobTitle
-      description: ''
+      description: Person's job title.
       type: String
     - contextPath: TOPdesk.Person.Department
-      description: ''
+      description: Person's department.
       type: Unknown
     - contextPath: TOPdesk.Person.BudgetHolder
-      description: ''
+      description: Person's budget holder.
       type: Unknown
     - contextPath: TOPdesk.Person.EmployeeNumber
-      description: ''
+      description: Person's employee number.
       type: String
     - contextPath: TOPdesk.Person.NetworkLoginName
-      description: ''
+      description: Person's network login name.
       type: String
     - contextPath: TOPdesk.Person.MainframeLoginName
-      description: ''
+      description: Person's mainframe login name.
       type: String
     - contextPath: TOPdesk.Person.ClientReferenceNumber
-      description: ''
+      description: Person's client reference number.
       type: String
     - contextPath: TOPdesk.Person.City
-      description: ''
+      description: Person's city.
       type: String
     - contextPath: TOPdesk.Person.TasLoginName
-      description: ''
+      description: Person's tas login name.
       type: String
     - contextPath: TOPdesk.Person.ShowBranch
-      description: ''
+      description: Person's branch visibility.
       type: Boolean
     - contextPath: TOPdesk.Person.ShowBudgetholder
-      description: ''
+      description: Person's budget holder visibility.
       type: Boolean
     - contextPath: TOPdesk.Person.ShowDepartment
-      description: ''
+      description: Person's department visibility.
       type: Boolean
     - contextPath: TOPdesk.Person.ShowSubsidiaries
-      description: ''
+      description: Person's subsidiaries visibility.
       type: Boolean
     - contextPath: TOPdesk.Person.ShowAllBranches
-      description: ''
+      description: Person's all branches visibility.
       type: Boolean
     - contextPath: TOPdesk.Person.AuthorizeAll
-      description: ''
+      description: Person authorization on everything.
       type: Boolean
     - contextPath: TOPdesk.Person.AuthorizeDepartment
-      description: ''
+      description: Person authorization on department.
       type: Boolean
     - contextPath: TOPdesk.Person.AuthorizeBudgetHolder
-      description: ''
+      description: Person's authorization on budget holder.
       type: Boolean
     - contextPath: TOPdesk.Person.AuthorizeBranch
-      description: ''
+      description: Person's authorization on branch.
       type: Boolean
     - contextPath: TOPdesk.Person.AuthorizeSubsidiaryBranches
-      description: ''
+      description: Person's authorization on subsidiary branches.
       type: Boolean
     - contextPath: TOPdesk.Person.IsManager
-      description: ''
+      description: Is the person manager.
       type: Boolean
     - contextPath: TOPdesk.Person.Manager
-      description: ''
+      description: Person's manager.
       type: Unknown
     - contextPath: TOPdesk.Person.HasAttention
-      description: ''
+      description: Does the person have attention.
       type: Boolean
     - contextPath: TOPdesk.Person.Attention
-      description: ''
+      description: Person's attention object.
       type: Unknown
     - contextPath: TOPdesk.Person.AttentionComment
-      description: ''
+      description: Person's attention comment.
       type: String
     - contextPath: TOPdesk.Person.Creator.Id
-      description: ''
+      description: Person's creator id.
       type: String
     - contextPath: TOPdesk.Person.Creator.Name
-      description: ''
+      description: Person's creator name.
       type: String
     - contextPath: TOPdesk.Person.CreationDate
-      description: ''
+      description: Person's creation date.
       type: Date
     - contextPath: TOPdesk.Person.Modifier.Id
-      description: ''
+      description: Person's modifier id.
       type: String
     - contextPath: TOPdesk.Person.Modifier.Name
-      description: ''
+      description: Person's modifier name.
       type: String
     - contextPath: TOPdesk.Person.ModificationDate
-      description: ''
+      description: Person's modification date.
       type: Date
     - contextPath: TOPdesk.Person.OptionalFields1.Boolean1
-      description: ''
+      description: Person's optional fields1 boolean1.
       type: Boolean
     - contextPath: TOPdesk.Person.OptionalFields1.Boolean2
-      description: ''
+      description: Person's optional fields1 boolean2.
       type: Boolean
     - contextPath: TOPdesk.Person.OptionalFields1.Boolean3
-      description: ''
+      description: Person's optional fields1 boolean3.
       type: Boolean
     - contextPath: TOPdesk.Person.OptionalFields1.Boolean4
-      description: ''
+      description: Person's optional fields1 boolean4.
       type: Boolean
     - contextPath: TOPdesk.Person.OptionalFields1.Boolean5
-      description: ''
+      description: Person's optional fields1 boolean5.
       type: Boolean
     - contextPath: TOPdesk.Person.OptionalFields1.Number1
-      description: ''
+      description: Person's optional fields1 number1.
       type: Number
     - contextPath: TOPdesk.Person.OptionalFields1.Number2
-      description: ''
+      description: Person's optional fields1 number2.
       type: Number
     - contextPath: TOPdesk.Person.OptionalFields1.Number3
-      description: ''
+      description: Person's optional fields1 number3.
       type: Number
     - contextPath: TOPdesk.Person.OptionalFields1.Number4
-      description: ''
+      description: Person's optional fields1 number4.
       type: Number
     - contextPath: TOPdesk.Person.OptionalFields1.Number5
-      description: ''
+      description: Person's optional fields1 number5.
       type: Number
     - contextPath: TOPdesk.Person.OptionalFields1.Date1
-      description: ''
+      description: Person's optional fields1 date1.
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Date2
-      description: ''
+      description: Person's optionalFields1 date2.
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Date3
-      description: ''
+      description: Person's optionalFields1 date3.
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Date4
-      description: ''
+      description: Person's optionalFields1 date4.
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Date5
-      description: ''
+      description: Person's optionalFields1 date5.
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Text1
-      description: ''
+      description: Person optional fields1 text1
       type: String
     - contextPath: TOPdesk.Person.OptionalFields1.Text2
-      description: ''
+      description: Person's optional fields1 text2
       type: String
     - contextPath: TOPdesk.Person.OptionalFields1.Text3
-      description: ''
+      description: Person's optional fields1 text3
       type: String
     - contextPath: TOPdesk.Person.OptionalFields1.Text4
-      description: ''
+      description: Person's optional fields1 text4
       type: String
     - contextPath: TOPdesk.Person.OptionalFields1.Text5
-      description: ''
+      description: Person's optional fields1 text5
       type: String
     - contextPath: TOPdesk.Person.OptionalFields1.Memo1
-      description: ''
+      description: Person's optional fields1 memo1
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Memo2
-      description: ''
+      description: Person's optional fields1 memo2
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Memo3
-      description: ''
+      description: Person's optional fields1 memo3
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Memo4
-      description: ''
+      description: Person's optional fields1 memo4
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Memo5
-      description: ''
+      description: Person's optional fields1 memo5
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Searchlist1
-      description: ''
+      description: Person's optional fields1 searchlist1
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Searchlist2
-      description: ''
+      description: Person's optional fields1 searchlist2
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Searchlist3
-      description: ''
+      description: Person's optional fields1 searchlist3
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Searchlist4
-      description: ''
+      description: Person's optional fields1 searchlist4
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields1.Searchlist5
-      description: ''
+      description: Person's optional fields1 searchlist5
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Boolean1
-      description: ''
+      description: Person's optional fields2 boolean1
       type: Boolean
     - contextPath: TOPdesk.Person.OptionalFields2.Boolean2
-      description: ''
+      description: Person's optional fields2 boolean2
       type: Boolean
     - contextPath: TOPdesk.Person.OptionalFields2.Boolean3
-      description: ''
+      description: Person's optional fields2 boolean3
       type: Boolean
     - contextPath: TOPdesk.Person.OptionalFields2.Boolean4
-      description: ''
+      description: Person's optional fields2 boolean4
       type: Boolean
     - contextPath: TOPdesk.Person.OptionalFields2.Boolean5
-      description: ''
+      description: Person's optional fields2 boolean5
       type: Boolean
     - contextPath: TOPdesk.Person.OptionalFields2.Number1
-      description: ''
+      description: Person's optional fields2 number1
       type: Number
     - contextPath: TOPdesk.Person.OptionalFields2.Number2
-      description: ''
+      description: Person's optional fields2 number2
       type: Number
     - contextPath: TOPdesk.Person.OptionalFields2.Number3
-      description: ''
+      description: Person's optional fields2 number3
       type: Number
     - contextPath: TOPdesk.Person.OptionalFields2.Number4
-      description: ''
+      description: Person's optional fields2 number4
       type: Number
     - contextPath: TOPdesk.Person.OptionalFields2.Number5
-      description: ''
+      description: Person's optional fields2 number5
       type: Number
     - contextPath: TOPdesk.Person.OptionalFields2.Date1
-      description: ''
+      description: Person's optional fields2 date1
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Date2
-      description: ''
+      description: Person's optional fields2 date2
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Date3
-      description: ''
+      description: Person's optional fields2 date3
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Date4
-      description: ''
+      description: Person's optional fields2 date4
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Date5
-      description: ''
+      description: Person's optional fields2 date5
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Text1
-      description: ''
+      description: Person's optional fields2 text1
       type: String
     - contextPath: TOPdesk.Person.OptionalFields2.Text2
-      description: ''
+      description: Person's optional fields2 text2
       type: String
     - contextPath: TOPdesk.Person.OptionalFields2.Text3
-      description: ''
+      description: Person's optional fields2 text3
       type: String
     - contextPath: TOPdesk.Person.OptionalFields2.Text4
-      description: ''
+      description: Person's optional fields2 text4
       type: String
     - contextPath: TOPdesk.Person.OptionalFields2.Text5
-      description: ''
+      description: Person's optional fields2 text5
       type: String
     - contextPath: TOPdesk.Person.OptionalFields2.Memo1
-      description: ''
+      description: Person's optional fields2 memo1
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Memo2
-      description: ''
+      description: Person's optional fields2 memo2
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Memo3
-      description: ''
+      description: Person's optional fields2 memo3
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Memo4
-      description: ''
+      description: Person's optional fields2 memo4
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Memo5
-      description: ''
+      description: Person's optional fields2 memo5
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Searchlist1
-      description: ''
+      description: Person's optional fields2 searchlist1
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Searchlist2
-      description: ''
+      description: Person's optional fields2 searchlist2
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Searchlist3
-      description: ''
+      description: Person's optional fields2 searchlist3
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Searchlist4
-      description: ''
+      description: Person's optional fields2 searchlist4
       type: Unknown
     - contextPath: TOPdesk.Person.OptionalFields2.Searchlist5
-      description: ''
+      description: Person's optional fields2 searchlist5
       type: Unknown
     - contextPath: TOPdesk.Person.PersonExtraFieldA
-      description: ''
+      description: Person's extra field A
       type: Unknown
     - contextPath: TOPdesk.Person.PersonExtraFieldB
-      description: ''
+      description: Person's extra field B
       type: Unknown
     - contextPath: TOPdesk.Person.DepartmentFree
-      description: ''
+      description: Person's department free
       type: Unknown
     - contextPath: TOPdesk.Person.Branch.Id
-      description: ''
+      description: Person's branch id
       type: String
     - contextPath: TOPdesk.Person.Branch.Name
-      description: ''
+      description: Person's branch name
       type: String
     - contextPath: TOPdesk.Person.Branch.ClientReferenceNumber
-      description: ''
+      description: Person's branch client reference number
       type: String
     - contextPath: TOPdesk.Person.Branch.TimeZone
-      description: ''
+      description: Person's branch timezone
       type: String
     - contextPath: TOPdesk.Person.Branch.ExtraA.Id
-      description: ''
+      description: Person's branch extra A id
       type: String
     - contextPath: TOPdesk.Person.Branch.ExtraA.Name
-      description: ''
+      description: Person's branch extra A name
       type: String
     - contextPath: TOPdesk.Person.Branch.ExtraB
-      description: ''
+      description: Person's branch extra B
       type: Unknown
+    - contextPath: TOPdesk.Person.Branch.ExtraB.Id
+      description: Person's branch extra B id
+      type: String
+    - contextPath: TOPdesk.Person.Branch.ExtraB.Name
+      description: Person's branch extra B name
+      type: String
     - contextPath: TOPdesk.Person.Location
-      description: ''
+      description: Person's location
       type: Unknown
   - arguments:
     - description: The offset at which to start listing the operators at. Must be
@@ -552,385 +558,388 @@ script:
     name: topdesk-operators-list
     outputs:
     - contextPath: TOPdesk.Operator.Id
-      description: ''
+      description: Operator's id
       type: String
     - contextPath: TOPdesk.Operator.PrincipalId
-      description: ''
+      description: Operator's principalId
       type: String
     - contextPath: TOPdesk.Operator.Status
-      description: ''
+      description: Operator's status
       type: String
     - contextPath: TOPdesk.Operator.SurName
-      description: ''
+      description: Operator's surname
       type: String
     - contextPath: TOPdesk.Operator.FirstName
-      description: ''
+      description: Operator's first name
       type: String
     - contextPath: TOPdesk.Operator.DynamicName
-      description: ''
+      description: Operator's dynamic name
       type: String
     - contextPath: TOPdesk.Operator.Initials
-      description: ''
+      description: Operator's initials
       type: String
     - contextPath: TOPdesk.Operator.Prefixes
-      description: ''
+      description: Operator's prefixes
       type: String
     - contextPath: TOPdesk.Operator.BirthName
-      description: ''
+      description: Operator's birth name
       type: String
     - contextPath: TOPdesk.Operator.Title
-      description: ''
+      description: Operator's title
       type: String
     - contextPath: TOPdesk.Operator.Gender
-      description: ''
+      description: Operator's gender
       type: String
     - contextPath: TOPdesk.Operator.Language.Id
-      description: ''
+      description: Operator's language id
       type: String
     - contextPath: TOPdesk.Operator.Language.Name
-      description: ''
+      description: Operator's language name
       type: String
     - contextPath: TOPdesk.Operator.Branch.Id
-      description: ''
+      description: Operator's branch id
       type: String
     - contextPath: TOPdesk.Operator.Branch.Name
-      description: ''
+      description: Operator's branch name
       type: String
     - contextPath: TOPdesk.Operator.Branch.ClientReferenceNumber
-      description: ''
+      description: Operator's Branch Client reference number
       type: String
     - contextPath: TOPdesk.Operator.Branch.TimeZone
-      description: ''
+      description: Operator's branch timezone
       type: String
     - contextPath: TOPdesk.Operator.Branch.ExtraA.Id
-      description: ''
+      description: Operator's branch extra A id
       type: String
     - contextPath: TOPdesk.Operator.Branch.ExtraA.Name
-      description: ''
+      description: Operator's branch extra A name
       type: String
-    - contextPath: TOPdesk.Operator.Branch.ExtraB
-      description: ''
-      type: Unknown
+    - contextPath: TOPdesk.Operator.Branch.ExtraB.Id
+      description: Operator's branch extra B id
+      type: String
+    - contextPath: TOPdesk.Operator.Branch.ExtraB.Name
+      description: Operator's branch extra B name
+      type: String
     - contextPath: TOPdesk.Operator.Location
-      description: ''
+      description: Operator's location
       type: Unknown
     - contextPath: TOPdesk.Operator.Telephone
-      description: ''
+      description: Operator's telephone
       type: String
     - contextPath: TOPdesk.Operator.MobileNumber
-      description: ''
+      description: Operator's mobile number
       type: String
     - contextPath: TOPdesk.Operator.FaxNumber
-      description: ''
+      description: Operator's fax number
       type: String
     - contextPath: TOPdesk.Operator.Email
-      description: ''
+      description: Operator's email
       type: String
     - contextPath: TOPdesk.Operator.ExchangeAccount
-      description: ''
+      description: Operator's exchange account
       type: String
     - contextPath: TOPdesk.Operator.LoginName
-      description: ''
+      description: Operator's login name
       type: String
     - contextPath: TOPdesk.Operator.LoginPermission
-      description: ''
+      description: Operator's login permission
       type: Boolean
     - contextPath: TOPdesk.Operator.JobTitle
-      description: ''
+      description: Operator's job title
       type: String
     - contextPath: TOPdesk.Operator.Department
-      description: ''
+      description: Operator's department
       type: Unknown
     - contextPath: TOPdesk.Operator.BudgetHolder
-      description: ''
+      description: Operator's budget holder
       type: Unknown
     - contextPath: TOPdesk.Operator.EmployeeNumber
-      description: ''
+      description: Operator's employee number
       type: String
     - contextPath: TOPdesk.Operator.HourlyRate
-      description: ''
+      description: Operator's hourly rate
       type: Number
     - contextPath: TOPdesk.Operator.NetworkLoginName
-      description: ''
+      description: Operator's network login name
       type: String
     - contextPath: TOPdesk.Operator.MainframeLoginName
-      description: ''
+      description: Operator's mainframe login name
       type: String
     - contextPath: TOPdesk.Operator.HasAttention
-      description: ''
+      description: Operator's has attention
       type: Boolean
     - contextPath: TOPdesk.Operator.Attention
-      description: ''
+      description: Operator's attention
       type: Unknown
     - contextPath: TOPdesk.Operator.Comments
-      description: ''
+      description: Operator's comments
       type: String
     - contextPath: TOPdesk.Operator.Installer
-      description: ''
+      description: Operator's installer
       type: Boolean
     - contextPath: TOPdesk.Operator.FirstLineCallOperator
-      description: ''
+      description: Operator's first line call operator
       type: Boolean
     - contextPath: TOPdesk.Operator.SecondLineCallOperator
-      description: ''
+      description: Operator's second line call operator
       type: Boolean
     - contextPath: TOPdesk.Operator.ProblemManager
-      description: ''
+      description: Operator's problem manager
       type: Boolean
     - contextPath: TOPdesk.Operator.ProblemOperator
-      description: ''
+      description: Operator's problem operator
       type: Boolean
     - contextPath: TOPdesk.Operator.ChangeCoordinator
-      description: ''
+      description: Operator's change coordinator
       type: Boolean
     - contextPath: TOPdesk.Operator.ChangeActivitiesOperator
-      description: ''
+      description: Operator's change activities operator
       type: Boolean
     - contextPath: TOPdesk.Operator.RequestForChangeOperator
-      description: ''
+      description: Operator's request for change operator
       type: Boolean
     - contextPath: TOPdesk.Operator.ExtensiveChangeOperator
-      description: ''
+      description: Operator's extensive change operator
       type: Boolean
     - contextPath: TOPdesk.Operator.SimpleChangeOperator
-      description: ''
+      description: Operator's simple change operator
       type: Boolean
     - contextPath: TOPdesk.Operator.ScenarioManager
-      description: ''
+      description: Operator's scenario manager
       type: Boolean
     - contextPath: TOPdesk.Operator.PlanningActivityManager
-      description: ''
+      description: Operator's planning activity manager
       type: Boolean
     - contextPath: TOPdesk.Operator.ProjectCoordinator
-      description: ''
+      description: Operator's project coordinator
       type: Boolean
     - contextPath: TOPdesk.Operator.ProjectActiviesOperator
-      description: ''
+      description: Operator's project activies operator
       type: Boolean
     - contextPath: TOPdesk.Operator.StockManager
-      description: ''
+      description: Operator's stock manager
       type: Boolean
     - contextPath: TOPdesk.Operator.ReservationsOperator
-      description: ''
+      description: Operator's reservations operator
       type: Boolean
     - contextPath: TOPdesk.Operator.ServiceOperator
-      description: ''
+      description: Operator's service operator
       type: Boolean
     - contextPath: TOPdesk.Operator.ExternalHelpDeskParty
-      description: ''
+      description: Operator's external help desk party
       type: Boolean
     - contextPath: TOPdesk.Operator.ContractManager
-      description: ''
+      description: Operator's contract manager
       type: Boolean
     - contextPath: TOPdesk.Operator.OperationsOperator
-      description: ''
+      description: Operator's operations operator
       type: Boolean
     - contextPath: TOPdesk.Operator.OperationsManager
-      description: ''
+      description: Operator's operations manager
       type: Boolean
     - contextPath: TOPdesk.Operator.KnowledgeBaseManager
-      description: ''
+      description: Operator's knowledge base manager
       type: Boolean
     - contextPath: TOPdesk.Operator.AccountManager
-      description: ''
+      description: Operator's account manager
       type: Boolean
     - contextPath: TOPdesk.Operator.CreationDate
-      description: ''
+      description: Operator's creationDate
       type: Date
     - contextPath: TOPdesk.Operator.Creator.Id
-      description: ''
+      description: Operator's creator id
       type: String
     - contextPath: TOPdesk.Operator.Creator.Name
-      description: ''
+      description: Operator's creator name
       type: String
     - contextPath: TOPdesk.Operator.ModificationDate
-      description: ''
+      description: Operator's modification date
       type: Date
     - contextPath: TOPdesk.Operator.Modifier.Id
-      description: ''
+      description: Operator's modifier id
       type: String
     - contextPath: TOPdesk.Operator.Modifier.Name
-      description: ''
+      description: Operator's modifier name
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields1.Boolean1
-      description: ''
+      description: Operator's optional fields1 boolean1
       type: Boolean
     - contextPath: TOPdesk.Operator.OptionalFields1.Boolean2
-      description: ''
+      description: Operator's optional fields1 boolean2
       type: Boolean
     - contextPath: TOPdesk.Operator.OptionalFields1.Boolean3
-      description: ''
+      description: Operator's optional fields1 boolean3
       type: Boolean
     - contextPath: TOPdesk.Operator.OptionalFields1.Boolean4
-      description: ''
+      description: Operator's optional fields1 boolean4
       type: Boolean
     - contextPath: TOPdesk.Operator.OptionalFields1.Boolean5
-      description: ''
+      description: Operator's optional fields1 boolean5
       type: Boolean
     - contextPath: TOPdesk.Operator.OptionalFields1.Number1
-      description: ''
+      description: Operator's optional fields1 number1
       type: Number
     - contextPath: TOPdesk.Operator.OptionalFields1.Number2
-      description: ''
+      description: Operator's optional fields1 number2
       type: Number
     - contextPath: TOPdesk.Operator.OptionalFields1.Number3
-      description: ''
+      description: Operator's optional fields1 number3
       type: Number
     - contextPath: TOPdesk.Operator.OptionalFields1.Number4
-      description: ''
+      description: Operator's optional fields1 number4
       type: Number
     - contextPath: TOPdesk.Operator.OptionalFields1.Number5
-      description: ''
+      description: Operator's optional fields1 number5
       type: Number
     - contextPath: TOPdesk.Operator.OptionalFields1.Date1
-      description: ''
+      description: Operator's optional fields1 date1
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Date2
-      description: ''
+      description: Operator's optional fields1 date2
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Date3
-      description: ''
+      description: Operator's optional fields1 date3
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Date4
-      description: ''
+      description: Operator's optional fields1 date4
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Date5
-      description: ''
+      description: Operator's optional fields1 date5
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Text1
-      description: ''
+      description: Operator's optional fields1 text1
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields1.Text2
-      description: ''
+      description: Operator's optional fields1 text2
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields1.Text3
-      description: ''
+      description: Operator's optional fields1 text3
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields1.Text4
-      description: ''
+      description: Operator's optional fields1 text4
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields1.Text5
-      description: ''
+      description: Operator's optional fields1 text5
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields1.Memo1
-      description: ''
+      description: Operator's optional fields1 memo1
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Memo2
-      description: ''
+      description: Operator's optional fields1 memo2
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Memo3
-      description: ''
+      description: Operator's optional fields1 memo3
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Memo4
-      description: ''
+      description: Operator's optional fields1 memo4
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Memo5
-      description: ''
+      description: Operator's optional fields1 memo5
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Searchlist1
-      description: ''
+      description: Operator's optional fields1 searchlist1
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Searchlist2
-      description: ''
+      description: Operator's optional fields1 searchlist2
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Searchlist3
-      description: ''
+      description: Operator's optional fields1 searchlist3
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Searchlist4
-      description: ''
+      description: Operator's optional fields1 searchlist4
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields1.Searchlist5
-      description: ''
+      description: Operator's optional fields1 searchlist5
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Boolean1
-      description: ''
+      description: Operator's optional fields2 boolean1
       type: Boolean
     - contextPath: TOPdesk.Operator.OptionalFields2.Boolean2
-      description: ''
+      description: Operator's optional fields2 boolean2
       type: Boolean
     - contextPath: TOPdesk.Operator.OptionalFields2.Boolean3
-      description: ''
+      description: Operator's optional fields2 boolean3
       type: Boolean
     - contextPath: TOPdesk.Operator.OptionalFields2.Boolean4
-      description: ''
+      description: Operator's optional fields2 boolean4
       type: Boolean
     - contextPath: TOPdesk.Operator.OptionalFields2.Boolean5
-      description: ''
+      description: Operator's optional fields2 boolean5
       type: Boolean
     - contextPath: TOPdesk.Operator.OptionalFields2.Number1
-      description: ''
+      description: Operator's optional fields2 number1
       type: Number
     - contextPath: TOPdesk.Operator.OptionalFields2.Number2
-      description: ''
+      description: Operator's optional fields2 number2
       type: Number
     - contextPath: TOPdesk.Operator.OptionalFields2.Number3
-      description: ''
+      description: Operator's optional fields2 number3
       type: Number
     - contextPath: TOPdesk.Operator.OptionalFields2.Number4
-      description: ''
+      description: Operator's optional fields2 number4
       type: Number
     - contextPath: TOPdesk.Operator.OptionalFields2.Number5
-      description: ''
+      description: Operator's optional fields2 number5
       type: Number
     - contextPath: TOPdesk.Operator.OptionalFields2.Date1
-      description: ''
+      description: Operator's optional fields2 date1
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Date2
-      description: ''
+      description: Operator's optional fields2 date2
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Date3
-      description: ''
+      description: Operator's optional fields2 date3
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Date4
-      description: ''
+      description: Operator's optional fields2 date4
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Date5
-      description: ''
+      description: Operator's optional fields2 date5
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Text1
-      description: ''
+      description: Operator's optional fields2 text1
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields2.Text2
-      description: ''
+      description: Operator's optional fields2 text2
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields2.Text3
-      description: ''
+      description: Operator's optional fields2 text3
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields2.Text4
-      description: ''
+      description: Operator's optional fields2 text4
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields2.Text5
-      description: ''
+      description: Operator's optional fields2 text5
       type: String
     - contextPath: TOPdesk.Operator.OptionalFields2.Memo1
-      description: ''
+      description: Operator's optional fields2 memo1
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Memo2
-      description: ''
+      description: Operator's optional fields2 memo2
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Memo3
-      description: ''
+      description: Operator's optional fields2 memo3
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Memo4
-      description: ''
+      description: Operator's optional fields2 memo4
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Memo5
-      description: ''
+      description: Operator's optional fields2 memo5
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Searchlist1
-      description: ''
+      description: Operator's optional fields2 searchlist1
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Searchlist2
-      description: ''
+      description: Operator's optional fields2 searchlist2
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Searchlist3
-      description: ''
+      description: Operator's optional fields2 searchlist3
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Searchlist4
-      description: ''
+      description: Operator's optional fields2 searchlist4
       type: Unknown
     - contextPath: TOPdesk.Operator.OptionalFields2.Searchlist5
-      description: ''
+      description: Operator's optional fields2 searchlist5
       type: Unknown
   - arguments:
     - description: The offset at which to start listing the persons at. Must be greater
@@ -956,494 +965,494 @@ script:
     description: Get list of branches.
     name: topdesk-branches-list
     outputs:
-    - contextPath: TOPdesk.Branch.Id
-      description: ''
+    - contextPath: TOPdesk.Branch.id
+      description: Branch's id
       type: String
     - contextPath: TOPdesk.Branch.Status
-      description: ''
+      description: Branch's status
       type: String
     - contextPath: TOPdesk.Branch.Name
-      description: ''
+      description: Branch's name
       type: String
     - contextPath: TOPdesk.Branch.Specification
-      description: ''
+      description: Branch's specification
       type: String
     - contextPath: TOPdesk.Branch.ClientReferenceNumber
-      description: ''
+      description: Branch's client referenceNumber
       type: String
     - contextPath: TOPdesk.Branch.TimeZone
-      description: ''
+      description: Branch's time zone
       type: String
     - contextPath: TOPdesk.Branch.ExtraA.Id
-      description: ''
+      description: Branch's extra A id
       type: String
     - contextPath: TOPdesk.Branch.ExtraA.Name
-      description: ''
+      description: Branch's extra A name
       type: String
     - contextPath: TOPdesk.Branch.ExtraB.Id
-      description: ''
+      description: Branch's extra B id
       type: String
     - contextPath: TOPdesk.Branch.ExtraB.Name
-      description: ''
+      description: Branch's extra B name
       type: String
     - contextPath: TOPdesk.Branch.Phone
-      description: ''
+      description: Branch's phone
       type: String
     - contextPath: TOPdesk.Branch.Fax
-      description: ''
+      description: Branch's fax
       type: String
     - contextPath: TOPdesk.Branch.Address.Country.Id
-      description: ''
+      description: Branch's address country id
       type: String
     - contextPath: TOPdesk.Branch.Address.Country.Name
-      description: ''
+      description: Branch's address country name
       type: String
-    - contextPath: TOPdesk.Branch.Address.Dtreet
-      description: ''
+    - contextPath: TOPdesk.Branch.Address.Street
+      description: Branch's address street
       type: String
     - contextPath: TOPdesk.Branch.Address.Number
-      description: ''
+      description: Branch's address number
       type: String
     - contextPath: TOPdesk.Branch.Address.County
-      description: ''
+      description: Branch's address county
       type: String
     - contextPath: TOPdesk.Branch.Address.City
-      description: ''
+      description: Branch's address city
       type: String
     - contextPath: TOPdesk.Branch.Address.Postcode
-      description: ''
+      description: Branch's address postcode
       type: String
     - contextPath: TOPdesk.Branch.Address.AddressMemo
-      description: ''
+      description: Branch's address memo
       type: String
     - contextPath: TOPdesk.Branch.Address.AddressType
-      description: ''
+      description: Branch's address type
       type: String
     - contextPath: TOPdesk.Branch.Email
-      description: ''
+      description: Branch's email
       type: String
     - contextPath: TOPdesk.Branch.Website
-      description: ''
+      description: Branch's website
       type: String
     - contextPath: TOPdesk.Branch.PostalAddress.Country.Id
-      description: ''
+      description: Branch's postal address country id
       type: String
     - contextPath: TOPdesk.Branch.PostalAddress.Country.Name
-      description: ''
+      description: Branch's postal adress country name
       type: String
     - contextPath: TOPdesk.Branch.PostalAddress.Street
-      description: ''
+      description: Branch's postal address street
       type: String
     - contextPath: TOPdesk.Branch.PostalAddress.Number
-      description: ''
+      description: Branch's postal address number
       type: String
     - contextPath: TOPdesk.Branch.PostalAddress.County
-      description: ''
+      description: Branch's postal address county
       type: String
     - contextPath: TOPdesk.Branch.PostalAddress.City
-      description: ''
+      description: Branch's postal address city
       type: String
     - contextPath: TOPdesk.Branch.PostalAddress.Postcode
-      description: ''
+      description: Branch's postal address postcode
       type: String
     - contextPath: TOPdesk.Branch.PostalAddress.AddressMemo
-      description: ''
+      description: Branch's postal address memo
       type: String
     - contextPath: TOPdesk.Branch.PostalAddress.AddressType
-      description: ''
+      description: Branch's postal address type
       type: String
     - contextPath: TOPdesk.Branch.BranchType
-      description: ''
+      description: Branch's branch type
       type: String
     - contextPath: TOPdesk.Branch.HeadBranch.Id
-      description: ''
+      description: Branch's head branch id
       type: String
     - contextPath: TOPdesk.Branch.HeadBranch.Name
-      description: ''
+      description: Branch's head branch name
       type: String
     - contextPath: TOPdesk.Branch.MembershipNumber
-      description: ''
+      description: Branch's membership number
       type: String
     - contextPath: TOPdesk.Branch.AccountManager.Id
-      description: ''
+      description: Branch's account manager id
       type: String
     - contextPath: TOPdesk.Branch.AccountManager.Name
-      description: ''
+      description: Branch's account manager name
       type: String
     - contextPath: TOPdesk.Branch.Contact.Id
-      description: ''
+      description: Branch's contact id
       type: String
     - contextPath: TOPdesk.Branch.Contact.Name
-      description: ''
+      description: Branch's contact name
       type: String
     - contextPath: TOPdesk.Branch.VatNumber
-      description: ''
+      description: Branch's vat number
       type: String
     - contextPath: TOPdesk.Branch.SurfaceArea
-      description: ''
+      description: Branch's surface area
       type: Number
     - contextPath: TOPdesk.Branch.Volume
-      description: ''
+      description: Branch's volume
       type: Number
     - contextPath: TOPdesk.Branch.Attention.Id
-      description: ''
+      description: Branch's attention id
       type: String
     - contextPath: TOPdesk.Branch.Attention.Name
-      description: ''
+      description: Branch's attention name
       type: String
     - contextPath: TOPdesk.Branch.AttentionComment
-      description: ''
+      description: Branch's attention comment
       type: String
     - contextPath: TOPdesk.Branch.AdditionalInfo
-      description: ''
+      description: Branch's additional info
       type: String
     - contextPath: TOPdesk.Branch.ServiceWindowOption
-      description: ''
+      description: Branch's service window option
       type: String
     - contextPath: TOPdesk.Branch.ServiceWindow.Id
-      description: ''
+      description: Branch's service window id
       type: String
     - contextPath: TOPdesk.Branch.ServiceWindow.Name
-      description: ''
+      description: Branch's service window name window name
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.RegistryReference
-      description: ''
+      description: Branch's real estate registry reference
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.OwnerName
-      description: ''
+      description: Branch's real estate owner name
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.OwnerMobile
-      description: ''
+      description: Branch's real estate ownerMobile
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.OwnerTelephone
-      description: ''
+      description: Branch's real estate owner telephone
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.OwnerEmail
-      description: ''
+      description: Branch's real estate owner email
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.DesignatedUse.Id
-      description: ''
+      description: Branch's real estate designated use id
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.DesignatedUse.Name
-      description: ''
+      description: Branch's real estate designated use name
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.ListedBuilding.Id
-      description: ''
+      description: Branch's real estate listed building id
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.ListedBuilding.Name
-      description: ''
+      description: Branch's real estate listed building name
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.ConstructionYear
-      description: ''
+      description: Branch's real estate construction year
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.AcquisitionYear
-      description: ''
+      description: Branch's real estate acquisition year
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.AcquisitionPrice
-      description: ''
+      description: Branch's real estate acquisitionPrice
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.EnergyPerformance.Id
-      description: ''
+      description: Branch's real estate energy performance id
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.EnergyPerformance.Name
-      description: ''
+      description: Branch's real estate energy performance name
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.EnergyPerformanceMeasurementDate
-      description: ''
+      description: Branch's real estate energy performance measurement date
       type: Date
     - contextPath: TOPdesk.Branch.RealEstate.EnvironmentalImpact.Id
-      description: ''
+      description: Branch's real estate environmental impact id
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.EnvironmentalImpact.Name
-      description: ''
+      description: Branch's real estate environmental impact name
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.EnvironmentalImpactMeasurementDate
-      description: ''
+      description: Branch's real estate environmental impact measurement date
       type: Date
     - contextPath: TOPdesk.Branch.RealEstate.BuildingLevelEPC.Id
-      description: ''
+      description: Branch's real estate building level EPC id
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.BuildingLevelEPC.Name
-      description: ''
+      description: Branch's real estate building level EPC name
       type: String
     - contextPath: TOPdesk.Branch.RealEstate.TotalAcquisitionCost
-      description: ''
+      description: Branch's real estate total acquisition cost
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.PropertyValuation
-      description: ''
+      description: Branch's real estate property valuation
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.ResidualValue
-      description: ''
+      description: Branchk's real estate residual value
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.AnnualDepreciation
-      description: ''
+      description: Branch's real estate annual depreciation
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.DepreciationPeriod
-      description: ''
+      description: Branch's real estate depreciation period
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.LiquidationValue
-      description: ''
+      description: Branch's real estate liquidation value
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.LiquidationValueSurveyDate
-      description: ''
+      description: Branch's real estate liquidation value survey date
       type: Date
     - contextPath: TOPdesk.Branch.RealEstate.LandValue
-      description: ''
+      description: Branch's real estate land value
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.LandValueSurveyDate
-      description: ''
+      description: Branch's real estate land value survey date
       type: Date
     - contextPath: TOPdesk.Branch.RealEstate.MarketValue
-      description: ''
+      description: Branch's real estate market value
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.MarketValueSurveyDate
-      description: ''
+      description: Branch's real estate market value survey date
       type: Date
     - contextPath: TOPdesk.Branch.RealEstate.RentalValue
-      description: ''
+      description: Branch's real estate rental value
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.RentalValueSurveyDate
-      description: ''
+      description: Branch's real estate rental value survey date
       type: Date
     - contextPath: TOPdesk.Branch.RealEstate.RebuildingValue
-      description: ''
+      description: Branch's real estate rebuilding value
       type: Number
     - contextPath: TOPdesk.Branch.RealEstate.RebuildingValueSurveyDate
-      description: ''
+      description: Branch's real estate rebuilding value survey date
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields1.Boolean1
-      description: ''
+      description: Branch's optional fields1 boolean1
       type: Boolean
     - contextPath: TOPdesk.Branch.OptionalFields1.Boolean2
-      description: ''
+      description: Branch's optional fields1 boolean2
       type: Boolean
     - contextPath: TOPdesk.Branch.OptionalFields1.Boolean3
-      description: ''
+      description: Branch's optional fields1 boolean3
       type: Boolean
     - contextPath: TOPdesk.Branch.OptionalFields1.Boolean4
-      description: ''
+      description: Branch's optional fields1 boolean4
       type: Boolean
     - contextPath: TOPdesk.Branch.OptionalFields1.Boolean5
-      description: ''
+      description: Branch's optional fields1 boolean5
       type: Boolean
     - contextPath: TOPdesk.Branch.OptionalFields1.Number1
-      description: ''
+      description: Branch's optional fields1 number1
       type: Number
     - contextPath: TOPdesk.Branch.OptionalFields1.Number2
-      description: ''
+      description: Branch's optional fields1 number2
       type: Number
     - contextPath: TOPdesk.Branch.OptionalFields1.Number3
-      description: ''
+      description: Branch's optional fields1 number3
       type: Number
     - contextPath: TOPdesk.Branch.OptionalFields1.Number4
-      description: ''
+      description: Branch's optional fields1 number4
       type: Number
     - contextPath: TOPdesk.Branch.OptionalFields1.Number5
-      description: ''
+      description: Branch's optional fields1 number5
       type: Number
     - contextPath: TOPdesk.Branch.OptionalFields1.Date1
-      description: ''
+      description: Branch's optional fields1 date1
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields1.Date2
-      description: ''
+      description: Branch's optional fields1 date2
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields1.Date3
-      description: ''
+      description: Branch's optional fields1 date3
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields1.Date4
-      description: ''
+      description: Branch's optional fields1 date4
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields1.Date5
-      description: ''
+      description: Branch's optional fields1 date5
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields1.Text1
-      description: ''
+      description: Branch's optional fields1 text1
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Text2
-      description: ''
+      description: Branch's optional fields1 text2
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Text3
-      description: ''
+      description: Branch's optional fields1 text3
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Text4
-      description: ''
+      description: Branch's optional fields1 text4
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Text5
-      description: ''
+      description: Branch's optional fields1 text5
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Memo1
-      description: ''
+      description: Branch's optional fields1 memo1
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Memo2
-      description: ''
+      description: Branch's optional fields1 memo2
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Memo3
-      description: ''
+      description: Branch's optional fields1 memo3
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Memo4
-      description: ''
+      description: Branch's optional fields1 memo4
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Memo5
-      description: ''
+      description: Branch's optional fields1 memo5
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Searchlist1.Id
-      description: ''
+      description: Branch's optional fields1 searchlist1 id
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Searchlist1.Name
-      description: ''
+      description: Branch's optional fields1 searchlist1 name
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Searchlist2.Id
-      description: ''
+      description: Branch's optional fields1 searchlist2 id
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Searchlist2.Name
-      description: ''
+      description: Branch's optional fields1 searchlist2 name
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Searchlist3.Id
-      description: ''
+      description: Branch's optional fields1 searchlist3 id
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Searchlist3.Name
-      description: ''
+      description: Branch's optional fields1 searchlist3 name
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Searchlist4.Id
-      description: ''
+      description: Branch's optional fields1 searchlist4 id
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Searchlist4.Name
-      description: ''
+      description: Branch's optional fields1 searchlist4 name
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Searchlist5.Id
-      description: ''
+      description: Branch's optional fields1 searchlist5 id
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields1.Searchlist5.Name
-      description: ''
+      description: Branch's optional fields1 searchlist5 name
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Boolean1
-      description: ''
+      description: Branch's optional fields2 boolean1
       type: Boolean
     - contextPath: TOPdesk.Branch.OptionalFields2.Boolean2
-      description: ''
+      description: Branch's optional fields2 boolean2
       type: Boolean
     - contextPath: TOPdesk.Branch.OptionalFields2.Boolean3
-      description: ''
+      description: Branch's optional fields2 boolean3
       type: Boolean
     - contextPath: TOPdesk.Branch.OptionalFields2.Boolean4
-      description: ''
+      description: Branch's optional fields2 boolean4
       type: Boolean
     - contextPath: TOPdesk.Branch.OptionalFields2.Boolean5
-      description: ''
+      description: Branch's optional fields2 boolean5
       type: Boolean
     - contextPath: TOPdesk.Branch.OptionalFields2.Number1
-      description: ''
+      description: Branch's optional fields2 number1
       type: Number
     - contextPath: TOPdesk.Branch.OptionalFields2.Number2
-      description: ''
+      description: Branch's optional fields2 number2
       type: Number
     - contextPath: TOPdesk.Branch.OptionalFields2.Number3
-      description: ''
+      description: Branch's optional fields2 number3
       type: Number
     - contextPath: TOPdesk.Branch.OptionalFields2.Number4
-      description: ''
+      description: Branch's optional fields2 number4
       type: Number
     - contextPath: TOPdesk.Branch.OptionalFields2.Number5
-      description: ''
+      description: Branch's optional fields2 number5
       type: Number
     - contextPath: TOPdesk.Branch.OptionalFields2.Date1
-      description: ''
+      description: Branch's optional fields2 date1
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields2.Date2
-      description: ''
+      description: Branch's optional fields2 date2
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields2.Date3
-      description: ''
+      description: Branch's optional fields2 date3
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields2.Date4
-      description: ''
+      description: Branch's optional fields2 date4
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields2.Date5
-      description: ''
+      description: Branch's optional fields2 date5
       type: Date
     - contextPath: TOPdesk.Branch.OptionalFields2.Text1
-      description: ''
+      description: Branch's optional fields2 text1
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Text2
-      description: ''
+      description: Branch's optional fields2 text2
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Text3
-      description: ''
+      description: Branch's optional fields2 text3
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Text4
-      description: ''
+      description: Branch's optional fields2 text4
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Text5
-      description: ''
+      description: Branch's optional fields2 text5
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Memo1
-      description: ''
+      description: Branch's optional fields2 memo1
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Memo2
-      description: ''
+      description: Branch's optional fields2 memo2
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Memo3
-      description: ''
+      description: Branch's optional fields2 memo3
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Memo4
-      description: ''
+      description: Branch's optional fields2 memo4
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Memo5
-      description: ''
+      description: Branch's optional fields2 memo5
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Searchlist1.Id
-      description: ''
+      description: Branch's optionalields2's searchlist1 id
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Searchlist1.Name
-      description: ''
+      description: Branch's optional fields2 searchlist1 name
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Searchlist2.Id
-      description: ''
+      description: Branch's optional fields2 searchlist2 id
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Searchlist2.Name
-      description: ''
+      description: Branch's optional fields2 searchlist2 name
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Searchlist3.Id
-      description: ''
+      description: Branch's optional fields2 searchlist3 id
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Searchlist3.Name
-      description: ''
+      description: Branch's optional fields2 searchlist3 name
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Searchlist4.Id
-      description: ''
+      description: Branch's optional fields2 searchlist4 id
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Searchlist4.Name
-      description: ''
+      description: Branch's optional fields2 searchlist4 name
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Searchlist5.Id
-      description: ''
+      description: Branch's optional fields2 searchlist5 id
       type: String
     - contextPath: TOPdesk.Branch.OptionalFields2.Searchlist5.Name
-      description: ''
+      description: Branch's optional fields2 searchlist5 name
       type: String
     - contextPath: TOPdesk.Branch.Notes
-      description: ''
+      description: Branch's notes
       type: String
     - contextPath: TOPdesk.Branch.Creator.Id
-      description: ''
+      description: Branch's creator id
       type: String
     - contextPath: TOPdesk.Branch.Creator.Name
-      description: ''
+      description: Branch's creator name
       type: String
     - contextPath: TOPdesk.Branch.CreationDate
-      description: ''
+      description: Branch's creation date
       type: Date
     - contextPath: TOPdesk.Branch.Modifier.Id
-      description: ''
+      description: Branch's modifier id
       type: String
     - contextPath: TOPdesk.Branch.Modifier.Name
-      description: ''
+      description: Branch's modifier name
       type: String
     - contextPath: TOPdesk.Branch.ModificationDate
-      description: ''
+      description: Branch's modification date
       type: Date
     - contextPath: TOPdesk.Branch.HasAttention
-      description: ''
+      description: Branch's has attention
       type: Boolean
   - arguments:
     - description: The offset at which to start listing the operators at. Must be
@@ -5877,34 +5886,34 @@ script:
     name: topdesk-incident-attachment-upload
     outputs:
     - contextPath: TOPdesk.Attachment.Id
-      description: ''
+      description: Attachment's id
       type: String
     - contextPath: TOPdesk.Attachment.FileName
-      description: ''
+      description: Attachment's file name
       type: String
     - contextPath: TOPdesk.Attachment.DownloadUrl
-      description: ''
+      description: Attachment's download url
       type: String
     - contextPath: TOPdesk.Attachment.Size
-      description: ''
+      description: Attachment's size
       type: Number
     - contextPath: TOPdesk.Attachment.Description
-      description: ''
+      description: Attachment's description
       type: String
     - contextPath: TOPdesk.Attachment.InvisibleForCaller
-      description: ''
+      description: Attachment's invisible for caller
       type: Boolean
     - contextPath: TOPdesk.Attachment.EntryDate
-      description: ''
+      description: Attachment's entry date
       type: Date
     - contextPath: TOPdesk.Attachment.Operator.Id
-      description: ''
+      description: Attachment's operator id
       type: String
     - contextPath: TOPdesk.Attachment.Operator.Name
-      description: ''
+      description: Attachment's operator name
       type: String
     - contextPath: TOPdesk.Attachment.Person
-      description: ''
+      description: Attachment's person
       type: Unknown
   dockerimage: demisto/python3:3.9.2.17246
   isfetch: true

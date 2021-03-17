@@ -375,7 +375,7 @@ def command_with_all_fields_readable_list(results: List[Dict[str, Any]], result_
 
 
 def get_incidents_with_pagination(client: Client, max_fetch: int, query: str, modification_date_start: str,
-                                  modification_date_end: str) -> List[Dict[str, Any]]:
+                                  modification_date_end: Optional[str] = None) -> List[Dict[str, Any]]:
     """Implement pagination for fetching incidents.
 
     Args:
@@ -942,13 +942,12 @@ def fetch_incidents(client: Client,
     latest_created_time = last_fetch_datetime
     incidents: List[Dict[str, Any]] = []
 
+    modification_date_start = last_fetch_datetime.strftime("<%Y-%m-%d>")
+
     topdesk_incidents = get_incidents_with_pagination(client=client,
                                                       max_fetch=int(demisto_params.get('max_fetch', 10)),
                                                       query=demisto_params.get('query', None),
-                                                      modification_date_start=demisto_params.get(
-                                                          'modification_date_start', None),
-                                                      modification_date_end=demisto_params.get(
-                                                          'modification_date_end', None))
+                                                      modification_date_start=modification_date_start)
 
     for topdesk_incident in topdesk_incidents:
         if topdesk_incident.get('creationDate', None):
