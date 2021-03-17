@@ -3,10 +3,10 @@ VirusTotal V3 - Premium API
 Difference: https://developers.virustotal.com/v3.0/reference#public-vs-premium-api
 """
 import copy
-from parser import ParserError
 from typing import Tuple
-from dateparser import parse
+
 import urllib3
+from dateparser import parse
 
 from CommonServerPython import *
 
@@ -36,10 +36,13 @@ def decrease_data_size(data: Union[dict, list]) -> Union[dict, list]:
             data['attributes']['autostart_locations']
             data['attributes']['sandbox_verdicts']
             data['attributes']['sigma_analysis_summary']
+            data['attributes']['popular_threat_classification']
+            data['attributes']['packers']
+            data['attributes']['malware_config']
     """
     attributes_to_remove = [
         'last_analysis_results', 'pe_info', 'crowdsourced_ids_results', 'autostart_locations', 'sandbox_verdicts',
-        'sigma_analysis_summary'
+        'sigma_analysis_summary', 'popular_threat_classification', 'packers', 'malware_config'
     ]
     if isinstance(data, list):
         data = [decrease_data_size(item) for item in data]
@@ -138,34 +141,6 @@ def arg_to_number_must_int(arg: Any, arg_name: Optional[str] = None, required: b
     arg_num = arg_to_number(arg, arg_name, required)
     assert isinstance(arg_num, int)
     return arg_num
-
-
-def decrease_data_size(data: Union[dict, list]) -> Union[dict, list]:
-    """ Minifying data size.
-    Args:
-        data: the data object from raw response
-    Returns:
-        the same data without:
-            data['attributes']['last_analysis_results']
-            data['attributes']['pe_info']
-            data['attributes']['crowdsourced_ids_results']
-            data['attributes']['autostart_locations']
-            data['attributes']['sandbox_verdicts']
-            data['attributes']['sigma_analysis_summary']
-    """
-    attributes_to_remove = [
-        'last_analysis_results', 'pe_info', 'crowdsourced_ids_results', 'autostart_locations', 'sandbox_verdicts',
-        'sigma_analysis_summary'
-    ]
-    if isinstance(data, list):
-        data = [decrease_data_size(item) for item in data]
-    else:
-        for attribute in attributes_to_remove:
-            try:
-                del data['attributes'][attribute]
-            except KeyError:
-                pass
-    return data
 
 
 def raise_if_hash_not_valid(
@@ -433,7 +408,7 @@ class Client(BaseClient):
             self,
             from_time: Optional[datetime] = None,
             to_time: Optional[datetime] = None,
-            tags: Optional[str] = None,
+            tag: Optional[str] = None,
             cursor: Optional[str] = None,
             limit: Optional[int] = None
     ) -> dict:
@@ -444,8 +419,8 @@ class Client(BaseClient):
         """
         time_format = "%Y-%m-%dT%H:%M:%S"
         filter_ = ''
-        if tags:
-            filter_ += f'{tags} '
+        if tag:
+            filter_ += f'{tag} '
         if from_time:
             filter_ += f'date:{from_time.strftime(time_format)}+ '
         if to_time:
@@ -790,8 +765,8 @@ def list_notifications(client: Client, args: dict) -> CommandResults:
         if from_time > to_time:
             raise DemistoException(f'The from_time argument is later then to_time. {from_time} > {to_time}')
     cursor = args.get('cursor')
-    tags = args.get('tags')
-    outputs = raw_response = client.list_notifications(from_time, to_time, tags, cursor, limit)
+    tag = args.get('tag')
+    outputs = raw_response = client.list_notifications(from_time, to_time, tag, cursor, limit)
     if not arg_to_boolean_can_be_none(args.get('extended_data')):
         outputs = copy.deepcopy(raw_response)
         outputs['data'] = decrease_data_size(outputs.get('data', []))
@@ -799,7 +774,7 @@ def list_notifications(client: Client, args: dict) -> CommandResults:
         f'{INTEGRATION_ENTRY_CONTEXT}.LiveHuntNotification',
         'id',
         readable_output=tableToMarkdown(
-            'Search results:',
+            'Notifications found:',
             outputs.get('data', {}),
             headers=['id']
         ),
@@ -922,7 +897,7 @@ def get_retrohunt_job_matching_files(client: Client, args: dict) -> CommandResul
     id_ = args['id']
     raw_response = client.get_retrohunt_job_matching_files(id_)
     if not arg_to_boolean_can_be_none(args.get('extended_data')):
-        raw_response['data'] = decrease_data_size(raw_response.get('data', []))
+        raw_response['data'] = decrease_data_size(raw_response['data'])
     data = raw_response.get('data', [])
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.RetroHuntJobFiles',
@@ -958,8 +933,9 @@ def get_quota_limits(client: Client, args: dict) -> CommandResults:
     )
 
 
-def fetch_incidents(client: Client, last_run_date: datetime) -> Tuple[List[dict], datetime]:
-    raw_response = client.list_notifications(from_time=last_run_date, limit=40)
+def fetch_incidents(client: Client, params: dict, last_run_date: datetime) -> Tuple[List[dict], datetime]:
+    tag = params.get('tag')
+    raw_response = client.list_notifications(from_time=last_run_date, tag=tag, limit=40)
     incidents = list()
     for notification in raw_response.get('data', []):
         attributes = notification.get('attributes', {})
@@ -970,11 +946,14 @@ def fetch_incidents(client: Client, last_run_date: datetime) -> Tuple[List[dict]
             last_run_date = date
         incidents.append(
             {
-                'name': f'VirusTotal incident: {notification.get("id")}',
+                'name': f'VirusTotal Intelligence LiveHunt Notification: {notification.get("id")}',
                 'occurred': f'{date.replace(microsecond=0).isoformat()}Z',
                 'rawJSON': json.dumps(notification)
             }
         )
+    if incidents:
+        # To not fetch duplicate notifications. If not incidents - Nothing found. keep going
+        last_run_date += timedelta(seconds=1)
     return incidents, last_run_date
 
 
