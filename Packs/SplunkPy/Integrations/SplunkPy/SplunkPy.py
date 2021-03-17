@@ -626,9 +626,16 @@ def splunk_edit_notable_event_command(proxy):
     baseurl = 'https://' + demisto.params()['host'] + ':' + demisto.params()['port'] + '/'
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
-    auth_req = requests.post(baseurl + 'services/auth/login',
-                             data={'username': username, 'password': password, 'output_mode': 'json'},
-                             verify=VERIFY_CERTIFICATE)
+    if username == '_token':
+        headers = {"Authorization": "Bearer {}".format(password)}
+        auth_req = requests.post(
+            baseurl + 'services/auth/login', data={'output_mode': 'json'}, headers=headers, verify=VERIFY_CERTIFICATE
+        )
+    else:
+        auth_req = requests.post(
+            baseurl + 'services/auth/login', data={'username': username, 'password': password, 'output_mode': 'json'},
+            verify=VERIFY_CERTIFICATE
+        )
 
     sessionKey = auth_req.json()['sessionKey']
     eventIDs = None
@@ -1084,10 +1091,16 @@ def main():
         'host': demisto.params()['host'],
         'port': demisto.params()['port'],
         'app': demisto.params().get('app', '-'),
-        'username': demisto.params()['authentication']['identifier'],
-        'password': demisto.params()['authentication']['password'],
         'verify': VERIFY_CERTIFICATE
     }
+
+    username = demisto.params()['authentication']['identifier']
+    password = demisto.params()['authentication']['password']
+    if username == '_token':
+        connection_args['splunkToken'] = password
+    else:
+        connection_args['username'] = username
+        connection_args['password'] = password
 
     if use_requests_handler:
         handle_proxy()
