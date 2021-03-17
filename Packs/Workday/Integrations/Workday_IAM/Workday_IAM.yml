@@ -55,6 +55,28 @@ configuration:
   name: workday_date_format
   required: false
   type: 0
+- additionalinfo: Select the field that implies when to trigger a termination incident for deactivated employees.
+  defaultvalue: Termination_Date
+  display: Deactivation date field
+  hidden: false
+  name: deactivation_date_field
+  options:
+  - Termination_Date
+  - Last_Day_of_Work
+  required: true
+  type: 15
+- additionalinfo: An integer threshold that determines when to sync employees from Workday. Leave empty to sync the hires instantly.
+  display: Number of days before hire date to sync hires
+  hidden: false
+  name: days_before_hire_to_sync
+  required: false
+  type: 0
+- additionalinfo: An integer threshold that determines when to enable the Active Directory accounts of employees. Leave empty to enable the accounts instantly.
+  display: Number of days before hire date to enable Active Directory account
+  hidden: false
+  name: days_before_hire_to_enable_ad
+  required: false
+  type: 0
 description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: Workday IAM
