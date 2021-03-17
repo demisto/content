@@ -926,12 +926,7 @@ second_incident = {
 
 third_incident = {
     'a': 'b',
-    'field_with_inner_dict': {
-        'k1': 'k2',
-        'test1': '1test',
-        'k3': 'k4',
-        'test2': '2test'
-    },
+    'rawJSON': '{"k1": "k2","test1": "1test","k3": "k4","test2": "2test"}',
     'c': 'd',
     'g': 'h',
     'dummy_field': 'is_dummy',
@@ -940,12 +935,7 @@ third_incident = {
 }
 
 fourth_incident = {
-    'field_with_inner_dict': {
-        'test1': '1test',
-        'test2': '2test',
-        'k1': 'k2',
-        'k3': 'k4'
-    },
+    'rawJSON': '{"test1": "1test","test2": "2test","k1": "k2","k3": "k4"}',
     'dummy_field': 'is_dummy',
     'a': 'b',
     'c': 'd',
