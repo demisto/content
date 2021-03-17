@@ -318,7 +318,7 @@ def cyberint_alerts_get_attachment_command(client: Client, args: dict) -> dict:
 
     raw_response = client.get_alert_attachment(args.get('alert_ref_id', None), args.get('attachment_id', None))
     if raw_response.status_code == 200:
-        file_entry = fileResult(filename='f.png', data=raw_response.content)
+        file_entry = fileResult(filename=args.get('attachment_name', None), data=raw_response.content)
         return file_entry
     elif raw_response.status_code == 302:  # have to complete it after getting more info from XSOAR
         return ""

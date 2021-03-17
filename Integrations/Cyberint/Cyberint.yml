@@ -493,13 +493,16 @@ script:
       name: attachment_id
       required: true
       secret: false
+    - default: false
+      description: Attachment file name
+      isArray: false
+      name: attachment_name
+      required: true
+      secret: false
     deprecated: false
     description: Get alert attachment.
     execution: false
     name: cyberint-alerts-get-attachment
-    outputs:
-    - contextPath: Cyberint.Alert.attachment
-      type: Unknown
   dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true

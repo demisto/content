@@ -494,13 +494,16 @@ script:
       name: attachment_id
       required: true
       secret: false
+    - default: false
+      description: Attachment file name
+      isArray: false
+      name: attachment_name
+      required: true
+      secret: false
     deprecated: false
     description: Get alert attachment.
     execution: false
     name: cyberint-alerts-get-attachment
-    outputs:
-    - contextPath: Cyberint.Alert.attachment
-      type: Unknown
   dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
@@ -828,9 +831,9 @@ script:
 
         raw_response = client.get_alert_attachment(args.get('alert_ref_id', None), args.get('attachment_id', None))
         if raw_response.status_code == 200:
-            file_entry = fileResult(filename='f.png', data=raw_response.content)
+            file_entry = fileResult(filename=args.get('attachment_name', None), data=raw_response.content)
             return file_entry
-        elif raw_response.status_code == 302:
+        elif raw_response.status_code == 302:  # have to complete it after getting more info from XSOAR
             return ""
         return ""
 
