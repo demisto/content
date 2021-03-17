@@ -528,11 +528,12 @@ def clear_internal_fields(incident):
         del incident[internal_field]
 
 
+
 def create_incident_custom_id(incident):
     # The '_serial' indicates the index of the event in the results returned from Splunk.
     # Therefore, it might be different on different runs for the same event.
     # Thus, it must be deleted to preserve the consistency of the custom IDs.
-    incident_raw_data = incident["rawJSON"]
+    incident_raw_data = json.loads(incident["rawJSON"])
     clear_internal_fields(incident_raw_data)
     incident_full_data = json.dumps(incident_raw_data, sort_keys=True)
     incident_occurred = incident['occurred']
