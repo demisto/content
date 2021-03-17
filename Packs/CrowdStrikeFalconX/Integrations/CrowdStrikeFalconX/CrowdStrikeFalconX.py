@@ -221,7 +221,10 @@ class Client:
         url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
                      f"&comment={comment}"
         self._headers['Content-Type'] = 'application/octet-stream'
-        return self._http_request("POST", url_suffix, data=open(file_path, 'rb'))
+        file_data = open(file_path, 'rb')
+        res = self._http_request("POST", url_suffix, data=file_data)
+        file_data.close()
+        return res
 
     def send_uploaded_file_to_sandbox_analysis(
             self,
