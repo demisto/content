@@ -28,7 +28,7 @@ configuration:
   - https://login.microsoftonline.us
   - https://login.microsoftonline.de
   - https://login.chinacloudapi.cn
-  required: true
+  required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with national cloud.
 - display: Trust any certificate (not secure)

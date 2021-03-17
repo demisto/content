@@ -25,7 +25,7 @@ configuration:
   - https://login.microsoftonline.us
   - https://login.microsoftonline.de
   - https://login.chinacloudapi.cn
-  required: true
+  required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with national cloud.
 - additionalinfo: A space-separated list of scopes that you want to consent to.
@@ -126,7 +126,7 @@ script:
     description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
     execution: false
     name: msgraph-api-test
-  dockerimage: demisto/crypto:1.0.0.12979
+  dockerimage: demisto/crypto:1.0.0.16776
   feed: false
   isfetch: false
   longRunning: false

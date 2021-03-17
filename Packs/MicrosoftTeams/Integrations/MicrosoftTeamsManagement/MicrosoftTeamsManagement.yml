@@ -18,7 +18,7 @@ configuration:
   - https://login.microsoftonline.us
   - https://login.microsoftonline.de
   - https://login.chinacloudapi.cn
-  required: true
+  required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with national cloud.
 - display: Trust any certificate (not secure)
@@ -1035,7 +1035,7 @@ script:
     - contextPath: MicrosoftTeams.Team.description
       description: An optional description for the group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.14297
+  dockerimage: demisto/crypto:1.0.0.16776
   feed: false
   isfetch: false
   longRunning: false
