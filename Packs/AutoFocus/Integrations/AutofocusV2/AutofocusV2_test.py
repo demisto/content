@@ -208,6 +208,7 @@ def test_tag_details(mocker):
     mocker.patch.object(AutofocusV2, 'autofocus_tag_details', return_value=TAGS_DETAILS_RES)
     mocker.patch.object(demisto, 'results')
     AutofocusV2.tag_details_command()
+    print(demisto.results)
     assert demisto.results.call_args[0][0] == util_load_json('test_data/teg_details_command_outputs.json')
 
 
