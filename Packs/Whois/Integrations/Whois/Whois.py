@@ -8430,7 +8430,7 @@ def ip_command(ips):
             ip=ip,
             asn=response.get('asn'),
             geo_country=response.get('asn_country_code'),
-            organization_mame=response.get('asn_description'),
+            organization_name=response.get('asn_description'),
             dbot_score=dbot_score,
             feed_related_indicators=related_feed
         )

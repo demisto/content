@@ -2281,8 +2281,8 @@ class Common(object):
         :type positive_engines: ``int``
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
-        :type organization_mame: ``str``
-        :param organization_mame:
+        :type organization_name: ``str``
+        :param organization_name:
 
         :type organization_type: ``str``
         :param organization_type:
@@ -2300,7 +2300,7 @@ class Common(object):
 
         def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
                      geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
-                     organization_mame=None, organization_type=None, feed_related_indicators=None):
+                     organization_name=None, organization_type=None, feed_related_indicators=None):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -2310,7 +2310,7 @@ class Common(object):
             self.geo_description = geo_description
             self.detection_engines = detection_engines
             self.positive_engines = positive_engines
-            self.organization_mame = organization_mame
+            self.organization_name = organization_name
             self.organization_type = organization_type
             self.feed_related_indicators = feed_related_indicators
 
@@ -2343,11 +2343,11 @@ class Common(object):
                 if self.geo_description:
                     ip_context['Geo']['Description'] = self.geo_description
 
-            if self.organization_mame or self.organization_type:
+            if self.organization_name or self.organization_type:
                 ip_context['Organization'] = {}
 
-                if self.organization_mame:
-                    ip_context['Organization']['Name'] = self.organization_mame
+                if self.organization_name:
+                    ip_context['Organization']['Name'] = self.organization_name
 
                 if self.organization_type:
                     ip_context['Organization']['Type'] = self.organization_type

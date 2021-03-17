@@ -144,6 +144,20 @@ def test_query_result(whois_result, domain, expected):
 
 
 def test_ip_command():
+    """
+    Given:
+        - IP addresses
+
+    When:
+        - running the IP command
+
+    Then:
+        - Verify the result is as expected
+        - Verify support list of IPs
+    """
     from Whois import ip_command
-    result = ip_command()
-    assert 1 == 1
+    result = ip_command(['8.8.8.8', '4.4.4.4'])
+    assert len(result) == 2
+    assert result[0].outputs_prefix == 'Whois.IP'
+    assert result[0].outputs.get('query') == '8.8.8.8'
+    assert result[1].outputs.get('query') == '4.4.4.4'
