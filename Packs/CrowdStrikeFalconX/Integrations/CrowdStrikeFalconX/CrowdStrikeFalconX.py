@@ -832,15 +832,6 @@ def find_submission_id_command(
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
 
-def get_file(entry_id):
-    get_file_path_res = demisto.getFilePath(entry_id)
-    file_path = get_file_path_res["path"]
-    file_name = get_file_path_res["name"]
-    with open(file_path, 'rb') as f:
-        file_bytes = f.read()
-    return file_name, file_bytes
-
-
 def main():
     params = demisto.params()
     url = params.get('base_url', 'https://api.crowdstrike.com/')
