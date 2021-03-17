@@ -1,0 +1,20 @@
+{
+    "approvalType": "MANUAL",
+    "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+    "filters": [
+        "dateTime: ['2021-01-01'..'2021-02-02'] "
+    ],
+    "id": "7b182a08-413e-4777-9493-9a23eb8c7e9e",
+    "name": "testtest2",
+    "reviewers": [
+        "qmast5gn1"
+    ],
+    "type": "DEFAULT",
+    "userInfo": {
+        "date": 1612360813140,
+        "user": {
+            "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
+            "name": "Gregori Nazarovsky"
+        }
+    }
+}
