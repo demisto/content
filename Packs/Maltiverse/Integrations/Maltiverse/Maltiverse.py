@@ -413,7 +413,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         markdown += f'Domain Creation Time: **{report.get("creation_time", "")}**\n'
         markdown += f'Domain Modification Time: **{report.get("modification_time", "")}**\n'
         markdown += f'Maltiverse Classification: **{report.get("classification", "")}**\n'
-        markdown += f'Doamin Resolved IP: {[report["resolved_ip"][i]["ip_addr"] for i in range(len(report["resolved_ip"]))]}'
+        markdown += f'Domain Resolved IP: {[report["resolved_ip"][i]["ip_addr"] for i in range(len(report["resolved_ip"]))]}'
 
         reports.append(report)
 

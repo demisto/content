@@ -13,7 +13,7 @@ configuration:
   required: false
   type: 4
 - additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
+  defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: integrationReliability
   options:
