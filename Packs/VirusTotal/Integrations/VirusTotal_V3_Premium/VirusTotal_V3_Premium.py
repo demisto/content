@@ -969,8 +969,8 @@ def main():
         handle_proxy()
         client = Client(params)
         if command == 'fetch-incidents':
-            incidents, run_date = fetch_incidents(client, get_last_run_time())
-            demisto.setLastRun({'date': run_date.isoformat()})
+            incidents, new_run_date = fetch_incidents(client, params, get_last_run_time())
+            demisto.setLastRun({'date': new_run_date.isoformat()})
             demisto.incidents(incidents)
         else:
             if command == 'test-module':

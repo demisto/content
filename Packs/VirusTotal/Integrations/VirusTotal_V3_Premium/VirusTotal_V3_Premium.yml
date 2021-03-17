@@ -14,6 +14,7 @@ configuration:
   required: false
   type: 8
 - display: Incident type
+  defaultvalue: VirusTotal Intelligence LiveHunt Notification
   name: incidentType
   required: false
   type: 13
@@ -1540,6 +1541,7 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.9.2.17246
+defaultmapperin: VirusTotal Intelligence LiveHunt Notification
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
