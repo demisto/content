@@ -1,0 +1,129 @@
+category: Network Security
+commonfields:
+  id: PAN-OS Policy Optimizer
+  version: -1
+configuration:
+- display: Server URL (e.g., https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- defaultvalue: "443"
+  display: Port (e.g 443)
+  name: port
+  required: false
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Device group - Panorama instances only (write shared for Shared location)
+  name: device_group
+  required: false
+  type: 0
+- display: Vsys - Firewall instances only
+  name: vsys
+  required: false
+  type: 0
+- display: Template - Panorama instances only.
+  name: template
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Automate your AppID Adoption by using this integration together with
+  your Palo Alto Networks Next-Generation Firewall or Panorama
+display: PAN-OS Policy Optimizer
+name: PAN-OS Policy Optimizer
+script:
+  commands:
+  - arguments: []
+    description: Gets the Policy Optimizer statistics
+    name: pan-os-po-getstats
+    outputs:
+    - contextPath: PanOS.PolicyOptimizer.Stats.no_app_specified
+      description: Number of rules with no apps specified
+      type: Number
+    - contextPath: PanOS.PolicyOptimizer.Stats.unused
+      description: Number of unused security policies
+      type: Number
+    - contextPath: PanOS.PolicyOptimizer.Stats.unused_apps
+      description: Number of unused apps in security policies
+      type: Number
+    - contextPath: "PanOS.PolicyOptimizer.Stats.unused_in_30_days\t"
+      description: Number of unused security policies in 30 days
+      type: Number
+    - contextPath: PanOS.PolicyOptimizer.Stats.unused_in_90_days
+      description: Number of unused security policies in 90 days
+      type: Number
+  - arguments: []
+    description: Shows all security policies with no apps specified
+    name: pan-os-po-noapps
+    outputs:
+    - contextPath: PanOS.PolicyOptimizer.NoApps
+      description: Contains informatios about the rules that have no apps specified.
+        i.e Source, Destination etc.
+      type: Unknown
+  - arguments: []
+    name: pan-os-po-unusedapps
+    outputs:
+    - contextPath: PanOS.PolicyOptimizer.UnusedApps
+      description: Shows all security polices with unused apps
+      type: Unknown
+  - arguments:
+    - defaultValue: "30"
+      description: The timeframe in days to show the unused rules for
+      name: timeframe
+      required: true
+    - auto: PREDEFINED
+      defaultValue: unused
+      description: Rule usage type. Which values you want to filter by.
+      name: usage
+      predefined:
+      - Unused
+      - Used
+      - Any
+      required: true
+    - description: Exclude rules reset during the last x days. It will not exclude
+        if argument is empty
+      name: exclude
+    description: Gets unused, used or any rules
+    name: pan-os-po-getrules
+    outputs:
+    - contextPath: PanOS.PolicyOptimizer.UnusedRules
+      description: Shows all Unused Rules
+      type: Unknown
+    - contextPath: PanOS.PolicyOptimizer.AnyRules
+      description: Shows Any Rules
+      type: Unknown
+    - contextPath: PanOS.PolicyOptimizer.UsedRules
+      description: Shows all Used Rules
+      type: Unknown
+  - arguments:
+    - description: The uuid of the security policy
+      name: rule_uuid
+      required: true
+    description: Gets the App usage statistics for a specific security policy
+    name: pan-os-po-appandusage
+    outputs:
+    - contextPath: PanOS.PolicyOptimizer.AppsAndUsage
+      description: Shows detailed App Usage statistics for specific rules
+      type: Unknown
+  - arguments:
+    - description: Dynamic Address Group Name
+      name: dag
+      required: true
+    name: pan-os-get-dag
+  dockerimage: demisto/python3:3.9.2.17246
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
