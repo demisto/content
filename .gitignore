@@ -132,3 +132,4 @@ dmypy.json
 CommonServerPython.py
 CommonServerUserPython.py
 demistomock.py
+Cyberint_unified.yml

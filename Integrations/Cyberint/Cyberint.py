@@ -108,6 +108,24 @@ class Client(BaseClient):
             for line in r.iter_lines(delimiter=delimiter):
                 yield line.decode('utf-8').strip('"')
 
+    def get_alert_attachment(self, alert_id: str, attachment_id: int):
+        """
+            Retrieve attachment by alert reference id and attachment internal id.
+
+        Args:
+            alert_id (str): Reference ID for the alert.
+            attachment_id (str): Attachment ID
+
+        Returns:
+            response (Response): API response from Cyberint.
+        """
+
+        url_suffix = f'api/v1/alerts/{alert_id}/attachments/{attachment_id}'
+        return self._http_request(method='GET',
+                                  cookies=self._cookies,
+                                  url_suffix=url_suffix,
+                                  resp_type='all')
+
 
 def test_module(client: Client):
     """
@@ -286,6 +304,27 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
                           outputs=outputs)
 
 
+def cyberint_alerts_get_attachment_command(client: Client, args: dict) -> dict:
+    """
+    Retrieve attachment by alert reference id and attachment internal id.
+
+    Args:
+        client (Client): Cyberint API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+
+    """
+
+    raw_response = client.get_alert_attachment(args.get('alert_ref_id', None), args.get('attachment_id', None))
+    if raw_response.status_code == 200:
+        file_entry = fileResult(filename='f.png', data=raw_response.content)
+        return file_entry
+    elif raw_response.status_code == 302:  # have to complete it after getting more info from XSOAR
+        return ""
+    return ""
+
+
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     first_fetch_time: str, fetch_severity: Optional[List[str]],
                     fetch_status: Optional[List[str]], fetch_type: Optional[List[str]],
@@ -387,6 +426,9 @@ def main():
 
         elif demisto.command() == 'cyberint-alerts-status-update':
             return_results(cyberint_alerts_status_update(client, demisto.args()))
+
+        elif demisto.command() == 'cyberint-alerts-get-attachment':
+            return_results(cyberint_alerts_get_attachment_command(client, demisto.args()))
     except Exception as e:
 
         if 'Invalid token or token expired' in str(e):

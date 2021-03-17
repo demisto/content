@@ -3,6 +3,10 @@ commonfields:
   id: cyberint
   version: -1
 configuration:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 - additionalinfo: Cyberint API access token.
   display: Cyberint Access Token
   name: access_token
@@ -17,9 +21,9 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: Choose the severity(s) (not minimum) to fetch. If none is chosen,
-    all severity levels will be returned.
-  display: Fetch Severities
+- additionalinfo: Severities to fetch. If none is chosen, all severity levels will
+    be returned.
+  display: Fetch Severity
   name: fetch_severity
   options:
   - low
@@ -28,9 +32,8 @@ configuration:
   - very_high
   required: false
   type: 16
-- additionalinfo: Choose one or more statuses to fetch if wanted. If none is chosen,
-    all categories will be returned.
-  display: Fetch Statuses
+- additionalinfo: Statuses to fetch. If none is chosen, all statuses will be returned.
+  display: Fetch Status
   name: fetch_status
   options:
   - open
@@ -38,14 +41,13 @@ configuration:
   - closed
   required: false
   type: 16
-- additionalinfo: Enter one or more environments to fetch if wanted (comma separated).
-    If empty, all available environments will be returned.
-  display: Fetch Environments
+- additionalinfo: Environments to fetch (comma separated). If empty, all available
+    environments will be returned.
+  display: Fetch Environment
   name: fetch_environment
   required: false
   type: 0
-- additionalinfo: Choose one or more types to fetch if wanted. If none is chosen,
-    all types will be returned.
+- additionalinfo: Types to fetch. If none is chosen, all types will be returned.
   display: Fetch Types
   name: fetch_type
   options:
@@ -99,10 +101,9 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days.
-  defaultvalue: 7 days
-  display: First Fetch Time
-  name: fetch_time
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -122,16 +123,17 @@ name: cyberint
 script:
   commands:
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '1'
-      description: Page number to return.
+      description: Page number to return. Default is 1.
       isArray: false
       name: page
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '10'
-      description: Number of results in a page. Must be between 10 and 100.
+      description: Number of results in a page. Default is 10. Must be between 10
+        and 100.
       isArray: false
       name: page_size
       required: false
@@ -360,6 +362,12 @@ script:
     - contextPath: Cyberint.Alert.alert_data.username
       description: Username of an account related to an event.
       type: String
+    - contextPath: Cyberint.Alert.alert_data.csv.username
+      description: Username of an account found in a report CSV.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.csv.password
+      description: Password of an account found in a report CSV.
+      type: String
     - contextPath: Cyberint.Alert.alert_data.email
       description: Email of an account related to an event.
       type: String
@@ -374,6 +382,9 @@ script:
       type: String
     - contextPath: Cyberint.Alert.alert_data.blacklist_repository
       description: Blacklist repository name related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.screenshot
+      description: Screenshot related to an event.
       type: String
     - contextPath: Cyberint.Alert.alert_data.spf_records
       description: SPF records if applicable to the event.
@@ -423,6 +434,9 @@ script:
     - contextPath: Cyberint.Alert.tags
       description: Tags related to the alert
       type: String
+    - contextPath: Cyberint.Alert.attachments
+      description: Attachments related to the alert
+      type: String
   - arguments:
     - default: false
       description: Reference IDs for the alert(s)
@@ -467,25 +481,49 @@ script:
     - contextPath: Cyberint.Alert.closure_reason
       description: Reason for updating the alert to closed if closed.
       type: String
-  dockerimage: demisto/python3:3.8.3.8715
+  - arguments:
+    - default: false
+      description: Reference ID of the alert.
+      isArray: false
+      name: alert_ref_id
+      required: true
+      secret: false
+    - default: false
+      description: Attachment ID.
+      isArray: false
+      name: attachment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get alert attachment.
+    execution: false
+    name: cyberint-alerts-get-attachment
+    outputs:
+    - contextPath: Cyberint.Alert.attachment
+      type: Unknown
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: |-
-    ''' IMPORTS '''
+    # pylint: disable=unsubscriptable-object
 
+
+    ''' IMPORTS '''
+    from contextlib import closing
     import json
     import requests
     import dateparser
-    from typing import Dict, List, Optional, Tuple
+    from typing import Dict, List, Optional, Tuple, Iterable
 
     requests.packages.urllib3.disable_warnings()
 
     ''' CONSTANTS '''
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
     SEVERITIES = {'low': 1, 'medium': 2, 'high': 3, 'very_high': 4}
+    CSV_FIELDS_TO_EXTRACT = ['Username', 'Password']
 
 
     class Client(BaseClient):
@@ -503,11 +541,10 @@ script:
                 verify_ssl (bool): specifies whether to verify the SSL certificate or not.
                 proxy (bool): specifies if to use XSOAR proxy settings.
             """
-            headers = {'Content-Type': 'application/json'}
             self._cookies = {'access_token': access_token}
-            super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy, headers=headers)
+            super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
 
-        def list_alerts(self, page: Optional[str], page_size: Optional[str],
+        def list_alerts(self, page: Optional[str], page_size: Optional[int],
                         created_date_from: Optional[str], created_date_to: Optional[str],
                         modification_date_from: Optional[str], modification_date_to: Optional[str],
                         environments: Optional[List[str]], statuses: Optional[List[str]],
@@ -517,7 +554,7 @@ script:
 
             Args:
                 page (str): Index of page to return.
-                page_size (str): Size of the page to return.
+                page_size (int): Size of the page to return.
                 created_date_from (str): Minimal ISO-Formatted creation date.
                 created_date_to (str): Maximal ISO-Formatted creation date.
                 modification_date_from (str): Minimal ISO-Formatted modification date.
@@ -541,7 +578,8 @@ script:
                                           url_suffix='api/v1/alerts')
             return response
 
-        def update_alerts(self, alerts: List[str], status: str, closure_reason: Optional[str]) -> Dict:
+        def update_alerts(self, alerts: List[str], status: Optional[str],
+                          closure_reason: Optional[str]) -> Dict:
             """
             Update the status of one or more alerts
 
@@ -560,33 +598,69 @@ script:
                                           url_suffix='api/v1/alerts/status')
             return response
 
+        def get_csv_file(self, alert_id: str, attachment_id: str,
+                         delimiter: bytes = b'\r\n') -> Iterable[str]:
+            """
+            Stream a CSV file attachment in order to extract data out of it.
 
-    def test_module(client):
+            Args:
+                alert_id (str): ID of the alert the CSV belongs to.
+                attachment_id (str): ID of the specific CSV file.
+                delimiter (str): Delimiter for the CSV file.
+
+            Returns:
+                row (generator(str)): Generator containing each line of the CSV.
+            """
+            url_suffix = f'api/v1/alerts/{alert_id}/attachments/{attachment_id}'
+            with closing(self._http_request(method='GET', url_suffix=url_suffix,
+                                            cookies=self._cookies, resp_type='all',
+                                            stream=True)) as r:
+                for line in r.iter_lines(delimiter=delimiter):
+                    yield line.decode('utf-8').strip('"')
+
+        def get_alert_attachment(self, alert_id: str, attachment_id: int):
+            """
+                Retrieve attachment by alert reference id and attachment internal id.
+
+            Args:
+                alert_id (str): Reference ID for the alert.
+                attachment_id (str): Attachment ID
+
+            Returns:
+                response (Response): API response from Cyberint.
+            """
+
+            url_suffix = f'api/v1/alerts/{alert_id}/attachments/{attachment_id}'
+            return self._http_request(method='GET',
+                                      cookies=self._cookies,
+                                      url_suffix=url_suffix,
+                                      resp_type='all')
+
+
+    def test_module(client: Client):
         """
         Test the connection to the API by sending a normal request.
 
         Args:
-            client: Cyberint API  client
+            client (Client): Cyberint API  client
 
         Returns:
             'ok' if test passed, anything else will fail the test.
         """
-        return_value = None
         try:
             result = client.list_alerts(*([None] * 10))
             if result:
-                return_value = 'ok'
+                return 'ok'
         except DemistoException as exception:
             if 'Invalid token or token expired' in str(exception):
-                return_value = 'Error verifying access token and / or environment, make sure the ' \
-                               'configuration parameters are correct.'
+                error_message = 'Error verifying access token and / or environment, make sure the ' \
+                                'configuration parameters are correct.'
             else:
-                return_value = str(exception)
-        finally:
-            return return_value
+                error_message = str(exception)
+            raise DemistoException(error_message)
 
 
-    def verify_input_date_format(date: str) -> str:
+    def verify_input_date_format(date: Optional[str]) -> Optional[str]:
         """
         Make sure a date entered by the user is in the correct string format (with a Z at the end).
 
@@ -602,7 +676,7 @@ script:
 
 
     def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
-                      date_range_arg: Optional[str]) -> Tuple[str, str]:
+                      date_range_arg: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
         """
         Calculate the date range to send to the API based on the arguments from the user.
 
@@ -629,6 +703,43 @@ script:
         return start_date_arg, end_date_arg
 
 
+    def extract_data_from_csv_stream(client: Client, alert_id: str,
+                                     attachment_id: str, delimiter: bytes = b'\r\n') -> List[dict]:
+        """
+        Call the attachment download API and parse required fields.
+
+        Args:
+            client (Client): Cyberint API client.
+            alert_id (str): ID of the alert the attachment belongs to.
+            attachment_id (str): ID of the attachment itself.
+            delimiter (bytes): Delimeter for the CSV file.
+
+        Returns:
+            list(dict): List of all the data found using the wanted fields.
+        """
+        first_line = True
+        field_indexes = {}  # {wanted_field_name: wanted_field_index...}
+        information_found = []
+        for csv_line in client.get_csv_file(alert_id, attachment_id, delimiter):
+            csv_line_separated = csv_line.split(',')
+            if first_line:
+                for field in CSV_FIELDS_TO_EXTRACT:
+                    try:
+                        field_indexes[field] = csv_line_separated.index(field)
+                    except ValueError:
+                        pass
+                first_line = False
+            else:
+                try:
+                    extracted_field_data = {field_name.lower(): csv_line_separated[field_index]
+                                            for field_name, field_index in field_indexes.items()}
+                    if extracted_field_data:
+                        information_found.append(extracted_field_data)
+                except IndexError:
+                    pass
+        return information_found
+
+
     def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
         """
         List alerts on cyberint according to parameters.
@@ -646,21 +757,31 @@ script:
         modify_date_from, modify_date_to = set_date_pair(args.get('modification_date_from', None),
                                                          args.get('modification_date_to', None),
                                                          args.get('modification_date_range', None))
+        if int(args.get('page_size', 10)) < 10 or int(args.get('page_size', 10)) > 100:
+            raise DemistoException('Page size must be between 10 and 100.')
         result = client.list_alerts(args.get('page'), args.get('page_size'), created_date_from,
                                     created_date_to, modify_date_from, modify_date_to,
                                     argToList(args.get('environments')),
                                     argToList(args.get('statuses')),
                                     argToList(args.get('severities')), argToList(args.get('types')))
-        alerts = result.get('alerts')
+        alerts = result.get('alerts', [])
+        outputs = []
+        for alert in alerts:
+            alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
+            if alert_csv_id:
+                extracted_csv_data = extract_data_from_csv_stream(client, alert.get('ref_id', ''),
+                                                                  alert_csv_id)
+                alert['alert_data']['csv'] = extracted_csv_data
+            outputs.append(alert)
         total_alerts = result.get('total')
         table_headers = ['ref_id', 'title', 'status', 'severity', 'created_date', 'type',
                          'environment']
         readable_output = f'Total alerts: {total_alerts}\nCurrent page: {args.get("page", 1)}\n'
-        readable_output += tableToMarkdown(name='CyberInt alerts:', t=alerts, headers=table_headers,
+        readable_output += tableToMarkdown(name='CyberInt alerts:', t=outputs, headers=table_headers,
                                            removeNull=True)
         return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
                               readable_output=readable_output, raw_response=result,
-                              outputs=alerts)
+                              outputs=outputs)
 
 
     def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
@@ -677,6 +798,8 @@ script:
         alert_ids = argToList(args.get('alert_ref_ids'))
         status = args.get('status')
         closure_reason = args.get('closure_reason')
+        if status == 'closed' and not closure_reason:
+            raise DemistoException('You must supply a closure reason when closing an alert.')
         response = client.update_alerts(alert_ids, status,
                                         closure_reason)
         table_headers = ['ref_id', 'status', 'closure_reason']
@@ -689,6 +812,27 @@ script:
         return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
                               readable_output=readable_output, raw_response=response,
                               outputs=outputs)
+
+
+    def cyberint_alerts_get_attachment_command(client: Client, args: dict) -> dict:
+        """
+        Retrieve attachment by alert reference id and attachment internal id.
+
+        Args:
+            client (Client): Cyberint API client.
+            args (dict): Command arguments from XSOAR.
+
+        Returns:
+
+        """
+
+        raw_response = client.get_alert_attachment(args.get('alert_ref_id', None), args.get('attachment_id', None))
+        if raw_response.status_code == 200:
+            file_entry = fileResult(filename='f.png', data=raw_response.content)
+            return file_entry
+        elif raw_response.status_code == 302:
+            return ""
+        return ""
 
 
     def fetch_incidents(client: Client, last_run: Dict[str, int],
@@ -730,6 +874,11 @@ script:
             alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
             alert_id = alert.get('ref_id')
             alert_title = alert.get('title')
+            alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
+            if alert_csv_id:
+                extracted_csv_data = extract_data_from_csv_stream(client, alert_id,
+                                                                  alert_csv_id)
+                alert['alert_data']['csv'] = extracted_csv_data
             incident = {
                 'name': f'Cyberint alert {alert_id}: {alert_title}',
                 'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
@@ -740,7 +889,7 @@ script:
         if incidents:
             #  Update the time for the next fetch so that there won't be duplicates.
             last_incident_time = incidents[0].get('occurred', '')
-            next_run = datetime.strptime(last_incident_time, DATE_FORMAT)
+            next_run = datetime.strptime(str(last_incident_time), DATE_FORMAT)
         next_run += timedelta(seconds=1)
         next_run_timestamp = int(datetime.timestamp(next_run) * 1000)
         return {'last_fetch': next_run_timestamp}, incidents
@@ -755,7 +904,7 @@ script:
         environment = params.get('environment')
 
         verify_certificate = not params.get('insecure', False)
-        first_fetch_time = params.get('fetch_time', '3 days').strip()
+        first_fetch_time = params.get('first_fetch', '3 days').strip()
         proxy = params.get('proxy', False)
         base_url = f'https://{environment}.cyberint.io/alert/'
         demisto.info(f'Command being called is {demisto.command()}')
@@ -787,13 +936,23 @@ script:
 
             elif demisto.command() == 'cyberint-alerts-status-update':
                 return_results(cyberint_alerts_status_update(client, demisto.args()))
+
+            elif demisto.command() == 'cyberint-alerts-get-attachment':
+                return_results(cyberint_alerts_get_attachment_command(client, demisto.args()))
         except Exception as e:
+
             if 'Invalid token or token expired' in str(e):
-                return_error('Error verifying access token and / or environment, make sure the '
-                             'configuration parameters are correct.')
-            if 'datetime' in str(e).lower():
-                return_error('Invalid time specified, make sure the arguments are correctly formatted.')
-            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+                error_message = 'Error verifying access token and / or environment, make sure the ' \
+                                'configuration parameters are correct.'
+            elif 'datetime' in str(e).lower():
+                error_message = 'Invalid time specified, ' \
+                                'make sure the arguments are correctly formatted and are not ' \
+                                'earlier than 2020 or later than the current time.'
+            elif 'Unauthorized alerts requested' in str(e):
+                error_message = 'Some of the alerts selected to update are either blocked or not found.'
+            else:
+                error_message = f'Failed to execute {demisto.command()} command. Error: {str(e)}'
+            return_error(error_message)
 
 
     if __name__ in ('__main__', '__builtin__', 'builtins'):
@@ -801,3 +960,6 @@ script:
   subtype: python3
   type: python
 image: data:image/png;base64,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
+tests:
+- No tests - Deprecated
+fromversion: 5.0.0
