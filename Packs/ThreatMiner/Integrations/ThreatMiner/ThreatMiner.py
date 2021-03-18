@@ -711,7 +711,7 @@ def main():
         if params.get('limit_results').lower() == 'all':
             args['max_array_size'] = -1
         else:
-            args['max_array_size'] = int(demisto.params().get('limit_results', 30))
+            args['max_array_size'] = int(params.get('limit_results', 30))
 
         if demisto_command == 'domain':
             domain_command(**args)
