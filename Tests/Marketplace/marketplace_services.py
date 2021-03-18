@@ -1016,7 +1016,7 @@ class Pack(object):
             list: list of files that were modified.
         """
         task_status = False
-        modified_files = []
+        modified_files_paths = []
 
         try:
             pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
@@ -1041,14 +1041,14 @@ class Pack(object):
                     if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
                         logging.info(f"Detected modified files in {self._pack_name} pack")
                         task_status = True
-                        modified_files.append(modified_file.a_path)
+                        modified_files_paths.append(modified_file.a_path)
                         return
 
             task_status = True
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
         finally:
-            return task_status, modified_files
+            return task_status, modified_files_paths
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
                           private_content=False, pack_artifacts_path=None):
