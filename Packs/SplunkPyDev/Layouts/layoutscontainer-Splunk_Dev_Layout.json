@@ -417,7 +417,7 @@
  },
  "group": "incident",
  "id": "65681f15-5e0b-45ef-86e0-f7263b2f13e4",
- "name": "Splunk Layout",
+ "name": "Splunk Dev Layout",
  "system": false,
  "version": -1,
  "fromVersion": "6.0.0",

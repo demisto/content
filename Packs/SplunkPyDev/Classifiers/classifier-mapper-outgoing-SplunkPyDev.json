@@ -31,7 +31,7 @@
    }
   }
  },
- "name": "Splunk Outgoing Mapper",
+ "name": "Splunk Dev Outgoing Mapper",
  "type": "mapping-outgoing",
  "version": -1,
  "fromVersion": "6.0.0"
