@@ -299,7 +299,7 @@ class Identity(BaseEstimator, TransformerMixin):
 TRANSFORMATION = {
     'commandline': {'transformer': Tfidf,
                     'normalize': normalize_command_line,
-                    'params': {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (1, 5)},
+                    'params': {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (2, 5)},
                     'scoring_function': euclidian_similarity_capped
                     },
     'potentialMatch': {'transformer': Identity,
@@ -309,7 +309,7 @@ TRANSFORMATION = {
                        },
     'json': {'transformer': Tfidf,
              'normalize': normalize_json,
-             'params': {'analyzer': 'char', 'max_features': 5000, 'ngram_range': (1, 5)},
+             'params': {'analyzer': 'char', 'max_features': 10000, 'ngram_range': (2, 5)},
              'scoring_function': euclidian_similarity_capped
              }
 }
@@ -476,7 +476,7 @@ def prepare_incidents_for_display(similar_incidents: pd.DataFrame, confidence: f
         similar_incidents[COLUMN_ID] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     if COLUMN_TIME in similar_incidents.columns:
         similar_incidents[COLUMN_TIME] = similar_incidents[COLUMN_TIME].apply(lambda timestamp: timestamp[:10] if
-        (timestamp and len(timestamp)) else '')
+        (timestamp and len(timestamp)) > 10 else '')
     if aggregate == 'True':
         agg_fields = [x for x in similar_incidents.columns if x not in FIELDS_NO_AGGREGATION]
         similar_incidents = similar_incidents.groupby(agg_fields, as_index=False, dropna=False).agg(
@@ -500,16 +500,20 @@ def prepare_incidents_for_display(similar_incidents: pd.DataFrame, confidence: f
     return similar_incidents.head(max_incidents)
 
 
-def get_incident_by_id(incident_id: str, populate_fields: List[str]):
+def get_incident_by_id(incident_id: str, populate_fields: List[str], from_date: str, to_date: str):
     """
     Get incident acording to incident id
     :param incident_id:
     :param populate_fields:
+    :param from_date: from_date
+    :param to_date: to_date
     :return: Get incident acording to incident id
     """
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': "id:(%s)" % incident_id,
-        'populateFields': ' , '.join(populate_fields)
+        'populateFields': ' , '.join(populate_fields),
+        'fromDate': from_date,
+        'toDate': to_date,
     })
     if is_error(res):
         return_error(res)
@@ -616,11 +620,13 @@ def get_args():  # type: ignore
         show_actual_incident, incident_id, include_indicators_similarity
 
 
-def load_current_incident(incident_id: str, populate_fields: List[str]):
+def load_current_incident(incident_id: str, populate_fields: List[str], from_date: str, to_date: str):
     """
     Load current incident if incident_id given or load current incident investigated
     :param incident_id: incident_id
     :param populate_fields: populate_fields
+    :param from_date: from_date
+    :param to_date: to_date
     :return:
     """
     if not incident_id:
@@ -630,7 +636,7 @@ def load_current_incident(incident_id: str, populate_fields: List[str]):
         incident = {k: v for k, v in incident.items() if k in populate_fields}
         incident_id = incident['id']
     else:
-        incident = get_incident_by_id(incident_id, populate_fields)
+        incident = get_incident_by_id(incident_id, populate_fields, from_date, to_date)
         if not incident:
             return None, incident_id
     return incident, incident_id
@@ -846,7 +852,7 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
                                    + exact_match_fields if x in incident_df.columns]]
     if COLUMN_TIME in incident_filter.columns.tolist():
         incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda timestamp: timestamp[:10] if
-        (timestamp and len(timestamp)) else '')
+        (timestamp and len(timestamp)) > 10 else '')
     if 'id' in incident_filter.columns.tolist():
         incident_filter[COLUMN_ID] = incident_filter['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     return incident_filter
@@ -863,7 +869,7 @@ def main():
         + display_fields + ['id']
     populate_high_level_fields = keep_high_level_field(populate_fields)
 
-    incident, incident_id = load_current_incident(incident_id, populate_high_level_fields)
+    incident, incident_id = load_current_incident(incident_id, populate_high_level_fields, from_date, to_date)
     if not incident:
         return_outputs_error(error_msg="%s \n" % MESSAGE_NO_CURRENT_INCIDENT % incident_id)
         return None, global_msg
