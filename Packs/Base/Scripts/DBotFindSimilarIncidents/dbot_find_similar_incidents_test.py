@@ -307,7 +307,7 @@ def test_main_incident_nested(mocker):
     mocker.patch.object(demisto, 'args',
                         return_value={
                             'incidentId': 12345,
-                            'similarTextField': nested_field ,
+                            'similarTextField': nested_field,
                             'similarCategoricalField': wrong_field_2,
                             'similarJsonField': wrong_field_3,
                             'limit': 3,
@@ -323,7 +323,5 @@ def test_main_incident_nested(mocker):
     mocker.patch.object(demisto, 'dt', return_value=['nested_val_1', 'nested_val_2'])
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     df, msg = main()
-    limit = demisto.args()['limit']
     assert not df.empty
-    assert (df['similarity %s' %nested_field] == [1.0, 1.0, 1.0]).all()
-
+    assert (df['similarity %s' % nested_field] == [1.0, 1.0, 1.0]).all()
