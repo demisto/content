@@ -13,6 +13,7 @@ import requests
 import urllib3
 import io
 import re
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
@@ -448,6 +449,7 @@ def splunk_job_create_command(service):
 def splunk_results_command(service):
     res = []
     sid = demisto.args().get('sid', '')
+    limit = int(demisto.args().get('limit', '100'))
     try:
         job = service.job(sid)
     except HTTPError as error:
@@ -456,7 +458,7 @@ def splunk_results_command(service):
         else:
             return_error(error.message, error)
     else:
-        for result in results.ResultsReader(job.results()):
+        for result in results.ResultsReader(job.results(count=limit)):
             if isinstance(result, results.Message):
                 demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
             elif isinstance(result, dict):
@@ -563,7 +565,6 @@ def splunk_submit_event_command(service):
 
 
 def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_):
-
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
@@ -595,7 +596,6 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 
 
 def splunk_submit_event_hec_command():
-
     hec_token = demisto.params().get('hec_token')
     baseurl = demisto.params().get('hec_url')
     if baseurl is None:
@@ -647,7 +647,7 @@ def splunk_edit_notable_event_command(proxy):
                          'Contents': "Could not update notable "
                                      "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
 
-    demisto.results('Splunk ES Notable events: ' + response_info['message'])
+    demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
 def splunk_job_status(service):
@@ -962,6 +962,116 @@ def get_mapping_fields_command(service):
     demisto.results(types_map)
 
 
+def get_cim_mapping_field_command():
+    notable = {'rule_name': '', '': '', 'rule_title': '', 'security_domain': '', 'index': '', 'rule_description': '',
+               'risk_score': '', 'host': '', 'host_risk_object_type': '', 'dest_risk_object_type': '',
+               'dest_risk_score': '', 'splunk_server': '', '_sourcetype': '', '_indextime': '', '_time': '',
+               'src_risk_object_type': '', 'src_risk_score': '', '_raw': '', 'urgency': '', 'owner': '',
+               'info_min_time': '', 'info_max_time': '', 'comment': '', 'reviewer': '', 'rule_id': '', 'action': '',
+               'app': '', 'authentication_method': '', 'authentication_service': '', 'bugtraq': '', 'bytes': '',
+               'bytes_in': '', 'bytes_out': '', 'category': '', 'cert': '', 'change': '', 'change_type': '',
+               'command': '', 'comments': '', 'cookie': '', 'creation_time': '', 'cve': '', 'cvss': '', 'date': '',
+               'description': '', 'dest': '', 'dest_bunit': '', 'dest_category': '', 'dest_dns': '',
+               'dest_interface': '', 'dest_ip': '', 'dest_ip_range': '', 'dest_mac': '', 'dest_nt_domain': '',
+               'dest_nt_host': '', 'dest_port': '', 'dest_priority': '', 'dest_translated_ip': '',
+               'dest_translated_port': '', 'dest_type': '', 'dest_zone': '', 'direction': '', 'dlp_type': '', 'dns': '',
+               'duration': '', 'dvc': '', 'dvc_bunit': '', 'dvc_category': '', 'dvc_ip': '', 'dvc_mac': '',
+               'dvc_priority': '', 'dvc_zone': '', 'file_hash': '', 'file_name': '', 'file_path': '', 'file_size': '',
+               'http_content_type': '', 'http_method': '', 'http_referrer': '', 'http_referrer_domain': '',
+               'http_user_agent': '', 'icmp_code': '', 'icmp_type': '', 'id': '', 'ids_type': '', 'incident': '',
+               'ip': '', 'mac': '', 'message_id': '', 'message_info': '', 'message_priority': '', 'message_type': '',
+               'mitre_technique_id': '', 'msft': '', 'mskb': '', 'name': '', 'orig_dest': '', 'orig_recipient': '',
+               'orig_src': '', 'os': '', 'packets': '', 'packets_in': '', 'packets_out': '', 'parent_process': '',
+               'parent_process_id': '', 'parent_process_name': '', 'parent_process_path': '', 'password': '',
+               'payload': '', 'payload_type': '', 'priority': '', 'problem': '', 'process': '', 'process_hash': '',
+               'process_id': '', 'process_name': '', 'process_path': '', 'product_version': '', 'protocol': '',
+               'protocol_version': '', 'query': '', 'query_count': '', 'query_type': '', 'reason': '', 'recipient': '',
+               'recipient_count': '', 'recipient_domain': '', 'recipient_status': '', 'record_type': '',
+               'registry_hive': '', 'registry_key_name': '', 'registry_path': '', 'registry_value_data': '',
+               'registry_value_name': '', 'registry_value_text': '', 'registry_value_type': '', 'request_sent_time': '',
+               'request_payload': '', 'request_payload_type': '', 'response_code': '', 'response_payload_type': '',
+               'response_received_time': '', 'response_time': '', 'result': '', 'return_addr': '', 'rule': '',
+               'rule_action': '', 'sender': '', 'service': '', 'service_hash': '', 'service_id': '', 'service_name': '',
+               'service_path': '', 'session_id': '', 'sessions': '', 'severity': '', 'severity_id': '', 'sid': '',
+               'signature': '', 'signature_id': '', 'signature_version': '', 'site': '', 'size': '', 'source': '',
+               'sourcetype': '', 'src': '', 'src_bunit': '', 'src_category': '', 'src_dns': '', 'src_interface': '',
+               'src_ip': '', 'src_ip_range': '', 'src_mac': '', 'src_nt_domain': '', 'src_nt_host': '', 'src_port': '',
+               'src_priority': '', 'src_translated_ip': '', 'src_translated_port': '', 'src_type': '', 'src_user': '',
+               'src_user_bunit': '', 'src_user_category': '', 'src_user_domain': '', 'src_user_id': '',
+               'src_user_priority': '', 'src_user_role': '', 'src_user_type': '', 'src_zone': '', 'state': '',
+               'status': '', 'status_code': '', 'status_description': '', 'subject': '', 'tag': '', 'ticket_id': '',
+               'time': '', 'time_submitted': '', 'transport': '', 'transport_dest_port': '', 'type': '', 'uri': '',
+               'uri_path': '', 'uri_query': '', 'url': '', 'url_domain': '', 'url_length': '', 'user': '',
+               'user_agent': '', 'user_bunit': '', 'user_category': '', 'user_id': '', 'user_priority': '',
+               'user_role': '', 'user_type': '', 'vendor_account': '', 'vendor_product': '', 'vlan': '', 'xdelay': '',
+               'xref': ''}
+
+    drilldown = {
+        'Drilldown': {'action': '', 'app': '', 'authentication_method': '', 'authentication_service': '', 'bugtraq': '',
+                      'bytes': '', 'bytes_in': '', 'bytes_out': '', 'category': '', 'cert': '', 'change': '',
+                      'change_type': '', 'command': '', 'comments': '', 'cookie': '', 'creation_time': '', 'cve': '',
+                      'cvss': '', 'date': '', 'description': '', 'dest': '', 'dest_bunit': '', 'dest_category': '',
+                      'dest_dns': '', 'dest_interface': '', 'dest_ip': '', 'dest_ip_range': '', 'dest_mac': '',
+                      'dest_nt_domain': '', 'dest_nt_host': '', 'dest_port': '', 'dest_priority': '',
+                      'dest_translated_ip': '', 'dest_translated_port': '', 'dest_type': '', 'dest_zone': '',
+                      'direction': '', 'dlp_type': '', 'dns': '', 'duration': '', 'dvc': '', 'dvc_bunit': '',
+                      'dvc_category': '', 'dvc_ip': '', 'dvc_mac': '', 'dvc_priority': '', 'dvc_zone': '',
+                      'file_hash': '', 'file_name': '', 'file_path': '', 'file_size': '', 'http_content_type': '',
+                      'http_method': '', 'http_referrer': '', 'http_referrer_domain': '', 'http_user_agent': '',
+                      'icmp_code': '', 'icmp_type': '', 'id': '', 'ids_type': '', 'incident': '', 'ip': '', 'mac': '',
+                      'message_id': '', 'message_info': '', 'message_priority': '', 'message_type': '',
+                      'mitre_technique_id': '', 'msft': '', 'mskb': '', 'name': '', 'orig_dest': '',
+                      'orig_recipient': '', 'orig_src': '', 'os': '', 'packets': '', 'packets_in': '',
+                      'packets_out': '', 'parent_process': '', 'parent_process_id': '', 'parent_process_name': '',
+                      'parent_process_path': '', 'password': '', 'payload': '', 'payload_type': '', 'priority': '',
+                      'problem': '', 'process': '', 'process_hash': '', 'process_id': '', 'process_name': '',
+                      'process_path': '', 'product_version': '', 'protocol': '', 'protocol_version': '', 'query': '',
+                      'query_count': '', 'query_type': '', 'reason': '', 'recipient': '', 'recipient_count': '',
+                      'recipient_domain': '', 'recipient_status': '', 'record_type': '', 'registry_hive': '',
+                      'registry_key_name': '', 'registry_path': '', 'registry_value_data': '',
+                      'registry_value_name': '', 'registry_value_text': '', 'registry_value_type': '',
+                      'request_payload': '', 'request_payload_type': '', 'request_sent_time': '', 'response_code': '',
+                      'response_payload_type': '', 'response_received_time': '', 'response_time': '', 'result': '',
+                      'return_addr': '', 'rule': '', 'rule_action': '', 'sender': '', 'service': '', 'service_hash': '',
+                      'service_id': '', 'service_name': '', 'service_path': '', 'session_id': '', 'sessions': '',
+                      'severity': '', 'severity_id': '', 'sid': '', 'signature': '', 'signature_id': '',
+                      'signature_version': '', 'site': '', 'size': '', 'source': '', 'sourcetype': '', 'src': '',
+                      'src_bunit': '', 'src_category': '', 'src_dns': '', 'src_interface': '', 'src_ip': '',
+                      'src_ip_range': '', 'src_mac': '', 'src_nt_domain': '', 'src_nt_host': '', 'src_port': '',
+                      'src_priority': '', 'src_translated_ip': '', 'src_translated_port': '', 'src_type': '',
+                      'src_user': '', 'src_user_bunit': '', 'src_user_category': '', 'src_user_domain': '',
+                      'src_user_id': '', 'src_user_priority': '', 'src_user_role': '', 'src_user_type': '',
+                      'src_zone': '', 'state': '', 'status': '', 'status_code': '', 'subject': '', 'tag': '',
+                      'ticket_id': '', 'time': '', 'time_submitted': '', 'transport': '', 'transport_dest_port': '',
+                      'type': '', 'uri': '', 'uri_path': '', 'uri_query': '', 'url': '', 'url_domain': '',
+                      'url_length': '', 'user': '', 'user_agent': '', 'user_bunit': '', 'user_category': '',
+                      'user_id': '', 'user_priority': '', 'user_role': '', 'user_type': '', 'vendor_account': '',
+                      'vendor_product': '', 'vlan': '', 'xdelay': '', 'xref': ''}
+    }
+
+    asset = {
+        'Asset': {'asset': '', 'asset_id': '', 'asset_tag': '', 'bunit': '', 'category': '', 'city': '', 'country': '',
+                  'dns': '', 'ip': '', 'is_expected': '', 'lat': '', 'long': '', 'mac': '', 'nt_host': '', 'owner': '',
+                  'pci_domain': '', 'priority': '', 'requires_av': ''}
+    }
+
+    identity = {
+        'Identity': {'bunit': '', 'category': '', 'email': '', 'endDate': '', 'first': '', 'identity': '',
+                     'identity_tag': '', 'last': '', 'managedBy': '', 'nick': '', 'phone': '', 'prefix': '',
+                     'priority': '', 'startDate': '', 'suffix': '', 'watchlist': '', 'work_city': '', 'work_lat': '',
+                     'work_long': ''}
+    }
+
+    fields = {
+        'Notable Data': notable,
+        'Drilldown Data': drilldown,
+        'Asset Data': asset,
+        'Identity Data': identity
+    }
+
+    demisto.results(fields)
+
+
 def main():
     if demisto.command() == 'splunk-parse-raw':
         splunk_parse_raw_command()
@@ -1043,7 +1153,10 @@ def main():
         elif demisto.command() == 'splunk-kv-store-collection-delete-entry':
             kv_store_collection_delete_entry(service)
     if demisto.command() == 'get-mapping-fields':
-        get_mapping_fields_command(service)
+        if argToBoolean(demisto.params().get('use_cim', False)):
+            get_cim_mapping_field_command()
+        else:
+            get_mapping_fields_command(service)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

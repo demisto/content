@@ -70,6 +70,7 @@ Executes an Analytics query for data.
 | --- | --- | --- |
 | query | The query to execute. | Required | 
 | timespan | The timespan over which to query data. This is an ISO8601 time period value. This timespan is applied in addition to any timespans specified in the query expression. | Optional | 
+| timeout | The amount of time (in seconds) that a request will wait for the query response before a timeout occurs. | Optional | 
 
 
 #### Context Output

@@ -1,0 +1,202 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: MicrosoftPolicyAndComplianceAuditLog
+  version: -1
+configuration:
+- display: Exchange Online URL
+  name: url
+  defaultvalue: https://outlook.office365.com
+  type: 0
+  required: true
+- display: Email (Password for basic authentication only)
+  name: credentials
+  type: 9
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+description: Use the integration to get logs from the O365 service.
+display: Microsoft Policy And Compliance (Audit Log)
+name: MicrosoftPolicyAndComplianceAuditLog
+script:
+  commands:
+  - name: o365-auditlog-auth-start
+    arguments: []
+    description: Starts the OAuth2.0 authorization process.
+  - name: o365-auditlog-auth-complete
+    arguments: []
+    description: Completes the OAuth2.0 authorization process.
+  - name: o365-auditlog-auth-test
+    arguments: []
+    description: Tests the OAuth2.0 authorization process.
+  - name: o365-auditlog-search
+    arguments:
+    - name: start_date
+      defaultValue: 24 hours
+      required: false
+      description: The start date of the date range
+        or a date range (3 days, 1 year, etc.). Entries are stored in the unified audit
+        log in Coordinated Universal Time (UTC). If you specify a date/time value
+        without a time zone, the value is in UTC.
+    - name: end_date
+      required: false
+      description: The end date of the date range.
+        Entries are stored in the unified audit log in Coordinated Universal Time
+        (UTC). If you specify a date/time value without a time zone, the value is
+        in UTC. If empty, wll take current time.
+    - name: free_text
+      required: false
+      description: 'The text string by which to filter the log entries.\
+        \ If the value contains spaces, enclose the value in quotation\
+        \ marks (for example: "Invalid logon").'
+    - name: record_type
+      required: false
+      description: 'The record type by which to filter the log entries.\
+        \ Available record types: https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype.'
+    - name: ip_addresses
+      required: false
+      isArray: true
+      description: A comma-separated list of IP addresses by which to filter the log entries. 
+    - name: operations
+      required: false
+      isArray: true
+      description: The operations by which to filter the log entries.
+        The available values for this parameter depend on the record_types value.
+        Refer to https://docs.microsoft.com/en-us/microsoft-365/compliance/search-the-audit-log-in-security-and-compliance?view=o365-worldwide#audited-activities.
+    - name: user_ids
+      required: false
+      isArray: true
+      description: A comma-separated list of ID of the users who performed the action by which to filter the log entries. 
+        The list of user IDs can be acquired by running the ews-users-list command.
+    - name: result_size
+      required: false
+      defaultValue: 10
+      description: The maximum number of results to return. Default is 10.
+    outputs:
+    - contextPath: O365AuditLog.Actor.ID
+      description: The ID of the actor.
+      type: String
+    - contextPath: O365AuditLog.Actor.Type
+      description: The type of the actor.
+      type: Number
+    - contextPath: O365AuditLog.ActorContextId
+      description: The GUID of the organization that the actor belongs to.
+      type: String
+    - contextPath: O365AuditLog.ActorIpAddress
+      description: The actor's IP address in IPV4 or IPV6 address format.
+      type: String
+    - contextPath: O365AuditLog.ApplicationId
+      description: The GUID that represents the application that is requesting the
+        login. The display name can be looked up using the Azure Active Directory Graph
+        API.
+      type: String
+    - contextPath: O365AuditLog.AzureActiveDirectoryEventType
+      description: The type of Azure Active Directory event.
+      type: Number
+    - contextPath: O365AuditLog.ClientIP
+      description: The IP address of the device that was used when the activity was
+        logged. The IP address is displayed in IPv4 or IPv6 address format.
+      type: String
+    - contextPath: O365AuditLog.CreationTime
+      description: The date and time in Coordinated Universal Time (UTC) when the
+        user performed the activity.
+      type: Date
+    - contextPath: O365AuditLog.ExtendedProperties.Name
+      description: Name of the extended properties.
+      type: String
+    - contextPath: O365AuditLog.ExtendedProperties.Value
+      description: Value of the extended properties.
+      type: String
+    - contextPath: O365AuditLog.ModifiedProperties.Name
+      description: Name of the modified properties.
+      type: String
+    - contextPath: O365AuditLog.ModifiedProperties.NewValue
+      description: The updated value of the property.
+      type: String
+    - contextPath: O365AuditLog.ModifiedProperties.OldValue
+      description: The previous value of the property.
+      type: String
+    - contextPath: O365AuditLog.Id
+      description: The unique ID of the log.
+      type: String
+    - contextPath: O365AuditLog.InterSystemsId
+      description: The GUID that tracked the actions across components within the Office
+        365 service.
+      type: String
+    - contextPath: O365AuditLog.IntraSystemId
+      description: The GUID that's generated by Azure Active Directory to track the action.
+      type: String
+    - contextPath: O365AuditLog.LogonError
+      description: For failed logins, a user-readable description
+        of the reason for the failure.
+      type: String
+    - contextPath: O365AuditLog.ObjectId
+      description: For SharePoint and OneDrive for Business activity, the full path
+        name of the file or folder accessed by the user. For Exchange admin audit
+        logging, the name of the object that was modified by the cmdlet.
+      type: String
+    - contextPath: O365AuditLog.Operation
+      description: The operation used in the log.
+      type: String
+    - contextPath: O365AuditLog.OrganizationId
+      description: The GUID for your organization's Office 365 tenant. This value
+        will always be the same for your organization, regardless of the Office 365
+        service in which it occurs.
+      type: String
+    - contextPath: O365AuditLog.RecordType
+      description: The type of operation indicated by the record. See the AuditLogRecordType
+        table (https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype)for details on the types of audit log records.
+      type: Number
+    - contextPath: O365AuditLog.ResultStatus
+      description: Whether the action (specified in the Operation property)
+        was successful. Possible values are Succeeded, PartiallySucceeded,
+        or Failed. For Exchange admin activity, the value is either True or False.
+      type: String
+    - contextPath: O365AuditLog.SupportTicketId
+      description: The customer support ticket ID for the action in "act-on-behalf-of"
+        situations.
+      type: String
+    - contextPath: O365AuditLog.Target.ID
+      description: The ID of the user on whom the action (identified by the Operation property)
+        was performed.
+      type: String
+    - contextPath: O365AuditLog.Target.Type
+      description: The type of the user on whom the action (identified by the Operation property)
+        was performed.
+      type: Number
+    - contextPath: O365AuditLog.TargetContextId
+      description: The GUID of the organization that the targeted user belongs to.
+      type: String
+    - contextPath: O365AuditLog.UserId
+      description: Identifier (for example, email address) for the user who clicked
+        on the URL.
+      type: String
+    - contextPath: O365AuditLog.UserKey
+      description: An alternative ID for the user identified in the UserId property.
+        For example, this property is populated with the passport unique ID (PUID)
+        for events performed by users in SharePoint, OneDrive for Business, and Exchange.
+      type: String
+    - contextPath: O365AuditLog.UserType
+      description: The type of user who performed the operation.
+      type: Number
+    - contextPath: O365AuditLog.Version
+      description: The version of the log.
+      type: Number
+    - contextPath: O365AuditLog.Workload
+      description: The Office 365 service where the activity occurred.
+      type: String
+    description: Use the o365-search-auditlog command to search the unified audit
+      log. This log contains events from Exchange Online, SharePoint Online, OneDrive
+      for Business, Azure Active Directory, Microsoft Teams, Power BI, and other Microsoft
+      365 services. You can search for all events in a specified date range, or you
+      can filter the results based on specific criteria, such as the action, the user who performed
+      the action, or the target object.
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: powershell
+  dockerimage: demisto/powershell-ubuntu:7.1.1.16151
+fromversion: 5.5.0
+tests:
+- Audit Log - Test

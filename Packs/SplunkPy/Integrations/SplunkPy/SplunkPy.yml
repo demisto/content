@@ -110,6 +110,12 @@ configuration:
   name: type_field
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: Use CIM Schemas for Mapping
+  name: use_cim
+  required: false
+  type: 8
+  additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (Supported from XSOAR V6.0), Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. 
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -121,6 +127,13 @@ script:
       isArray: false
       name: sid
       required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of returned results per search. To retrieve all results, enter "0" (Not recommended).
+      isArray: false
+      name: limit
+      required: false
       secret: false
     deprecated: false
     description: Returns the results of a previous Splunk search. You can use this command in conjunction with the splunk-job-create command.
@@ -465,7 +478,7 @@ script:
       name: kv_store_collection_name
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: Maximum number of records to return. The default is 50.
       isArray: false
@@ -606,7 +619,7 @@ script:
       for Mapping fetched incidents through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/splunksdk:1.0.0.11989
+  dockerimage: demisto/splunksdk:1.0.0.15975
   feed: false
   isfetch: true
   longRunning: false

@@ -346,15 +346,6 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "pemmd5",
-                                "height": 22,
-                                "id": "27098350-2fd0-11eb-ba36-a1dbbe00805f",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxH": null,

@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b0718fa5-12c0-44b8-83d5-226ca67abf77
+    taskid: 6085cd81-16d6-473f-818f-1f4e2e042b5a
     type: start
     task:
-      id: b0718fa5-12c0-44b8-83d5-226ca67abf77
+      id: 6085cd81-16d6-473f-818f-1f4e2e042b5a
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 405bc8f7-210d-4523-875d-cb95cce06e47
+    taskid: e269748d-4c88-4fcf-881a-b5a1ed164192
     type: regular
     task:
-      id: 405bc8f7-210d-4523-875d-cb95cce06e47
+      id: e269748d-4c88-4fcf-881a-b5a1ed164192
       version: -1
       name: msgraph-mail-get-attachment
       description: Gets an attachment from the email.
@@ -51,15 +51,15 @@ tasks:
         simple: ${MSGraphMailAttachment.Attachment.ID}
       folder_id: {}
       message_id:
-        simple: ${MSGraphMail.ID}
+        simple: ${MSGraphMailAttachment.ID}
       user_id:
-        simple: ${MSGraphMail.UserID}
+        simple: ${MSGraphMailAttachment.UserID}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1915
+          "x": 470,
+          "y": 1920
         }
       }
     note: false
@@ -69,10 +69,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 6a431b0c-d9cc-4d3d-85b4-e365cc5f6c1c
+    taskid: 9caf5187-7158-4a2c-8fbb-4bdf599ce5a7
     type: regular
     task:
-      id: 6a431b0c-d9cc-4d3d-85b4-e365cc5f6c1c
+      id: 9caf5187-7158-4a2c-8fbb-4bdf599ce5a7
       version: -1
       name: msgraph-mail-get-email
       description: Gets the properties of an email.
@@ -106,10 +106,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 8b177c61-5d3d-44d8-81d4-4608b7917fdf
+    taskid: 208a52ea-e16e-4828-87ba-4517b4bc814e
     type: regular
     task:
-      id: 8b177c61-5d3d-44d8-81d4-4608b7917fdf
+      id: 208a52ea-e16e-4828-87ba-4517b4bc814e
       version: -1
       name: msgraph-mail-list-attachments
       description: Lists all of the attachments of given email
@@ -123,7 +123,15 @@ tasks:
     scriptarguments:
       folder_id: {}
       message_id:
-        simple: ${MSGraphMail.ID}
+        complex:
+          root: MSGraphMail
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: MSGraphMail.HasAttachments
+                iscontext: true
+          accessor: ID
       user_id:
         simple: ${MSGraphMail.UserID}
     separatecontext: false
@@ -141,10 +149,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 0ec0e9cd-8be8-4070-8574-3e2689e0e173
+    taskid: de8e735f-a61f-4a4d-8f49-b00f6209f1aa
     type: regular
     task:
-      id: 0ec0e9cd-8be8-4070-8574-3e2689e0e173
+      id: de8e735f-a61f-4a4d-8f49-b00f6209f1aa
       version: -1
       name: msgraph-mail-list-emails
       description: Get items from the service.
@@ -178,10 +186,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 7d2303aa-3695-4767-8e15-445727359127
+    taskid: 3db4b8cf-cdc6-481f-8a32-993f84ca10c8
     type: regular
     task:
-      id: 7d2303aa-3695-4767-8e15-445727359127
+      id: 3db4b8cf-cdc6-481f-8a32-993f84ca10c8
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -214,10 +222,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: b170b388-0cc0-40f1-8c32-5285bce1e8ed
+    taskid: bc5ce48d-1d4e-491b-8eec-d958cd219dca
     type: title
     task:
-      id: b170b388-0cc0-40f1-8c32-5285bce1e8ed
+      id: bc5ce48d-1d4e-491b-8eec-d958cd219dca
       version: -1
       name: Finish
       type: title
@@ -238,10 +246,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: d2c6bda7-8906-40ab-8d79-f6237706e00d
+    taskid: 1a5835b3-439c-4542-827d-0c4a261465b1
     type: regular
     task:
-      id: d2c6bda7-8906-40ab-8d79-f6237706e00d
+      id: 1a5835b3-439c-4542-827d-0c4a261465b1
       version: -1
       name: run msgraph-mail-list-emails with more than one page
       description: Get items from the service.
@@ -275,10 +283,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 8f5de9ef-9da7-4053-8e23-31994f887518
+    taskid: d1aac14c-6574-4078-8459-4982e5001f57
     type: regular
     task:
-      id: 8f5de9ef-9da7-4053-8e23-31994f887518
+      id: d1aac14c-6574-4078-8459-4982e5001f57
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -311,12 +319,12 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 9f180bb4-fdc5-4244-8ff5-25a167f09787
+    taskid: db4076dc-4ccf-4e6e-802d-15befaf8d504
     type: condition
     task:
-      id: 9f180bb4-fdc5-4244-8ff5-25a167f09787
+      id: db4076dc-4ccf-4e6e-802d-15befaf8d504
       version: -1
-      name: Untitled Task
+      name: Verify Results
       type: condition
       iscommand: false
       brand: ""
@@ -346,10 +354,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: ba03764e-f711-4316-82b9-ebf14abd23ce
+    taskid: 50379a4a-ae99-40b9-8744-6489867f2a8d
     type: regular
     task:
-      id: ba03764e-f711-4316-82b9-ebf14abd23ce
+      id: 50379a4a-ae99-40b9-8744-6489867f2a8d
       version: -1
       name: OData - $select Example
       description: Get items from the service.
@@ -384,10 +392,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 8c46059d-6954-43ec-8940-2ee270b8319e
+    taskid: 705a6ad1-592f-49e6-8cf4-d0f6e9c7d67d
     type: title
     task:
-      id: 8c46059d-6954-43ec-8940-2ee270b8319e
+      id: 705a6ad1-592f-49e6-8cf4-d0f6e9c7d67d
       version: -1
       name: msgraph-mail-list-emails OData Examples
       type: title
@@ -413,10 +421,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: e6853f54-9689-4686-84ed-2ddf27cbd4e0
+    taskid: f1004efd-0441-4892-8f47-01eba3cc9fb1
     type: regular
     task:
-      id: e6853f54-9689-4686-84ed-2ddf27cbd4e0
+      id: f1004efd-0441-4892-8f47-01eba3cc9fb1
       version: -1
       name: OData - $filter Example - filter by sent time
       description: Get items from the service.
@@ -450,10 +458,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 19960fbc-f173-467a-821c-5f2b6c0931cb
+    taskid: 93181118-955e-4d85-8530-9f0f93e2b016
     type: regular
     task:
-      id: 19960fbc-f173-467a-821c-5f2b6c0931cb
+      id: 93181118-955e-4d85-8530-9f0f93e2b016
       version: -1
       name: OData - $filter Example - filter by sender name
       description: Get items from the service.
@@ -487,10 +495,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 6eed931a-c1ff-41b8-851d-30309605f973
+    taskid: 3b73cca2-6919-498e-86e4-27b38799f28c
     type: regular
     task:
-      id: 6eed931a-c1ff-41b8-851d-30309605f973
+      id: 3b73cca2-6919-498e-86e4-27b38799f28c
       version: -1
       name: msgraph-mail-get-email - OData $select Example
       description: Gets the properties of an email.
@@ -507,7 +515,7 @@ tasks:
       message_id:
         simple: ${MSGraphMail.ID}
       odata:
-        simple: $select=from
+        simple: $select=from,hasAttachments
       user_id:
         simple: ${MSGraphMail.UserID}
     separatecontext: false
@@ -525,10 +533,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 7425a8b5-6956-4115-8d4f-35f3ccf4662e
+    taskid: da3a6c7f-1f70-4ba0-885f-53d6be4f3d79
     type: regular
     task:
-      id: 7425a8b5-6956-4115-8d4f-35f3ccf4662e
+      id: da3a6c7f-1f70-4ba0-885f-53d6be4f3d79
       version: -1
       name: Sleep for 30 seconds
       description: Sleep for X seconds

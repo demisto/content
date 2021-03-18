@@ -1,0 +1,33 @@
+[
+    {
+        "Type": 1,
+        "Contents": "Mirroring: Expanse Bot updated field [progressStatus] from [None] to [New]",
+        "ContentsFormat": "text",
+        "Note": false
+    },
+    {
+        "Type": 1,
+        "Contents": "Mirroring: Expanse Bot updated field [priority] from [None] to [High]",
+        "ContentsFormat": "text",
+        "Note": false
+    },
+    {
+        "Type": 1,
+        "Contents": "Mirroring: user1@xsoar.local updated field [priority] from [High] to [Critical]",
+        "ContentsFormat": "text",
+        "Note": false
+    },
+    {
+        "Type": 1,
+        "Contents": "Mirroring: Expanse Bot updated field [progressStatus] from [New] to [Investigating]",
+        "ContentsFormat": "text",
+        "Note": false
+    },
+    {
+        "Type": 1,
+        "Contents": "Expanse Bot added a comment: [This Issue is being investigated by the SOC through Cortex XSOAR]",
+        "ContentsFormat": "text",
+        "Note": true,
+        "Tags": []
+    }
+]

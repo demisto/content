@@ -2,7 +2,7 @@ id: JOB - Integrations and Playbooks Health Check
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: JOB - Integrations and Playbooks Health Check
+name: JOB - Integrations and Incidents Health Check
 description: You should run this playbook as a scheduled job.  The playbook checks
   the health of all enabled integrations and open incidents.
 starttaskid: "0"
@@ -97,11 +97,11 @@ tasks:
     task:
       id: 802e016d-5606-4568-8faa-acb55df55621
       version: -1
-      name: JOB - Integrations and Playbooks Health Check - Lists handling
+      name: JOB - Integrations and Incidents Health Check - Lists handling
       description: This playbook is triggered by a 'JOB - Integrations and Playbooks
         Health' playbook and is responsible for creating or updating related XSOAR
         lists.
-      playbookName: JOB - Integrations and Playbooks Health Check - Lists handling
+      playbookName: JOB - Integrations and Incidents Health Check - Lists handling
       type: playbook
       iscommand: false
       brand: ""
@@ -362,7 +362,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "25"
+      - "37"
       "Yes":
       - "24"
     separatecontext: false
@@ -431,7 +431,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 2650
+          "y": 3000
         }
       }
     note: false
@@ -446,17 +446,17 @@ tasks:
     task:
       id: 2834100f-3f00-489f-8cb5-6ba3cb1d1b04
       version: -1
-      name: JOB - Integrations and Playbooks Health Check - Lists handling
+      name: JOB - Integrations and Incidents Health Check - Lists handling
       description: This playbook is triggered by a 'JOB - Integrations and Playbooks
         Health' playbook and is responsible for creating or updating related XSOAR
         lists.
-      playbookName: JOB - Integrations and Playbooks Health Check - Lists handling
+      playbookName: JOB - Integrations and Incidents Health Check - Lists handling
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "37"
     separatecontext: false
     loop:
       iscommand: false
@@ -1062,6 +1062,119 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "37":
+    id: "37"
+    taskid: 37c324dd-f456-4b40-8bd6-7742369ee767
+    type: condition
+    task:
+      id: 37c324dd-f456-4b40-8bd6-7742369ee767
+      version: -1
+      name: Automatically close investigation?
+      description: Checks if the "AutoCloseInvestigation" playbook input is 'True'.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCloseInvestigation
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: inputs.AutoCloseInvestigation
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 1645bd48-d9e2-4ac8-8a62-c213f4eed825
+    type: regular
+    task:
+      id: 1645bd48-d9e2-4ac8-8a62-c213f4eed825
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: b3e9e58e-850c-43ea-89f2-60f822dad41d
+    type: regular
+    task:
+      id: b3e9e58e-850c-43ea-89f2-60f822dad41d
+      version: -1
+      name: 'Manually review and close investigation '
+      description: 'Manually Review and close investigation '
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 system: true
 view: |-
   {
@@ -1071,13 +1184,15 @@ view: |-
       "18_17_yes": 0.47,
       "18_21_#default#": 0.18,
       "22_24_Yes": 0.33,
-      "22_25_#default#": 0.19,
+      "22_37_#default#": 0.21,
       "36_21_#default#": 0.14,
-      "36_30_yes": 0.3
+      "36_30_yes": 0.3,
+      "37_38_yes": 0.43,
+      "37_39_#default#": 0.44
     },
     "paper": {
       "dimensions": {
-        "height": 2755,
+        "height": 3105,
         "width": 1580,
         "x": -540,
         "y": -40
@@ -1097,6 +1212,13 @@ inputs:
   required: false
   description: In case the 'SendHealthCheckReport' input equals to 'True', the email
     address the report will be sent to.
+  playbookInputQuery:
+- key: AutoCloseInvestigation
+  value:
+    simple: "False"
+  required: false
+  description: This input determines if the investigation should close automatically
+    after the re-run of the scripts.
   playbookInputQuery:
 outputs: []
 tests:

@@ -404,7 +404,7 @@ def list_content_command(client, args):
         outputs={
             'MicrosoftManagement.ContentRecord(val.ID && val.ID === obj.ID)': content_records_context
         },
-        raw_response=content_records
+        raw_response=filtered_content_records
     )
 
 

@@ -22,7 +22,7 @@ args:
     Date format is the same as in the incidents query page. For example, "3 days ago",
     ""2019-01-01T00:00:00 +0200").
   isArray: false
-  name: exsitingIncidentsLookback
+  name: existingIncidentsLookback
   required: false
   secret: false
 - default: false
@@ -126,6 +126,19 @@ args:
   name: maxIncidentsToReturn
   required: false
   secret: false
+- default: false
+  description: A comma-separated list of incident fields to poplulate.
+  isArray: false
+  name: populateFields
+  required: false
+  secret: false
+- default: false
+  defaultValue: 30 days ago
+  description: Deprecated, use the *existingIncidentsLookback* argument instead.
+  isArray: false
+  name: exsitingIncidentsLookback
+  required: false
+  secret: false
 comment: Can be used to find duplicate emails for incidents of type Phishing, including  malicious,
   spam, and legitimate emails.
 commonfields:
@@ -168,7 +181,8 @@ outputs:
   description: A list of all duplicate incidents names found.
   type: Unknown
 - contextPath: allDuplicateIncidents.similarity
-  description: A list of the simlairty between duplicate incidents and new the incident of all duplicate incidents names found.
+  description: A list of the simlairty between duplicate incidents and new the incident
+    of all duplicate incidents names found.
   type: Unknown
 script: '-'
 subtype: python3
@@ -178,7 +192,8 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.14213
+dockerimage: demisto/sklearn:1.0.0.17163
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+runonce: true

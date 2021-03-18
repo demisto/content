@@ -83,7 +83,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deprecated. Feodo Tracker no longer supports this feed.
+description: Deprecated. Feodo Tracker no longer supports this feed. No available replacement.
 display: Feodo Tracker Hashes Feed (Deprecated)
 name: Feodo Tracker Hashes Feed
 script:

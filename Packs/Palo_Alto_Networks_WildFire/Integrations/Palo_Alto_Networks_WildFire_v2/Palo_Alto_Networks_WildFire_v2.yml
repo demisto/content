@@ -204,8 +204,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Retrieves results for a URL using WildFire. Currently, this is only supported in US cloud.
-        The report format is in JSON.
+        Retrieves results for a URL using WildFire. The report format is in JSON.
       isArray: true
       name: url
       required: false
@@ -295,6 +294,27 @@ script:
       type: string
     - contextPath: WildFire.Report.Evidence.Text
       description: Submission evidence text.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.description
+      description: Reason for the detection verdict.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.name
+      description: Name of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.type
+      description: Type of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.verdict
+      description: Verdict of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.artifacts
+      description: Artifacts of the detection reasons.
+      type: unknown
+    - contextPath: WildFire.Report.iocs
+      description: Associated IOCs.
+      type: unknown
+    - contextPath: WildFire.Report.verdict
+      description: The verdict of the report.
       type: string
   - arguments:
     - default: false
@@ -415,7 +435,47 @@ script:
     description: Retrieves a sample.
     execution: false
     name: wildfire-get-sample
-  dockerimage: demisto/python3:3.8.5.10845
+  - arguments:
+    - default: false
+      description: URL of the webpage.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to download as screenshots or as downloadable files. if not specified, both will be downloaded.
+      isArray: false
+      name: types
+      required: false
+      predefined:
+      - 'download_files'
+      - 'screenshot'
+      secret: false
+    deprecated: false
+    description: Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict, or even if the URL is malformed.
+    execution: false
+    name: wildfire-get-url-webartifacts
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the webartifacts.
+      type: String
+    - contextPath: InfoFile.Extension
+      description: Extension of the webartifacts.
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the webartifacts.
+      type: string
+    - contextPath: InfoFile.Info
+      description: Details of the webartifacts.
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the webartifacts.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The webartifacts file type.
+      type: string
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: false
   longRunning: false
@@ -426,4 +486,5 @@ script:
   type: python
 tests:
 - Wildfire Test
+- Detonate File - WildFire - Test
 fromversion: 5.0.0

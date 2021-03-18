@@ -1,5 +1,5 @@
 import shutil
-from typing import Dict, Any
+from typing import Dict
 
 from CommonServerPython import *
 
@@ -26,7 +26,8 @@ URL_DICT = {
     'upload_url': '/submit/link',
     'upload_file_url': '/submit/url',
     'report': '/get/report',
-    'sample': '/get/sample'
+    'sample': '/get/sample',
+    'webartifacts': '/get/webartifacts',
 }
 
 ERROR_DICT = {
@@ -110,7 +111,8 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
     if result.text.find("Forbidden. (403)") != -1:
         raise Exception('Request Forbidden - 403, check SERVER URL and API Key')
 
-    if result.headers['Content-Type'] == 'application/octet-stream':
+    if ('Content-Type' in result.headers and result.headers['Content-Type'] == 'application/octet-stream') or (
+            'Transfer-Encoding' in result.headers and result.headers['Transfer-Encoding'] == 'chunked'):
         return result
 
     if resp_type == 'json':
@@ -238,15 +240,18 @@ def create_dbot_score_from_verdicts(pretty_verdicts):
 def create_upload_entry(upload_body, title, result):
     pretty_upload_body = prettify_upload(upload_body)
     human_readable = tableToMarkdown(title, pretty_upload_body, removeNull=True)
+    entry_context = {
+        "WildFire.Report"
+        "(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)":
+            pretty_upload_body
+    }
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': result,
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': {
-            "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5 || val.URL == obj.URL)": pretty_upload_body
-        }
+        'EntryContext': entry_context
     })
 
 
@@ -315,7 +320,7 @@ def wildfire_upload_file(upload):
                 upload_file_uri,
                 'POST',
                 body=body,
-                files={'file': file.read()}
+                files={'file': file}
             )
     finally:
         shutil.rmtree(file_name, ignore_errors=True)
@@ -417,7 +422,8 @@ def wildfire_get_verdict_command():
 
         dbot_score_list = create_dbot_score_from_verdict(pretty_verdict)
         entry_context = {
-            "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdict,
+            "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
+                pretty_verdict,
             "DBotScore": dbot_score_list
         }
         demisto.results({
@@ -451,6 +457,7 @@ def wildfire_get_verdicts(file_path):
     return result, verdicts_data
 
 
+@logger
 def wildfire_get_verdicts_command():
     if ('EntryID' in demisto.args() and 'hash_list' in demisto.args()) or (
             'EntryID' not in demisto.args() and 'hash_list' not in demisto.args()):
@@ -472,7 +479,8 @@ def wildfire_get_verdicts_command():
         dbot_score_list = create_dbot_score_from_verdicts(pretty_verdicts)
 
         entry_context = {
-            "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdicts,
+            "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
+                pretty_verdicts,
             "DBotScore": dbot_score_list
         }
 
@@ -484,6 +492,39 @@ def wildfire_get_verdicts_command():
             'ReadableContentsFormat': formats['markdown'],
             'EntryContext': entry_context
         })
+
+
+@logger
+def wildfire_get_webartifacts(url: str, types: str) -> dict:
+    get_webartifacts_uri = f'{URL}{URL_DICT["webartifacts"]}'
+    params = {
+        'apikey': TOKEN,
+        'url': url,
+    }
+    if types:
+        params['types'] = types
+
+    result = http_request(
+        get_webartifacts_uri,
+        'POST',
+        headers=DEFAULT_HEADERS,
+        params=params
+    )
+    return result
+
+
+@logger
+def wildfire_get_url_webartifacts_command():
+    urls = argToList(demisto.args().get('url'))
+    types = demisto.args().get('types', '')
+
+    for url in urls:
+        try:
+            result = wildfire_get_webartifacts(url, types)
+            file_entry = fileResult(f'{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
+            demisto.results(file_entry)
+        except NotFoundError:
+            return_results('Webartifacts were not found. For more info contact your WildFire representative.')
 
 
 def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml', verbose: bool = False):
@@ -695,7 +736,8 @@ def wildfire_get_file_report(file_hash: str):
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['text'],
             'EntryContext': {
-                "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": entry_context,
+                "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
+                    entry_context,
                 'DBotScore': dbot
             }
         })
@@ -714,7 +756,8 @@ def wildfire_get_file_report(file_hash: str):
             'HumanReadable': 'The sample is still being analyzed. Please wait to download the report.',
             'ReadableContentsFormat': formats['text'],
             'EntryContext': {
-                "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": entry_context
+                "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
+                    entry_context
             }
         })
         sys.exit(0)
@@ -742,7 +785,7 @@ def wildfire_get_report_command():
     for element in inputs:
         if url_report:
             url, report = wildfire_get_url_report(element)
-            headers = ['sha256', 'type', 'verdict']
+            headers = ['sha256', 'type', 'verdict', 'iocs']
             human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report, headers=headers,
                                              removeNull=True)
             entry_context = {"WildFire.Report(val.URL == obj.URL)": report}
@@ -838,6 +881,9 @@ def main():
 
         elif command == 'wildfire-get-verdicts':
             wildfire_get_verdicts_command()
+
+        elif command == 'wildfire-get-url-webartifacts':
+            wildfire_get_url_webartifacts_command()
 
     except Exception as err:
         return_error(str(err))

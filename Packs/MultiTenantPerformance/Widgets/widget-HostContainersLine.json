@@ -1,0 +1,27 @@
+{
+ "id": "host-containers-line",
+ "version": -1,
+ "fromVersion": "6.1.0",
+ "name": "Docker Container Count per Host (last 24h)",
+ "description": "The number of Docker containers used per host in the previous 24 hours.",
+ "dataType": "system",
+ "widgetType": "line",
+ "query": "host.account-docker-containers",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "host"
+  ],
+  "timeFrame": "minutes"
+ },
+ "size": 1440,
+ "dateRange": {
+  "period": {
+   "byTo": "",
+   "byFrom": "minutes",
+   "toValue": null,
+   "fromValue": 60,
+   "field": ""
+  }
+ }
+}

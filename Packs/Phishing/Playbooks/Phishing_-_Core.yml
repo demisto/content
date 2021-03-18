@@ -46,7 +46,7 @@ tasks:
       id: 5f36e515-65e9-429d-8301-d92fa6213b44
       version: -1
       name: Acknowledge email
-      description: Sends an email to the user who reported the phishing email, inoforming them that the email was received and is being investigated.
+      description: Sends an email to the user who reported the phishing email, informing them that the email was received and is being investigated.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -847,7 +847,7 @@ tasks:
       id: 7a672d8e-c040-4735-8885-b0bea150d5b6
       version: -1
       name: Manually investigate the incident
-      description: Pauses the playbook so the analyst can investigate the incdent, and manually resume the playbook when necessary.
+      description: Pauses the playbook so the analyst can investigate the incident and manually resume the playbook when necessary.
       type: regular
       iscommand: false
       brand: ""
@@ -875,7 +875,7 @@ tasks:
       id: c175a884-7f18-4e6a-85ee-d2ad13a0fc2d
       version: -1
       name: Is the email malicious or benign?
-      description: Pauses the playbook so the analyst can decides whether the investigated email is malicious or benign.
+      description: Pauses the playbook so the analyst can decide whether the investigated email is malicious or benign.
       type: condition
       iscommand: false
       brand: ""
@@ -905,7 +905,7 @@ tasks:
       id: 3d5a299b-7128-4113-8fd2-702db6b0b2f9
       version: -1
       name: Update user that the email is malicious
-      description: Sends an email to the user who reported the phishing email, informing them that the email is malicious.
+      description: Sends an email to the user who reported the phishing email informing them that the email is malicious.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -1007,7 +1007,7 @@ tasks:
       id: f0dbc4bc-78d2-4d92-8d7c-78a9ca37fbad
       version: -1
       name: Manually remediate the incident
-      description: Pauses the playbook so the analyst can manually remediate the incident, and manually resume the playbook.
+      description: Pauses the playbook so the analyst can manually remediate the incident and manually resume the playbook.
       tags:
       - manual
       type: regular
@@ -1125,7 +1125,7 @@ tasks:
       id: c27037e6-3bbc-4a1c-8859-19285b0fc806
       version: -1
       name: Process Email - Core
-      description: Add email details to the relevant context entities and handle the case where original emails are attached.
+      description: Adds email details to the relevant context entities and handles the case where original emails are attached.
       playbookName: Process Email - Core
       type: playbook
       iscommand: false
@@ -1195,7 +1195,7 @@ tasks:
       id: 56e057ee-35bc-4385-8747-456e80ca7fa9
       version: -1
       name: Can an image of the email be rendered?
-      description: Checks if the email that was received is HTML-formatted, and whether the Rasterize integration is enabled.
+      description: Checks if the email that was received is HTML-formatted and whether the Rasterize integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1258,7 +1258,7 @@ tasks:
       id: 1f4908fc-2741-41a7-8ef3-98a3496f81d6
       version: -1
       name: Render HTML to an image
-      description: Creates a visual image of the email, if the email is HTML-formatted.
+      description: Creates a visual image of the email (if the email is HTML-formatted).
       tags:
       - email_html_image
       script: '|||rasterize-email'

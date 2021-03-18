@@ -1,5 +1,5 @@
 AWS Network Firewall is a stateful, managed, network firewall and intrusion detection and prevention service for Amazon Virtual Private Cloud (Amazon VPC). With Network Firewall, you can filter traffic at the perimeter of your VPC. This includes filtering traffic going to and coming from an internet gateway, NAT gateway, or over VPN or AWS Direct Connect. Network Firewall uses rules that are compatible with Suricata, a free, open source intrusion detection system (IDS) engine.
-This integration was integrated and tested with version xx of AWS Network Firewall
+
 ## Configure AWS Network Firewall on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

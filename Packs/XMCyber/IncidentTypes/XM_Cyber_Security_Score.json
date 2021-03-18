@@ -7,7 +7,7 @@
     "prevName": "XM Cyber Security Score",
     "color": "#00B8D4",
     "sla": 168,
-    "playbookId": "XM Cyber Security Score To Jira",
+    "playbookId": "Create Jira Ticket - XM Cyber",
     "hours": 0,
     "days": 0,
     "weeks": 1,

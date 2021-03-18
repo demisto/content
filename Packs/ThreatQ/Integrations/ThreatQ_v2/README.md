@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes. This integration was integrated and tested with version xx of ThreatQ v2</p>
+<p>A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.</p>
 <h2>Configure ThreatQ v2 on Demisto</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Servers &amp; Services</strong>.</li>

@@ -1,0 +1,47 @@
+{
+    "responseCode": 0,
+    "limit": 0,
+    "offset": 0,
+    "count": 0,
+    "size": 0,
+    "metaData": {},
+    "messages": [
+        {
+            "message": "string",
+            "messageTemplate": "string",
+            "type": "FIELD_ERROR",
+            "field": "string",
+            "parameter": {},
+            "timestamp": 0
+        }
+    ],
+    "data": [
+        {
+            "id": 0,
+            "lastModified": 0,
+            "source": {
+                "id": 0,
+                "alias": "string",
+                "name": "string"
+            },
+            "role": {
+                "id": 0,
+                "alias": "string",
+                "name": "string"
+            },
+            "firstSeen": 0,
+            "lastSeen": 0,
+            "numObservations": 0,
+            "state": 0,
+            "comment": "string",
+            "address": {
+                "host": true,
+                "ipv6": true,
+                "maskBits": 0,
+                "multicast": true,
+                "public": true,
+                "address": "string"
+            }
+        }
+    ]
+}

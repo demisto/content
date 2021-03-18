@@ -1,7 +1,6 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
-<p>Use the SkyFormation integration to execute remediation actions on cloud applications when threats are detected by the SIEM and to activate SkyFormation automated remediation responses from a playbook using the cloud connector.</p>
-<p>This integration works for SkyFormation v2.2 and later. It was integrated and tested with SkyFormation v2.2.6.</p>
+<p>Deprecated. Vendor has declared end of life for this integration. No available replacement.</p>
 <h5>Limitations</h5>
 <ul>
 <li>Not all actions are supported, only the commands listed in the <a href="#h_30483980971528705313167">Use Cases</a>.</li>

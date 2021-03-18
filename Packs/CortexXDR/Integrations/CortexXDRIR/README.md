@@ -135,35 +135,11 @@ To setup the mirroring follow these instructions:
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. xdr-get-incidents
-2. xdr-get-incident-extra-data
-3. xdr-update-incident
-4. xdr-insert-parsed-alert
-5. xdr-insert-cef-alerts
-6. xdr-isolate-endpoint
-7. xdr-unisolate-endpoint
-8. xdr-get-endpoints
-9. xdr-get-distribution-versions
-10. xdr-create-distribution
-11. xdr-get-distribution-url
-12. xdr-get-create-distribution-status
-13. xdr-get-audit-management-logs
-14. xdr-get-audit-agent-reports
-15. xdr-get-policy
-16. xdr-get-endpoint-device-control-violations
-17. xdr-retrieve-files
-18. xdr-retrieve-file-details
-19. xdr-get-scripts
-20. xdr-get-script-metadata
-21. xdr-get-script-code
-22. xdr-action-status-get
-23. xdr-delete-endpoints
 
 ### 1. xdr-get-incidents
 ---
 Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created. If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported. This command requires at least one query argument.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `xdr-get-incidents`
@@ -302,8 +278,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 ### 2. xdr-get-incident-extra-data
 ---
 Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `xdr-get-incident-extra-data`
@@ -731,8 +706,6 @@ Returns additional data for the specified incident, for example, related alerts,
 ### 3. xdr-update-incident
 ---
 Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in assignee email argument.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-update-incident`
@@ -764,8 +737,6 @@ Incident 4 has been updated
 Upload alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
 successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
 maximum of 60 alerts.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-insert-parsed-alert`
@@ -798,8 +769,6 @@ Alert inserted successfully
 ### 5. xdr-insert-cef-alerts
 ---
 Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-insert-cef-alerts`
@@ -823,8 +792,6 @@ Alerts inserted successfully
 ### 6. xdr-isolate-endpoint
 ---
 Isolates the specified endpoint.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-isolate-endpoint`
@@ -848,8 +815,6 @@ Endpoint f8a2f58846b542579c12090652e79f3d has isolated successfully
 ### 7. xdr-unisolate-endpoint
 ---
 Reverses the isolation of an endpoint.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-unisolate-endpoint`
@@ -873,8 +838,6 @@ Endpoint f8a2f58846b542579c12090652e79f3d already unisolated
 ### 8. xdr-get-endpoints
 ---
 Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-get-endpoints`
@@ -1018,8 +981,7 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 ### 9. xdr-get-distribution-versions
 ---
 Gets a list of all the agent versions to use for creating a distribution list.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `xdr-get-distribution-versions`
@@ -1088,8 +1050,6 @@ There are no input arguments for this command.
 ### 10. xdr-create-distribution
 ---
 Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-create-distribution`
@@ -1138,8 +1098,6 @@ Distribution 43aede7f846846fa92b50149663fbb25 created successfully
 ### 11. xdr-get-distribution-url
 ---
 Gets the distribution URL for downloading the installation package.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-get-distribution-url`
@@ -1168,8 +1126,6 @@ Gets the distribution URL for downloading the installation package.
 ### 12. xdr-get-create-distribution-status
 ---
 Gets the status of the installation package.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-get-create-distribution-status`
@@ -1213,8 +1169,6 @@ Gets the status of the installation package.
 ### 13. xdr-get-audit-management-logs
 ---
 Gets management logs. You can filter by multiple fields, which will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of management logs from the start of the result set (start by counting from 0).
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-get-audit-management-logs`
@@ -1307,8 +1261,6 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 ### 14. xdr-get-audit-agent-reports
 ---
 Gets agent event reports. You can filter by multiple fields, which will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-get-audit-agent-reports`
@@ -2071,3 +2023,484 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Endpoints aeec6a2cc92e46fab3b6f621722e9916 successfully deleted
+
+### xdr-run-script
+***
+Initiates a new endpoint script execution action using a script from the script library.
+
+
+#### Base Command
+
+`xdr-run-script`
+
+#### Required Permissions
+`Run Standard Script`
+`Run High-Risk Script`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| script_uid | Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command. | Required | 
+| parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"} | Optional |
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
+| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+
+
+#### Command Example
+```!xdr-run-script script_uid=414763381b5bfb7b05796c9fe690df46 endpoint_ids=23a86310665d413a958926fce5b794b3 parameters={"path":"test.txt"}```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "ScriptRun": {
+            "action_id": 3653,
+            "endpoints_count": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Run Script
+>|action_id|endpoints_count|
+>|---|---|
+>| 3653 | 1 |
+
+### xdr-run-snippet-code-script
+***
+Initiates a new endpoint script execution action using provided snippet code.
+
+
+#### Base Command
+
+`xdr-run-snippet-code-script`
+
+#### Required Permissions
+`Script Configurations`
+`Run High-Risk Script`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| snippet_code | Section of a script you want to initiate on an endpoint (e.g. print("7")). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. |
+| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. |
+
+#### Command Example
+```!xdr-run-snippet-code-script endpoint_ids=23a86310665d413a958926fce5b794b3 snippet_code="print('hello world')"```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "ScriptRun": {
+            "action_id": 3654,
+            "endpoints_count": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Run Snippet Code Script
+>|action_id|endpoints_count|
+>|---|---|
+>| 3654 | 1 |
+
+### xdr-get-script-execution-status
+***
+Retrieves the status of a script execution action.
+
+
+#### Base Command
+
+`xdr-get-script-execution-status`
+
+#### Required Permissions
+`Script Configurations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_id | Action ID retrieved from the xdr-run-script command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptStatus.general_status | String | General status of the action, considering the status of all the endpoints. | 
+| PaloAltoNetworksXDR.ScriptStatus.error_message | String | Error message regarding permissions for running APIs or the action doesn’t exist. | 
+| PaloAltoNetworksXDR.ScriptStatus.endpoints_timeout | Number | Number of endpoints in "timeout" status. | 
+| PaloAltoNetworksXDR.ScriptStatus.action_id | Number | ID of the action initiated. | 
+| PaloAltoNetworksXDR.ScriptStatus.endpoints_pending_abort | Number | Number of endpoints in "pending abort" status. | 
+| PaloAltoNetworksXDR.ScriptStatus.endpoints_pending | Number | Number of endpoints in "pending" status. | 
+| PaloAltoNetworksXDR.ScriptStatus.endpoints_in_progress | Number | Number of endpoints in "in progress" status. | 
+| PaloAltoNetworksXDR.ScriptStatus.endpoints_failed | Number | Number of endpoints in "failed" status. | 
+| PaloAltoNetworksXDR.ScriptStatus.endpoints_expired | Number | Number of endpoints in "expired" status. | 
+| PaloAltoNetworksXDR.ScriptStatus.endpoints_completed_successfully | Number | Number of endpoints in "completed successfully" status. | 
+| PaloAltoNetworksXDR.ScriptStatus.endpoints_canceled | Number | Number of endpoints in "canceled" status. | 
+| PaloAltoNetworksXDR.ScriptStatus.endpoints_aborted | Number | Number of endpoints in "aborted" status. | 
+
+
+#### Command Example
+```!xdr-get-script-execution-status action_id=3641```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "ScriptStatus": {
+            "action_id": "3641",
+            "endpoints_aborted": 0,
+            "endpoints_canceled": 0,
+            "endpoints_completed_successfully": 1,
+            "endpoints_expired": 0,
+            "endpoints_failed": 0,
+            "endpoints_in_progress": 0,
+            "endpoints_pending": 0,
+            "endpoints_pending_abort": 0,
+            "endpoints_timeout": 0,
+            "general_status": "COMPLETED_SUCCESSFULLY"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Script Execution Status - 3641
+>|action_id|endpoints_aborted|endpoints_canceled|endpoints_completed_successfully|endpoints_expired|endpoints_failed|endpoints_in_progress|endpoints_pending|endpoints_pending_abort|endpoints_timeout|general_status|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 3641 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | COMPLETED_SUCCESSFULLY |
+
+### xdr-get-script-execution-results
+***
+Retrieves the results of a script execution action.
+
+
+#### Base Command
+
+`xdr-get-script-execution-results`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_id | Action ID retrieved from the xdr-run-script command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptResult.action_id | Number | ID of the action initiated. | 
+| PaloAltoNetworksXDR.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Number of successfully retrieved files. | 
+| PaloAltoNetworksXDR.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_status | String | Endpoint status. | 
+| PaloAltoNetworksXDR.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_id | String | Endpoint ID. | 
+| PaloAltoNetworksXDR.ScriptResult.results.execution_status | String | Execution status of this endpoint. | 
+| PaloAltoNetworksXDR.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
+| PaloAltoNetworksXDR.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
+| PaloAltoNetworksXDR.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
+
+
+#### Command Example
+```!xdr-get-script-execution-results action_id=3641```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "ScriptResult": {
+            "action_id": "3641",
+            "results": [
+                {
+                    "_return_value": false,
+                    "domain": "WORKGROUP",
+                    "endpoint_id": "23a86310665d413a958926fce5b794b3",
+                    "endpoint_ip_address": [
+                        "196.168.0.1"
+                    ],
+                    "endpoint_name": "DESKTOP-S2455R8",
+                    "endpoint_status": "STATUS_010_CONNECTED",
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                    "failed_files": 0,
+                    "retention_date": null,
+                    "retrieved_files": 0,
+                    "standard_output": "Input path <test.txt> not valid, must be an absolute path"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Script Execution Results - 3641
+>|_return_value|domain|endpoint_id|endpoint_ip_address|endpoint_name|endpoint_status|execution_status|failed_files|retrieved_files|standard_output|
+>|---|---|---|---|---|---|---|---|---|---|
+>| false | WORKGROUP | 23a86310665d413a958926fce5b794b3 | 196.168.0.1 | DESKTOP-S2455R8 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY | 0 | 0 | Input path \<test.txt\> not valid, must be an absolute path |
+
+### xdr-get-script-execution-result-files
+***
+Gets the files retrieved from a specific endpoint during a script execution.
+
+
+#### Base Command
+
+`xdr-get-script-execution-result-files`
+
+#### Required Permissions
+`Script Configurations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_id | Action ID retrieved from the xdr-run-script command. | Required | 
+| endpoint_id | Endpoint ID. Can be retrieved by running the xdr-get-endpoints command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | File size. |
+| File.Type | String | File type, for example: "PE", "txt" |
+| File.EntryID | String | The file entry ID. |
+| File.Name | String | File name. |
+| File.SHA1 | String | File SHA1 hash. |
+| File.SHA256 | String | File SHA256 hash. |
+| File.MD5 | String | File MD5 hash. |
+
+#### Command Example
+```!xdr-get-script-execution-result-files action_id=3641 endpoint_id=23a86310665d413a958926fce5b794b3```
+
+### xdr-run-script-execute-commands
+***
+Initiates a new endpoint script execution of shell commands.
+
+
+#### Base Command
+
+`xdr-run-script-execute-commands`
+
+#### Required Permissions
+`Run High-Risk Script`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
+| commands | Comma-separated list of shell commands to execute. | Required |
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. |
+| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. |
+
+
+#### Command Example
+```!xdr-run-script-execute-commands endpoint_ids=23a86310665d413a958926fce5b794b3 commands_list=tasklist```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "ScriptRun": {
+            "action_id": 3655,
+            "endpoints_count": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Run Script Execute Commands
+>|action_id|endpoints_count|
+>|---|---|
+>| 3655 | 1 |
+
+
+### xdr-run-script-delete-file
+***
+Initiates a new endpoint script execution to delete the specified file.
+
+
+#### Base Command
+
+`xdr-run-script-delete-file`
+
+#### Required Permissions
+`Run High-Risk Script`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
+| file_path | Path of the file to delete. | Required |
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. |
+| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. |
+
+
+#### Command Example
+```!xdr-run-script-delete-file endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "ScriptRun": {
+            "action_id": 3656,
+            "endpoints_count": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Run Script Execute Commands
+>|action_id|endpoints_count|
+>|---|---|
+>| 3656 | 1 |
+
+### xdr-run-script-file-exists
+***
+Initiates a new endpoint script execution to check if the file exists.
+
+
+#### Base Command
+
+`xdr-run-script-file-exists`
+
+#### Required Permissions
+`Run Standard Script`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
+| file_path | Path of the file to check for existence. | Required |
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. |
+| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. |
+
+
+#### Command Example
+```!xdr-run-script-file-exists endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "ScriptRun": {
+            "action_id": 3657,
+            "endpoints_count": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Run Script Execute Commands
+>|action_id|endpoints_count|
+>|---|---|
+>| 3657 | 1 |
+
+### xdr-run-script-kill-process
+***
+Initiates a new endpoint script execution kill process.
+
+
+#### Base Command
+
+`xdr-run-script-kill-process`
+
+#### Required Permissions
+`Run High-Risk Script`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
+| process_name | Name of the process to kill. | Required |
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. |
+| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. |
+
+
+#### Command Example
+```!xdr-run-script-kill-process endpoint_ids=23a86310665d413a958926fce5b794b3 process_name=calculator.exe```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "ScriptRun": {
+            "action_id": 3658,
+            "endpoints_count": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Run Script Execute Commands
+>|action_id|endpoints_count|
+>|---|---|
+>| 3658 | 1 |

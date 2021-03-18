@@ -18,8 +18,8 @@ def parse_data(playbook_names):
         while playbook_number < playbooks_number:
             for topPlaybook in top_playbooks:
                 random_number = random.randint(0, 16777215)
-                hex_number = str(hex(random_number))  # convert to hexadecimal
-                color = '#' + hex_number[2:]  # remove 0x and prepend '#'
+                hex_number = hex(random_number)  # convert to hexadecimal
+                color = f'#{hex_number[2:].zfill(6)}'  # remove 0x and prepend '#'
 
                 playbook_widget_data = {
                     "data": [
