@@ -52,7 +52,7 @@ tasks:
       frame:
         simple: "260"
       recording_id:
-        simple: ${incident.ubntid}
+        simple: ${incident.unifivideoubntid}
     separatecontext: false
     view: |-
       {
