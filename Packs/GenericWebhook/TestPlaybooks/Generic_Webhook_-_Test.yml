@@ -277,7 +277,7 @@ tasks:
     task:
       id: 0102897a-8451-4150-8c15-30c27d589383
       version: -1
-      name: sleep 10 seconds to let the webserver spin up
+      name: Sleep 10 seconds to let the webserver spin up
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
