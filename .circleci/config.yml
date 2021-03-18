@@ -777,6 +777,29 @@ jobs:
                     exit 1
                   fi
       - run:
+          name: Validate landingPageSections.json
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
+              then
+                echo "Skipping - not running in contribution build"
+                exit 0
+            fi
+            GCS_PATH=$(mktemp)
+            echo "$GCS_MARKET_KEY" > "$GCS_PATH"
+            gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+            echo "successfully activated google cloud service account"
+
+            # Download index.zip
+            INDEX_PATH=$(mktemp)
+            gsutil cp gs://marketplace-dist/content/packs/index.zip $INDEX_PATH
+            echo "successfully downloaded index.zip into $INDEX_PATH"
+            gcloud auth revoke --all &> /dev/null
+            rm $GCS_PATH
+
+            UNZIP_PATH=$(mktemp -d)
+            unzip $INDEX_PATH -d $UNZIP_PATH
+      - run:
           name: Slack Notifier
           shell: /bin/bash
           command: |
