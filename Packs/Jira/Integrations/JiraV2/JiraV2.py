@@ -1080,7 +1080,7 @@ def update_remote_system_command(args):
 
 def get_user_info_data():
     """
-    This function returns details for the current user in order to get timezone.
+    This function returns details for a current user in order to get timezone.
     :return: API response
     """
     HEADERS['Accept'] = "application/json"
@@ -1100,7 +1100,7 @@ def get_modified_remote_data_command(args):
     try:
         res = get_user_info_data()
     except Exception as e:
-        demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data. failed because: {e}')
+        demisto.error(f'Could not get Jira\'s timezone for get-modified-remote-data. failed because: {e}')
     else:
         if res.status_code == 200:
             timezone_name = res.json().get('timeZone')
@@ -1108,11 +1108,11 @@ def get_modified_remote_data_command(args):
                 demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data.Got unexpected resonse: {res.json()}')
             last_update: datetime = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})\
                 .strftime('%Y-%m-%d %H:%M')
-            demisto.info(f'Performing get-modified-remote-data command. Last update is: {last_update}')  # TODO: change to debug
+            demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
             _, _, context = issue_query_command(f'updated > "{last_update}"', max_results=50)
             modified_issues = context.get('issues', [])
             modified_issues_ids = [issue.get('id') for issue in modified_issues if issue.get('id')]
-            demisto.info(f'Performing get-modified-remote-data command. Issue IDs to update in XSOAR: {modified_issues_ids}')  # TODO: change to debug
+            demisto.debug(f'Performing get-modified-remote-data command. Issue IDs to update in XSOAR: {modified_issues_ids}')
         else:
             demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data. status code: {res.status_code}.'
                           f' reason: {res.reason}')

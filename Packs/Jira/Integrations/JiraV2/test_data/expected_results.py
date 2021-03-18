@@ -65,6 +65,10 @@ GET_JIRA_ISSUE_RES = {
 
 JIRA_ATTACHMENT = [{'created': '1996-11-25T16:29:37.277764067Z', "content": "https://demistodev.atlassian.net/secure/attachment/14848/download.png"}]
 
+JIRA_ATTACHMENT_ALL = [{'created': '1996-11-25T16:29:37.277764067Z', "content": "https://demistodev.atlassian.net/secure/attachment/14848/download.png"},
+                       {'created': '1992-11-25T16:29:37.277764067Z', "content": "https://demistodev.atlassian.net/secure/attachment/14848/download1.png"},
+                       {'created': '2170-11-25T16:29:37.277764067Z', "content": "https://demistodev.atlassian.net/secure/attachment/14848/download2.png"}]
+
 ARGS_FROM_UPDATE_REMOTE_SYS = {
     'lastUpdate': '2020-12-14T12:38:30.006+0200',
     'incidentChanged': True,

@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import demistomock as demisto
 import pytest
 
@@ -233,7 +235,7 @@ def test_get_remote_data_when_dont_need_update(mocker):
 def test_update_remote_system_delta(mocker):
     """
     Given:
-        - Information regarding a changed incident in Demisto
+        - Information regarding a changed incident in XSOAR
 
     When:
         - An incident's summary was changed.
@@ -287,6 +289,37 @@ def test_get_new_attachment_return_result(mocker):
     )
     res = get_attachments(JIRA_ATTACHMENT, parse('1996-11-25T16:29:35.277764067Z'))
     assert res[0]['File'] == 'download.png'
+
+
+def test_get_all_attachment_return_result(mocker):
+    """
+    Given:
+        - attachment related to an issue
+        - The date the incident was last updated
+
+    When:
+        - An incident's attachment was modified\added
+
+    Then:
+        - Getting all attachments as fileResult
+    """
+    from JiraV2 import get_attachments
+    from test_data.expected_results import JIRA_ATTACHMENT_ALL
+    from dateparser import parse
+
+    class file:
+        def __init__(self):
+            self.content = b'content'
+
+    file_content = file()
+    mocker.patch(
+        'JiraV2.jira_req',
+        return_value=file_content
+    )
+    res = get_attachments(JIRA_ATTACHMENT_ALL, parse('1996-11-25T16:29:35.277764067Z'), only_new=False)
+    assert res[0]['File'] == 'download.png'
+    assert res[1]['File'] == 'download1.png'
+    assert res[2]['File'] == 'download2.png'
 
 
 def test_get_new_attachment_without_return_new_attachment(mocker):
@@ -659,7 +692,8 @@ def test_edit_issue_status(mocker):
     Then
         - An issue has a new status
     """
-    from JiraV2 import edit_issue_command, edit_transition, get_issue_fields, list_transitions_data_for_issue, edit_status
+    from JiraV2 import edit_issue_command, edit_transition, get_issue_fields, list_transitions_data_for_issue, \
+        edit_status
     mocker.patch('JiraV2.jira_req', return_value=None)
     mocker.patch('JiraV2.get_issue_fields', return_value=None)
     mocker.patch('JiraV2.get_issue', return_value=True)
@@ -707,7 +741,8 @@ def test_edit_issue_when_passing_both_transition_and_status(mocker):
     Then
         - Error is being returned saying both parameters can't be passed
     """
-    from JiraV2 import edit_issue_command, edit_transition, get_issue_fields, list_transitions_data_for_issue, edit_status
+    from JiraV2 import edit_issue_command, edit_transition, get_issue_fields, list_transitions_data_for_issue, \
+        edit_status
     mocker.patch('JiraV2.jira_req', return_value=None)
     mocker.patch('JiraV2.get_issue_fields', return_value=None)
     mocker.patch('JiraV2.get_issue', return_value=True)
@@ -738,19 +773,28 @@ def test_list_transitions_command(mocker):
     assert res.outputs == {'ticketId': '123', 'transitions': ['To Do']}
 
 
-def test_get_modified_data_commad(mocker):
+def test_get_modified_data_command(mocker):
+    """
+    Given:
+        - Date string represents the last time we retrieved modified incidents for this integration.
+    When
+        - Before running get_remote_data_command
+    Then
+        - Returns a list of changed incidents
+    """
     from JiraV2 import get_modified_remote_data_command, get_user_info_data, issue_query_command
 
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
     mocker.patch('JiraV2.json', return_value={'timeZone': 'Asia/Jerusalem'})
-    # res = type('res', (object,), {'status_code': 200, 'json()': {'timeZone': 'Asia/Jerusalem'}})
 
     class res:
         def __init__(self):
             self.status_code = 200
+
         def json(self):
             return {'timeZone': 'Asia/Jerusalem'}
+
     response = res()
     response.json()
     mocker.patch('JiraV2.get_user_info_data', return_value=response)
@@ -760,3 +804,73 @@ def test_get_modified_data_commad(mocker):
     assert modified_ids.modified_incident_ids == ['123']
 
 
+def test_get_modified_data_command_when_getting_exception_for_get_user_info_data(mocker):
+    """
+    Given:
+        - Date string represents the last time we retrieved modified incidents for this integration.
+    When
+        - Having an error in get_user_info_data function.
+    Then
+        - An error is printed via demisto.error and returning an empty modified_incident_ids list
+    """
+    from JiraV2 import get_modified_remote_data_command, get_user_info_data
+
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocked_demisto_error = mocker.patch.object(demisto, 'error')
+    mocker.patch('JiraV2.get_user_info_data', side_effect=Mock(side_effect=Exception('Test')))
+    modified_ids = get_modified_remote_data_command({'lastUpdate': '0'})
+    assert mocked_demisto_error.call_count == 1
+    assert modified_ids.modified_incident_ids == []
+
+
+def test_get_modified_data_command_when_getting_not_ok_status_code_for_get_user_info_data(mocker):
+    """
+    Given:
+        - Date string represents the last time we retrieved modified incidents for this integration.
+    When
+        - Getting '404' from get_user_info_data function.
+    Then
+        - An error is printed via demisto.error and returning an empty modified_incident_ids list
+    """
+    from JiraV2 import get_modified_remote_data_command, get_user_info_data, issue_query_command
+
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('JiraV2.json', return_value={'timeZone': 'Asia/Jerusalem'})
+
+    class res:
+        def __init__(self):
+            self.status_code = 404
+            self.reason = "Not Found"
+
+    response = res()
+    mocker.patch('JiraV2.get_user_info_data', return_value=response)
+    mocked_demisto_error = mocker.patch.object(demisto, 'error')
+
+    modified_ids = get_modified_remote_data_command({'lastUpdate': '0'})
+    assert mocked_demisto_error.call_count == 1
+    assert modified_ids.modified_incident_ids == []
+
+
+def test_get_comments_command(mocker):
+    """
+    Given:
+        - IssueId
+    When
+        - Running get_comments_command in order to get an issue's comments.
+    Then
+        - Returns a list of comments for the given issue.
+    """
+    from JiraV2 import jira_req, get_comments_command
+    comments = {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00', 'body': 'comment text', 'updateAuthor':
+        {'name': "Test"}, 'created': '10.12'}]}
+    mocker.patch('JiraV2.jira_req', return_value=comments)
+
+    _, outputs, context = get_comments_command(123)
+    assert list(outputs.keys())[0] == 'Ticket(val.Id == obj.Id)'
+    assert outputs['Ticket(val.Id == obj.Id)']['Id'] == 123
+    assert outputs['Ticket(val.Id == obj.Id)']['Comment'][0]['Comment'] == 'comment text'
+    assert outputs['Ticket(val.Id == obj.Id)']['Comment'][0]['User'] == 'Test'
+    assert outputs['Ticket(val.Id == obj.Id)']['Comment'][0]['Created'] == '10.12'
+    assert context == comments
