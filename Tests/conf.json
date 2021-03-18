@@ -1796,12 +1796,12 @@
         },
         {
             "integrations": "Microsoft Graph Calendar",
-            "playbookID": "Microsoft Graph Calendar - Test",
+            "playbookID": "Microsoft Graph Calendar - Test dev",
             "instance_names": "ms_graph_calendar_dev"
         },
         {
             "integrations": "Microsoft Graph Calendar",
-            "playbookID": "Microsoft Graph Calendar - Test",
+            "playbookID": "Microsoft Graph Calendar - Test prod",
             "instance_names": "ms_graph_calendar_prod"
         },
         {
