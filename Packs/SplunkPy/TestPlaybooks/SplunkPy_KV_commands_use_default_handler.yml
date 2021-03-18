@@ -1,0 +1,79 @@
+id: SplunkPy KV commands use_default_handler
+version: -1
+name: SplunkPy KV commands use_default_handler
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 51e68d1d-b720-4fc9-a7ca-2a6cd6fe9a1f
+    type: start
+    task:
+      id: 51e68d1d-b720-4fc9-a7ca-2a6cd6fe9a1f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 8ce8a9a2-bca8-4ecf-8f21-79b26ca5f07f
+    type: regular
+    task:
+      id: 8ce8a9a2-bca8-4ecf-8f21-79b26ca5f07f
+      version: -1
+      name: set playbook to SplunkPy KV commands
+      description: set playbook for current incident to SplunkPy KV commands
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: SplunkPy KV commands
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
