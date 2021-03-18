@@ -183,7 +183,7 @@ script:
       secret: false
     - default: false
       description: 'Filters only incidents in the specified status. The options are:
-        new,under_investigation,resolved_threat_handled,resolved_known_issue,resolved_false_positive,resolved_other,resolved_auto'
+     new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_other, resolved_auto'
       isArray: false
       name: status
       required: false
