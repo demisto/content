@@ -1,4 +1,4 @@
-from mock import MagicMock, patch
+from mock import Mock, patch
 
 import demistomock as demisto
 
@@ -25,7 +25,7 @@ def test_add_comment(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.add_comment()
     assert(comment == mocker_results.call_args[0][0]['Contents']['Comment'])
 
@@ -42,7 +42,7 @@ def test_add_tag(mocker_results, mocker):
     import IntSight
 
     tag_id = '1234'
-    with patch('IntSight.http_request', MagicMock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = {
             'Details': {
                 'Tags': [
@@ -65,7 +65,7 @@ def test_get_alert_takedown_status(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.get_alert_takedown_status()
     assert('TakedownStatus' in mocker_results.call_args[0][0]['Contents'] and not None)
 
@@ -79,7 +79,7 @@ def test_ask_analyst(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.ask_analyst()
     assert(question == mocker_results.call_args[0][0]['Contents']['Question'])
 
@@ -93,7 +93,7 @@ def test_close_alert(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.close_alert()
     assert(reason == mocker_results.call_args[0][0]['Contents']['Closed']['Reason'])
 
@@ -107,7 +107,7 @@ def test_get_alert_image(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.get_alert_image()
     assert(image_id + '-image.jpeg' == mocker_results.call_args[0][0]['File'])
 
@@ -121,7 +121,7 @@ def test_takedown_request(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.takedown_request()
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
@@ -139,7 +139,7 @@ def test_get_ioc_blocklist_status(mocker_results, mocker):
         "Value": "example.com",
         "Status": "Sent"
     }
-    with patch('IntSight.http_request', MagicMock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = [mock_response]
         IntSight.get_ioc_blocklist_status()
         assert(mock_response in mocker_results.call_args[0][0]['Contents'])
@@ -177,7 +177,7 @@ def test_search_for_ioc(mocker_results, mocker):
             "Phishing"
         ]
     }
-    with patch('IntSight.http_request', MagicMock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = mock_response
         IntSight.search_for_ioc()
         assert(value == mocker_results.call_args[0][0]['Contents']['Value'])
@@ -192,7 +192,7 @@ def test_remove_tag(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.remove_tag()
     assert(tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
 
@@ -301,7 +301,7 @@ def test_request_for_ioc_enrichment(mocker_results, mocker):
             ]
         }
     }
-    with patch('IntSight.http_request', MagicMock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = mock_response
         IntSight.request_for_ioc_enrichment()
         assert(mock_response['OriginalValue'] == mocker_results.call_args[0][0]['Contents']['OriginalValue'])
@@ -321,7 +321,7 @@ def test_send_mail(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.send_mail()
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
@@ -338,7 +338,7 @@ def test_unassign_alert(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.unassign_alert()
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
@@ -356,7 +356,7 @@ def test_change_severity(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.change_severity()
     assert(severity == mocker_results.call_args[0][0]['Contents']['Severity'])
 
@@ -376,7 +376,7 @@ def test_update_ioc_blocklist_status(mocker_results, mocker):
 
     import IntSight
 
-    patch('IntSight.http_request', MagicMock())
+    patch('IntSight.http_request', Mock())
     IntSight.update_ioc_blocklist_status()
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
@@ -458,7 +458,7 @@ def test_get_iocs(mocker_results, mocker):
         ]
     }
 
-    with patch('IntSight.http_request', MagicMock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = mock_response
         IntSight.search_for_ioc()
         assert(value == mocker_results.call_args[0][0]['Contents']['Value'])
@@ -581,10 +581,10 @@ def test_get_alert_by_id(mocker_results, mocker):
         "IsClosed": "false",
         "IsFlagged": "false"
     }
-    with patch('IntSight.http_request', MagicMock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = complete_alert
 
-        patch('IntSight.http_request', MagicMock())
+        patch('IntSight.http_request', Mock())
         IntSight.get_alert_by_id()
         assert(complete_alert['_id'] == mocker_results.call_args[0][0]['Contents']['ID'])
 
@@ -618,7 +618,7 @@ def test_get_alert_activity(mocker_results, mocker):
         "SubTypes": []
     }
 
-    with patch('IntSight.http_request', MagicMock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = [
             {
                 'ID': '5e7b0b5620d02a00085ab21e',
@@ -645,7 +645,7 @@ def test_assign_alert(mocker_results, mocker):
     import IntSight
 
     assignee_id = '12345'
-    with patch('IntSight.http_request', MagicMock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = [
             {
                 "Email": "email@domain.com",
