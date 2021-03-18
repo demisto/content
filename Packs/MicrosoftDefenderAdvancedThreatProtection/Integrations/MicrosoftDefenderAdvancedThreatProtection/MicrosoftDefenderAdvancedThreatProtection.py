@@ -231,9 +231,9 @@ class MsClient:
         cmd_url = '/machines'
         params = {'$filter': filter_req} if filter_req else None
         if next_link:  # pagination
-            machines = self.ms_client.http_request(method='GET', full_url=next_link,  params=params)
+            machines = self.ms_client.http_request(method='GET', full_url=next_link,  params=params, timeout=30)
         else:
-            machines = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+            machines = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params, timeout=30)
         return machines
 
     def get_file_related_machines(self, file):
