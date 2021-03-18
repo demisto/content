@@ -856,7 +856,19 @@ def request_for_ioc_enrichment():
             }
         )
     elif status == 'Queued' or status == 'InProgress':
-        demisto.results({'Type': entryTypes['note'],'EntryContext': {'IntSights.Iocs(val.ID === obj.ID)': {'Value': demisto.get(response, 'OriginalValue'),'Status': demisto.get(response, 'Status'),},},'Contents': response,'ContentsFormat': formats['json']})
+        demisto.results(
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {
+                    'IntSights.Iocs(val.ID === obj.ID)': {
+                        'Value': demisto.get(response, 'OriginalValue'),
+                        'Status': demisto.get(response, 'Status'),
+                    },
+                },
+                    'Contents': response,
+                    'ContentsFormat': formats['json']
+            }
+        )
     elif status == 'QuotaExceeded':
         raise Exception('Could not get any results. Reason: Quota exceded.')
     else:
