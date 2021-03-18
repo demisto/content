@@ -1013,10 +1013,10 @@ class Pack(object):
 
         Returns:
             bool: whether the operation succeeded.
-            bool: whether pack was modified and override will be required.
+            list: list of files that were modified.
         """
         task_status = False
-        pack_was_modified = False
+        modified_files = []
 
         try:
             pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
@@ -1035,19 +1035,20 @@ class Pack(object):
             previous_commit = content_repo.commit(previous_commit_hash)
 
             for modified_file in current_commit.diff(previous_commit).iter_change_type('M'):
-                if modified_file.a_path.startswith(PACKS_FOLDER):
+                if modified_file.a_path.startswith(PACKS_FOLDER):  # get the a file (from source and target files that are modified) check if it starts with 'Pack' cause we are in content repo!
                     modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
 
                     if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
                         logging.info(f"Detected modified files in {self._pack_name} pack")
-                        task_status, pack_was_modified = True, True
+                        task_status = True
+                        modified_files.append(modified_file.a_path)
                         return
 
             task_status = True
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
         finally:
-            return task_status, pack_was_modified
+            return task_status, modified_files
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
                           private_content=False, pack_artifacts_path=None):
