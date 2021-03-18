@@ -716,7 +716,7 @@ def main():
         'phishlabs-get-incident-indicators': get_incident_indicators_command
     }
     try:
-        command_func: Callable = command_dict[demisto.command()]
+        command_func: Callable = command_dict[demisto.command()]  # type:ignore[assignment]
         if demisto.command() == 'fetch-incidents':
             RAISE_EXCEPTION_ON_ERROR = True
         command_func(client, **args)
