@@ -37,8 +37,14 @@ For more information about manage syntax, see the https://support.atlassian.com/
     * __Issue index to start fetching incidents from__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
+    * __Mirror outgoing incidents__
+    * __Mirror incoming incidents__
     * __Fetch incidents__
     * __Incident type__
+    * __File Entry Tag__
+    * __Comment Entry Tag__
+    * __Fetch Comments__
+    * __Fetch Attachments__
     * __Use created field to fetch incidents__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
@@ -63,6 +69,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 8. Get a ticket's comments: jira-get-comments
 9. Delete an issue: jira-delete-issue
 10. Get the ID offset: jira-get-id-offset
+11. List transitions for an issue: jira-list-transitions
 
 ### 1. Search Jira issues
 ---
@@ -555,3 +562,42 @@ Gets the Account ID for a given user's attribute.
 #### Human Readable Output
 
 >Account ID for attribute: XSOAR User is: 5e4ds952052b790c97509a7c
+
+
+### jira-list-transitions-command
+***
+List all possible transitions
+
+
+#### Base Command
+
+`jira-list-transitions-command`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueId | The ID of the issue. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Transitions.ticketId | Number | The ID of the issue. | 
+| Ticket.Transitions.transitions | Unknown | A list of all possible transitions | 
+
+
+#### Command Example
+```!jira-list-transitions-command issueId=18847 ```
+
+
+#### Human Readable Output
+### List Transitions:
+|Transition Name|
+|---|
+| Backlog |
+| Selected for Development |
+| In Progress |
+| Done |
+| To Do |
+| Build Broken |
