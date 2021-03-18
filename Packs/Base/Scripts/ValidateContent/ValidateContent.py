@@ -104,7 +104,7 @@ def convert_contribution_to_pack(contrib_converter: ContributionConverter) -> Di
     for unpacked_contribution_dir in unpacked_contribution_dirs:
         contrib_converter.convert_contribution_dir_to_pack_contents(unpacked_contribution_dir)
     # extract to package format
-    code_fp_to_row_offset = {}
+    code_fp_to_row_offset: Dict[str, int] = {}
     for pack_subdir in get_child_directories(contrib_converter.pack_dir_path):
         basename = os.path.basename(pack_subdir)
         if basename in {SCRIPTS_DIR, INTEGRATIONS_DIR}:
