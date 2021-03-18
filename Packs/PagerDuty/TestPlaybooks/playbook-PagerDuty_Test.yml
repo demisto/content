@@ -246,7 +246,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3665
+          "y": 3815
         }
       }
     note: false
@@ -721,7 +721,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "22"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -781,7 +781,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3310
+          "y": 3480
         }
       }
     note: false
@@ -818,7 +818,41 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3490
+          "y": 3640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: b804863f-8ef4-436e-8db6-6771fd52e16a
+    type: regular
+    task:
+      id: b804863f-8ef4-436e-8db6-6771fd52e16a
+      version: -1
+      name: Sleep 1 sec for incident to update
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3305
         }
       }
     note: false
@@ -833,7 +867,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3680,
+        "height": 3830,
         "width": 380,
         "x": 50,
         "y": 50
