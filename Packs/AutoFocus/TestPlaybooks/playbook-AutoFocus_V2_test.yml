@@ -679,11 +679,6 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: AutoFocus.Sessions.ID
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
               simple: AutoFocus.Sessions.Industry
             iscontext: true
       - - operator: isExists
