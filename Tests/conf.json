@@ -813,7 +813,7 @@
         {
             "integrations": "QRadar_v2",
             "playbookID": "test playbook - QRadarCorrelations For V2",
-            "timeout": 2000,
+            "timeout": 2600,
             "fromversion": "6.0.0",
             "is_mockable": false
         },
@@ -3206,6 +3206,11 @@
         {
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Cisco Stealthwatch",
+            "fromversion": "5.5.0",
+            "playbookID": "Cisco Stealthwatch Test"
         }
     ],
     "skipped_tests": {
@@ -3359,6 +3364,9 @@
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
         "Akamai WAF": "Issue 32318",
+        "FraudWatch": "Issue 34299",
+        "Cisco Stealthwatch": "No instance - developed by Qmasters",
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
