@@ -36,4 +36,4 @@ This playbook does not use any scripts.
 | CiscoStealthwatch.FlowResults | The results of the search. | unknown |
 
 ## Playbook Image
-![Setup Account](./../../doc_files/CiscoStealthWatch-Query-Flows-Playbook.png)
+![Setup Account](./../doc_files/CiscoStealthWatch-Query-Flows-Playbook.png)
