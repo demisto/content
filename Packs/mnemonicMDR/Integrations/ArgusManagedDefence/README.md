@@ -1,6 +1,7 @@
-Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.
+Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service. 
 
-This integration was integrated and tested with version 5.0.1 argus-toolbelt ([PyPi](https://pypi.org/project/argus-toolbelt)).
+This integration was integrated and tested with version 5.1.1 argus-toolbelt ([PyPi](https://pypi.org/project/argus-toolbelt)).
+
 ## Configure ArgusManagedDefence on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,24 +10,42 @@ This integration was integrated and tested with version 5.0.1 argus-toolbelt ([P
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | isFetch | Fetch incidents | False |
-    | incidentType | Incident type | False |
-    | max_fetch | Maximum number of incidents per fetch | False |
-    | api_key | API Key | True |
-    | min_severity | Minimum severity of alerts to fetch | True |
-    | first_fetch | First fetch time | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | api_url | API URL | True |
+    | Fetch incidents | Defines if this integration fetches incidents. | False |
+    | Incident type | Should be set to Argus Case. | False |
+    | API URL | URL to Argus' API Endpoint. | True |
+    | API Key | API Key of API user in Argus. | True |
+    | Minimum severity of alerts to fetch | Argus Cases with priority lower than this value will be excluded by fetch incidents. | True |
+    | First fetch time | How far back should the first run fetch open cases in Argus. | False |
+    | Maximum number of incidents per fetch | Maximum number of cases to be fetched from Argus. 0 means up to system limit \(100 000\) | False |
+    | Fetch incidents exclude tag | Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with tag key, or key: value pairs by a comma-separated string. | False |
+    | Incident Mirroring Direction | Which direction should the integration mirror incidents. | False |
+    | Mirroring tag | Names of tags used to mark incident entries to be mirrored. Comma separated. | False |
+    | Trust any certificate (not secure) | Skip HTTPS certification verification. | False |
+    | Use system proxy settings | Use system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Mirroring
+This integration supports in- and outbound mirroring of incidents. 
+Case comments are added as incident notes and case attachments added as files.
+Tags and events are fetched and placed in context.
+#### Configuration
+You should set the mirroring direction parameter to the appropriate mirroring direction(s). If you are mirroring out, please note that all War Room entries you want added to Argus must be attached with the same tag as configured as the integration parameter *Mirroring tag*.
+
+### Excluding cases / creating Argus Cases from XSOAR
+If you wish to create an Argus Case from an incident you should configure the integration to exclude fetching incidents with and appropriate tag and ensure that the new Argus Case has this tag. 
+This will ensure that this Argus Case is *not* fetched back by the integration and a new incident created.
+An example use case could be that you are running an XSOAR incident for a while for internal purposes before you wish to create an Argus Case. 
+
+#### Example
+```
+!argus-create-case subject=<...> description=<...> service=<...> type=<...> tags=<exclude_tag>
+```
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-**Note: all timestamps are in the millisecond format**
-
-### argus_add_case_tag
+### argus-add-case-tag
 ***
 Adds a key, value tag to an Argus case
 
@@ -130,7 +149,6 @@ List tags attached to an Argus case
 | Argus.Tags.data.flags | String | Tag Flags | 
 | Argus.Tags.data.addedTime | String | Tag Added Time | 
 
-
 #### Command Example
 ``` !argus-list-case-tags case_id=123 ```
 
@@ -199,6 +217,7 @@ Add comment to an Argus case
 #### Command Example
 ``` !argus-add-comment case_id=123 comment="this is a comment" ```
 
+
 ### argus-list-case-comments
 ***
 List the comments of an Argus case
@@ -263,6 +282,7 @@ List the comments of an Argus case
 #### Command Example
 ``` !argus_list_case_comments case_id=123 ```
 
+
 ### argus-advanced-case-search
 ***
 Returns cases matching the defined case search criteria
@@ -275,42 +295,42 @@ Returns cases matching the defined case search criteria
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_timestamp | Start timestamp. Possible values are: | Optional | 
+| start_timestamp | Start timestamp. Possible values are: . | Optional | 
 | end_timestamp | End timestamp. | Optional | 
 | limit | Set this value to set max number of results. By default, no restriction on result set size. | Optional | 
-| offset | Set this value to skip the first (offset) objects. By default, return result from first object. | Optional | 
+| offset | Set this value to skip the first (offset) objects. By default, return result from first object. . | Optional | 
 | include_deleted | Set to true to include deleted objects. By default, exclude deleted objects. Possible values are: true, false. Default is false. | Optional | 
 | sub_criteria | Set additional criterias which are applied using a logical OR. | Optional | 
-| exclude | Only relevant for subcriteria. If set to true, objects matching this subcriteria object will be excluded. Possible values are: true, false. | Optional | 
-| required | Only relevant for subcriteria. If set to true, objects matching this subcriteria are required (AND-ed together with parent criteria). Possible values are: true, false. | Optional | 
-| customer_id | Restrict search to data belonging to specified customers.  | Optional | 
-| case_id | Restrict search to specific cases (by ID).  | Optional | 
-| customer | Restrict search to specific customers (by ID or shortname).  | Optional | 
+| exclude | Only relevant for subcriteria. If set to true, objects matching this subcriteria object will be excluded. . Possible values are: true, false. | Optional | 
+| required | Only relevant for subcriteria. If set to true, objects matching this subcriteria are required (AND-ed together with parent criteria). . Possible values are: true, false. | Optional | 
+| customer_id | Restrict search to data belonging to specified customers. . | Optional | 
+| case_id | Restrict search to specific cases (by ID). . | Optional | 
+| customer | Restrict search to specific customers (by ID or shortname). . | Optional | 
 | case_type | Restrict search to entries of one of these types. | Optional | 
-| service | Restrict search to entries of one of these services (by service shortname or ID).  | Optional | 
+| service | Restrict search to entries of one of these services (by service shortname or ID). . | Optional | 
 | category | Restrict search to entries of one of these categories (by category shortname or ID). | Optional | 
-| status | Restrict search to entries of one of these statuses.  | Optional | 
+| status | Restrict search to entries of one of these statuses. . | Optional | 
 | priority | Restrict search to entries with given priorties. | Optional | 
 | asset_id | Restrict search to cases associated with specified assets (hosts, services or processes). | Optional | 
-| tag | Restrict search to entries matching the given tag criteria.  | Optional | 
-| workflow | Restrict search to entries matching the given workflow criteria.  | Optional | 
-| field | Restrict search to entries matching the given field criteria.  | Optional | 
+| tag | Restrict search to entries matching the given tag criteria. . | Optional | 
+| workflow | Restrict search to entries matching the given workflow criteria. . | Optional | 
+| field | Restrict search to entries matching the given field criteria. . | Optional | 
 | keywords | Search for keywords. | Optional | 
-| time_field_strategy | Defines which timestamps will be included in the search (default all).  | Optional | 
+| time_field_strategy | Defines which timestamps will be included in the search (default all). . | Optional | 
 | time_match_strategy | Defines how strict to match against different timestamps (all/any) using start and end timestamp (default any). | Optional | 
-| keyword_field_strategy | Defines which fields will be searched by keywords (default all supported fields).  | Optional | 
-| keyword_match_strategy | Defines the MatchStrategy for keywords (default match all keywords).  | Optional | 
-| user | Restrict search to cases associated with these users or user groups (by ID or shortname).  | Optional | 
-| user_field_strategy | Defines which user fields will be searched (default match all user fields).  | Optional | 
+| keyword_field_strategy | Defines which fields will be searched by keywords (default all supported fields). . | Optional | 
+| keyword_match_strategy | Defines the MatchStrategy for keywords (default match all keywords). . | Optional | 
+| user | Restrict search to cases associated with these users or user groups (by ID or shortname). . | Optional | 
+| user_field_strategy | Defines which user fields will be searched (default match all user fields). . | Optional | 
 | user_assigned | If set, limit search to cases where assignedUser field is set/unset. Possible values are: true, false. | Optional | 
 | tech_assigned | If set, limit search to cases where assignedTech field is set/unset. Possible values are: true, false. | Optional | 
-| include_workflows | If true, include list of workflows in result. Default is false (not present).  Possible values are: true, false. Default is false. | Optional | 
-| include_description | If false, omit description from response. Default is true (description is present).  Possible values are: true, false. Default is true. | Optional | 
+| include_workflows | If true, include list of workflows in result. Default is false (not present). . Possible values are: true, false. Default is false. | Optional | 
+| include_description | If false, omit description from response. Default is true (description is present). . Possible values are: true, false. Default is true. | Optional | 
 | access_mode | If set, only match cases which is set to one of these access modes. | Optional | 
 | explicit_access | If set, only match cases which have explicit access grants matching the specified criteria. | Optional | 
 | sort_by | List of properties to sort by (prefix with "-" to sort descending). | Optional | 
-| include_flags | Only include objects which have includeFlags set.  | Optional | 
-| exclude_flags | Exclude objects which have excludeFlags set.  | Optional | 
+| include_flags | Only include objects which have includeFlags set. . | Optional | 
+| exclude_flags | Exclude objects which have excludeFlags set. . | Optional | 
 
 
 #### Context Output
@@ -449,10 +469,8 @@ Returns cases matching the defined case search criteria
 | Argus.Cases.data.closedTime | String | Case Closed Time | 
 | Argus.Cases.data.publishedTime | String | Case Published Time | 
 
-
 #### Command Example
 ``` !argus-advanced-case-search ```
-
 
 
 ### argus-close-case
@@ -607,11 +625,8 @@ Close an Argus case
 | Argus.Case.data.closedTime | String | Case Closed Time | 
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
-
 #### Command Example
 ``` !argus-close-case case_id=123 ```
-
-
 
 
 ### argus-create-case
@@ -628,8 +643,8 @@ Create Argus case
 | --- | --- | --- |
 | customer | ID or shortname of customer to create case for. Defaults to current users customer. | Optional | 
 | service | ID of service to create case for. Possible values are: ids, support, administrative, advisory, vulnscan. | Required | 
-| category | If set, assign given category to new case (by category shortname).  Possible values are: network-testing, unauthorized-access, dos, data-leakage, exposed-malicious, malicious-infection, poor-practice, reconnaissance, misconfigured, vpn-down, sensor-malfunctioning, not-receiving-traffic, false-positive, suspected-targeted-attack, duplicate, problem-managed, problem-customer, adware, network-connection-lost, failed-authentication, missing-log-sources, no-threat, phishing, argus-improvement, argus-bug. | Optional | 
-| type | Type of case to create. Possible values are: operationalIncident, change, securityIncident, informational. | Required | 
+| category | If set, assign given category to new case (by category shortname). . Possible values are: network-testing, unauthorized-access, dos, data-leakage, exposed-malicious, malicious-infection, poor-practice, reconnaissance, misconfigured, vpn-down, sensor-malfunctioning, not-receiving-traffic, false-positive, suspected-targeted-attack, duplicate, problem-managed, problem-customer, adware, network-connection-lost, failed-authentication, missing-log-sources, no-threat, phishing, argus-improvement, argus-bug. | Optional | 
+| type | Type of case to create . Possible values are: operationalIncident, change, securityIncident, informational. | Required | 
 | status | Status of case to create. If not set, system will select automatically. Creating a new case with status closed is not permitted. . Possible values are: pendingCustomer, pendingSoc, pendingVendor, pendingClose, workingSoc, workingCustomer. | Optional | 
 | tags | Tags to add on case creation.  (key,value,key,value, ...). | Optional | 
 | subject | Subject of case to create. | Required | 
@@ -778,8 +793,8 @@ Create Argus case
 | Argus.Case.data.closedTime | String | Case Closed Time | 
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
-#### Command Example
 ``` !argus-create-case subject="test case title" description="test case details" service=administrative type=informational ```
+
 
 ### argus-delete-case
 ***
@@ -935,6 +950,7 @@ Mark existing case as deleted
 #### Command Example
 ``` !argus-delete-case case_id=123 ```
 
+
 ### argus-delete-comment
 ***
 Mark existing comment as deleted
@@ -1056,6 +1072,7 @@ Edit existing comment
 
 #### Command Example
 ``` !argus-edit-comment case_id=123 comment_id=123456 comment="comment content" ```
+
 
 ### argus-get-case-metadata-by-id
 ***
@@ -1212,6 +1229,7 @@ Returns the basic case descriptor for the case identified by ID
 #### Command Example
 ``` !argus-get-case_metadata_by_id case_id=123 ```
 
+
 ### argus-list-case-attachments
 ***
 List attachments for an existing case
@@ -1267,6 +1285,7 @@ List attachments for an existing case
 #### Command Example
 ``` !argus-list-case-attachments case_id=123 ```
 
+
 ### argus-remove-case-tag-by-id
 ***
 Remove existing tag by tag ID
@@ -1315,6 +1334,7 @@ Remove existing tag by tag ID
 | Argus.Tags.data.addedByUser.type | String | Tag Added By User Type | 
 | Argus.Tags.data.flags | String | Tag Flags | 
 | Argus.Tags.data.addedTime | String | Tag Added Time | 
+
 
 #### Command Example
 ``` !argus-remove-case-tag-by-id case_id=123 tag_id=123456 ```
@@ -1372,6 +1392,7 @@ Remove existing tag with key, value matching
 #### Command Example
 ``` !argus-remove-case-tag-by-key-value case_id=123 key=foo value=bar ```
 
+
 ### argus-update-case
 ***
 Request changes to basic fields of an existing case.
@@ -1387,17 +1408,17 @@ Request changes to basic fields of an existing case.
 | case_id | ID of Argus case to update. | Required | 
 | subject | If set, change subject of case. | Optional | 
 | description | If set, change description of case. May use HTML, will be sanitized. . | Optional | 
-| status | If set, change status of case Possible values are: pendingCustomer, pendingSoc, pendingVendor, pendingClose, workingSoc, workingCustomer. | Optional | 
-| priority | If set, change priority of case.  Possible values are: low, medium, high, critical. | Optional | 
-| category | If set, assign given category to specified category (by category shortname). Set value to empty string to unset category. Possible values are: network-testing, unauthorized-access, dos, data-leakage, exposed-malicious, malicious-infection, poor-practice, reconnaissance, misconfigured, vpn-down, sensor-malfunctioning, not-receiving-traffic, false-positive, suspected-targeted-attack, duplicate, problem-managed, problem-customer, adware, network-connection-lost, failed-authentication, missing-log-sources, no-threat, phishing, argus-improvement, argus-bug. | Optional | 
-| reporter | If set, set given user as reporter for case (by ID or shortname). Shortname will be resolved in the current users domain.  | Optional | 
+| status | If set, change status of case . Possible values are: pendingCustomer, pendingSoc, pendingVendor, pendingClose, workingSoc, workingCustomer. | Optional | 
+| priority | If set, change priority of case. . Possible values are: low, medium, high, critical. | Optional | 
+| category | If set, assign given category to specified category (by category shortname). Set value to empty string to unset category. . Possible values are: network-testing, unauthorized-access, dos, data-leakage, exposed-malicious, malicious-infection, poor-practice, reconnaissance, misconfigured, vpn-down, sensor-malfunctioning, not-receiving-traffic, false-positive, suspected-targeted-attack, duplicate, problem-managed, problem-customer, adware, network-connection-lost, failed-authentication, missing-log-sources, no-threat, phishing, argus-improvement, argus-bug. | Optional | 
+| reporter | If set, set given user as reporter for case (by ID or shortname). Shortname will be resolved in the current users domain. . | Optional | 
 | assigned_user | If set, assign given user to case (by ID or shortname). Shortname will be resolved in the current users domain. If blank, this will unset assignedUser. . | Optional | 
 | assigned_tech | If set, assign given technical user (solution engineer) to case (by ID or shortname). Shortname will be resolved in the current users domain. If blank, this will unset assignedTech. | Optional | 
-| customer_reference | If set, change customer reference for case.  | Optional | 
-| comment | If set, add comment to case. May use HTML, will be sanitized.  | Optional | 
+| customer_reference | If set, change customer reference for case. . | Optional | 
+| comment | If set, add comment to case. May use HTML, will be sanitized. . | Optional | 
 | origin_email_address | If update is made from an email, specify origin email address here. | Optional | 
 | has_events | f set, update the hasEvents flag for this case, signalling that this case may have events associated to it. . Possible values are: true, false. | Optional | 
-| internal_comment | If true, add comment as internal. Possible values are: true, false. Default is false. | Optional | 
+| internal_comment | If true, add comment as internal. (default false). Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -1539,6 +1560,7 @@ Request changes to basic fields of an existing case.
 #### Command Example
 ``` !argus-update-case case_id=123 ```
 
+
 ### argus-get-attachment
 ***
 Fetch specific attachment metadata
@@ -1593,6 +1615,7 @@ Fetch specific attachment metadata
 #### Command Example
 ``` !argus-get-attachment case_id=123 attachment_id=123456 ```
 
+
 ### argus-download-attachment
 ***
 Download specific attachment contents.
@@ -1606,7 +1629,8 @@ Download specific attachment contents.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | ID of Argus case. | Required | 
-| attachment_id | ID of attachment to download. | Required | 
+| attachment_id | ID of attachment to download. . | Required | 
+| file_name | Filename of attachment, will otherwise be the ID. | Optional | 
 
 
 #### Context Output
@@ -1737,6 +1761,7 @@ Fetch events associated with specified case.
 #### Command Example
 ``` !argus_get_events_for_case case_id=123 ```
 
+
 ### argus-list-aggregated-events
 ***
 List aggregated events
@@ -1850,8 +1875,6 @@ List aggregated events
 
 #### Command Example
 ``` !argus_list_aggregated_events  ```
-
-
 
 ### argus-find-aggregated-events
 ***
@@ -1998,7 +2021,6 @@ Search for aggregated events (OSB! advanced method: look in API doc)
 #### Command Example
 ``` !argus-find-aggregated-events ```
 
-
 ### argus-get-payload
 ***
 Fetch specified event payload
@@ -2035,11 +2057,8 @@ Fetch specified event payload
 | Argus.Payload.data.type | String | Payload Type | 
 | Argus.Payload.data.payload | String | Payload Payload | 
 
-
 #### Command Example
 ``` !argus-get-payload customer_id=123 event_id=123456 timestamp=123456789 type=NIDS ```
-
-
 
 
 ### argus-get-pcap
@@ -2066,8 +2085,6 @@ There is no context output for this command.
 
 #### Command Example
 ``` !argus-get-pcap customer_id=123 event_id=123456 timestamp=123456789 type=NIDS ```
-
-
 
 ### argus-get-event
 ***
@@ -2115,10 +2132,8 @@ Fetch specified event.
 | Argus.Event.data.aggregated | Boolean | Event Aggregated | 
 | Argus.Event.data.encodedFlags | String | Event Encoded Flags | 
 
-
 #### Command Example
 ``` !argus-get-event customer_id=123 event_id=123456 timestamp=123456789 type=NIDS ```
-
 
 
 ### argus-list-nids-events
@@ -2229,7 +2244,6 @@ Simple search for NIDS events.
 | Argus.NIDS.data.severity | String | NIDS Severity | 
 | Argus.NIDS.data.flags | String | NIDS Flags | 
 | Argus.NIDS.data.id | String | NIDS ID | 
-
 
 #### Command Example
 ``` !argus-list-nids-events  ```
@@ -2372,10 +2386,8 @@ Search for NIDS events.
 | Argus.NIDS.data.flags | String | NIDS Flags | 
 | Argus.NIDS.data.id | String | NIDS ID | 
 
-
 #### Command Example
 ``` !argus-find-nids-events ```
-
 
 
 ### argus-pdns-search-records
@@ -2391,8 +2403,8 @@ Search against PassiveDNS with criteria and return matching records.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Lookup query. | Required | 
-| aggregate_result | Whether aggregate results (default true). Possible values are: true, false. | Optional | 
-| include_anonymous_results | Whether include anonymous results (default true). Possible values are: true, false. | Optional | 
+| aggregate_result | Whether aggregate results (default true) . Possible values are: true, false. | Optional | 
+| include_anonymous_results | Whether include anonymous results (default true) . Possible values are: true, false. | Optional | 
 | rr_class | Lookup with specified record classes (as comma-separated list). | Optional | 
 | rr_type | Lookup with specified record types (as comma-separated list). | Optional | 
 | customer_id | Lookup for specified customer IDs  (as comma-separated list). | Optional | 
@@ -2437,8 +2449,6 @@ Search against PassiveDNS with criteria and return matching records.
 #### Command Example
 ``` !argus-pdns-search-records query=mnemonic.no ```
 
-
-
 ### argus-fetch-observations-for-domain
 ***
 Look up reputation observations for the given domain
@@ -2476,8 +2486,6 @@ Look up reputation observations for the given domain
 
 #### Command Example
 ``` !argus-fetch-observations-for-domain fqdn=mnemonic.no ```
-
-
 
 ### argus-fetch-observations-for-ip
 ***
@@ -2528,6 +2536,154 @@ Look up reputation observations for the given IP
 | Argus.ObservationsIP.data.address.public | Boolean | Observations IP Address Public | 
 | Argus.ObservationsIP.data.address.address | String | Observations IP Address Address | 
 
-
 #### Command Example
 ``` !argus-fetch-observations-for-ip ip=94.127.56.170 ```
+
+
+### get-remote-data
+***
+Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+
+
+#### Base Command
+
+`get-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Argus Case ID. | Optional | 
+| lastUpdate | Time or timestamp case was last updated. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` !get-remote-data case_id=123 ```
+
+
+### update-remote-system
+***
+Updates the remote system with incident changes.
+
+
+#### Base Command
+
+`update-remote-system`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` !update-remote-system ```
+
+
+### argus-download-attachment-by-filename
+***
+Downloads case attachment by best-effort search of filename.
+
+
+#### Base Command
+
+`argus-download-attachment-by-filename`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | Case ID. | Required | 
+| file_name | Filename. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
+
+#### Command Example
+``` !argus-download-attachment-by-filename case_id=123 file_name=file.name ```
+
+
+### argus-print-case-comments
+***
+Print case comments as notes
+
+
+#### Base Command
+
+`argus-print-case-comments`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | Case ID. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` !argus_print_case_comments case_id=123 ```
+
+### argus-print-case-metadata-by-id
+***
+Print case metadata as HTML. Does not add to context.
+
+
+#### Base Command
+
+`argus-print-case-metadata-by-id`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | Case ID. | Required | 
+| skip_redirect | If true, skip automatic redirect (for merged cases). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` !argus-print-case_metadata_by_id case_id=123 ```
+
+### argus-download-case-attachments
+***
+Download all attachments related to Argus Case.
+
+
+#### Base Command
+
+`argus-download-case-attachments`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | Case ID. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` !argus-download-case-attachments case_id=123 ```
