@@ -495,11 +495,6 @@ def get_scan_status_command():
     return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id && val.Id === obj.Id)', scan_status)
 
 
-def is_valid_scan_id(scan_id):
-    # Make sure that the scan id is not empty and contains only digits.
-    return not (scan_id == "" or not scan_id.isdigit())
-
-
 def pause_scan_command():
     scan_ids = str(demisto.getArg('scanId')).split(",")
 
@@ -507,10 +502,6 @@ def pause_scan_command():
 
     for scan_id in scan_ids:
         scan_id = scan_id.strip()
-        if not is_valid_scan_id(scan_id):
-            results.append(
-                "Command 'tenable-io-pause-scan' cannot be called cause scan ID '{}' was blank or "
-                "invalid.".format(scan_id))
 
         scan_details = send_scan_request(scan_id)
         scan_status = {
@@ -543,11 +534,6 @@ def resume_scan_command():
 
     for scan_id in scan_ids:
         scan_id = scan_id.strip()
-        if not is_valid_scan_id(scan_id):
-            results.append(
-                "Command 'tenable-io-resume-scan' cannot be called cause scan ID '{}' was blank or "
-                "invalid.".format(scan_id))
-
         scan_details = send_scan_request(scan_id)
         scan_status = {
             'Id': scan_id,
