@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import demistomock as demisto
 
@@ -13,7 +13,7 @@ INTSIGHTS_PARAMS = {
 }
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_add_comment(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -25,12 +25,12 @@ def test_add_comment(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.add_comment()
     assert(comment == mocker_results.call_args[0][0]['Contents']['Comment'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_add_tag(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -42,7 +42,7 @@ def test_add_tag(mocker_results, mocker):
     import IntSight
 
     tag_id = '1234'
-    with mock.patch('IntSight.http_request', mock.Mock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = {
             'Details': {
                 'Tags': [
@@ -57,7 +57,7 @@ def test_add_tag(mocker_results, mocker):
         assert(tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_get_alert_takedown_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -65,12 +65,12 @@ def test_get_alert_takedown_status(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.get_alert_takedown_status()
     assert('TakedownStatus' in mocker_results.call_args[0][0]['Contents'] and not None)
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_ask_analyst(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -79,12 +79,12 @@ def test_ask_analyst(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.ask_analyst()
     assert(question == mocker_results.call_args[0][0]['Contents']['Question'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_close_alert(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -93,12 +93,12 @@ def test_close_alert(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.close_alert()
     assert(reason == mocker_results.call_args[0][0]['Contents']['Closed']['Reason'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_get_alert_image(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -107,12 +107,12 @@ def test_get_alert_image(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.get_alert_image()
     assert(image_id + '-image.jpeg' == mocker_results.call_args[0][0]['File'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_takedown_request(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -121,12 +121,12 @@ def test_takedown_request(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.takedown_request()
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_get_ioc_blocklist_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -139,13 +139,13 @@ def test_get_ioc_blocklist_status(mocker_results, mocker):
         "Value": "example.com",
         "Status": "Sent"
     }
-    with mock.patch('IntSight.http_request', mock.Mock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = [mock_response]
         IntSight.get_ioc_blocklist_status()
         assert(mock_response in mocker_results.call_args[0][0]['Contents'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_search_for_ioc(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -177,13 +177,13 @@ def test_search_for_ioc(mocker_results, mocker):
             "Phishing"
         ]
     }
-    with mock.patch('IntSight.http_request', mock.Mock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = mock_response
         IntSight.search_for_ioc()
         assert(value == mocker_results.call_args[0][0]['Contents']['Value'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_remove_tag(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -192,12 +192,12 @@ def test_remove_tag(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.remove_tag()
     assert(tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_request_for_ioc_enrichment(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -301,13 +301,13 @@ def test_request_for_ioc_enrichment(mocker_results, mocker):
             ]
         }
     }
-    with mock.patch('IntSight.http_request', mock.Mock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = mock_response
         IntSight.request_for_ioc_enrichment()
         assert(mock_response['OriginalValue'] == mocker_results.call_args[0][0]['Contents']['OriginalValue'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_send_mail(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -321,12 +321,12 @@ def test_send_mail(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.send_mail()
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_unassign_alert(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -338,12 +338,12 @@ def test_unassign_alert(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.unassign_alert()
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_change_severity(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -356,12 +356,12 @@ def test_change_severity(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.change_severity()
     assert(severity == mocker_results.call_args[0][0]['Contents']['Severity'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_update_ioc_blocklist_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -376,7 +376,7 @@ def test_update_ioc_blocklist_status(mocker_results, mocker):
 
     import IntSight
 
-    mock.patch('IntSight.http_request', mock.Mock())
+    patch('IntSight.http_request', Mock())
     IntSight.update_ioc_blocklist_status()
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
@@ -399,7 +399,7 @@ def get_mssp_sub_accounts_http_response(method, path, **kwargs):
         return None
 
 
-@mock.patch('IntSight.http_request')
+@patch('IntSight.http_request')
 def run_mocked_https_request(mocked_http_request, action, side_effect=None, return_value=None):
     if side_effect:
         mocked_http_request.side_effect = side_effect
@@ -409,7 +409,7 @@ def run_mocked_https_request(mocked_http_request, action, side_effect=None, retu
     action()
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_get_mssp_sub_accounts(mocker_results, mocker):
     INTSIGHTS_PARAMS['mssp_sub_account_id'] = '123456789'
 
@@ -425,7 +425,7 @@ def test_get_mssp_sub_accounts(mocker_results, mocker):
     assert(10 == mocker_results.call_args[0][0]['Contents'][0]['AssetsLimit'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_get_iocs(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -458,7 +458,7 @@ def test_get_iocs(mocker_results, mocker):
         ]
     }
 
-    with mock.patch('IntSight.http_request', mock.Mock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = mock_response
         IntSight.search_for_ioc()
         assert(value == mocker_results.call_args[0][0]['Contents']['Value'])
@@ -516,7 +516,7 @@ def get_alerts_http_response(method, path, **kwargs):
         return None
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_get_alerts(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -531,7 +531,7 @@ def test_get_alerts(mocker_results, mocker):
     assert(alert_id == mocker_results.call_args[0][0]['Contents'][0]['ID'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_get_alert_by_id(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -581,15 +581,15 @@ def test_get_alert_by_id(mocker_results, mocker):
         "IsClosed": "false",
         "IsFlagged": "false"
     }
-    with mock.patch('IntSight.http_request', mock.Mock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = complete_alert
 
-        mock.patch('IntSight.http_request', mock.Mock())
+        patch('IntSight.http_request', Mock())
         IntSight.get_alert_by_id()
         assert(complete_alert['_id'] == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_get_alert_activity(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -618,7 +618,7 @@ def test_get_alert_activity(mocker_results, mocker):
         "SubTypes": []
     }
 
-    with mock.patch('IntSight.http_request', mock.Mock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = [
             {
                 'ID': '5e7b0b5620d02a00085ab21e',
@@ -632,7 +632,7 @@ def test_get_alert_activity(mocker_results, mocker):
         assert('Activities' in mocker_results.call_args[0][0]['Contents'][0])
 
 
-@mock.patch.object(demisto, "results")
+@patch.object(demisto, "results")
 def test_assign_alert(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -645,7 +645,7 @@ def test_assign_alert(mocker_results, mocker):
     import IntSight
 
     assignee_id = '12345'
-    with mock.patch('IntSight.http_request', mock.Mock()) as mock_http_response:
+    with patch('IntSight.http_request', Mock()) as mock_http_response:
         mock_http_response.return_value = [
             {
                 "Email": "email@domain.com",
