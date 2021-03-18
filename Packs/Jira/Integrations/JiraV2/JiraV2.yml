@@ -121,10 +121,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of issues to return (default is 50). The maximum
-        allowed value is dictated by the JIRA property 'jira.search.views.default.max'.
-        If you specify a value that is higher than this number, your search results
-        will be truncated.
+      description: The maximum number of users to pull when searching for a matching
+        user (default is 50). The maximum allowed value is dictated by the JIRA property
+        'jira.search.views.default.max'. If you specify a value that is higher than
+        this number, your search results will be truncated.
       isArray: false
       name: maxResults
       required: false
@@ -160,7 +160,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The user's attribute value. Can be Username or Email address.
+      description: The user's attribute value. Can be Username or Email address. Note
+        - when using OAuth 1.0 only username works.
       isArray: false
       name: attribute
       required: true
@@ -508,7 +509,7 @@ script:
       secret: false
     - default: false
       description: The name of the assignee. Relevant for Jira Server only. If you
-        are using Jira Cloud please provide the assignee_id argument instead.
+        are using Jira Cloud, please provide the assignee_id argument instead.
       isArray: false
       name: assignee
       required: false
@@ -647,7 +648,7 @@ script:
       incidents that were modified since the last update.it's here for debugging purposes.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.15507
+  dockerimage: demisto/oauthlib:1.0.0.17529
   feed: false
   isfetch: true
   ismappable: true
