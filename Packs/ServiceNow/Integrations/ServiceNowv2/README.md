@@ -2044,3 +2044,10 @@ Get remote data from a remote incident. This method does not update the current 
 There is no context output for this command.
 
 
+### Troubleshooting
+
+* Make sure that the date and time in SNOW are the same as the date and time in XSOAR to prevent mirroring issues.
+* If the date in the layout is incorrect, Please follow this steps:
+1. Go to the incoming-mapper you are using
+2. Change in every field which using ``DateStringToISOFormat`` script the argument ``dayfirst`` to ``true``.
+
