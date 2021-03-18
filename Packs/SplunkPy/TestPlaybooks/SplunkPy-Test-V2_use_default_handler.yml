@@ -1,0 +1,79 @@
+id: SplunkPy-Test-V2 use_default_handler
+version: -1
+name: SplunkPy-Test-V2 use_default_handler
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 278fcf18-6590-4b68-96a3-da6b1f25b24a
+    type: start
+    task:
+      id: 278fcf18-6590-4b68-96a3-da6b1f25b24a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 40d9762b-889a-4ccc-a297-1afbfc6dc2bf
+    type: regular
+    task:
+      id: 40d9762b-889a-4ccc-a297-1afbfc6dc2bf
+      version: -1
+      name: set playbook to SplunkPy-Test-V2
+      description: set playbook for current incident to SplunkPy-Test-V2
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: SplunkPy-Test-V2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
