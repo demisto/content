@@ -53,6 +53,7 @@ outputs:
   description: The code line number in which the error was found in the lint.
   type: String
 scripttarget: 0
+timeout: 300ns
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.5.0
