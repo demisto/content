@@ -643,7 +643,7 @@ def fetch_incidents(client: Client, **kwargs):
 
     incidents: list = []
     count: int = 1
-    limit = int(kwargs.get('fetch_limit'))
+    limit = int(kwargs.get('fetch_limit', '10'))
     if not last_fetch:
         feed: dict = get_feed_request(client, since=kwargs.get('fetch_time'))
 
@@ -719,9 +719,7 @@ def main():
         command_func: Callable = command_dict[demisto.command()]
         if demisto.command() == 'fetch-incidents':
             RAISE_EXCEPTION_ON_ERROR = True
-            command_func(client, **args)
-        else:
-            command_func(client)
+        command_func(client, **args)
 
     except Exception as e:
         if RAISE_EXCEPTION_ON_ERROR:
