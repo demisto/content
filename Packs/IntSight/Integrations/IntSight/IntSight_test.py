@@ -13,7 +13,7 @@ INTSIGHTS_PARAMS = {
 }
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_add_comment(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -30,7 +30,7 @@ def test_add_comment(mocker_results, mocker):
     assert(comment == mocker_results.call_args[0][0]['Contents']['Comment'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_add_tag(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -57,7 +57,7 @@ def test_add_tag(mocker_results, mocker):
         assert(tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_get_alert_takedown_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -70,7 +70,7 @@ def test_get_alert_takedown_status(mocker_results, mocker):
     assert('TakedownStatus' in mocker_results.call_args[0][0]['Contents'] and not None)
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_ask_analyst(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -84,7 +84,7 @@ def test_ask_analyst(mocker_results, mocker):
     assert(question == mocker_results.call_args[0][0]['Contents']['Question'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_close_alert(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -98,7 +98,7 @@ def test_close_alert(mocker_results, mocker):
     assert(reason == mocker_results.call_args[0][0]['Contents']['Closed']['Reason'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_get_alert_image(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -112,7 +112,7 @@ def test_get_alert_image(mocker_results, mocker):
     assert(image_id + '-image.jpeg' == mocker_results.call_args[0][0]['File'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_takedown_request(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -126,7 +126,7 @@ def test_takedown_request(mocker_results, mocker):
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_get_ioc_blocklist_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -145,7 +145,7 @@ def test_get_ioc_blocklist_status(mocker_results, mocker):
         assert(mock_response in mocker_results.call_args[0][0]['Contents'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_search_for_ioc(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -183,7 +183,7 @@ def test_search_for_ioc(mocker_results, mocker):
         assert(value == mocker_results.call_args[0][0]['Contents']['Value'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_remove_tag(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -197,7 +197,7 @@ def test_remove_tag(mocker_results, mocker):
     assert(tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_request_for_ioc_enrichment(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -307,7 +307,7 @@ def test_request_for_ioc_enrichment(mocker_results, mocker):
         assert(mock_response['OriginalValue'] == mocker_results.call_args[0][0]['Contents']['OriginalValue'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_send_mail(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -326,7 +326,7 @@ def test_send_mail(mocker_results, mocker):
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_unassign_alert(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -343,7 +343,7 @@ def test_unassign_alert(mocker_results, mocker):
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_change_severity(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -361,7 +361,7 @@ def test_change_severity(mocker_results, mocker):
     assert(severity == mocker_results.call_args[0][0]['Contents']['Severity'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_update_ioc_blocklist_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -399,7 +399,7 @@ def get_mssp_sub_accounts_http_response(method, path, **kwargs):
         return None
 
 
-@patch('IntSight.http_request')
+@mock.patch('IntSight.http_request')
 def run_mocked_https_request(mocked_http_request, action, side_effect=None, return_value=None):
     if side_effect:
         mocked_http_request.side_effect = side_effect
@@ -409,7 +409,7 @@ def run_mocked_https_request(mocked_http_request, action, side_effect=None, retu
     action()
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_get_mssp_sub_accounts(mocker_results, mocker):
     INTSIGHTS_PARAMS['mssp_sub_account_id'] = '123456789'
 
@@ -425,7 +425,7 @@ def test_get_mssp_sub_accounts(mocker_results, mocker):
     assert(10 == mocker_results.call_args[0][0]['Contents'][0]['AssetsLimit'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_get_iocs(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -516,7 +516,7 @@ def get_alerts_http_response(method, path, **kwargs):
         return None
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_get_alerts(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -531,7 +531,7 @@ def test_get_alerts(mocker_results, mocker):
     assert(alert_id == mocker_results.call_args[0][0]['Contents'][0]['ID'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_get_alert_by_id(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -589,7 +589,7 @@ def test_get_alert_by_id(mocker_results, mocker):
         assert(complete_alert['_id'] == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_get_alert_activity(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
@@ -632,7 +632,7 @@ def test_get_alert_activity(mocker_results, mocker):
         assert('Activities' in mocker_results.call_args[0][0]['Contents'][0])
 
 
-@patch.object(demisto, "results")
+@mock.patch.object(demisto, "results")
 def test_assign_alert(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)

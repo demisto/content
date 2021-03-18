@@ -4,9 +4,6 @@ import sys
 import os
 import importlib
 
-importlib.reload(sys)
-requests.packages.urllib3.disable_warnings()
-
 URL = demisto.getParam('server')
 if URL[-1] != '/':
     URL += '/'
