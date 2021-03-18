@@ -1021,6 +1021,21 @@ def test_return_error_fetch_incidents(mocker):
     assert returned_error
 
 
+def test_return_error_fetch_credentials(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-credentials
+    mocker.patch.object(demisto, 'command', return_value="fetch-credentials")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
 def test_return_error_fetch_indicators(mocker):
     from CommonServerPython import return_error
     err_msg = "Testing unicode Ё"
