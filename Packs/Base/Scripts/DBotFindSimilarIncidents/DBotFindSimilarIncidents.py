@@ -40,6 +40,7 @@ FIELDS_NO_AGGREGATION = ['id', 'created', COLUMN_ID]
 COLUMN_TIME = 'created'
 TAG_INCIDENT = 'incidents'
 TAG_SCRIPT_INDICATORS = "similarIncidents"
+KEEP_COLUMNS_INDICATORS = ['Identical indicators', 'similarity indicators']
 
 PREFIXES_TO_REMOVE = ['incident.']
 CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
@@ -836,11 +837,11 @@ def enriched_with_indicators_similarity(full_args_indicators_script: Dict, simil
     indicators_similarity_df = pd.DataFrame(indicators_similarity_json)
     if indicators_similarity_df.empty:
         indicators_similarity_df = pd.DataFrame(
-            columns=[SIMILARITY_COLUNM_NAME_INDICATOR, 'Identical indicators', 'type', 'id'])
-    keep_columns = [x for x in indicators_similarity_df.columns if x not in similar_incidents]
+            columns=[SIMILARITY_COLUNM_NAME_INDICATOR, 'Identical indicators', 'id'])
+    keep_columns = [x for x in KEEP_COLUMNS_INDICATORS if x not in similar_incidents]
     indicators_similarity_df.index = indicators_similarity_df.id
     similar_incidents = similar_incidents.join(indicators_similarity_df[keep_columns])
-    values = {SIMILARITY_COLUNM_NAME_INDICATOR: 0, 'Identical indicators': "", 'type': ""}
+    values = {SIMILARITY_COLUNM_NAME_INDICATOR: 0, 'Identical indicators': ""}
     similar_incidents = similar_incidents.fillna(value=values)
     return similar_incidents
 
