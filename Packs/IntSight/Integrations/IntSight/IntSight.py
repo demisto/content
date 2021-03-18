@@ -862,7 +862,7 @@ def request_for_ioc_enrichment():
                 'EntryContext': {
                     'IntSights.Iocs(val.ID === obj.ID)': {
                         'Value': demisto.get(response, 'OriginalValue'),
-                        'Status': demisto.get(response, 'Status'),
+                        'Status': demisto.get(response, 'Status')
                     },
                 },
                     'Contents': response,
