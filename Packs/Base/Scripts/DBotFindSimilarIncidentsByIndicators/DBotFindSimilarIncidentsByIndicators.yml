@@ -10,7 +10,8 @@ args:
   secret: false
 - default: false
   defaultValue: '150'
-  description: 'The maximum number of incidents that an indicator can be associated with to be retained. This helps to filter out indicators that appear in many incidents '
+  description: 'The maximum number of incidents that an indicator can be associated
+    with to be retained. This helps to filter out indicators that appear in many incidents '
   isArray: false
   name: maxIncidentsInIndicatorsForWhiteList
   required: false
@@ -31,8 +32,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: Type of indicators to take into account. If empty, uses all
-    indicators types.
+  description: Type of indicators to take into account. If empty, uses all indicators
+    types.
   isArray: false
   name: indicatorsTypes
   required: false
@@ -44,8 +45,8 @@ args:
   isArray: false
   name: showActualIncident
   predefined:
-    - 'True'
-    - 'False'
+  - 'True'
+  - 'False'
   required: false
   secret: false
 - default: false
@@ -60,6 +61,13 @@ args:
   description: Fields to add in the table of incident
   isArray: false
   name: fieldsIncidentToDisplay
+  required: false
+  secret: false
+- default: false
+  defaultValue: 1 month ago
+  description: The start date by which we retrieve information on incidents.
+  isArray: false
+  name: fromDate
   required: false
   secret: false
 comment: Finds similar incidents based on indicators' similarity. Indicators' contribution
@@ -78,5 +86,5 @@ dockerimage: demisto/ml:1.0.0.16162
 runas: DBotWeakRole
 runonce: false
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 5.0.0

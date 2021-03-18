@@ -238,11 +238,12 @@ def match_indicators_incident(indicators: List[Dict], incident_ids: List[str]) -
     return d
 
 
-def enriched_incidents(df, fields_incident_to_display):
+def enriched_incidents(df, fields_incident_to_display, from_date: str):
     """
     Enriched incidents with data
     :param df: Incidents dataFrame
     :param fields_incident_to_display: Fields selected for enrichement
+    :param from_date: from_date
     :return: Incidents dataFrame enriched
     """
     if 'id' in df.columns:
@@ -255,7 +256,8 @@ def enriched_incidents(df, fields_incident_to_display):
     query = " OR ".join(ids_string)
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': query,
-        'populateFields': ' , '.join(fields_incident_to_display)
+        'populateFields': ' , '.join(fields_incident_to_display),
+        'fromDate': from_date,
     })
     if is_error(res):
         return_error(res)
@@ -401,16 +403,18 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
     return context
 
 
-def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_incident_to_display: List[str]) -> None:
+def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_incident_to_display: List[str],
+                            from_date: str) -> None:
     """
     Display current incident
     :param incident_df: DataFrame of incident
     :param incident_id: incident ID
     :param fields_incident_to_display: fields to display
+    :param from_date: fields to from_date
     :return: None
     """
     incident_df['id'] = [incident_id]
-    incident_df = enriched_incidents(incident_df, fields_incident_to_display)
+    incident_df = enriched_incidents(incident_df, fields_incident_to_display, from_date)
     incident_df['Incident ID'] = incident_df['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     col_incident = incident_df.columns.tolist()
     col_incident = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in col_incident if
@@ -536,6 +540,7 @@ def main():
     fields_incident_to_display = demisto.args()['fieldsIncidentToDisplay'].split(',')
     fields_incident_to_display = [x.strip() for x in fields_incident_to_display if x]
     fields_incident_to_display = list(set(['created', 'name'] + fields_incident_to_display))
+    from_date = demisto.args().get('fromDate')
 
     # load the Dcurrent incident
     incident_id = demisto.args().get('incidentId')
@@ -575,12 +580,12 @@ def main():
     # Display and enriched incidents data
     current_incident_df = organize_current_incident(current_incident_df, indicators_map)
     similar_incidents = organize_data(similar_incidents, indicators_map, threshold, max_incidents_to_display)
-    similar_incidents = enriched_incidents(similar_incidents, fields_incident_to_display)
+    similar_incidents = enriched_incidents(similar_incidents, fields_incident_to_display, from_date)
 
     incident_found_bool = (len(similar_incidents) > 0)
 
     if show_actual_incident == 'True':
-        display_actual_incident(current_incident_df, incident_id, fields_incident_to_display)
+        display_actual_incident(current_incident_df, incident_id, fields_incident_to_display, from_date)
 
     if incident_found_bool:
         context = create_context_for_incidents(similar_incidents)
