@@ -590,6 +590,17 @@ List all possible transitions
 #### Command Example
 ```!jira-list-transitions-command issueId=18847 ```
 
+#### Context Example
+```json
+{
+    "Ticket": {
+        "Transitions": {
+            "ticketId": "18847",
+            "transitions": ["Backlog", "Selected for Development", "In Progress", "Done", "To Do", "Build Broken"]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 ### List Transitions:
