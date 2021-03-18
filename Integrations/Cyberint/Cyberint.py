@@ -313,6 +313,7 @@ def cyberint_alerts_get_attachment_command(client: Client, args: dict) -> dict:
         args (dict): Command arguments from XSOAR.
 
     Returns:
+        If the API response status is 200 : return attachment file , else return ""
 
     """
 
