@@ -21,8 +21,8 @@ MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, plea
                             "fieldExactMatch, enlarge the time period or increase the limit argument " \
                             "to more than %s."
 
-MESSAGE_NO_CURRENT_INCIDENT = "- Incident %s does not exist. Please check incidentId value or that you are running " \
-                              "the command within an incident."
+MESSAGE_NO_CURRENT_INCIDENT = "- Incident %s does not exist within the given time range. " \
+                              "Please check incidentId value or that you are running the command within an incident."
 MESSAGE_NO_FIELD = "- %s field(s) does not exist in the current incident."
 MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents."
 
