@@ -16,12 +16,12 @@ Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and
 
 
 ##Uploading a file to the sandbox
-Please pay attention that there are 2 ways to upload a file to the sandbox.
-1. Using ***cs-fx-upload-file*** command with **submit_file=yes**.
-2. Using ***cs-fx-upload-file*** command and afterwards the ***cs-fx-submit-uploaded-file command***, 
+There are 2 ways to upload a file to the sandbox.
+1. Using the ***cs-fx-upload-file*** command with **submit_file=yes**.
+2. Using the ***cs-fx-upload-file*** command and afterwards the ***cs-fx-submit-uploaded-file command***, 
 in this option the sha256 identifier from the ***cs-fx-upload-file*** command output is the input to the ***cs-fx-submit-uploaded-file command***.
 
-For more information look at the commands documentation.
+For more information review the documentation for the commands.
 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
