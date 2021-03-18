@@ -285,6 +285,24 @@ class DBotScoreReliability(object):
             DBotScoreReliability.F,
         )
 
+    @staticmethod
+    def get_dbot_score_reliability_from_str(reliability_str):
+        if reliability_str == DBotScoreReliability.A_PLUS:
+            return DBotScoreReliability.A_PLUS
+        elif reliability_str == DBotScoreReliability.A:
+            return DBotScoreReliability.A
+        elif reliability_str == DBotScoreReliability.B:
+            return DBotScoreReliability.B
+        elif reliability_str == DBotScoreReliability.C:
+            return DBotScoreReliability.C
+        elif reliability_str == DBotScoreReliability.D:
+            return DBotScoreReliability.D
+        elif reliability_str == DBotScoreReliability.E:
+            return DBotScoreReliability.E
+        elif reliability_str == DBotScoreReliability.F:
+            return DBotScoreReliability.F
+        raise Exception("Please use supported reliability only.")
+
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
@@ -4491,6 +4509,7 @@ def return_error(message, error='', outputs=None):
         :rtype: ``dict``
     """
     is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
+                                                                              'fetch-credentials',
                                                                               'long-running-execution',
                                                                               'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
