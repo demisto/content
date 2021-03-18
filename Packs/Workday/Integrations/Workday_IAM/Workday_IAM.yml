@@ -63,15 +63,15 @@ configuration:
   options:
   - Termination_Date
   - Last_Day_of_Work
-  required: true
+  required: false
   type: 15
-- additionalinfo: An integer threshold that determines when to sync employees from Workday. Leave empty to sync the hires instantly.
+- additionalinfo: Determines when employees are synced from Workday, i.e., when are the User Profile in XSOAR and the users in the applications created. Set to 0 to sync hires on their hire date. Leave empty to sync the hires immediately.
   display: Number of days before hire date to sync hires
   hidden: false
   name: days_before_hire_to_sync
   required: false
   type: 0
-- additionalinfo: An integer threshold that determines when to enable the Active Directory accounts of employees. Leave empty to enable the accounts instantly.
+- additionalinfo: Determines when to enable the Active Directory accounts of employees. Set to 0 to enable the Active Directory accounts on their hire date. Leave empty to enable the accounts immediately. Note that this is effective only when the employees are already synced to XSOAR, so you should set a number lower or equal to the previous parameter (days before hire to sync).
   display: Number of days before hire date to enable Active Directory account
   hidden: false
   name: days_before_hire_to_enable_ad
@@ -81,7 +81,7 @@ description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: Workday IAM
 script:
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
   longRunning: false

@@ -60,8 +60,10 @@ def entry_to_user_profile(entry, mapper_in, workday_date_format):
 
 
 def report_to_indicators(report_entries, mapper_in, workday_date_format):
+    # we push only active employees (with past hire date)
     user_profiles = [entry_to_user_profile(e, mapper_in, workday_date_format) for e in report_entries]
-    indicators = [user_profile_to_indicator(u) for u in user_profiles]
+    indicators = [user_profile_to_indicator(u) for u in user_profiles
+                  if dateparser.parse(u.get(HIRE_DATE_FIELD)) < datetime.today()]
     return indicators
 
 
@@ -103,11 +105,11 @@ def get_workday_user_from_entry(entry, mapper_in, workday_date_format):
 
 
 def has_reached_threshold_date(num_of_days_before_hire, workday_user):
-    if not num_of_days_before_hire:
+    if not num_of_days_before_hire and num_of_days_before_hire != 0:
         return True
 
-    hire_date = dateparser.parse(workday_user.get(HIRE_DATE_FIELD))
-    today = datetime.today()
+    hire_date = dateparser.parse(workday_user.get(HIRE_DATE_FIELD)).date()
+    today = datetime.today().date()
     delta = (hire_date - today).days
     if delta > num_of_days_before_hire:
         demisto.debug(f'Skipped creating an incident for user '
@@ -126,9 +128,10 @@ def new_hire_email_already_taken(workday_user, demisto_user, email_to_user_profi
 
 
 def is_report_missing_required_user_data(workday_user):
-    if not workday_user.get(EMAIL_ADDRESS_FIELD) or not workday_user.get(EMPLOYEE_ID_FIELD):
+    if not workday_user.get(EMAIL_ADDRESS_FIELD) or not workday_user.get(EMPLOYEE_ID_FIELD) \
+            or not workday_user.get(HIRE_DATE_FIELD):
         demisto.debug(f'Skipped creating an incident for the following user profile:\n{workday_user}\n\n'
-                      f'The user profile does not contain email address/employee ID, '
+                      f'The user profile does not contain email address/employee ID/hire date, '
                       f'to fix please add the missing data to the report.')
         return True
     return False
