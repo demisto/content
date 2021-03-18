@@ -667,11 +667,22 @@ def edit_status(issue_id, status):
 
 
 def list_transitions_data_for_issue(issue_id):
+    """
+    This function performs the API call for getting a list of all possible transitions for a given issue.
+    :param issue_id: The ID of the issue.
+    :return: API raw response.
+    """
     url = f'rest/api/2/issue/{issue_id}/transitions'
     return jira_req('GET', url, resp_type='json')
 
 
 def edit_transition(issue_id, transition_name):
+    """
+    This function changes a transition for a given issue.
+    :param issue_id: The ID of the issue.
+    :param transition_name: The name of the new transition.
+    :return: None
+    """
     j_res = list_transitions_data_for_issue(issue_id)
     transitions_data = j_res.get('transitions')
     for transition in transitions_data:
@@ -684,6 +695,11 @@ def edit_transition(issue_id, transition_name):
 
 
 def list_transitions_command(args):
+    """
+    This command list all possible transitions for a given issue.
+    :param args: args['issueId']: The ID of the issue.
+    :return: CommandResults object with the list of transitions
+    """
     issue_id = args.get('issueId')
     transitions_data_list = list_transitions_data_for_issue(issue_id)
     transitions_names = [transition.get('name') for transition in transitions_data_list.get('transitions')]
@@ -1094,6 +1110,15 @@ def get_user_info_data():
 
 
 def get_modified_remote_data_command(args):
+    """
+    available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last
+    update. If the command is implemented in the integration, the get-remote-data command will only be performed on
+    incidents returned from this command, rather than on all existing incidents.
+    :param args: args['last_update']: Date string represents the last time we retrieved modified incidents for this
+     integration.
+    :return: GetModifiedRemoteDataResponse: this is the object that maintains a list of incident ids to run
+     'get-remote-data' on.
+    """
     remote_args = GetModifiedRemoteDataArgs(args)
     modified_issues_ids = []
     HEADERS['Accept'] = "application/json"
@@ -1121,7 +1146,7 @@ def get_modified_remote_data_command(args):
 
 
 def get_remote_data_command(args) -> GetRemoteDataResponse:
-    """ Mirror-in data to incident from Jira into demisto 'jira issue' incident.
+    """ Mirror-in data to incident from Jira into XSOAR 'jira issue' incident.
 
     Notes:
         1. Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
