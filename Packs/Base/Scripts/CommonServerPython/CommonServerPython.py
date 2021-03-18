@@ -4289,7 +4289,8 @@ class CommandResults:
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False, mark_as_note=False):
+                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
+                 mark_as_note=False, relations=None):
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool) -> None
         if raw_response is None:
             raw_response = outputs
@@ -4321,8 +4322,10 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
+        self.relations = relations
 
     def to_context(self):
+        relations = [] # type: list
         outputs = {}  # type: dict
         if self.readable_output:
             human_readable = self.readable_output
@@ -4377,6 +4380,9 @@ class CommandResults:
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
             content_format = EntryFormat.TEXT
 
+        if self.relations:
+            relations = [relation.to_entry() for relation in self.relations]
+
         return_entry = {
             'Type': EntryType.NOTE,
             'ContentsFormat': content_format,
@@ -4385,11 +4391,130 @@ class CommandResults:
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
+            'Relationships': relations,
             'Note': mark_as_note
         }
 
         return return_entry
 
+class EntityRelation:
+    def __init__(self, name, reverse_name, entity_a, relation_type, entity_a_family,
+                 object_type_a,
+                 entity_b, entity_b_family, object_type_b, source_reliability = "",
+                 fields = None, brand = ""):
+        """ XSOAR entity relation.
+        :type name: ``str``
+        :param name: Relation name.
+        :type reverse_name: ``str``
+        :param reverse_name: Relation reverse name.
+        :type relation_type: ``str``
+        :param relation_type: Relation type.
+        :type entity_a: ``str``
+        :param entity_a: A value, A aka Source of the relation.
+        :type entity_a_family: ``str``
+        :param entity_a_family: Entity family of type A, A aka Source of the relation. (e.g. IP/URL/...).
+        :type object_type_a: ``str``
+        :param object_type_a: Entity type B, B aka Source of the relation. (For future use).
+        :type entity_b: ``str``
+        :param entity_b: B value, B aka Source of the relation.
+        :type entity_b_family: ``str``
+        :param entity_b_family: Entity family of type B, B aka Source of the relation. (e.g. IP/URL/...)
+        :type object_type_b: ``str``
+        :param object_type_b: Entity type B, B aka Source of the relation. (For future use).
+        :type source_reliability: ``str``
+        :param source_reliability: Source_reliability.
+        :type fields: ``dict``
+        :param fields: Custom fields.
+        :type entity_a: ``str``
+        :param brand: Source brand name. (Optional)
+        """
+
+        # Relation
+        self._name = str(name)
+        self._reverse_name = str(reverse_name)
+        # if not RelationsTypes.is_valid_type(relation_type):
+        #     raise ValueError(f"Invalid relation type: {relation_type}.")
+        self._relation_type = str(relation_type)
+
+        # Entity A - Source
+        self._entity_a = str(entity_a)
+        # The type of the entity doesnt have to be a indicator type
+        # if not FeedIndicatorType.is_valid_type(entity_a_family):
+        #     raise ValueError(f"Invalid entity A family type: {entity_a_family}.")
+        self._entity_a_family = str(entity_a_family)
+        # Who will insert the relation, if its from the api then should be validated , otherwise can be set here.
+        # if not RelationsObjectType.is_valid_type(object_type_a):
+        #     raise ValueError(f"Invalid object type A: {object_type_a}.")
+
+        self._object_type_a = str(object_type_a)
+
+
+
+
+        # Entity B - Destination
+        self._entity_b = str(entity_b)
+        # if not FeedIndicatorType.is_valid_type(entity_b_family):
+        #     raise ValueError(f"Invalid entity B family type: {entity_b_family}.")
+        self._entity_b_family = str(entity_b_family)
+        # if not RelationsObjectType.is_valid_type(object_type_b):
+        #     raise ValueError(f"Invalid object type B: {object_type_b}.")
+        self._object_type_b = str(object_type_b)
+
+        # Custom fields
+        if fields:
+            self._fields = fields
+        else:
+            self._fields = {}
+
+        # Source
+        if brand:
+            self._brand = brand
+        if source_reliability:
+            if not DBotScoreReliability.is_valid_type(source_reliability):
+                raise ValueError("Invalid source reliability value",source_reliability)
+            self._source_reliability = source_reliability
+
+    def to_entry(self):
+        """ Convert object to XSOAR entry
+        :rtype: ``dict``
+        :return: XSOAR entry representation.
+        """
+        entry = {
+            "name": self._name,
+            "reverseName": self._reverse_name,
+            "type": self._relation_type,
+            "entityA": self._entity_a,
+            "entityAFamily": self._entity_a_family,
+            "objectTypeA": self._object_type_a,
+            "entityB": self._entity_b,
+            "entityBFamily": self._entity_b_family,
+            "objectTypeB": self._object_type_b,
+            "fields": self._fields,
+            "reliability": self._source_reliability
+        }
+        if self._brand:
+            entry["brand"] = self._brand
+        return entry
+
+
+    def to_indicator(self):
+        """ Convert object to XSOAR entry
+        :rtype: ``dict``
+        :return: XSOAR entry representation.
+        """
+        indicator_relation = {
+            "name": self._name,
+            "reverseName": self._reverse_name,
+            "type": self._relation_type,
+            "entityA": self._entity_a,
+            "entityAFamily": self._entity_a_family,
+            "objectTypeA": self._object_type_a,
+            "entityB": self._entity_b,
+            "entityBFamily": self._entity_b_family,
+            "objectTypeB": self._object_type_b,
+            "fields": self._fields,
+        }
+        return indicator_relation
 
 def return_results(results):
     """

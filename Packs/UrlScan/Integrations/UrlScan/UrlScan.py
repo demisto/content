@@ -10,6 +10,49 @@ import json as JSON
 from urlparse import urlparse
 from requests.utils import quote  # type: ignore
 
+""" RELATIONSHIP TYPE"""
+RELATIONSHIP_TYPE = {
+    'lists': {
+        'domains': {
+            'indicator_type': 'Domain',
+            'name': 'related to',
+            'reversed_name': 'related to'
+        },
+        'hashes': {
+            'indicator_type': 'File',
+            'name': 'related to',
+            'reversed_name': 'related to'
+        },
+        'ips': {
+            'indicator_type': 'IP',
+            'name': 'related to',
+            'reversed_name': 'related to'
+
+        },
+        'linkDomains': {
+            'indicator_type': 'Domain',
+            'name': 'related to',
+            'reversed_name': 'related to'
+        },
+        'urls': {
+            'indicator_type': 'URL',
+            'name': 'related to',
+            'reversed_name': 'related to'
+        }
+    },
+    'page': {
+        'domain': {
+            'indicator_type': 'Domain',
+            'name': 'hosted on',
+            'reversed_name': 'hosts'
+        },
+        'ip': {
+            'indicator_type': 'IP',
+            'name': 'hosted on',
+            'reversed_name': 'hosts'
+        }
+    }
+}
 
 """ POLLING FUNCTIONS"""
 try:
@@ -167,6 +210,41 @@ def urlscan_submit_url():
     return r
 
 
+def create_relationship(scan_type, field, entity_a, object_type_a, entity_b, object_type_b):
+    relations_type = 'indicatorToIndicator'
+    entity_a_family = 'Indicator'
+    entity_b_family = 'Indicator'
+    brand = 'urlscan.io'
+    return EntityRelation(name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('name', ''),
+                          reverse_name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('reversed_name', ''),
+                          relation_type=relations_type,
+                          entity_a=entity_a,
+                          entity_a_family=entity_a_family,
+                          object_type_a=object_type_a,
+                          entity_b=entity_b,
+                          entity_b_family=entity_b_family,
+                          object_type_b=object_type_b,
+                          source_reliability='F - Reliability cannot be judged',  #???????????
+                          brand=brand)
+
+
+def create_list_relationships(scans_dict, url):
+    relationships_list = []
+    for scan_name, scan_dict in scans_dict.items():
+        fields = RELATIONSHIP_TYPE.get(scan_name).keys()
+        for field in fields:
+            indicators = scan_dict.get(field)
+            if isinstance(indicators, str):
+                indicators = [indicators]
+            relation_dict = RELATIONSHIP_TYPE.get(scan_name, {}).get(field)
+            indicator_type = relation_dict.get('indicator_type')
+            for indicator in indicators:
+                relation = create_relationship(scan_type=scan_name, field=field, entity_a=url, object_type_a='url',
+                                               entity_b=indicator, object_type_b=indicator_type)
+                relationships_list.append(relation)
+    return relationships_list
+
+
 def format_results(uuid):
     # Scan Lists sometimes returns empty
     num_of_attempts = 0
@@ -311,7 +389,8 @@ def format_results(uuid):
         'URL': url_cont,
         outputPaths['file']: file_context
     }
-
+    relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query)
+    relations = [relation.to_entry() for relation in relationships]
     if 'screenshotURL' in scan_tasks:
         human_readable['Screenshot'] = scan_tasks['screenshotURL']
         screen_path = scan_tasks['screenshotURL']
@@ -323,7 +402,8 @@ def format_results(uuid):
         'ContentsFormat': formats['markdown'],
         'Contents': response,
         'HumanReadable': tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
-        'EntryContext': ec
+        'EntryContext': ec,
+        'Relationships': relations,
     })
 
     if len(cert_md) > 0:

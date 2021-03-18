@@ -8,7 +8,7 @@ import gzip
 import urllib3
 from dateutil.parser import parse
 from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
-
+import traceback
 # disable insecure warnings
 urllib3.disable_warnings()
 
@@ -277,8 +277,11 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
         else:
             try:
                 field_value = re.match(regex_extractor, raw_json[field]).group(1)  # type: ignore
-            except Exception:
-                field_value = raw_json[field]  # type: ignore
+            except Exception as e:
+                return_error(raw_json[field])
+                return_error(traceback.format_exc())  # p
+                raise DemistoException(f'yana test {regex_extractor}')
+                # field_value = raw_json[field]  # type: ignore
 
         field_value = formatter_string.format(field_value) if formatter_string else field_value
         field_value = field_mapper_function(field_value) if field_mapper_function else field_value
@@ -309,11 +312,24 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, auto_detect,
                                                               value)
                     raw_json['type'] = indicator_type
+
+                    relationship = EntityRelation(
+                        name='indicates',
+                        reverse_name='communicates with',
+                        relation_type='indicatorToIndicator',
+                        entity_a=value,
+                        entity_a_family='Indicator',
+                        object_type_a=indicator_type,
+                        entity_b=fields_mapping.get('malwarefamily'),
+                        entity_b_family='Indicator',
+                        object_type_b='Malware',
+                    )
                     indicator = {
                         'value': value,
                         'type': indicator_type,
                         'rawJSON': raw_json,
-                        'fields': fields_mapping
+                        'fields': fields_mapping,
+                        'relationships': [relationship.to_indicator()]
                     }
                     indicator['fields']['tags'] = client.tags
 
@@ -324,6 +340,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     # exit the loop if we have more indicators than the limit
                     if limit and len(indicators) >= limit:
                         return indicators
+                    demisto.info(f"indicator_yana  {indicator}")
 
     return indicators
 
