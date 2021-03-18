@@ -496,7 +496,8 @@ def get_scan_status_command():
 
 
 def is_valid_scan_id(scan_id):
-    return not (scan_id == "" or scan_id.isalpha())
+    # Make sure that the scan id is not empty and contains only digits.
+    return not (scan_id == "" or not scan_id.isdigit())
 
 
 def pause_scan_command():
