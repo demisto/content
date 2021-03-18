@@ -18,7 +18,7 @@ STATUS_DICT = {
 
 ROUND_SCORING = 2
 PLAYGROUND_PATTERN = '[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}'
-FIRST_COLUMNS_INCIDENTS_DISPLAY = ['Incident ID', 'created', 'name']
+FIRST_COLUMNS_INCIDENTS_DISPLAY = ['incident ID', 'created', 'name']
 FIELDS_TO_REMOVE_TO_DISPLAY = ['id']
 INCIDENT_FIELDS_TO_USE = ['indicators']
 FIELD_INDICATOR_TYPE = 'indicator_type'
@@ -366,12 +366,12 @@ def organize_data(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dic
     :return: Clean DataFrame of incident
     """
     similar_incidents = similar_incidents.reset_index().rename(columns={'index': 'id'})
-    similar_incidents['Incident ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
+    similar_incidents['incident ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     similar_incidents['Identical indicators'] = similar_incidents['Identical indicators'].apply(
         lambda _ids: '\n'.join(
             [indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in  # type: ignore
              _ids.split(',')]))  # type: ignore
-    similar_incidents = similar_incidents[['Incident ID', 'id', 'Identical indicators', 'similarity indicators']]
+    similar_incidents = similar_incidents[['incident ID', 'id', 'Identical indicators', 'similarity indicators']]
     similar_incidents = similar_incidents[similar_incidents['similarity indicators'] > threshold]
     similar_incidents.sort_values(['similarity indicators'], inplace=True, ascending=False)
     return similar_incidents.head(max_incidents_to_display)
