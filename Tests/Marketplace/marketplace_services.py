@@ -1347,7 +1347,7 @@ class Pack(object):
                     # Handling modified old release notes files, if there are any
                     # add condition for this to happen only if there are updated rn files
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines()
-                    # add clause 9 handeling
+                    # add clause 9 handling
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
