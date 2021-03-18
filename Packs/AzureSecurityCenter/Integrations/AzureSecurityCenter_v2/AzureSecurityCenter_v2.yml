@@ -481,5 +481,7 @@ script:
   type: python
   subtype: python3
 tests:
-- Azure SecurityCenter - Test
+- Azure SecurityCenter - Test self deployed
+- Azure SecurityCenter - Test dev
+- Azure SecurityCenter - Test prod
 fromversion: 5.0.0

@@ -396,17 +396,17 @@
         },
         {
             "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
+            "playbookID": "Azure SecurityCenter - Test prod",
             "instance_names": "ms_azure_sc_prod"
         },
         {
             "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
+            "playbookID": "Azure SecurityCenter - Test dev",
             "instance_names": "ms_azure_sc_dev"
         },
         {
             "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
+            "playbookID": "Azure SecurityCenter - Test self deployed",
             "instance_names": "ms_azure_sc_self_deployed"
         },
         {
