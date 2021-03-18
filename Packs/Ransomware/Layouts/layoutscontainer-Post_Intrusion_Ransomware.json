@@ -564,12 +564,12 @@
                 "readOnly": false,
                 "type": ""
             }
-        ],
+        ]
+    },
     "group": "incident",
     "id": "Post Intrusion Ransomware",
     "name": "Post Intrusion Ransomware",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0"
-    }
 }
