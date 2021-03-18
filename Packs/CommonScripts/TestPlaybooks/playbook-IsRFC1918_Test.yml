@@ -1,0 +1,214 @@
+id: IsRFC1918-Test
+version: -1
+name: IsRFC1918-Test
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4f036a14-bfa0-4448-8cf6-97741dc90bfd
+    type: start
+    task:
+      id: 4f036a14-bfa0-4448-8cf6-97741dc90bfd
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 287535e2-fcec-48fa-8251-71ae3e369c0f
+    type: regular
+    task:
+      id: 287535e2-fcec-48fa-8251-71ae3e369c0f
+      version: -1
+      name: IsRFC1918 as automation
+      description: A filter that determines whether an IPv4 address is in the private
+        RFC-1918 address space (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16).  For more
+        information, see https://en.wikipedia.org/wiki/Private_network
+      scriptName: IsRFC1918Address
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        complex:
+          root: IP
+          accessor: Address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5b0ba7ba-eb59-4d40-8ff7-49769ab5c76c
+    type: regular
+    task:
+      id: 5b0ba7ba-eb59-4d40-8ff7-49769ab5c76c
+      version: -1
+      name: IsRFC1918 as filter
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: IP.Address
+          filters:
+          - - operator: IsRFC1918Address
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ad7bf510-f5b6-4e3a-88fb-05368c82bbfa
+    type: regular
+    task:
+      id: ad7bf510-f5b6-4e3a-88fb-05368c82bbfa
+      version: -1
+      name: Delete all context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6179511d-311d-4e65-8896-bb7cecc2d566
+    type: regular
+    task:
+      id: 6179511d-311d-4e65-8896-bb7cecc2d566
+      version: -1
+      name: auto extract 10.0.0.0
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      value:
+        simple: 10.0.0.0
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: ce9c5c93-fa2f-4662-8c34-a7687cf61268
+    type: title
+    task:
+      id: ce9c5c93-fa2f-4662-8c34-a7687cf61268
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
