@@ -13,7 +13,8 @@
         {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 700
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
