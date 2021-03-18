@@ -2884,13 +2884,13 @@
         {
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_currently__active",
-            "playbookID": "playbook-feodotrackeripblock_test",
+            "playbookID": "playbook-feodotrackeripblock_test_currently__active",
             "fromversion": "5.5.0"
         },
         {
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_30_days",
-            "playbookID": "playbook-feodotrackeripblock_test",
+            "playbookID": "playbook-feodotrackeripblock_test_30_days",
             "fromversion": "5.5.0"
         },
         {
