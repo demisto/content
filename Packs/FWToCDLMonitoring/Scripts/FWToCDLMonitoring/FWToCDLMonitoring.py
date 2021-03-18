@@ -95,7 +95,7 @@ for current_fw in fw_monitor_list:
             FW_OK.append(current_fw)
 
 
-all_results = [ {'FW OK': FW_OK, 'FW KO': FW_KO} ]
+all_results = [{'FW OK': FW_OK, 'FW KO': FW_KO}]
 
 command_results = CommandResults(
     outputs_prefix='CDL.monitoring',
