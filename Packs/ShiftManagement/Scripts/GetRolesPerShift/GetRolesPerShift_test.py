@@ -42,7 +42,7 @@ def test_get_shifts(mocker):
     main()
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == """### Roles Per Shift
+    assert results[0] == """Roles Per Shift
 |Hours / Days|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|
 |---|---|---|---|---|---|---|---|
 | __0:00 - 1:00__ |  | Shift1, Shift2 | Shift1, Shift2 | Shift1, Shift2 | Shift2 | Shift1, Shift2 | Shift1, Shift2 |

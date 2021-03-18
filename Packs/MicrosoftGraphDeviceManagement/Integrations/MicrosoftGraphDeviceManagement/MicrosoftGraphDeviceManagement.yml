@@ -472,7 +472,8 @@ script:
     name: msgraph-windows-device-defender-update-signatures
   - arguments:
     - auto: PREDEFINED
-      default: true
+      default: false
+      defaultValue: 'true'
       description: Whether to keep the user's data or not. (Default is set to true)
       isArray: false
       name: keep_user_data
@@ -496,7 +497,7 @@ script:
     name: msgraph-clean-windows-device
   - arguments:
     - auto: PREDEFINED
-      default: true
+      defaultValue: 'true'
       description: Whether to peformn quick scan or not. (Default is set to true)
       isArray: false
       name: quick_scan
@@ -518,7 +519,7 @@ script:
     name: msgraph-windows-device-defender-scan
   - arguments:
     - auto: PREDEFINED
-      default: true
+      defaultValue: 'true'
       description: Whether to keep enrollment data or not. (Default is set to true)
       isArray: false
       name: keep_enrollment_data
@@ -528,7 +529,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      defaultValue: 'true'
       description: Whether to keep the user's data or not. (Default is set to true)
       isArray: false
       name: keep_user_data
@@ -568,7 +569,8 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
+      defaultValue: 'false'
       description: Whether to enable calendar sync or not. (Default is set to false)
       isArray: false
       name: calendar_sync_enabled
@@ -578,7 +580,8 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
+      defaultValue: 'false'
       description: Whether to enable password rotation or not. (Default is set to
         false)
       isArray: false
@@ -866,7 +869,7 @@ script:
         unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
         unresponsive, compromised, misconfigured.
       type: String
-  dockerimage: demisto/crypto:1.0.0.12410
+  dockerimage: demisto/crypto:1.0.0.14297
   isfetch: false
   longRunning: false
   longRunningPort: false

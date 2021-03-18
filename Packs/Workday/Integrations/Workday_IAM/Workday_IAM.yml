@@ -42,18 +42,25 @@ configuration:
   name: first_run
   required: false
   type: 8
-- name: fetch_samples
-  display: Fetch Samples
-  required: false
+- additionalinfo: If checked, the fetch incidents command will sample (at most) five
+    incidents. Use only to sample incidents for classification & mapping.
   defaultvalue: 'false'
-  additionalinfo: If checked, the fetch incidents command will sample (at most) five incidents.
-    Use only to sample incidents for classification & mapping.
+  display: Fetch Samples
+  name: fetch_samples
+  required: false
   type: 8
+- defaultvalue: '%m/%d/%Y'
+  display: Date Format in Workday Report
+  hidden: false
+  name: workday_date_format
+  required: false
+  type: 0
 description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: Workday IAM
 script:
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false

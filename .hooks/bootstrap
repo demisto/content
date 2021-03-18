@@ -96,7 +96,9 @@ else
         fi
 
         PY3CMD="python3"
-        if command -v python3.8 >/dev/null 2>&1; then
+        if command -v python3.9 >/dev/null 2>&1; then
+            PY3CMD="python3.9"
+        elif command -v python3.8 >/dev/null 2>&1; then
             PY3CMD="python3.8"
         elif command -v python3.7 >/dev/null 2>&1; then
             PY3CMD="python3.7"

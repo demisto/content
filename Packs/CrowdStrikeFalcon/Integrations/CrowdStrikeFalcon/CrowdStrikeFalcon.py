@@ -94,7 +94,8 @@ SEARCH_DEVICE_KEY_MAP = {
     'os_version': 'OS',
     'mac_address': 'MacAddress',
     'first_seen': 'FirstSeen',
-    'last_seen': 'LastSeen'
+    'last_seen': 'LastSeen',
+    'status': 'Status',
 }
 
 ''' SPLIT KEY DICTIONARY '''
@@ -216,7 +217,19 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 LOG(err_msg)
                 token = get_token(new_token=True)
                 headers['Authorization'] = 'Bearer {}'.format(token)
-                return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
+                return http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    data=data,
+                    headers=headers,
+                    files=files,
+                    json=json,
+                    safe=safe,
+                    get_token_flag=False,
+                    status_code=status_code,
+                    no_json=no_json,
+                )
             elif safe:
                 return None
             return_error(err_msg)
@@ -1532,7 +1545,7 @@ def search_device_command():
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
     entries = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
-    headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen']
+    headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
     hr = tableToMarkdown('Devices', entries, headers=headers, headerTransform=pascalToSpace)
     ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries}
     return create_entry_object(contents=raw_res, ec=ec, hr=hr)

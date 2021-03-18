@@ -34,10 +34,6 @@
 					"complex": null,
 					"simple": "givenname"
 				},
-				"id": {
-					"complex": null,
-					"simple": "oktaid"
-				},
 				"lastName": {
 					"complex": null,
 					"simple": "surname"

@@ -1,7 +1,7 @@
 {
  "id": "incident_chronicleautoblockentities",
  "version": -1,
- "modified": "2020-07-27T13:27:15.496890733+05:30",
+ "modified": "2020-09-22T11:13:50.542139696+05:30",
  "name": "Chronicle Auto Block Entities",
  "ownerOnly": false,
  "description": "Auto block the detected suspicious Domain(s) and URL(s). Select 'yes' to automatically start the process of blocking the entities, 'no' otherwise.",
@@ -23,10 +23,7 @@
  "content": true,
  "group": 0,
  "hidden": false,
- "associatedTypes": [
-  "Chronicle IOC Domain Matches"
- ],
- "associatedToAll": false,
+ "associatedToAll": true,
  "unmapped": false,
  "unsearchable": false,
  "caseInsensitive": true,

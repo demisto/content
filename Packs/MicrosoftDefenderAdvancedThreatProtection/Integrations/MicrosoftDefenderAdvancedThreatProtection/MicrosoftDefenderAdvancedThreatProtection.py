@@ -543,12 +543,13 @@ class MsClient:
         cmd_url = '/investigations'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def start_investigation(self, machine_id, comment):
+    def start_investigation(self, machine_id, comment, timeout):
         """Start automated investigation on a machine.
 
         Args:
             machine_id (str): The Machine ID
             comment (str): Comment to associate with the action
+            timeout (int): Connection timeout
 
         Returns:
             dict. Investigation's entity
@@ -557,7 +558,7 @@ class MsClient:
         json_data = {
             'Comment': comment,
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, timeout=timeout)
 
     def get_domain_statistics(self, domain):
         """Retrieves the statistics on the given domain.
@@ -749,7 +750,7 @@ class MsClient:
 
     def update_indicator(
             self, indicator_id: str, expiration_date_time: str,
-            description: Optional[str], severity: Optional[str]
+            description: Optional[str], severity: Optional[int]
     ) -> Dict:
         """Updates a given indicator
 
@@ -1542,7 +1543,8 @@ def start_investigation_command(client: MsClient, args: dict):
                'ComputerDNSName', 'TriggeringAlertID']
     machine_id = args.get('machine_id')
     comment = args.get('comment')
-    response = client.start_investigation(machine_id, comment)
+    timeout = int(args.get('timeout', 50))
+    response = client.start_investigation(machine_id, comment, timeout)
     investigation_id = response['id']
     investigation_data = get_investigation_data(response)
     human_readable = tableToMarkdown(f'Starting investigation {investigation_id} on {machine_id} machine:',
@@ -2094,7 +2096,7 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
             assert 0 <= confidence <= 100, 'The confidence argument must be between 0 and 100'
     except ValueError:
         raise DemistoException('The confidence argument must be an integer.')
-    severity = NUMBER_TO_SEVERITY.get(args.get('severity', 'Informational'))
+    severity = SEVERITY_TO_NUMBER.get(args.get('severity', 'Informational'))
     tags = argToList(args.get('tags'))
     body = assign_params(
         action=action,
@@ -2237,7 +2239,7 @@ def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, D
         human readable, outputs
     """
     indicator_id = args.get('indicator_id', '')
-    severity = NUMBER_TO_SEVERITY.get(args.get('severity', 'Informational'))
+    severity = SEVERITY_TO_NUMBER.get(args.get('severity', 'Informational'))
     expiration_time = get_future_time(args.get('expiration_time', ''))
     description = args.get('description')
     if description is not None:

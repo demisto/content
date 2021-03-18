@@ -235,15 +235,7 @@
       "isVisible": true
      },
      {
-      "fieldId": "incident_chronicleassetsupportcontact",
-      "isVisible": true
-     },
-     {
       "fieldId": "incident_chronicleautoblockentities",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_chronicleskipentityisolation",
       "isVisible": true
      },
      {

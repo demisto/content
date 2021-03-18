@@ -1,0 +1,26 @@
+{
+  "eventId": "event-id-1",
+  "description": "This is a description",
+  "date": 1601145608054,
+  "sourceApplication": "source-app",
+  "severity": 3,
+  "items": [
+    {
+      "itemId": "file-id-1",
+      "itemName": "test.txt",
+      "type": "Type1",
+      "createdAt": 0,
+      "severity": 3,
+      "labels": [
+        {
+          "name": "label-1"
+        }
+      ]
+    }
+  ],
+  "insights": [
+    {
+      "name": "insight-1"
+    }
+  ]
+}

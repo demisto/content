@@ -1,0 +1,23 @@
+{
+    "fromVersion": "5.0.0",
+    "autorun": true,
+    "color": "#AA00FF",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "GraHighRiskUser",
+    "locked": false,
+    "name": "GraHighRiskUser",
+    "playbookId": "GraHighRiskUser",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "vcShouldIgnore": false,
+    "prevName": "GraHighRiskUser"
+}

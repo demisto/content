@@ -17,7 +17,7 @@ OAUTH = 'https://accounts.zoho.com/oauth/v2/token'
 
 REQUEST_FIELDS = ['subject', 'description', 'request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority',
                   'service_category', 'requester', 'assets', 'site', 'group', 'technician', 'category', 'subcategory',
-                  'item', 'email_ids_to_notify', 'is_fcr', 'resources', 'udf_fields']
+                  'item', 'email_ids_to_notify', 'is_fcr', 'resources', 'udf_fields', 'update_reason']
 FIELDS_WITH_NAME = ['request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority', 'service_category',
                     'requester', 'site', 'group', 'technician', 'category', 'subcategory', 'item']
 FIELDS_TO_IGNORE = ['has_draft', 'cancel_flag_comments']

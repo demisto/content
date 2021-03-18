@@ -2,7 +2,7 @@
     "name": "Cofense Triage",
     "description": "Use the Cofense Triage integration to manage reports and attachments.",
     "support": "partner",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.1.7",
     "author": "Cofense",
     "url": "https://cofense.com/contact-support/",
     "email": "support@cofense.com",

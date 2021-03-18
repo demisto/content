@@ -1,4 +1,4 @@
-from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_millisecond_timestamp, feed_main
+from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main
 import requests_mock
 import demistomock as demisto
 
@@ -127,17 +127,29 @@ def test_custom_fields_creator():
     assert "old_filed2" not in custom_fields.keys()
 
 
-def test_datestring_to_millisecond_timestamp():
-    datesting1 = "2020-02-10 13:39:14"
-    datesting2 = "2020-02-10T13:39:14"
-    datesting3 = "2020-02-10 13:39:14.123"
-    datesting4 = "2020-02-10T13:39:14.123"
-    datesting5 = "2020-02-10T13:39:14Z"
-    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting1)
-    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting2)
-    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting5)
-    assert 1581341954123 == datestring_to_millisecond_timestamp(datesting3)
-    assert 1581341954123 == datestring_to_millisecond_timestamp(datesting4)
+def test_datestring_to_server_format():
+    """
+    Given
+    - A string represting a date.
+
+    When
+    - running datestring_to_server_format on the date.
+
+    Then
+    - Ensure the datestring is converted to the ISO-8601 format.
+    """
+    datestring1 = "2020-02-10 13:39:14"
+    datestring2 = "2020-02-10T13:39:14"
+    datestring3 = "2020-02-10 13:39:14.123"
+    datestring4 = "2020-02-10T13:39:14.123"
+    datestring5 = "2020-02-10T13:39:14Z"
+    datestring6 = "2020-11-01T04:16:13-04:00"
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring1)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring2)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring3)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring4)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring5)
+    assert '2020-11-01T08:16:13Z' == datestring_to_server_format(datestring6)
 
 
 def test_get_feed_config():

@@ -34,7 +34,7 @@ tasks:
     taskid: 3fee81c5-3b59-4e8e-8ee7-e5e09da65c8a
     type: regular
     task:
-      id: c45723e1-b428-41da-89ad-7e11c82c390e
+      id: 3fee81c5-3b59-4e8e-8ee7-e5e09da65c8a
       version: -1
       name: Delete Context
       description: 'Deletes previous context '
@@ -67,7 +67,7 @@ tasks:
     taskid: ac0556df-aba3-4a09-8493-5f689b6c4f70
     type: regular
     task:
-      id: d28c1a0a-18eb-429c-803c-b9fa04bdf384
+      id: ac0556df-aba3-4a09-8493-5f689b6c4f70
       version: -1
       name: Add new 'TEST' category
       description: Will Add new API-managed category.
@@ -101,7 +101,7 @@ tasks:
     taskid: 87314ac8-4c2b-4265-8424-c6e9eae5a251
     type: regular
     task:
-      id: 8ac94280-84c1-465f-88da-a48ac24c5eaa
+      id: 87314ac8-4c2b-4265-8424-c6e9eae5a251
       version: -1
       name: Get new category details
       description: Query by category name
@@ -135,7 +135,7 @@ tasks:
     taskid: 405a4d19-0f8e-4c83-80a4-32e558f876ed
     type: regular
     task:
-      id: 8d9036f8-48b8-44fb-84e2-2ac5fe0a0d0a
+      id: 405a4d19-0f8e-4c83-80a4-32e558f876ed
       version: -1
       name: Add URLs to 'TEST' category
       description: |-
@@ -173,7 +173,7 @@ tasks:
     taskid: e9517bb9-565f-4c71-8625-66917e1a2516
     type: regular
     task:
-      id: 1bd3107e-0132-4560-8b91-6a71ad091ca3
+      id: e9517bb9-565f-4c71-8625-66917e1a2516
       version: -1
       name: Delete URL from 'TEST' category
       description: Delete https://test.com from the category URL list
@@ -209,7 +209,7 @@ tasks:
     taskid: 67c019d5-a69d-4ea0-8dc8-8095cfd11c13
     type: regular
     task:
-      id: cc9e9986-06e7-4986-86a0-cc90cbcada96
+      id: 67c019d5-a69d-4ea0-8dc8-8095cfd11c13
       version: -1
       name: Get 'TEST' category details after alterations
       script: Forcepoint|||fp-get-category-detailes
@@ -241,7 +241,7 @@ tasks:
     taskid: 7f927d99-8eb6-428d-8fe0-e4d920d4e046
     type: regular
     task:
-      id: ece37b21-c90b-4240-8681-98c7f46bb12f
+      id: 7f927d99-8eb6-428d-8fe0-e4d920d4e046
       version: -1
       name: Delete 'TEST' category
       description: Using the category ID

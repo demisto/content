@@ -195,10 +195,6 @@
 							}
 						]
 					}
-				},
-				"Email to": {
-					"simple": "to.[0]",
-					"complex": null
 				}
 			},
 			"dontMapEventToLabels": false

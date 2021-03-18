@@ -1,0 +1,43 @@
+commonfields:
+  id: URLSSLVerification
+  version: -1
+name: URLSSLVerification
+script: ''
+type: python
+subtype: python2
+tags:
+- url
+- Enrichment
+comment: Verify URL SSL certificate
+system: true
+args:
+- name: url
+  required: true
+  default: true
+  description: Comma separated list of URLs to verify.
+  isArray: true
+outputs:
+- contextPath: URL
+  description: The URL object
+- contextPath: URL.Data
+  description: The URL address
+  type: string
+- contextPath: URL.Malicious
+  description: The malicious description
+- contextPath: DBotScore
+  description: The DBotScore object
+- contextPath: DBotScore.Indicator
+  description: The indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator's type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The reputation vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The reputation score
+  type: number
+scripttarget: 0
+runonce: false
+fromversion: 5.0.0

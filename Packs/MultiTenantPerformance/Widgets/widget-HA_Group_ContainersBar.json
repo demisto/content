@@ -1,0 +1,17 @@
+{
+ "id": "ha-group-container-bar",
+ "version": -1,
+ "fromVersion": "6.1.0",
+ "name": "Average Docker Container Count per HA Group",
+ "description": "Average number of Docker containers used per HA Group.",
+ "dataType": "system",
+ "widgetType": "bar",
+ "query": "host.account-docker-containers",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "haGroup"
+  ]
+ },
+ "size": 61
+}

@@ -7,12 +7,8 @@ import requests
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
+handle_proxy()
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', False)
 URL = demisto.params()['server']
 XML_NS = demisto.params()['xml_ns']

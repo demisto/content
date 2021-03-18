@@ -105,7 +105,7 @@ tasks:
     taskid: 402c0b9a-94f9-4a17-82a5-0478df6c5da9
     type: playbook
     task:
-      id: Detonate URL - CrowdStrike Falcon X
+      id: 402c0b9a-94f9-4a17-82a5-0478df6c5da9
       version: -1
       name: Detonate URL - CrowsStrike Falcon X
       playbookName: Detonate URL - CrowsStrike Falcon X

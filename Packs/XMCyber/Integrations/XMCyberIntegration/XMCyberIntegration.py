@@ -474,7 +474,7 @@ def pretty_print_entity(entity: Any):
 
 
 def affected_critical_assets_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    time_id = args.get('time_id')
+    time_id = args.get('timeId')
     if not time_id:
         time_id = 'timeAgo_days_7'
     entity_ids = argToList(args.get('entityId'))
@@ -513,7 +513,7 @@ def affected_critical_assets_list_command(xm: XM, args: Dict[str, Any]) -> Comma
 
 
 def affected_entities_list_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
-    time_id = args.get('time_id')
+    time_id = args.get('timeId')
     if not time_id:
         time_id = 'timeAgo_days_7'
     entity_ids = argToList(args.get('entityId'))

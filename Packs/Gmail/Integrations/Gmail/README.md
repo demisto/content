@@ -24,7 +24,7 @@ There are several procedures you have to perform in Google before configuring th
 8.  Select Key type **JSON** and click **CREATE**.
 9.  Click **DONE**.<br/>A key pair is generated and automatically downloads.
 10.  In the **Actions** column, select the service and then click **edit**.
-    ![mceclip1.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/gmail-enable.png) 
+    ![mceclip1.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip1.png) 
 11.  Under the show domain wide delegation, select **Enable G Suite Domain-wide Delegation**.
     ![gmail-_enable.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/gmail-enable.png)  
     NOTE: Copy the value of the Unique ID for the client name in step 2 in Delegate Domain-wide Authority to Your Service Account. 
@@ -39,7 +39,7 @@ There are several procedures you have to perform in Google before configuring th
     
 ``` https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.device.mobile.action,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/admin.directory.device.chromeos,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/gmail.readonly,https://mail.google.com,https://www.googleapis.com/auth/gmail.compose ```
     
-![Setup Account](./doc_imgs/mceclip1.png)
+![Setup Account](./doc_imgs/mceclip1-1.png)
 
 ### Get an Immutable Google Apps ID Parameters
 In order to revoke/fetch a user role, you need an Immutable Google Apps ID param.
@@ -59,7 +59,7 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | adminEmail | Email of user with admin privileges \(the Password refers to the Service Account private key\) | True |
+    | adminEmail | Email of user with admin privileges \(the Password refers to the content of the Service Account file\) | True |
     | gappsID | Immutable Google Apps Id -  Only the Cxxxxxxxx, section is needed| False |
     | query | Events query \(e.g. "from:example@demisto.com"\) The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
     | queryUserKey | Events user key \(e.g. example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
@@ -188,7 +188,7 @@ Lists all tokens associated with a specified user. applications.
             "openid",
             "https://www.googleapis.com/auth/calendar"
         ],
-        "UserKey": "115824619743385532879"
+        "UserKey": "123456789"
     }
 }
 ```
@@ -198,11 +198,11 @@ Lists all tokens associated with a specified user. applications.
 >### Tokens:
 >|DisplayText|ClientId|Kind|Scopes|UserKey|
 >|---|---|---|---|---|
->| Google APIs Explorer | 292824132082.apps.googleusercontent.com | admin#directory#token | openid,<br/>https://www.googleapis.com/auth/calendar | 115824619743385532879 |
->|Go Phish!|422358954086-4fvv287aojmge1qaqe9m5mmgmbuhg1hj.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/gmail.addons.current.message.readonly, <br/> https://www.googleapis.com/auth/script.send_mail, <br/> https://www.googleapis.com/auth/userinfo.email, <br/> openid, <br/> https://www.googleapis.com/auth/script.storage, <br/> https://www.googleapis.com/auth/gmail.addons.execute, <br/> https://www.googleapis.com/auth/admin.directory.user.readonly|103020731686044834269|
->|Demisto KMS DEV|950822307886-oiv25bpm32dtp21eabn2k5lf1ba7koum.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/cloud-platform|103020731686044834269|
->|Google Data Studio|371237729773-oj8m98u7esgqep8snt9aold136opo3fi.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/bigquery.readonly|103020731686044834269|
->|Postman|805864674475-3abs2rivkn7kreou30b8ru8esnti4oih.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/userinfo.profile, <br/> https://www.googleapis.com/auth/userinfo.email|103020731686044834269|
+>| Google APIs Explorer | 292824132082.apps.googleusercontent.com | admin#directory#token | openid,<br/>`https://www.googleapis.com/auth/calendar` | 123456789 |
+>|Go Phish!|422358954086-4fvv287aojmge1qaqe9m5mmgmbuhg1hj.apps.googleusercontent.com|admin#directory#token|`https://www.googleapis.com/auth/gmail.addons.current.message.readonly`, <br/> `https://www.googleapis.com/auth/script.send_mail`, <br/> `https://www.googleapis.com/auth/userinfo.email`, <br/> openid, <br/> `https://www.googleapis.com/auth/script.storage`, <br/> `https://www.googleapis.com/auth/gmail.addons.execute`, <br/> `https://www.googleapis.com/auth/admin.directory.user.readonly`|123456789|
+>|Demisto KMS DEV|950822307886-oiv25bpm32dtp21eabn2k5lf1ba7koum.apps.googleusercontent.com|admin#directory#token|`https://www.googleapis.com/auth/cloud-platform`|123456789|
+>|Google Data Studio|371237729773-oj8m98u7esgqep8snt9aold136opo3fi.apps.googleusercontent.com|admin#directory#token|`https://www.googleapis.com/auth/bigquery.readonly`|123456789|
+>|Postman|805864674475-3abs2rivkn7kreou30b8ru8esnti4oih.apps.googleusercontent.com|admin#directory#token|`https://www.googleapis.com/auth/userinfo.profile`, <br/> `https://www.googleapis.com/auth/userinfo.email`|123456789|
 
 ### gmail-get-user
 ***
@@ -3397,7 +3397,7 @@ Lists all Google users in a domain.
 | customer | The unique ID for the customers Google account. Default is the value specified in the integration configuration. For a multi-domain account, to fetch all groups for a customer, use this field instead of domain. | Optional | 
 | max-results | Maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. | Optional | 
 | custom-field-mask | A comma-separated list of schema names. All fields from these schemas are fetched. Must be set when projection=custom. | Optional | 
-| query | Query string search. Should be of the form "". Complete documentation is at https://developers.google.com/admin-suser/directory/v1/guides/search-users | Optional | 
+| query | Query string search. Should be of the form "name:value". Complete documentation is at https://developers.google.com/admin-sdk/directory/v1/guides/search-users | Optional | 
 | show-deleted | If true, retrieves the list of deleted users. Default is false. | Optional | 
 | sort-order | How to sort out results. Can be ASCENDING/DESCENDING | Optional | 
 | token | Token to authorize and authenticate the action. | Optional | 
