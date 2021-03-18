@@ -39,7 +39,7 @@ configuration:
   hidden: false
   name: cert_text
   required: false
-  type: 4
+  type: 12
 - additionalinfo: Add a key file in text format to use to connect to the CyberArk
     AIM server.
   display: Key File as Text
