@@ -1207,6 +1207,47 @@ class Pack(object):
 
         return changelog, changelog_latest_rn_version
 
+    # call this func only if we have modified rn files
+    def get_modified_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion, changelog, modified_rn_files):
+        """
+
+        Returns:
+
+        """
+        modified_versions_dict: dict = dict()
+
+        for rn_filename in modified_rn_files: # rn file needs to be as in the format of the items in os.listdir(release_notes_dir)
+            _version = rn_filename.replace('.md', '')
+            version = _version.replace('_', '.')
+            if changelog.get(version) and LooseVersion(version) <= changelog_latest_rn_version:
+                # The modified file is not the last rn file
+                with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
+                    rn_lines = rn_file.read()
+                modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
+            else:
+                same_block_versions_dict, higher_nearest_version  = self.get_same_block_versions(version, release_notes_dir, changelog) # the dicts items should be clean lines
+                modified_versions_dict[higher_nearest_version] = aggregate_release_notes_for_marketplace(same_block_versions_dict)
+
+        return modified_versions_dict
+
+    def get_same_block_versions(self, release_notes_dir: str, version: str, changelog, ):
+        same_block_versions_dict: dict = dict()
+        versions = [LooseVersion(item) for item in changelog.keys()]
+        higher_versions = [item for item in versions if item < version]
+        lower_versions = [item for item in versions if item > version]
+        higher_nearest_version = min(higher_versions)
+        lower_nearest_version = max(lower_versions)
+        for filename in sorted(os.listdir(release_notes_dir)):
+            _current_version = filename.replace('.md', '')
+            current_version = _current_version.replace('_', '.')
+            if lower_nearest_version < LooseVersion(current_version) < higher_nearest_version:
+                with open(os.path.join(release_notes_dir, filename), 'r') as rn_file:
+                    rn_lines = rn_file.read()
+                same_block_versions_dict[current_version] = self._clean_release_notes(rn_lines).strip()
+        return same_block_versions_dict, higher_nearest_version
+
+
+
     def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion) -> \
             Tuple[str, str]:
         """
@@ -1299,10 +1340,14 @@ class Pack(object):
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
                 if os.path.exists(release_notes_dir):
+                    # Handling latest release notes files
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
-                        release_notes_dir, changelog_latest_rn_version
-                    )
+                        release_notes_dir, changelog_latest_rn_version)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
+                    # Handling modified old release notes files, if there are any
+                    # add condition for this to happen only if there are updated rn files
+                    modified_release_notes_lines_dict = self.get_modified_release_notes_lines()
+                    # add clause 9 handeling
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
@@ -1377,6 +1422,7 @@ class Pack(object):
                           f"Additional info: {e}")
         finally:
             return task_status, not_updated_build
+
 
     def create_local_changelog(self, build_index_folder_path):
         """ Copies the pack index changelog.json file to the pack path
