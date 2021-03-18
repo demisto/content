@@ -20,41 +20,42 @@
             "mandatory": false,
             "display_name": "EWS Mail Sender"
         },
-        "EWS": {
+        "rasterize": {
+            "mandatory": true,
+            "display_name": "Rasterize"
+        },
+        "GmailSingleUser": {
             "mandatory": false,
-            "display_name": "EWS"
+            "display_name": "Gmail Single User (Beta)"
         },
         "MailSenderNew": {
             "mandatory": false,
             "display_name": "Mail Sender (New)"
         },
-        "rasterize": {
-            "mandatory": true,
-            "display_name": "Rasterize"
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
         },
-        "Cryptocurrency": {
+        
+        "CommonTypes": {
             "mandatory": true,
-            "display_name": "Cryptocurrency"
+            "display_name": "Common Types"
+        },
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
         },
         "MicrosoftGraphMail": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
         },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "Gmail": {
-            "mandatory": false,
-            "display_name": "Gmail"
-        },
         "MicrosoftGraphListener": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail Single User"
         },
-        "GmailSingleUser": {
-            "mandatory": false,
-            "display_name": "Gmail Single User (Beta)"
+        "Cryptocurrency": {
+            "mandatory": true,
+            "display_name": "Cryptocurrency"
         },
         "Active_Directory_Query": {
             "mandatory": false,
