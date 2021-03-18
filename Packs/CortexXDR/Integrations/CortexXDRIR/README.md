@@ -67,6 +67,7 @@ You need to collect several pieces of information in order to configure the inte
     * __Sync Incident Owners__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
+    * __Incident Statuses to Fetch__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
