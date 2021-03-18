@@ -54,7 +54,6 @@ def test_add_tag(mocker_results, mocker):
             }
         }
         IntSight.add_tag()
-        
         assert(tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
 
 
