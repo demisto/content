@@ -1,4 +1,4 @@
-from unittest import mock
+from unittest.mock import Mock
 
 import demistomock as demisto
 
