@@ -865,8 +865,8 @@ def request_for_ioc_enrichment():
                         'Status': demisto.get(response, 'Status')
                     },
                 },
-                    'Contents': response,
-                    'ContentsFormat': formats['json']
+                'Contents': response,
+                'ContentsFormat': formats['json']
             }
         )
     elif status == 'QuotaExceeded':
