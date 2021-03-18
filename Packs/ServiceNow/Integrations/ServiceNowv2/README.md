@@ -2046,8 +2046,7 @@ There is no context output for this command.
 
 ### Troubleshooting
 
-* Make sure that the date and time in SNOW are the same as the date and time in XSOAR to prevent mirroring issues.
-* If the date in the layout is incorrect, Please follow this steps:
-1. Go to the incoming-mapper you are using
-2. Change in every field which using ``DateStringToISOFormat`` script the argument ``dayfirst`` to ``true``.
-
+* Ensure that the date and time in SNOW are the same as the date and time in XSOAR to prevent mirroring issues.
+* If the date displayed in the layout is incorrect, please follow these steps to resolve the issue:
+1. Navigate to the `incoming-mapper` which you are using.
+2. In every field which uses the ``DateStringToISOFormat`` script, change the argument ``dayfirst`` to be ``true``.
