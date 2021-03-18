@@ -133,3 +133,4 @@ CommonServerPython.py
 CommonServerUserPython.py
 demistomock.py
 Cyberint_unified.yml
+Integrations/Cyberint/Cyberint_unified.yml

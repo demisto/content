@@ -637,7 +637,7 @@ script:
             return self._http_request(method='GET',
                                       cookies=self._cookies,
                                       url_suffix=url_suffix,
-                                      resp_type='all')
+                                      resp_type='response')
 
 
     def test_module(client: Client):
@@ -826,14 +826,12 @@ script:
             args (dict): Command arguments from XSOAR.
 
         Returns:
+            If the API response status is 200 : return attachment file , else return ""
 
         """
 
-        print("before client func")
         raw_response = client.get_alert_attachment(args.get('alert_ref_id', None), args.get('attachment_id', None))
-        print("after client func")
         if raw_response.status_code == 200:
-            print("status 200")
             file_entry = fileResult(filename=args.get('attachment_name', None), data=raw_response.content)
             return file_entry
         elif raw_response.status_code == 302:  # have to complete it after getting more info from XSOAR

@@ -124,7 +124,7 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   cookies=self._cookies,
                                   url_suffix=url_suffix,
-                                  resp_type='all')
+                                  resp_type='response')
 
 
 def test_module(client: Client):
