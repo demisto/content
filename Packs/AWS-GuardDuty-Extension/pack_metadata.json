@@ -1,0 +1,17 @@
+{
+    "name": "AWS - GuardDuty - Extension",
+    "description": "The 'AWS - GuardDuty - Extension' pack provides supports for aws-gd-*-members commands.\nThe current pack includes commands,\n1. aws-gd-list-members (Describes Amazon GuardDuty members for the specified detector ID)\n2. aws-gd-get-members (Describes Amazon GuardDuty members for the specified detector ID & account ID)",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Sayan Ghosh",
+    "url": "",
+    "email": "",
+    "created": "2021-03-19T16:26:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "sayans88"
+    ]
+}
