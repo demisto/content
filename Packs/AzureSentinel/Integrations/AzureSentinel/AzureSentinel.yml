@@ -307,6 +307,7 @@ script:
       default: false
       description: The reason the incident was closed. Required when updating the status
         to Closed.
+    - default: false
       isArray: false
       name: classification
       predefined:
@@ -314,12 +315,14 @@ script:
       - FalsePositive
       - TruePositive
       - Undetermined
+      name: owner_email
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: The classification reason the incident was closed with. Required
         when updating the status to Closed and the classification is determined.
+    - default: false
       isArray: false
       name: classification_reason
       predefined:
@@ -327,6 +330,7 @@ script:
       - IncorrectAlertLogic
       - SuspiciousActivity
       - SuspiciousButExpected
+      name: labels
       required: false
       secret: false
     deprecated: false

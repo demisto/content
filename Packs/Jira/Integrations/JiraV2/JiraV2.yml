@@ -297,6 +297,17 @@ script:
         command to get the user's Account ID.
     - name: status
       description: The name of the status.
+      isArray: false
+    - default: false
+      isArray: false
+      name: components
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: security
+      required: false
+      secret: false
     outputs:
     - contextPath: Ticket.Id
       description: The ID of the ticket.
