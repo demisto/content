@@ -41,7 +41,7 @@ def get_all_projects(token):
             outputs_key_field='projects',
             outputs=res
         )
-    except e:
+    except:
         demisto.results("Request failed")
 
 
@@ -69,7 +69,7 @@ def get_project(pid, token):
             outputs_key_field='project',
             outputs=project
         )
-    except e:
+    except:
         demisto.results("Request failed")
 
 
@@ -92,7 +92,7 @@ def create_task_in_project(pid, name, token):
         client = get_asana_client(token)
         client.tasks.create({'projects': pid, 'name': name})
         demisto.results(f'Task {name} successfully added to project')
-    except e:
+    except:
         demisto.results('Task creation failed')
 
 
@@ -141,12 +141,7 @@ def main():
             res = get_all_projects(access_token)
             return_results(res)
     except Exception as err:
-        if isinstance(err, NotImplementedError) and COMMAND_NOT_IMPELEMENTED_MSG in str(err):
-            raise
         return_error(str(err))
-
-    finally:
-        LOG.print_log()
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
