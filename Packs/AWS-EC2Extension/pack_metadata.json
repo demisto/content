@@ -1,0 +1,17 @@
+{
+    "name": "AWS - EC2 Extension",
+    "description": "This content pack extends the existing AWS EC2 integration by adding the revoke-security-group-egress command. The intent is for this command to be merged into the system AWS EC2 integration.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "csilveira303",
+    "url": "",
+    "email": "",
+    "created": "2021-03-19T17:09:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "csilveira303"
+    ]
+}
