@@ -20,7 +20,7 @@ dependson:
   must:
   - '|||pt-get-host-pairs'
 runonce: false
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.2.17246
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
