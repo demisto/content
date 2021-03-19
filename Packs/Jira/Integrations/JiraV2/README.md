@@ -612,3 +612,88 @@ List all possible transitions
 | Done |
 | To Do |
 | Build Broken |
+
+## Mirror In And Out Custom Fields:
+
+**Important note:** Once you&#39;ve changed a field in XSOAR it can&#39;t be mirrored in. Meaning: changes that will be made in Jira won&#39;t affect this field anymore in XSOAR (relevant for all field types and not only custom fields).
+
+### Add a new custom field and add it to the incident type&#39;s layout:
+
+Add a new custom field and add it to the incident type&#39;s layout:
+
+1.Create a new incident field:
+  1. Go to settings -> advance-> fields -> new field
+  2. Under &quot;Basic Settings&quot;:
+    *Provide a name
+    *Choose field type. For example for a label, you might want to use &quot;Tag&quot; as a type.
+  3. Click on &quot;Attributes&quot;:
+    *Uncheck the box under: &quot;Add to incident types&quot;
+    *for “Add associated type...” Select the incident type you want to work with. In this example I’ll choose “Jira     Incident”.
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/create_new_field_1.png)
+
+2.Add the new incident field you&#39;ve just created to the layout associated with the integration&#39;s incident type. In this example, the layout is &quot;Jira Incident Layout&quot;:
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/settings_find_layout_2.png)
+
+### Add the new field to the incoming mapper:
+
+1. Go to settings -> Integrations -> Servers & Services -> in the search bar type “Jira”
+2. Open the integration settings by clicking on the next button:![](https://raw.githubusercontent.com/demisto/content/5e46922e5dad2c524c63a2ab062453076ff446c4/Packs/Jira/doc_files/setting_btn.png) or by clicking on &quot;Add instance&quot; if you don&#39;t have Jira already configured in your system.
+  1.If you don&#39;t have Jira configured yet, please provide all the needed information for authentication (Jira URL, Username if needed... ) and hit the &quot;Test&quot; button in order to see that the integration is well set.
+  2.In addition: 
+    * Make sure that under &quot;Incident type&quot; you&#39;ve selected the incident type you want to work with and it is the same one you&#39;ve selected once you created the new field. In our example: &quot;Jira Incident&quot;.
+    * The option &quot;Fetch Incidents&quot; is checked.
+    * The option &quot;Mirror incoming incidents&quot; is checked.
+    * The option &quot;Mirror outgoing incidents&quot; is checked.
+
+  finally, Hit on &quot;Done&quot;, and wait for new Jira incidents to be pulled:
+
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/fetch_incidents_3.png)
+
+3. Once you&#39;ve finished the setup stage, go to the &quot;Mapper (incoming)&quot; field and select the mapper you want to work with by clicking on &quot;Select&quot;:
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/con_mapper_in_4.png)
+
+4. Then, click on the next button:![](https://raw.githubusercontent.com/demisto/content/6feec247c3789d9248abdad3d05343f08050a8ed/Packs/Jira/doc_files/edit_mapper_btn.png) in order to edit the selected mapper. It will open the &quot;Incident Incoming Mapping Editor&quot; editor.
+  1.For &quot;Incident Type&quot;, please provide the incident type you&#39;ve selected in the integration settings.
+  2.In &quot;Select Instance&quot; choose the name of your instance. You can find it in the integration settings (you can see a screenshot above), under &quot;Name&quot;.
+    1. Once done. I&#39;ll see on the right side of the screen a Jira incident.
+      *Note: If you want to work with a specific incident, in &quot;Get data&quot; select the option: &quot;Upload JSON&quot; and provide the wanted incident as JSON. In order to get the incident as JSON, you can see the section: &quot;how to get an incident as JSON&quot; below.
+    2. On the left side, I&#39;ll see all Jira incident fields.
+
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/incoming_editor_5.png )
+  3. Use &quot;Search Cortex XSOAR field…&quot; in order to find your new incident field by searching its name
+  4. Once found, click on &quot;Choose data path&quot; and map it to the custom jira field:
+    *Find the jira field you want to map to this incident field on the right side, and click on its value.
+    *Then you will see the path you&#39;ve selected under your new added field:
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/map_in_incident_6.png)
+    *Note: In this example:&quot;customfield\_ **10045**&quot; is the jira field ID we want to map.
+    *Note: You can also type the path manually.
+5. Hit on &quot;Save Version&quot;.
+
+### Add the new field to the outgoing mapper:
+
+1. Go to settings -> Integrations -> Servers & Services -> in the search bar type “Jira”
+2. Open the integration settings by clicking on the next button: ![](https://raw.githubusercontent.com/demisto/content/5e46922e5dad2c524c63a2ab062453076ff446c4/Packs/Jira/doc_files/setting_btn.png)
+3. go to the &quot;Mapper (outgoing)&quot; field and select the mapper you want to work with by clicking on &quot;Select&quot; (the same process we did with the incoming mapper).
+4. Then, click on the next button: ![](https://raw.githubusercontent.com/demisto/content/6feec247c3789d9248abdad3d05343f08050a8ed/Packs/Jira/doc_files/edit_mapper_btn.png) in order to edit the selected mapper. It will open the &quot;Incident Outgoing Mapping Editor&quot; editor.
+5. In &quot;Select Instance&quot; choose the name of your instance. You can find it in the integration settings (you can see a screenshot above), under &quot;Name&quot;.
+  1.See that &quot;Schema Type&quot; changes automatically to &quot;Jira Incident&quot;
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/outgoing_editor_7.png)
+6. Select one incident to work with by specifying it in the &quot;Incident&quot; list (it can be seen in the screenshot above under &quot;Select Instance&quot;).
+  1.On the right side you are now able to see your selected incident.
+  2.On the left side you are able to see all the Jira fields you can map in the system.
+7. Search the Jira field you want to map on the left side. In this example, We want to map customfield\_10045
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/map_out_field_8.png)
+8. Map the jira field to the incident field you&#39;ve created by clicking on &quot;Select incident field&quot; and type its name\*.
+ *The name of the incident will not include spaces, underscores, capital letters, etc. for example: Jira Transitions will be transformed to &quot;jiratransitions&quot; once saved in the incident&#39;s context (you can see the name you need to select by fetching incidents after configuring the mapper in and in the &quot;Incident&quot; field select one of the new incidents that the edited mapper in has worked on. Then on the right side you should be able to see the new added field and the name you need to provide)
+9. Hit the &quot;Save Version&quot; button
+
+#### how to get an incident as JSON:
+
+1. Use !jira-get-issue command with raw-response=true parameter. For example: ```!jira-get-issue issueId=VIK-183 raw-response=true```
+2. Click on &quot;view full JSON in a new tab&quot;
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/download_as_json_10.png)
+3. Click on &quot;Download as a file&quot;
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/download_as_json_10.png)
+4. Open the downloaded file and put its content inside a list, resulting in a list which contains only one item, the downloaded JSON.
+5. When selecting &quot;Upload JSON&quot; for &quot;Get data&quot; in as mentioned above, you can upload the file using the &quot;Upload JSON&quot;:
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/upload_json_11.png)
