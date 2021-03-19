@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c0673dbc-c694-469e-803c-5d6363b0da25
+    taskid: 782df7e3-989a-4592-8556-c2c57b9abcf6
     type: start
     task:
-      id: c0673dbc-c694-469e-803c-5d6363b0da25
+      id: 782df7e3-989a-4592-8556-c2c57b9abcf6
       version: -1
       name: ""
       iscommand: false
@@ -37,10 +37,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: baa57499-1cef-4a25-859d-b19805b7904e
+    taskid: 09d60617-adaf-4bf4-8191-6035d4a81046
     type: regular
     task:
-      id: baa57499-1cef-4a25-859d-b19805b7904e
+      id: 09d60617-adaf-4bf4-8191-6035d4a81046
       version: -1
       name: Retrieve Data from Incident
       description: Retrieves a Particular Incident's Data
@@ -73,10 +73,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 04f8aaae-2f2d-4944-8d37-f9f95e8b0e25
+    taskid: bfa0f342-8fce-45f3-8ebc-f7fc88d7f95f
     type: condition
     task:
-      id: 04f8aaae-2f2d-4944-8d37-f9f95e8b0e25
+      id: bfa0f342-8fce-45f3-8ebc-f7fc88d7f95f
       version: -1
       name: Is there a Source Address field?
       description: Check if the given field is source/destination address.
@@ -118,10 +118,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: dd205f58-d472-495f-8cdc-4ecb30ade61b
+    taskid: 5b1ef4bf-dfdc-436b-8a30-4f052ec83756
     type: condition
     task:
-      id: dd205f58-d472-495f-8cdc-4ecb30ade61b
+      id: 5b1ef4bf-dfdc-436b-8a30-4f052ec83756
       version: -1
       name: Is there a Domain field?
       description: Check if there is a domain field in the incident data.
@@ -157,10 +157,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 2f9d34a4-e311-4d43-882d-aee97d83acc6
+    taskid: 69c113a8-f397-4f67-8799-164f20bbe13d
     type: condition
     task:
-      id: 2f9d34a4-e311-4d43-882d-aee97d83acc6
+      id: 69c113a8-f397-4f67-8799-164f20bbe13d
       version: -1
       name: Is there a User field?
       description: Check if there is a user field present in incident data.
@@ -186,7 +186,7 @@ tasks:
       {
         "position": {
           "x": 0,
-          "y": 1240
+          "y": 1210
         }
       }
     note: false
@@ -196,10 +196,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 75293e8c-867f-4492-87fe-cf1884df9fa2
+    taskid: da8cca4e-c818-4087-8ed2-52f7866caa22
     type: regular
     task:
-      id: 75293e8c-867f-4492-87fe-cf1884df9fa2
+      id: da8cca4e-c818-4087-8ed2-52f7866caa22
       version: -1
       name: Check for Malware Associated Domain
       description: Checks the reputation of a domain.
@@ -235,10 +235,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: f8e2d278-204a-4a2e-8716-f701b2a13ca3
+    taskid: e7a56db8-7d3d-4be7-8000-9949ed191cee
     type: regular
     task:
-      id: f8e2d278-204a-4a2e-8716-f701b2a13ca3
+      id: e7a56db8-7d3d-4be7-8000-9949ed191cee
       version: -1
       name: Assign Incident to Analyst
       description: Assigning/Re-assigning Incidents
@@ -270,10 +270,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 5de06b05-47c8-43a3-8d38-2b8d866723a8
+    taskid: 5c399687-29aa-491c-8c25-d662e8137e31
     type: regular
     task:
-      id: 5de06b05-47c8-43a3-8d38-2b8d866723a8
+      id: 5c399687-29aa-491c-8c25-d662e8137e31
       version: -1
       name: Add Comment about Incident Investigation
       description: Add comments to the incidents
@@ -305,10 +305,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 829de437-3332-475f-888c-707a5e69e373
+    taskid: b67fcdc8-39cb-4136-8e9c-61264a9b21e1
     type: title
     task:
-      id: 829de437-3332-475f-888c-707a5e69e373
+      id: b67fcdc8-39cb-4136-8e9c-61264a9b21e1
       version: -1
       name: Done
       type: title
@@ -330,10 +330,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 3ae60a8c-f539-4537-895b-737ad2af3f6f
+    taskid: 754f0020-a958-495d-8ac6-7e4e8e0a2f75
     type: condition
     task:
-      id: 3ae60a8c-f539-4537-895b-737ad2af3f6f
+      id: 754f0020-a958-495d-8ac6-7e4e8e0a2f75
       version: -1
       name: Is Domain Malicious?
       description: Check if the domain is malicious.
@@ -369,10 +369,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 4e30d8e4-f177-4ff5-8d93-ec0e4726d0da
+    taskid: 825ec56e-b2fc-424f-8b15-47f32261317c
     type: regular
     task:
-      id: 4e30d8e4-f177-4ff5-8d93-ec0e4726d0da
+      id: 825ec56e-b2fc-424f-8b15-47f32261317c
       version: -1
       name: Check for Malware Associated Destination Address
       description: Checks the reputation of an destination address.
@@ -424,10 +424,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 36d6003d-062f-4695-8211-c9f84637da6e
+    taskid: 9141cac4-bc41-4f0a-8396-74ce434317ca
     type: condition
     task:
-      id: 36d6003d-062f-4695-8211-c9f84637da6e
+      id: 9141cac4-bc41-4f0a-8396-74ce434317ca
       version: -1
       name: Is Source Address Internal?
       description: Checks the source address to determine it as internal/external.
@@ -485,10 +485,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 35d890a5-ea7d-413a-8c77-545743591965
+    taskid: 82c58041-420c-42bf-8529-943f71f2af9d
     type: condition
     task:
-      id: 35d890a5-ea7d-413a-8c77-545743591965
+      id: 82c58041-420c-42bf-8529-943f71f2af9d
       version: -1
       name: Is Destination Address Internal?
       description: Checks the destination address to determine it as internal/external
@@ -527,10 +527,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: cc78756c-960d-43be-830b-2868f613ac76
+    taskid: a73f0020-9790-4f61-80aa-e8e44f37a03a
     type: condition
     task:
-      id: cc78756c-960d-43be-830b-2868f613ac76
+      id: a73f0020-9790-4f61-80aa-e8e44f37a03a
       version: -1
       name: Is Source Address Malicious?
       description: Check if the IP is malicious.
@@ -576,10 +576,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 5514b5e7-7c5a-46b8-808d-288882104b03
+    taskid: d3b1f869-847a-4c61-8d61-cd361e9a731f
     type: regular
     task:
-      id: 5514b5e7-7c5a-46b8-808d-288882104b03
+      id: d3b1f869-847a-4c61-8d61-cd361e9a731f
       version: -1
       name: Check for Malware Associated Source Address
       description: Checks the reputation of an source address.
@@ -631,10 +631,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 2ce6d477-b307-46d4-8c56-b6613a7c95f1
+    taskid: 7fdbf66f-ff72-4df4-858d-77af36bd04a3
     type: regular
     task:
-      id: 2ce6d477-b307-46d4-8c56-b6613a7c95f1
+      id: 7fdbf66f-ff72-4df4-858d-77af36bd04a3
       version: -1
       name: Calculate Entropy
       description: Calculates the entropy for the given data.
@@ -669,10 +669,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 763483ad-49df-438e-8a1f-c572c75ac248
+    taskid: b37a19c5-11a6-4061-88ae-4c8bb926f8ac
     type: condition
     task:
-      id: 763483ad-49df-438e-8a1f-c572c75ac248
+      id: b37a19c5-11a6-4061-88ae-4c8bb926f8ac
       version: -1
       name: Is Entropy Higher?
       description: Check if the entropy is higher than 4.0
@@ -682,6 +682,8 @@ tasks:
     nexttasks:
       '#default#':
       - "12"
+      user:
+      - "7"
       "yes":
       - "66"
     separatecontext: false
@@ -696,7 +698,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "4.0"
+              simple: "3.5"
+    - label: user
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.user
+            iscontext: true
     view: |-
       {
         "position": {
@@ -711,10 +721,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 08a51a6a-65d1-43e9-8377-fbaa3af38d81
+    taskid: b2cce706-baca-43bc-8c6a-d5593959210c
     type: regular
     task:
-      id: 08a51a6a-65d1-43e9-8377-fbaa3af38d81
+      id: b2cce706-baca-43bc-8c6a-d5593959210c
       version: -1
       name: Check for User Detail
       description: Retrieves detailed information about a user account. The user can
@@ -726,7 +736,7 @@ tasks:
       brand: Active Directory Query v2
     nexttasks:
       '#none#':
-      - "52"
+      - "104"
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -754,10 +764,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: da81dcfa-6c55-4e1f-8c29-bdace3afe8a0
+    taskid: 8a353d52-20c4-4d5f-8188-ca271e0137db
     type: regular
     task:
-      id: da81dcfa-6c55-4e1f-8c29-bdace3afe8a0
+      id: 8a353d52-20c4-4d5f-8188-ca271e0137db
       version: -1
       name: Disable Account
       description: Disables an Active Directory user account.
@@ -788,10 +798,10 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: e42f50a6-0a7e-4f9b-897f-f7fa440b7601
+    taskid: eee8da3b-21a9-4445-84ff-c4791f1d19ef
     type: regular
     task:
-      id: e42f50a6-0a7e-4f9b-897f-f7fa440b7601
+      id: eee8da3b-21a9-4445-84ff-c4791f1d19ef
       version: -1
       name: Add Comment for Manager
       description: Add comments about user disabled to the incidents
@@ -824,10 +834,10 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 884bb242-4954-40cd-8051-ad6bcab9c6f5
+    taskid: 27b62e18-7199-45d1-8191-b705e6d05f77
     type: condition
     task:
-      id: 884bb242-4954-40cd-8051-ad6bcab9c6f5
+      id: 27b62e18-7199-45d1-8191-b705e6d05f77
       version: -1
       name: Check for Malicious User
       description: "Check if the alert name refers to some malicious users. The following\
@@ -869,10 +879,10 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: 10b5dbf8-3ff8-4cab-8404-c4d01fd53262
+    taskid: 4d7e6f95-38bc-45eb-8889-96d0a3ef7ba1
     type: condition
     task:
-      id: 10b5dbf8-3ff8-4cab-8404-c4d01fd53262
+      id: 4d7e6f95-38bc-45eb-8889-96d0a3ef7ba1
       version: -1
       name: Is Destination Address Malicious?
       description: Check if the IP is malicious.
@@ -918,10 +928,10 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: d362e45a-fa72-426d-8451-d298a50fc7d8
+    taskid: 2ef82150-36c4-49ba-8da5-8bdf01c32e2a
     type: condition
     task:
-      id: d362e45a-fa72-426d-8451-d298a50fc7d8
+      id: 2ef82150-36c4-49ba-8da5-8bdf01c32e2a
       version: -1
       name: Is there a Destination Address field?
       description: Check if the given field is source/destination address.
@@ -963,10 +973,10 @@ tasks:
     quietmode: 0
   "66":
     id: "66"
-    taskid: 3ee66bde-df6a-4468-84ad-553f92d4fb8d
+    taskid: 061e1d7b-8654-4abe-81d0-dbd362a95d07
     type: condition
     task:
-      id: 3ee66bde-df6a-4468-84ad-553f92d4fb8d
+      id: 061e1d7b-8654-4abe-81d0-dbd362a95d07
       version: -1
       name: Is Firewall enabled?
       description: Check if Firewall is enabled.
@@ -1003,10 +1013,10 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: ce65c54d-41e1-478d-8701-a1491bf474bb
+    taskid: 63ef28cf-1cc0-4dce-8991-1b07d06aa73b
     type: regular
     task:
-      id: ce65c54d-41e1-478d-8701-a1491bf474bb
+      id: 63ef28cf-1cc0-4dce-8991-1b07d06aa73b
       version: -1
       name: checkpoint-login-and-get-session-id
       description: Log in to CheckPoint and get the session ID.
@@ -1035,10 +1045,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: 62317882-4615-43dd-8c21-870d1827413c
+    taskid: 4bec2fc9-0dc2-46ff-8cde-f7f344028044
     type: condition
     task:
-      id: 62317882-4615-43dd-8c21-870d1827413c
+      id: 4bec2fc9-0dc2-46ff-8cde-f7f344028044
       version: -1
       name: Is it URL or IP Block?
       description: Check if it is URL Block or IP Block.
@@ -1098,10 +1108,10 @@ tasks:
     quietmode: 0
   "69":
     id: "69"
-    taskid: 8eac26d8-0229-4370-8166-14b0369b29e4
+    taskid: 18e0cf77-98dc-4f36-8acf-721ab6ef9527
     type: regular
     task:
-      id: 8eac26d8-0229-4370-8166-14b0369b29e4
+      id: 18e0cf77-98dc-4f36-8acf-721ab6ef9527
       version: -1
       name: Check for application site category
       description: Retrieve application site category object using object name or
@@ -1134,10 +1144,10 @@ tasks:
     quietmode: 0
   "70":
     id: "70"
-    taskid: 34d920b7-a6f1-4dee-8c03-31162c4878d3
+    taskid: c8de4ff9-4b3e-4601-8c22-c5ee2dc52426
     type: condition
     task:
-      id: 34d920b7-a6f1-4dee-8c03-31162c4878d3
+      id: c8de4ff9-4b3e-4601-8c22-c5ee2dc52426
       version: -1
       name: Is application site category pre defined?
       description: Check if application site category is pre defined.
@@ -1176,10 +1186,10 @@ tasks:
     quietmode: 0
   "71":
     id: "71"
-    taskid: 920a3473-ee16-43ee-80e9-6f3af24572ee
+    taskid: 8c399022-d183-4c2d-8c35-de2ca45057ee
     type: regular
     task:
-      id: 920a3473-ee16-43ee-80e9-6f3af24572ee
+      id: 8c399022-d183-4c2d-8c35-de2ca45057ee
       version: -1
       name: Check for Checkpoint objects
       description: Retrieve data about objects.
@@ -1217,10 +1227,10 @@ tasks:
     quietmode: 0
   "72":
     id: "72"
-    taskid: cfaada97-862b-432f-8410-71cf53f46a03
+    taskid: 6b3ccd26-eb93-4fdc-860b-88a563e0ac56
     type: condition
     task:
-      id: cfaada97-862b-432f-8410-71cf53f46a03
+      id: 6b3ccd26-eb93-4fdc-860b-88a563e0ac56
       version: -1
       name: Is application site defined?
       description: Check if application site is defined.
@@ -1266,10 +1276,10 @@ tasks:
     quietmode: 0
   "73":
     id: "73"
-    taskid: 1cbe96b7-8546-43c3-8ec6-514530b4eb60
+    taskid: 824bfcd8-1479-41ec-8452-bbbddf8d1051
     type: regular
     task:
-      id: 1cbe96b7-8546-43c3-8ec6-514530b4eb60
+      id: 824bfcd8-1479-41ec-8452-bbbddf8d1051
       version: -1
       name: Add the URL
       description: Adds an application site.
@@ -1317,10 +1327,10 @@ tasks:
     quietmode: 0
   "74":
     id: "74"
-    taskid: fdee0bde-9fce-4ad0-8510-ff528e3a0f91
+    taskid: f2ba5726-a35d-485e-8900-3aa492687091
     type: regular
     task:
-      id: fdee0bde-9fce-4ad0-8510-ff528e3a0f91
+      id: f2ba5726-a35d-485e-8900-3aa492687091
       version: -1
       name: Logout from session
       description: Log out from a given session.
@@ -1350,10 +1360,10 @@ tasks:
     quietmode: 0
   "75":
     id: "75"
-    taskid: b4e3a32e-c1ff-4154-8f94-a81ec288e2f1
+    taskid: d80e9147-2fcd-4f9c-8ade-6ff1279ad019
     type: regular
     task:
-      id: b4e3a32e-c1ff-4154-8f94-a81ec288e2f1
+      id: d80e9147-2fcd-4f9c-8ade-6ff1279ad019
       version: -1
       name: Add URL catgeory
       description: Adds new application site category.
@@ -1386,10 +1396,10 @@ tasks:
     quietmode: 0
   "76":
     id: "76"
-    taskid: 333dc0d9-8c85-429c-8fde-07899bd6f007
+    taskid: 23765208-5e42-4e9a-8993-76720008f6ab
     type: condition
     task:
-      id: 333dc0d9-8c85-429c-8fde-07899bd6f007
+      id: 23765208-5e42-4e9a-8993-76720008f6ab
       version: -1
       name: Was category addition successful?
       description: Check if category addition was successful.
@@ -1428,10 +1438,10 @@ tasks:
     quietmode: 0
   "77":
     id: "77"
-    taskid: c83c1c87-7d88-4f5e-82c0-7abd4255ad69
+    taskid: d9abc1e2-3b3a-4168-8219-71e603324d54
     type: regular
     task:
-      id: c83c1c87-7d88-4f5e-82c0-7abd4255ad69
+      id: d9abc1e2-3b3a-4168-8219-71e603324d54
       version: -1
       name: Checkpoint Publish Configuration
       description: Publishes changes.
@@ -1461,10 +1471,10 @@ tasks:
     quietmode: 0
   "78":
     id: "78"
-    taskid: ff7d78a5-f0ed-4ac1-8249-bbd6f594444a
+    taskid: 96ef5394-00f8-4c01-8e0c-2885e9cb4779
     type: regular
     task:
-      id: ff7d78a5-f0ed-4ac1-8249-bbd6f594444a
+      id: 96ef5394-00f8-4c01-8e0c-2885e9cb4779
       version: -1
       name: Add Comment for administrator
       description: Add comments to the incidents
@@ -1497,10 +1507,10 @@ tasks:
     quietmode: 0
   "79":
     id: "79"
-    taskid: 8dadb83a-c431-4608-8887-af23f64384e6
+    taskid: dd65bc83-5574-4bd8-853e-b2ddf718aa92
     type: regular
     task:
-      id: 8dadb83a-c431-4608-8887-af23f64384e6
+      id: dd65bc83-5574-4bd8-853e-b2ddf718aa92
       version: -1
       name: Check for Checkpoint object
       description: Retrieve data about objects.
@@ -1568,10 +1578,10 @@ tasks:
     quietmode: 0
   "80":
     id: "80"
-    taskid: 0b557161-fc4e-4d62-8c2e-3297fab6c004
+    taskid: 8e943d10-2694-4bf0-8dcb-ee8778771ad3
     type: condition
     task:
-      id: 0b557161-fc4e-4d62-8c2e-3297fab6c004
+      id: 8e943d10-2694-4bf0-8dcb-ee8778771ad3
       version: -1
       name: Is IP already defined?
       description: Check if IP is already defined.
@@ -1617,10 +1627,10 @@ tasks:
     quietmode: 0
   "81":
     id: "81"
-    taskid: 8bfb6ddd-3813-423d-8b1d-263b2d250869
+    taskid: c301e34e-05b9-44b1-88ea-1de95f0c7d62
     type: regular
     task:
-      id: 8bfb6ddd-3813-423d-8b1d-263b2d250869
+      id: c301e34e-05b9-44b1-88ea-1de95f0c7d62
       version: -1
       name: Add Host
       description: Adds a new host.
@@ -1656,10 +1666,10 @@ tasks:
     quietmode: 0
   "82":
     id: "82"
-    taskid: 8ddf662e-ace1-4a14-8f3d-3491ad1c62eb
+    taskid: 4217b266-fd09-4f55-88dc-a9bf91fb59f8
     type: condition
     task:
-      id: 8ddf662e-ace1-4a14-8f3d-3491ad1c62eb
+      id: 4217b266-fd09-4f55-88dc-a9bf91fb59f8
       version: -1
       name: Was the host addition successful?
       description: Check if the host addition was successful.
@@ -1705,10 +1715,10 @@ tasks:
     quietmode: 0
   "83":
     id: "83"
-    taskid: a4969d61-b7ce-4bc2-81ee-4fd5941f2f9e
+    taskid: b7471efd-3dd9-46ac-8d8c-8c368cdc5fae
     type: regular
     task:
-      id: a4969d61-b7ce-4bc2-81ee-4fd5941f2f9e
+      id: b7471efd-3dd9-46ac-8d8c-8c368cdc5fae
       version: -1
       name: Checkpoint publish configuration
       description: Publishes changes.
@@ -1738,10 +1748,10 @@ tasks:
     quietmode: 0
   "86":
     id: "86"
-    taskid: 46ddb1ed-ef21-43c0-8908-b56c0cead3eb
+    taskid: 3498cbbc-59b7-42f9-8ff8-c5bf6129e47a
     type: regular
     task:
-      id: 46ddb1ed-ef21-43c0-8908-b56c0cead3eb
+      id: 3498cbbc-59b7-42f9-8ff8-c5bf6129e47a
       version: -1
       name: Add the policy
       description: Creates a new access rule.
@@ -1756,18 +1766,20 @@ tasks:
       action: {}
       destination:
         complex:
-          root: CheckPoint.Objects
+          root: CheckPoint.Host
           filters:
-          - - operator: containsGeneral
+          - - operator: isEqualString
               left:
                 value:
-                  simple: CheckPoint.Objects.ipv4-address
+                  simple: CheckPoint.Host.ipv4-address
                 iscontext: true
               right:
                 value:
                   simple: incident.malwarename
                 iscontext: true
           accessor: name
+          transformers:
+          - operator: FirstArrayElement
       layer:
         simple: network
       name:
@@ -1795,10 +1807,10 @@ tasks:
     quietmode: 0
   "87":
     id: "87"
-    taskid: 76dad7ba-7803-449e-8e61-419c5e31e302
+    taskid: 968b87e4-6a5e-480b-8a3f-19bd90a868f1
     type: regular
     task:
-      id: 76dad7ba-7803-449e-8e61-419c5e31e302
+      id: 968b87e4-6a5e-480b-8a3f-19bd90a868f1
       version: -1
       name: Publish the policy/access rule
       description: Publishes changes.
@@ -1828,10 +1840,10 @@ tasks:
     quietmode: 0
   "88":
     id: "88"
-    taskid: 6ee14afe-893c-4b87-89cd-75920c2311bf
+    taskid: 0302cea7-0b35-4bc9-8d31-279513fe4fac
     type: regular
     task:
-      id: 6ee14afe-893c-4b87-89cd-75920c2311bf
+      id: 0302cea7-0b35-4bc9-8d31-279513fe4fac
       version: -1
       name: Show task id
       description: Show task progress and details.
@@ -1864,10 +1876,10 @@ tasks:
     quietmode: 0
   "90":
     id: "90"
-    taskid: 03274a80-fbce-447a-8f7f-3e267cfa2581
+    taskid: bddf673c-30cd-49a8-8de0-5ba293bc35dd
     type: regular
     task:
-      id: 03274a80-fbce-447a-8f7f-3e267cfa2581
+      id: bddf673c-30cd-49a8-8de0-5ba293bc35dd
       version: -1
       name: Get the status
       description: Show task progress and details.
@@ -1900,10 +1912,10 @@ tasks:
     quietmode: 0
   "91":
     id: "91"
-    taskid: bfc8e3ec-fd3d-4427-8dea-4b19fa5c5647
+    taskid: d7872f18-3011-4bd2-879f-4d53989ffa5a
     type: condition
     task:
-      id: bfc8e3ec-fd3d-4427-8dea-4b19fa5c5647
+      id: d7872f18-3011-4bd2-879f-4d53989ffa5a
       version: -1
       name: Is publish successful?
       description: Check if the publish is successful.
@@ -1942,10 +1954,10 @@ tasks:
     quietmode: 0
   "92":
     id: "92"
-    taskid: 7f3a8a03-fce0-4fd9-8366-36fe5cde77e2
+    taskid: 8e4cc8a1-1c59-4094-82f7-81b95a2aa6bc
     type: regular
     task:
-      id: 7f3a8a03-fce0-4fd9-8366-36fe5cde77e2
+      id: 8e4cc8a1-1c59-4094-82f7-81b95a2aa6bc
       version: -1
       name: Show the gateways
       description: Retrieve all gateways and servers.
@@ -1977,10 +1989,10 @@ tasks:
     quietmode: 0
   "93":
     id: "93"
-    taskid: dd75aa65-04b9-4543-89e4-f9c9c766fda9
+    taskid: 50b77ea9-ced5-4f88-82c5-433cb77d772b
     type: regular
     task:
-      id: dd75aa65-04b9-4543-89e4-f9c9c766fda9
+      id: 50b77ea9-ced5-4f88-82c5-433cb77d772b
       version: -1
       name: Install the policy
       description: Intsalls an Access Control policy.
@@ -2018,10 +2030,10 @@ tasks:
     quietmode: 0
   "94":
     id: "94"
-    taskid: bd8a5802-4272-4469-8de1-53439b673aee
+    taskid: 2ccbeeff-e6e7-457d-82da-a9c663fbd60a
     type: condition
     task:
-      id: bd8a5802-4272-4469-8de1-53439b673aee
+      id: 2ccbeeff-e6e7-457d-82da-a9c663fbd60a
       version: -1
       name: Is the install initiated?
       description: Show task progress and details.
@@ -2057,10 +2069,10 @@ tasks:
     quietmode: 0
   "95":
     id: "95"
-    taskid: becd0355-8307-428c-87da-4b6cfd484908
+    taskid: 153b8e39-57a2-48cf-884c-54b795f24ce8
     type: regular
     task:
-      id: becd0355-8307-428c-87da-4b6cfd484908
+      id: 153b8e39-57a2-48cf-884c-54b795f24ce8
       version: -1
       name: Waiting for the task to complete
       description: Sleep for X seconds
@@ -2089,10 +2101,10 @@ tasks:
     quietmode: 0
   "96":
     id: "96"
-    taskid: f37185ee-339c-4495-8fdd-64918e10dd32
+    taskid: 733908d7-2039-4729-8326-b544e8d307f7
     type: regular
     task:
-      id: f37185ee-339c-4495-8fdd-64918e10dd32
+      id: 733908d7-2039-4729-8326-b544e8d307f7
       version: -1
       name: Waiting for the task to complete
       description: Sleep for X seconds
@@ -2121,10 +2133,10 @@ tasks:
     quietmode: 0
   "97":
     id: "97"
-    taskid: 2c84c8b1-d6b5-4613-8c68-70006a97ab9a
+    taskid: 136c08ad-7870-4da5-828c-51f4f97029cd
     type: regular
     task:
-      id: 2c84c8b1-d6b5-4613-8c68-70006a97ab9a
+      id: 136c08ad-7870-4da5-828c-51f4f97029cd
       version: -1
       name: Get the status
       description: Show task progress and details.
@@ -2157,10 +2169,10 @@ tasks:
     quietmode: 0
   "98":
     id: "98"
-    taskid: 8900604f-96c7-44fe-8f82-878e8799d2e8
+    taskid: 5fb8979a-128a-4a83-8b9f-4e264a837e3a
     type: condition
     task:
-      id: 8900604f-96c7-44fe-8f82-878e8799d2e8
+      id: 5fb8979a-128a-4a83-8b9f-4e264a837e3a
       version: -1
       name: Was the install process successful?
       description: Check if the install process was successful.
@@ -2199,10 +2211,10 @@ tasks:
     quietmode: 0
   "100":
     id: "100"
-    taskid: b8670abb-afe8-4d04-8c4d-1132c1e7bdcb
+    taskid: 224e7b9f-9df6-4b2f-8618-2023dfd1ff81
     type: condition
     task:
-      id: b8670abb-afe8-4d04-8c4d-1132c1e7bdcb
+      id: 224e7b9f-9df6-4b2f-8618-2023dfd1ff81
       version: -1
       name: Was the URL added?
       description: Check if the URL was added.
@@ -2239,10 +2251,10 @@ tasks:
     quietmode: 0
   "101":
     id: "101"
-    taskid: b1d9b24e-4c67-467f-8dca-9a918aaa45ca
+    taskid: 3efc4767-3216-43fd-8f66-0f1b20e70bfe
     type: regular
     task:
-      id: b1d9b24e-4c67-467f-8dca-9a918aaa45ca
+      id: 3efc4767-3216-43fd-8f66-0f1b20e70bfe
       version: -1
       name: Get the policy package
       description: List all packages.
@@ -2274,10 +2286,10 @@ tasks:
     quietmode: 0
   "102":
     id: "102"
-    taskid: 8c4b5bb5-246f-4428-8d6b-52ae6bfa1689
+    taskid: 10bca740-604a-4f0b-8eaf-95d7ac45ebe4
     type: regular
     task:
-      id: 8c4b5bb5-246f-4428-8d6b-52ae6bfa1689
+      id: 10bca740-604a-4f0b-8eaf-95d7ac45ebe4
       version: -1
       name: Add comment for issues
       description: Add comments to the incidents
@@ -2310,10 +2322,10 @@ tasks:
     quietmode: 0
   "103":
     id: "103"
-    taskid: 2581388b-665f-418f-8f00-98f75006631b
+    taskid: d771d1e8-ba60-4284-8fb6-58631d73dd2e
     type: regular
     task:
-      id: 2581388b-665f-418f-8f00-98f75006631b
+      id: d771d1e8-ba60-4284-8fb6-58631d73dd2e
       version: -1
       name: Add successful comment
       description: Add comments to the incidents
@@ -2344,6 +2356,45 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "104":
+    id: "104"
+    taskid: 9ebbbd5e-b043-4493-8898-42c0a0673011
+    type: condition
+    task:
+      id: 9ebbbd5e-b043-4493-8898-42c0a0673011
+      version: -1
+      name: Is user present in AD?
+      description: Check if user is present in AD.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Account.Username
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -2355,8 +2406,9 @@ view: |-
       "38_5_yes": 0.52,
       "39_12_#default#": 0.24,
       "39_66_yes": 0.24,
-      "44_12_#default#": 0.1,
+      "44_12_#default#": 0.32,
       "44_66_yes": 0.19,
+      "44_7_user": 0.24,
       "59_12_#default#": 0.57,
       "5_9_yes": 0.44,
       "62_12_#default#": 0.13,
