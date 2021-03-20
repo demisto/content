@@ -5,7 +5,7 @@ import json
 import requests_mock
 from RecordedFuture import lookup_command, Client, enrich_command, \
     get_alert_rules_command, get_alerts_command, triage_command
-from mock_samples import IP_LOOKUP, IP_REP, TRIAGE, ALERT_RULES, ALERTS
+from test_data.mock_samples import IP_LOOKUP, IP_REP, TRIAGE, ALERT_RULES, ALERTS
 from CommonServerPython import CommandResults
 
 

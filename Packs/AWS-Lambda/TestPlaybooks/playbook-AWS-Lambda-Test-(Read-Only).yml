@@ -1,22 +1,28 @@
 id: AWS-Lambda-Test (Read-Only)
-version: -1
+inputs: []
 name: AWS-Lambda-Test (Read-Only)
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: de4c6491-2b88-4edf-89bd-c093c2a4d512
-    type: start
-    task:
-      id: de4c6491-2b88-4edf-89bd-c093c2a4d512
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4af32f5d-b314-4b4f-8c5f-1512014566f3
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 4af32f5d-b314-4b4f-8c5f-1512014566f3
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -24,26 +30,30 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "1":
     id: "1"
-    taskid: 233ed168-fe31-4c78-839c-10e9a1e14dc0
-    type: regular
-    task:
-      id: 233ed168-fe31-4c78-839c-10e9a1e14dc0
-      version: -1
-      name: aws-lambda-list-functions
-      description: Returns a list of your Lambda functions. For each function, the response includes the function configuration information. You must use GetFunction to retrieve the code for your function.
-      script: AWS - Lambda|||aws-lambda-list-functions
-      type: regular
-      iscommand: true
-      brand: AWS - Lambda
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "2"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - Lambda
+      description: Returns a list of your Lambda functions. For each function, the
+        response includes the function configuration information. You must use GetFunction
+        to retrieve the code for your function.
+      id: b590a0cf-4298-4599-8ff2-a5f1c7a690da
+      iscommand: true
+      name: aws-lambda-list-functions
+      script: AWS - Lambda|||aws-lambda-list-functions
+      type: regular
+      version: -1
+    taskid: b590a0cf-4298-4599-8ff2-a5f1c7a690da
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -51,23 +61,29 @@ tasks:
           "y": 190
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "2":
     id: "2"
-    taskid: 166f0026-3899-4333-8eff-87af678d477b
-    type: regular
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 166f0026-3899-4333-8eff-87af678d477b
-      version: -1
+      brand: AWS - Lambda
+      description: Retrieves details about your account's limits and usage in an AWS
+        Region.
+      id: 4ca6e783-65a5-4012-89ca-7b3e1059c788
+      iscommand: true
       name: aws-lambda-get-account-settings
-      description: Retrieves details about your account's limits and usage in an AWS Region.
       script: AWS - Lambda|||aws-lambda-get-account-settings
       type: regular
-      iscommand: true
-      brand: AWS - Lambda
-    separatecontext: false
+      version: -1
+    taskid: 4ca6e783-65a5-4012-89ca-7b3e1059c788
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -75,21 +91,293 @@ tasks:
           "y": 370
         }
       }
-    note: false
-    timertriggers: []
+  "3":
+    id: "3"
     ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      clientContext: {}
+      functionName:
+        simple: test_echo
+      invocationType: {}
+      logType:
+        simple: Tail
+      payload:
+        simple: ${AWS.Lambda.Functions}
+      qualifier: {}
+      region: {}
+      retries: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      timeout: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Invokes a Lambda function. Specify just a function name to invoke
+        the latest version of the function. To invoke a published version, use the
+        Qualifier parameter to specify a version or alias .  If you use the RequestResponse
+        (synchronous) invocation option, the function will be invoked only once. If
+        you use the Event (asynchronous) invocation option, the function will be invoked
+        at least once in response to an event and the function must be idempotent
+        to handle this.  For functions with a long timeout, your client may be disconnected
+        during synchronous invocation while it waits for a response. Configure your
+        demisto server to allow for long connections with timeout or keep-alive settings.
+      id: a40054d8-51c5-4844-86e5-234dd232b98d
+      iscommand: true
+      name: aws lambda invoke
+      script: '|||aws-lambda-invoke'
+      type: regular
+      version: -1
+    taskid: a40054d8-51c5-4844-86e5-234dd232b98d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: AWS.Lambda.InvokedFunctions.Payload
+          operator: containsGeneral
+          right:
+            value:
+              simple: '"FunctionName":"test_echo"'
+      - - left:
+            iscontext: true
+            value:
+              simple: AWS.Lambda.InvokedFunctions.LogResult
+          operator: containsGeneral
+          right:
+            value:
+              simple: Billed Duration
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 76d3fc24-ce98-4ac5-8c32-a70917dac3f8
+      iscommand: false
+      name: Check returned invoke result
+      type: condition
+      version: -1
+    taskid: 76d3fc24-ce98-4ac5-8c32-a70917dac3f8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+  "5":
+    continueonerror: true
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      clientContext: {}
+      functionName:
+        simple: test_sleep
+      invocationType: {}
+      logType: {}
+      payload:
+        simple: '{"sleep":"20"}'
+      qualifier: {}
+      region: {}
+      retries:
+        simple: "0"
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      timeout:
+        simple: "10"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Invokes a Lambda function. Specify just a function name to invoke
+        the latest version of the function. To invoke a published version, use the
+        Qualifier parameter to specify a version or alias .  If you use the RequestResponse
+        (synchronous) invocation option, the function will be invoked only once. If
+        you use the Event (asynchronous) invocation option, the function will be invoked
+        at least once in response to an event and the function must be idempotent
+        to handle this.  For functions with a long timeout, your client may be disconnected
+        during synchronous invocation while it waits for a response. Configure your
+        demisto server to allow for long connections with timeout or keep-alive settings.
+      id: 1da9d5c5-a955-48dc-8e80-45cc3bd32bf5
+      iscommand: true
+      name: Invoke Sleep with timeout (should fail)
+      script: '|||aws-lambda-invoke'
+      type: regular
+      version: -1
+    taskid: 1da9d5c5-a955-48dc-8e80-45cc3bd32bf5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Context payload didn't contain "test":"this"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 6d5145e3-2388-453d-8fcf-7f1ab9c69540
+      iscommand: false
+      name: Invoke Error
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 6d5145e3-2388-453d-8fcf-7f1ab9c69540
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 860
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "8"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: d9c31c25-62fc-4f37-8814-91718370e59d
+      iscommand: false
+      name: Check that we failed
+      script: isError
+      type: condition
+      version: -1
+    taskid: d9c31c25-62fc-4f37-8814-91718370e59d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Expected to timeout
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: bb1bbfbd-8980-4312-845b-d75b4f2db893
+      iscommand: false
+      name: Expected to timeout
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: bb1bbfbd-8980-4312-845b-d75b4f2db893
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1240
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e8b95477-7369-4023-893f-fcce6e621d41
+      iscommand: false
+      name: All is good
+      type: title
+      version: -1
+    taskid: e8b95477-7369-4023-893f-fcce6e621d41
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1390
+        }
+      }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 415,
-        "width": 380,
+        "height": 1405,
+        "width": 890,
         "x": 450,
         "y": 50
       }
     }
   }
-inputs: []
-outputs: []
 fromversion: 5.0.0

@@ -411,22 +411,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xdrseverity",
-                                "height": 24,
-                                "id": "6d8c0030-ac7a-11e9-a30b-53d47e1ea7d7",
-                                "index": 3,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "xdrmanualseverity",
-                                "height": 24,
-                                "id": "c40c7ac0-ac89-11e9-a30b-53d47e1ea7d7",
-                                "index": 3,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "xdrhostcount",
                                 "height": 24,
                                 "id": "5d54d8e0-ac7a-11e9-a30b-53d47e1ea7d7",
@@ -471,7 +455,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "xdrhighseverityalerts",
+                                "fieldId": "xdrhighseverityalertcount",
                                 "height": 24,
                                 "id": "407735a0-ac7b-11e9-a30b-53d47e1ea7d7",
                                 "index": 2,
@@ -479,7 +463,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "xdrmediumseverityalerts",
+                                "fieldId": "xdrmediumseverityalertcount",
                                 "height": 24,
                                 "id": "42b2a6b0-ac7b-11e9-a30b-53d47e1ea7d7",
                                 "index": 2,
@@ -487,17 +471,9 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "xdrlowseverityalerts",
+                                "fieldId": "xdrlowseverityalertcount",
                                 "height": 24,
                                 "id": "440ae3b0-ac7b-11e9-a30b-53d47e1ea7d7",
-                                "index": 2,
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "xdrassignedusername",
-                                "height": 24,
-                                "id": "34c76d60-ac8a-11e9-a30b-53d47e1ea7d7",
                                 "index": 2,
                                 "startCol": 2
                             },

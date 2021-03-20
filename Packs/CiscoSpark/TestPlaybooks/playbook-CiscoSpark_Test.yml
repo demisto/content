@@ -34,7 +34,7 @@ tasks:
     taskid: e3af1d1a-52f9-4e67-83f3-dba4612b35ba
     type: regular
     task:
-      id: 13636ddd-8adc-4967-8561-4acaa14386b7
+      id: e3af1d1a-52f9-4e67-83f3-dba4612b35ba
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -67,7 +67,7 @@ tasks:
     taskid: 9e731381-632b-4058-8de8-acfcee138f3e
     type: regular
     task:
-      id: fbcb40c4-abdd-433d-8a3e-9c5193916a13
+      id: 9e731381-632b-4058-8de8-acfcee138f3e
       version: -1
       name: cisco-spark-create-team (name=The Amazing Four)
       script: Cisco Spark|||cisco-spark-create-team
@@ -99,7 +99,7 @@ tasks:
     taskid: 31162fd8-999e-447b-8c19-cde0c4d72a0f
     type: regular
     task:
-      id: b726c1cb-8fe7-478c-869f-f48678837373
+      id: 31162fd8-999e-447b-8c19-cde0c4d72a0f
       version: -1
       name: cisco-spark-list-teams
       script: Cisco Spark|||cisco-spark-list-teams
@@ -129,7 +129,7 @@ tasks:
     taskid: 18497210-7982-468a-86a0-00d9c32488f7
     type: regular
     task:
-      id: 4e306dd8-4dad-4b10-8218-4beba510385c
+      id: 18497210-7982-468a-86a0-00d9c32488f7
       version: -1
       name: VerifyContext (CiscoSpark.Teams)
       script: VerifyContext
@@ -163,7 +163,7 @@ tasks:
     taskid: 71e3572f-8899-4c9b-859b-415528f1a13e
     type: regular
     task:
-      id: 088a235b-ae17-42ee-83ba-1376d37a9c4f
+      id: 71e3572f-8899-4c9b-859b-415528f1a13e
       version: -1
       name: cisco-spark-list-rooms (type=group)
       script: Cisco Spark|||cisco-spark-list-rooms
@@ -196,7 +196,7 @@ tasks:
     taskid: 12f7cbc9-21ce-48d8-8a9c-c010ab0fcb2b
     type: regular
     task:
-      id: 5e646767-efcf-4538-82e0-0ab36ee3d398
+      id: 12f7cbc9-21ce-48d8-8a9c-c010ab0fcb2b
       version: -1
       name: VerifyContext (CiscoSpark.Rooms)
       script: VerifyContext
@@ -257,7 +257,7 @@ tasks:
     taskid: dce7308f-71ef-42a7-841d-0aa2a4d77e48
     type: title
     task:
-      id: 8b219895-d1cc-4238-8981-eaa804fb7462
+      id: dce7308f-71ef-42a7-841d-0aa2a4d77e48
       version: -1
       name: Send messages to a room
       type: title
@@ -284,7 +284,7 @@ tasks:
     taskid: 75acf407-ef52-4bbc-8145-4ec5be611553
     type: regular
     task:
-      id: f7385170-6ab9-4a15-8466-06dca229eb6b
+      id: 75acf407-ef52-4bbc-8145-4ec5be611553
       version: -1
       name: cisco-spark-send-message-to-room (by roomId)
       script: Cisco Spark|||cisco-spark-send-message-to-room
@@ -321,7 +321,7 @@ tasks:
     taskid: bc6d7559-bb99-4c9e-8338-bb368e8f9150
     type: regular
     task:
-      id: e38627d2-8599-417d-82bf-311e4572fc9a
+      id: bc6d7559-bb99-4c9e-8338-bb368e8f9150
       version: -1
       name: cisco-spark-list-messages (to room)
       script: Cisco Spark|||cisco-spark-list-messages
@@ -361,7 +361,7 @@ tasks:
     taskid: 7b201574-ea8f-4944-8312-e6d185418547
     type: regular
     task:
-      id: 52f90753-b190-4ca0-87d7-4df33a0ea9e9
+      id: 7b201574-ea8f-4944-8312-e6d185418547
       version: -1
       name: VerifyContext (CiscoSpark.Messages.[0])
       script: VerifyContext
@@ -395,7 +395,7 @@ tasks:
     taskid: a6dbcf79-0972-4347-8134-1b484c44bd6d
     type: regular
     task:
-      id: 858f871b-e3dc-4182-853a-7d8ce8e2448c
+      id: a6dbcf79-0972-4347-8134-1b484c44bd6d
       version: -1
       name: cisco-spark-send-message-to-room (by room name)
       script: Cisco Spark|||cisco-spark-send-message-to-room
@@ -431,7 +431,7 @@ tasks:
     taskid: db34da89-7c2f-4591-838c-dd8b967f1fd6
     type: regular
     task:
-      id: 1ba382b8-98c8-434b-8b55-ac14a40dba05
+      id: db34da89-7c2f-4591-838c-dd8b967f1fd6
       version: -1
       name: VerifyContext (CiscoSpark.Messages.[1])
       script: VerifyContext
@@ -466,7 +466,7 @@ tasks:
     taskid: a3f21919-3716-42b2-80fa-5c91698ec44e
     type: title
     task:
-      id: d08be230-91e3-4d8e-87fe-74e1a48d34bc
+      id: a3f21919-3716-42b2-80fa-5c91698ec44e
       version: -1
       name: Delete everything
       type: title
@@ -495,7 +495,7 @@ tasks:
     taskid: 0400884e-2cf2-49c6-8999-d7ceed450389
     type: regular
     task:
-      id: 6bcd727c-e2a1-41d6-8d76-4e4b39d80417
+      id: 0400884e-2cf2-49c6-8999-d7ceed450389
       version: -1
       name: cisco-spark-delete-team (The Amazing Four)
       script: Cisco Spark|||cisco-spark-delete-team
@@ -526,7 +526,7 @@ tasks:
     taskid: 39d58533-ab51-4104-8e85-831fbd23a8be
     type: title
     task:
-      id: a9052186-0344-4908-8643-156f3fe32b31
+      id: 39d58533-ab51-4104-8e85-831fbd23a8be
       version: -1
       name: Send messages to a person
       type: title
@@ -553,7 +553,7 @@ tasks:
     taskid: 3d4df208-d8f4-4fe8-82fc-0542357414f1
     type: regular
     task:
-      id: 4dc8d300-29d3-4d4f-82c9-3f04eafeb451
+      id: 3d4df208-d8f4-4fe8-82fc-0542357414f1
       version: -1
       name: cisco-spark-send-message-to-person (by email)
       script: Cisco Spark|||cisco-spark-send-message-to-person
@@ -589,7 +589,7 @@ tasks:
     taskid: 5a3ded42-0c0a-478c-8e5a-5b2134ed46b2
     type: regular
     task:
-      id: 510aa2c9-7201-4f9a-8ac4-cc535f0c12c9
+      id: 5a3ded42-0c0a-478c-8e5a-5b2134ed46b2
       version: -1
       name: cisco-spark-send-message-to-person (by personId)
       script: Cisco Spark|||cisco-spark-send-message-to-person
@@ -625,7 +625,7 @@ tasks:
     taskid: 12c8e213-e8f0-4d84-8b5b-ed65e1d99281
     type: regular
     task:
-      id: f6571185-92de-4091-8e40-d956bbab912b
+      id: 12c8e213-e8f0-4d84-8b5b-ed65e1d99281
       version: -1
       name: cisco-spark-list-people (email=ciscosparktestmail@gmail.com)
       script: Cisco Spark|||cisco-spark-list-people
@@ -659,7 +659,7 @@ tasks:
     taskid: 378dcdeb-594d-4cb5-847e-01d4b01654a5
     type: regular
     task:
-      id: b101e3b1-6330-4ba6-8dd4-8152198f5725
+      id: 378dcdeb-594d-4cb5-847e-01d4b01654a5
       version: -1
       name: cisco-spark-list-rooms (type=direct)
       script: Cisco Spark|||cisco-spark-list-rooms
@@ -692,7 +692,7 @@ tasks:
     taskid: fe344f5f-aa0a-4e3c-82ae-28daf152da9b
     type: regular
     task:
-      id: 1d771ae8-220e-4f7f-8231-0f7a97595d7d
+      id: fe344f5f-aa0a-4e3c-82ae-28daf152da9b
       version: -1
       name: cisco-spark-list-messages (direct)
       script: Cisco Spark|||cisco-spark-list-messages
@@ -728,7 +728,7 @@ tasks:
     taskid: 10634d18-20dd-4776-8adb-5f06f113d7c8
     type: regular
     task:
-      id: 10fad658-61c0-417d-801c-1ebfa33ef17d
+      id: 10634d18-20dd-4776-8adb-5f06f113d7c8
       version: -1
       name: VerifyContext (CiscoSpark.People)
       script: VerifyContext
@@ -770,7 +770,7 @@ tasks:
     taskid: a40147ad-4079-4acb-858b-e0e78b2703b4
     type: regular
     task:
-      id: cb1fb94c-d997-4940-889a-ff8bc69d2581
+      id: a40147ad-4079-4acb-858b-e0e78b2703b4
       version: -1
       name: VerifyContext (CiscoSpark.Rooms.[1])
       script: VerifyContext
@@ -812,7 +812,7 @@ tasks:
     taskid: e1bd796f-f101-46ae-8218-d9d46d9c6066
     type: regular
     task:
-      id: ece1ca0c-4529-4b74-8f94-6f7340f51246
+      id: e1bd796f-f101-46ae-8218-d9d46d9c6066
       version: -1
       name: VerifyContext (CiscoSpark.Messages.[2])
       script: VerifyContext
@@ -847,7 +847,7 @@ tasks:
     taskid: acc9e22b-61db-45f4-8a07-843e41b2294c
     type: regular
     task:
-      id: 0cbf62c8-98f2-4288-8698-3dc87a4b8ac1
+      id: acc9e22b-61db-45f4-8a07-843e41b2294c
       version: -1
       name: VerifyContext (CiscoSpark.Messages.[3])
       script: VerifyContext
@@ -882,7 +882,7 @@ tasks:
     taskid: 435d3db0-a862-4629-8673-c69e99d56846
     type: regular
     task:
-      id: 96df7659-8e8f-48ae-8e75-710eb34f6eb6
+      id: 435d3db0-a862-4629-8673-c69e99d56846
       version: -1
       name: cisco-spark-delete-message (personal, 1)
       script: Cisco Spark|||cisco-spark-delete-message
@@ -915,7 +915,7 @@ tasks:
     taskid: 875403fc-7db2-4e94-8af7-d68157f56e92
     type: regular
     task:
-      id: 3bd184db-9f73-438d-833e-cba7cdf91e27
+      id: 875403fc-7db2-4e94-8af7-d68157f56e92
       version: -1
       name: cisco-spark-delete-message (personal, 2)
       script: Cisco Spark|||cisco-spark-delete-message
@@ -948,7 +948,7 @@ tasks:
     taskid: 4d7a0a9d-dcec-4fb3-82e9-55de6f412d75
     type: regular
     task:
-      id: 955e29e9-c769-485e-80de-39404bd0fe97
+      id: 4d7a0a9d-dcec-4fb3-82e9-55de6f412d75
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -982,7 +982,7 @@ tasks:
     taskid: 05ab21f9-a027-4ffc-8a1f-3bbd4559750e
     type: regular
     task:
-      id: 2172d8dd-4b5e-4d50-8c8b-cc8beeb37576
+      id: 05ab21f9-a027-4ffc-8a1f-3bbd4559750e
       version: -1
       name: cisco-spark-list-messages (direct)
       script: Cisco Spark|||cisco-spark-list-messages
@@ -1018,7 +1018,7 @@ tasks:
     taskid: b379a49d-ee5f-4ec1-80cb-29124eddbd92
     type: regular
     task:
-      id: 8e7b4dcb-3979-466b-8015-a105e397e991
+      id: b379a49d-ee5f-4ec1-80cb-29124eddbd92
       version: -1
       name: cisco-spark-list-teams
       script: Cisco Spark|||cisco-spark-list-teams
@@ -1049,7 +1049,7 @@ tasks:
     taskid: f41a137a-d452-4d3e-86ef-1b553cadd763
     type: regular
     task:
-      id: e2eba093-7fd9-47e5-8c71-b6fdbf5def6d
+      id: f41a137a-d452-4d3e-86ef-1b553cadd763
       version: -1
       name: cisco-spark-list-rooms (all)
       script: Cisco Spark|||cisco-spark-list-rooms
@@ -1082,7 +1082,7 @@ tasks:
     taskid: 8e65fdb3-aad4-40e5-8ab1-197105b84ed3
     type: regular
     task:
-      id: 54b19b94-eff5-49bc-8929-f233f5f25d25
+      id: 8e65fdb3-aad4-40e5-8ab1-197105b84ed3
       version: -1
       name: VerifyContext (CiscoSpark.Rooms)
       script: VerifyContext
@@ -1117,7 +1117,7 @@ tasks:
     taskid: 00fd4b20-b444-4e94-8a5a-9a6d854ed3e0
     type: title
     task:
-      id: ea428e96-3609-45d0-87ae-fea9307cd122
+      id: 00fd4b20-b444-4e94-8a5a-9a6d854ed3e0
       version: -1
       name: Done!
       type: title

@@ -149,6 +149,7 @@ def get_modified_files_for_testing(
     # Modified files = YMLs of integrations, scripts and playbooks
     modified_files: Set[str] = types_to_files.get(FileType.INTEGRATION, set()).union(
         types_to_files.get(FileType.SCRIPT, set()),
+        types_to_files.get(FileType.BETA_INTEGRATION, set()),
         types_to_files.get(FileType.PLAYBOOK, set()))  # Modified YMLs for testing (Integrations, Scripts, Playbooks).
 
     # Metadata packs

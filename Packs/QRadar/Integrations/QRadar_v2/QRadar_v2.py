@@ -21,6 +21,7 @@ urllib3.disable_warnings()
 """ ADVANCED GLOBAL PARAMETERS """
 EVENTS_INTERVAL_SECS = 15           # interval between events polling
 EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
+FAILURE_SLEEP = 15           # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60                    # sleep between fetches
 BATCH_SIZE = 100                    # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10   # max amount of IPs to enrich per offense
@@ -28,16 +29,21 @@ LOCK_WAIT_TIME = 0.5                # time to wait for lock.acquire
 MAX_WORKERS = 8                     # max concurrent workers used for events enriching
 DOMAIN_ENRCH_FLG = "True"           # when set to true, will try to enrich offense and assets with domain names
 RULES_ENRCH_FLG = "True"            # when set to true, will try to enrich offense with rule names
+MAX_FETCH_EVENT_RETIRES = 3         # max iteration to try search the events of an offense
+SLEEP_FETCH_EVENT_RETIRES = 10      # sleep between iteration to try search the events of an offense
 
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
     "EVENTS_FAILURE_LIMIT",
+    "FAILURE_SLEEP",
     "FETCH_SLEEP",
     "BATCH_SIZE",
     "OFF_ENRCH_LIMIT",
     "MAX_WORKERS",
     "DOMAIN_ENRCH_FLG",
     "RULES_ENRCH_FLG",
+    "MAX_FETCH_EVENT_RETIRES",
+    "SLEEP_FETCH_EVENT_RETIRES",
 ]
 
 """ GLOBAL VARS """
@@ -146,24 +152,6 @@ DEVICE_MAP = {
 }
 
 
-class LongRunningIntegrationLogger(IntegrationLogger):
-    """
-    LOG class that ignores LOG calls if long_running
-    """
-
-    def __init__(self, long_running=False):
-        super().__init__()
-        self.long_running = long_running
-
-    def __call__(self, message):
-        # ignore messages if self.long_running
-        if not self.long_running:
-            super().__call__(message)
-
-
-LOG = LongRunningIntegrationLogger(demisto.command() == "long-running-execution")
-
-
 class FetchMode:
     """Enum class for fetch mode"""
 
@@ -218,15 +206,11 @@ class QRadarClient:
         try:
             log_hdr = deepcopy(headers)
             sec_hdr = log_hdr.pop("SEC", None)
-            formatted_params = json.dumps(params, indent=4)
             # default on sec_hdr, else, try username/password
             auth = (
                 (self._username, self._password)
                 if not sec_hdr and self._username and self._password
                 else None
-            )
-            LOG(
-                f"qradar is attempting {method} to {url} with headers:\n{headers}\nparams:\n{formatted_params}"
             )
             res = requests.request(
                 method,
@@ -261,10 +245,7 @@ class QRadarClient:
         try:
             json_body = res.json()
         except ValueError:
-            LOG(
-                "Got unexpected response from QRadar. Raw response: {}".format(res.text)
-            )
-            raise DemistoException("Got unexpected response from QRadar")
+            raise DemistoException(f"Got unexpected response from QRadar. Raw response: {res.text}")
         return json_body
 
     def test_connection(self):
@@ -805,12 +786,19 @@ def perform_offense_events_enrichment(
     events_query = {"headers": "", "query_expression": query_expression}
     print_debug_msg(f'Starting events fetch for offense {offense["id"]}.', client.lock)
     try:
-        query_status, search_id = try_create_search_with_retry(
-            client, events_query, offense
-        )
-        offense["events"] = try_poll_offense_events_with_retry(
-            client, offense["id"], query_status, search_id
-        )
+        # retry to check if we got all the event (its not an error retry)
+        for i in range(MAX_FETCH_EVENT_RETIRES):
+            query_status, search_id = try_create_search_with_retry(
+                client, events_query, offense
+            )
+            offense["events"] = try_poll_offense_events_with_retry(
+                client, offense["id"], query_status, search_id
+            )
+            if not len(offense["events"]) < min(offense['event_count'], client.offenses_per_fetch):
+                break
+            elif i == MAX_FETCH_EVENT_RETIRES:
+                break
+            time.sleep(SLEEP_FETCH_EVENT_RETIRES)
     except Exception as e:
         print_debug_msg(
             f'Failed fetching event for offense {offense["id"]}: {str(e)}.',
@@ -868,6 +856,8 @@ def try_poll_offense_events_with_retry(
             print_debug_msg(f"Error while fetching offense {offense_id} events, search_id: {search_id}. "
                             f"Error details: {str(e)}")
             failures += 1
+            if failures < max_retries:
+                time.sleep(FAILURE_SLEEP)
     return []
 
 
@@ -893,8 +883,11 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
         except Exception as e:
             err = str(e)
             failures += 1
+            if failures < max_retries:
+                time.sleep(FAILURE_SLEEP)
     if failures >= max_retries:
         raise DemistoException(f"Unable to create search for offense: {offense['id']}. Error: {err}")
+
     return query_status, search_id
 
 
@@ -2329,14 +2322,8 @@ def main():
         elif command == "get-mapping-fields":
             demisto.results(get_mapping_fields(client))
     except Exception as e:
-        error = f"Error has occurred in the QRadar Integration: {str(e)}"
-        LOG(traceback.format_exc())
-        if demisto.command() == "fetch-incidents":
-            LOG(error)
-            LOG.print_log()
-            raise Exception(error)
-        else:
-            return_error(error)
+        error = f"Error has occurred in the QRadar Integration: {str(e)}\n{traceback.format_exc()}"
+        return_error(error)
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):

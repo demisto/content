@@ -85,7 +85,7 @@ tasks:
     scriptarguments:
       address_type: {}
       crypto:
-        simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+        simple: bitcoin:1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
     separatecontext: false
     view: |-
       {
@@ -124,7 +124,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+              simple: bitcoin:1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
       - - operator: isEqualString
           left:
             value:
@@ -132,7 +132,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+              simple: bitcoin:1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
       - - operator: isEqualString
           left:
             value:
@@ -212,7 +212,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+              simple: bitcoin:1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
       - - operator: isEqualString
           left:
             value:
@@ -220,7 +220,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+              simple: bitcoin:1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
       - - operator: isEqualString
           left:
             value:

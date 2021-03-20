@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the CyberArk AIM integration to eliminate hard-coded and visible credentials. This integration fetches credentials. For more information, see <a href="https://xsoar.pan.dev/docs/reference/articles/managing-credentials">Managing Credentials</a>.</p>
+<p>Deprecated. Use the CyberArk AIM v2 integration instead.</p>
 <h2>Configure CyberArkAIM on Demisto</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

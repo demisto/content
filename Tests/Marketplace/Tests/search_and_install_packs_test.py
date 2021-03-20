@@ -4,6 +4,7 @@ import timeout_decorator
 import Tests.Marketplace.search_and_install_packs as script
 from Tests.Marketplace.marketplace_services import GCPConfig
 from google.cloud.storage import Blob
+import json
 
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
@@ -61,6 +62,8 @@ MOCK_PACKS_DEPENDENCIES_RESULT = """{
         }
     ]
 }"""
+
+PACKS_PACK_META_FILE_NAME = 'pack_metadata.json'
 
 
 def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None):
@@ -129,6 +132,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
     mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
+    mocker.patch.object(script, 'is_pack_deprecated', return_value=False)
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
                                                                                       client)
@@ -311,3 +315,25 @@ def test_get_latest_version_from_bucket(mocker):
     second_blob = Blob(f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip', dummy_prod_bucket)
     dummy_prod_bucket.list_blobs.return_value = [first_blob, second_blob]
     assert script.get_latest_version_from_bucket('TestPack', dummy_prod_bucket) == '1.0.1'
+
+
+@pytest.mark.parametrize("pack_metadata_content, expected", [
+    ({'hidden': False}, False),
+    ({'hidden': True}, True),
+])
+def test_is_pack_hidden(tmp_path, pack_metadata_content, expected):
+    """
+    Given:
+        - Case A: Pack is not deprecated
+        - Case B: Pack is deprecated
+
+    When:
+        - Checking if pack is deprecated
+
+    Then:
+        - Case A: Verify pack is not deprecated, since the 'hidden' flag is set to 'false'
+        - Case B: Verify pack is deprecated, since the 'hidden' flag is set to 'true'
+    """
+    pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
+    pack_metadata_file.write_text(json.dumps(pack_metadata_content))
+    assert script.is_pack_hidden(str(tmp_path)) == expected

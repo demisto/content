@@ -62,16 +62,13 @@ def test_mirroring(mocker):
     response = get_mapping_fields_command(client).extract_mapping()
     assert len(response) == 3
     assert 'Default Mapping' in str(response)
-    parsed_response = {}
-    for mapping in response:
-        parsed_response.update(mapping)
-    assert parsed_response['Default Mapping'] == {
+    assert response['Default Mapping'] == {
         'cliName1': 'field1 - type1'
     }
-    assert parsed_response['test'] == {
+    assert response['test'] == {
         'cliName1': 'field1 - type1',
         'cliName2': 'field2 - type2'
     }
-    assert parsed_response['Something'] == {
+    assert response['Something'] == {
         'cliName1': 'field1 - type1'
     }

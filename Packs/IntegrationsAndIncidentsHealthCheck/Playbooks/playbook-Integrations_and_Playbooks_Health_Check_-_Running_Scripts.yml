@@ -2,7 +2,7 @@ id: Integrations and Playbooks Health Check - Running Scripts
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Integrations and Playbooks Health Check - Running Scripts
+name: Integrations and Incidents Health Check - Running Scripts
 description: This playbook is triggered by a 'JOB - Integrations and Playbooks Health'
   playbook and is responsible for running failed integrations and failed incidents
   scripts. The playbook may run separately from the main playbook to run health tests
@@ -790,7 +790,7 @@ tasks:
         simple: playbooktaskserrors
       keys:
         simple: Command Name,Incident Created Date,Incident ID,Number of Errors,Incident
-          Owner,Playbook Name,Task ID,Task Name
+          Owner,Task Name,Task ID,Playbook Name
       overwrite:
         simple: "true"
       sort_by: {}

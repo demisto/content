@@ -1,0 +1,76 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to the HelloIAMWorld user data.",
+	"id": "User Profile - HelloIAMWorld (Outgoing)",
+	"mapping": {
+		"User Profile": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"city": {
+					"complex": null,
+					"simple": "city"
+				},
+				"cost_center": {
+					"complex": null,
+					"simple": "costcenter"
+				},
+				"country": {
+					"complex": null,
+					"simple": "countryname"
+				},
+				"department": {
+					"complex": null,
+					"simple": "department"
+				},
+				"name": {
+					"complex": null,
+					"simple": "displayname"
+				},
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"employee_number": {
+					"complex": null,
+					"simple": "employeeid"
+				},
+				"first_name": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"last_name": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"manager": {
+					"complex": null,
+					"simple": "managername"
+				},
+				"mobile_phone": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"state": {
+					"complex": null,
+					"simple": "state"
+				},
+				"street": {
+					"complex": null,
+					"simple": "streetaddress"
+				},
+				"title": {
+					"complex": null,
+					"simple": "title"
+				},
+				"zip": {
+					"complex": null,
+					"simple": "zipcode"
+				}
+			}
+		}
+	},
+	"name": "User Profile - HelloIAMWorld (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

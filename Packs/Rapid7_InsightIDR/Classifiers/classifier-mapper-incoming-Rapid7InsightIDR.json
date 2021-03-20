@@ -1,0 +1,97 @@
+{
+	"id": "Rapid7 InsightIDR - Incoming Mapper",
+	"name": "Rapid7 InsightIDR - Incoming Mapper",
+	"type": "mapping-incoming",
+	"description": "Maps incoming InsightIDR alert fields.",
+	"fromVersion": "6.0.0",
+	"defaultIncidentType": "",
+	"mapping": {
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert ID": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "id",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Alert Name": {
+					"complex": {
+						"accessor": "type",
+						"filters": [],
+						"root": "alerts",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Assigned User": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "assignee",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"State": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "status",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Sub Category": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "source",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"details": {
+					"complex": {
+						"accessor": "type_description",
+						"filters": [],
+						"root": "alerts",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "title",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"occurred": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "created_time",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"owner": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "assignee",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"version": -1
+}

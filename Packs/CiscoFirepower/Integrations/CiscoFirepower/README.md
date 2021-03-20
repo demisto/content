@@ -1944,7 +1944,7 @@ Retrieves a list of all ISE security group tag objects.
 
 
 ##### Command Example
-```!ciscofp-list-ise-security-group-tags```
+```!ciscofp-list-ise-security-group-tag```
 
 ##### Context Example
 ```

@@ -1,0 +1,162 @@
+category: Authentication
+commonfields:
+  id: Mantis
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: API token
+  name: token
+  required: true
+  type: 4
+description: create and update issues in MantisBT,MantisBT is a popular free web-based
+  bug tracking system
+display: Mantis
+name: Mantis
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Mantis issue to get details of
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: get details of the mantis issue
+    execution: false
+    name: mantis-get-issue-by-id
+    outputs:
+    - contextPath: Mantis.Issue.id
+      description: id ofthe issue created
+      type: String
+    - contextPath: Mantis.Issue.project
+      description: project under which issue is created
+      type: Unknown
+    - contextPath: Mantis.Issue.category
+      description: category under which issue is created
+      type: Unknown
+    - contextPath: Mantis.Issue.reporter
+      description: reporter of the issue
+      type: Unknown
+    - contextPath: Mantis.Issue.status
+      description: status of the issues created
+      type: Unknown
+    - contextPath: Mantis.Issue.created_at
+      description: time  at which issue created
+      type: Unknown
+  - arguments:
+    - default: false
+      description: project name to  create issue under
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      description: category name for the issue
+      isArray: false
+      name: category
+      required: true
+      secret: false
+    - default: false
+      description: summary of the issue
+      isArray: false
+      name: summary
+      required: true
+      secret: false
+    - default: false
+      description: Description for the issue
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    deprecated: false
+    description: create a Mantis issue
+    execution: false
+    name: mantis-create-issue
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The number of issues to return per page. Default is 50 but overridable
+        by configuration.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: get a list of mantis issues
+    execution: false
+    name: mantis-get-issues
+  - arguments:
+    - default: false
+      description: Mantis issue to add a Note
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: note text
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: public
+      description: select view_state defailt is public
+      isArray: false
+      name: view_state
+      predefined:
+      - public
+      - private
+      required: true
+      secret: false
+    deprecated: false
+    description: add Note to a Mantis issue
+    execution: false
+    name: mantis-add-note
+  - arguments:
+    - default: false
+      description: Mantis issue Id to close
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: close a Mantis issue
+    execution: false
+    name: mantis-close-issue
+  dockerimage: demisto/python3:3.9.1.14969
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

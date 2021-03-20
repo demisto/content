@@ -475,8 +475,7 @@ tasks:
       source_user: {}
       start_time: {}
       sub_type: {}
-      time_range:
-        simple: 1 year
+      time_range: {}
       url_category: {}
       url_domain: {}
     separatecontext: false

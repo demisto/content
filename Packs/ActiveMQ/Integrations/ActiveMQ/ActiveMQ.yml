@@ -12,11 +12,6 @@ configuration:
   name: port
   required: false
   type: 0
-- defaultvalue: ''
-  display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - defaultvalue: Demisto
   display: Client ID
   name: client-id

@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 7c83c62e-c3fa-4bc7-b3e1-51b5d70b0c3f
     type: start
     task:
-      id: '0'
+      id: 7c83c62e-c3fa-4bc7-b3e1-51b5d70b0c3f
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: 32b79020-3565-466c-b1aa-20122377ea18
     type: regular
     task:
-      id: '1'
+      id: 32b79020-3565-466c-b1aa-20122377ea18
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: 0206c881-f2f8-43be-86df-b51c78458e41
     type: regular
     task:
-      id: '2'
+      id: 0206c881-f2f8-43be-86df-b51c78458e41
       version: -1
       name: xmcyber-affected-critical-assets-list
       description: ''
@@ -76,10 +76,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: 4d770f49-fc01-4ba7-919d-5791073ae13d
     type: condition
     task:
-      id: '3'
+      id: 4d770f49-fc01-4ba7-919d-5791073ae13d
       version: -1
       name: Verify Outputs
       type: condition
@@ -120,10 +120,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: 486f36c8-29f2-40a0-89c9-da386e7930d5
     type: regular
     task:
-      id: '4'
+      id: 486f36c8-29f2-40a0-89c9-da386e7930d5
       version: -1
       name: xmcyber-affected-entities-list
       description: ''
@@ -146,10 +146,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: 2328bc3c-7ff0-4b65-8344-9e3a291cde1e
     type: condition
     task:
-      id: '5'
+      id: 2328bc3c-7ff0-4b65-8344-9e3a291cde1e
       version: -1
       name: Verify Outputs
       type: condition
@@ -185,10 +185,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: 422072c2-1f90-4754-9636-3c973405d8af
     type: regular
     task:
-      id: '6'
+      id: 422072c2-1f90-4754-9636-3c973405d8af
       version: -1
       name: xmcyber-version-supported
       description: ''
@@ -208,10 +208,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: 5b5c8e7b-1531-4428-81ca-6c9c01d0176d
     type: condition
     task:
-      id: '7'
+      id: 5b5c8e7b-1531-4428-81ca-6c9c01d0176d
       version: -1
       name: Verify Outputs
       type: condition
@@ -237,10 +237,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: '8'
+    taskid: 161e2316-07ee-453f-ac22-946eaff47cb2
     type: regular
     task:
-      id: '8'
+      id: 161e2316-07ee-453f-ac22-946eaff47cb2
       version: -1
       name: xmcyber-version-get
       description: ''
@@ -260,10 +260,10 @@ tasks:
     skipunavailable: false
   '9':
     id: '9'
-    taskid: '9'
+    taskid: 0dc22270-c9a0-4996-944c-2b4f0533328b
     type: condition
     task:
-      id: '9'
+      id: 0dc22270-c9a0-4996-944c-2b4f0533328b
       version: -1
       name: Verify Outputs
       type: condition
@@ -289,14 +289,14 @@ tasks:
     skipunavailable: false
   '10':
     id: 10
-    taskid: '10'
+    taskid: 0b9034da-fd8d-4db2-8c65-ff4c582a0ea1
     type: regular
     task:
-      id: '10'
+      id: 0b9034da-fd8d-4db2-8c65-ff4c582a0ea1
       version: -1
       name: ip
       description: ''
-      script: '|||ip'
+      script: 'XMCyber|||ip'
       type: regular
       iscommand: true
       brand: ''
@@ -314,10 +314,10 @@ tasks:
     skipunavailable: false
   '11':
     id: '11'
-    taskid: '11'
+    taskid: 5069c1b2-94ad-4c37-a6d2-d0b0f5078f73
     type: condition
     task:
-      id: '11'
+      id: 5069c1b2-94ad-4c37-a6d2-d0b0f5078f73
       version: -1
       name: Verify Outputs
       type: condition
@@ -393,10 +393,10 @@ tasks:
     skipunavailable: false
   '12':
     id: 12
-    taskid: '12'
+    taskid: ec5eaab2-8b3c-44db-8a2c-ab39502e7093
     type: regular
     task:
-      id: '12'
+      id: ec5eaab2-8b3c-44db-8a2c-ab39502e7093
       version: -1
       name: xmcyber-entity-get
       description: ''
@@ -419,10 +419,10 @@ tasks:
     skipunavailable: false
   '13':
     id: '13'
-    taskid: '13'
+    taskid: d7c68352-0834-4e70-9dfb-663855479569
     type: condition
     task:
-      id: '13'
+      id: d7c68352-0834-4e70-9dfb-663855479569
       version: -1
       name: Verify Outputs
       type: condition
@@ -498,10 +498,10 @@ tasks:
     skipunavailable: false
   '14':
     id: 14
-    taskid: '14'
+    taskid: 37bb1fc5-9542-452c-b4b9-192b1065fd28
     type: regular
     task:
-      id: '14'
+      id: 37bb1fc5-9542-452c-b4b9-192b1065fd28
       version: -1
       name: hostname
       description: ''
@@ -524,10 +524,10 @@ tasks:
     skipunavailable: false
   '15':
     id: '15'
-    taskid: '15'
+    taskid: 2921796a-d266-49a8-bd4c-7c72aefe30d9
     type: condition
     task:
-      id: '15'
+      id: 2921796a-d266-49a8-bd4c-7c72aefe30d9
       version: -1
       name: Verify Outputs
       type: condition
@@ -603,10 +603,10 @@ tasks:
     skipunavailable: false
   '16':
     id: '16'
-    taskid: '16'
+    taskid: 5cf3d8a7-588b-4bef-8d7b-bafebbc3addf
     type: title
     task:
-      id: '16'
+      id: 5cf3d8a7-588b-4bef-8d7b-bafebbc3addf
       version: -1
       name: Test Done
       type: title

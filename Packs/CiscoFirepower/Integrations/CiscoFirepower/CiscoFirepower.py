@@ -1428,7 +1428,7 @@ def main():  # pragma: no cover
 
         elif demisto.command() == 'ciscofp-list-security-group-tags':
             return_outputs(*list_security_group_tags_command(client, demisto.args()))
-        elif demisto.command() == 'ciscofp-list-ise-security-group-tags':
+        elif demisto.command() == 'ciscofp-list-ise-security-group-tag':
             return_outputs(*list_ise_security_group_tags_command(client, demisto.args()))
         elif demisto.command() == 'ciscofp-list-vlan-tags':
             return_outputs(*list_vlan_tags_command(client, demisto.args()))

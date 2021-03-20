@@ -1,0 +1,56 @@
+args:
+- default: false
+  description: Parameters that were changed and caused the integration to run successfully.
+  isArray: true
+  name: succeeded_changed_params
+  required: false
+  secret: false
+- default: false
+  description: All file entry IDs in the incident.
+  isArray: true
+  name: file_names
+  required: false
+  secret: false
+- default: false
+  description: The raw configuration output.
+  isArray: false
+  name: configuration
+  required: true
+  secret: false
+- default: false
+  description: The errors when testing the instance.
+  isArray: true
+  name: errors
+  required: false
+  secret: false
+- default: false
+  description: Errors from the ExecuteCommand automation.
+  isArray: true
+  name: execute_command_errors
+  required: false
+  secret: false
+comment: Collects all results from previous tasks. (Available from Cortex XSOAR 5.0.0.)
+commonfields:
+  id: TroubleshootAggregateResults
+  version: -1
+enabled: false
+name: TroubleshootAggregateResults
+outputs:
+- contextPath: TroubleshootAggregateResults.configuration_file_name
+  description: The name of the file the configuration was saved to.
+  type: String
+- contextPath: TroubleshootAggregateResults.summary_file_name
+  description: The name of the file the summary was saved to.
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- troubleshoot
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.14969
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
+

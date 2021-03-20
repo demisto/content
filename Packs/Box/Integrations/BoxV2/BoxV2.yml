@@ -17,7 +17,8 @@ configuration:
   name: as_user
   required: false
   type: 0
-- hidden: false
+- display: Types of Events to Ingest as Incidents
+  hidden: false
   name: event_type
   options:
   - ACCESS_GRANTED
@@ -122,8 +123,8 @@ configuration:
   name: default_user
   required: false
   type: 0
-- additionalinfo: 'Note: If more than one user exists for the email address,
-    the commands will fail.'
+- additionalinfo: 'Note: If more than one user exists for the email address, the commands
+    will fail.'
   defaultvalue: 'true'
   display: Auto-detect user IDs based on their email address.
   hidden: false
@@ -144,6 +145,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '50'
+  display: The maximum amount of incidents to fetch at once
   name: max_fetch
   required: false
   type: 0
@@ -156,8 +158,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Limits the search results to any items of this type. This parameter
-        only takes one value. By default, the API returns items that match any of these
-        types. Possible values are: "file", "folder", "web_link".'
+        only takes one value. By default, the API returns items that match any of
+        these types. Possible values are: "file", "folder", "web_link".'
       isArray: false
       name: type
       predefined:
@@ -167,7 +169,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated lists of folder IDs that limits the search results to items within the given list of folders.
+      description: A comma-separated lists of folder IDs that limits the search results
+        to items within the given list of folders.
       isArray: false
       name: ancestor_folder_ids
       required: false
@@ -191,39 +194,44 @@ script:
       required: false
       secret: false
     - default: false
-      description: The tag of the item to search for. 
+      description: The tag of the item to search for.
       isArray: false
       name: tag
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the time frame of when the item was created. Can be RFC3339 timestamps, or relative to the current time (e.g., 3 Days).
+      description: A comma-separated list of the time frame of when the item was created.
+        Can be RFC3339 timestamps, or relative to the current time (e.g., 3 Days).
       isArray: false
       name: created_range
       required: false
       secret: false
     - default: false
-      description: Limits the search results to any files that match any of the provided file extensions.
+      description: Limits the search results to any files that match any of the provided
+        file extensions.
       isArray: false
       name: file_extensions
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The maximum number of items to return as part of a page of results. Default is "100".
+      description: The maximum number of items to return as part of a page of results.
+        Default is "100".
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: The offset of the item at which to begin the response. Default is "0".
+      description: The offset of the item at which to begin the response. Default
+        is "0".
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of user IDs used to limit the search results to any items that are owned by the given list of owners.
+      description: A comma-separated list of user IDs used to limit the search results
+        to any items that are owned by the given list of owners.
       isArray: false
       name: owner_uids
       required: false
@@ -235,7 +243,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limits the search results to any items updated within a given date range.
+      description: Limits the search results to any items updated within a given date
+        range.
       isArray: false
       name: updated_at_range
       required: false
@@ -247,7 +256,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches for files, folders, web links, and shared files across the users' content or across the entire enterprise.
+    description: Searches for files, folders, web links, and shared files across the
+      users' content or across the entire enterprise.
     execution: false
     name: box-search-content
     outputs:
@@ -561,7 +571,7 @@ script:
       description: The access level for the shared link.
       type: String
     - contextPath: Box.ShareLink.shared_link.effective_access
-      description: The effective access level for the shared link. 
+      description: The effective access level for the shared link.
       type: String
     - contextPath: Box.ShareLink.shared_link.effective_permission
       description: The effective permissions for this shared link.
@@ -646,7 +656,7 @@ script:
       description: The access level for the shared link.
       type: String
     - contextPath: Box.ShareLink.shared_link.effective_access
-      description: The effective access level for the shared link. 
+      description: The effective access level for the shared link.
       type: String
     - contextPath: Box.ShareLink.shared_link.effective_permission
       description: The effective permissions for this shared link.
@@ -678,7 +688,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
+      description: 'The level of access for the shared link. Possible values are:
+        "open", "company", and "collaborators".'
       isArray: false
       name: access
       predefined:
@@ -701,7 +712,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'If the shared link allows for downloading of files. Possible values are: "true" and "false".'
+      description: 'If the shared link allows for downloading of files. Possible values
+        are: "true" and "false".'
       isArray: false
       name: can_download
       predefined:
@@ -771,7 +783,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
+      description: 'The level of access for the shared link. Possible values are:
+        "open", "company", and "collaborators".'
       isArray: false
       name: access
       predefined:
@@ -794,7 +807,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'If the shared link allows for downloading of files. Possible values are: "true" and "false".'
+      description: 'If the shared link allows for downloading of files. Possible values
+        are: "true" and "false".'
       isArray: false
       name: can_download
       predefined:
@@ -963,7 +977,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
+      description: 'The level of access for the shared link. Possible values are:
+        "open", "company", and "collaborators".'
       isArray: false
       name: access
       predefined:
@@ -986,7 +1001,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'If the shared link allows for downloading of folders. Possible values are: "true" and "false".'
+      description: 'If the shared link allows for downloading of folders. Possible
+        values are: "true" and "false".'
       isArray: false
       name: can_download
       predefined:
@@ -1074,7 +1090,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
+      description: 'The level of access for the shared link. Possible values are:
+        "open", "company", and "collaborators".'
       isArray: false
       name: access
       predefined:
@@ -1097,7 +1114,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'If the shared link allows for downloading of folders. Possible values are: "true" and "false".'
+      description: 'If the shared link allows for downloading of folders. Possible
+        values are: "true" and "false".'
       isArray: false
       name: can_download
       predefined:
@@ -1393,7 +1411,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The offset of the item at which to begin the response. Default is "0".
+      description: The offset of the item at which to begin the response. Default
+        is "0".
       isArray: false
       name: offset
       required: false
@@ -1401,7 +1420,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: name
-      description: 'The field the results should be sorted by. Possible values are: "id", "name", "date", and "size".'
+      description: 'The field the results should be sorted by. Possible values are:
+        "id", "name", "date", and "size".'
       isArray: false
       name: sort
       predefined:
@@ -1656,7 +1676,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Attributes to include in the response. Possible values are: "id", "type", and "name".'
+      description: 'Attributes to include in the response. Possible values are: "id",
+        "type", and "name".'
       isArray: false
       name: fields
       predefined:
@@ -1681,7 +1702,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The offset of the item at which to begin the response. Default is "0".
+      description: The offset of the item at which to begin the response. Default
+        is "0".
       isArray: false
       name: offset
       required: false
@@ -1767,8 +1789,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The ID of the folder the file is being uploaded to. Default is
-        "0/root".'
+      description: The ID of the folder the file is being uploaded to. Default is
+        "0/root".
       isArray: false
       name: folder_id
       required: true
@@ -1961,7 +1983,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The offset of the item at which to begin the response. Default is "0".
+      description: The offset of the item at which to begin the response. Default
+        is "0".
       isArray: false
       name: offset
       required: false
@@ -2203,7 +2226,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the item to delete. Possible values are: "file" and "folder".'
+      description: 'The type of the item to delete. Possible values are: "file" and
+        "folder".'
       isArray: false
       name: type
       predefined:
@@ -2346,7 +2370,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "The user's account status. Possible values are \"active\", \"inactive\", \"cannot_delete_edit\", and \"cannot_delete_edit_upload\"."
+      description: The user's account status. Possible values are "active", "inactive",
+        "cannot_delete_edit", and "cannot_delete_edit_upload".
       isArray: false
       name: status
       predefined:
@@ -2364,7 +2389,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user can use Box Sync. Possible values are: "true" and "false".'
+      description: 'Whether the user can use Box Sync. Possible values are: "true"
+        and "false".'
       isArray: false
       name: is_sync_enabled
       predefined:
@@ -2374,7 +2400,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to exempt the user from enterprise device limits. Possible values are: "true" and "false".'
+      description: 'Whether to exempt the user from enterprise device limits. Possible
+        values are: "true" and "false".'
       isArray: false
       name: is_exempt_from_device_limits
       predefined:
@@ -2384,8 +2411,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user is allowed to collaborate with users outside their
-        enterprise. Possible values are: "true" and "false".'
+      description: 'Whether the user is allowed to collaborate with users outside
+        their enterprise. Possible values are: "true" and "false".'
       isArray: false
       name: is_external_collab_restricted
       predefined:
@@ -2395,7 +2422,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user must use two-factor authentication. Possible values are: "true" and "false".'
+      description: 'Whether the user must use two-factor authentication. Possible
+        values are: "true" and "false".'
       isArray: false
       name: is_exempt_from_login_verification
       predefined:
@@ -2415,8 +2443,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A tracking code that allows an admin to generate reports from the admin
-        console and assign an attribute to a specific group of users. The expected
+      description: A tracking code that allows an admin to generate reports from the
+        admin console and assign an attribute to a specific group of users. The expected
         format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be
         used when using the `;` separator.
       isArray: false
@@ -2517,7 +2545,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The user’s enterprise role. Possible values are: "coadmin" and "user".'
+      description: 'The user’s enterprise role. Possible values are: "coadmin" and
+        "user".'
       isArray: false
       name: role
       predefined:
@@ -2534,7 +2563,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user can use Box Sync. Possible values are: "true" and "false".'
+      description: 'Whether the user can use Box Sync. Possible values are: "true"
+        and "false".'
       isArray: false
       name: is_sync_enabled
       predefined:
@@ -2568,8 +2598,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A tracking code that allows an admin to generate reports from the admin
-        console and assign an attribute to a specific group of users. The expected
+      description: A tracking code that allows an admin to generate reports from the
+        admin console and assign an attribute to a specific group of users. The expected
         format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be
         used when using the `;` separator.
       isArray: false
@@ -2595,7 +2625,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to exempt the user from enterprise device limits. Possible values are: "true" and "false".'
+      description: 'Whether to exempt the user from enterprise device limits. Possible
+        values are: "true" and "false".'
       isArray: false
       name: is_exempt_from_device_limits
       predefined:
@@ -2605,7 +2636,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user must use two-factor authentication. Possible values are: "true" and "false".'
+      description: 'Whether the user must use two-factor authentication. Possible
+        values are: "true" and "false".'
       isArray: false
       name: is_exempt_from_login_verification
       predefined:
@@ -2615,8 +2647,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user is allowed to collaborate with users outside their
-        enterprise. Possible values are: "true" and "false".'
+      description: 'Whether the user is allowed to collaborate with users outside
+        their enterprise. Possible values are: "true" and "false".'
       isArray: false
       name: is_external_collab_restricted
       predefined:
@@ -2626,7 +2658,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user is an app user. Possible values are: "true" and "false".'
+      description: 'Whether the user is an app user. Possible values are: "true" and
+        "false".'
       isArray: false
       name: is_platform_access_only
       predefined:
@@ -2636,7 +2669,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The account status of the user. Possible values are: "active", "inactive", "cannot_delete_edit", and "cannot_delete_edit_upload".'
+      description: 'The account status of the user. Possible values are: "active",
+        "inactive", "cannot_delete_edit", and "cannot_delete_edit_upload".'
       isArray: false
       name: status
       predefined:
@@ -2733,8 +2767,8 @@ script:
       secret: false
     deprecated: false
     description: Deletes a user. By default this will fail if the user still owns
-      any content. Move their owned content before proceeding, or use the force
-      field to delete the user and their files.
+      any content. Move their owned content before proceeding, or use the force field
+      to delete the user and their files.
     execution: true
     name: box-delete-user
   - arguments:
@@ -2746,7 +2780,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of stream to retrieve. Possible values are: "all", "changes", and "sync".'
+      description: 'The type of stream to retrieve. Possible values are: "all", "changes",
+        and "sync".'
       isArray: false
       name: stream_type
       predefined:
@@ -2899,6 +2934,204 @@ script:
     description: Returns the contents of a file in binary format.
     execution: false
     name: box-download-file
+  - arguments:
+    - default: false
+      description: The ID of the user who currently owns the folder.
+      isArray: false
+      name: from_user_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the user who will receive the folders.
+      isArray: false
+      name: to_user_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Determines if users should receive email notification for the action
+        performed.
+      isArray: false
+      name: notify
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Move all of the items (files, folders and workflows) owned by a user
+      into another user's account.
+    execution: false
+    name: box-move-folder
+    outputs:
+    - contextPath: Box.Folder.id
+      description: The ID of the folder created.
+      type: Number
+    - contextPath: Box.Folder.etag
+      description: The entry tag for the folder created.
+      type: Number
+    - contextPath: Box.Folder.type
+      description: The type of folder.
+      type: String
+    - contextPath: Box.Folder.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the folder.
+      type: Number
+    - contextPath: Box.Folder.name
+      description: The name of the folder.
+      type: String
+    - contextPath: Box.Folder.sha1
+      description: The SHA1 hash of the folder.
+      type: String
+    - contextPath: Box.Folder.file_version.id
+      description: The unique identifier that represents a file version.
+      type: Number
+    - contextPath: Box.Folder.file_version.type
+      description: Value is always file_version.
+      type: String
+    - contextPath: Box.Folder.file_version.sha1
+      description: The SHA1 hash of this version of the file.
+      type: String
+    - contextPath: Box.Folder.description
+      description: The description of the item.
+      type: String
+    - contextPath: Box.Folder.size
+      description: The folder size in bytes.
+      type: Number
+    - contextPath: Box.Folder.path_collection.total_count
+      description: The number of folders in the list.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.Folder.path_collection.entries.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.Folder.created_at
+      description: The date and time when the item was created on Box.
+      type: Date
+    - contextPath: Box.Folder.modified_at
+      description: The date and time when the item was last updated on Box.
+      type: Date
+    - contextPath: Box.Folder.trashed_at
+      description: The time at which the item was put in the trash.
+      type: Date
+    - contextPath: Box.Folder.purged_at
+      description: The time at which the item is expected to be purged from the trash.
+      type: Date
+    - contextPath: Box.Folder.content_created_at
+      description: The date and time at which the item was originally created, which
+        might be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.Folder.content_modified_at
+      description: The date and time at which the item was last updated, which might
+        be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.Folder.created_by.id
+      description: The unique identifier for the user who created the item.
+      type: Number
+    - contextPath: Box.Folder.created_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Folder.created_by.name
+      description: The display name of the user who created the item.
+      type: String
+    - contextPath: Box.Folder.created_by.login
+      description: The primary email address of the user who created the item.
+      type: String
+    - contextPath: Box.Folder.modified_by.id
+      description: The unique identifier for the user who modified the item.
+      type: Number
+    - contextPath: Box.Folder.modified_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Folder.modified_by.name
+      description: The display name of the user who modified the item.
+      type: String
+    - contextPath: Box.Folder.modified_by.login
+      description: The primary email address of the user who modified the item.
+      type: String
+    - contextPath: Box.Folder.owned_by.id
+      description: The unique identifier for the user who owns the item.
+      type: Number
+    - contextPath: Box.Folder.owned_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Folder.owned_by.name
+      description: The display name of the user who owns the item.
+      type: String
+    - contextPath: Box.Folder.owned_by.login
+      description: The primary email address of the user who owns the item.
+      type: String
+    - contextPath: Box.Folder.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.Folder.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.Folder.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.Folder.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.Folder.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.Folder.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.Folder.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.Folder.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.Folder.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.Folder.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.Folder.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.Folder.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.Folder.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+    - contextPath: Box.Folder.parent.id
+      description: The ID of the parent for the item found.
+      type: Number
+    - contextPath: Box.Folder.parent.etag
+      description: The entry tag for the parent of the item found.
+      type: Number
+    - contextPath: Box.Folder.parent.type
+      description: The type for the parent of the item found.
+      type: String
+    - contextPath: Box.Folder.parent.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the parent of the item.
+      type: Number
+    - contextPath: Box.Folder.parent.name
+      description: The name of the parent of the item.
+      type: String
+    - contextPath: Box.Folder.item_status
+      description: The status of the parent of the item.
+      type: String
   dockerimage: demisto/pyjwt3:1.0.0.13142
   feed: false
   isfetch: true
