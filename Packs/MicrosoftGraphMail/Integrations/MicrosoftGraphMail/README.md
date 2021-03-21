@@ -82,7 +82,7 @@ Gets the properties of returned emails.
 | MSGraphMail.Subject | String | The subject of email. | 
 | MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
 | MSGraphMail.Body | String | The content \(body\) of the email. | 
-| MSGraphMail.Sender.Name | String | The name of sender. | 
+| MSGraphMail.Sender.Name | String | The name of the sender. | 
 | MSGraphMail.Sender.Address | String | The email address of the sender. | 
 | MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
 | MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email | 
