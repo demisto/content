@@ -399,7 +399,7 @@ script:
     - contextPath: GitLab.revision
       description: GitLab Revision
       type: String
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: false
   longRunning: false
@@ -408,6 +408,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0
