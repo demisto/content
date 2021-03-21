@@ -2,8 +2,8 @@ id: Carbon Black Defense Find Processes
 version: -1
 fromversion: 5.5.0
 name: Carbon Black Defense Find Processes
-description: Find processes using a search query (or device_id etc.) one of the parameters
-  is required, returns a list of processes
+description: Find processes using a search query (or device_id, etc.). One of the parameters
+  is required. Returns a list of processes.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
       version: -1
       name: cbd-find-process
       description: Creates a process search job. The results for the search job may
-        be requested using the job_id returned.
+        be requested using the returned job ID.
       script: '|||cbd-find-processes'
       type: regular
       iscommand: true
@@ -68,7 +68,7 @@ tasks:
           root: inputs.device_internal_ip
       device_name:
         complex:
-          root: inputs.deivce_name
+          root: inputs.device_name
       device_os:
         complex:
           root: inputs.device_os
@@ -206,7 +206,7 @@ tasks:
       id: 822c5274-3b51-4fb9-8767-6072ff51a2e4
       version: -1
       name: cbd-find-processes-results
-      description: Retrieves the results of a process search identified by a job_id.
+      description: Retrieves the results of a process search identified by a job ID.
       script: '|||cbd-find-processes-results'
       type: regular
       iscommand: true
@@ -275,26 +275,26 @@ inputs:
     simple: chrome
   required: false
   description: |
-    The Query in lucene syntax and/or including value searches query or some of the other must be included.
+    The query in Lucene syntax and/or value searches.
   playbookInputQuery:
 - key: alert_category
   value: {}
   required: false
-  description: The A Carbon Black Cloud classification for events tagged to an alert
+  description: A Carbon Black Cloud classification for events tagged to an alert
     indicating whether the event is a “threat” or “observed”.
   playbookInputQuery:
 - key: blocked_hash
   value: {}
   required: false
-  description: SHA-256 hash(es) of the child process(es) binary; for any process(es)
-    terminated by the sensor
+  description: SHA-256 hash(es) of the child process(es) binary. For any process(es)
+    terminated by the sensor.
   playbookInputQuery:
 - key: device_external_ip
   value: {}
   required: false
-  description: The IP address of the endpoint according to the Carbon Black Cloud;
-    can differ from device_internal_ip due to network proxy or NAT; either IPv4 (dotted
-    decimal notation) or IPv6 (proprietary format documented below).
+  description: The IP address of the endpoint according to Carbon Black Cloud.
+    This IP address can differ from the device_internal_ip due to network proxy or NAT. 
+    Can be either IPv4 or IPv6 format.
   playbookInputQuery:
 - key: device_id
   value: {}
@@ -305,13 +305,12 @@ inputs:
 - key: device_internal_ip
   value: {}
   required: false
-  description: The IP address of the endpoint reported by the sensor; either IPv4
-    (dotted decimal notation) or IPv6 (proprietary format, documented below).
+  description: The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format.
   playbookInputQuery:
-- key: deivce_name
+- key: device_name
   value: {}
   required: false
-  description: The Hostname of the endpoint recorded by the sensor when last initialized.
+  description: The hostname of the endpoint recorded by the sensor when last initialized.
   playbookInputQuery:
 - key: device_os
   value: {}
@@ -321,13 +320,13 @@ inputs:
 - key: device_timestamp
   value: {}
   required: false
-  description: The Sensor-reported timestamp of the batch of events in which this
+  description: The sensor-reported timestamp of the batch of events in which this
     record was submitted to Carbon Black Cloud.
   playbookInputQuery:
 - key: event_type
   value: {}
   required: false
-  description: The Type of enriched event observed.
+  description: The type of enriched event observed.
   playbookInputQuery:
 - key: parent_hash
   value: {}
@@ -338,37 +337,38 @@ inputs:
 - key: parent_name
   value: {}
   required: false
-  description: The Filesystem path of the parent process binary.
+  description: The file system path of the parent process binary.
   playbookInputQuery:
 - key: parent_reputation
   value: {}
   required: false
   description: |
-    The Reputation of the parent process; applied by the Carbon Black Cloud when the event is initially processed.
+    The reputation of the parent process applied by Carbon Black
+    Cloud when the event is initially processed.
   playbookInputQuery:
 - key: process_cmdline
   value: {}
   required: false
   description: |
-    The Command line executed by the actor process.
+    The command line executed by the actor process.
   playbookInputQuery:
 - key: process_guid
   value: {}
   required: false
   description: |
-    The Unique process identifier for the actor process.
+    The unique process identifier for the actor process.
   playbookInputQuery:
 - key: process_hash
   value: {}
   required: false
-  description: The MD5 and/or SHA-256 hash of the actor process binary; order may
+  description: The MD5 and/or SHA-256 hash of the actor process binary. The order may
     vary when two hashes are reported.
   playbookInputQuery:
 - key: process_name
   value: {}
   required: false
   description: |
-    The Filesystem path of the actor process binary.
+    The file system path of the actor process binary.
   playbookInputQuery:
 - key: process_pid
   value: {}
@@ -428,20 +428,20 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: CarbonBlackDefense.Process.Results.approximate_unaggregated
-  description: The approximate unaggregated
+  description: The approximate number of unaggregated results.
 - contextPath: CarbonBlackDefense.Process.Results.completed
-  description: The completed results.
+  description: The number of completed results.
 - contextPath: CarbonBlackDefense.Process.Results.contacted
-  description: The contacted results.
+  description: The number of contacted results.
 - contextPath: CarbonBlackDefense.Process.Results.num_aggregated
-  description: The num aggregated.
+  description: The number of aggregated results.
 - contextPath: CarbonBlackDefense.Process.Results.num_available
-  description: The num available.
+  description: The number of processes available in this search.
 - contextPath: CarbonBlackDefense.Process.Results.num_found
-  description: The num found.
+  description: The number of processes found in this search.
 - contextPath: CarbonBlackDefense.Process.Results.results
-  description: The results of the job id.
+  description: The lists that contains the data of the results for this search.
 - contextPath: CarbonBlackDefense.Process.Search.job_id
-  description: The job id os the processes search.
+  description: The job ID of the process search.
 tests:
 - carbonBlackDefenseV2TestPlaybook
