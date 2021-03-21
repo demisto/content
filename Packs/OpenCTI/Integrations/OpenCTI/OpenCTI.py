@@ -620,7 +620,6 @@ def marking_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> Comm
 def main():
     params = demisto.params()
     args = demisto.args()
-
     credentials = params.get('credentials', {})
     api_key = credentials.get('password')
     base_url = params.get('base_url').strip('/')
