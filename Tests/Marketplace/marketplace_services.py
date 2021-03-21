@@ -2472,21 +2472,21 @@ def get_updated_server_version(current_string_version, compared_content_item, pa
     Returns:
         str: latest version between compared versions.
     """
-    higher_version_result = current_string_version
+    lower_version_result = current_string_version
 
     try:
-        compared_string_version = compared_content_item.get('fromversion') or compared_content_item.get(
-            'fromVersion') or "1.0.0"
+        compared_string_version = compared_content_item.get('fromversion') or \
+                                  compared_content_item.get('fromVersion') or "99.99.99"
         current_version, compared_version = LooseVersion(current_string_version), LooseVersion(compared_string_version)
 
-        if current_version < compared_version:
-            higher_version_result = compared_string_version
+        if current_version > compared_version:
+            lower_version_result = compared_string_version
     except Exception:
         content_item_name = compared_content_item.get('name') or compared_content_item.get(
             'display') or compared_content_item.get('id') or compared_content_item.get('details', '')
         logging.exception(f"{pack_name} failed in version comparison of content item {content_item_name}.")
     finally:
-        return higher_version_result
+        return lower_version_result
 
 
 def get_content_git_client(content_repo_path: str):
