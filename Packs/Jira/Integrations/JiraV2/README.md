@@ -1,4 +1,4 @@
-Use the Atlassian Jira v2 integration to manage issues and create Demisto incidents from projects.
+Use the Atlassian Jira v2 integration to manage issues and create Cortex XSOAR incidents from projects.
 
 This integration was integrated and tested with version 1001.0.0-SNAPSHOT of Jira.
 For more information about manage syntax, see the https://support.atlassian.com/
@@ -9,7 +9,7 @@ For more information about manage syntax, see the https://support.atlassian.com/
 2. Get or add issue’s comments.
 3. Add link and upload an attachment to issue.
 
-## Configure jira-v2 on Demisto
+## Configure jira-v2 on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -37,23 +37,103 @@ For more information about manage syntax, see the https://support.atlassian.com/
     * __Issue index to start fetching incidents from__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __Mirror outgoing incidents__
-    * __Mirror incoming incidents__
+    * __Mirror outgoing incidents__: Mirror outgoing incidents
+    * __Mirror incoming incidents__: Mirror incoming incidents
     * __Fetch incidents__
     * __Incident type__
-    * __File Entry Tag__
-    * __Comment Entry Tag__
-    * __Fetch Comments__
-    * __Fetch Attachments__
+    * __File Entry Tag__: Choose a tag to add to an entry in order to mirror it as a attachment in Jira.
+    * __Comment Entry Tag__: Choose a tag to add to an entry in order to mirror it as a comment in Jira.
+    * __Fetch Comments__: Fetch comments for Jira ticket
+    * __Fetch Attachments__: Fetch attachments for Jira ticket
     * __Use created field to fetch incidents__
 4. Click __Test__ to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
 ---
-When you enable fetched incidents, Demisto fetches the first batch of Jira issues from the 10 minutes prior to when the integration was added. After the first batch of fetched issues, Demisto fetches new Jira issues as soon as they are generated in Jira. By default, 50 issues are pulled for each call. To pull older Jira issues, use the query to fetch issues option.
+When you enable fetched incidents, Cortex XSOAR fetches the first batch of Jira issues from the 10 minutes prior to when the integration was added. After the first batch of fetched issues, Cortex XSOAR fetches new Jira issues as soon as they are generated in Jira. By default, 50 issues are pulled for each call. To pull older Jira issues, use the query to fetch issues option.
 If `Fetch comments` is enabled, The fetched incident will include the comments in the Jira issue.
 If `Fetch attachments` is enabled, The fetched incident will include the attachments in the Jira issue.
-If mirror `Mirror incoming incidents` is enabled, any incident data changed in remote Jira server will reflected on existing fetched incidents.
-If mirror `Mirror outgoing incidents` is enabled, any incident data changed in existing fetched incidents will reflected on remote Jira server.
+
+## Configure Incident Mirroring
+**This feature is compliant with XSOAR version 6.0 and above.**
+This part walks you through setting up the Jira integration to mirror incidents from Jira in Cortex XSOAR. 
+It includes steps for configuring the integration and incoming and outgoing mappers. However, it does not cover every option available in the integration nor classification and mapping features. 
+For information about **Classification and Mapping** visit: [Classification and Mapping](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping.html).
+
+When mirroring incidents, you can make changes in Jira that will be reflected in Cortex XSOAR, or vice versa. 
+You can also attach files from either of the systems, which will then be available in the other system. 
+
+This is made possible by the addition of 3 new functions in the integration, which are applied with the following options:
+- External schema support
+- Can sync mirror in
+- Can sync mirror out
+
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-configuration.png)
+
+#### STEP 1 - Modify the incoming mapper.
+1. Navigate to **Classification and Mapping** and click **classifier-mapper-incoming-JiraV2**.
+2. Under the Incident Type dropdown, select **Jira Incident**.
+3. Change the mapping according to your needs.
+4. Save your changes.
+    
+##### 5 fields have been added to support the mirroring feature:
+- **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both.
+    - You can choose the mirror direction when configuring the Jira instance using the **Incident Mirroring Direction** field.
+
+- **dbotMirrorId** - determines the incident ID in the 3rd party integration. In this case, the Jira ID field.
+- **dbotMirrorInstance** - determines the Jira instance with which to mirror.
+- **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
+- **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to Jira.
+    - You can set the tags in the instance configuration, using **File Entry Tag**, and **Comment Entry Tag**.
+
+![image](https://raw.githubusercontent.com/demisto/content/1e428c782c1da1314bb6443ec472ad7c5d895e59/Packs/Jira/doc_files/mirror_incoming_mapper_fields.png)
+
+#### STEP 2 - Modify the outgoing mapper.
+1. Under **Classification and Mapping**, click **classifier-mapper-outgoing-Jira.**
+2. Under **Select Instance** dropdown, select the instance name you want to work with.
+The left side of the screen shows the Jira fields to which to map and the right side of the
+screen shows the Cortex XSOAR fields by which you are mapping.
+  *Note: If **Select Instance** dropdown is empty, so to the integration's settings and under **Incident Type** select **Jira Incident** and try again.
+3. Under **Schema Type**, select **Jira Incident**. The Schema Type represents the Jira entity that
+you are mapping to. In our example it is an incident, but it can also be any other kind of ticket that
+Jira supports.
+![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/outgoing_editor_7.png)
+4. Under the **Incident Type** dropdown, select **Jira Incident**.
+5. On the right side of the screen, under **Incident**, select the incident based on which you want to
+match.
+6. Change the mapping according to your needs.
+7. Save your changes.
+
+#### STEP 3 - Configure the following integration fields in order to customize the mirroring feature:
+1. **Mirror outgoing incidents**: If enabled, any incident data changed in existing fetched incidents will reflected on remote Jira server.
+2. **Mirror incoming incidents**: If enabled, any incident data changed in remote Jira server will reflected on existing fetched incidents.
+3. **Fetch incident**s: Should be enabled in order mirror in and out new incidents.
+4. **Incident type**: In order to mirror out changes, please provide an incident type that associated with a layout containing the fields you want to mirror their values. You can use 'Jira Incident' that already has a built-in layout. 
+5. **File Entry Tag**: Choose a tag to add to an entry in order to mirror it as a attachment in Jira.
+6. **Comment Entry Tag**: Choose a tag to add to an entry in order to mirror it as a comment in Jira.
+7. **Fetch Comments**: Fetch comments for Jira ticket.
+8. **Fetch Attachments**: Fetch attachments for Jira ticket.
+
+#### STEP 4 - Create an incident in Jira. For purposes of this use case, it can be a very simple incident
+
+#### STEP 5 - In Cortex XSOAR, the new ticket will be ingested in approximately one minute.
+1. Add a note to the incident. In the example below, we have written A comment from Cortex XSOAR to Jira.
+2. Click Actions -> Tags and add the **Comment Entry Tag** tag that you've selected before. If not already modified, the default is: "comment".
+3. Add a file to the incident and mark it with the **File Entry Tag** tag that you've selected before. If not already modified, the default is: "attachment".
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)
+5. Go back to **Incident Info** and locate a field you've configured in the outgoing mapper and it being displayed in the incident's layout, change its value and hit on 'V' in the 'V/X' menu to save changes.
+![image](https://raw.githubusercontent.com/demisto/content/6ec8b4443de51ff1c9bf593526226df2b5b4f2ba/Packs/Jira/doc_files/edit_incident_via_layout.png)
+6. Navigate back to the incident in Jira and within approximately one minute, the changes will be reflected there, too.
+7. Perform a change in a Jira field you've configured in the incoming mapper.
+8. Go back to Cortex XSOAR and within approximately one minute, the changes will be reflected there, too.
+* You can make additional changes like closing the incident or changing description and those will be reflected in both systems.
+
+
+**Notes**
+- The final 'source of truth' for the incident for Cortex XSOAR are the values in Cortex XSOAR. 
+  Meaning, if you change the severity in Cortex XSOAR and then change it back in Jira, the final value that will be presented is the one in Cortex XSOAR.
+- If you wish to mirror in and out Jira's custom fields. please see the 'Mirror In And Out Custom Fields' section below.
+- If you wish to change status for a Jira's incident using Transitions, please see the 'Change Ticket\'s Status Using Transitions' section below.
 
 ## Commands
 ---
@@ -615,8 +695,6 @@ List all possible transitions
 
 ## Mirror In And Out Custom Fields:
 
-**Important note:** Once you&#39;ve changed a field in XSOAR it can&#39;t be mirrored in. Meaning: changes that will be made in Jira won&#39;t affect this field anymore in XSOAR (relevant for all field types and not only custom fields).
-
 ### Add a new custom field and add it to the incident type&#39;s layout:
 
 Add a new custom field and add it to the incident type&#39;s layout:
@@ -628,7 +706,7 @@ Add a new custom field and add it to the incident type&#39;s layout:
     *Choose field type. For example for a label, you might want to use &quot;Tag&quot; as a type.
   3. Click on &quot;Attributes&quot;:
     *Uncheck the box under: &quot;Add to incident types&quot;
-    *for “Add associated type...” Select the incident type you want to work with. In this example I’ll choose “Jira     Incident”.
+    *for “Add associated type...” Select the incident type you want to work with. In this example I’ll choose “Jira Incident”.
 ![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/create_new_field_1.png)
 
 2.Add the new incident field you&#39;ve just created to the layout associated with the integration&#39;s incident type. In this example, the layout is &quot;Jira Incident Layout&quot;:
@@ -638,7 +716,7 @@ Add a new custom field and add it to the incident type&#39;s layout:
 
 1. Go to settings -> Integrations -> Servers & Services -> in the search bar type “Jira”
 2. Open the integration settings by clicking on the next button:![](https://raw.githubusercontent.com/demisto/content/5e46922e5dad2c524c63a2ab062453076ff446c4/Packs/Jira/doc_files/setting_btn.png) or by clicking on &quot;Add instance&quot; if you don&#39;t have Jira already configured in your system.
-  1.If you don&#39;t have Jira configured yet, please provide all the needed information for authentication (Jira URL, Username if needed... ) and hit the &quot;Test&quot; button in order to see that the integration is well set.
+  1.If you don&#39;t have Jira configured yet, please provide all the needed information for authentication (Jira URL, Username if needed...) and hit the &quot;Test&quot; button in order to see that the integration is well set.
   2.In addition: 
     * Make sure that under &quot;Incident type&quot; you&#39;ve selected the incident type you want to work with and it is the same one you&#39;ve selected once you created the new field. In our example: &quot;Jira Incident&quot;.
     * The option &quot;Fetch Incidents&quot; is checked.
@@ -665,7 +743,7 @@ Add a new custom field and add it to the incident type&#39;s layout:
     *Find the jira field you want to map to this incident field on the right side, and click on its value.
     *Then you will see the path you&#39;ve selected under your new added field:
 ![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/map_in_incident_6.png)
-    *Note: In this example:&quot;customfield\_ **10045**&quot; is the jira field ID we want to map.
+    *Note: In this example:&quot;customfield\_ **10045**&quot; is the jira field ID we want to map. You can find IDs of custom fields for your field in Jira using this guide:![Click Here](https://confluence.atlassian.com/jirakb/how-to-find-id-for-custom-field-s-744522503.html)
     *Note: You can also type the path manually.
 5. Hit on &quot;Save Version&quot;.
 
@@ -697,3 +775,15 @@ Add a new custom field and add it to the incident type&#39;s layout:
 4. Open the downloaded file and put its content inside a list, resulting in a list which contains only one item, the downloaded JSON.
 5. When selecting &quot;Upload JSON&quot; for &quot;Get data&quot; in as mentioned above, you can upload the file using the &quot;Upload JSON&quot;:
 ![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/upload_json_11.png)
+
+## Change Ticket\'s Status Using Transitions
+1. please make sure you've configured your instance as described in **'Configure Incident Mirroring'** above.
+2. make sure you are using 'Jira Incident Layout' for displaying your incident you want to change its status.
+ The reason is that this layout structured in a way that both **'script-JiraChangeTransition'** and **'script-JiraListTransition'** scripts can work, which is crucial when you want to use transitions.
+3. In order to select a new status, select a incident you want to change its status and open it.
+4. Under **"Incident Info"** search for "Jira Transitions" field
+5. Click on "Select" and choose the name of the new status.
+![](https://raw.githubusercontent.com/demisto/content/6ec8b4443de51ff1c9bf593526226df2b5b4f2ba/Packs/Jira/doc_files/list_transitions.png)
+6. Hit on the 'V' option in the 'V/X' menu.
+7. See under 'Jira Status' the new status name.
+8. Go to Jira, and within approximately one minute you will be able to see the new status there as well.
