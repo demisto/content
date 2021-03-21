@@ -2475,8 +2475,8 @@ def get_updated_server_version(current_string_version, compared_content_item, pa
     lower_version_result = current_string_version
 
     try:
-        compared_string_version = compared_content_item.get('fromversion') or \
-                                  compared_content_item.get('fromVersion') or "99.99.99"
+        compared_string_version = compared_content_item.get('fromversion') or compared_content_item.get(
+            'fromVersion') or "99.99.99"
         current_version, compared_version = LooseVersion(current_string_version), LooseVersion(compared_string_version)
 
         if current_version > compared_version:
