@@ -927,6 +927,5 @@
     "typeId": "New Git PR",
     "version": -1,
     "description": "",
-    "fromVersion": "5.0.0",
-    "toVersion": "5.9.9"
+    "fromVersion": "6.0.0"
 }
