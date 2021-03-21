@@ -1367,9 +1367,9 @@ def search_ip_command(ip, reliability):
     return command_results
 
 
-def search_domain_command(args, reliability):
+def search_domain_command(domain, reliability):
     indicator_type = 'Domain'
-    domain_name_list = argToList(args.get('domain'))
+    domain_name_list = argToList(domain)
 
     command_results = []
 
@@ -1657,7 +1657,7 @@ def main():
         handle_proxy()
         active_command = demisto.command()
         args = {k: v for (k, v) in demisto.args().items() if v}
-
+        args['reliability'] = reliability
         if active_command == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
@@ -1685,7 +1685,7 @@ def main():
         elif active_command == 'ip':
             return_results(search_ip_command(**args))
         elif active_command == 'domain':
-            return_results(search_domain_command(args, reliability))
+            return_results(search_domain_command(**args))
         elif active_command == 'url':
             return_results(search_url_command(**args))
         elif active_command == 'file':
