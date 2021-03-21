@@ -7,6 +7,7 @@ description: |-
   4. Gets the results of the compliance search.
   5. Gets the preview results, if specified.
   6. Deletes the search results (Hard/Soft).
+id: O365 - Security And Compliance - Search And Delete
 starttaskid: "0"
 tasks:
   "0":
@@ -500,7 +501,7 @@ tasks:
     task:
       id: e3f49938-386d-4310-8ef9-55fa8529f584
       version: -1
-      name: Soft delete
+      name: O365 - Security And Compliance - Search Action - Delete
       description: |-
         This playbook performs the following steps:
         1. Creates a new compliance search action Purge - Hard or Soft.
@@ -545,7 +546,7 @@ tasks:
     task:
       id: c6b58231-3264-4c5a-84c1-88d3fbc62c2d
       version: -1
-      name: Hard delete
+      name: O365 - Security And Compliance - Search Action - Delete
       description: |-
         This playbook performs the following steps:
         1. Creates a new compliance search action Purge - Hard or Soft.
@@ -707,43 +708,43 @@ inputs:
   value: {}
   required: false
   description: The name of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: case
   value: {}
   required: false
   description: The name of a Core eDiscovery case to associate with the new compliance
     search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: kql
   value: {}
   required: true
   description: Text search string or a query that is formatted using the Keyword Query
     Language (KQL).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: description
   value: {}
   required: false
   description: Description of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: allow_not_found_exchange_locations
   value:
     simple: "true"
   required: false
   description: Whether to include mailboxes other than regular user mailboxes in the
     compliance search. Default is "false".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: exchange_location
   value: {}
   required: true
   description: Comma-separated list of mailboxes/distribution groups to include, or
     use the value "All" to include all.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: exchange_location_exclusion
   value: {}
   required: false
   description: Comma-separated list of mailboxes/distribution groups to exclude when
     you use the value "All" for the exchange_location parameter.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: force
   value:
     simple: "false"
@@ -751,21 +752,21 @@ inputs:
   description: Whether to replace the existing search. If "true", the existing search
     will be removed and a new search will be created. If "false", the existing search
     will be used and any new search configurations will be ignored.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: preview
   value:
     simple: "true"
   required: true
   description: 'Whether to preview the results using the search action "Preview".
     Possible values are: "true" and "false" or leave empty to select manually.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: delete_type
   value: {}
   required: false
   description: Specify the delete type to perform on the search results. Possible
     values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
     Soft=Recoverable)
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 version: -1
 fromversion: 5.5.0
