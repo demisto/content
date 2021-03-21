@@ -582,7 +582,7 @@ script:
       predefined:
       - USEFUL
       - NOT_USEFUL
-      description: Specify wheter the finding was useful or not.
+      description: Specify whether the finding was useful or not.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn

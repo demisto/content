@@ -558,8 +558,8 @@ Action: _guardduty:UpdateThreatIntelSet_
 | --- | --- | --- |
 | detectorId | The detectorID that specifies the GuardDuty service whose ThreatIntelSet you want to update. | Required | 
 | threatIntelSetId | The unique ID that specifies the ThreatIntelSet that you want to update. | Optional | 
-| activate | The updated boolean value that specifies whether the ThreateIntelSet is active or not. Possible values are: True, False. | Optional | 
-| location | The updated URI of the file that contains the ThreateIntelSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key). | Optional | 
+| activate | The updated boolean value that specifies whether the ThreatIntelSet is active or not. Possible values are: True, False. | Optional | 
+| location | The updated URI of the file that contains the ThreatIntelSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key). | Optional | 
 | name | The user-friendly ThreatIntelSet name. | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
@@ -758,7 +758,7 @@ Action: _guardduty:UpdateFindingsFeedback_
 | detectorId | The ID of the detector that specifies the GuardDuty service whose findings you want to mark as useful or not useful. | Required | 
 | findingIds | IDs of the findings that you want to mark as useful or not useful. | Optional | 
 | comments | Additional feedback about the GuardDuty findings. | Optional | 
-| feedback | Specifi wheter the finding was usful or not. Possible values are: USEFUL, NOT_USEFUL. | Optional | 
+| feedback | Specify whether the finding was useful or not. Possible values are: USEFUL, NOT_USEFUL. | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
