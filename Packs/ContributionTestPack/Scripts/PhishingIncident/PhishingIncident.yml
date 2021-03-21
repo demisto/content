@@ -1,0 +1,22 @@
+args:
+- auto: PREDEFINED
+  name: malicious_location
+  predefined:
+  - attachment
+  - inline
+  required: true
+commonfields:
+  id: PhishingIncident
+  version: -1
+enabled: true
+name: PhishingIncident
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
