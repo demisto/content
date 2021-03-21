@@ -3,7 +3,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from packaging import version
+from distutils.version import LooseVersion
 
 import os
 import math
@@ -42,8 +42,8 @@ class Client(BaseClient):
 
         Return True if the version supports new FIQL type query and False otherwise.
         """
-        rest_api_version = version.parse(self.get_single_endpoint("/version")["version"])
-        if rest_api_version >= version.parse(FIRST_REST_API_VERSION_WITH_NEW_QUERY):
+        rest_api_version = LooseVersion(self.get_single_endpoint("/version")["version"])
+        if rest_api_version >= LooseVersion(FIRST_REST_API_VERSION_WITH_NEW_QUERY):
             return True
         return False
 
@@ -89,6 +89,8 @@ class Client(BaseClient):
 
         else:
             new_query = self.supporting_files_new_query
+
+        query = self.convert_query_types(query, new_query)
 
         url_suffix = self.add_query_to_request(query, url_suffix, new_query, inline_parameters)
 
@@ -294,6 +296,39 @@ class Client(BaseClient):
 
         return url_suffix
 
+    @staticmethod
+    def convert_query_types(current_query: Optional[str], to_new_query: bool) -> Optional[str]:
+        """Convert inline params to FIQL query and otherwise
+
+        Args:
+            current_query: The current query, must be in the for.
+            to_new_query: Wether to convert to FIQL query or inline parameters.
+
+        Return the new reconstructed query.
+        """
+        if not current_query:
+            return None
+        query_args = re.split("&", current_query)
+        new_query_args = []
+        for query_arg in query_args:
+            query_arg_list = re.split("=", query_arg)
+            if '' in query_arg_list:
+                query_arg_list.remove('')
+
+            if len(query_arg_list) > 3:
+                raise ValueError('Invalid query, make sure it is in the right format')
+
+            if not to_new_query and len(query_arg_list) != 2:
+                raise ValueError(f'Invalid query, older {INTEGRATION_NAME} versions only support filtering with =')
+
+            if to_new_query and len(query_arg_list) == 2 and query_arg_list[0][-1] != '!':
+                new_query_args.append('=='.join(query_arg_list))
+
+            else:
+                new_query_args.append('='.join(query_arg_list))
+
+        return '&'.join(new_query_args)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -482,7 +517,7 @@ def get_incidents_list(client: Client, modification_date_start: str = None, modi
             for filter_arg in filter_arguments.keys():
                 if not client.rest_api_new_query:
                     if args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters:
-                        raise KeyError(f"{filter_arg} is not supported with old query setting.")
+                        raise KeyError(f"Filtering via {filter_arg} is not supported in older TOPdeskRestApi versions.")
 
                 query = client.add_filter_to_query(query=query,
                                                    filter_name=filter_arguments.get(filter_arg, None),

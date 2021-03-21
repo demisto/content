@@ -21,7 +21,7 @@ configuration:
   type: 8
 - defaultvalue: true
   display: Use new style FIQL query when listing branches, persons and operators. (e.g. query=status==firsLine)
-  additionalinfo: Getting incidents with new style FIQL query is available from SupportingFilesAPI version 1.38.0. If the checkbox is unchecked, old style queries will be used. Filtering TOPdesk incidents will not be affected by this configuration.
+  additionalinfo: Getting lists with new style FIQL query is available from SupportingFilesAPI version 1.38.0. If the checkbox is unchecked, old style queries will be used. Filtering TOPdesk incidents will not be affected by this configuration.
   name: new_query
   required: false
   type: 8
@@ -37,17 +37,8 @@ configuration:
   required: false
   type: 0
 - display: The query to use when fetching incidents
+  additionalinfo: Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported.
   name: fetch_query
-  required: false
-  type: 0
-- display: The earliest modification date to use when fetching incidents (<yyyy-mm-dd>
-    e.g. 2020-01-01)
-  name: modification_date_start
-  required: false
-  type: 0
-- display: The latest modification date to use when fetching incidents (<yyyy-mm-dd>
-    e.g. 2020-01-03)
-  name: modification_date_end
   required: false
   type: 0
 - display: Incident type

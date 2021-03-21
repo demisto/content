@@ -613,6 +613,18 @@ def test_get_incidents_with_pagination(client,
      False,  # Old query
      {"query": "status=firstLine"},
      'https://test.com/api/v1/persons?status=firstLine'),
+    (list_persons_command,
+     False,  # Old query
+     {"query": "status=firstLine&id=5"},
+     'https://test.com/api/v1/persons?status=firstLine&id=5'),
+    (list_persons_command,
+     False,  # Old query
+     {"query": "status=firstLine&id==5"},
+     'https://test.com/api/v1/persons?status=firstLine&id=5'),
+    (list_persons_command,
+     False,  # Old query
+     {"query": "status==firstLine"},
+     'https://test.com/api/v1/persons?status=firstLine'),
     (list_operators_command,
      False,  # Old query
      {"query": "status=firstLine"},
@@ -635,16 +647,32 @@ def test_get_incidents_with_pagination(client,
      'https://test.com/api/v1/incidents?caller_id=some_caller&status=firstLine'),
     (get_incidents_list_command,
      False,  # Old query
+     {"query": 'caller_id==some_caller', "status": "firstLine"},
+     'https://test.com/api/v1/incidents?caller_id=some_caller&status=firstLine'),
+    (get_incidents_list_command,
+     False,  # Old query
      {"query": 'caller_id=some_caller', "status": "firstLine", "branch_id": "some_branch"},
      'https://test.com/api/v1/incidents?caller_id=some_caller&status=firstLine&branch=some_branch'),
     (list_persons_command,
      True,  # New query
      {"query": "status==firstLine"},
      'https://test.com/api/v1/persons?query=status==firstLine'),
+    (list_persons_command,
+     True,  # New query
+     {"query": "status=firstLine"},
+     'https://test.com/api/v1/persons?query=status==firstLine'),
+    (list_persons_command,
+     True,  # New query
+     {"query": "status=firstLine&id=5"},
+     'https://test.com/api/v1/persons?query=status==firstLine&id==5'),
     (list_operators_command,
      True,  # New query
      {"query": "status==firstLine"},
      'https://test.com/api/v1/operators?query=status==firstLine'),
+    (list_operators_command,
+     True,  # New query
+     {"query": "status!=firstLine"},
+     'https://test.com/api/v1/operators?query=status!=firstLine'),
     (branches_command,
      True,  # New query
      {"query": "status==firstLine"},
