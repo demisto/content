@@ -1,6 +1,6 @@
 import pytest
 import json
-from Perch import fetch_alerts
+
 
 STATUSES = {
     'Not Reviewed': '0',
@@ -22,7 +22,7 @@ ALERTS = {
             "dest_port": 1122,
             "dest_subnet_id": None,
             "full_url": None,
-            "id": 3244985,
+            "id": 1,
             "indicator_id": "indicator_id",
             "indicator_loaded": None,
             "observable_id": 4563855,
@@ -62,7 +62,7 @@ ALERTS = {
             "dest_port": 3389,
             "dest_subnet_id": None,
             "full_url": None,
-            "id": 3235530,
+            "id": 2,
             "indicator_id": "EmergingThreats:Indicator-2012710",
             "indicator_loaded": None,
             "observable_id": 4552422,
@@ -102,7 +102,7 @@ ALERTS = {
             "dest_port": 3389,
             "dest_subnet_id": None,
             "full_url": None,
-            "id": 3235530,
+            "id": 3,
             "indicator_id": "EmergingThreats:Indicator-2012710",
             "indicator_loaded": None,
             "observable_id": 4552422,
@@ -135,10 +135,31 @@ ALERTS = {
     ]
 }
 
-def test_fetch_alerts_command_by_soc_status(request_mock):
-    request_mock.get('https://api.perch.rocks/v1/alerts', json=json.dumps(ALERTS))
+
+def get_alerts_by_status(status=[]):
+    return [alert for alert in ALERTS["results"] if STATUSES[status] == str(alert["status"])]
+
+
+def test_fetch_alerts_command_by_soc_status(requests_mock, mocker):
+    params = {
+        'credentials': {
+            'identifier': 1234,
+            'password': 5678
+        },
+        'url': "https://api.perch.rocks",
+        'soc_status': ['On hold']
+    }
+    mocker.patch('demistomock.params', return_value=params)
+
+    from Perch import fetch_alerts
+
+    # requests_mock.get('https://api.perch.rocks/v1/alerts', json=ALERTS)
+    mocker.patch('http_request', side_effect=get_alerts_by_status)
+
     headers = {'Content-Type': 'application/json'}
     last_run = {'time': 1561017202}
+
     _, incidents = fetch_alerts(last_run, headers)
-    assert len(incidents) == 2
+    print(incidents)
+    assert len(incidents) == 3
 
