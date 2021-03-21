@@ -109,6 +109,8 @@ class MicrosoftClient(BaseClient):
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
+        if 'ok_codes' not in kwargs:
+            kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
         token = self.get_access_token(resource=resource, scope=scope)
         default_headers = {
             'Authorization': f'Bearer {token}',
