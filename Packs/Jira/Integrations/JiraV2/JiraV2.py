@@ -2,7 +2,6 @@ from typing import Union
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
-from typing import Union
 from CommonServerPython import *
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -26,7 +25,7 @@ ISSUE_INCIDENT_FIELDS = {'issueId': 'The ID of the issue to edit',
                          'dueDate': 'The due date for the issue (in the format 2018-03-11).',
                          'assignee': 'The name of the assignee.',
                          'status': 'The name of the status.',
-                          'assignee_id': 'The account ID of the assignee. Use'
+                         'assignee_id': 'The account ID of the assignee. Use'
                                         ' the jira-get-id-by-attribute command to get the user\'s Account ID.'
                          }
 BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
@@ -709,11 +708,8 @@ def list_transitions_command(args):
     outputs = {'ticketId': issue_id,
                'transitions': transitions_names
                }
-    return CommandResults(raw_response=transitions_names,
-                                     readable_output=readable_output,
-                                     outputs_prefix="Ticket.Transitions",
-                                     outputs_key_field="ticketId",
-                                     outputs=outputs)
+    return CommandResults(raw_response=transitions_names, readable_output=readable_output,
+                          outputs_prefix="Ticket.Transitions", outputs_key_field="ticketId", outputs=outputs)
 
 
 def get_comments_command(issue_id):
