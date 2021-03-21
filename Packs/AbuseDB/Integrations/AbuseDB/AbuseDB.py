@@ -221,7 +221,7 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tim
 ''' FUNCTIONS '''
 
 
-def check_ip_command(ip, reliability, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
+def check_ip_command(reliability, ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
     params = {
         "maxAgeInDays": days
     }
@@ -239,7 +239,7 @@ def check_ip_command(ip, reliability, days=MAX_AGE, verbose=VERBOSE, threshold=T
     return entry_list
 
 
-def check_block_command(network, limit, reliability, days=MAX_AGE, threshold=THRESHOLD):
+def check_block_command(reliability, network, limit, days=MAX_AGE, threshold=THRESHOLD):
     params = {
         "network": network,
         "maxAgeInDays": days
@@ -305,7 +305,7 @@ try:
     elif demisto.command() == 'ip':
         demisto.results(check_ip_command(reliability, **demisto.args()))
     elif demisto.command() == 'abuseipdb-check-cidr-block':
-        demisto.results(check_block_command(**demisto.args()))
+        demisto.results(check_block_command(reliability, **demisto.args()))
     elif demisto.command() == 'abuseipdb-report-ip':
         demisto.results(report_ip_command(**demisto.args()))
     elif demisto.command() == 'abuseipdb-get-blacklist':
