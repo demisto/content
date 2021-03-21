@@ -4371,7 +4371,11 @@ class CommandResults:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
-                outputs = self.outputs  # type: ignore[assignment]
+                if outputs and isinstance(self.outputs, dict):
+                        outputs.update(self.outputs)
+                else:
+                    outputs = self.outputs  # WILL OVERRIDE SCORES IF OUTPUTS IS LIST
+
 
         content_format = EntryFormat.JSON
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
