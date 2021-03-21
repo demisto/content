@@ -260,7 +260,7 @@ def main():
     access_secret = params.get('access_secret')
     secure_connection = params.get('ssl', False)
 
-    endpoint = f"{server}"+":"+f"{port}"
+    endpoint = server+":"+port
 
     command = demisto.command()
 
