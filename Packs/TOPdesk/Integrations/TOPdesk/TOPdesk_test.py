@@ -739,7 +739,7 @@ def test_unsupported_old_query_param(client, command_args):
     Then
         - validate KeyError is raised.
     """
-    with pytest.raises(KeyError, match="is not supported with old query setting."):
+    with pytest.raises(KeyError, match=" is not supported in older TOPdeskRestApi versions."):
         get_incidents_list_command(client=client, args=command_args)
 
 
