@@ -1337,7 +1337,9 @@ def search_ip_command(ip):
 
         ip = Common.IP(
             ip=ip_address,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            malware_family=get_tags_for_generic_context1(raw_tags, True),
+            tags=get_tags_for_generic_context1(raw_tags)
         )
 
         autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1392,8 +1394,11 @@ def search_domain_command(args):
                 updated_date=indicator.get('whoisDomainUpdateDate'),
                 admin_email=indicator.get('whoisAdminEmail'),
                 admin_name=indicator.get('whoisAdminName'),
+                admin_country=indicator.get('whoisAdminCountry'),
                 registrar_name=indicator.get('whoisRegistrar'),
-                registrant_name=indicator.get('whoisRegistrant')
+                registrant_name=indicator.get('whoisRegistrant'),
+                malware_family=get_tags_for_generic_context1(raw_tags, True),
+                tags=get_tags_for_generic_context1(raw_tags)
             )
             autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
             # create human readable markdown for ip
@@ -1457,7 +1462,9 @@ def search_url_command(url):
 
         url = Common.URL(
             url=url_name,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            malware_family=get_tags_for_generic_context1(raw_tags, True),
+            tags=get_tags_for_generic_context1(raw_tags)
         )
 
         autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1476,7 +1483,6 @@ def search_url_command(url):
             outputs_prefix='AutoFocus.URL',
             outputs_key_field='IndicatorValue',
             outputs=autofocus_url_output,
-
             readable_output=md,
             raw_response=raw_res,
             indicator=url
@@ -1547,6 +1553,21 @@ def get_tags_for_generic_context(tags: Optional[list]):
     for item in tags:
         generic_context_tags = {key: item.get(key) for key in keys}
         generic_context_tags['tagGroups'] = {key: item.get(key) for key in sub_keys}
+        results.append(remove_empty_elements(generic_context_tags))
+    return results
+
+
+def get_tags_for_generic_context1(tags: Optional[list], is_malware_family=False):
+    if not tags:
+        return None
+    results = []
+    generic_context_tags = []
+    for item in tags:
+        generic_context_tags.append(item.get('TagName'))
+        generic_context_tags.append(item.get('PublicTagName'))
+        generic_context_tags.append(alias for alias in item.get('Aliases', []))
+        if not is_malware_family:
+            generic_context_tags.append(group.get('TagGroupName') for group in item.get('TagGroups', [{}]))
         results.append(remove_empty_elements(generic_context_tags))
     return results
 
