@@ -4374,7 +4374,7 @@ class CommandResults:
                 if outputs and isinstance(self.outputs, dict):
                         outputs.update(self.outputs)
                 else:
-                    outputs = self.outputs  # WILL OVERRIDE SCORES IF OUTPUTS IS LIST
+                    outputs = self.outputs  # type: ignore[assignment] # WILL OVERWRITE SCORES IF OUTPUTS IS LIST
 
 
         content_format = EntryFormat.JSON
