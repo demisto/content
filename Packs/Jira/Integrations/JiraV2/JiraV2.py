@@ -1096,13 +1096,8 @@ def get_user_info_data():
     :return: API response
     """
     HEADERS['Accept'] = "application/json"
-    return requests.request(
-            method='GET',
-            url=BASE_URL + 'rest/api/latest/myself',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
-        )
+    return requests.request(method='GET', url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS, verify=USE_SSL,
+                            auth=get_auth())
 
 
 def get_modified_remote_data_command(args):
@@ -1126,16 +1121,19 @@ def get_modified_remote_data_command(args):
         if res.status_code == 200:
             timezone_name = res.json().get('timeZone')
             if not timezone_name:
-                demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data.Got unexpected resonse: {res.json()}')
+                demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data.Got unexpected reason:'
+                              f' {res.json()}')
             last_update: datetime = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})\
                 .strftime('%Y-%m-%d %H:%M')
             demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
             _, _, context = issue_query_command(f'updated > "{last_update}"', max_results=50)
             modified_issues = context.get('issues', [])
             modified_issues_ids = [issue.get('id') for issue in modified_issues if issue.get('id')]
-            demisto.debug(f'Performing get-modified-remote-data command. Issue IDs to update in XSOAR: {modified_issues_ids}')
+            demisto.debug(f'Performing get-modified-remote-data command. Issue IDs to update in XSOAR:'
+                          f' {modified_issues_ids}')
         else:
-            demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data. status code: {res.status_code}.'
+            demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data. status code:'
+                          f' {res.status_code}.'
                           f' reason: {res.reason}')
     finally:
         return GetModifiedRemoteDataResponse(modified_issues_ids)

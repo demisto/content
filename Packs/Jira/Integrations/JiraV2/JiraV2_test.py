@@ -805,8 +805,6 @@ def test_edit_issue_status(mocker):
     """
     from JiraV2 import (
         edit_issue_command,
-        get_issue_fields,
-        list_transitions_data_for_issue,
         edit_status
     )
 
@@ -839,8 +837,6 @@ def test_edit_issue_transition(mocker):
     from JiraV2 import (
         edit_issue_command,
         edit_transition,
-        get_issue_fields,
-        list_transitions_data_for_issue,
     )
 
     mocker.patch("JiraV2.jira_req", return_value=None)
@@ -871,13 +867,7 @@ def test_edit_issue_when_passing_both_transition_and_status(mocker):
     Then
         - Error is being returned saying both parameters can't be passed
     """
-    from JiraV2 import (
-        edit_issue_command,
-        edit_transition,
-        get_issue_fields,
-        list_transitions_data_for_issue,
-        edit_status,
-    )
+    from JiraV2 import edit_issue_command
 
     mocker.patch("JiraV2.jira_req", return_value=None)
     mocker.patch("JiraV2.get_issue_fields", return_value=None)
@@ -925,24 +915,20 @@ def test_get_modified_data_command(mocker):
     Then
         - Returns a list of changed incidents
     """
-    from JiraV2 import (
-        get_modified_remote_data_command,
-        get_user_info_data,
-        issue_query_command,
-    )
+    from JiraV2 import get_modified_remote_data_command
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
     mocker.patch("JiraV2.json", return_value={"timeZone": "Asia/Jerusalem"})
 
-    class res:
+    class Res:
         def __init__(self):
             self.status_code = 200
 
         def json(self):
             return {"timeZone": "Asia/Jerusalem"}
 
-    response = res()
+    response = Res()
     response.json()
     mocker.patch("JiraV2.get_user_info_data", return_value=response)
     mocker.patch(
@@ -989,11 +975,7 @@ def test_get_modified_data_command_when_getting_not_ok_status_code_for_get_user_
     Then
         - An error is printed via demisto.error and returning an empty modified_incident_ids list
     """
-    from JiraV2 import (
-        get_modified_remote_data_command,
-        get_user_info_data,
-        issue_query_command,
-    )
+    from JiraV2 import get_modified_remote_data_command
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
@@ -1022,7 +1004,7 @@ def test_get_comments_command(mocker):
     Then
         - Returns a list of comments for the given issue.
     """
-    from JiraV2 import jira_req, get_comments_command
+    from JiraV2 import get_comments_command
 
     comments = {
         "comments": [
