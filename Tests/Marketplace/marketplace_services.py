@@ -1478,8 +1478,8 @@ class Pack(object):
                     logging.debug(
                         f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
                     # updated min server version from current content item
-                    self._sever_min_version = get_higher_server_version(self._sever_min_version, content_item,
-                                                                        self._pack_name)
+                    self._sever_min_version = get_updated_server_version(self._sever_min_version, content_item,
+                                                                         self._pack_name)
 
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
@@ -2461,7 +2461,7 @@ def convert_price(pack_id, price_value_input=None):
         return 0
 
 
-def get_higher_server_version(current_string_version, compared_content_item, pack_name):
+def get_updated_server_version(current_string_version, compared_content_item, pack_name):
     """ Compares two semantic server versions and returns the higher version between them.
 
     Args:
