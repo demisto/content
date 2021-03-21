@@ -107,7 +107,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the properties of returned emails. Usually shows partialy results,
+    description: Gets the properties of returned emails. Typically shows partial results,
       use the "page_size" and "pages_to_pull" arguments to get all results.
     execution: false
     name: msgraph-mail-list-emails
