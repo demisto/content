@@ -1,6 +1,6 @@
 import pytest
 import json
-import Perch
+from Perch import fetch_alerts
 
 STATUSES = {
     'Not Reviewed': '0',
@@ -137,6 +137,8 @@ ALERTS = {
 
 def test_fetch_alerts_command_by_soc_status(request_mock):
     request_mock.get('https://api.perch.rocks/v1/alerts', json=json.dumps(ALERTS))
-
-    _, incidents = fetch_alerts()
+    headers = {'Content-Type': 'application/json'}
+    last_run = {'time': 1561017202}
+    _, incidents = fetch_alerts(last_run, headers)
+    assert len(incidents) == 2
 
