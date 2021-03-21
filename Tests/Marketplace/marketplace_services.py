@@ -1209,7 +1209,7 @@ class Pack(object):
         return changelog, changelog_latest_rn_version
 
     def get_modified_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
-                                         changelog: dict, modified_rn_files: list):
+                                         changelog: dict, modified_rn_files: list) -> dict[str, str]:
         """
         In the case where an rn file was changed, this function return the right format of the new content
         of the release note suitable for the changelog file.
@@ -1231,6 +1231,10 @@ class Pack(object):
 
 
         """
+        # No modified rn files, return None
+        if not len(modified_rn_files):
+            return None
+
         modified_versions_dict = {}
 
         for rn_filename in modified_rn_files:
@@ -1401,11 +1405,11 @@ class Pack(object):
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
-                    rn_files_names = self.get_rn_files_names(modified_files_paths)
+
                     # Handling modified old release notes files, if there are any
-                    if len(rn_files_names) > 0:
-                        modified_release_notes_lines_dict = self.get_modified_release_notes_lines()
-                    # add clause 9 handling
+                    rn_files_names = self.get_rn_files_names(modified_files_paths)
+                    modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
+                        release_notes_dir,changelog_latest_rn_version, changelog, rn_files_names )
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
@@ -1431,6 +1435,16 @@ class Pack(object):
 
                         if version_changelog:
                             changelog[latest_release_notes] = version_changelog
+
+                        if modified_release_notes_lines_dict:
+                            for version, modified_release_notes_lines in modified_release_notes_lines_dict:
+                                changelog_entry = self._create_changelog_entry(
+                                    release_notes=modified_release_notes_lines,
+                                    version_display_name=version,
+                                    build_number=build_number,
+                                    new_version=False)
+                                changelog[version] = changelog_entry
+
                 else:  # will enter only on initial version and release notes folder still was not created
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
                         logging.warning(
