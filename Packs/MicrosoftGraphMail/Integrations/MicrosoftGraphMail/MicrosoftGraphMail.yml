@@ -92,6 +92,12 @@ script:
       name: search
       required: false
       secret: false
+    - defaultValue: 20
+      description: 'Limit emails to fetch in one request'
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: The number of pages of emails to return (maximum is 10 emails per
@@ -101,7 +107,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the properties of returned emails.
+    description: Gets the properties of returned emails. Typically shows partial results,
+      use the "page_size" and "pages_to_pull" arguments to get all results.
     execution: false
     name: msgraph-mail-list-emails
     outputs:
@@ -167,6 +174,10 @@ script:
       type: String
     - contextPath: MSGraphMail.UserID
       description: The ID of the user.
+      type: String
+    - contextPath: MSGraphMail.NextPage
+      description: A token to pass to the next list command to retrieve additional
+        results.
       type: String
   - arguments:
     - default: false
@@ -1017,7 +1028,7 @@ script:
     description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
-  dockerimage: demisto/crypto:1.0.0.12979
+  dockerimage: demisto/crypto:1.0.0.16776
   feed: false
   isfetch: true
   longRunning: false

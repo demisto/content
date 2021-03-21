@@ -34,8 +34,9 @@ commands:
             echo "Host 10.0.*
               StrictHostKeyChecking no
               LogLevel ERROR
-              ProxyJump ec2-user@content-build-lb.demisto.works  # disable-secrets-detection
+              ProxyJump content-build@content-build-lb.demisto.works  # disable-secrets-detection
              Host content-build-lb.demisto.works
+              Port 43567
               UserKnownHostsFile /dev/null
               StrictHostKeyChecking no
               LogLevel ERROR" >> ~/.ssh/config
@@ -57,7 +58,7 @@ commands:
               # Capturing the port
               PORT=$(echo $IP_AND_PORT | grep -o -E "[0-9]{4}")
               echo "Opening a tunnel for ip $IP with port $PORT"
-              ssh -4 -o "ServerAliveInterval=15" -f -N "ec2-user@content-build-lb.demisto.works" -L "$PORT:$IP:443"  # disable-secrets-detection
+              ssh -4 -o "ServerAliveInterval=15" -f -N "content-build@content-build-lb.demisto.works" -L "$PORT:$IP:443"  # disable-secrets-detection
               echo "Waiting for tunnel to be established"
               until nc -z 127.0.0.1 $PORT -v; do
                 if [ $COUNT -ge << parameters.timeout >> ]; then
@@ -288,18 +289,40 @@ references:
         fi
 
   trigger_private_build: &trigger_private_build
-    run:
-      name: Trigger Private Repo Build
-      when: always
-      command: |
-        python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+    unless:
+      condition:
+        or:
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
+      steps:
+        run:
+          name: Trigger Private Repo Build
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
+              then
+                echo "Skipping - not running in contribution instance"
+                exit 0
+            fi
+            python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
 
   get_private_build_status: &get_private_build_status
-    run:
-      name: Get Private Build Status
-      when: always
-      command: |
-        python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+    unless:
+      condition:
+        or:
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
+      steps:
+        run:
+          name: Get Private Build Status
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
+              then
+                echo "Skipping - not running in contribution instance"
+                exit 0
+            fi
+            python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
   create_artifact: &create_artifact
     run:
