@@ -1,8 +1,8 @@
 commonfields:
-  id: VirusTotal v3
+  id: VirusTotal (API v3)
   version: -1
-name: VirusTotal v3
-display: VirusTotal v3
+name: VirusTotal (API v3)
+display: VirusTotal (API v3)
 fromversion: 5.5.0
 category: Data Enrichment & Threat Intelligence
 description: Analyze suspicious hashes, URLs, domains and IP addresses
@@ -23,7 +23,7 @@ configuration:
   defaultvalue: ''
   type: 8
   required: false
-- display: Is premium API?
+- display: Premium Subscription
   name: is_premium_api
   defaultvalue: 'false'
   type: 8
@@ -646,7 +646,7 @@ script:
       description: Link to the domain investigation.
       type: String
     description: Checks the reputation of a domain.
-  - name: vt-file-scan
+  - name: file-scan
     arguments:
     - name: entryID
       required: true
@@ -696,7 +696,7 @@ script:
         description: The type of the submission (analysis).
         type: String
     description: Submits a file for scanning.
-  - name: vt-file-rescan
+  - name: file-rescan
     arguments:
     - name: file
       required: true
@@ -739,7 +739,7 @@ script:
       description: The file hash (MD5, SHA1, orSHA256), Domain, URL or IP you're commenting
         on.
     - name: resource_type
-      required: true
+      required: false
       default: false
       description: The type of the resource you're commenting one.
       auto: PREDEFINED
@@ -768,7 +768,7 @@ script:
       description: The file hash (MD5, SHA1, orSHA256), Domain, URL or IP from which
         you're retrieving comments.
     - name: resource_type
-      required: true
+      required: false
       default: false
       description: The type of the resource you're commenting one.
       auto: PREDEFINED

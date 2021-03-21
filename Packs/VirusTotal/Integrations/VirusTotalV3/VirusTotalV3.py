@@ -1398,7 +1398,8 @@ def file_rescan_command(client: Client, args: dict) -> CommandResults:
     data = raw_response['data']
     data['hash'] = file_hash
     context = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data
+        f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
+        'vtScanID': data.get('id')
     }
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1432,7 +1433,7 @@ def file_scan(client: Client, args: dict) -> CommandResults:
         readable_output=tableToMarkdown(
             f'The file has been submitted "{file_obj["name"]}"',
             data,
-            headers=['id', 'EntryID']
+            headers=['id', 'EntryID', 'MD5', 'SHA1', 'SHA256']
         ),
         outputs=context,
         raw_response=raw_response
@@ -1446,12 +1447,14 @@ def get_upload_url(client: Client) -> CommandResults:
     raw_response = client.get_upload_url()
     upload_url = raw_response['data']
     context = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.FileUploadURL': upload_url
+        f'{INTEGRATION_ENTRY_CONTEXT}.FileUploadURL': upload_url,
+        'vtUploadURL': upload_url  # BC preservation
+
     }
     return CommandResults(
-        tableToMarkdown(
+        readable_output=tableToMarkdown(
             'New upload url acquired!',
-            {'upload_url': upload_url}
+            {'Upload url': upload_url}
         ),
         outputs=context,
         raw_response=raw_response
@@ -1496,7 +1499,14 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         required=True
     )
     resource = args['resource']
-    resource_type = args['resource_type'].lower()
+    resource_type = args.get('resource_type')
+    if not resource_type:
+        try:
+            raise_if_hash_not_valid(resource)
+            resource_type = 'file'
+        except ValueError:
+            resource_type = 'url'
+    resource_type = resource_type.lower()
     # Will find if there's one and only one True in the list.
     if resource_type == 'ip':
         raise_if_ip_not_valid(resource)
@@ -1515,21 +1525,25 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         'id': resource,
         'comments': data
     }
-    # TODO: human readable
     comments = []
     for comment in data:
-        comments.append(
-            {
-                'comment': comment.get('attributes'),
-                'data': epoch_to_timestamp(comment.get('attributes', {}).get('date'))
-            }
-        )
+        attributes = comment.get('attributes', {})
+        votes = attributes.get('votes', {})
+        comments.append({
+            'Date': epoch_to_timestamp(attributes.get('date')),
+            'Text': attributes.get('text'),
+            'Positive Votes': votes.get('positive'),
+            'Abuse Votes': votes.get('abuse'),
+            'Negative Votes': votes.get('negative')
+        })
+
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.Comments',
         'id',
         readable_output=tableToMarkdown(
             f'Virus total comments of {resource_type}: "{resource}"',
             comments,
+            headers=['Date', 'Text', 'Positive Votes', 'Abuse Votes', 'Negative Votes']
         ),
         outputs=context,
         raw_response=raw_response
@@ -1541,8 +1555,15 @@ def add_comments_command(client: Client, args: dict) -> CommandResults:
     1 API Call
     """
     resource = args['resource']
-    resource_type = args['resource_type'].lower()
     comment = args['comment']
+    resource_type = args.get('resource_type')
+    if not resource_type:
+        try:
+            raise_if_hash_not_valid(resource)
+            resource_type = 'file'
+        except ValueError:
+            resource_type = 'url'
+    resource_type = resource_type.lower()
     if resource_type == 'ip':
         raise_if_ip_not_valid(resource)
         client.add_comment_to_ip(resource, comment)
@@ -1728,9 +1749,9 @@ def main(params: dict, args: dict, command: str):
         results = add_comments_command(client, args)
     elif command == f'{COMMAND_PREFIX}-comments-get-by-id':
         results = get_comments_by_id_command(client, args)
-    elif command == f'{COMMAND_PREFIX}-file-rescan':
+    elif command == 'file-rescan':
         results = file_rescan_command(client, args)
-    elif command == f'{COMMAND_PREFIX}-file-scan':
+    elif command == 'file-scan':
         results = file_scan(client, args)
     elif command == f'{COMMAND_PREFIX}-file-scan-upload-url':
         results = get_upload_url(client)
