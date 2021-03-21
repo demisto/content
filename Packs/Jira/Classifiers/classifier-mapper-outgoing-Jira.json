@@ -18,10 +18,6 @@
      "complex": null,
      "simple": "jiraduedate"
     },
-    "issueId": {
-     "complex": null,
-     "simple": "dbotMirrorId"
-    },
     "labels": {
      "complex": null,
      "simple": "jiralabels"
