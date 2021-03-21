@@ -1,9 +1,8 @@
 import pytest
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    add_second_to_str_date, list_mails_command
-from MicrosoftApiModule import MicrosoftClient
     add_second_to_str_date, list_mails_command, item_result_creator, create_attachment
+from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
 
