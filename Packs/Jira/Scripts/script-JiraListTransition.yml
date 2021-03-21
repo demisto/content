@@ -5,12 +5,12 @@ name: script-JiraListTransition
 script: |-
   def main():
       output = {}
-      # res = demisto.executeCommand('jira-list-transitions-command', {'issueId': incident.get('dbotMirrorId')})[0]["Contents"]
+      # res = demisto.executeCommand('jira-list-transitions', {'issueId': incident.get('dbotMirrorId')})[0]["Contents"]
       try:
           incident = demisto.incidents()[0]
           incident_id = incident.get('dbotMirrorId')
           if incident_id:
-              res = demisto.executeCommand('jira-list-transitions-command', {'issueId': incident.get('dbotMirrorId')})
+              res = demisto.executeCommand('jira-list-transitions', {'issueId': incident.get('dbotMirrorId')})
               if isinstance(res, list):
                   res = res[0]
                   transitions_names = res.get("Contents")
@@ -19,7 +19,7 @@ script: |-
                           output = {'hidden': False, 'options': sorted(transitions_names)}
                       else:
                           output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                                    "Contents": f"Error occurred while running jira-list-transitions-command. The response is: {transitions_names}"}
+                                    "Contents": f"Error occurred while running jira-list-transitions. The response is: {transitions_names}"}
                   else:
                       output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                       "Contents": f"Error occurred while running script-JiraListTransition. Could not find:\"Content\" as key. The response is: {res}"}

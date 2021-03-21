@@ -633,9 +633,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: List all possible transitions
+    description: List all possible transitions for a given ticket.
     execution: false
-    name: jira-list-transitions-command
+    name: jira-list-transitions
     outputs:
     - contextPath: Ticket.Transitions.ticketId
       description: The ID of the issue.

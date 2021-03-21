@@ -1173,8 +1173,8 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
             incident_update = issue_raw_response
 
             demisto.info(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
-                          f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
-                          f"\n\tRemote last updated time: {jira_modified_date}\n")
+                         f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
+                         f"\n\tRemote last updated time: {jira_modified_date}\n")
             demisto.info(f"\n raw incident: {issue_raw_response}\n")
 
             closed_issue = handle_incoming_closing_incident(incident_update)
@@ -1290,7 +1290,7 @@ def main():
         elif demisto.command() == 'jira-get-id-by-attribute':
             return_results(get_account_id_from_attribute(**demisto.args()))
 
-        elif demisto.command() == 'jira-list-transitions-command':
+        elif demisto.command() == 'jira-list-transitions':
             return_results(list_transitions_command(demisto.args()))
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(demisto.args()))

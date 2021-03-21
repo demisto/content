@@ -644,14 +644,14 @@ Gets the Account ID for a given user's attribute.
 >Account ID for attribute: XSOAR User is: 5e4ds952052b790c97509a7c
 
 
-### jira-list-transitions-command
+### jira-list-transitions
 ***
 List all possible transitions
 
 
 #### Base Command
 
-`jira-list-transitions-command`
+`jira-list-transitions`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -668,7 +668,7 @@ List all possible transitions
 
 
 #### Command Example
-```!jira-list-transitions-command issueId=18847 ```
+```!jira-list-transitions issueId=18847 ```
 
 #### Context Example
 ```json

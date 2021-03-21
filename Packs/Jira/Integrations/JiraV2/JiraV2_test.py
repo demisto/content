@@ -951,7 +951,7 @@ def test_get_modified_data_command_when_getting_exception_for_get_user_info_data
     Then
         - An error is printed via demisto.error and returning an empty modified_incident_ids list
     """
-    from JiraV2 import get_modified_remote_data_command, get_user_info_data
+    from JiraV2 import get_modified_remote_data_command
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
