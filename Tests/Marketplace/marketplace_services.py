@@ -192,7 +192,7 @@ class Pack(object):
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
-        self._sever_min_version = "1.0.0"  # initialized min version
+        self._server_min_version = "99.99.99"  # initialized min version
         self._latest_version = None  # pack latest version found in changelog
         self._support_type = None  # initialized in load_user_metadata function
         self._current_version = None  # initialized in load_user_metadata function
@@ -336,10 +336,10 @@ class Pack(object):
     def server_min_version(self):
         """ str: server min version according to collected items.
         """
-        if not self._sever_min_version or self._sever_min_version == "1.0.0":
+        if not self._server_min_version or self._server_min_version == "99.99.99":
             return Metadata.SERVER_DEFAULT_MIN_VERSION
         else:
-            return self._sever_min_version
+            return self._server_min_version
 
     @property
     def downloads_count(self):
@@ -1478,8 +1478,8 @@ class Pack(object):
                     logging.debug(
                         f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
                     # updated min server version from current content item
-                    self._sever_min_version = get_updated_server_version(self._sever_min_version, content_item,
-                                                                         self._pack_name)
+                    self._server_min_version = get_updated_server_version(self._server_min_version, content_item,
+                                                                          self._pack_name)
 
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
