@@ -503,6 +503,23 @@ script:
     description: Get alert attachment.
     execution: false
     name: cyberint-alerts-get-attachment
+  - arguments:
+    - default: false
+      description: Reference ID of the alert.
+      isArray: false
+      name: alert_ref_id
+      required: true
+      secret: false
+    - default: false
+      description: Analysis report file name
+      isArray: false
+      name: report_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get alert analysis report.
+    execution: false
+    name: cyberint-alerts-analysis-report
   dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
