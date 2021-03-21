@@ -2,7 +2,7 @@ id: Carbon Black Defense Find Event Details
 version: -1
 fromversion: 5.5.0
 name: Carbon Black Defense Find Event Details
-description: Receives event ID's and returns details about the event
+description: Receives event ID's and returns details about the event.
 starttaskid: "0"
 tasks:
   "0":
@@ -74,7 +74,7 @@ tasks:
       version: -1
       name: cbd-find-events-details-results
       description: Retrieves the status for an enriched events detail request for
-        a given job_id.
+        a given job ID.
       script: '|||cbd-find-events-details-results'
       type: regular
       iscommand: true
@@ -205,18 +205,18 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: CarbonBlackDefense.EventsDetails.Results.approximate_unaggregated
-  description: The approximate unaggregated
+  description: The approximate number of unaggregated results.
 - contextPath: CarbonBlackDefense.EventsDetails.Results.completed
-  description: The completed results.
+  description: The number of completed results.
 - contextPath: CarbonBlackDefense.EventsDetails.Results.contacted
-  description: The contacted results.
+  description: The number of contacted results.
 - contextPath: CarbonBlackDefense.EventsDetails.Results.num_aggregated
-  description: The num aggregated.
+  description: The number of aggregated results.
 - contextPath: CarbonBlackDefense.EventsDetails.Results.num_available
-  description: The num available.
+  description: The number of event details available in this search.
 - contextPath: CarbonBlackDefense.EventsDetails.Results.num_found
-  description: The num found.
+  description: The number of event details found in this search.
 - contextPath: CarbonBlackDefense.EventsDetails.Results.results
-  description: The results of the job id.
+  description: The lists that contains the data of the results for this search.
 tests:
 - carbonBlackDefenseV2TestPlaybook
