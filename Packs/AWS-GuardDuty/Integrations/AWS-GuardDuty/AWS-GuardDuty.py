@@ -678,6 +678,48 @@ def update_findings_feedback(args):
         return raise_error(e)
 
 
+def list_members(args):
+    try:
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        response = client.list_members(DetectorId=args.get('detectorId'))
+
+        ec = {"AWS.GuardDuty.Members(val.AccountId === obj.AccountId)": response['Members']}
+        return create_entry('AWS GuardDuty Members', response['Members'], ec)
+
+    except Exception as e:
+        return raise_error(e)
+
+
+def get_members(args):
+    try:
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        accountId_list = []
+        accountId_list.append(args.get('accountIds'))
+
+        response = client.get_members(
+            DetectorId=args.get('detectorId'),
+            AccountIds=accountId_list
+        )
+
+        ec = {"AWS.GuardDuty.Members(val.AccountId === obj.AccountId)": response['Members']}
+        return create_entry('AWS GuardDuty Members', response['Members'], ec)
+
+    except Exception as e:
+        return raise_error(e)
+
+
 def test_function():
     try:
         client = aws_session()
@@ -756,6 +798,12 @@ if demisto.command() == 'aws-gd-unarchive-findings':
 
 if demisto.command() == 'aws-gd-update-findings-feedback':
     result = update_findings_feedback(demisto.args())
+
+if demisto.command() == 'aws-gd-list-members':
+    result = list_members(demisto.args())
+
+if demisto.command() == 'aws-gd-get-members':
+    result = get_members(demisto.args())
 
 if demisto.command() == 'fetch-incidents':
     fetch_incidents()
