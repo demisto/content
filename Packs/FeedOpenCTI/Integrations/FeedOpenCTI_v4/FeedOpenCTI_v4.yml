@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: OpenCTI Feed v4
+  id: OpenCTI Feed 4.X
   version: -1
 configuration:
 - display: Base URL
@@ -131,9 +131,9 @@ configuration:
   required: false
   additionalinfo: 'Score range end to filter by. Possible range is 1-100. '
   type: 0
-description: Ingest indicator feeds from OpenCTI. Compatible with OpenCTI v4.* instances.
+description: Ingest indicator feeds from OpenCTI. Compatible with OpenCTI 4.X API version.
 display: OpenCTI Feed 4.X
-name: OpenCTI Feed v4
+name: OpenCTI Feed 4.X
 script:
   commands:
   - deprecated: false

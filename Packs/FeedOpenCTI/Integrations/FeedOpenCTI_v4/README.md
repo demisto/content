@@ -1,9 +1,9 @@
-Ingest indicator feeds from OpenCTI. Compatible with OpenCTI v4.* instances.
-This integration was integrated and tested with version v4.0.7 of OpenCTI Feed v4
-## Configure OpenCTI Feed v4 on Cortex XSOAR
+Ingest indicator feeds from OpenCTI. Compatible with OpenCTI 4.X API version.
+This integration was integrated and tested with version v4.0.7 of OpenCTI Feed 4.X
+## Configure OpenCTI Feed 4.X on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OpenCTI Feed v4.
+2. Search for OpenCTI Feed 4.X.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
