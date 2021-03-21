@@ -84,6 +84,20 @@ STATUS_OPTIONS = {
     'Deleted': 4
 }
 
+CLOSE_BENIGN_REASON_OPTIONS = {
+    'Actual severity is lower': 0,
+    'Other': 1,
+    'Confirmed with end user': 2,
+    'Triggered by test': 3
+}
+
+CLOSE_FALSE_POSITIVE_REASON_OPTIONS = {
+    'Not of interest': 0,
+    'Too many similar alerts': 1,
+    'Alert is not accurate': 2,
+    'Other': 3
+}
+
 INTEGRATION_NAME = 'MicrosoftCloudAppSecurity'
 
 
@@ -101,21 +115,44 @@ class Client(BaseClient):
         )
         return data
 
-    def dismiss_bulk_alerts(self, request_data: dict):
-        data = self._http_request(
+    # # @obenacot DEPRECATED
+    # def dismiss_bulk_alerts(self, request_data: dict):
+    #     data = self._http_request(
+    #         method='POST',
+    #         url_suffix='/alerts/close_false_positive/',
+    #         json_data=request_data
+    #     )
+    #     return data
+
+    # # @obenacot DEPRECATED
+    # def resolve_bulk_alerts(self, request_data: dict):
+    #     data = self._http_request(
+    #         method='POST',
+    #         url_suffix='/alerts/close_true_positive/',
+    #         json_data=request_data
+    #     )
+    #     return data
+
+    def close_benign(self, request_data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix='/alerts/close_benign/',
+            json_data=request_data
+        )
+
+    def close_false_positive(self, request_data: dict):
+        return self._http_request(
             method='POST',
             url_suffix='/alerts/close_false_positive/',
             json_data=request_data
         )
-        return data
 
-    def resolve_bulk_alerts(self, request_data: dict):
-        data = self._http_request(
+    def close_true_positive(self, request_data: dict):
+        return self._http_request(
             method='POST',
             url_suffix='/alerts/close_true_positive/',
             json_data=request_data
         )
-        return data
 
     def list_activities(self, url_suffix: str, request_data: dict):
         data = self._http_request(
@@ -153,7 +190,52 @@ class Client(BaseClient):
         )
 
 
-def args_to_filter(arguments: dict):
+def args_to_filter_alerts(arguments: dict):
+    request_data: Dict[str, Any] = {}
+    filters: Dict[str, Any] = {}
+
+    for key, value in arguments.items():
+        if key in ['skip', 'limit']:
+            request_data[key] = int(value)
+        if key == 'entity.ip':
+            filters[key] = {'eq': value}
+        if key == 'entity.service':
+            filters[key] = {'eq': int(value)}
+        if key == 'entity.instance':
+            filters[key] = {'eq': int(value)}
+        if key == 'entity.policy':
+            filters[key] = {'eq': value}
+        if key == 'entity.file':
+            filters[key] = {'eq': value}
+        if key == 'alertOpen':
+            filters[key] = {'eq': bool(value)}
+        if key == 'severity':
+            filters[key] = {'eq': SEVERITY_OPTIONS[value]}
+        if key == 'resolutionStatus':
+            filters[key] = {'eq': RESOLUTION_STATUS_OPTIONS[value]}
+        if key == 'read':
+            filters[key] = {'eq': bool(value)}
+        if key == 'date':
+            filters[key] = {'eq': date_to_timestamp(value)}
+        if key == 'resolutionDate':
+            filters[key] = {'eq': date_to_timestamp(value)}
+        if key == 'risk':
+            filters[key] = {'eq': int(value)}
+        if key == 'alertType':
+            filters[key] = {'eq': int(value)}
+        if key == 'source':
+            filters[key] = {'eq': value}
+
+    request_data['filters'] = filters
+    return request_data
+
+
+def args_to_filter_list(arguments: dict):
+    """
+    Function combines common filters of **all** related entities
+    (Activities, Alerts, Files, Data Entities etc.)
+
+    """
     request_data: Dict[str, Any] = {}
     filters: Dict[str, Any] = {}
     for key, value in arguments.items():
@@ -193,6 +275,33 @@ def args_to_filter(arguments: dict):
     return request_data
 
 
+def args_to_filter_close_alerts(alert_ids: Any, custom_filter: Optional[Any], arguments: dict,
+                                comment: Any, reason: Any, sendFeedback: bool, feedbackText: Any,
+                                allowContact: bool, contactEmail: Any):
+    request_data: Dict[str, Any] = {}
+    filters = {}
+
+    if alert_ids:
+        ids = {'eq': alert_ids.split(',')}
+        filters['id'] = ids
+        request_data['filters'] = filters
+    elif custom_filter:
+        request_data = json.loads(custom_filter)
+    elif arguments:
+        request_data = args_to_filter_alerts(arguments)
+    else:
+        raise DemistoException("Error: You must enter ids or arguments to filter.")
+
+    request_data['comment'] = comment
+    request_data['reason'] = reason
+    request_data['sendFeedback'] = sendFeedback
+    request_data['feedbackText'] = feedbackText
+    request_data['allowContact'] = allowContact
+    request_data['contactEmail'] = contactEmail
+
+    return request_data
+
+
 def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional[Any], arguments: dict,
                                         specific_id_to_search: Any = ''):
     """
@@ -216,22 +325,6 @@ def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional
         request_data = args_to_filter(arguments)
     request_data = {'filters': request_data} if 'filters' not in request_data.keys() else request_data
     return request_data, url_suffix
-
-
-def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter: Any, comments: Any):
-    request_data: Dict[str, Any] = {}
-    filters = {}
-    if alert_ids:
-        ids = {'eq': alert_ids.split(',')}
-        filters['id'] = ids
-        if comments:
-            request_data['comment'] = comments
-        request_data['filters'] = filters
-    elif custom_filter:
-        request_data = json.loads(custom_filter)
-    else:
-        raise DemistoException("Error: You must enter at least one of these arguments: alert ID, custom filter.")
-    return request_data
 
 
 def test_module(client: Client, is_fetch: bool, custom_filter: Optional[str]):
@@ -339,38 +432,40 @@ def list_alerts_command(client: Client, args: dict):
         return CommandResults(readable_output=human_readable)
 
 
-def bulk_dismiss_alert_command(client: Client, args: dict):
-    alert_ids = args.get('alert_ids')
-    custom_filter = args.get('custom_filter')
-    comment = args.get('comment')
-    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comment)
-    dismissed_alerts_data = {}
-    try:
-        dismissed_alerts_data = client.dismiss_bulk_alerts(request_data)
-    except Exception as e:
-        if 'alertsNotFound' in str(e):
-            raise DemistoException('Error: This alert id is already dismissed or does not exist.')
-    number_of_dismissed_alerts = dismissed_alerts_data['closed_false_positive']
-    return CommandResults(
-        readable_output=f'{number_of_dismissed_alerts} alerts dismissed',
-        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
-        outputs_key_field='_id'
-    )
+# @obenacot DEPRECATED
+# def bulk_dismiss_alert_command(client: Client, args: dict):
+#     alert_ids = args.get('alert_ids')
+#     custom_filter = args.get('custom_filter')
+#     comment = args.get('comment')
+#     request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment)
+#     dismissed_alerts_data = {}
+#     try:
+#         dismissed_alerts_data = client.dismiss_bulk_alerts(request_data)
+#     except Exception as e:
+#         if 'alertsNotFound' in str(e):
+#             raise DemistoException('Error: This alert id is already dismissed or does not exist.')
+#     number_of_dismissed_alerts = dismissed_alerts_data['closed_false_positive']
+#     return CommandResults(
+#         readable_output=f'{number_of_dismissed_alerts} alerts dismissed',
+#         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+#         outputs_key_field='_id'
+#     )
 
 
-def bulk_resolve_alert_command(client: Client, args: dict):
-    alert_ids = args.get('alert_ids')
-    custom_filter = args.get('custom_filter')
-    comment = args.get('comment')
-    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comment)
-    resolve_alerts = client.resolve_bulk_alerts(request_data)
-    number_of_resolved_alerts = resolve_alerts['closed_true_positive']
-    return CommandResults(
-        readable_output=f'{number_of_resolved_alerts} alerts resolved',
-        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
-        outputs_key_field='alert_id',
-        outputs=resolve_alerts
-    )
+# @obenacot DEPRECATED
+# def bulk_resolve_alert_command(client: Client, args: dict):
+#     alert_ids = args.get('alert_ids')
+#     custom_filter = args.get('custom_filter')
+#     comment = args.get('comment')
+#     request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment)
+#     resolve_alerts = client.resolve_bulk_alerts(request_data)
+#     number_of_resolved_alerts = resolve_alerts['closed_true_positive']
+#     return CommandResults(
+#         readable_output=f'{number_of_resolved_alerts} alerts resolved',
+#         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+#         outputs_key_field='alert_id',
+#         outputs=resolve_alerts
+#     )
 
 
 def activity_to_human_readable(activity: dict):
@@ -589,6 +684,78 @@ def params_to_filter(severity: List[str], resolution_status: str):
     return filters
 
 
+def close_benign_command(client: Client, args: dict):
+    """
+    #TODO
+    """
+    alert_ids = args.get('alert_ids')
+    custom_filter = args.get('custom_filter')
+    comment = args.get('comment')
+    arguments = assign_params(**args)
+    reason = CLOSE_BENIGN_REASON_OPTIONS.get(args.get('reason'))
+    sendFeedback = bool(args.get('sendFeedback'))
+    feedbackText = args.get('feedbackText')
+    allowContact = bool(args.get('allowContact'))
+    contactEmail = args.get('contactEmail')
+
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, arguments, comment, reason,
+                                               sendFeedback, feedbackText, allowContact, contactEmail)
+    close_benign_alerts = client.close_benign(request_data)
+    return CommandResults(
+        readable_output='',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+        outputs_key_field='_id',
+        outputs=close_benign_alerts)
+
+
+def close_false_positive_command(client: Client, args: dict):
+    """
+    #TODO
+    """
+    alert_ids = args.get('alert_ids')
+    custom_filter = args.get('custom_filter')
+    comment = args.get('comment')
+    arguments = assign_params(**args)
+    reason = CLOSE_FALSE_POSITIVE_REASON_OPTIONS.get(args.get('reason'))
+    sendFeedback = bool(args.get('sendFeedback'))
+    feedbackText = args.get('feedbackText')
+    allowContact = bool(args.get('allowContact'))
+    contactEmail = args.get('contactEmail')
+
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, arguments, comment, reason,
+                                               sendFeedback, feedbackText, allowContact, contactEmail)
+    close_false_positive = client.close_false_positive(request_data)
+    return CommandResults(
+        readable_output='',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+        outputs_key_field='_id',
+        outputs=close_false_positive)
+
+
+def close_true_positive_command(client: Client, args: dict):
+    """
+    #TODO
+    """
+    alert_ids = args.get('alert_ids')
+    custom_filter = args.get('custom_filter')
+    comment = args.get('comment')
+    arguments = assign_params(**args)
+    reason = CLOSE_BENIGN_REASON_OPTIONS.get(args.get('reason'))
+    sendFeedback = bool(args.get('sendFeedback'))
+    feedbackText = args.get('feedbackText')
+    allowContact = bool(args.get('allowContact'))
+    contactEmail = args.get('contactEmail')
+
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, arguments, comment, reason,
+                                               sendFeedback, feedbackText, allowContact, contactEmail)
+    close_true_positive = client.close_true_positive(request_data)
+    return CommandResults(
+        readable_output='',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+        outputs_key_field='_id',
+        outputs=close_true_positive)
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -632,11 +799,13 @@ def main():
         elif demisto.command() == 'microsoft-cas-alerts-list':
             return_results(list_alerts_command(client, demisto.args()))
 
-        elif demisto.command() == 'microsoft-cas-alert-dismiss-bulk':
-            return_results(bulk_dismiss_alert_command(client, demisto.args()))
-
-        elif demisto.command() == 'microsoft-cas-alert-resolve-bulk':
-            return_results(bulk_resolve_alert_command(client, demisto.args()))
+        # # @obenacot: DEPRECATED
+        # elif demisto.command() == 'microsoft-cas-alert-dismiss-bulk':
+        #     return_results(bulk_dismiss_alert_command(client, demisto.args()))
+        #
+        # # @obenacot: DEPRECATED
+        # elif demisto.command() == 'microsoft-cas-alert-resolve-bulk':
+        #     return_results(bulk_resolve_alert_command(client, demisto.args()))
 
         elif demisto.command() == 'microsoft-cas-activities-list':
             return_results(list_activities_command(client, demisto.args()))
@@ -647,6 +816,14 @@ def main():
         elif demisto.command() == 'microsoft-cas-users-accounts-list':
             return_results(list_users_accounts_command(client, demisto.args()))
 
+        elif demisto.command() == 'microsoft-cas-alert-close-benign':
+            return_results(close_benign_command(client, demisto.args()))
+
+        elif demisto.command() == 'microsoft-cas-alert-close-true-positive':
+            return_results(close_true_positive_command(client, demisto.args()))
+
+        elif demisto.command() == 'microsoft-cas-alert-close-false-positive':
+            return_results(close_false_positive_command(client, demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')

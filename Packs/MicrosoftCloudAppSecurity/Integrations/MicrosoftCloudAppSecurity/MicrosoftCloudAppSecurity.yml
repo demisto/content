@@ -326,6 +326,84 @@ script:
     name: microsoft-cas-alert-resolve-bulk
   - arguments:
     - default: false
+      description: |-
+        Multiple alerts matching the specified filters.
+        Alert_id should appear similar to - "1234567890abcdefg".
+        Mandatory, unless you use a custom filter.
+      isArray: true
+      name: alert_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, please refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    - default: false
+      description: Comment describing why the alerts were dismissed.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: 'An alert on a suspicious but not malicious activity, such as a penetration test or other authorized suspicious action'
+    execution: false
+    name: microsoft-cas-alert-close-benign
+  - arguments:
+    - default: false
+      description: |-
+        Multiple alerts matching the specified filters.
+        Alert_id should appear similar to - "1234567890abcdefg".
+        Mandatory, unless you use a custom filter.
+      isArray: true
+      name: alert_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, please refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    - default: false
+      description: Comment describing why the alerts were dismissed.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: #todo
+    execution: false
+    name: microsoft-cas-alert-close-true-positive
+  - arguments:
+    - default: false
+      description: |-
+        Multiple alerts matching the specified filters.
+        Alert_id should appear similar to - "1234567890abcdefg".
+        Mandatory, unless you use a custom filter.
+      isArray: true
+      name: alert_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, please refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    - default: false
+      description: Comment describing why the alerts were dismissed.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: #todo
+    execution: false
+    name: microsoft-cas-alert-close-false-positive
+  - arguments:
+    - default: false
       defaultValue: '50'
       description: The number of records to skip. Default is 50.
       isArray: false
