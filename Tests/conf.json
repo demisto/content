@@ -3209,6 +3209,14 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "LogPoint SIEM Integration",
+            "playbookID": "LogPoint SIEM Integration - Test Playbook 1"
+        },
+        {
+            "integrations": "LogPoint SIEM Integration",
+            "playbookID": "LogPoint SIEM Integration - Test Playbook 2"
+        },
+        {
             "integrations": "Cisco Stealthwatch",
             "fromversion": "5.5.0",
             "playbookID": "Cisco Stealthwatch Test"
