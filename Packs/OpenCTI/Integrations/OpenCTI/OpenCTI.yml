@@ -8,12 +8,10 @@ configuration:
   name: base_url
   required: true
   type: 0
-- display: API Key (leave empty. Fill the API key in the password field.)
-  displaypassword: API Key
-  name: credentials
-  required: false
-  hiddenusername: true
-  type: 9
+- display: API Key
+  hidden: false
+  name: apikey
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
