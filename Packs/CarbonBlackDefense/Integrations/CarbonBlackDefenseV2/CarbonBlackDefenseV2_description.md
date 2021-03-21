@@ -1,34 +1,33 @@
 ## Carbon Black Cloud Endpoint Standard
 
-***Carbon Black Cloud Endpoint Standard is the new name for the product formerly called CB Defense.***
+*Carbon Black Cloud Endpoint Standard is the new name for the product formerly called CB Defense.*
 
-Set up Access Levels and API Keys in the Carbon Black Cloud Console.
+### Create Access Levels and API Keys
 
-Your attention for policies unlike the rest all we use V3 because there is still no new version (for the rest we use V6), So you have to create custom api key
-& a custom api secret key in addition of the api & api secret keys
-[For more information about the versions](https://developer.carbonblack.com/reference/carbon-black-cloud/cb-defense/latest/rest-api) 
+There are two versions of the API - V3 and V6. V6 includes all the APIs except for the Policy APIs. Therefore, in addition to creating an API key and API secret key, you also need to create a custom API key and a custom API secret key.
+Click [here](https://developer.carbonblack.com/reference/carbon-black-cloud/cb-defense/latest/rest-api) for more information about the versions.
 
-**Creating a Custom Access Level**
+#### Create a Custom Access Level
 
-1. Go to your Carbon Black Cloud console, and open the “Add Access Level” panel from Settings > API Access > Access
-   Levels tab.
-2. Give the access level a unique name (you will need this for creating your API Key) and give it a description.
-3. From the table below, scroll down until you see your API Service Category. Some Service Categories have multiple
+1. In the Carbon Black Cloud console, go to **Settings** > **API Access** > **Access Levels** tab.
+2. Open the *Add Access Level* panel. 
+2. Give the access level a unique name (you will need this for creating your API Key) and a description.
+3. In the table, scroll down until you see your API service category. Configure the required permissions. Some service categories have multiple
    permissions that can be configured.
 
-**Creating an API Key**
+#### Create an API Key
 
-1. To create an API Key, go to Settings > API Access > API Keys tab in the Carbon Black Cloud console.
-2. Select “Add API Key” from the far right.
-3. Give the API Key a unique name, and select the appropriate access level provided in the table above. If you select
-   “Custom”, you will need to choose the Access Level you created in the prior section.
-4. Hit save, and you will be provided with your API Key Credentials:
+1. In the Carbon Black Cloud console, go to **Settings** > **API Access** > **API Keys** tab.
+2. Select **Add API Key** from the far right.
+3. Give the API key a unique name, and select the appropriate access level. If you select
+   "Custom", you will need to choose the Access Level you created in [Create a Custom Access Level](#create-a-custom-access-level).
+4. Click **Save**. You will be provided with your API key credentials:
+   - API Secret Key
+   - API Key
+ 
+   Click [here](https://developer.carbonblack.com/reference/carbon-black-cloud/authentication) for more information about authentication.
 
-- API Secret Key
-- API Key
+### Create a Carbon Black Query
 
-[For more information about authentication](https://developer.carbonblack.com/reference/carbon-black-cloud/authentication) 
-##### Creating Carbon Black's Query:
-
-Carbon Black Cloud Endpoint Standard uses Advanced Search Queries to query for events and processes. Here's some more information
-about [Advanced Search Queries](https://developer.carbonblack.com/resources/query_overview.pdf).
+Carbon Black Cloud Endpoint Standard uses Advanced Search Queries to query for events and processes. Click [here](https://developer.carbonblack.com/resources/query_overview.pdf) for more information
+about Advanced Search Queries.
