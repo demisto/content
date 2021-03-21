@@ -961,7 +961,7 @@ def arg_to_number_must_int(arg: Any, arg_name: Optional[str] = None, required: b
     return arg_num
 
 
-def epoch_to_timestamp(epoch: int) -> Optional[str]:
+def epoch_to_timestamp(epoch: Union[int, str]) -> Optional[str]:
     """Converts epoch timestamp to a string.
 
     Args:
@@ -971,8 +971,8 @@ def epoch_to_timestamp(epoch: int) -> Optional[str]:
         A formatted string if succeeded. if not, returns None.
     """
     try:
-        return datetime.utcfromtimestamp(epoch).strftime("%Y-%m-%d %H:%M:%SZ")
-    except (TypeError, OSError):
+        return datetime.utcfromtimestamp(int(epoch)).strftime("%Y-%m-%d %H:%M:%SZ")
+    except (TypeError, OSError, ValueError):
         return None
 
 
@@ -1004,6 +1004,71 @@ def decrease_data_size(data: Union[dict, list]) -> Union[dict, list]:
             except KeyError:
                 pass
     return data
+
+
+def build_domain_output(
+        client: Client,
+        score_calculator: ScoreCalculator,
+        domain: str,
+        raw_response: dict,
+        extended_data: bool):
+    data = raw_response.get('data', {})
+    attributes = data.get('attributes', {})
+    whois: defaultdict = get_whois(attributes.get('whois', ''))
+    score = score_calculator.domain_score(domain, raw_response)
+    if score != Common.DBotScore.BAD and client.is_premium:
+        score = score_calculator.analyze_premium_domain_score(client, domain, score)
+    logs = score_calculator.get_logs()
+    demisto.debug(logs)
+    domain_indicator = Common.Domain(
+        domain=domain,
+        name_servers=whois['Name Server'],
+        creation_date=whois['Creation Date'],
+        updated_date=whois['Updated Date'],
+        expiration_date=whois['Registry Expiry Date'],
+        admin_name=whois['Admin Organization'],
+        admin_email=whois['Admin Email'],
+        admin_country=whois['Admin Country'],
+        registrant_email=whois['Registrant Email'],
+        registrant_country=whois['Registrant Country'],
+        registrar_name=whois['Registrar'],
+        registrar_abuse_email=whois['Registrar Abuse Contact Email'],
+        registrar_abuse_phone=whois['Registrar Abuse Contact Phone'],
+        dbot_score=Common.DBotScore(
+            domain,
+            DBotScoreType.DOMAIN,
+            INTEGRATION_NAME,
+            score=score,
+            malicious_description=logs
+        )
+    )
+    if not extended_data:
+        data = decrease_data_size(data)
+
+    attributes = data.get('attributes', {})
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.Domain',
+        outputs_key_field='id',
+        indicator=domain_indicator,
+        readable_output=tableToMarkdown(
+            f'Domain data of {domain}',
+            {
+                'last_modified': epoch_to_timestamp(attributes['last_modification_date']),
+                **data,
+                **whois,
+                **attributes
+            },
+            headers=[
+                'id',
+                'Registrant Country',
+                'last_modified',
+                'last_analysis_stats'
+            ],
+            removeNull=True
+        ),
+        outputs=data,
+        raw_response=raw_response
+    )
 
 
 def build_url_output(
@@ -1039,10 +1104,9 @@ def build_url_output(
     )
     if not extended_data:
         data = decrease_data_size(data)
-    outputs = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.URL(val.id && val.id === obj.id)': data
-    }
     return CommandResults(
+        outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.URL',
+        outputs_key_field='id',
         indicator=url_indicator,
         readable_output=tableToMarkdown(
             f'URL data of "{url}"',
@@ -1063,7 +1127,54 @@ def build_url_output(
                 'reputation'
             ]
         ),
-        outputs=outputs,
+        outputs=data,
+        raw_response=raw_response
+    )
+
+
+def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, raw_response: dict,
+                    extended_data: bool) -> CommandResults:
+    score = score_calculator.ip_score(ip, raw_response)
+    if score != Common.DBotScore.BAD and client.is_premium:
+        score = score_calculator.analyze_premium_ip_score(client, ip, score)
+    logs = score_calculator.get_logs()
+    demisto.debug(logs)
+    data = raw_response.get('data', {})
+    attributes = data.get('attributes', {})
+    last_analysis_stats = attributes.get('last_analysis_stats')
+    positive_engines = last_analysis_stats.get('malicious', 0)
+    detection_engines = sum(last_analysis_stats.values())
+    ip_indicator = Common.IP(
+        ip,
+        asn=attributes.get('asn'),
+        geo_country=attributes.get('country'),
+        detection_engines=detection_engines,
+        positive_engines=positive_engines,
+        dbot_score=Common.DBotScore(
+            ip,
+            DBotScoreType.IP,
+            INTEGRATION_NAME,
+            score=score,
+            malicious_description=logs
+        )
+    )
+    if not extended_data:
+        data = decrease_data_size(data)
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.IP',
+        outputs_key_field='id',
+        indicator=ip_indicator,
+        readable_output=tableToMarkdown(
+            f'IP reputation of {ip}:',
+            {
+                **data,
+                **attributes,
+                'last_modified': epoch_to_timestamp(attributes['last_modification_date']),
+                'positives': f'{positive_engines}/{detection_engines}'
+            },
+            headers=['id', 'network', 'country', 'last_modified', 'reputation', 'positives']
+        ),
+        outputs=data,
         raw_response=raw_response
     )
 
@@ -1111,13 +1222,12 @@ def build_file_output(
     )
     if not extended_data:
         data = decrease_data_size(data)
-    outputs = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.File(val.id && val.id === obj.id)': data
-    }
     last_analysis_stats = attributes.get("last_analysis_stats", {})
     malicious = last_analysis_stats.get('malicious', 0)
     total = sum(last_analysis_stats.values())
     return CommandResults(
+        outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.File',
+        outputs_key_field='id',
         indicator=file_indicator,
         readable_output=tableToMarkdown(
             f'Results of file hash {file_hash}',
@@ -1134,7 +1244,7 @@ def build_file_output(
             ],
             removeNull=True
         ),
-        outputs=outputs,
+        outputs=data,
         raw_response=raw_response
     )
 
@@ -1240,149 +1350,87 @@ def encode_url_to_base64(url: str) -> str:
 # endregion
 
 # region Reputation commands
-def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
+
+
+def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
-    ip = args['ip']
-    raise_if_ip_not_valid(ip)
-    raw_response = client.ip(ip)
-    score = score_calculator.ip_score(ip, raw_response)
-    if score != Common.DBotScore.BAD and client.is_premium:
-        score = score_calculator.analyze_premium_ip_score(client, ip, score)
-    logs = score_calculator.get_logs()
-    demisto.debug(logs)
-    data = raw_response.get('data', {})
-    attributes = data.get('attributes', {})
-    last_analysis_stats = attributes.get('last_analysis_stats')
-    positive_engines = last_analysis_stats.get('malicious', 0)
-    detection_engines = sum(last_analysis_stats.values())
-    ip_indicator = Common.IP(
-        ip,
-        asn=attributes.get('asn'),
-        geo_country=attributes.get('country'),
-        detection_engines=detection_engines,
-        positive_engines=positive_engines,
-        dbot_score=Common.DBotScore(
-            ip,
-            DBotScoreType.IP,
-            INTEGRATION_NAME,
-            score=score,
-            malicious_description=logs
+    ips = argToList(args['ip'])
+    results: List[CommandResults] = list()
+    for ip in ips:
+        raise_if_ip_not_valid(ip)
+        try:
+            raw_response = client.ip(ip)
+        except Exception as exception:
+            # If anything happens, just keep going
+            demisto.debug(f'Could not process IP: "{ip}"\n {str(exception)}')
+            continue
+        results.append(
+            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data')))
         )
-    )
-    if not argToBoolean(args.get('extended_data')):
-        data = decrease_data_size(data)
-    outputs = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.IP(val.id && val.id === obj.id)': data
-    }
-    return CommandResults(
-        indicator=ip_indicator,
-        readable_output=tableToMarkdown(
-            f'IP reputation of {ip}:',
-            {
-                **data,
-                **attributes,
-                'last_modified': epoch_to_timestamp(attributes['last_modification_date']),
-                'positives': f'{positive_engines}/{detection_engines}'
-            },
-            headers=['id', 'network', 'country', 'last_modified', 'reputation', 'positives']
-        ),
-        outputs=outputs,
-        raw_response=raw_response
-    )
+    return results
 
 
-def file_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
+def file_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> List[CommandResults]:
     """
     1 API Call
     """
-    file_hash = args['file']
+    files = argToList(args['file'])
     extended_data = argToBoolean(args.get('extended_data'))
-    raise_if_hash_not_valid(file_hash)
-    raw_response = client.file(file_hash)
-    return build_file_output(score_calculator, file_hash, raw_response, extended_data)
+    results: List[CommandResults] = list()
+    for file in files:
+        raise_if_hash_not_valid(file)
+        try:
+            raw_response = client.file(file)
+        except Exception as exception:
+            # If anything happens, just keep going
+            demisto.debug(f'Could not process file: "{file}"\n {str(exception)}')
+            continue
+        results.append(build_file_output(score_calculator, file, raw_response, extended_data))
+    return results
 
 
-def url_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
+def url_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
-    url = args['url']
+    urls = argToList(args['url'])
     extended_data = argToBoolean(args.get('extended_data'))
-    raw_response = client.url(
-        url
-    )
-    return build_url_output(client, score_calculator, url, raw_response, extended_data)
+    results: List[CommandResults] = list()
+    for url in urls:
+        try:
+            raw_response = client.url(
+                url
+            )
+        except Exception as exception:
+            # If anything happens, just keep going
+            demisto.debug(f'Could not process URL: "{url}".\n {str(exception)}')
+            continue
+        results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
+    return results
 
 
-def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
+def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
-    domain = args['domain']
-    raw_response = client.domain(domain)
-    data = raw_response.get('data', {})
-    attributes = data.get('attributes', {})
-    whois: defaultdict = get_whois(attributes.get('whois', ''))
-    score = score_calculator.domain_score(domain, raw_response)
-    if score != Common.DBotScore.BAD and client.is_premium:
-        score = score_calculator.analyze_premium_domain_score(client, domain, score)
-    logs = score_calculator.get_logs()
-    demisto.debug(logs)
-    domain_indicator = Common.Domain(
-        domain=domain,
-        name_servers=whois['Name Server'],
-        creation_date=whois['Creation Date'],
-        updated_date=whois['Updated Date'],
-        expiration_date=whois['Registry Expiry Date'],
-        admin_name=whois['Admin Organization'],
-        admin_email=whois['Admin Email'],
-        admin_country=whois['Admin Country'],
-        registrant_email=whois['Registrant Email'],
-        registrant_country=whois['Registrant Country'],
-        registrar_name=whois['Registrar'],
-        registrar_abuse_email=whois['Registrar Abuse Contact Email'],
-        registrar_abuse_phone=whois['Registrar Abuse Contact Phone'],
-        dbot_score=Common.DBotScore(
-            domain,
-            DBotScoreType.DOMAIN,
-            INTEGRATION_NAME,
-            score=score,
-            malicious_description=logs
+    domains = argToList(args['domain'])
+    results: List[CommandResults] = list()
+    for domain in domains:
+        try:
+            raw_response = client.domain(domain)
+        except Exception as exception:
+            # If anything happens, just keep going
+            demisto.debug(f'Could not process domain: "{domain}"\n {str(exception)}')
+            continue
+        results.append(
+            build_domain_output(client, score_calculator, domain, raw_response, argToBoolean(args.get('extended_data')))
         )
-    )
-    if not argToBoolean(args.get('extended_data')):
-        data = decrease_data_size(data)
-    context = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.Domain(val.id && val.id === obj.id) ': data
-    }
-
-    attributes = data['attributes']
-    return CommandResults(
-        indicator=domain_indicator,
-        readable_output=tableToMarkdown(
-            f'Domain data of {domain}',
-            {
-                'last_modified': epoch_to_timestamp(attributes['last_modification_date']),
-                **data,
-                **whois,
-                **attributes
-            },
-            headers=[
-                'id',
-                'Registrant Country',
-                'last_modified',
-                'last_analysis_stats'
-            ],
-            removeNull=True
-        ),
-        outputs=context,
-        raw_response=raw_response
-    )
+    return results
 
 
 # endregion
@@ -1399,7 +1447,7 @@ def file_rescan_command(client: Client, args: dict) -> CommandResults:
     data['hash'] = file_hash
     context = {
         f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
-        'vtScanID': data.get('id')
+        'vtScanID': data.get('id')  # BC preservation
     }
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1427,7 +1475,8 @@ def file_scan(client: Client, args: dict) -> CommandResults:
     )
 
     context = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data
+        f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
+        'vtScanID': data.get('id')  # BC preservation
     }
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1470,7 +1519,8 @@ def scan_url_command(client: Client, args: dict) -> CommandResults:
     data = raw_response['data']
     data['url'] = url
     context = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data
+        f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
+        'vtScanID': data.get('id')  # BC preservation
     }
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1522,7 +1572,7 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException(f'Could not find resource type of "{resource_type}"')
     data = raw_response['data']
     context = {
-        'id': resource,
+        'indicator': resource,
         'comments': data
     }
     comments = []
@@ -1588,13 +1638,21 @@ def get_comments_by_id_command(client: Client, args: dict) -> CommandResults:
     comment_id = args['id']
     raw_response = client.get_comment_by_id(comment_id)
     data = raw_response['data']
+    attributes = data.get('attributes', {})
+    votes = attributes.get('votes', {})
     return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.Comments',
+        f'{INTEGRATION_ENTRY_CONTEXT}.Comments.comments',
         'id',
         readable_output=tableToMarkdown(
             f'Comment of ID {comment_id}',
-            data['attributes'],
-            removeNull=True
+            {
+                'Date': epoch_to_timestamp(attributes.get('date')),
+                'Text': attributes.get('text'),
+                'Positive Votes': votes.get('positive'),
+                'Abuse Votes': votes.get('abuse'),
+                'Negative Votes': votes.get('negative')
+            },
+            headers=['Date', 'Text', 'Positive Votes', 'Abuse Votes', 'Negative Votes']
         ),
         outputs=data,
         raw_response=raw_response
@@ -1694,14 +1752,16 @@ def get_analysis_command(client: Client, args: dict) -> CommandResults:
     """
     analysis_id = args['id']
     raw_response = client.get_analysis(analysis_id)
-    attributes = raw_response.get('data', {}).get('attributes', {})
+    data = raw_response.get('data', {})
+    if not argToBoolean(args.get('extended_data', False)):
+        data = decrease_data_size(data)
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.Analysis',
         'id',
         readable_output=tableToMarkdown(
             'Analysis results:',
             {
-                **attributes,
+                **data.get('attributes', {}),
                 'id': analysis_id
 
             },
@@ -1769,5 +1829,5 @@ def main(params: dict, args: dict, command: str):
 if __name__ in ('builtins', '__builtin__'):
     try:
         main(demisto.params(), demisto.args(), demisto.command())
-    except Exception as exc:
-        return_error(exc)
+    except Exception as exception:
+        return_error(exception)

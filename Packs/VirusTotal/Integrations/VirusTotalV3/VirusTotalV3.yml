@@ -7,7 +7,7 @@ fromversion: 5.5.0
 category: Data Enrichment & Threat Intelligence
 description: Analyze suspicious hashes, URLs, domains and IP addresses
 configuration:
-- display: ""
+- display: Write "no_user" here.
   displaypassword: API Key
   name: credentials
   type: 9
@@ -99,7 +99,7 @@ script:
       required: true
       default: true
       description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
-      isArray: false
+      isArray: true
     - name: extended_data
       required: false
       description: Will return exteded data (last_analysis_results).
@@ -321,7 +321,7 @@ script:
       required: true
       default: true
       description: IP address to check.
-      isArray: false
+      isArray: true
     - name: extended_data
       required: false
       description: Will return exteded data (last_analysis_results).
@@ -420,7 +420,7 @@ script:
       required: true
       default: true
       description: URL to check.
-      isArray: false
+      isArray: true
     - name: extended_data
       required: false
       description: Will return exteded data (last_analysis_results).
@@ -545,7 +545,7 @@ script:
       required: true
       default: true
       description: Domain name to check.
-      isArray: false
+      isArray: true
     - name: extended_data
       required: false
       description: Will return exteded data (last_analysis_results).
@@ -695,7 +695,7 @@ script:
       - contextPath: VirusTotal.Submission.Type
         description: The type of the submission (analysis).
         type: String
-    description: Submits a file for scanning.
+    description: Submits a file for scanning. Use vt-analysis-get to get the scan results.
   - name: file-rescan
     arguments:
     - name: file
@@ -713,8 +713,8 @@ script:
         description: The indicator sent to rescan.
         type: String
     description: Re-scans an already submitted file. This avoids having to upload
-      the file again.
-  - name: vt-url-scan
+      the file again. Use vt-analysis-get to get the scan results.
+  - name: url-scan
     arguments:
     - name: url
       required: true
@@ -730,7 +730,7 @@ script:
       - contextPath: VirusTotal.Submission.hash
         description: The indicator sent to rescan.
         type: String
-    description: Scans a specified URL.
+    description: Scans a specified URL. Use vt-analysis-get to get the scan results.
   - name: vt-comments-add
     arguments:
     - name: resource
@@ -759,7 +759,7 @@ script:
     outputs:
     - contextPath: VirusTotal.FileUploadURL
       description: The special upload URL for large files.
-    description: Private API. Get a special URL for files larger than 32 MB.
+    description: Premium API. Get a special URL for files larger than 32 MB.
   - name: vt-comments-get
     arguments:
     - name: resource
@@ -819,8 +819,8 @@ script:
       default: true
       description: The comment's id. Can be retrieved from vt-comments-get.
     outputs:
-      - contextPath: VirusTotal.Comments.id
-        description: ID Commented on (the given hash, domain, url or ip)
+      - contextPath: VirusTotal.Comments.comments.id
+        description: ID of the comment iself.
         type: String
       - contextPath: VirusTotal.Comments.comments.attributes.date
         description: The date of the comment in epoch.
@@ -842,9 +842,6 @@ script:
         type: String
       - contextPath: VirusTotal.Comments.comments.type
         description: The type of the comment.
-        type: String
-      - contextPath: VirusTotal.Comments.comments.id
-        description: ID of the comment.
         type: String
       - contextPath: VirusTotal.Comments.comments.links.self
         description: Link to the request
@@ -1120,7 +1117,11 @@ script:
     - name: id
       required: true
       default: true
-      description: ID of the analysis (from vt-file-scan, vt-file-rescan or vt-url-scan)
+      description: ID of the analysis (from file-scan, file-rescan or url-scan)
+    - name: extended_data
+      required: false
+      description: Will return exteded data (last_analysis_results).
+      defaultValue: false
     outputs:
       - contextPath: VirusTotal.Analysis.data.attributes.date
         description: Date of the analysis in epoch

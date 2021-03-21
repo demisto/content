@@ -1,9 +1,9 @@
 import json
 
 import pytest
-
-from VirusTotalV3 import encode_url_to_base64, raise_if_hash_not_valid, \
-    raise_if_ip_not_valid, ScoreCalculator, epoch_to_timestamp
+from VirusTotalV3 import (ScoreCalculator, encode_url_to_base64,
+                          epoch_to_timestamp, raise_if_hash_not_valid,
+                          raise_if_ip_not_valid)
 
 
 class TestScoreCalculator:

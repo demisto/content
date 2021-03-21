@@ -34,34 +34,36 @@ not exists.
 - Each reputation command will be use at least 1 api call. For advanced reputation commands, use the premium api.
 
 ### vt-comments-get:
-- Added argument: resource_type to distinguish between resources type.
+- Added argument: resource_type. If not supplied, will try to determine if the *resource* argument is a hash or a url.
 - Added argument: limit - gets the latest comments with the given limit.
-- Removed argument: before use 'limit' argument instead (breaks bc)
+- Removed argument: *before*. Use the 'limit' argument instead to limit the results returned from the integration (breaks bc)
 - New output path: According to the given resource_type:
     - VirusTotal.Comments
 - Removed output path: All previous output paths removed (breaks bc)
 
 ### vt-comments-add:
-- added argument: resource_type to distinguish between resourced type.
+- added argument: resource_type to distinguish between resourced type. If not supplied, will try to determine if the *resource* argument is a hash or a url.
 - comment: will be the text field in the comment.
 
 ### file-rescan -> vt-file-rescan:
 - New output path: VirusTotal.FileSubmission.id
-- Removed output path: vtLink, vtScanID
+- Preserved output: vtScanID
+- Removed output path: vtLink
 
 
-### file-scan -> vt-file-scan:
-- New output path: VirusTotal.FileSubmission.id
+### file-scan
+- New output path: VirusTotal.FileSubmission
+- The old output path (vtScanID) is still preserved for bc
+- Removed output path: vtLink
+
+### url-scan 
+- New output path: VirusTotal.UrlSubmission
 - The old output path (vtScanID) is still preserved for bc
 - Removed output path: vtLink
 
 ### vt-file-scan-upload-url: 
-- New output path: VirusTotal.FileUploadURL.id
+- New output path: VirusTotal.FileUploadURL
 - Removed output path: vtUploadURL
-
-### url-scan -> vt-url-scan:
-- New output path: VirusTotal.UrlSubmission.id
-- Removed output path: vtLink, vtScanID
 
 new commands:
 ---
