@@ -2525,6 +2525,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             for status in statuses:
                 raw_incidents += client.get_incidents(gte_creation_time_milliseconds=last_fetch, status=status,
                                                       limit=max_fetch, sort_by_creation_time='asc')
+            raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
         else:
             raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
                                                  sort_by_creation_time='asc')
