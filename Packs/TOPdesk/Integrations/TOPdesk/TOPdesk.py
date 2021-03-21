@@ -3,6 +3,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from packaging import version
 
 import os
 import math
@@ -22,6 +23,7 @@ INTEGRATION_NAME = 'TOPdesk'
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DATE_FORMAT_FULL = "%Y-%m-%dT%H:%M:%S.%f%z"
 MAX_API_PAGE_SIZE = 10000
+FIRST_REST_API_VERSION_WITH_NEW_QUERY = "3.4.0"
 
 ''' CLIENT CLASS '''
 
@@ -32,7 +34,18 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, auth, new_query):
         super().__init__(base_url=base_url, verify=verify, auth=auth)
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-        self.new_query = new_query
+        self.supporting_files_new_query = new_query
+        self.rest_api_new_query = self.rest_api_supports_new_query()
+
+    def rest_api_supports_new_query(self) -> bool:
+        """Initialize which query type is supported by requesting the TOPdeskRestAPI version.
+
+        Return True if the version supports new FIQL type query and False otherwise.
+        """
+        rest_api_version = version.parse(self.get_single_endpoint("/version")["version"])
+        if rest_api_version >= version.parse(FIRST_REST_API_VERSION_WITH_NEW_QUERY):
+            return True
+        return False
 
     def get_list_with_query(self, list_type: str, start: Optional[int] = None, page_size: Optional[int] = None,
                             query: Optional[str] = None, modification_date_start: Optional[str] = None,
@@ -71,15 +84,13 @@ class Client(BaseClient):
                 url_suffix = f"{url_suffix}?page_size={page_size}"
                 inline_parameters = True
 
-        if query:
-            if list_type != "incidents" or self.new_query:
-                query = f"query={query}"
+        if list_type == "incidents":
+            new_query = self.rest_api_new_query
 
-            if inline_parameters:
-                url_suffix = f"{url_suffix}&{query}"
+        else:
+            new_query = self.supporting_files_new_query
 
-            else:
-                url_suffix = f"{url_suffix}?{query}"
+        url_suffix = self.add_query_to_request(query, url_suffix, new_query, inline_parameters)
 
         if modification_date_start:
             request_params["modification_date_start"] = modification_date_start
@@ -231,13 +242,16 @@ class Client(BaseClient):
         os.remove(file_name)
         return response
 
-    def add_filter_to_query(self, query: Optional[str], filter_name: str, filter_arg: str) -> Optional[str]:
+    @staticmethod
+    def add_filter_to_query(query: Optional[str], filter_name: str, filter_arg: str,
+                            use_new_query: bool = True) -> Optional[str]:
         """Enhance query to include filter argument. Consider the supported query type.
 
         Args:
             query: The current query in use. (e.g. id==some-id)
             filter_name: The filter name to add (e.g. email)
             filter_arg: The filter argument to add (e.g. my@email.com)
+            use_new_query: Whether to use FIQL query or not.
 
         Return the joined query with the argument (e.g. id==some-id&email==my@email.com)
         """
@@ -247,12 +261,38 @@ class Client(BaseClient):
             else:
                 query = ''
 
-            if self.new_query:
+            if use_new_query:
                 query = f"{query}{filter_name}=={filter_arg}"
             else:
                 query = f"{query}{filter_name}={filter_arg}"
 
         return query
+
+    @staticmethod
+    def add_query_to_request(query: Optional[str], url_suffix: str, new_query: bool,
+                             inline_parameters: bool) -> str:
+        """Add the inline query parameter to the url suffix of a request.
+        Consider the supported query type.
+
+        Args:
+             query: The query argument to add to the url suffix (e.g. id==3)
+             url_suffix: The existing url suffix (e.g. /persons?start=2)
+             new_query: Whether to use FIQL query or add parameters inline.
+             inline_parameters: Whether there are already other inline parameters in the url.
+
+        Return the reconstructed url_suffix containing the query.
+        """
+        if query:
+            if new_query:
+                query = f"query={query}"
+
+            if inline_parameters:
+                url_suffix = f"{url_suffix}&{query}"
+
+            else:
+                url_suffix = f"{url_suffix}?{query}"
+
+        return url_suffix
 
 
 ''' HELPER FUNCTIONS '''
@@ -440,13 +480,14 @@ def get_incidents_list(client: Client, modification_date_start: str = None, modi
 
             query = args.get('query', None)
             for filter_arg in filter_arguments.keys():
-                if not client.new_query:
+                if not client.rest_api_new_query:
                     if args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters:
                         raise KeyError(f"{filter_arg} is not supported with old query setting.")
 
                 query = client.add_filter_to_query(query=query,
                                                    filter_name=filter_arguments.get(filter_arg, None),
-                                                   filter_arg=args.get(filter_arg, None))
+                                                   filter_arg=args.get(filter_arg, None),
+                                                   use_new_query=client.rest_api_new_query)
             incidents = client.get_list_with_query(list_type="incidents",
                                                    start=args.get('start', None),
                                                    page_size=args.get('page_size', None),
