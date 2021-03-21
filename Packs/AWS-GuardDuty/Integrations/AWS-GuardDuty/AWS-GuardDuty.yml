@@ -457,10 +457,10 @@ script:
       predefined:
       - "True"
       - "False"
-      description: The updated boolean value that specifies whether the ThreateIntelSet
+      description: The updated boolean value that specifies whether the ThreatIntelSet
         is active or not.
     - name: location
-      description: The updated URI of the file that contains the ThreateIntelSet.
+      description: The updated URI of the file that contains the ThreatIntelSet.
         For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
     - name: name
       description: The user-friendly ThreatIntelSet name.
@@ -582,7 +582,7 @@ script:
       predefined:
       - USEFUL
       - NOT_USEFUL
-      description: Specifi wheter the finding was usful or not.
+      description: Specify wheter the finding was useful or not.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
