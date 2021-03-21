@@ -621,7 +621,8 @@ def main():
     params = demisto.params()
     args = demisto.args()
 
-    api_key = params.get('apikey')
+    credentials = params.get('credentials', {})
+    api_key = credentials.get('password')
     base_url = params.get('base_url').strip('/')
 
     try:
