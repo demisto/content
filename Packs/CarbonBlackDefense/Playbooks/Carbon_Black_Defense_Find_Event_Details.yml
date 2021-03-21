@@ -2,7 +2,7 @@ id: Carbon Black Defense Find Event Details
 version: -1
 fromversion: 5.5.0
 name: Carbon Black Defense Find Event Details
-description: Receives event ID's and returns details about the event.
+description: Receives event IDs and returns details about the event.
 starttaskid: "0"
 tasks:
   "0":
