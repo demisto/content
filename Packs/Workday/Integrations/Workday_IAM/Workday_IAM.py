@@ -18,6 +18,7 @@ REHIRED_EMPLOYEE_FIELD = 'rehiredemployee'
 HIRE_DATE_FIELD = 'hiredate'
 AD_ACCOUNT_STATUS_FIELD = 'adaccountstatus'
 USER_PROFILE_INC_FIELD = 'UserProfile'
+USER_PROFILE_INDICATOR = 'User Profile'
 
 DATE_FORMAT = "%m/%d/%Y"
 READ_TIME_OUT_IN_SECONDS = 300
@@ -51,32 +52,38 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def entry_to_user_profile(entry, mapper_in, workday_date_format):
-    user_profile = demisto.mapObject(entry, mapper_in, DEFAULT_INCIDENT_TYPE)
-    user_profile = convert_incident_fields_to_cli_names(user_profile)
-    reformat_date_fields(user_profile, workday_date_format)
+def report_to_indicators(report_entries, mapper_in, workday_date_format, deactivation_date_field,
+                         days_before_hire_to_sync, days_before_hire_to_enable_ad):
+    indicators = []
+    email_to_user_profile: Dict[str, Dict] = {}
 
-    return user_profile
+    for entry in report_entries:
+        workday_user = get_workday_user_from_entry(entry, mapper_in, workday_date_format)
+        if not has_reached_threshold_date(days_before_hire_to_sync, workday_user) \
+                or new_hire_email_already_taken(workday_user, None, email_to_user_profile) \
+                or is_report_missing_required_user_data(workday_user) \
+                or is_termination_event(workday_user, None, deactivation_date_field, first_run=True):
+            continue
 
+        indicator = workday_user_to_indicator(workday_user, days_before_hire_to_enable_ad)
+        indicators.append(indicator)
+        email_to_user_profile[workday_user.get(EMAIL_ADDRESS_FIELD)] = indicator
 
-def report_to_indicators(report_entries, mapper_in, workday_date_format):
-    # we push only active employees (with past hire date)
-    user_profiles = [entry_to_user_profile(e, mapper_in, workday_date_format) for e in report_entries]
-    indicators = [user_profile_to_indicator(u) for u in user_profiles
-                  if dateparser.parse(u.get(HIRE_DATE_FIELD)) < datetime.today()]
     return indicators
 
 
-def user_profile_to_indicator(user_profile):
-    raw_json = user_profile.copy()
-    raw_json['value'] = user_profile.get(EMAIL_ADDRESS_FIELD)
-    raw_json['type'] = 'User Profile'
-    # raw_json[AD_ACCOUNT_STATUS_FIELD] = determine_ad_account_status(user_profile)
+def workday_user_to_indicator(workday_user, days_before_hire_to_enable_ad):
+    if not has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user):
+        workday_user[AD_ACCOUNT_STATUS_FIELD] = 'Pending'
+
+    raw_json = workday_user.copy()
+    raw_json['value'] = workday_user.get(EMAIL_ADDRESS_FIELD)
+    raw_json['type'] = USER_PROFILE_INDICATOR
     indicator = {
-        'value': user_profile.get(EMAIL_ADDRESS_FIELD),
-        'type': 'User Profile',
+        'value': workday_user.get(EMAIL_ADDRESS_FIELD),
+        'type': USER_PROFILE_INDICATOR,
         'rawJSON': raw_json,
-        'fields': user_profile
+        'fields': workday_user
     }
     return indicator
 
@@ -121,7 +128,7 @@ def has_reached_threshold_date(num_of_days_before_hire, workday_user):
 
 def new_hire_email_already_taken(workday_user, demisto_user, email_to_user_profile):
     if demisto_user is None and email_to_user_profile.get(workday_user.get(EMAIL_ADDRESS_FIELD)) is not None:
-        demisto.debug(f'Skipped creating an incident for the following user profile:\n{workday_user}\n\n'
+        demisto.debug(f'Skipped creating a user profile for the following employee:\n{workday_user}\n\n'
                       f'The user profile doesn\'t exist but its email is already being used by another user.')
         return True
     return False
@@ -137,8 +144,8 @@ def is_report_missing_required_user_data(workday_user):
     return False
 
 
-def is_termination_event(workday_user, demisto_user, deactivation_date_field):
-    if demisto_user is None or demisto_user.get(AD_ACCOUNT_STATUS_FIELD) == 'Disabled':
+def is_termination_event(workday_user, demisto_user, deactivation_date_field, first_run=False):
+    if not first_run and demisto_user is None or demisto_user.get(AD_ACCOUNT_STATUS_FIELD) == 'Disabled':
         # skipping termination check - user does not exist or already terminated
         return False
 
@@ -211,7 +218,7 @@ def is_update_event(workday_user, changed_fields):
 
 
 def get_all_user_profiles():
-    query = 'type:\"User Profile\"'
+    query = f'type:\"{USER_PROFILE_INDICATOR}\"'
     employee_id_to_user_profile = {}
     email_to_user_profile = {}
 
@@ -249,18 +256,19 @@ def get_demisto_user(employee_id_to_user_profile, workday_user):
 
 
 def get_orphan_users(email_to_user_profile, user_emails):
-    """Get all users that does not exists in the Workday report anymore and terminate them in XSOAR."""
+    """ Gets all users that don't exist in the Workday report anymore and terminate them in XSOAR. """
 
     events = []
     orphan_users = [email for email, user in email_to_user_profile.items()
                     if email not in user_emails and user.get(EMPLOYMENT_STATUS_FIELD) != 'Terminated']
-    demisto.debug(f'orphan_users: {orphan_users}')
+
     if orphan_users:
+        demisto.debug(f'Found orphan users: {orphan_users}')
         for email in orphan_users:
             email_to_user_profile[email][EMPLOYMENT_STATUS_FIELD] = 'Terminated'
             entry = {
                 'Email_Address': email,
-                'UserProfile': email_to_user_profile[email].copy(),
+                'UserProfile': email_to_user_profile[email],
                 'Emp_ID': email_to_user_profile[email].get(EMPLOYEE_ID_FIELD)
             }
             event = {
@@ -270,7 +278,7 @@ def get_orphan_users(email_to_user_profile, user_emails):
                 'details': 'The user has been terminated.'
             }
 
-        events.append(event)
+            events.append(event)
 
     return events
 
@@ -415,14 +423,11 @@ def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactiva
         report_entries = client.get_full_report(report_url)
 
         for entry in report_entries:
-            email_address = entry.get('Email_Address')
-            user_emails.append(email_address)
-
+            # get the user event (if exists) according to workday report
             workday_user = get_workday_user_from_entry(entry, mapper_in, workday_date_format)
             demisto_user = get_demisto_user(employee_id_to_user_profile, workday_user)
             demisto.debug(f'Getting event details for user with email address {workday_user.get("email")}.\n'
-                          f'Current user data in XSOAR: {demisto_user=}\nData in Workday: {workday_user=}\n\n'
-                          f'{days_before_hire_to_sync=}\n{days_before_hire_to_enable_ad=}\n{deactivation_date_field=}')
+                          f'Current user data in XSOAR: {demisto_user=}\nData in Workday: {workday_user=}')
 
             event = get_event_details(entry, workday_user, demisto_user, days_before_hire_to_sync,
                                       days_before_hire_to_enable_ad, deactivation_date_field,
@@ -430,10 +435,12 @@ def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactiva
             if event is not None:
                 events.append(event)
 
+            # store all user emails from workday report for later use
+            user_emails.append(workday_user.get(EMAIL_ADDRESS_FIELD))
+
+        # terminate users in XSOAR which are not on workday report
         orphan_users_events = get_orphan_users(email_to_user_profile, user_emails)
-        if orphan_users_events:
-            for event in orphan_users_events:
-                events.append(event)
+        events.extend(orphan_users_events)
 
     except Exception as e:
         demisto.error('Failed to fetch events. Reason: ' + str(e))
@@ -442,9 +449,11 @@ def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactiva
     return events
 
 
-def workday_first_run_command(client, mapper_in, report_url, workday_date_format):
+def workday_first_run_command(client, mapper_in, report_url, workday_date_format, deactivation_date_field,
+                              days_before_hire_to_sync, days_before_hire_to_enable_ad):
     report_entries = client.get_full_report(report_url)
-    indicators = report_to_indicators(report_entries, mapper_in, workday_date_format)
+    indicators = report_to_indicators(report_entries, mapper_in, workday_date_format, deactivation_date_field,
+                                      days_before_hire_to_sync, days_before_hire_to_enable_ad)
     for b in batch(indicators, batch_size=BATCH_SIZE):
         demisto.createIndicators(b)
 
@@ -536,7 +545,15 @@ def main():
 
             else:
                 if not last_run.get('synced_users') and params.get('first_run'):
-                    workday_first_run_command(client, mapper_in, report_url, workday_date_format)
+                    workday_first_run_command(
+                        client=client,
+                        mapper_in=mapper_in,
+                        report_url=report_url,
+                        workday_date_format=workday_date_format,
+                        deactivation_date_field=deactivation_date_field,
+                        days_before_hire_to_sync=days_before_hire_to_sync,
+                        days_before_hire_to_enable_ad=days_before_hire_to_enable_ad
+                    )
                 elif not events:
                     # Get the events from Workday by making an API call. Last run is updated only when API call is made
                     events = fetch_incidents(

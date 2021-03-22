@@ -50,7 +50,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '%m/%d/%Y'
-  display: Date Format in Workday Report
+  display: Dates Format in Workday Report
   hidden: false
   name: workday_date_format
   required: false
@@ -93,5 +93,4 @@ script:
 tests:
 - No tests
 defaultmapperin: IAM Sync User - Workday
-defaultclassifier: Workday Classifier
 fromversion: 6.0.0
