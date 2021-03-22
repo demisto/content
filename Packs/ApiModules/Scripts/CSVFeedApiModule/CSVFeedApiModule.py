@@ -336,7 +336,6 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     # exit the loop if we have more indicators than the limit
                     if limit and len(indicators) >= limit:
                         return indicators
-                    demisto.info(f"indicator_yana  {indicator}")
 
     return indicators
 
