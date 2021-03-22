@@ -7,8 +7,7 @@ script: |-
       output = {}
       # res = demisto.executeCommand('jira-list-transitions', {'issueId': incident.get('dbotMirrorId')})[0]["Contents"]
       try:
-          incident = demisto.incidents()[0]
-          incident_id = incident.get('dbotMirrorId')
+          incident_id = demisto.incidents()[0].get('dbotMirrorId')
           if incident_id:
               res = demisto.executeCommand('jira-list-transitions', {'issueId': incident.get('dbotMirrorId')})
               if res and isinstance(res, list):
