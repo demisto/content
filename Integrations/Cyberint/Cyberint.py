@@ -376,6 +376,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     alerts = client.list_alerts('1', max_fetch, datetime.strftime(last_fetch, DATE_FORMAT),
                                 datetime.strftime(datetime.now(), DATE_FORMAT), None, None,
                                 fetch_environment, fetch_status, fetch_severity, fetch_type)
+    last_file = None
     for alert in alerts.get('alerts', []):
         #  Create the XS0AR incident.
         alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
@@ -404,7 +405,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
             incident_attachments.append({
                 "path": file_result["FileID"],
                 "name": attachment_name,
-                "Type": file_result["Type"]
+                "showMediaFile": True
             })
         incident = {
             'name': f'Cyberint alert {alert_id}: {alert_title}',
