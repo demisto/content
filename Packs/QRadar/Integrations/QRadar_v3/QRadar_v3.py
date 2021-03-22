@@ -1371,7 +1371,6 @@ def get_remote_data_with_events(client: Client, fetch_mode: str, current_mirrore
     """
     ctx = get_integration_context()
     modified_records = deepcopy(ctx.get('modified_records_ids', []))
-    modified_records.append([current_mirrored_id, None])
     updated_offense = None
     for i in range(min(MAX_NUMBER_OF_OFFENSES_TO_CHECK_SEARCH, len(modified_records))):
         # Getting first in queue modified ID
@@ -1384,6 +1383,7 @@ def get_remote_data_with_events(client: Client, fetch_mode: str, current_mirrore
             search_id = search_response.get('search_id') if search_response else None
             # Append the search created to the end of the list to poll the search later.
             modified_records.append([modified_id, search_id])
+            continue
         try:
             # Search ID exists, poll to see if search was completed.
             search_status_response = client.search_status_get(search_id)
@@ -1400,7 +1400,7 @@ def get_remote_data_with_events(client: Client, fetch_mode: str, current_mirrore
                 else:
                     modified_records.append([modified_id, None])
             else:
-                # Search results is still not ready.
+                # Search results are still not ready.
                 modified_records.append([modified_id, search_id])
                 continue
         except Exception:
@@ -2664,10 +2664,9 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
 
-    final_offense_data: Optional[Dict] = None
     if mirroring_option != 'Mirror Offense And Events':
         enriched_offense = enrich_offenses_result(client, current_mirrored_offense, ip_enrich, asset_enrich)
-        final_offense_data = sanitize_outputs(enriched_offense)[0]
+        final_offense_data = sanitize_outputs(enriched_offense)[0]  # type: Optional[Dict]
 
     else:
         final_offense_data = get_remote_data_with_events(
@@ -2685,8 +2684,8 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         return GetRemoteDataResponse({'id': offense_id, 'in_mirror_error': ''}, [])
 
     entries = []
-    if current_mirrored_offense.get('status') == 'CLOSED' and argToBoolean(params.get('close_incident', False)):
-        if closing_reason := current_mirrored_offense.get('closing_reason_id', ''):
+    if final_offense_data.get('status') == 'CLOSED' and argToBoolean(params.get('close_incident', False)):
+        if closing_reason := final_offense_data.get('closing_reason_id', ''):
             closing_reason = client.closing_reasons_list(closing_reason).get('text')
 
         entries.append({
@@ -2716,33 +2715,37 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     """
     ctx = get_integration_context()
     remote_args = GetModifiedRemoteDataArgs(args)
-    highest_fetched_id = get_integration_context().get(LAST_FETCH_KEY, 0)
+    highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     range_ = f'items=0-{limit - 1}'
+    mirroring_option = params.get('mirror_options')
     last_update = get_time_parameter(remote_args.last_update, epoch_format=True)
 
     offenses = client.offenses_list(range_=range_,
                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
-                                    sort='+last_persisted_time')
-    new_modified_records_ids = []
-    new_modified_records = []
-    for offense in offenses:
-        offense_id = str(offense.get('id'))
-        new_modified_records_ids.append(offense_id)
-        new_modified_records.append([offense_id, None])
+                                    sort='+last_persisted_time',
+                                    fields='id')
 
-    old_modified_records = ctx.get('modified_records_ids', [])
-    old_modified_records_ids = [record_id for record_id, _ in old_modified_records]
+    new_modified_records_ids = [offense.get('id') for offense in offenses if 'id' in offense]
 
-    all_modified_records = old_modified_records + new_modified_records
-    set_to_integration_context_with_retries({
-        'samples': ctx.get('samples', []),
-        LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY),
-        'modified_records_ids': all_modified_records
-    })
+    if mirroring_option == 'Mirror Offense And Events':
+        old_modified_records = ctx.get('modified_records_ids', [])
+        # List containing 2 items, [offense_id, search_id] where search_id is search associated to the offense.
+        # Because search was not created, initallized with None.
+        new_modified_records = [[offense_id, None] for offense_id in new_modified_records_ids]
+        all_modified_records = old_modified_records + new_modified_records
 
-    all_modified_ids = old_modified_records_ids + new_modified_records_ids
-    return GetModifiedRemoteDataResponse(all_modified_ids)
+        old_modified_records_ids = [record_id for record_id, _ in old_modified_records]
+        all_modified_records_ids = old_modified_records_ids + new_modified_records_ids
+        set_to_integration_context_with_retries({
+            'samples': ctx.get('samples', []),
+            LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY),
+            'modified_records_ids': all_modified_records
+        })
+    else:
+        all_modified_records_ids = new_modified_records_ids
+
+    return GetModifiedRemoteDataResponse(all_modified_records_ids)
 
 
 # get_remote_data_command without events mirroring

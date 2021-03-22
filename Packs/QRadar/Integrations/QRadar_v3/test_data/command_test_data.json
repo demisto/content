@@ -2228,7 +2228,7 @@
      "id": 112
     }
    ],
-   "closing_reason_id": null,
+   "closing_reason_id": 2,
    "device_count": 1,
    "offense_type": "Source IP",
    "relevance": 0,
