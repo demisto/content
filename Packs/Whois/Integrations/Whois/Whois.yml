@@ -1,14 +1,15 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Whois ip
+  id: Whois
   version: -1
 configuration:
 - display: Return Errors
   name: with_error
   required: false
   type: 8
-- display: Proxy URL. (for the Domain and whois commands) Supports socks4/socks5/http connect
-    proxies (e.g. socks5h://host:1080)
+- display: Proxy URL
+  additionalInfo: "Domain and Whois commands: supports socks4/socks5/http connect
+    proxies (e.g. socks5h://host:1080)."
   name: proxy_url
   required: false
   type: 0
@@ -18,8 +19,8 @@ configuration:
   required: false
   type: 8
 description: Provides data enrichment for domains.
-display: Whois ip
-name: Whois ip
+display: Whois
+name: Whois
 script:
   commands:
   - arguments:

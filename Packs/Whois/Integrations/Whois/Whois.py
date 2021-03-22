@@ -8397,23 +8397,27 @@ def domain_command():
         })
 
 
-def ip_command(ips):
+def get_whois_ip(ip):
     try:
         from urllib2 import build_opener, ProxyHandler
         from ipwhois import IPWhois
     except ImportError as e:
         return_error("The Docker needs to be updated to use an IP command")
+    proxy_opener = None
+    if demisto.params().get('proxy'):
+        proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
+        handler = ProxyHandler(proxies)
+        proxy_opener = build_opener(handler)
+    ip_obj = IPWhois(ip, proxy_opener)
+    return ip_obj.lookup_rdap(depth=1)
+
+
+def ip_command(ips):
 
     results = []
     for ip in argToList(ips):
-        if demisto.params().get('proxy'):
-            proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
-            handler = ProxyHandler(proxies)
-            opener = build_opener(handler)
-            ip_obj = IPWhois(ip, proxy_opener=opener)
-        else:
-            ip_obj = IPWhois(ip)
-        response = ip_obj.lookup_rdap(depth=1)
+
+        response = get_whois_ip(ip)
 
         dbot_score = Common.DBotScore(
             indicator=ip,
@@ -8421,11 +8425,12 @@ def ip_command(ips):
             integration_name='Whois',
             score=Common.DBotScore.NONE
         )
+
         related_feed = Common.FeedRelatedIndicators(
             value=response.get('network', {}).get('cidr'),
             indicator_type='IP'
-
         )
+
         ip_output = Common.IP(
             ip=ip,
             asn=response.get('asn'),
@@ -8434,6 +8439,7 @@ def ip_command(ips):
             dbot_score=dbot_score,
             feed_related_indicators=related_feed
         )
+
         result = CommandResults(
             outputs_prefix='Whois.IP',
             outputs_key_field='query',
@@ -8444,6 +8450,7 @@ def ip_command(ips):
             raw_response=response,
             indicator=ip_output
         )
+
         results.append(result)
     return results
 
