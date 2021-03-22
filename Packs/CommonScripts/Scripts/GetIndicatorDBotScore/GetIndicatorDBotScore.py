@@ -53,7 +53,7 @@ def main():
             data = resp[0].get("Contents")
 
             if not data:
-                demisto.results("No results.")
+                demisto.results("No results found for indicator {}.".format(indicator))
                 return
             dbot_scores = []
             for entry in data:
