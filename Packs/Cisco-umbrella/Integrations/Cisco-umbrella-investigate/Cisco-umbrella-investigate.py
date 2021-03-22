@@ -17,17 +17,6 @@ from datetime import datetime, timedelta
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
-
-API_TOKEN = demisto.params()['APIToken']
-BASE_URL = demisto.params()['baseURL']
-USE_SSL = not demisto.params().get('insecure', False)
-DEFAULT_HEADERS = {
-    'Authorization': 'Bearer {}'.format(API_TOKEN),
-    'Accept': 'application/json'
-}
-MALICIOUS_THRESHOLD = int(demisto.params().get('dboscore_threshold', -100))
-
 ''' MAPS '''
 
 # This object describe the result of the http request of getDomainSecurity function
@@ -105,15 +94,15 @@ def http_request(api_endpoint, params_dict=None, method='GET', data_list=None):
         data_list = json.dumps(data_list)
     if params_dict:
         req_params.update(params_dict)
-    url = BASE_URL + api_endpoint
+    url = base_url + api_endpoint
     LOG('running %s request with url=%s\tparams=%s\tdata=%s' % (method, url, json.dumps(req_params), data_list))
     try:
         res = requests.request(
             method,
             url,
-            verify=USE_SSL,
+            verify=use_ssl,
             params=req_params,
-            headers=DEFAULT_HEADERS,
+            headers=default_headers,
             data=data_list
         )
 
@@ -174,9 +163,9 @@ def securerank_to_dbotscore(sr):
     DBotScore = 0
     if sr > 0 and sr <= 100:
         DBotScore = 1
-    elif sr < 0 and sr > MALICIOUS_THRESHOLD:
+    elif sr < 0 and sr > malicious_threshold:
         DBotScore = 2
-    elif sr <= MALICIOUS_THRESHOLD:
+    elif sr <= malicious_threshold:
         DBotScore = 3
     return DBotScore
 
@@ -461,7 +450,7 @@ def get_domain_security_command():
     results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
-    threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
+    threshold = int(demisto.args().get('threshold', malicious_threshold))
     # Fetch data
     res = get_domain_security(domain)
     if res:
@@ -495,7 +484,8 @@ def get_domain_security_command():
                     'Indicator': domain,
                     'Type': 'domain',
                     'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': DBotScore
+                    'Score': DBotScore,
+                    'Reliability': reliability
                 }
 
             context[outputPaths['domain']] = {
@@ -513,7 +503,9 @@ def get_domain_security_command():
             'Indicator': domain,
             'Type': 'domain',
             'Vendor': 'Cisco Umbrella Investigate',
-            'Score': 0
+            'Score': 0,
+            'Reliability': reliability
+
         }
     results.append({
         'Type': entryTypes['note'],
@@ -697,7 +689,8 @@ def get_ip_malicious_domains_command():
                 'Indicator': domain['name'],
                 'Type': 'domain',
                 'Vendor': 'Cisco Umbrella Investigate',
-                'Score': 3
+                'Score': 3,
+                'Reliability': reliability
             })
 
         if contents:
@@ -804,7 +797,7 @@ def get_domain_command():
     }
 
     # Add malicious if needed
-    if risk_score == -1 or secure_rank < MALICIOUS_THRESHOLD:
+    if risk_score == -1 or secure_rank < malicious_threshold:
         context[outputPaths['domain']]['Malicious'] = {
             'Vendor': 'Cisco Umbrella Investigate',
             'Description': 'Malicious domain found with risk score -1'
@@ -815,7 +808,8 @@ def get_domain_command():
         'Indicator': domain,
         'Type': 'domain',
         'Vendor': 'Cisco Umbrella Investigate',
-        'Score': dbotscore
+        'Score': dbotscore,
+        'Reliability': reliability
     }
 
     contents.append({
@@ -1062,7 +1056,7 @@ def get_domain_details_command():
     results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
-    threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
+    threshold = int(demisto.args().get('threshold', malicious_threshold))
     # Fetch data
     res = get_domain_details(domain)
     if res:
@@ -1099,7 +1093,8 @@ def get_domain_details_command():
                     'Indicator': domain,
                     'Type': 'domain',
                     'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': dbotscore
+                    'Score': dbotscore,
+                    'Reliability': reliability
                 }
                 if dbotscore == 3:
                     context[outputPaths['domain']] = {}
@@ -1500,7 +1495,8 @@ def get_malicious_domains_for_ip_command():
                     'Indicator': domain,
                     'Type': 'domain',
                     'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': 3
+                    'Score': 3,
+                    'Reliability': reliability
                 })
                 context_malicious.append({
                     'Name': domain,
@@ -1797,6 +1793,19 @@ def get_url_timeline(url):
 
 LOG('command is %s' % (demisto.command(),))
 try:
+
+    params = demisto.params()
+
+    api_token = params['APIToken']
+    base_url = params['baseURL']
+    use_ssl = not params.get('insecure', False)
+    malicious_threshold = int(params.get('dboscore_threshold', -100))
+    reliability = params.get('integrationReliability')
+    default_headers = {
+        'Authorization': 'Bearer {}'.format(api_token),
+        'Accept': 'application/json'
+    }
+
     handle_proxy()
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
