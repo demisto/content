@@ -367,6 +367,22 @@ def cyberint_alerts_get_analysis_report_command(client: Client, args: dict) -> d
     return ""
 
 
+def get_attachment_name(attachment_name):
+    """
+    Retrieve attachment name or error string if none is provided
+
+    Args:
+        attachment_name (str): Attachment name to retrieve
+
+    Returns:
+        str: If attachment_name is None or "" - return "demisto_untitled_attachment" , otherwise attachment_name
+
+    """
+    if attachment_name is None or attachment_name == "":
+        return "demisto_untitled_attachment"
+    return attachment_name
+
+
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     first_fetch_time: str, fetch_severity: Optional[List[str]],
                     fetch_status: Optional[List[str]], fetch_type: Optional[List[str]],
@@ -401,6 +417,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     alerts = client.list_alerts('1', max_fetch, datetime.strftime(last_fetch, DATE_FORMAT),
                                 datetime.strftime(datetime.now(), DATE_FORMAT), None, None,
                                 fetch_environment, fetch_status, fetch_severity, fetch_type)
+    last_file = None
     for alert in alerts.get('alerts', []):
         #  Create the XS0AR incident.
         alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
@@ -411,11 +428,32 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
             extracted_csv_data = extract_data_from_csv_stream(client, alert_id,
                                                               alert_csv_id)
             alert['alert_data']['csv'] = extracted_csv_data
+        alert_attachments = alert.get('attachments', [])
+        incident_attachments = []
+        for attachment in alert_attachments:
+            attachment_name = get_attachment_name(attachment.get('name', None))
+            attachment_id = attachment.get('id', None)
+            if not attachment_id or not alert_id:
+                continue
+            get_attachment_response = client.get_alert_attachment(alert_id, attachment_id)
+            file_result = fileResult(filename=attachment_name, data=get_attachment_response.content)
+
+            # check for error
+            if file_result["Type"] == EntryType.ERROR:
+                demisto.error(file_result["Contents"])
+                raise Exception(file_result["Contents"])
+
+            incident_attachments.append({
+                "path": file_result["FileID"],
+                "name": attachment_name,
+                "showMediaFile": True
+            })
         incident = {
             'name': f'Cyberint alert {alert_id}: {alert_title}',
             'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
             'rawJSON': json.dumps(alert),
-            'severity': SEVERITIES.get(alert.get('severity', 'low'), 1)
+            'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
+            'attachment': incident_attachments
         }
         incidents.append(incident)
     if incidents:
