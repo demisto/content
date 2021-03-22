@@ -151,28 +151,28 @@ script:
       description: Tags that are associated with the IP
       type: string
     - contextPath: IP.Registrar.Abuse.Address
-      description: The abuse address of the IP
+      description: The IP registrar abuse address
       type: string
     - contextPath: IP.Registrar.Abuse.Country
-      description: The abuse country of the IP
+      description: The IP registrar abuse country
       type: string
     - contextPath: IP.Registrar.Abuse.Name
-      description: The abuse name of the IP
+      description: The IP registrar abuse name
       type: string
     - contextPath: IP.Registrar.Abuse.Network
-      description: The abuse network of the IP
+      description: The IP registrar abuse network
       type: string
     - contextPath: IP.Registrar.Abuse.Phone
-      description: The abuse phone of the IP
+      description: The IP registrar abuse phone
       type: string
     - contextPath: IP.Registrar.Abuse.Email
-      description: The abuse email of the IP
+      description: The IP registrar abuse email
       type: string
     - contextPath: IP.Organization.Name
-      description: The organization name of the IP
+      description: The IP organization name
       type: string
     - contextPath: IP.Organization.Type
-      description: The organization type of the IP
+      description: The IP organization type
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.

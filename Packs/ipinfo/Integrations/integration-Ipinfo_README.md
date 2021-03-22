@@ -45,14 +45,14 @@ Check IP reputation (when information is available, returns a JSON with details)
 | IP.FeedRelatedIndicators.value | string | Indicators that are associated with the IP |
 | IP.FeedRelatedIndicators.type | string | The type of the indicators that are associated with the IP |
 | IP.Tags | string | Tags that are associated with the IP |
-| IP.Registrar.Abuse.Address | string | The abuse address of the IP |
-| IP.Registrar.Abuse.Country | string | The abuse country of the IP |
-| IP.Registrar.Abuse.Name | string | The abuse name of the IP |
-| IP.Registrar.Abuse.Network | string | The abuse network of the IP |
-| IP.Registrar.Abuse.Phone | string | The abuse phone of the IP |
-| IP.Registrar.Abuse.Email | string | The abuse email of the IP |
-| IP.Organization.Name | string | The organization name of the IP |
-| IP.Organization.Type | string | The organization type of the IP |
+| IP.Registrar.Abuse.Address | string | The IP registrar abuse address |
+| IP.Registrar.Abuse.Country | string | The IP registrar abuse country |
+| IP.Registrar.Abuse.Name | string | The IP registrar abuse name |
+| IP.Registrar.Abuse.Network | string | The IP registrar abuse network |
+| IP.Registrar.Abuse.Phone | string | The IP registrar abuse phone |
+| IP.Registrar.Abuse.Email | string | The IP registrar abuse email |
+| IP.Organization.Name | string | The IP organization name |
+| IP.Organization.Type | string | The IP organization type |
 | DBotScore.Indicator | string | The indicator that was tested. |
 | DBotScore.Type | string | The indicator type. |
 | DBotScore.Vendor | string | The vendor used to calculate the score. |
