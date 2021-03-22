@@ -157,6 +157,7 @@ def test_parse_indicator_response():
     raw_indicator = IP_RES_JSON['indicator']
     raw_tags = IP_RES_JSON['tags']
     indicator = parse_indicator_response(raw_indicator, raw_tags, 'IP')
+    print(indicator)
     assert json.dumps(indicator) == json.dumps(INDICATOR_RES)
 
 
@@ -225,3 +226,15 @@ def test_get_tags_for_generic_context():
      """
     import AutofocusV2
     assert AutofocusV2.get_tags_for_generic_context(TAGS_FROM_FILE_RES) == TAGS_FOR_GENERIC_CONTEXT_OUTPUT
+
+
+def test_reliability(mocker):
+    import AutofocusV2
+    import CommonServerPython
+    from CommonServerPython import DBotScoreReliability
+    mock_data = {'indicator': {'indicatorValue': '1.1.1.1', 'indicatorType': 'IPV4_ADDRESS', 'summaryGenerationTs': 1616340557369, 'firstSeenTsGlobal': None, 'lastSeenTsGlobal': None, 'latestPanVerdicts': {'PAN_DB': 'BENIGN'}, 'seenByDataSourceIds': [], 'wildfireRelatedSampleVerdictCounts': {}}, 'tags': [], 'bucketInfo': {'minutePoints': 200, 'dailyPoints': 100000, 'minuteBucketStart': '2021-03-21 15:01:40', 'dailyBucketStart': '2021-03-21 07:33:33', 'minutePointsRemaining': 197, 'dailyPointsRemaining': 99305, 'waitInSeconds': 0}}
+    mocker.patch.object(AutofocusV2, 'search_indicator', return_value=mock_data)
+    mocked_dbot = mocker.patch.object(CommonServerPython.Common, 'DBotScore')
+    mocker.patch.object(CommonServerPython.Common, 'IP')
+    AutofocusV2.search_ip_command('1.1.1.1', DBotScoreReliability.B)
+    assert mocked_dbot.call_args[1].get('reliability') == 'B - Usually reliable'
