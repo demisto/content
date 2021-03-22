@@ -359,10 +359,16 @@ script:
       name: device_id
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: 'The operating system. Possible values: "WINDOWS", "MAC", "LINUX", and "OTHER".'
       isArray: false
       name: os
+      predefined:
+      - WINDOWS
+      - MAC
+      - LINUX
+      - OTHER
       required: false
       secret: false
     - auto: PREDEFINED
@@ -417,6 +423,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '20'
       description: The maximum number of rows to return. Default is 20.
       isArray: false
       name: rows
@@ -1667,7 +1674,7 @@ script:
       name: id
       required: true
       secret: false
-    - - auto: PREDEFINED
+    - auto: PREDEFINED
       default: false
       description: 'Application type. Possible values: "REPUTATION", "SIGNED_BY", and "NAME_PATH".'
       isArray: false
