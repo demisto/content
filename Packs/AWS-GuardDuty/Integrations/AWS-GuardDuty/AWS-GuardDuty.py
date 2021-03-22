@@ -1,63 +1,120 @@
 import boto3
+from botocore.config import Config
+from botocore.parsers import ResponseParserError
+from datetime import datetime, date
+
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
-AWS_rolePolicy = None
+AWS_ROLE_ARN = demisto.params()['roleArn']
+AWS_ROLE_SESSION_NAME = demisto.params()['roleSessionName']
+AWS_ROLE_SESSION_DURATION = demisto.params()['sessionDuration']
+AWS_ROLE_POLICY = None
+AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
+AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
+VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+config = Config(
+    connect_timeout=1,
+    retries=dict(
+        max_attempts=5
+    ),
+    proxies=proxies
+)
 AWS_GD_SEVERITY = demisto.params()['gs_severity']
 
 
-def aws_session(service='guardduty', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None, rolePolicy=None):
+def aws_session(service='guardduty', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
+                rolePolicy=None):
     kwargs = {}
     if roleArn and roleSessionName is not None:
         kwargs.update({
             'RoleArn': roleArn,
             'RoleSessionName': roleSessionName,
         })
-    elif AWS_roleArn and AWS_roleSessionName is not None:
+    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
         kwargs.update({
-            'RoleArn': AWS_roleArn,
-            'RoleSessionName': AWS_roleSessionName,
+            'RoleArn': AWS_ROLE_ARN,
+            'RoleSessionName': AWS_ROLE_SESSION_NAME,
         })
 
     if roleSessionDuration is not None:
         kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(AWS_roleSessionDuration)})
+    elif AWS_ROLE_SESSION_DURATION is not None:
+        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
 
     if rolePolicy is not None:
         kwargs.update({'Policy': rolePolicy})
-    elif AWS_rolePolicy is not None:
-        kwargs.update({'Policy': AWS_rolePolicy})
+    elif AWS_ROLE_POLICY is not None:
+        kwargs.update({'Policy': AWS_ROLE_POLICY})
+    if kwargs and not AWS_ACCESS_KEY_ID:
 
-    if kwargs:
-        sts_client = boto3.client('sts')
+        if not AWS_ACCESS_KEY_ID:
+            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
+        sts_client = boto3.client(
+            service_name='sts',
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
+        kwargs.update({
+            'RoleArn': AWS_ROLE_ARN,
+            'RoleSessionName': AWS_ROLE_SESSION_NAME,
+        })
         sts_response = sts_client.assume_role(**kwargs)
+        client = boto3.client(
+            service_name=service,
+            region_name=AWS_DEFAULT_REGION,
+            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+            aws_session_token=sts_response['Credentials']['SessionToken'],
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
+    else:
         if region is not None:
             client = boto3.client(
                 service_name=service,
                 region_name=region,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                verify=VERIFY_CERTIFICATE,
+                config=config
             )
         else:
             client = boto3.client(
                 service_name=service,
                 region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                verify=VERIFY_CERTIFICATE,
+                config=config
             )
-    else:
-        if region is not None:
-            client = boto3.client(service_name=service, region_name=region)
-        else:
-            client = boto3.client(service_name=service, region_name=AWS_DEFAULT_REGION)
 
     return client
 
@@ -69,101 +126,68 @@ def parse_finding_ids(finding_ids):
 
 
 class DatetimeEncoder(json.JSONEncoder):
-    def default(self, obj):  # pylint: disable=E0202
-        if isinstance(obj, datetime.datetime):  # type: ignore  # pylint: disable=E1101
+    # pylint: disable=method-hidden
+    def default(self, obj):
+        if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, datetime.date):  # type: ignore
-            return obj.strftime('%Y-%m-%d')
-        elif isinstance(obj, datetime):  # type: ignore
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, date):  # type: ignore  # pylint: disable=E0602
+        elif isinstance(obj, date):
             return obj.strftime('%Y-%m-%d')
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
 
-def create_entry(title, data, ec):
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': data,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
-        'EntryContext': ec
-    }
-
-
-def raise_error(error):
-    return {
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': str(error)
-    }
-
-
 def create_detector(args):
-    try:
-        client = aws_session(
-            service='guardduty',
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        kwargs = {'Enable': True if args.get('enable') == 'True' else False}
-        response = client.create_detector(**kwargs)
-        data = ({
-            'DetectorId': response['DetectorId']
-        })
-        ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
-        return create_entry('AWS GuardDuty Detectors', data, ec)
-
-    except Exception as e:
-        return raise_error(e)
+    client = aws_session(
+        service='guardduty',
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {'Enable': True if args.get('enable') == 'True' else False}
+    response = client.create_detector(**kwargs)
+    data = ({
+        'DetectorId': response['DetectorId']
+    })
+    ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
+    human_readable = tableToMarkdown('AWS GuardDuty Detectors', data)
+    return_outputs(human_readable, ec)
 
 
 def delete_detector(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        response = client.delete_detector(DetectorId=args.get('detectorId'))
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'The Detector {0} has been deleted'.format(args.get('detectorId'))
-
-    except Exception as e:
-        return raise_error(e)
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    response = client.delete_detector(DetectorId=args.get('detectorId'))
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('The Detector {0} has been deleted'.format(args.get('detectorId')))
 
 
 def get_detector(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
 
-        response = client.get_detector(DetectorId=args.get('detectorId'))
-        data = ({
-            'DetectorId': args.get('detectorId'),
-            'CreatedAt': response['CreatedAt'],
-            'ServiceRole': response['ServiceRole'],
-            'Status': response['Status'],
-            'UpdatedAt': response['UpdatedAt'],
-        })
-        ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
-        return create_entry('AWS GuardDuty Detectors', data, ec)
-
-    except Exception as e:
-        return raise_error(e)
+    response = client.get_detector(DetectorId=args.get('detectorId'))
+    data = ({
+        'DetectorId': args.get('detectorId'),
+        'CreatedAt': response['CreatedAt'],
+        'ServiceRole': response['ServiceRole'],
+        'Status': response['Status'],
+        'UpdatedAt': response['UpdatedAt'],
+    })
+    ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
+    human_readable = tableToMarkdown('AWS GuardDuty Detectors', data)
+    return_outputs(human_readable, ec)
 
 
 def update_detector(args):
-    try:
         client = aws_session(
             region=args.get('region'),
             roleArn=args.get('roleArn'),
@@ -175,66 +199,59 @@ def update_detector(args):
             Enable=True if args.get('enable') == 'True' else False
         )
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'The Detector {0} has been Updated'.format(args.get('detectorId'))
-
-    except Exception as e:
-        return raise_error(e)
+            return_results('The Detector {0} has been Updated'.format(args.get('detectorId')))
+        else:
+            return_results("Failed to update detector with ID {}".format(args.get('detectorId')))
 
 
 def list_detectors(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        response = client.list_detectors()
-        detector = response['DetectorIds']
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    response = client.list_detectors()
+    detector = response['DetectorIds']
 
-        data = ({
-            'DetectorId': detector[0]
-        })
-        ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
-        return create_entry('AWS GuardDuty Detectors', data, ec)
-    except Exception as e:
-        return raise_error(e)
+    data = ({
+        'DetectorId': detector[0]
+    })
+    ec = {'AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId)': data}
+    human_readable = tableToMarkdown('AWS GuardDuty Detectors', data)
+    return_outputs(human_readable, ec)
 
 
 def create_ip_set(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
 
-        kwargs = {'DetectorId': args.get('detectorId')}
-        if args.get('activate') is not None:
-            kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
-        if args.get('format') is not None:
-            kwargs.update({'Format': args.get('format')})
-        if args.get('location') is not None:
-            kwargs.update({'Location': args.get('location')})
-        if args.get('name') is not None:
-            kwargs.update({'Name': args.get('name')})
+    kwargs = {'DetectorId': args.get('detectorId')}
+    if args.get('activate') is not None:
+        kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
+    if args.get('format') is not None:
+        kwargs.update({'Format': args.get('format')})
+    if args.get('location') is not None:
+        kwargs.update({'Location': args.get('location')})
+    if args.get('name') is not None:
+        kwargs.update({'Name': args.get('name')})
 
-        response = client.create_ip_set(**kwargs)
+    response = client.create_ip_set(**kwargs)
 
-        data = ({
-            'DetectorId': args.get('detectorId'),
-            'IpSetId': response['IpSetId']
-        })
-        ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
-        return create_entry('AWS GuardDuty IPSets', data, ec)
-
-    except Exception as e:
-        return e  # raise_error(e)
+    data = ({
+        'DetectorId': args.get('detectorId'),
+        'IpSetId': response['IpSetId']
+    })
+    ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
+    human_readable = tableToMarkdown('AWS GuardDuty IPSets', data)
+    return_outputs(human_readable, ec)
 
 
 def delete_ip_set(args):
-    try:
         client = aws_session(
             region=args.get('region'),
             roleArn=args.get('roleArn'),
@@ -246,276 +263,242 @@ def delete_ip_set(args):
             IpSetId=args.get('ipSetId')
         )
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'The IPSet {0} has been deleted from Detector {1}'.format(args.get('ipSetId'), args.get('detectorId'))
-
-    except Exception as e:
-        return raise_error(e)
+            return_results('The IPSet {0} has been deleted from Detector {1}'.format(args.get('ipSetId'), args.get('detectorId')))
 
 
 def update_ip_set(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        kwargs = {
-            'DetectorId': args.get('detectorId'),
-            'IpSetId': args.get('ipSetId')
-        }
-        if args.get('activate'):
-            kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
-        if args.get('location'):
-            kwargs.update({'Location': args.get('location')})
-        if args.get('name'):
-            kwargs.update({'Name': args.get('name')})
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'DetectorId': args.get('detectorId'),
+        'IpSetId': args.get('ipSetId')
+    }
+    if args.get('activate'):
+        kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
+    if args.get('location'):
+        kwargs.update({'Location': args.get('location')})
+    if args.get('name'):
+        kwargs.update({'Name': args.get('name')})
 
-        response = client.update_ip_set(**kwargs)
+    response = client.update_ip_set(**kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'The IPSet {0} has been Updated'.format(args.get('ipSetId'))
-
-    except Exception as e:
-        return raise_error(e)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('The IPSet {0} has been Updated'.format(args.get('ipSetId')))
 
 
 def get_ip_set(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        response = client.get_ip_set(
-            DetectorId=args.get('detectorId'),
-            IpSetId=args.get('ipSetId')
-        )
-        data = ({
-            'DetectorId': args.get('detectorId'),
-            'IpSetId': args.get('ipSetId'),
-            'Format': response['Format'],
-            'Location': response['Location'],
-            'Name': response['Name'],
-            'Status': response['Status']
-        })
-        ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
-        return create_entry('AWS GuardDuty IPSets', data, ec)
-
-    except Exception as e:
-        return raise_error(e)
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    response = client.get_ip_set(
+        DetectorId=args.get('detectorId'),
+        IpSetId=args.get('ipSetId')
+    )
+    data = ({
+        'DetectorId': args.get('detectorId'),
+        'IpSetId': args.get('ipSetId'),
+        'Format': response['Format'],
+        'Location': response['Location'],
+        'Name': response['Name'],
+        'Status': response['Status']
+    })
+    ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
+    human_readable = tableToMarkdown('AWS GuardDuty IPSets', data)
+    return_outputs(human_readable, ec)
 
 
 def list_ip_sets(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        response = client.list_ip_sets(DetectorId=args.get('detectorId'))
-        data = []
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    response = client.list_ip_sets(DetectorId=args.get('detectorId'))
+    data = []
+    data.append({
+        'DetectorId': args.get('detectorId')
+    })
+    for ipset in response['IpSetIds']:
         data.append({
-            'DetectorId': args.get('detectorId')
+            'IpSetId': ipset
         })
-        for ipset in response['IpSetIds']:
-            data.append({
-                'IpSetId': ipset
-            })
-        ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
-        return create_entry('AWS GuardDuty IPSets', data, ec)
-
-    except Exception as e:
-        return raise_error(e)
+    ec = {"AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).IPSet(val.IpSetId === obj.IpSetId)": data}
+    human_readable = tableToMarkdown('AWS GuardDuty IPSets', data)
+    return_outputs(human_readable, ec)
 
 
 def create_threat_intel_set(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        kwargs = {'DetectorId': args.get('detectorId')}
-        if args.get('activate') is not None:
-            kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
-        if args.get('format') is not None:
-            kwargs.update({'Format': args.get('format')})
-        if args.get('location') is not None:
-            kwargs.update({'Location': args.get('location')})
-        if args.get('name') is not None:
-            kwargs.update({'Name': args.get('name')})
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {'DetectorId': args.get('detectorId')}
+    if args.get('activate') is not None:
+        kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
+    if args.get('format') is not None:
+        kwargs.update({'Format': args.get('format')})
+    if args.get('location') is not None:
+        kwargs.update({'Location': args.get('location')})
+    if args.get('name') is not None:
+        kwargs.update({'Name': args.get('name')})
 
-        response = client.create_threat_intel_set(**kwargs)
+    response = client.create_threat_intel_set(**kwargs)
 
-        data = ({
-            'DetectorId': args.get('detectorId'),
-            'ThreatIntelSetId': response['ThreatIntelSetId']
-        })
-        ec = {
-            "AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet"
-            "(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
-        return create_entry('AWS GuardDuty ThreatIntel Set', data, ec)
-
-    except Exception as e:
-        return raise_error(e)
+    data = ({
+        'DetectorId': args.get('detectorId'),
+        'ThreatIntelSetId': response['ThreatIntelSetId']
+    })
+    ec = {
+        "AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet"
+        "(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
+    human_readable = tableToMarkdown('AWS GuardDuty ThreatIntel Set', data)
+    return_outputs(human_readable, ec)
 
 
 def delete_threat_intel_set(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        response = client.delete_threat_intel_set(
-            DetectorId=args.get('detectorId'),
-            ThreatIntelSetId=args.get('threatIntelSetId')
-        )
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'The ThreatIntel Set {0} has been deleted from Detector {1}'.format(args.get('ipSetId'),
-                                                                                       args.get('detectorId'))
-
-    except Exception as e:
-        return raise_error(e)
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    response = client.delete_threat_intel_set(
+        DetectorId=args.get('detectorId'),
+        ThreatIntelSetId=args.get('threatIntelSetId')
+    )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('The ThreatIntel Set {0} has been deleted from Detector {1}'.format(args.get('ipSetId'),
+                                                                                   args.get('detectorId')))
 
 
 def get_threat_intel_set(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        response = client.get_threat_intel_set(
-            DetectorId=args.get('detectorId'),
-            ThreatIntelSetId=args.get('threatIntelSetId')
-        )
-        data = ({
-            'DetectorId': args.get('detectorId'),
-            'ThreatIntelSetId': args.get('threatIntelSetId'),
-            'Format': response['Format'],
-            'Location': response['Location'],
-            'Name': response['Name'],
-            'Status': response['Status']
-        })
-        ec = {
-            "AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet"
-            "(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
-        return create_entry('AWS GuardDuty ThreatIntel Set', data, ec)
-
-    except Exception as e:
-        return raise_error(e)
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    response = client.get_threat_intel_set(
+        DetectorId=args.get('detectorId'),
+        ThreatIntelSetId=args.get('threatIntelSetId')
+    )
+    data = ({
+        'DetectorId': args.get('detectorId'),
+        'ThreatIntelSetId': args.get('threatIntelSetId'),
+        'Format': response['Format'],
+        'Location': response['Location'],
+        'Name': response['Name'],
+        'Status': response['Status']
+    })
+    ec = {
+        "AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet"
+        "(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
+    human_readable = tableToMarkdown('AWS GuardDuty ThreatIntel Set', data)
+    return_outputs(human_readable, ec)
 
 
 def list_threat_intel_sets(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        response = client.list_threat_intel_sets(DetectorId=args.get('detectorId'))
-        data = []
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    response = client.list_threat_intel_sets(DetectorId=args.get('detectorId'))
+    data = []
+    data.append({
+        'DetectorId': args.get('detectorId')
+    })
+    for threatintelset in response['ThreatIntelSetIds']:
         data.append({
-            'DetectorId': args.get('detectorId')
+            'ThreatIntelSetId': threatintelset
         })
-        for threatintelset in response['ThreatIntelSetIds']:
-            data.append({
-                'ThreatIntelSetId': threatintelset
-            })
-        ec = {
-            "AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet"
-            "(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
-        return create_entry('AWS GuardDuty IPSets', data, ec)
-
-    except Exception as e:
-        return raise_error(e)
+    ec = {
+        "AWS.GuardDuty.Detectors(val.DetectorId === obj.DetectorId).ThreatIntelSet"
+        "(val.ThreatIntelSetId === obj.ThreatIntelSetId)": data}
+    human_readable = tableToMarkdown('AWS GuardDuty IPSets', data)
+    return_outputs(human_readable, ec)
 
 
 def update_threat_intel_set(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        kwargs = {
-            'DetectorId': args.get('detectorId'),
-            'ThreatIntelSetId': args.get('threatIntelSetId')
-        }
-        if args.get('activate'):
-            kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
-        if args.get('location'):
-            kwargs.update({'Location': args.get('location')})
-        if args.get('name'):
-            kwargs.update({'Name': args.get('name')})
-        response = client.update_threat_intel_set(**kwargs)
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'The ThreatIntel Set {0} has been Updated'.format(args.get('threatIntelSetId'))
-
-    except Exception as e:
-        return raise_error(e)
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'DetectorId': args.get('detectorId'),
+        'ThreatIntelSetId': args.get('threatIntelSetId')
+    }
+    if args.get('activate'):
+        kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
+    if args.get('location'):
+        kwargs.update({'Location': args.get('location')})
+    if args.get('name'):
+        kwargs.update({'Name': args.get('name')})
+    response = client.update_threat_intel_set(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('The ThreatIntel Set {0} has been Updated'.format(args.get('threatIntelSetId')))
 
 
 def severity_mapping(severity):
     if severity <= 3.9:
-        demistoSevirity = 1
+        demisto_severity = 1
     elif severity >= 4 and severity <= 6.9:
-        demistoSevirity = 2
+        demisto_severity = 2
     elif severity >= 7 and severity <= 8.9:
-        demistoSevirity = 3
+        demisto_severity = 3
     else:
-        demistoSevirity = 0
+        demisto_severity = 0
 
-    return demistoSevirity
+    return demisto_severity
 
 
 def gd_severity_mapping(severity):
     if severity == 'Low':
-        gdSevirity = 1
+        gd_severity = 1
     elif severity == 'Medium':
-        gdSevirity = 4
+        gd_severity = 4
     elif severity == 'High':
-        gdSevirity = 7
+        gd_severity = 7
     else:
-        gdSevirity = 1
+        gd_severity = 1
 
-    return gdSevirity
+    return gd_severity
 
 
 def list_findings(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
 
-        paginator = client.get_paginator('list_findings')
-        response_iterator = paginator.paginate(DetectorId=args.get('detectorId'))
-        data = []
-        for page in response_iterator:
-            for finding in page['FindingIds']:
-                data.append({'FindingId': finding})
+    paginator = client.get_paginator('list_findings')
+    response_iterator = paginator.paginate(DetectorId=args.get('detectorId'))
+    data = []
+    for page in response_iterator:
+        for finding in page['FindingIds']:
+            data.append({'FindingId': finding})
 
-        ec = {"AWS.GuardDuty.Findings": data}
-        return create_entry('AWS GuardDuty Findings', data, ec)
-
-    except Exception as e:
-        return raise_error(e)
+    ec = {"AWS.GuardDuty.Findings": data}
+    human_readable = tableToMarkdown('AWS GuardDuty Findings', data)
+    return_outputs(human_readable, ec)
 
 
 def get_findings(args):
-    try:
         client = aws_session(
             region=args.get('region'),
             roleArn=args.get('roleArn'),
@@ -542,10 +525,8 @@ def get_findings(args):
         output = json.dumps(response['Findings'], cls=DatetimeEncoder)
         raw = json.loads(output)
         ec = {"AWS.GuardDuty.Findings(val.FindingId === obj.Id)": raw}
-        return create_entry('AWS GuardDuty Findings', data, ec)
-
-    except Exception as e:
-        return raise_error(e)
+        human_readable = tableToMarkdown('AWS GuardDuty Findings', data)
+        return_outputs(human_readable, ec)
 
 
 def parse_incident_from_finding(finding):
@@ -559,207 +540,192 @@ def parse_incident_from_finding(finding):
 
 
 def fetch_incidents():
-    try:
-        client = aws_session()
-        incidents = []
-        response = client.list_detectors()
-        detector = response['DetectorIds']
+    client = aws_session()
+    incidents = []
+    response = client.list_detectors()
+    detector = response['DetectorIds']
 
-        list_findings = client.list_findings(
-            DetectorId=detector[0], FindingCriteria={
-                'Criterion': {
-                    'service.archived': {'Eq': ['false', 'false']},
-                    'severity': {'Gt': gd_severity_mapping(AWS_GD_SEVERITY)}
-                }
+    list_findings = client.list_findings(
+        DetectorId=detector[0], FindingCriteria={
+            'Criterion': {
+                'service.archived': {'Eq': ['false', 'false']},
+                'severity': {'Gt': gd_severity_mapping(AWS_GD_SEVERITY)}
             }
-        )
+        }
+    )
 
-        get_findings = client.get_findings(DetectorId=detector[0], FindingIds=list_findings['FindingIds'])
+    get_findings = client.get_findings(DetectorId=detector[0], FindingIds=list_findings['FindingIds'])
 
-        for finding in get_findings['Findings']:
-            incident = parse_incident_from_finding(finding)
-            incidents.append(incident)
+    for finding in get_findings['Findings']:
+        incident = parse_incident_from_finding(finding)
+        incidents.append(incident)
 
-        # Create demisto incidents
-        demisto.incidents(incidents)
-        if incidents is not None:
-            # Archive findings
-            client.archive_findings(DetectorId=detector[0], FindingIds=list_findings['FindingIds'])
-
-    except Exception as e:
-        return raise_error(e)
+    # Create demisto incidents
+    demisto.incidents(incidents)
+    if incidents is not None:
+        # Archive findings
+        client.archive_findings(DetectorId=detector[0], FindingIds=list_findings['FindingIds'])
 
 
 def create_sample_findings(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        kwargs = {'DetectorId': args.get('detectorId')}
-        if args.get('findingTypes') is not None:
-            kwargs.update({'FindingTypes': parse_finding_ids(args.get('findingTypes'))})
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {'DetectorId': args.get('detectorId')}
+    if args.get('findingTypes') is not None:
+        kwargs.update({'FindingTypes': parse_finding_ids(args.get('findingTypes'))})
 
-        response = client.create_sample_findings(**kwargs)
+    response = client.create_sample_findings(**kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'Sample Findings were generated'
-
-    except Exception as e:
-        return raise_error(e)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('Sample Findings were generated')
 
 
 def archive_findings(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        kwargs = {'DetectorId': args.get('detectorId')}
-        if args.get('findingIds') is not None:
-            kwargs.update({'FindingIds': parse_finding_ids(args.get('findingIds'))})
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {'DetectorId': args.get('detectorId')}
+    if args.get('findingIds') is not None:
+        kwargs.update({'FindingIds': parse_finding_ids(args.get('findingIds'))})
 
-        response = client.archive_findings(**kwargs)
+    response = client.archive_findings(**kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'Findings were archived'
-
-    except Exception as e:
-        return raise_error(e)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('Findings were archived')
 
 
 def unarchive_findings(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        kwargs = {'DetectorId': args.get('detectorId')}
-        if args.get('findingIds') is not None:
-            kwargs.update({'FindingIds': parse_finding_ids(args.get('findingIds'))})
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {'DetectorId': args.get('detectorId')}
+    if args.get('findingIds') is not None:
+        kwargs.update({'FindingIds': parse_finding_ids(args.get('findingIds'))})
 
-        response = client.unarchive_findings(**kwargs)
+    response = client.unarchive_findings(**kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'Findings were Unarchived'
-
-    except Exception as e:
-        return raise_error(e)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('Findings were Unarchived')
 
 
 def update_findings_feedback(args):
-    try:
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
 
-        kwargs = {'DetectorId': args.get('detectorId')}
-        if args.get('findingIds') is not None:
-            kwargs.update({'FindingIds': parse_finding_ids(args.get('findingIds'))})
-        if args.get('comments') is not None:
-            kwargs.update({'Comments': parse_finding_ids(args.get('comments'))})
-        if args.get('feedback') is not None:
-            kwargs.update({'Feedback': parse_finding_ids(args.get('feedback'))})
+    kwargs = {'DetectorId': args.get('detectorId')}
+    if args.get('findingIds') is not None:
+        kwargs.update({'FindingIds': parse_finding_ids(args.get('findingIds'))})
+    if args.get('comments') is not None:
+        kwargs.update({'Comments': parse_finding_ids(args.get('comments'))})
+    if args.get('feedback') is not None:
+        kwargs.update({'Feedback': parse_finding_ids(args.get('feedback'))})
 
-        response = client.update_findings_feedback(**kwargs)
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'Findings Feedback sent!'
-
-    except Exception as e:
-        return raise_error(e)
+    response = client.update_findings_feedback(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('Findings Feedback sent!')
 
 
 def test_function():
-    try:
-        client = aws_session()
-        response = client.list_detectors()
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'ok'
+    client = aws_session()
+    response = client.list_detectors()
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('ok')
+    else:
+        return_error("Test failed. Please verify your configuration.")
 
-    except Exception as e:
-        return raise_error(e)
+try:
+    LOG('Command being called is {command}'.format(command=demisto.command()))
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        test_function()
 
+    if demisto.command() == 'aws-gd-create-detector':
+        create_detector(demisto.args())
 
-# The command demisto.command() holds the command sent from the user.
-if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
-    result = test_function()
+    if demisto.command() == 'aws-gd-delete-detector':
+        delete_detector(demisto.args())
 
-if demisto.command() == 'aws-gd-create-detector':
-    result = create_detector(demisto.args())
+    if demisto.command() == 'aws-gd-get-detector':
+        get_detector(demisto.args())
 
-if demisto.command() == 'aws-gd-delete-detector':
-    result = delete_detector(demisto.args())
+    if demisto.command() == 'aws-gd-update-detector':
+        update_detector(demisto.args())
 
-if demisto.command() == 'aws-gd-get-detector':
-    result = get_detector(demisto.args())
+    if demisto.command() == 'aws-gd-create-ip-set':
+        create_ip_set(demisto.args())
 
-if demisto.command() == 'aws-gd-update-detector':
-    result = update_detector(demisto.args())
+    if demisto.command() == 'aws-gd-delete-ip-set':
+        delete_ip_set(demisto.args())
 
-if demisto.command() == 'aws-gd-create-ip-set':
-    result = create_ip_set(demisto.args())
+    if demisto.command() == 'aws-gd-list-detectors':
+        list_detectors(demisto.args())
 
-if demisto.command() == 'aws-gd-delete-ip-set':
-    result = delete_ip_set(demisto.args())
+    if demisto.command() == 'aws-gd-update-ip-set':
+        update_ip_set(demisto.args())
 
-if demisto.command() == 'aws-gd-list-detectors':
-    result = list_detectors(demisto.args())
+    if demisto.command() == 'aws-gd-get-ip-set':
+        get_ip_set(demisto.args())
 
-if demisto.command() == 'aws-gd-update-ip-set':
-    result = update_ip_set(demisto.args())
+    if demisto.command() == 'aws-gd-list-ip-sets':
+        list_ip_sets(demisto.args())
 
-if demisto.command() == 'aws-gd-get-ip-set':
-    result = get_ip_set(demisto.args())
+    if demisto.command() == 'aws-gd-create-threatintel-set':
+        create_threat_intel_set(demisto.args())
 
-if demisto.command() == 'aws-gd-list-ip-sets':
-    result = list_ip_sets(demisto.args())
+    if demisto.command() == 'aws-gd-delete-threatintel-set':
+        delete_threat_intel_set(demisto.args())
 
-if demisto.command() == 'aws-gd-create-threatintel-set':
-    result = create_threat_intel_set(demisto.args())
+    if demisto.command() == 'aws-gd-get-threatintel-set':
+        get_threat_intel_set(demisto.args())
 
-if demisto.command() == 'aws-gd-delete-threatintel-set':
-    result = delete_threat_intel_set(demisto.args())
+    if demisto.command() == 'aws-gd-list-threatintel-sets':
+        list_threat_intel_sets(demisto.args())
 
-if demisto.command() == 'aws-gd-get-threatintel-set':
-    result = get_threat_intel_set(demisto.args())
+    if demisto.command() == 'aws-gd-update-threatintel-set':
+        update_threat_intel_set(demisto.args())
 
-if demisto.command() == 'aws-gd-list-threatintel-sets':
-    result = list_threat_intel_sets(demisto.args())
+    if demisto.command() == 'aws-gd-list-findings':
+        list_findings(demisto.args())
 
-if demisto.command() == 'aws-gd-update-threatintel-set':
-    result = update_threat_intel_set(demisto.args())
+    if demisto.command() == 'aws-gd-get-findings':
+        get_findings(demisto.args())
 
-if demisto.command() == 'aws-gd-list-findings':
-    result = list_findings(demisto.args())
+    if demisto.command() == 'aws-gd-create-sample-findings':
+        create_sample_findings(demisto.args())
 
-if demisto.command() == 'aws-gd-get-findings':
-    result = get_findings(demisto.args())
+    if demisto.command() == 'aws-gd-archive-findings':
+        archive_findings(demisto.args())
 
-if demisto.command() == 'aws-gd-create-sample-findings':
-    result = create_sample_findings(demisto.args())
+    if demisto.command() == 'aws-gd-unarchive-findings':
+        unarchive_findings(demisto.args())
 
-if demisto.command() == 'aws-gd-archive-findings':
-    result = archive_findings(demisto.args())
+    if demisto.command() == 'aws-gd-update-findings-feedback':
+        update_findings_feedback(demisto.args())
 
-if demisto.command() == 'aws-gd-unarchive-findings':
-    result = unarchive_findings(demisto.args())
+    if demisto.command() == 'fetch-incidents':
+        fetch_incidents()
 
-if demisto.command() == 'aws-gd-update-findings-feedback':
-    result = update_findings_feedback(demisto.args())
+except ResponseParserError as e:
+    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
+        error=e))
+    LOG(e.message)
 
-if demisto.command() == 'fetch-incidents':
-    fetch_incidents()
-    sys.exit(0)
-
-demisto.results(result)
-sys.exit(0)
+except Exception as e:
+    LOG(e.message)
+    return_error('Error has occurred in the AWS EC2 Integration: {code}\n {message}'.format(
+        code=type(e), message=e.message))
