@@ -117,7 +117,7 @@ class Client(BaseClient):
             attachment_id (str): Attachment ID
 
         Returns:
-            response (Response): API response from Cyberint.
+            Response: API response from Cyberint.
         """
 
         url_suffix = f'api/v1/alerts/{alert_ref_id}/attachments/{attachment_id}'
@@ -134,7 +134,7 @@ class Client(BaseClient):
             alert_ref_id (str): Reference ID for the alert.
 
         Returns:
-            response (Response): API response from Cyberint.
+            Response: API response from Cyberint.
 
         """
         url_suffix = f'api/v1/alerts/{alert_ref_id}/analysis_report'
@@ -276,7 +276,8 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
     for alert in alerts:
         alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
         if alert_csv_id:
-            alert['csv_data'] = {'csv_id': alert_csv_id, 'name': dict_safe_get(alert, ['alert_data', 'csv', 'name'])}
+            alert['csv_data'] = {'csv_id': alert_csv_id,
+                                 'name': dict_safe_get(alert, ['alert_data', 'csv', 'name'])}
             extracted_csv_data = extract_data_from_csv_stream(client, alert.get('ref_id', ''),
                                                               alert_csv_id)
             alert['alert_data']['csv'] = extracted_csv_data
@@ -325,47 +326,37 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
 def cyberint_alerts_get_attachment_command(client: Client, args: dict) -> dict:
     """
     Retrieve attachment by alert reference id and attachment internal id.
+    Attachments imcludes: CSV files , screenshots and alert attachments file.
 
     Args:
         client (Client): Cyberint API client.
         args (dict): Command arguments from XSOAR.
 
     Returns:
-        If the API response status is 200 : return attachment file , else return ""
+        fileResult: Alert attachment file.
 
     """
 
-    raw_response = client.get_alert_attachment(args.get('alert_ref_id', None), args.get('attachment_id', None))
-    if raw_response.status_code == 200:
-        file_entry = fileResult(filename=args.get('attachment_name', None), data=raw_response.content)
-        return file_entry
-    elif raw_response.status_code == 302:  # have to complete it after getting more info from XSOAR
-        return ""
-    return ""
+    raw_response = client.get_alert_attachment(args.get('alert_ref_id', None),
+                                               args.get('attachment_id', None))
+    return fileResult(filename=args.get('attachment_name', None),
+                      data=raw_response.content)
 
 
 def cyberint_alerts_get_analysis_report_command(client: Client, args: dict) -> dict:
     """
-    Retrieve analysis report by alert reference id and report name.
-    Args:
-        client:
-        args:
+    Retrieve expert analysis report by alert reference id and report name.
 
     Args:
         client (Client): Cyberint API client.
         args (dict): Command arguments from XSOAR.
 
     Returns:
-        If the API response status is 200 : return analysis report file , else return ""
+        fileResult : return analysis report file , else return ""
 
     """
     raw_response = client.get_analysis_report(args.get('alert_ref_id', None))
-    if raw_response.status_code == 200:
-        file_entry = fileResult(filename=args.get('report_name', None), data=raw_response.content)
-        return file_entry
-    elif raw_response.status_code == 302:  # have to complete it after getting more info from XSOAR
-        return ""
-    return ""
+    return fileResult(filename=args.get('report_name', None), data=raw_response.content)
 
 
 def get_attachment_name(attachment_name) -> str:
@@ -376,7 +367,8 @@ def get_attachment_name(attachment_name) -> str:
         attachment_name (str): Attachment name to retrieve
 
     Returns:
-        str: If attachment_name is None or "" - return "demisto_untitled_attachment" , otherwise attachment_name
+        str: If attachment_name is None or "" - return "demisto_untitled_attachment" ,
+        otherwise attachment_name
 
     """
     if attachment_name is None or attachment_name == "":
@@ -384,9 +376,44 @@ def get_attachment_name(attachment_name) -> str:
     return attachment_name
 
 
+def create_fetch_incident_attachment(client: Client, attachment: object, alert_id: str) -> dict:
+    """
+    Get attachment and create the suitable entry for this attachment details
+    in fetch-incidents attachments list.
+
+    Args:
+        client (Client): Cyberint API client
+        attachment (object): Alert attachment object.
+        alert_id: Alert id
+
+    Returns:
+        dict: Attachment details dictionary.Contains the following keys: "path" , "name" ,"showMediaFile"
+
+    """
+    attachment_name = get_attachment_name(attachment.get('name', None))
+    attachment_id = attachment.get('id', None)
+
+    if not attachment_id or not alert_id:
+        return {}
+
+    get_attachment_response = client.get_alert_attachment(alert_id, attachment_id)
+    file_result = fileResult(filename=attachment_name, data=get_attachment_response.content)
+    # check for error
+    if file_result["Type"] == EntryType.ERROR:
+        demisto.error(file_result["Contents"])
+        raise Exception(file_result["Contents"])
+
+    return {
+        "path": file_result["FileID"],
+        "name": attachment_name,
+        "showMediaFile": True
+    }
+
+
 def get_alert_attachments_files(client: Client, alert: dict) -> list:
     """
-    Retrieve all alert attachments files - Attachments , CSV , Screenshot and Analysis report
+    Retrieve all alert attachments files - Attachments , CSV , Screenshot and Analysis report.
+
     Args:
         client (Client): Cyberint API client.
         alert (dict): Cyberint Alert.
@@ -404,77 +431,40 @@ def get_alert_attachments_files(client: Client, alert: dict) -> list:
     alert_id = alert.get('ref_id')
     if not alert_id:
         return []
-    # alert_attachments = []
+
     alert_attachments = alert.get('attachments', [])
     for attachment in alert_attachments:
-        attachment_name = get_attachment_name(attachment.get('name', None))
-        attachment_id = attachment.get('id', None)
-        if not attachment_id:
-            continue
-        get_attachment_response = client.get_alert_attachment(alert_id, attachment_id)
-        file_result = fileResult(filename=attachment_name, data=get_attachment_response.content)
-        # check for error
-        if file_result["Type"] == EntryType.ERROR:
-            demisto.error(file_result["Contents"])
-            raise Exception(file_result["Contents"])
+        attachment_details = create_fetch_incident_attachment(client, attachment, alert_id)
+        if attachment_details:
+            incident_attachments.append(attachment_details)
 
-        incident_attachments.append({
-            "path": file_result["FileID"],
-            "name": attachment_name,
-            "showMediaFile": True
-        })
-
-    scrren_shot = dict_safe_get(alert, ["alert_data", "screenshot"])
-    if scrren_shot:
-        scrren_shot_name = get_attachment_name(scrren_shot.get('name', None))
-        scrren_shot_id = scrren_shot.get('id', None)
-        get_scrren_shot_response = client.get_alert_attachment(alert_id, scrren_shot_id)
-        file_result = fileResult(filename=scrren_shot_name, data=get_scrren_shot_response.content)
-        # check for error
-        if file_result["Type"] == EntryType.ERROR:
-            demisto.error(file_result["Contents"])
-            raise Exception(file_result["Contents"])
-
-        incident_attachments.append({
-            "path": file_result["FileID"],
-            "name": scrren_shot_name,
-            "showMediaFile": True
-        })
+    screenshot = dict_safe_get(alert, ["alert_data", "screenshot"])
+    if screenshot:
+        attachment_details = create_fetch_incident_attachment(client, screenshot, alert_id)
+        if attachment_details:
+            incident_attachments.append(attachment_details)
 
     csv = dict_safe_get(alert, ["alert_data", "csv"])
     if csv:
-        csv_name = get_attachment_name(csv.get('name', None))
-        csv_id = csv.get('id', None)
-        if csv_id:
-            csv_response = client.get_alert_attachment(alert_id, csv_id)
-            file_result = fileResult(filename=csv_name, data=csv_response.content)
-            # check for error
-            if file_result["Type"] == EntryType.ERROR:
-                demisto.error(file_result["Contents"])
-                raise Exception(file_result["Contents"])
-
-            incident_attachments.append({
-                "path": file_result["FileID"],
-                "name": csv_name,
-                "showMediaFile": True
-            })
+        attachment_details = create_fetch_incident_attachment(client, csv, alert_id)
+        if attachment_details:
+            incident_attachments.append(attachment_details)
 
     analysis_report = alert.get('analysis_report', None)
-    try:
+    if analysis_report:
         analysis_raw_response = client.get_analysis_report(alert_id)
-    except Exception as e:
-        return []
-    file_result = fileResult(filename=get_attachment_name(analysis_report.get("name", None)),
-                             data=analysis_raw_response.content)
-    if file_result["Type"] == EntryType.ERROR:
-        demisto.error(file_result["Contents"])
-        raise Exception(file_result["Contents"])
+        file_result = fileResult(filename=get_attachment_name(analysis_report.get("name", None)),
+                                 data=analysis_raw_response.content)
+        # check for error
+        if file_result["Type"] == EntryType.ERROR:
+            demisto.error(file_result["Contents"])
+            raise Exception(file_result["Contents"])
 
-    incident_attachments.append({
-        "path": file_result["FileID"],
-        "name": get_attachment_name(analysis_report.get("name", None)),
-        "showMediaFile": True
-    })
+        incident_attachments.append({
+            "path": file_result["FileID"],
+            "name": get_attachment_name(analysis_report.get("name", None)),
+            "showMediaFile": True
+        })
 
     return incident_attachments
 
