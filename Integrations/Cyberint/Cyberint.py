@@ -276,6 +276,7 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
     for alert in alerts:
         alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
         if alert_csv_id:
+            alert['csv_data'] = {'csv_id': alert_csv_id, 'name': dict_safe_get(alert, ['alert_data', 'csv', 'name'])}
             extracted_csv_data = extract_data_from_csv_stream(client, alert.get('ref_id', ''),
                                                               alert_csv_id)
             alert['alert_data']['csv'] = extracted_csv_data
