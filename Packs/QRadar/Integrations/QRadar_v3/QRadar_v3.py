@@ -1395,6 +1395,7 @@ def get_remote_data_with_events(client: Client, fetch_mode: str, current_mirrore
                 if len(sanitized_events) >= min(next_offense.get('event_count', 0), events_limit):
                     enriched_offense = enrich_offenses_result(client, next_offense, ip_enrich, asset_enrich)
                     updated_offense = sanitize_outputs(enriched_offense)[0]
+                    demisto.error(f'Updating offense with events! {updated_offense}')
                     break
                 # Search was not valid, remove search and retry to create a search later.
                 else:
@@ -2652,6 +2653,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     offense_id = remote_args.remote_incident_id
     mirroring_option = params.get('mirror_options')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
+    demisto.error(f'handling {offense_id} fromremote')
 
     current_mirrored_offense = client.offenses_list(offense_id=offense_id)
     offense_last_update = get_time_parameter(current_mirrored_offense.get('last_persisted_time'))
@@ -2745,6 +2747,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     else:
         all_modified_records_ids = new_modified_records_ids
 
+    demisto.error(f'returning {all_modified_records_ids} from modified-remote')
     return GetModifiedRemoteDataResponse(all_modified_records_ids)
 
 
