@@ -19,7 +19,14 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-DEFAULT_HEADERS = None
+API_TOKEN = demisto.params()['APIToken']
+BASE_URL = demisto.params()['baseURL']
+USE_SSL = not demisto.params().get('insecure', False)
+DEFAULT_HEADERS = {
+    'Authorization': 'Bearer {}'.format(API_TOKEN),
+    'Accept': 'application/json'
+}
+MALICIOUS_THRESHOLD = int(demisto.params().get('dboscore_threshold', -100))
 
 ''' MAPS '''
 
@@ -83,11 +90,6 @@ IP_DNS_FEATURE_INFO = {
     'div_ld2_1': 'ld2_1_count divided by the number of records',
     'div_ld2_2': 'ld2_2_count divided by the number of record'
 }
-
-
-class Client:
-    def __init__(self, base_url, ):
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -1795,16 +1797,6 @@ def get_url_timeline(url):
 
 LOG('command is %s' % (demisto.command(),))
 try:
-
-    api_token = demisto.params()['APIToken']
-    base_url = demisto.params()['baseURL']
-    use_ssl = not demisto.params().get('insecure', False)
-    malicious_threshold = int(demisto.params().get('dboscore_threshold', -100))
-    DEFAULT_HEADERS = {
-        'Authorization': 'Bearer {}'.format(api_token),
-        'Accept': 'application/json'
-    }
-
     handle_proxy()
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
