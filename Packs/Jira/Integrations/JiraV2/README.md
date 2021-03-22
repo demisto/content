@@ -132,7 +132,7 @@ match.
 **Notes**
 - The final 'source of truth' for the incident for Cortex XSOAR are the values in Cortex XSOAR. 
   Meaning, if you change the severity in Cortex XSOAR and then change it back in Jira, the final value that will be presented is the one in Cortex XSOAR.
-  You can see a list of this fields for each incident under "Context Data" -> "dbotDirtyFields"
+  You can see a list of this fields for each incident under "Context Data" -> "dbotDirtyFields".
 - If you wish to mirror in and out Jira's custom fields. please see the 'Mirror In And Out Custom Fields' section below.
 - If you wish to change status for a Jira's incident using Transitions, please see the 'Change Ticket\'s Status Using Transitions' section below.
 
