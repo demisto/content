@@ -4372,7 +4372,7 @@ class CommandResults:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
-                outputs.update(self.outputs)
+                outputs.update(self.outputs)  # type: ignore[call-overload]
 
         content_format = EntryFormat.JSON
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
