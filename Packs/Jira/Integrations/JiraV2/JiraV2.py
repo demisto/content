@@ -610,7 +610,7 @@ def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, tra
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
     jira_req('PUT', url, json.dumps(issue))
     if status and transition:
-        return_error("Please provide only status or transition and try again.")
+        return_error("Please provide only status or transition, but not both.")
     elif status:
         edit_status(issue_id, status)
     elif transition:
