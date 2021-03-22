@@ -27,8 +27,6 @@ To access the Security & Compliance Center, you need to be a global administrato
 
 2. Search for and select the **Data Investigator** role.
 
-   ![image-20201129135216851](../../doc_imgs/security-and-compliance-roles.png)
-
 3. Click **Edit role group**. 
 
    ![roles-edit-1](../../doc_imgs/security-and-compliance-edit-1.png)
