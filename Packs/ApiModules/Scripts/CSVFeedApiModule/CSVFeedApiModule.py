@@ -8,7 +8,6 @@ import gzip
 import urllib3
 from dateutil.parser import parse
 from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
-import traceback
 # disable insecure warnings
 urllib3.disable_warnings()
 
@@ -277,11 +276,8 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
         else:
             try:
                 field_value = re.match(regex_extractor, raw_json[field]).group(1)  # type: ignore
-            except Exception as e:
-                return_error(raw_json[field])
-                return_error(traceback.format_exc())  # p
-                raise DemistoException(f'yana test {regex_extractor}')
-                # field_value = raw_json[field]  # type: ignore
+            except Exception:
+                field_value = raw_json[field]  # type: ignore
 
         field_value = formatter_string.format(field_value) if formatter_string else field_value
         field_value = field_mapper_function(field_value) if field_mapper_function else field_value
