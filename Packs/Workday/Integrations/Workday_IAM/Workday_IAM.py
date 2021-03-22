@@ -248,6 +248,33 @@ def get_demisto_user(employee_id_to_user_profile, workday_user):
     return None
 
 
+def get_orphan_users(email_to_user_profile, user_emails):
+    """Get all users that does not exists in the Workday report anymore and terminate them in XSOAR."""
+
+    events = []
+    orphan_users = [email for email, user in email_to_user_profile.items() if email not in user_emails and
+                    user.get(EMPLOYMENT_STATUS_FIELD) != 'Terminated']
+    demisto.debug(f'orphan_users: {orphan_users}')
+    if orphan_users:
+        for email in orphan_users:
+            email_to_user_profile[email][EMPLOYMENT_STATUS_FIELD] = 'Terminated'
+            entry = {
+                'Email_Address': email,
+                'UserProfile': email_to_user_profile[email].copy(),
+                'Emp_ID': email_to_user_profile[email].get(EMPLOYEE_ID_FIELD)
+            }
+            event = {
+                'name': email,
+                'rawJSON': json.dumps(entry),
+                'type': TERMINATE_USER_EVENT_TYPE,
+                'details': 'The user has been terminated.'
+            }
+
+        events.append(event)
+
+    return events
+
+
 def get_profile_changed_fields_str(demisto_user, workday_user):
     if not demisto_user:
         return None
@@ -382,11 +409,15 @@ def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactiva
         events: Incidents/Events that will be created in Cortex XSOAR
     """
     events = []
+    user_emails = []
     try:
         employee_id_to_user_profile, email_to_user_profile = get_all_user_profiles()
-
         report_entries = client.get_full_report(report_url)
+
         for entry in report_entries:
+            email_address = entry.get('Email_Address')
+            user_emails.append(email_address)
+
             workday_user = get_workday_user_from_entry(entry, mapper_in, workday_date_format)
             demisto_user = get_demisto_user(employee_id_to_user_profile, workday_user)
             demisto.debug(f'Getting event details for user with email address {workday_user.get("email")}.\n'
@@ -398,6 +429,12 @@ def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactiva
                                       email_to_user_profile)
             if event is not None:
                 events.append(event)
+
+        orphan_users_events = get_orphan_users(email_to_user_profile, user_emails)
+        if orphan_users_events:
+            for event in orphan_users_events:
+                events.append(event)
+
     except Exception as e:
         demisto.error('Failed to fetch events. Reason: ' + str(e))
         raise e
