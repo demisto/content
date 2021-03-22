@@ -99,7 +99,7 @@ script:
       - duplicate
     - description: Number of incidents to retrieve.
       name: limit
-    - description: The number of incidents in a page. Maximum value is 200.
+    - description: The number of incidents in a page. Maximum value is 200. If page is given, defaults of this argument will be 50.
       name: page_size
     - description: Retrieve incidents by the given page number.
       name: page
@@ -410,7 +410,7 @@ script:
       required: true
     - description: Number of related messages to retrieve.
       name: limit
-    - description: Maximum number of related messages in a page. Maximum value is 200.
+    - description: Maximum number of related messages in a page. Maximum value is 200. If page is given, defaults of this argument will be 50.
       name: page_size
     - description: Retrieve related messages by the specified page number.
       name: page
@@ -478,7 +478,7 @@ script:
   - arguments:
     - description: Number of brands to retrieve.
       name: limit
-    - description: 'Total number of brands in a page. Values range: 20-100.'
+    - description: 'Total number of brands in a page. Values range: 20-100. If page is given, defaults of this argument will be 50.'
       name: page_size
     - description: Retrieve brands by the specified page number.
       name: page
