@@ -359,10 +359,16 @@ script:
       name: device_id
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The Operating System. (WINDOWS, MAC, LINUX, OTHER)
       isArray: false
       name: os
+      predefined:
+      - WINDOWS
+      - MAC
+      - LINUX
+      - OTHER
       required: false
       secret: false
     - auto: PREDEFINED
@@ -417,6 +423,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '20'
       description: The maximum number of rows to return. default is 20
       isArray: false
       name: rows
@@ -960,8 +967,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The A Carbon Black Cloud classification for events tagged to an
-        alert indicating whether the event is a “threat” or “observed”.
+      description: The Carbon Black Cloud classification for events tagged to an alert
+        indicating whether the event is a “threat” or “observed”.
       isArray: false
       name: alert_category
       predefined:
@@ -1160,20 +1167,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Query in lucene syntax and/or including value searches query
+      description: The Query in lucene syntax and/or including value searches. query
         or some of the other must be included.
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: The Number of rows to request, can be paginated.
+      defaultValue: '10'
+      description: The Number of rows to request, can be paginated. default is 10.
       isArray: false
       name: rows
       required: false
       secret: false
     - default: false
-      description: The first row to use for pagination.
+      defaultValue: '0'
+      description: The first row to use for pagination. default is 0.
       isArray: false
       name: start
       required: false
@@ -1206,6 +1215,7 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: '10'
       description: The number of rows to request, can be paginated, default is 10.
       isArray: false
       name: rows
@@ -1504,7 +1514,7 @@ script:
       name: action
       predefined:
       - TERMINATE
-      - IGNORE
+      - '66'
       - TERMINATE_THREAD
       - ALLOW
       - DENY
@@ -1664,6 +1674,7 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: '10'
       description: The number of rows to request, can be paginated, default is 10.
       isArray: false
       name: rows
@@ -1939,13 +1950,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of results to be returned.
+      defaultValue: '20'
+      description: The number of results to be returned. default is 20
       isArray: false
       name: rows
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: The number of the alert where to start retrieving results from.
+        default is 0
       isArray: false
       name: start
       required: false

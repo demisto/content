@@ -1,15 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import pytest
 import CarbonBlackDefenseV2 as cbdv2
 from test_data.test_constants import *
