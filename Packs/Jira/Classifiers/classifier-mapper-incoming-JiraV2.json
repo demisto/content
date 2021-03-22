@@ -79,6 +79,10 @@
      "complex": null,
      "simple": "fields.assignee.emailAddress"
     },
+    "IncomingMirrorError": {
+     "complex": null,
+     "simple": "in_mirror_error"
+    },
     "Jira Attachments": {
      "complex": null,
      "simple": "fields.attachment"

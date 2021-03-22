@@ -128,7 +128,7 @@
       "type": "linkedIncidents",
       "w": 1,
       "x": 1,
-      "y": 8
+      "y": 10
      },
      {
       "displayType": "ROW",
@@ -195,7 +195,7 @@
       "type": "indicators",
       "w": 2,
       "x": 0,
-      "y": 6
+      "y": 8
      },
      {
       "displayType": "CARD",
@@ -302,7 +302,7 @@
       "static": false,
       "w": 1,
       "x": 0,
-      "y": 8
+      "y": 10
      },
      {
       "displayType": "CARD",
@@ -478,6 +478,63 @@
       "w": 1,
       "x": 0,
       "y": 2
+     },
+     {
+      "description": "",
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "caseinfoid-96429a60-8af5-11eb-a9b4-532789dcef33",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "dbotmirrorinstance",
+        "height": 22,
+        "id": "3fd2a750-8af6-11eb-a9b4-532789dcef33",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotmirrordirection",
+        "height": 22,
+        "id": "3cd45b70-8af6-11eb-a9b4-532789dcef33",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotmirrortags",
+        "height": 22,
+        "id": "8dc93770-8b24-11eb-81f2-433a511bae17",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "incomingmirrorerror",
+        "height": 44,
+        "id": "382a5b60-8af6-11eb-a9b4-532789dcef33",
+        "index": 2,
+        "listId": "caseinfoid-96429a60-8af5-11eb-a9b4-532789dcef33",
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Mirroring Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 6
      }
     ],
     "type": "custom"
