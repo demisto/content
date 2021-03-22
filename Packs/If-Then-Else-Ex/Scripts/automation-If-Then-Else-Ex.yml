@@ -1,0 +1,195 @@
+args:
+- description: The value to evaluate
+  name: value
+  required: true
+- description: A value to compare with rhs
+  name: lhs
+- description: A value to compare with lhs
+  name: rhs
+- auto: PREDEFINED
+  defaultValue: =
+  description: The operator to compare value1 to value2
+  name: operator
+  predefined:
+  - =
+  - '!='
+  required: true
+- description: Return this value if the condition is true
+  name: then
+- description: Return this value if the condition is false
+  name: else
+- defaultValue: transformer_value
+  description: The name to specify the value given to this transformer.
+  name: transformer_value_key
+comment: A transformer for extended if-then-else logic.
+commonfields:
+  id: If-Then-Else-Ex
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c38d9334-280b-4a27-869b-d188b3b573f8
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.2.17246
+enabled: true
+name: If-Then-Else-Ex
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: |
+  import fnmatch
+  import re
+  from typing import Any, Optional
+
+  PATALG_BINARY = 0
+  PATALG_WILDCARD = 1
+  PATALG_REGEX = 2
+
+  def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool:
+      """ Pattern matching
+
+        :param pattern: The pattern string.
+        :param value: The value to compare with the pattern.
+        :param caseless: True if the pattern matching take places in case insensitive, otherwise False.
+        :param patalg: The pattern matching algorithm. Spefify any of PATALG_BINARY, PATALG_WILDCARD and PATALG_REGEX.
+        :return: Return True if the value matches the pattern, otherwise False.
+      """
+      if patalg == PATALG_BINARY:
+          if caseless:
+              pattern = pattern.lower()
+              if isinstance(value, list):
+                  return next(filter(lambda v: isinstance(v, str) and v.lower() == pattern, value), None) is not None
+              elif isinstance(value, str):
+                  return pattern == value.lower()
+          else:
+              if isinstance(value, list):
+                  return pattern in value
+              elif isinstance(value, str):
+                  return pattern == value
+          return False
+
+      elif patalg == PATALG_WILDCARD:
+          if caseless:
+              pattern = pattern.lower()
+              if isinstance(value, list):
+                  return next(filter(lambda v: isinstance(v, str) and fnmatch.fnmatchcase(v.lower(), pattern), value), None) is not None
+              elif isinstance(value, str):
+                  return fnmatch.fnmatchcase(value.lower(), pattern)
+          else:
+              if isinstance(value, list):
+                  return next(filter(lambda v: isinstance(v, str) and fnmatch.fnmatchcase(v, pattern), value), None) is not None
+              elif isinstance(value, str):
+                  return fnmatch.fnmatchcase(value, pattern)
+          return False
+
+      elif patalg == PATALG_REGEX:
+          flags = re.IGNORECASE if caseless else 0
+
+          if isinstance(value, list):
+              return next(filter(lambda v: isinstance(v, str) and re.fullmatch(pattern, v, flags), value), None) is not None
+          elif isinstance(value, str):
+              return re.fullmatch(pattern, value, flags) is not None
+          return False
+      else:
+          exit_error(f"Unknown pattern algorithm: '{patalg}'")
+      return False
+
+
+  def compare(lhs: Any, rhs: Any, operator: str) -> bool:
+      """ Compare lhs value to rhs value.
+
+        :param lhs: The left hand side value.
+        :param lhs: The right hand side value.
+        :param operator: The name of the operation.
+        :return: Return True if the value matches the pattern, False otherwise.
+      """
+      if operator in ('=', 'matches'):
+          return lhs == rhs
+
+      elif operator in ('!=', "doesn't match"):
+          return lhs != rhs
+
+      elif operator == '>':
+          return lhs > rhs
+
+      elif operator == '>=':
+          return lhs >= rhs
+
+      elif operator == '<':
+          return lhs < rhs
+
+      elif operator == '<=':
+          return lhs <= rhs
+
+      elif operator == "matches caseless":
+          return lhs.lower() == rhs.lower()
+
+      elif operator == "doesn't match caseless":
+          return lhs.lower() != rhs.lower()
+
+      elif operator == "wildcard: matches":
+          return match_pattern(rhs, lhs, False, PATALG_WILDCARD)
+
+      elif operator == "wildcard: matches caseless":
+          return match_pattern(rhs, lhs, True, PATALG_WILDCARD)
+
+      elif operator == "wildcard: doesn't match":
+          return not match_pattern(rhs, lhs, False, PATALG_WILDCARD)
+
+      elif operator == "wildcard: doesn't match caseless":
+          return not match_pattern(rhs, lhs, True, PATALG_WILDCARD)
+
+      elif operator == "regex: matches":
+          return match_pattern(rhs, lhs, False, PATALG_REGEX)
+
+      elif operator == "regex: matches caseless":
+          return match_pattern(rhs, lhs, True, PATALG_REGEX)
+
+      elif operator == "regex: doesn't match":
+          return not match_pattern(rhs, lhs, False, PATALG_REGEX)
+
+      elif operator == "regex: doesn't match caseless":
+          return not match_pattern(rhs, lhs, True, PATALG_REGEX)
+
+      elif operator == "in list":
+          return lhs in rhs.split(',')
+
+      elif operator == "in caseless list":
+          return lower(lhs) in rhs.lower().split(',')
+
+      elif operator == "not in list":
+          return not compare(lhs, "in list", rhs)
+
+      elif operator == "not in caseless list":
+          return not compare(lhs, "in caseless list", rhs)
+
+      else:
+          raise ValueError(f'Unknown Operator: {operator}')
+
+  if __name__ in ('__builtin__', 'builtins', '__main__'):
+      args = demisto.args()
+      try:
+          if compare(args.get('lhs'), args.get('rhs'), args.get('operator', '')):
+              value = args.get('then')
+          else:
+              value = args.get('else')
+      except (ValueError, TypeError, AttributeError):
+          value = args.get('else')
+
+      transformer_value_key = args.get('transformer_value_key')
+      if transformer_value_key:
+          try:
+              value = args.get('value') if value == transformer_value_key else value
+          except (ValueError, TypeError) as e:
+              pass
+
+      demisto.results(value)
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- general
+type: python
