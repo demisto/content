@@ -1128,8 +1128,11 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         command_args['userId'])
     try:
         result = service.users().messages().list(**command_args).execute()
-    except HTTPError:
-        result = {}
+    except HTTPError as e:
+        if "Mail service not enabled" in str(e):
+            result = {}
+        else:
+            raise Exception(e)
 
     return [get_mail(user_id, mail['id'], 'full') for mail in result.get('messages', [])], q
 

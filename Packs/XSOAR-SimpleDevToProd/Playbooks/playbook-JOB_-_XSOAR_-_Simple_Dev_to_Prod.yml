@@ -14,6 +14,7 @@ inputs:
   value:
     simple: "True"
 name: JOB - XSOAR - Simple Dev to Prod
+deprecated: true
 outputs: []
 starttaskid: "0"
 tasks:
