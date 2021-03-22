@@ -4560,6 +4560,7 @@ def return_error(message, error='', outputs=None):
         :rtype: ``dict``
     """
     is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
+                                                                              'fetch-credentials',
                                                                               'long-running-execution',
                                                                               'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
