@@ -8,7 +8,7 @@ configuration:
   required: false
   type: 8
 - display: Proxy URL
-  additionalInfo: "Domain and Whois commands: supports socks4/socks5/http connect
+  additionalinfo: "Domain and Whois commands: supports socks4/socks5/http connect
     proxies (e.g. socks5h://host:1080)."
   name: proxy_url
   required: false
