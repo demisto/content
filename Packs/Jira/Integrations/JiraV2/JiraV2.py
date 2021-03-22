@@ -1202,7 +1202,7 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
 
     except Exception as e:
         demisto.info(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id} \n"
-                      f"Error message: {str(e)}")
+                     f"Error message: {str(e)}")
 
         if "Rate limit exceeded" in str(e):
             return_error("API rate limit")
