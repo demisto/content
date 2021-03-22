@@ -1338,8 +1338,8 @@ def search_ip_command(ip):
         ip = Common.IP(
             ip=ip_address,
             dbot_score=dbot_score,
-            malware_family=get_tags_for_generic_context1(raw_tags, True),
-            tags=get_tags_for_generic_context1(raw_tags)
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
         )
 
         autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1397,8 +1397,8 @@ def search_domain_command(args):
                 admin_country=indicator.get('whoisAdminCountry'),
                 registrar_name=indicator.get('whoisRegistrar'),
                 registrant_name=indicator.get('whoisRegistrant'),
-                malware_family=get_tags_for_generic_context1(raw_tags, True),
-                tags=get_tags_for_generic_context1(raw_tags)
+                malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+                tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
             )
             autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
             # create human readable markdown for ip
@@ -1463,8 +1463,8 @@ def search_url_command(url):
         url = Common.URL(
             url=url_name,
             dbot_score=dbot_score,
-            malware_family=get_tags_for_generic_context1(raw_tags, True),
-            tags=get_tags_for_generic_context1(raw_tags)
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
         )
 
         autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1557,19 +1557,20 @@ def get_tags_for_generic_context(tags: Optional[list]):
     return results
 
 
-def get_tags_for_generic_context1(tags: Optional[list], is_malware_family=False):
+def get_tags_for_tags_and_malware_family_fields(tags: Optional[list], is_malware_family=False):
+    """get specific tags for the tgas and malware_family fields"""
     if not tags:
         return None
     results = []
-    generic_context_tags = []
     for item in tags:
-        generic_context_tags.append(item.get('TagName'))
-        generic_context_tags.append(item.get('PublicTagName'))
-        generic_context_tags.append(alias for alias in item.get('Aliases', []))
+        results.append(item.get('tag_name'))
+        results.append(item.get('public_tag_name'))
+        for alias in item.get('aliases', []):
+            results.append(alias)
         if not is_malware_family:
-            generic_context_tags.append(group.get('TagGroupName') for group in item.get('TagGroups', [{}]))
-        results.append(remove_empty_elements(generic_context_tags))
-    return results
+            for group in item.get('tagGroups', [{}]):
+                results.append(group.get('tag_group_name'))
+    return list(dict.fromkeys(remove_empty_elements(results)))
 
 
 def get_export_list_command(args):

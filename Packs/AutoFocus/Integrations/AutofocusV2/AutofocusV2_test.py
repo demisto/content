@@ -225,3 +225,74 @@ def test_get_tags_for_generic_context():
      """
     import AutofocusV2
     assert AutofocusV2.get_tags_for_generic_context(TAGS_FROM_FILE_RES) == TAGS_FOR_GENERIC_CONTEXT_OUTPUT
+
+
+def test_get_tags_for_tags_and_malware_family_fields():
+    """
+
+     Given:
+         - The 'Tags' values returned from the API for a given response.
+     When:
+         - When the user uses 'file' 'ip' 'domain' or 'url' commands.
+     Then:
+         - Only specific tags should be parsed in to context.
+
+     """
+    import AutofocusV2
+    tags = AutofocusV2.get_tags_for_tags_and_malware_family_fields(TAGS_FROM_RESPONSE)
+    assert tags == ['NJRat', 'Unit42.NJRat', 'Bladabindi', 'RemoteAccessTrojan', 'NanoCoreRAT', 'Unit42.NanoCoreRAT']
+
+
+TAGS_FROM_RESPONSE = [
+        {
+            "aliases": [
+                "Bladabindi"
+            ],
+            "count": 2273664,
+            "customer_industry": "High Tech",
+            "customer_name": "Palo Alto Networks Unit42",
+            "description": "NJRat is a remote-access Trojan that has been used by a variety of threat actors since it was written in the early 2010s.\n\nThe malware is fully featured and since its source is available is frequently customised by up-and-coming malware authors to add or remove existing features.",
+            "downVotes": "",
+            "lasthit": "2020-11-17 12:04:36",
+            "myVote": "",
+            "public_tag_name": "Unit42.NJRat",
+            "source": "Unit 42",
+            "support_id": 1,
+            "tagGroups": [
+                {
+                    "description": "Remote Access Trojans are programs that provide the capability to allow covert surveillance or the ability to gain unauthorized access to a victim machine. Often packaged to imitate legitimate applications, Remote Access Trojans often mimic similar behaviors of keylogger applications by allowing the automated collection of keystrokes, usernames, passwords, screenshots, browser history, emails, chat logs, etc.",
+                    "tag_group_name": "RemoteAccessTrojan"
+                }
+            ],
+            "tag_class_id": 3,
+            "tag_definition_id": 31426,
+            "tag_definition_scope_id": 4,
+            "tag_definition_status_id": 1,
+            "tag_name": "NJRat",
+            "upVotes": 1
+        },
+        {
+            "count": 506972,
+            "customer_industry": "High Tech",
+            "customer_name": "Palo Alto Networks Unit42",
+            "description": "Generally delivered via phishing, NanocoreRAT is a Trojan that opens a back door and steals information from the compromised computer. It also allows a remote attacker to execute various commands on the infected system. It may achieve persistence on the targeted system by modifying the Registry.",
+            "downVotes": "",
+            "lasthit": "2020-11-17 16:31:52",
+            "myVote": "",
+            "public_tag_name": "Unit42.NanoCoreRAT",
+            "source": "Unit 42",
+            "support_id": 1,
+            "tag_class_id": 3,
+            "tag_definition_id": 31987,
+            "tag_definition_scope_id": 4,
+            "tag_definition_status_id": 1,
+            "tag_name": "NanoCoreRAT",
+            "tagGroups": [
+                {
+                    "description": "Remote Access Trojans are programs that provide the capability to allow covert surveillance or the ability to gain unauthorized access to a victim machine. Often packaged to imitate legitimate applications, Remote Access Trojans often mimic similar behaviors of keylogger applications by allowing the automated collection of keystrokes, usernames, passwords, screenshots, browser history, emails, chat logs, etc.",
+                    "tag_group_name": "RemoteAccessTrojan"
+                }
+            ],
+            "upVotes": 3
+        }
+    ]
