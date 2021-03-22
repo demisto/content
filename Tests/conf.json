@@ -1774,12 +1774,12 @@
         },
         {
             "integrations": "Microsoft Graph Groups",
-            "playbookID": "Microsoft Graph Groups - Test",
+            "playbookID": "Microsoft Graph Groups - Test dev",
             "instance_names": "ms_graph_groups_dev"
         },
         {
             "integrations": "Microsoft Graph Groups",
-            "playbookID": "Microsoft Graph Groups - Test",
+            "playbookID": "Microsoft Graph Groups - Test prod",
             "instance_names": "ms_graph_groups_prod"
         },
         {
