@@ -2281,15 +2281,6 @@ class Common(object):
         :type positive_engines: ``int``
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
-        :type organization_name: ``str``
-        :param organization_name:
-
-        :type organization_type: ``str``
-        :param organization_type:
-
-        :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators:
-
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
@@ -2299,8 +2290,7 @@ class Common(object):
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
         def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
-                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
-                     organization_name=None, organization_type=None, feed_related_indicators=None):
+                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -2310,10 +2300,6 @@ class Common(object):
             self.geo_description = geo_description
             self.detection_engines = detection_engines
             self.positive_engines = positive_engines
-            self.organization_name = organization_name
-            self.organization_type = organization_type
-            self.feed_related_indicators = feed_related_indicators
-
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2343,23 +2329,11 @@ class Common(object):
                 if self.geo_description:
                     ip_context['Geo']['Description'] = self.geo_description
 
-            if self.organization_name or self.organization_type:
-                ip_context['Organization'] = {}
-
-                if self.organization_name:
-                    ip_context['Organization']['Name'] = self.organization_name
-
-                if self.organization_type:
-                    ip_context['Organization']['Type'] = self.organization_type
-
             if self.detection_engines:
                 ip_context['DetectionEngines'] = self.detection_engines
 
             if self.positive_engines:
                 ip_context['PositiveDetections'] = self.positive_engines
-
-            if self.feed_related_indicators:
-                ip_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 ip_context['Malicious'] = {
@@ -2411,31 +2385,6 @@ class Common(object):
                 'FileVersion': self.file_version,
                 'InternalName': self.internal_name,
                 'OriginalName': self.original_name,
-            }
-
-    class FeedRelatedIndicators(object):
-        """
-        FeedRelatedIndicators class
-        :type value: ``str``
-        :param value:
-        :type indicator_type: ``str``
-        :param indicator_type:
-        :type description: ``str``
-        :param description:
-        :return: None
-        :rtype: ``None``
-        """
-
-        def __init__(self, value=None, indicator_type=None, description=None):
-            self.value = value
-            self.indicator_type = indicator_type
-            self.description = description
-
-        def to_context(self):
-            return {
-                'value': self.value,
-                'type': self.indicator_type,
-                'description': self.description
             }
 
     class File(Indicator):
