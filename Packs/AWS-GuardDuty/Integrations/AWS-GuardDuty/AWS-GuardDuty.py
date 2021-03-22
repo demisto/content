@@ -115,7 +115,6 @@ def aws_session(service='guardduty', region=None, roleArn=None, roleSessionName=
                 verify=VERIFY_CERTIFICATE,
                 config=config
             )
-
     return client
 
 
@@ -188,20 +187,20 @@ def get_detector(args):
 
 
 def update_detector(args):
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        response = client.update_detector(
-            DetectorId=args.get('detectorId'),
-            Enable=True if args.get('enable') == 'True' else False
-        )
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return_results('The Detector {0} has been Updated'.format(args.get('detectorId')))
-        else:
-            return_results("Failed to update detector with ID {}".format(args.get('detectorId')))
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    response = client.update_detector(
+        DetectorId=args.get('detectorId'),
+        Enable=True if args.get('enable') == 'True' else False
+    )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('The Detector {0} has been Updated'.format(args.get('detectorId')))
+    else:
+        return_results("Failed to update detector with ID {}".format(args.get('detectorId')))
 
 
 def list_detectors(args):
@@ -252,18 +251,18 @@ def create_ip_set(args):
 
 
 def delete_ip_set(args):
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        response = client.delete_ip_set(
-            DetectorId=args.get('detectorId'),
-            IpSetId=args.get('ipSetId')
-        )
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return_results('The IPSet {0} has been deleted from Detector {1}'.format(args.get('ipSetId'), args.get('detectorId')))
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    response = client.delete_ip_set(
+        DetectorId=args.get('detectorId'),
+        IpSetId=args.get('ipSetId')
+    )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results('The IPSet {0} has been deleted from Detector {1}'.format(args.get('ipSetId'), args.get('detectorId')))
 
 
 def update_ip_set(args):
@@ -499,34 +498,34 @@ def list_findings(args):
 
 
 def get_findings(args):
-        client = aws_session(
-            region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-        response = client.get_findings(
-            DetectorId=args.get('detectorId'),
-            FindingIds=parse_finding_ids(args.get('findingIds')))
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    response = client.get_findings(
+        DetectorId=args.get('detectorId'),
+        FindingIds=parse_finding_ids(args.get('findingIds')))
 
-        data = []
-        for finding in response['Findings']:
-            data.append({
-                'AccountId': finding['AccountId'],
-                'Arn': finding['Arn'],
-                'CreatedAt': finding['CreatedAt'],
-                'Description': finding['Description'],
-                'Id': finding['Id'],
-                'Region': finding['Region'],
-                'Title': finding['Title'],
-                'Type': finding['Type'],
-            })
+    data = []
+    for finding in response['Findings']:
+        data.append({
+            'AccountId': finding['AccountId'],
+            'Arn': finding['Arn'],
+            'CreatedAt': finding['CreatedAt'],
+            'Description': finding['Description'],
+            'Id': finding['Id'],
+            'Region': finding['Region'],
+            'Title': finding['Title'],
+            'Type': finding['Type'],
+        })
 
-        output = json.dumps(response['Findings'], cls=DatetimeEncoder)
-        raw = json.loads(output)
-        ec = {"AWS.GuardDuty.Findings(val.FindingId === obj.Id)": raw}
-        human_readable = tableToMarkdown('AWS GuardDuty Findings', data)
-        return_outputs(human_readable, ec)
+    output = json.dumps(response['Findings'], cls=DatetimeEncoder)
+    raw = json.loads(output)
+    ec = {"AWS.GuardDuty.Findings(val.FindingId === obj.Id)": raw}
+    human_readable = tableToMarkdown('AWS GuardDuty Findings', data)
+    return_outputs(human_readable, ec)
 
 
 def parse_incident_from_finding(finding):
@@ -647,85 +646,91 @@ def test_function():
     else:
         return_error("Test failed. Please verify your configuration.")
 
-try:
-    LOG('Command being called is {command}'.format(command=demisto.command()))
-    # The command demisto.command() holds the command sent from the user.
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_function()
+def main():
+    try:
+        LOG('Command being called is {command}'.format(command=demisto.command()))
+        # The command demisto.command() holds the command sent from the user.
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_function()
 
-    if demisto.command() == 'aws-gd-create-detector':
-        create_detector(demisto.args())
+        if demisto.command() == 'aws-gd-create-detector':
+            create_detector(demisto.args())
 
-    if demisto.command() == 'aws-gd-delete-detector':
-        delete_detector(demisto.args())
+        if demisto.command() == 'aws-gd-delete-detector':
+            delete_detector(demisto.args())
 
-    if demisto.command() == 'aws-gd-get-detector':
-        get_detector(demisto.args())
+        if demisto.command() == 'aws-gd-get-detector':
+            get_detector(demisto.args())
 
-    if demisto.command() == 'aws-gd-update-detector':
-        update_detector(demisto.args())
+        if demisto.command() == 'aws-gd-update-detector':
+            update_detector(demisto.args())
 
-    if demisto.command() == 'aws-gd-create-ip-set':
-        create_ip_set(demisto.args())
+        if demisto.command() == 'aws-gd-create-ip-set':
+            create_ip_set(demisto.args())
 
-    if demisto.command() == 'aws-gd-delete-ip-set':
-        delete_ip_set(demisto.args())
+        if demisto.command() == 'aws-gd-delete-ip-set':
+            delete_ip_set(demisto.args())
 
-    if demisto.command() == 'aws-gd-list-detectors':
-        list_detectors(demisto.args())
+        if demisto.command() == 'aws-gd-list-detectors':
+            list_detectors(demisto.args())
 
-    if demisto.command() == 'aws-gd-update-ip-set':
-        update_ip_set(demisto.args())
+        if demisto.command() == 'aws-gd-update-ip-set':
+            update_ip_set(demisto.args())
 
-    if demisto.command() == 'aws-gd-get-ip-set':
-        get_ip_set(demisto.args())
+        if demisto.command() == 'aws-gd-get-ip-set':
+            get_ip_set(demisto.args())
 
-    if demisto.command() == 'aws-gd-list-ip-sets':
-        list_ip_sets(demisto.args())
+        if demisto.command() == 'aws-gd-list-ip-sets':
+            list_ip_sets(demisto.args())
 
-    if demisto.command() == 'aws-gd-create-threatintel-set':
-        create_threat_intel_set(demisto.args())
+        if demisto.command() == 'aws-gd-create-threatintel-set':
+            create_threat_intel_set(demisto.args())
 
-    if demisto.command() == 'aws-gd-delete-threatintel-set':
-        delete_threat_intel_set(demisto.args())
+        if demisto.command() == 'aws-gd-delete-threatintel-set':
+            delete_threat_intel_set(demisto.args())
 
-    if demisto.command() == 'aws-gd-get-threatintel-set':
-        get_threat_intel_set(demisto.args())
+        if demisto.command() == 'aws-gd-get-threatintel-set':
+            get_threat_intel_set(demisto.args())
 
-    if demisto.command() == 'aws-gd-list-threatintel-sets':
-        list_threat_intel_sets(demisto.args())
+        if demisto.command() == 'aws-gd-list-threatintel-sets':
+            list_threat_intel_sets(demisto.args())
 
-    if demisto.command() == 'aws-gd-update-threatintel-set':
-        update_threat_intel_set(demisto.args())
+        if demisto.command() == 'aws-gd-update-threatintel-set':
+            update_threat_intel_set(demisto.args())
 
-    if demisto.command() == 'aws-gd-list-findings':
-        list_findings(demisto.args())
+        if demisto.command() == 'aws-gd-list-findings':
+            list_findings(demisto.args())
 
-    if demisto.command() == 'aws-gd-get-findings':
-        get_findings(demisto.args())
+        if demisto.command() == 'aws-gd-get-findings':
+            get_findings(demisto.args())
 
-    if demisto.command() == 'aws-gd-create-sample-findings':
-        create_sample_findings(demisto.args())
+        if demisto.command() == 'aws-gd-create-sample-findings':
+            create_sample_findings(demisto.args())
 
-    if demisto.command() == 'aws-gd-archive-findings':
-        archive_findings(demisto.args())
+        if demisto.command() == 'aws-gd-archive-findings':
+            archive_findings(demisto.args())
 
-    if demisto.command() == 'aws-gd-unarchive-findings':
-        unarchive_findings(demisto.args())
+        if demisto.command() == 'aws-gd-unarchive-findings':
+            unarchive_findings(demisto.args())
 
-    if demisto.command() == 'aws-gd-update-findings-feedback':
-        update_findings_feedback(demisto.args())
+        if demisto.command() == 'aws-gd-update-findings-feedback':
+            update_findings_feedback(demisto.args())
 
-    if demisto.command() == 'fetch-incidents':
-        fetch_incidents()
+        if demisto.command() == 'fetch-incidents':
+            fetch_incidents()
 
-except ResponseParserError as e:
-    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-        error=e))
-    LOG(e.message)
+    except ResponseParserError as e:
+        return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
+            error=e))
+        LOG(e.message)
 
-except Exception as e:
-    LOG(e.message)
-    return_error('Error has occurred in the AWS EC2 Integration: {code}\n {message}'.format(
-        code=type(e), message=e.message))
+    except Exception as e:
+        LOG(e.message)
+        return_error('Error has occurred in the AWS EC2 Integration: {code}\n {message}'.format(
+                     code=type(e), message=e.message))
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ in ("__builtin__", "builtins"):
+    main()
