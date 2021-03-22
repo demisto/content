@@ -157,7 +157,6 @@ def test_parse_indicator_response():
     raw_indicator = IP_RES_JSON['indicator']
     raw_tags = IP_RES_JSON['tags']
     indicator = parse_indicator_response(raw_indicator, raw_tags, 'IP')
-    print(indicator)
     assert json.dumps(indicator) == json.dumps(INDICATOR_RES)
 
 
