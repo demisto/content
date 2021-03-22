@@ -1238,6 +1238,21 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
+    def test_outputs_without_outputs_prefix(self):
+        """
+        Given
+        - outputs as a list without output_prefix
+
+        When
+        - Returins results
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import CommandResults
+        with pytest.raises(ValueError, match='outputs_prefix'):
+            CommandResults(outputs=[])
+
     def test_dbot_score_is_in_to_context_ip(self):
         """
         Given
