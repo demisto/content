@@ -15,7 +15,6 @@ script: |-
                   if chosen_transition:
                       demisto.executeCommand('jira-edit-issue',
                       {'issueId': incident_id, "transition": chosen_transition})
-                      # jira_status = demisto.executeCommand('jira-get-issue', {'issueId': incident_id})[0]["Contents"]["fields"]["status"]["name"]
                       res = demisto.executeCommand('jira-get-issue', {'issueId': incident_id})
                       if isinstance(res, list):
                           for entry in res:

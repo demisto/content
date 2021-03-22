@@ -5,7 +5,6 @@ name: script-JiraListTransition
 script: |-
   def main():
       output = {}
-      # res = demisto.executeCommand('jira-list-transitions', {'issueId': incident.get('dbotMirrorId')})[0]["Contents"]
       try:
           incident = demisto.incidents()[0]
           incident_id = incident.get('dbotMirrorId')
