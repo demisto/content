@@ -773,6 +773,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         else:
             user_dn = generate_dn_and_remove_from_user_profile(ad_user)
             object_classes = ["top", "person", "organizationalPerson", "user"]
+            ad_user.pop('ou')
 
             success = conn.add(user_dn, object_classes, ad_user)
             if success:
@@ -1163,7 +1164,7 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if not user_exists:
             iam_user_profile.set_result(success=True, action=IAMActions.DISABLE_USER,
-                                        skip=True, skip_reason="User doesn't exists")
+                                        skip=True, skip_reason="User doesn't exist")
             return iam_user_profile
 
         dn = user_dn(sam_account_name, default_base_dn)

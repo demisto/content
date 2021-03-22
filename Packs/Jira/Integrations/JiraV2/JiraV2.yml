@@ -121,13 +121,14 @@ script:
     arguments:
     - name: attribute
       required: true
-      description: The user's attribute value. Can be Username or Email address.
+      description: The user's attribute value. Can be Username or Email address. Note
+        - when using OAuth 1.0 only username works.
     - name: max_results
       defaultValue: 50
-      description: The maximum number of users to pull when searching for a matching user (default is 50). The maximum
-        allowed value is dictated by the JIRA property 'jira.search.views.default.max'.
-        If you specify a value that is higher than this number, your search results
-        will be truncated.
+      description: The maximum number of users to pull when searching for a matching
+        user (default is 50). The maximum allowed value is dictated by the JIRA property
+        'jira.search.views.default.max'. If you specify a value that is higher than
+        this number, your search results will be truncated.
     outputs:
     - contextPath: Jira.User.Attribute
       description: The user's attribute.
@@ -206,9 +207,11 @@ script:
     - name: dueDate
       description: 'The due date for the issue (in the format: 2018-03-11).'
     - name: assignee
-      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, please provide the assignee_id argument instead.
+      description: The name of the assignee. Relevant for Jira Server only. If you
+        are using Jira Cloud, please provide the assignee_id argument instead.
     - name: assignee_id
-      description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's Account ID.
+      description: The account ID of the assignee. Use the jira-get-id-by-attribute
+        command to get the user's Account ID.
     - name: reporter
       description: The account ID of the reporter.
     - name: parentIssueKey
@@ -287,9 +290,11 @@ script:
     - name: dueDate
       description: The due date for the issue (in the format 2018-03-11).
     - name: assignee
-      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud please provide the assignee_id argument instead.
+      description: The name of the assignee. Relevant for Jira Server only. If you
+        are using Jira Cloud please provide the assignee_id argument instead.
     - name: assignee_id
-      description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's Account ID.
+      description: The account ID of the assignee. Use the jira-get-id-by-attribute
+        command to get the user's Account ID.
     - name: status
       description: The name of the status.
     outputs:
@@ -354,7 +359,7 @@ script:
       will not update the current incident, it's here for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.15507
+  dockerimage: demisto/oauthlib:1.0.0.17529
   isfetch: true
   isremotesyncin: true
   runonce: false

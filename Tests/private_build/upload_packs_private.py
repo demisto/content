@@ -7,8 +7,8 @@ import glob
 import logging
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
-    GCPConfig, CONTENT_ROOT_PATH, get_packs_statistics_dataframe, load_json, get_content_git_client, \
-    get_recent_commits_data
+    GCPConfig, CONTENT_ROOT_PATH, LANDING_PAGE_SECTIONS_PATH, get_packs_statistics_dataframe, load_json, \
+    get_content_git_client, get_recent_commits_data
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config, \
     upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
@@ -76,6 +76,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
     :return: List of dicts containing pack metadata information.
     """
     try:
+        logging.info(f'searching metadata files in: {private_index_path}')
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
     except Exception:
         logging.exception(f'Could not find metadata files in {private_index_path}.')
@@ -86,21 +87,27 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
 
     private_packs = []
     for metadata_file_path in metadata_files:
+        logging.info(f'scanning metadata file: {metadata_file_path}')
         try:
-            with open(metadata_file_path, "r") as metadata_file:
+            with open(metadata_file_path, 'r') as metadata_file:
                 metadata = json.load(metadata_file)
+
             pack_id = metadata.get('id')
             is_changed_private_pack = pack_id in pack_names
+
             if is_changed_private_pack:  # Should take metadata from artifacts.
-                with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
-                          "r") as metadata_file:
+                new_metadata_file_path = os.path.join(extract_destination_path, pack_id, "pack_metadata.json")
+                logging.info(f'reloading metadata using {new_metadata_file_path}')
+                with open(new_metadata_file_path, 'r') as metadata_file:
                     metadata = json.load(metadata_file)
+
             if metadata:
                 private_packs.append({
-                    'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
+                    'id': pack_id,
                     'price': metadata.get('price'),
-                    'vendorId': metadata.get('vendorId'),
-                    'vendorName': metadata.get('vendorName'),
+                    'vendorId': metadata.get('vendorId', ""),
+                    'partnerId': metadata.get('partnerId', ""),
+                    'partnerName': metadata.get('partnerName', ""),
                     'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
         except ValueError:
@@ -203,6 +210,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     private_artifacts_dir = upload_config.private_artifacts
     is_infra_run = upload_config.is_infra_run
     secondary_enc_key = upload_config.secondary_encryption_key
+    landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
 
     pack_was_modified = not is_infra_run
 
@@ -236,7 +244,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                        packs_dependencies_mapping=packs_dependencies_mapping,
                                        build_number=build_number, commit_hash=current_commit_hash,
                                        packs_statistic_df=packs_statistic_df,
-                                       pack_was_modified=pack_was_modified)
+                                       pack_was_modified=pack_was_modified, landing_page_sections=landing_page_sections)
 
     if not task_status:
         pack.status = PackStatus.FAILED_METADATA_PARSING.name
@@ -412,8 +420,9 @@ def main():
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.encryption_key and upload_config.encryption_key != ''
+    landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
 
-    print(f"Packs artifact path is: {packs_artifacts_path}")
+    logging.info(f"Packs artifact path is: {packs_artifacts_path}")
 
     prepare_test_directories(packs_artifacts_path)
 
@@ -484,12 +493,12 @@ def main():
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
         upload_index_to_storage(index_folder_path, extract_destination_path, private_index_blob, build_number,
-                                private_packs,
-                                current_commit_hash, index_generation, is_private_build)
+                                private_packs, current_commit_hash, index_generation, is_private_build,
+                                landing_page_sections=landing_page_sections)
 
     else:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                                current_commit_hash, index_generation)
+                                current_commit_hash, index_generation, landing_page_sections=landing_page_sections)
 
     # upload id_set.json to bucket
     upload_id_set(default_storage_bucket, id_set_path)
