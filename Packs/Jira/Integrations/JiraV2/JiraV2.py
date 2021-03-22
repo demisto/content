@@ -610,7 +610,7 @@ def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, tra
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
     jira_req('PUT', url, json.dumps(issue))
     if status and transition:
-        return_error("Please provide only status or transition and try again.")
+        return_error("Please provide only status or transition, but not both.")
     elif status:
         edit_status(issue_id, status)
     elif transition:
@@ -1093,7 +1093,7 @@ def get_modified_remote_data_command(args):
             last_update: datetime = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})\
                 .strftime('%Y-%m-%d %H:%M')
             demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
-            _, _, context = issue_query_command(f'updated > "{last_update}"', max_results=50)
+            _, _, context = issue_query_command(f'updated > "{last_update}"', max_results=100)
             modified_issues = context.get('issues', [])
             modified_issues_ids = [issue.get('id') for issue in modified_issues if issue.get('id')]
             demisto.debug(f'Performing get-modified-remote-data command. Issue IDs to update in XSOAR:'
