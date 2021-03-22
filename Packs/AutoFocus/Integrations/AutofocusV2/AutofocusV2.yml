@@ -1074,7 +1074,7 @@ script:
     - default: false
       description: The label of the exported list.
       isArray: false
-      name: labe
+      name: label
       required: true
       secret: false
     deprecated: false
@@ -1100,7 +1100,7 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   isfetch: false
   longRunning: false
   longRunningPort: false
