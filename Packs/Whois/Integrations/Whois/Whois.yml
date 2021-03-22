@@ -326,6 +326,78 @@ script:
     - contextPath: Domain.Whois.QueryResult
       description: Whether the query found a matching result.
       type: Boolean
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of domain administrator.
+      type: String
+    - contextPath: Domain.Admin.State
+      description: The state of domain administrator.
+      type: String
+    - contextPath: Domain.Admin.country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.name
+      description: The name of domain administrator.
+      type: String
+    - contextPath: Domain.Admin.state
+      description: The state of domain administrator.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.DomainStatus
+      description: The domain status.
+      type: String
+    - contextPath: Domain.ExpirationDate
+      description: The date that the domain expires.
+      type: Date
+    - contextPath: Domain.FeedRelatedIndicators.type
+      description: Indicators that are associated with the Domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.value
+      description: The type of the indicators that are associated with the Domain.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.NameServers
+      description: The name servers.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization name.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Organization
+      description: The organization of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.State
+      description: The state of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.organization
+      description: The organization of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.state
+      description: The state of the registrant.
+      type: String
+    - contextPath: Domain.Registrar.Name
+      description: The name of the registrar.
+      type: String
+    - contextPath: Domain.Tech.Country
+      description: The country of tech administrator.
+      type: String
+    - contextPath: Domain.Tech.Organization
+      description: The organization of the tech administrator.
+      type: String
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: Date
   - arguments:
     - default: true
       description: The IP to enrich.
@@ -426,13 +498,13 @@ script:
       description: The country in which the IP address is located.
       type: string
     - contextPath: IP.Organization.Name
-      description: ppp
+      description: The organization name.
       type: string
     - contextPath: IP.feed_related_indicators.value
-      description: ppp
+      description: Indicators that are associated with the IP.
       type: string
     - contextPath: IP.feed_related_indicators.type
-      description: ppp
+      description: The type of the indicators that are associated with the IP
       type: string
   dockerimage: devdemisto/ippysocks:1.0.0.17516
   feed: false

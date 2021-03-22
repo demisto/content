@@ -8408,7 +8408,10 @@ def get_whois_ip(ip):
         proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
         handler = ProxyHandler(proxies)
         proxy_opener = build_opener(handler)
-    ip_obj = IPWhois(ip, proxy_opener)
+        ip_obj = IPWhois(ip, proxy_opener)
+    else:
+        ip_obj = IPWhois(ip)
+
     return ip_obj.lookup_rdap(depth=1)
 
 
@@ -8416,7 +8419,6 @@ def ip_command(ips):
 
     results = []
     for ip in argToList(ips):
-
         response = get_whois_ip(ip)
 
         dbot_score = Common.DBotScore(
