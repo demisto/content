@@ -252,8 +252,8 @@ def get_orphan_users(email_to_user_profile, user_emails):
     """Get all users that does not exists in the Workday report anymore and terminate them in XSOAR."""
 
     events = []
-    orphan_users = [email for email, user in email_to_user_profile.items() if email not in user_emails and
-                    user.get(EMPLOYMENT_STATUS_FIELD) != 'Terminated']
+    orphan_users = [email for email, user in email_to_user_profile.items()
+                    if email not in user_emails and user.get(EMPLOYMENT_STATUS_FIELD) != 'Terminated']
     demisto.debug(f'orphan_users: {orphan_users}')
     if orphan_users:
         for email in orphan_users:
