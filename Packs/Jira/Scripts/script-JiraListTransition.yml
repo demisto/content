@@ -11,7 +11,7 @@ script: |-
           incident_id = incident.get('dbotMirrorId')
           if incident_id:
               res = demisto.executeCommand('jira-list-transitions', {'issueId': incident.get('dbotMirrorId')})
-              if isinstance(res, list):
+              if res and isinstance(res, list):
                   transitions_names = res[0].get("Contents")
                   if transitions_names:
                       if not isError(res):
