@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import traceback
 
 """
 
@@ -18,6 +17,7 @@ import sys
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
 # Define utf8 as default encoding
 reload(sys)
 sys.setdefaultencoding('utf-8')  # pylint: disable=E1101
@@ -2386,7 +2386,7 @@ def parse_alert_to_incident(alert):
     event_values = alert.get('event_values', {})
     event_indicators_map = {
         'fileWriteEvent': 'fileWriteEvent/fileName',
-        'ipv4NetworkEvent': 'ipv4NetworkEven get/remoteIP',
+        'ipv4NetworkEvent': 'ipv4NetworkEven/remoteIP',
         'dnsLookupEvent': 'dnsLookupEvent/hostname',
         'regKeyEvent': 'regKeyEvent/valueName'
     }
@@ -2648,14 +2648,8 @@ def main():
             append_conditions()
         elif command == 'fireeye-hx-get-all-hosts-information':
             get_hosts_information()
-
-    except Exception as e:
-        demisto.error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
-        return_error(str(e))
-
-    # except ValueError as e:
-    #    return_error(e)
-
+     except ValueError as e:
+        return_error(e)
     finally:
         logout()
 
