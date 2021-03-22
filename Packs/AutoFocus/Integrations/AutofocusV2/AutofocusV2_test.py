@@ -59,7 +59,9 @@ IP_RES_JSON = {
             "tagGroups": [
                 {
                     "tag_group_name": "Downloader",
-                    "description": "This type of malware secretly downloads malicious files from a remote server, then installs and executes the files."
+                    "description":
+                        "This type of malware secretly downloads malicious files from a remote server, "
+                        "then installs and executes the files."
                     # noqa: E501
                 }
             ],
@@ -234,7 +236,7 @@ def test_reliability(mocker):
                                'summaryGenerationTs': 1616340557369, 'firstSeenTsGlobal': None,
                                'lastSeenTsGlobal': None, 'latestPanVerdicts': {'Test': 'test'},
                                'seenByDataSourceIds': [], 'wildfireRelatedSampleVerdictCounts': {}}, 'tags': [],
-                }
+                 }
     mocker.patch.object(AutofocusV2, 'search_indicator', return_value=mock_data)
     mocked_dbot = mocker.patch.object(CommonServerPython.Common, 'DBotScore')
     mocker.patch.object(CommonServerPython.Common, 'IP')
