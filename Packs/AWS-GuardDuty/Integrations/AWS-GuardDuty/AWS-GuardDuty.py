@@ -377,7 +377,7 @@ def delete_threat_intel_set(args):
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return_results('The ThreatIntel Set {0} has been deleted from Detector {1}'.format(args.get('ipSetId'),
-                                                                                   args.get('detectorId')))
+                       args.get('detectorId')))
 
 
 def get_threat_intel_set(args):
@@ -645,6 +645,7 @@ def test_function():
         return_results('ok')
     else:
         return_error("Test failed. Please verify your configuration.")
+
 
 def main():
     try:
