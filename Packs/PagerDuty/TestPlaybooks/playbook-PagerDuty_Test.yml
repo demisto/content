@@ -29,6 +29,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: e4df299a-5255-4fd9-8d71-650a68a27233
@@ -59,6 +61,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: a681fe78-7e3b-4823-8f01-9dfebc518ec6
@@ -92,6 +96,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 505be58d-eefe-4cb5-8d90-1e517170639f
@@ -123,6 +129,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 01a29c56-9ded-4cee-8baa-6c0c19205d8a
@@ -156,6 +164,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: be3c9739-b46f-4494-89b7-4e4cbc890e71
@@ -189,6 +199,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 854c3348-dffb-450b-8563-3fcde76d5a5e
@@ -216,6 +228,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 53f842f8-6d41-430b-8054-d710584b6e3e
@@ -232,7 +246,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3315
+          "y": 3815
         }
       }
     note: false
@@ -240,6 +254,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 05065412-7502-44c1-86e1-f2538a95420b
@@ -274,6 +290,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: a45088ff-5f6f-467a-8786-0637279875da
@@ -310,6 +328,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: a4912b92-3f33-4735-8118-598f388f92fc
@@ -360,6 +380,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: ff31cdb1-7353-45c5-8bb3-67124805300c
@@ -394,6 +416,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 36b072ab-e031-40fc-8e64-f4a9731a1fbd
@@ -434,6 +458,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 16429770-4272-4af6-8224-296e5c438cab
@@ -470,6 +496,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 2c1e418e-f2ce-4a58-8e41-b05b64f0fb9e
@@ -505,6 +533,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 53260adf-0016-49a5-8a0b-c110e9833f76
@@ -539,6 +569,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: fb2a48f8-7fc0-4b6a-8501-070b757cd339
@@ -589,6 +621,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: 0dc64057-20f3-4102-8892-bcde6c406e62
@@ -625,6 +659,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: 525a7927-ce70-4a17-8fdd-ec542574e682
@@ -670,6 +706,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: b5292631-ae5b-40eb-8bfd-e22f9ff34ec1
@@ -683,7 +721,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -713,12 +751,123 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 3ef72d21-4699-4397-8aef-b92aa9ddd4a8
+    type: regular
+    task:
+      id: 3ef72d21-4699-4397-8aef-b92aa9ddd4a8
+      version: -1
+      name: Get Submitted Incident info
+      description: Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged
+      script: '|||PagerDuty-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      incident_key:
+        simple: ${PagerDuty.Event.incident_key}
+      since: {}
+      sortBy: {}
+      status: {}
+      until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 340f05b1-3ab3-46d4-8049-02c45d7a8ea0
+    type: condition
+    task:
+      id: 340f05b1-3ab3-46d4-8049-02c45d7a8ea0
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PagerDuty.Incidents.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: b804863f-8ef4-436e-8db6-6771fd52e16a
+    type: regular
+    task:
+      id: b804863f-8ef4-436e-8db6-6771fd52e16a
+      version: -1
+      name: Sleep 1 sec for incident to update
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3330,
+        "height": 3830,
         "width": 380,
         "x": 50,
         "y": 50

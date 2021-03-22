@@ -85,7 +85,7 @@ SERVICES_HEADERS = ['ID', 'Name', 'Status', 'Created At', 'Integration']
 NOTIFICATION_RULES_HEADERS = ['ID', 'Type', 'Urgency', 'Notification timeout(minutes)']
 SCHEDULES_HEADERS = ['ID', 'Name', 'Today', 'Time Zone', 'Escalation Policy', 'Escalation Policy ID']
 USERS_ON_CALL_NOW_HEADERS = ['ID', 'Email', 'Name', 'Role', 'User Url', 'Time Zone']
-INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urgency', 'Html Url',
+INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urgency', 'Html Url', 'Incident key',
                      'Assigned To User', 'Service ID', 'Service Name', 'Escalation Policy', 'Last Status Change On',
                      'Last Status Change By', 'Number Of Escalations', 'Resolved By User', 'Resolve Reason']
 
@@ -239,6 +239,8 @@ def parse_incident_data(incidents):
         context['created_at'] = output['Created On'] = incident.get('created_at')
         context['urgency'] = output['Urgency'] = incident.get('urgency', '')
         output['Html Url'] = incident.get('html_url')
+        context['incident_key'] = incident.get('incident_key')
+        output['Incident key'] = incident.get('incident_key')
 
         if len(incident.get('assignments', [])) > 0:
             output['Assigned To User'] = incident['assignments'][0].get('assignee', {}).get('name')
@@ -533,7 +535,7 @@ def configure_status(status='triggered,acknowledged'):
     return status_request
 
 
-def get_incidents_command(since=None, until=None, status='triggered,acknowledged', sortBy=None):
+def get_incidents_command(since=None, until=None, status='triggered,acknowledged', sortBy=None, incident_key=None):
     """Get incidents command."""
     param_dict = {}
     if since is not None:
@@ -542,6 +544,8 @@ def get_incidents_command(since=None, until=None, status='triggered,acknowledged
         param_dict['until'] = until
     if sortBy is not None:
         param_dict['sortBy'] = sortBy
+    if incident_key:
+        param_dict['incident_key'] = incident_key
 
     url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(status)
     res = http_request('GET', url, param_dict)
