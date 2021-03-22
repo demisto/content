@@ -285,6 +285,24 @@ class DBotScoreReliability(object):
             DBotScoreReliability.F,
         )
 
+    @staticmethod
+    def get_dbot_score_reliability_from_str(reliability_str):
+        if reliability_str == DBotScoreReliability.A_PLUS:
+            return DBotScoreReliability.A_PLUS
+        elif reliability_str == DBotScoreReliability.A:
+            return DBotScoreReliability.A
+        elif reliability_str == DBotScoreReliability.B:
+            return DBotScoreReliability.B
+        elif reliability_str == DBotScoreReliability.C:
+            return DBotScoreReliability.C
+        elif reliability_str == DBotScoreReliability.D:
+            return DBotScoreReliability.D
+        elif reliability_str == DBotScoreReliability.E:
+            return DBotScoreReliability.E
+        elif reliability_str == DBotScoreReliability.F:
+            return DBotScoreReliability.F
+        raise Exception("Please use supported reliability only.")
+
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
@@ -4275,7 +4293,8 @@ class CommandResults:
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool) -> None
         if raw_response is None:
             raw_response = outputs
-
+        if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
+            raise ValueError('outputs_prefix is missing')
         if indicators and indicator:
             raise ValueError('indicators is DEPRECATED, use only indicator')
         self.indicators = indicators  # type: Optional[List[Common.Indicator]]
@@ -4353,7 +4372,7 @@ class CommandResults:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
-                outputs = self.outputs  # type: ignore[assignment]
+                outputs.update(self.outputs)  # type: ignore[call-overload]
 
         content_format = EntryFormat.JSON
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
@@ -4369,7 +4388,6 @@ class CommandResults:
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
             'Note': mark_as_note
         }
-
         return return_entry
 
 
@@ -4491,6 +4509,7 @@ def return_error(message, error='', outputs=None):
         :rtype: ``dict``
     """
     is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
+                                                                              'fetch-credentials',
                                                                               'long-running-execution',
                                                                               'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred

@@ -1,20 +1,19 @@
 from splunklib.binding import HTTPError, namespace
+
 import demistomock as demisto
 from CommonServerPython import *
-
-
 import splunklib.client as client
 import splunklib.results as results
 import json
 from datetime import timedelta, datetime
 import urllib2
-import hashlib
 import ssl
 from StringIO import StringIO
 import requests
 import urllib3
 import io
 import re
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
@@ -116,13 +115,12 @@ def convert_to_str(obj):
     return str(obj)
 
 
-def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
-                        searchID=None):
+def updateNotableEvents(baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
+                        searchID=None, auth_token=None, sessionKey=None):
     """
     Update some notable events.
 
     Arguments:
-    sessionKey -- The session key to use
     comment -- A description of the change or some information about the notable events
     status -- A status (only required if you are changing the status of the event)
     urgency -- An urgency (only required if you are changing the urgency of the event)
@@ -130,11 +128,13 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     eventIDs -- A list of notable event IDs (must be provided if a search ID is not provided)
     searchID -- An ID of a search. All of the events associated with this search will be modified
      unless a list of eventIDs are provided that limit the scope to a sub-set of the results.
+     auth_token - The authentication token to use
+     sessionKey -- The session key to use
     """
 
     # Make sure that the session ID was provided
-    if sessionKey is None:
-        raise Exception("A session key was not provided")
+    if not sessionKey and not auth_token:
+        raise Exception("A session_key/auth_token was not provided")
 
     # Make sure that rule IDs and/or a search ID is provided
     if eventIDs is None and searchID is None:
@@ -161,7 +161,10 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     if searchID is not None:
         args['searchID'] = searchID
 
-    auth_header = {'Authorization': 'Splunk %s' % sessionKey}
+    if not auth_token:
+        auth_header = {'Authorization': sessionKey}
+    else:
+        auth_header = {'Authorization': 'Bearer %s' % auth_token}
 
     args['output_mode'] = 'json'
 
@@ -188,13 +191,6 @@ def notable_to_incident(event):
     incident = {}  # type: Dict[str,Any]
     rule_title = ''
     rule_name = ''
-
-    if isinstance(event, results.Message):
-        if "Error in" in event.message:
-            raise ValueError(event.message)
-        else:
-            extensive_log('message in notable_to_incident is: {}'.format(convert_to_str(event.message)))
-
     if demisto.get(event, 'rule_title'):
         rule_title = event['rule_title']
     if demisto.get(event, 'rule_name'):
@@ -208,8 +204,6 @@ def notable_to_incident(event):
         incident["occurred"] = event["_time"]
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
-        extensive_log('\n\n occurred time in else: {} \n\n'.format(incident["occurred"]))
-
     event = replace_keys(event) if REPLACE_FLAG else event
     for key, val in event.items():
         # if notable event raw fields were sent in double quotes (e.g. "DNS Destination") and the field does not exist
@@ -478,62 +472,13 @@ def splunk_results_command(service):
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
-def occurred_to_datetime(incident_ocurred_time):
-    incident_time_without_timezone = incident_ocurred_time.split('.')[0]
-    incident_time_datetime = datetime.strptime(incident_time_without_timezone, SPLUNK_TIME_FORMAT)
-    return incident_time_datetime
+def fetch_incidents(service):
+    last_run = demisto.getLastRun() and demisto.getLastRun()['time']
+    search_offset = demisto.getLastRun().get('offset', 0)
 
-
-def get_latest_incident_time(incidents):
-    def get_incident_time_datetime(incident):
-        incident_time = incident["occurred"]
-        incident_time_datetime = occurred_to_datetime(incident_time)
-        return incident_time_datetime
-
-    latest_incident = max(incidents, key=get_incident_time_datetime)
-    latest_incident_time = latest_incident["occurred"]
-    return latest_incident_time
-
-
-def get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_incidents_found=True, max_window=20):
-    last_run_datetime = occurred_to_datetime(last_run)
-    if were_new_incidents_found:
-        # Decreasing one minute to avoid missing incidents that were indexed late
-        last_run_datetime = last_run_datetime - timedelta(minutes=1)
-
-    # keep last time max 20 mins before current time, to avoid timeout
-    if fetches_with_same_start_time_count >= max_window and not were_new_incidents_found:
-        last_run_datetime = last_run_datetime + timedelta(minutes=1)
-
-    next_run_without_miliseconds_and_tz = last_run_datetime.strftime(SPLUNK_TIME_FORMAT)
-    next_run = next_run_without_miliseconds_and_tz
-    return next_run
-
-
-def create_incident_custom_id(incident):
-    incident_raw_data = json.loads(incident['rawJSON'])['_raw']
-    incident_occurred = incident['occurred']
-    raw_hash = hashlib.md5(incident_raw_data).hexdigest()
-    incident_custom_id = '{}_{}'.format(incident_occurred, raw_hash)
-    return incident_custom_id
-
-
-def extensive_log(message):
-    if demisto.params().get('extensive_logs', False):
-        demisto.info(message)
-
-
-def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time):
-    new_last_run_fetched_ids = {}
-    for inc_id, time in last_run_fetched_ids.items():
-        if current_epoch_time - time < 3600:
-            new_last_run_fetched_ids[inc_id] = time
-
-    return new_last_run_fetched_ids
-
-
-def get_last_run_time(dem_params, service, last_run):
+    incidents = []
     current_time_for_fetch = datetime.utcnow()
+    dem_params = demisto.params()
     if demisto.get(dem_params, 'timezone'):
         timezone = dem_params['timezone']
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
@@ -548,95 +493,33 @@ def get_last_run_time(dem_params, service, last_run):
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-        extensive_log('SplunkPy last run is None. Last run time is: {}'.format(last_run))
-
-    return last_run, now
-
-
-def build_fetch_kwargs(dem_params, last_run_time, now, search_offset):
 
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run_time,
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
-    return kwargs_oneshot
 
-
-def build_fetch_query(dem_params):
-    fetch_query = dem_params['fetchQuery']
+    searchquery_oneshot = dem_params['fetchQuery']
 
     if demisto.get(dem_params, 'extractFields'):
         extractFields = dem_params['extractFields']
         extra_raw_arr = extractFields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
-            fetch_query = fetch_query + ' | eval ' + field_trimmed + '=' + field_trimmed
+            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
 
-    return fetch_query
-
-
-def fetch_incidents(service):
-    last_run_data = demisto.getLastRun()
-    last_run_time = last_run_data and last_run_data['time']
-    extensive_log('SplunkPy last run is:\n {}'.format(last_run_data))
-
-    search_offset = last_run_data.get('offset', 0)
-
-    dem_params = demisto.params()
-    last_run_time, now = get_last_run_time(dem_params, service, last_run_time)
-    extensive_log('SplunkPy last run time: {}, now: {}'.format(last_run_time, now))
-
-    kwargs_oneshot = build_fetch_kwargs(dem_params, last_run_time, now, search_offset)
-    fetch_query = build_fetch_query(dem_params)
-
-    oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
-
-    last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
-    current_epoch_time = int(time.time())
-
-    incidents = []
     for item in reader:
         inc = notable_to_incident(item)
-        extensive_log('Incident data after parsing to notable: {}'.format(inc))
-        incident_id = create_incident_custom_id(inc)
+        incidents.append(inc)
 
-        if incident_id not in last_run_fetched_ids:
-            last_run_fetched_ids[incident_id] = current_epoch_time
-            incidents.append(inc)
-        else:
-            extensive_log('SplunkPy - Dropped incident {} due to duplication.'.format(incident_id))
-
-    last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time)
-    extensive_log('SplunkPy - incidents fetched on last run = {}'.format(last_run_fetched_ids))
-
-    debug_message = 'SplunkPy - total number of incidents found: from {}\n to {}\n with the ' \
-                    'query: {} is: {}.\n incidents found: {}'.format(last_run_time, now, fetch_query,
-                                                                     len(incidents), incidents)
-    extensive_log(debug_message)
-
-    fetches_with_same_start_time_count = last_run_data.get('fetch_start_update_count', 0) + 1
-    max_window = 20 if "backwards_fetch_window" not in params else int(params["backwards_fetch_window"])
     demisto.incidents(incidents)
-    extensive_log('SplunkPy - Found incidents at the end of this run: {}'.format(incidents))
-
-    if len(incidents) == 0:
-        next_run = get_next_start_time(last_run_time, fetches_with_same_start_time_count, False, max_window)
-        extensive_log('SplunkPy - Next run time with no incidents found: {}'.format(next_run))
-        demisto.setLastRun({'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_ids,
-                            'fetch_start_update_count': fetches_with_same_start_time_count})
-    elif len(incidents) < FETCH_LIMIT:
-        latest_incident_fetched_time = get_latest_incident_time(incidents)
-        next_run = get_next_start_time(latest_incident_fetched_time, fetches_with_same_start_time_count, max_window)
-        extensive_log('SplunkPy - Next run time with some incidents found: {}'.format(next_run))
-        demisto.setLastRun(
-            {'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_ids,
-             'fetch_start_update_count': 0})
+    if len(incidents) < FETCH_LIMIT:
+        demisto.setLastRun({'time': now, 'offset': 0})
     else:
-        extensive_log('SplunkPy - Next run time with too many incidents:  {}'.format(last_run_time))
-        demisto.setLastRun({'time': last_run_time, 'offset': search_offset + FETCH_LIMIT,
-                            'fetch_start_update_count': 0, 'found_incidents_ids': last_run_fetched_ids})
+        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
 
 
 def parse_time_to_minutes():
@@ -686,7 +569,6 @@ def splunk_submit_event_command(service):
 
 
 def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_):
-
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
@@ -718,7 +600,6 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 
 
 def splunk_submit_event_hec_command():
-
     hec_token = demisto.params().get('hec_token')
     baseurl = demisto.params().get('hec_url')
     if baseurl is None:
@@ -740,20 +621,11 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def splunk_edit_notable_event_command(proxy):
-    if not proxy:
-        os.environ["HTTPS_PROXY"] = ""
-        os.environ["HTTP_PROXY"] = ""
-        os.environ["https_proxy"] = ""
-        os.environ["http_proxy"] = ""
-    baseurl = 'https://' + demisto.params()['host'] + ':' + demisto.params()['port'] + '/'
-    username = demisto.params()['authentication']['identifier']
-    password = demisto.params()['authentication']['password']
-    auth_req = requests.post(baseurl + 'services/auth/login',
-                             data={'username': username, 'password': password, 'output_mode': 'json'},
-                             verify=VERIFY_CERTIFICATE)
+def splunk_edit_notable_event_command(service, auth_token):
+    params = demisto.params()
+    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    sessionKey = service.token if not auth_token else None
 
-    sessionKey = auth_req.json()['sessionKey']
     eventIDs = None
     if demisto.get(demisto.args(), 'eventIDs'):
         eventIDsStr = demisto.args()['eventIDs']
@@ -761,10 +633,12 @@ def splunk_edit_notable_event_command(proxy):
     status = None
     if demisto.get(demisto.args(), 'status'):
         status = int(demisto.args()['status'])
-    response_info = updateNotableEvents(sessionKey=sessionKey, baseurl=baseurl,
+
+    response_info = updateNotableEvents(baseurl=base_url,
                                         comment=demisto.get(demisto.args(), 'comment'), status=status,
                                         urgency=demisto.get(demisto.args(), 'urgency'),
-                                        owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
+                                        owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs,
+                                        auth_token=auth_token, sessionKey=sessionKey)
     if 'success' not in response_info or not response_info['success']:
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Could not update notable "
@@ -1207,10 +1081,18 @@ def main():
         'host': demisto.params()['host'],
         'port': demisto.params()['port'],
         'app': demisto.params().get('app', '-'),
-        'username': demisto.params()['authentication']['identifier'],
-        'password': demisto.params()['authentication']['password'],
         'verify': VERIFY_CERTIFICATE
     }
+
+    auth_token = None
+    username = demisto.params()['authentication']['identifier']
+    password = demisto.params()['authentication']['password']
+    if username == '_token':
+        connection_args['splunkToken'] = password
+        auth_token = password
+    else:
+        connection_args['username'] = username
+        connection_args['password'] = password
 
     if use_requests_handler:
         handle_proxy()
@@ -1247,7 +1129,7 @@ def main():
     if demisto.command() == 'splunk-submit-event':
         splunk_submit_event_command(service)
     if demisto.command() == 'splunk-notable-event-edit':
-        splunk_edit_notable_event_command(proxy)
+        splunk_edit_notable_event_command(service, auth_token)
     if demisto.command() == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     if demisto.command() == 'splunk-job-status':

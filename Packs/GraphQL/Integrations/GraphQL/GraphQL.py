@@ -74,11 +74,15 @@ def main() -> None:
 
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
+            with client as session:
+                session.fetch_schema()
             return_results('ok')
         elif command == 'graphql-query':
             return_results(execute_query(client, demisto.args()))
         elif command == 'graphql-mutation':
             return_results(execute_query(client, demisto.args()))
+        else:
+            raise NotImplementedError(f"Received an un-supported command: {command}")
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
