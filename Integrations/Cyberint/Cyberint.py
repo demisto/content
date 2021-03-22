@@ -367,7 +367,7 @@ def cyberint_alerts_get_analysis_report_command(client: Client, args: dict) -> d
     return ""
 
 
-def get_attachment_name(attachment_name):
+def get_attachment_name(attachment_name) -> str:
     """
     Retrieve attachment name or error string if none is provided
 
@@ -381,6 +381,101 @@ def get_attachment_name(attachment_name):
     if attachment_name is None or attachment_name == "":
         return "demisto_untitled_attachment"
     return attachment_name
+
+
+def get_alert_attachments_files(client: Client, alert: dict) -> list:
+    """
+    Retrieve all alert attachments files - Attachments , CSV , Screenshot and Analysis report
+    Args:
+        client (Client): Cyberint API client.
+        alert (dict): Cyberint Alert.
+
+    Returns:
+        list: List of attachments - each attachment element will contain the following fields:
+        {
+            "path": file_result["FileID"],
+            "name": attachment_name,
+            "showMediaFile": True
+        }
+
+    """
+    incident_attachments = []
+    alert_id = alert.get('ref_id')
+    if not alert_id:
+        return []
+    # alert_attachments = []
+    alert_attachments = alert.get('attachments', [])
+    for attachment in alert_attachments:
+        attachment_name = get_attachment_name(attachment.get('name', None))
+        attachment_id = attachment.get('id', None)
+        if not attachment_id:
+            continue
+        get_attachment_response = client.get_alert_attachment(alert_id, attachment_id)
+        file_result = fileResult(filename=attachment_name, data=get_attachment_response.content)
+        # check for error
+        if file_result["Type"] == EntryType.ERROR:
+            demisto.error(file_result["Contents"])
+            raise Exception(file_result["Contents"])
+
+        incident_attachments.append({
+            "path": file_result["FileID"],
+            "name": attachment_name,
+            "showMediaFile": True
+        })
+
+    scrren_shot = dict_safe_get(alert, ["alert_data", "screenshot"])
+    if scrren_shot:
+        scrren_shot_name = get_attachment_name(scrren_shot.get('name', None))
+        scrren_shot_id = scrren_shot.get('id', None)
+        get_scrren_shot_response = client.get_alert_attachment(alert_id, scrren_shot_id)
+        file_result = fileResult(filename=scrren_shot_name, data=get_scrren_shot_response.content)
+        # check for error
+        if file_result["Type"] == EntryType.ERROR:
+            demisto.error(file_result["Contents"])
+            raise Exception(file_result["Contents"])
+
+        incident_attachments.append({
+            "path": file_result["FileID"],
+            "name": scrren_shot_name,
+            "showMediaFile": True
+        })
+
+    csv = dict_safe_get(alert, ["alert_data", "csv"])
+    if csv:
+        csv_name = get_attachment_name(csv.get('name', None))
+        csv_id = csv.get('id', None)
+        if csv_id:
+            csv_response = client.get_alert_attachment(alert_id, csv_id)
+            file_result = fileResult(filename=csv_name, data=csv_response.content)
+            # check for error
+            if file_result["Type"] == EntryType.ERROR:
+                demisto.error(file_result["Contents"])
+                raise Exception(file_result["Contents"])
+
+            incident_attachments.append({
+                "path": file_result["FileID"],
+                "name": csv_name,
+                "showMediaFile": True
+            })
+
+    analysis_report = alert.get('analysis_report', None)
+    try:
+        analysis_raw_response = client.get_analysis_report(alert_id)
+    except Exception as e:
+        return []
+    file_result = fileResult(filename=get_attachment_name(analysis_report.get("name", None)),
+                             data=analysis_raw_response.content)
+    if file_result["Type"] == EntryType.ERROR:
+        demisto.error(file_result["Contents"])
+        raise Exception(file_result["Contents"])
+
+    incident_attachments.append({
+        "path": file_result["FileID"],
+        "name": get_attachment_name(analysis_report.get("name", None)),
+        "showMediaFile": True
+    })
+
+    return incident_attachments
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
@@ -423,31 +518,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
         alert_id = alert.get('ref_id')
         alert_title = alert.get('title')
-        alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
-        if alert_csv_id:
-            extracted_csv_data = extract_data_from_csv_stream(client, alert_id,
-                                                              alert_csv_id)
-            alert['alert_data']['csv'] = extracted_csv_data
-        alert_attachments = alert.get('attachments', [])
-        incident_attachments = []
-        for attachment in alert_attachments:
-            attachment_name = get_attachment_name(attachment.get('name', None))
-            attachment_id = attachment.get('id', None)
-            if not attachment_id or not alert_id:
-                continue
-            get_attachment_response = client.get_alert_attachment(alert_id, attachment_id)
-            file_result = fileResult(filename=attachment_name, data=get_attachment_response.content)
 
-            # check for error
-            if file_result["Type"] == EntryType.ERROR:
-                demisto.error(file_result["Contents"])
-                raise Exception(file_result["Contents"])
-
-            incident_attachments.append({
-                "path": file_result["FileID"],
-                "name": attachment_name,
-                "showMediaFile": True
-            })
+        incident_attachments = get_alert_attachments_files(client, alert)
         incident = {
             'name': f'Cyberint alert {alert_id}: {alert_title}',
             'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
@@ -456,6 +528,13 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
             'attachment': incident_attachments
         }
         incidents.append(incident)
+
+        alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
+        if alert_csv_id:
+            extracted_csv_data = extract_data_from_csv_stream(client, alert_id,
+                                                              alert_csv_id)
+            alert['alert_data']['csv'] = extracted_csv_data
+
     if incidents:
         #  Update the time for the next fetch so that there won't be duplicates.
         last_incident_time = incidents[0].get('occurred', '')
