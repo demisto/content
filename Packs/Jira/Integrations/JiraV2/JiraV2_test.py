@@ -241,7 +241,7 @@ def test_get_remote_data_when_dont_need_update(mocker):
     res = get_remote_data_command(
         {"id": "15", "lastUpdate": "2050-11-25T16:29:37.277764067Z"}
     )
-    assert res.mirrored_object == {}
+    assert res.mirrored_object == {'in_mirror_error': ''}
     assert res.entries == []
 
 
