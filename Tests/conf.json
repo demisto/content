@@ -424,17 +424,17 @@
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
+            "playbookID": "MicrosoftGraphMail-Test_dev",
             "instance_names": "ms_graph_mail_dev"
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
+            "playbookID": "MicrosoftGraphMail-Test_dev_no_oproxy",
             "instance_names": "ms_graph_mail_dev_no_oproxy"
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
+            "playbookID": "MicrosoftGraphMail-Test_prod",
             "instance_names": "ms_graph_mail_prod"
         },
         {
@@ -1709,17 +1709,17 @@
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
             "instance_names": "microsoft_defender_atp_prod"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test dev",
             "instance_names": "microsoft_defender_atp_dev"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed"
         },
         {
@@ -1774,23 +1774,23 @@
         },
         {
             "integrations": "Microsoft Graph Groups",
-            "playbookID": "Microsoft Graph Groups - Test",
+            "playbookID": "Microsoft Graph Groups - Test dev",
             "instance_names": "ms_graph_groups_dev"
         },
         {
             "integrations": "Microsoft Graph Groups",
-            "playbookID": "Microsoft Graph Groups - Test",
+            "playbookID": "Microsoft Graph Groups - Test prod",
             "instance_names": "ms_graph_groups_prod"
         },
         {
             "integrations": "Microsoft_Graph_Files",
-            "playbookID": "test_MsGraphFiles",
+            "playbookID": "test_MsGraphFiles dev",
             "instance_names": "ms_graph_files_dev",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft_Graph_Files",
-            "playbookID": "test_MsGraphFiles",
+            "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
             "fromversion": "5.0.0"
         },
@@ -1806,19 +1806,19 @@
         },
         {
             "integrations": "Microsoft Graph Device Management",
-            "playbookID": "MSGraph_DeviceManagement_Test",
+            "playbookID": "MSGraph_DeviceManagement_Test_dev",
             "instance_names": "ms_graph_device_management_oproxy_dev",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
-            "playbookID": "MSGraph_DeviceManagement_Test",
+            "playbookID": "MSGraph_DeviceManagement_Test_prod",
             "instance_names": "ms_graph_device_management_oproxy_prod",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
-            "playbookID": "MSGraph_DeviceManagement_Test",
+            "playbookID": "MSGraph_DeviceManagement_Test_self_deployed_prod",
             "instance_names": "ms_graph_device_management_self_deployed_prod",
             "fromversion": "5.0.0"
         },
