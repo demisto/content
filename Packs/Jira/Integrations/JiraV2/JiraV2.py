@@ -443,38 +443,6 @@ def create_incident_from_ticket(issue, should_get_attachments, should_get_commen
     }
 
 
-def create_update_incident_from_ticket(issue: dict) -> dict:
-    """ Create incident update.
-
-    Args:
-        issue: Dict representing the Jira issue (Raw).
-
-    Returns:
-        dict: Labels to update in incident.
-    """
-    fetch_obj = {
-        'issue': json.dumps(issue),
-        'id': str(issue.get('id')),
-        'fields': {
-            'assignee': {'emailAddress': str(demisto.get(issue, 'fields.assignee.emailAddress'))},
-            'priority': {'name': str(demisto.get(issue, 'fields.priority.name'))},
-            'status': {'name': str(demisto.get(issue, 'fields.status.name'))},
-            'project': {'name': str(demisto.get(issue, 'fields.project.name'))},
-            'reporter': {'displayName': str(demisto.get(issue, 'fields.reporter.displayName')),
-                         'emailAddress': str(issue['fields']['reporter'].get('emailAddress', ''))},
-            'summary': str(demisto.get(issue, 'fields.summary')),
-            'description': str(demisto.get(issue, 'fields.description')),
-            'duedate': str(demisto.get(issue, 'fields.duedate')),
-            'labels': str(demisto.get(issue, 'fields.labels')),
-            'updated': str(demisto.get(issue, 'fields.updated')),
-            'created': str(demisto.get(issue, 'fields.created')),
-            'lastViewed': str(demisto.get(issue, 'fields.lastViewed')),
-        }
-    }
-
-    return fetch_obj
-
-
 def get_project_id(project_key='', project_name=''):
     if not project_key and not project_name:
         return_error('You must provide at least one of the following: project_key or project_name')

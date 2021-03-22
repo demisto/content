@@ -413,39 +413,6 @@ def test_get_incident_entries(mocker):
     assert res["attachments"] == "here there is attachment"
 
 
-def test_create_update_incident_from_ticket(mocker):
-    """
-    Given:
-        - incident
-    When
-        - need to update incident when an issue is modified in Jira
-    Then
-        - The updated incident
-    """
-    from JiraV2 import create_update_incident_from_ticket
-    from test_data.expected_results import GET_JIRA_ISSUE_RES
-
-    res = create_update_incident_from_ticket(GET_JIRA_ISSUE_RES)
-    mocker.patch.object(demisto, "info")
-    mocker.patch.object(demisto, "debug")
-    assert res["id"] == "17757"
-    assert res["issue"]
-    assert list(res["fields"].keys()) == [
-        "assignee",
-        "priority",
-        "status",
-        "project",
-        "reporter",
-        "summary",
-        "description",
-        "duedate",
-        "labels",
-        "updated",
-        "created",
-        "lastViewed",
-    ]
-
-
 def test_update_remote_system(mocker):
     """
     Given:
