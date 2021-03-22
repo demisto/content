@@ -57,7 +57,7 @@ RESPONSE = [{u'Type': 1,
 )
 def test_multiple_indicators(mocker, input, expected):
     from GetIndicatorDBotScore import main
-    res = mocker.patch.object(CommonServerPython, 'appendContext')
+    mocker.patch.object(CommonServerPython, 'appendContext')
     mocker.patch.object(demisto, 'executeCommand', return_value=RESPONSE)
     mocker.patch.object(demisto, 'args', return_value={'indicator': input})
     main()
