@@ -9,7 +9,6 @@ inputs: []
 name: JOB - XSOAR - Export Selected Custom Content
 outputs: []
 starttaskid: "0"
-deprecated: true
 tasks:
   "0":
     id: "0"

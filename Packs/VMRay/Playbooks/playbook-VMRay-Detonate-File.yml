@@ -3,7 +3,6 @@ version: -1
 name: Detonate File - VMRay
 description: Detonating file with VMRay
 starttaskid: "0"
-deprecated: true
 tasks:
   "0":
     id: "0"
