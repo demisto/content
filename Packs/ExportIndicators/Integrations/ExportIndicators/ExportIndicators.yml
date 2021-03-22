@@ -57,10 +57,10 @@ configuration:
   type: 0
 - defaultvalue: 'true'
   display: Long Running Instance
+  hidden: true
   name: longRunning
   required: false
   type: 8
-  hidden: true
 - additionalinfo: Requires a unique port for each long-running integration instance.
     Do not use the same port for multiple instances.
   display: Listen Port
@@ -267,12 +267,28 @@ script:
       - 'True'
       required: false
       secret: false
+    - default: false
+      description: The field by which to sort the indicators by.
+      isArray: false
+      name: sort_field
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The direction by which to order the indicators. The options are `asc` or `desc`.
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
     deprecated: false
     description: Updates values stored in the Export Indicators Service (only avaialable
       On-Demand).
     execution: false
     name: eis-update
-  dockerimage: demisto/teams:1.0.0.14318
+  dockerimage: demisto/teams:1.0.0.16907
   feed: false
   isfetch: false
   longRunning: true
