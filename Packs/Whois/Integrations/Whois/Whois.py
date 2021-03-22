@@ -8427,12 +8427,10 @@ def ip_command(ips):
             integration_name='Whois',
             score=Common.DBotScore.NONE
         )
-
         related_feed = Common.FeedRelatedIndicators(
             value=response.get('network', {}).get('cidr'),
             indicator_type='IP'
         )
-
         ip_output = Common.IP(
             ip=ip,
             asn=response.get('asn'),
@@ -8441,7 +8439,6 @@ def ip_command(ips):
             dbot_score=dbot_score,
             feed_related_indicators=related_feed
         )
-
         result = CommandResults(
             outputs_prefix='Whois.IP',
             outputs_key_field='query',
