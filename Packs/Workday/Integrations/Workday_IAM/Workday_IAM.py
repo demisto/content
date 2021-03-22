@@ -145,7 +145,7 @@ def is_report_missing_required_user_data(workday_user):
 
 
 def is_termination_event(workday_user, demisto_user, deactivation_date_field, first_run=False):
-    if not first_run and demisto_user is None or demisto_user.get(AD_ACCOUNT_STATUS_FIELD) == 'Disabled':
+    if not first_run and (demisto_user is None or demisto_user.get(AD_ACCOUNT_STATUS_FIELD) == 'Disabled'):
         # skipping termination check - user does not exist or already terminated
         return False
 
