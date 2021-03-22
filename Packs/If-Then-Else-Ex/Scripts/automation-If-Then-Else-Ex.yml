@@ -1,5 +1,5 @@
 args:
-- description: The value to evaluate
+- description: The value to transform
   name: value
   required: true
 - description: A value to compare with rhs
@@ -7,19 +7,39 @@ args:
 - description: A value to compare with lhs
   name: rhs
 - auto: PREDEFINED
-  defaultValue: =
-  description: The operator to compare value1 to value2
+  defaultValue: ==
+  description: The operator to compare lhs to rhs
   name: operator
   predefined:
-  - =
+  - ==
   - '!='
+  - '>'
+  - '>='
+  - <
+  - <=
+  - matches
+  - matches caseless
+  - doesn't match
+  - doesn't match caseless
+  - 'wildcard: matches'
+  - 'wildcard: matches caseless'
+  - 'wildcard: doesn''t match'
+  - 'wildcard: doesn''t match caseless'
+  - 'regex: matches'
+  - 'regex: matches caseless'
+  - 'regex: doesn''t match'
+  - 'regex: doesn''t match caseless'
+  - in list
+  - in caseless list
+  - not in list
+  - not in caseless list
   required: true
 - description: Return this value if the condition is true
   name: then
-- description: Return this value if the condition is false
+- description: Return this value if the condition is not true
   name: else
 - defaultValue: transformer_value
-  description: The name to specify the value given to this transformer.
+  description: The special name to return the value given to this transformer.
   name: transformer_value_key
 comment: A transformer for extended if-then-else logic.
 commonfields:
@@ -106,7 +126,7 @@ script: |
         :param operator: The name of the operation.
         :return: Return True if the value matches the pattern, False otherwise.
       """
-      if operator in ('=', 'matches'):
+      if operator in ('==', 'matches'):
           return lhs == rhs
 
       elif operator in ('!=', "doesn't match"):
