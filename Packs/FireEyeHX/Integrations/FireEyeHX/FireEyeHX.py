@@ -2386,7 +2386,7 @@ def parse_alert_to_incident(alert):
     event_values = alert.get('event_values', {})
     event_indicators_map = {
         'fileWriteEvent': 'fileWriteEvent/fileName',
-        'ipv4NetworkEvent': 'ipv4NetworkEven/remoteIP',
+        'ipv4NetworkEvent': 'ipv4NetworkEvent/remoteIP',
         'dnsLookupEvent': 'dnsLookupEvent/hostname',
         'regKeyEvent': 'regKeyEvent/valueName'
     }
@@ -2648,7 +2648,7 @@ def main():
             append_conditions()
         elif command == 'fireeye-hx-get-all-hosts-information':
             get_hosts_information()
-     except ValueError as e:
+    except ValueError as e:
         return_error(e)
     finally:
         logout()
