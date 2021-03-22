@@ -56,6 +56,16 @@ RESPONSE = [{u'Type': 1,
 
 )
 def test_multiple_indicators(mocker, input, expected):
+    """
+    Given:
+            - indicator list as input
+
+        When:
+            - running the script
+
+        Then:
+            - validating that every indicator in the input returns at least one valid result (multiple indicators have multiple results)
+    """
     from GetIndicatorDBotScore import main
     mocker.patch.object(CommonServerPython, 'appendContext')
     mocker.patch.object(demisto, 'executeCommand', return_value=RESPONSE)
