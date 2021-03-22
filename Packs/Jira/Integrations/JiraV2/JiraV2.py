@@ -1065,7 +1065,6 @@ def update_remote_system_command(args):
         if remote_args.delta and remote_args.incident_changed:
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
-
             edit_issue_command(remote_id, mirroring=True, **remote_args.delta)
 
         else:
@@ -1160,7 +1159,6 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         # Get raw response on issue ID
         _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
         demisto.info('get remote data')
-
         # Timestamp - Issue last modified in jira server side
         jira_modified_date: datetime = parse(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
         # Timestamp - Issue last sync in demisto server side
@@ -1181,6 +1179,7 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
             if closed_issue:
                 demisto.info(
                     f'Close incident with ID: {parsed_args.remote_incident_id} this issue was marked as "Done"')
+                incident_update['in_mirror_error'] = ''
                 return GetRemoteDataResponse(incident_update, [closed_issue])
 
             entries = get_incident_entries(issue_raw_response, incident_modified_date)
@@ -1197,10 +1196,12 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
                 parsed_entries.append(attachment)
         if parsed_entries:
             demisto.info(f'Update the next entries: {parsed_entries}')
+
+        incident_update['in_mirror_error'] = ''
         return GetRemoteDataResponse(incident_update, parsed_entries)
 
     except Exception as e:
-        demisto.debug(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id} \n"
+        demisto.info(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
 
         if "Rate limit exceeded" in str(e):
@@ -1208,7 +1209,6 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
 
         if incident_update:
             incident_update['in_mirror_error'] = str(e)
-
         else:
             incident_update = {
                 'id': parsed_args.remote_incident_id,
