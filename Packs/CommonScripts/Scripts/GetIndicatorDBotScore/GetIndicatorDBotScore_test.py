@@ -64,7 +64,7 @@ def test_multiple_indicators(mocker, input, expected):
             - running the script
 
         Then:
-            - validating that every indicator in the input returns at least one valid result (multiple indicators have multiple results)
+            - ensures that every indicator in the input returns one valid result (multiple indicators have multiple results)
     """
     from GetIndicatorDBotScore import main
     mocker.patch.object(CommonServerPython, 'appendContext')
