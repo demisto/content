@@ -1,4 +1,5 @@
 import concurrent.futures
+from copy import deepcopy
 from enum import Enum
 from threading import Lock
 from typing import Tuple
@@ -8,7 +9,6 @@ import urllib3
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from copy import deepcopy
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -61,8 +61,7 @@ TERMINATING_SEARCH_STATUSES = {'CANCELED', 'ERROR', 'COMPLETED'}
 DEFAULT_MIRRORING_DIRECTION = 'No Mirroring'
 MIRROR_DIRECTION: Dict[str, Optional[str]] = {
     'No Mirroring': None,
-    'Mirror Offense': 'In',
-    'Mirror Offense And Events': 'In'
+    'Mirror Offense': 'In'
 }
 EVENT_COLUMNS_DEFAULT_VALUE = \
     'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
@@ -2650,44 +2649,22 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         GetRemoteDataResponse.
     """
     remote_args = GetRemoteDataArgs(args)
-    offense_id = remote_args.remote_incident_id
-    mirroring_option = params.get('mirror_options')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-    demisto.error(f'handling {offense_id} fromremote')
 
-    current_mirrored_offense = client.offenses_list(offense_id=offense_id)
-    offense_last_update = get_time_parameter(current_mirrored_offense.get('last_persisted_time'))
+    offense = client.offenses_list(offense_id=remote_args.remote_incident_id)
+    offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
 
     # versions below 6.1 compatibility
     last_update = get_time_parameter(args.get('lastUpdate'))
     if last_update and last_update > offense_last_update:
         demisto.debug('Nothing new in the ticket')
-        return GetRemoteDataResponse({'id': offense_id, 'in_mirror_error': ''}, [])
+        return GetRemoteDataResponse({'id': remote_args.remote_incident_id, 'in_mirror_error': ''}, [])
 
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
-
-    if mirroring_option != 'Mirror Offense And Events':
-        enriched_offense = enrich_offenses_result(client, current_mirrored_offense, ip_enrich, asset_enrich)
-        final_offense_data = sanitize_outputs(enriched_offense)[0]  # type: Optional[Dict]
-
-    else:
-        final_offense_data = get_remote_data_with_events(
-            client=client,
-            fetch_mode=params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE),
-            current_mirrored_id=offense_id,
-            events_columns=params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE),
-            events_limit=int(params.get('events_limit', DEFAULT_EVENTS_LIMIT)),
-            ip_enrich=ip_enrich,
-            asset_enrich=asset_enrich
-        )
-
-    # If mirroring with events did not return an updated offense.
-    if not final_offense_data:
-        return GetRemoteDataResponse({'id': offense_id, 'in_mirror_error': ''}, [])
-
     entries = []
-    if final_offense_data.get('status') == 'CLOSED' and argToBoolean(params.get('close_incident', False)):
-        if closing_reason := final_offense_data.get('closing_reason_id', ''):
+    if offense.get('status') == 'CLOSED' and argToBoolean(params.get('close_incident', False)):
+        demisto.debug(f'Offense is closed: {offense}')
+        if closing_reason := offense.get('closing_reason_id', ''):
             closing_reason = client.closing_reasons_list(closing_reason).get('text')
 
         entries.append({
@@ -2698,6 +2675,9 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             },
             'ContentsFormat': EntryFormat.JSON
         })
+
+    enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
+    final_offense_data = sanitize_outputs(enriched_offense)[0]
 
     return GetRemoteDataResponse(final_offense_data, entries)
 
@@ -2715,116 +2695,19 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     Returns:
         (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
     """
-    ctx = get_integration_context()
     remote_args = GetModifiedRemoteDataArgs(args)
-    highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
+    highest_fetched_id = get_integration_context().get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     range_ = f'items=0-{limit - 1}'
-    mirroring_option = params.get('mirror_options')
     last_update = get_time_parameter(remote_args.last_update, epoch_format=True)
 
     offenses = client.offenses_list(range_=range_,
                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
                                     sort='+last_persisted_time',
                                     fields='id')
+    new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
 
-    new_modified_records_ids = [offense.get('id') for offense in offenses if 'id' in offense]
-
-    if mirroring_option == 'Mirror Offense And Events':
-        old_modified_records = ctx.get('modified_records_ids', [])
-        # List containing 2 items, [offense_id, search_id] where search_id is search associated to the offense.
-        # Because search was not created, initallized with None.
-        new_modified_records = [[offense_id, None] for offense_id in new_modified_records_ids]
-        all_modified_records = old_modified_records + new_modified_records
-
-        old_modified_records_ids = [record_id for record_id, _ in old_modified_records]
-        all_modified_records_ids = old_modified_records_ids + new_modified_records_ids
-        set_to_integration_context_with_retries({
-            'samples': ctx.get('samples', []),
-            LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY),
-            'modified_records_ids': all_modified_records
-        })
-    else:
-        all_modified_records_ids = new_modified_records_ids
-
-    demisto.error(f'returning {all_modified_records_ids} from modified-remote')
-    return GetModifiedRemoteDataResponse(all_modified_records_ids)
-
-
-# get_remote_data_command without events mirroring
-# def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
-#     """
-#     get-remote-data command: Returns an updated incident and entries
-#
-#     Args:
-#         client (Client): QRadar client to perform the API calls.
-#         params (Dict): Demisto params.
-#         args (Dict):
-#             id: Offense id to retrieve.
-#             lastUpdate: When was the last time we data was retrieved in Epoch.
-#
-#     Returns:
-#         GetRemoteDataResponse.
-#     """
-#     remote_args = GetRemoteDataArgs(args)
-#     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-#
-#     offense = client.offenses_list(offense_id=remote_args.remote_incident_id)
-#     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
-#
-#     # versions below 6.1 compatibility
-#     last_update = get_time_parameter(args.get('lastUpdate'))
-#     if last_update and last_update > offense_last_update:
-#         demisto.debug('Nothing new in the ticket')
-#         return GetRemoteDataResponse({'id': remote_args.remote_incident_id, 'in_mirror_error': ''}, [])
-#
-#     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
-#     entries = []
-#     if offense.get('status') == 'CLOSED' and argToBoolean(params.get('close_incident', False)):
-#         demisto.debug(f'Offense is closed: {offense}')
-#         if closing_reason := offense.get('closing_reason_id', ''):
-#             closing_reason = client.closing_reasons_list(closing_reason).get('text')
-#
-#         entries.append({
-#             'Type': EntryType.NOTE,
-#             'Contents': {
-#                 'dbotIncidentClose': True,
-#                 'closeReason': f'From QRadar: {closing_reason}'
-#             },
-#             'ContentsFormat': EntryFormat.JSON
-#         })
-#
-#     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
-#     final_offense_data = sanitize_outputs(enriched_offense)[0]
-#
-#     return GetRemoteDataResponse(final_offense_data, entries)
-
-# get-modified without mirror events
-# def get_modified_remote_data_command(client: Client, params: Dict[str, str],
-#                                      args: Dict[str, str]) -> GetModifiedRemoteDataResponse:
-#     """
-#     Performs API calls to QRadar service, querying for offenses that were updated in QRadar later than
-#     the last update time given in the argument 'lastUpdate'.
-#     Args:
-#         client (Client): QRadar client to perform the API calls.
-#         params (Dict): Demisto params.
-#         args (Dict): Demisto arguments.
-#
-#     Returns:
-#         (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
-#     """
-#     remote_args = GetModifiedRemoteDataArgs(args)
-#     highest_fetched_id = get_integration_context().get(LAST_FETCH_KEY, 0)
-#     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
-#     range_ = f'items=0-{limit - 1}'
-#     last_update = get_time_parameter(remote_args.last_update, epoch_format=True)
-#
-#     offenses = client.offenses_list(range_=range_,
-#                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
-#                                     sort='+last_persisted_time')
-#     new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
-#
-#     return GetModifiedRemoteDataResponse(new_modified_records_ids)
+    return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
 
 ''' MAIN FUNCTION '''
