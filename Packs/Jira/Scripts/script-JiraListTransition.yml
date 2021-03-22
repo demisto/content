@@ -6,13 +6,11 @@ script: |-
   def main():
       output = {}
       try:
-          incident = demisto.incidents()[0]
-          incident_id = incident.get('dbotMirrorId')
+          incident_id = demisto.incidents()[0].get('dbotMirrorId')
           if incident_id:
               res = demisto.executeCommand('jira-list-transitions', {'issueId': incident.get('dbotMirrorId')})
-              if isinstance(res, list):
-                  res = res[0]
-                  transitions_names = res.get("Contents")
+              if res and isinstance(res, list):
+                  transitions_names = res[0].get("Contents")
                   if transitions_names:
                       if not isError(res):
                           output = {'hidden': False, 'options': sorted(transitions_names)}
