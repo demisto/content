@@ -19,24 +19,26 @@ def main():
     validate_file_keys(landing_page_sections_json)
 
     bucket_pack_names = {os.path.basename(pack_name) for pack_name in glob(f'{options.index_path}/index/*')}
-    validate_valid_packs_in_sections(landing_page_sections_json, bucket_pack_names)
+    content_repo_pack_names = {os.path.basename(pack_name) for pack_name in glob('Packs/*')}
+    valid_packs = bucket_pack_names | content_repo_pack_names
+    validate_valid_packs_in_sections(landing_page_sections_json, valid_packs)
     logging.success('Validation finished successfully')
 
 
-def validate_valid_packs_in_sections(landing_page_sections_json: dict, bucket_pack_names: set) -> None:
+def validate_valid_packs_in_sections(landing_page_sections_json: dict, valid_pack_names: set) -> None:
     """
     Validates all packs in the sections of the file are valid packs according to the latest index.zip file
     Args:
         landing_page_sections_json: The content of the landingPage_sections.json file
-        bucket_pack_names: A set containing all valid pack names from latest index.zip file
+        valid_pack_names: A set containing all valid pack names from latest index.zip file and content repo
     """
     logging.info('validating packs in sections appear in latest index.zip file')
     for section_name, packs_in_section in landing_page_sections_json.items():
         if section_name in {'description', 'sections'}:
             continue
         for pack_name in packs_in_section:
-            assert pack_name in bucket_pack_names, f'Pack {pack_name} was not found in latest index.zip file, ' \
-                                                   f'Make sure you uploaded the pack'
+            assert pack_name in valid_pack_names, f'Pack {pack_name} was not found in latest index.zip file, ' \
+                                                  f'Make sure you uploaded the pack'
 
 
 def validate_file_keys(landing_page_sections_json: dict) -> None:
