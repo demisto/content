@@ -26,6 +26,7 @@ import string
 from apiclient import discovery
 from oauth2client import service_account
 import itertools as it
+from requests.exceptions import HTTPError
 
 ''' GLOBAL VARS '''
 ADMIN_EMAIL = None
@@ -1125,7 +1126,10 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'v1',
         ['https://www.googleapis.com/auth/gmail.readonly'],
         command_args['userId'])
-    result = service.users().messages().list(**command_args).execute()
+    try:
+        result = service.users().messages().list(**command_args).execute()
+    except HTTPError:
+        result = {}
 
     return [get_mail(user_id, mail['id'], 'full') for mail in result.get('messages', [])], q
 
