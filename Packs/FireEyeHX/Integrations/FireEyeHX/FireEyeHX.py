@@ -14,9 +14,13 @@ import time
 import json
 import os
 import re
+import sys
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
+# Define utf8 as default encoding
+reload(sys)
+sys.setdefaultencoding('utf-8')  # pylint: disable=E1101
 """
 
 HANDLE PROXY
@@ -2382,7 +2386,7 @@ def parse_alert_to_incident(alert):
     event_values = alert.get('event_values', {})
     event_indicators_map = {
         'fileWriteEvent': 'fileWriteEvent/fileName',
-        'ipv4NetworkEvent': 'ipv4NetworkEvent/remoteIP',
+        'ipv4NetworkEvent': 'ipv4NetworkEven get/remoteIP',
         'dnsLookupEvent': 'dnsLookupEvent/hostname',
         'regKeyEvent': 'regKeyEvent/valueName'
     }
@@ -2399,7 +2403,7 @@ def parse_alert_to_incident(alert):
     )
 
     incident = {
-        'name': encode_string_results(incident_name),
+        'name': incident_name,
         'rawJSON': json.dumps(alert)
     }
     return incident
