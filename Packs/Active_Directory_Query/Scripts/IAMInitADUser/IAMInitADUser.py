@@ -23,7 +23,7 @@ def main():
         # set a new password
         ad_create_user_arguments = {
             'username': username,
-            'password': 'Test123!@#',  # password,
+            'password': password,
             'attribute-name': 'pwdLastSet',
             'attribute-value': -1
         }
