@@ -4398,6 +4398,9 @@ class CommandResults:
         return return_entry
 
 class EntityRelation:
+    """
+    XSOAR entity relation object - use to return relations to demisto.
+    """
     def __init__(self, name, reverse_name, entity_a, relation_type, entity_a_family,
                  object_type_a,
                  entity_b, entity_b_family, object_type_b, source_reliability = "",
