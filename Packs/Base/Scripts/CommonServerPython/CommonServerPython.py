@@ -2281,9 +2281,6 @@ class Common(object):
         :type positive_engines: ``int``
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
-        :type malware_family: ``str``
-        :param category: .
-
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
@@ -2293,8 +2290,7 @@ class Common(object):
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
         def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
-                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
-                     malware_family=None):
+                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -2304,7 +2300,6 @@ class Common(object):
             self.geo_description = geo_description
             self.detection_engines = detection_engines
             self.positive_engines = positive_engines
-            self.malware_family = malware_family
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2339,9 +2334,6 @@ class Common(object):
 
             if self.positive_engines:
                 ip_context['PositiveDetections'] = self.positive_engines
-
-            if self.malware_family:
-                ip_context['MalwareFamily'] = self.malware_family
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 ip_context['Malicious'] = {
@@ -2655,9 +2647,6 @@ class Common(object):
         :type category: ``str``
         :param category: The category associated with the indicator.
 
-        :type malware_family: ``str``
-        :param category: .
-
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
 
@@ -2666,13 +2655,11 @@ class Common(object):
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
-                     malware_family=None):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
             self.category = category
-            self.malware_family = malware_family
 
             self.dbot_score = dbot_score
 
@@ -2689,9 +2676,6 @@ class Common(object):
 
             if self.category:
                 url_context['Category'] = self.category
-
-            if self.malware_family:
-                url_context['MalwareFamily'] = self.malware_family
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
@@ -2716,7 +2700,7 @@ class Common(object):
 
         def __init__(self, domain, dbot_score, dns=None, detection_engines=None, positive_detections=None,
                      organization=None, sub_domains=None, creation_date=None, updated_date=None, expiration_date=None,
-                     domain_status=None, name_servers=None, malware_family=None,
+                     domain_status=None, name_servers=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
                      admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None):
@@ -2747,7 +2731,6 @@ class Common(object):
 
             self.domain_status = domain_status
             self.name_servers = name_servers
-            self.malware_family = malware_family
 
             self.dbot_score = dbot_score
 
@@ -2820,9 +2803,6 @@ class Common(object):
 
             if self.tags:
                 domain_context['Tags'] = self.tags
-
-            if self.malware_family:
-                domain_context['MalwareFamily'] = self.malware_family
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {
