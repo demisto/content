@@ -1,0 +1,80 @@
+interactions:
+- request:
+    body: '{"ip": "37.48.83.137"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '22'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.24.0
+      X-RF-User-Agent:
+      - Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1
+      X-RFToken:
+      - XXXXXX
+    method: POST
+    uri: https://api.recordedfuture.com/v2/soar/enrichment
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0, no-transform
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 10 Nov 2020 12:34:18 GMT
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - JSESSIONID=node0mwgldq7cknm3106qru1a7ondz20202.node0;Path=/rfq
+      Strict-Transport-Security:
+      - max-age=86400; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1
