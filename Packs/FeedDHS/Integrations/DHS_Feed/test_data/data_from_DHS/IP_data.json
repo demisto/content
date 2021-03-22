@@ -1,0 +1,523 @@
+{
+    "@xmlns:taxii_11": "http://taxii.mitre.org/messages/taxii_xml_binding-1.1",
+    "@xmlns:xmldsig": "http://www.w3.org/2000/09/xmldsig#",
+    "@message_id": "urn:uuid:5ade83ef-ee49-47e9-8cc2-25c2148ae961",
+    "@in_response_to": "de0c9f92-d162-4c94-afa6-c93be148dac2",
+    "@collection_name": "AIS",
+    "@more": "false",
+    "@result_id": "urn:uuid:5ade83ef-ee49-47e9-8cc2-25c2148ae961",
+    "@result_part_number": "1",
+    "taxii_11:Exclusive_Begin_Timestamp": "2020-11-04T11:06:10Z",
+    "taxii_11:Inclusive_End_Timestamp": "2020-11-04T14:06:10Z",
+    "taxii_11:Record_Count": "3",
+    "taxii_11:Message": "Here are the results that were requested.",
+    "taxii_11:Content_Block": [
+        {
+            "taxii_11:Content_Binding": {
+                "@binding_id": "urn:stix.mitre.org:xml:1.1.1"
+            },
+            "taxii_11:Content": {
+                "stix:STIX_Package": {
+                    "@id": "NCCIC:STIX_Package-70559364-3904-461c-b22a-2c5ee090b9bd",
+                    "@timestamp": "2020-11-04T11:06:33Z",
+                    "@version": "1.1.1",
+                    "@xsi:schemaLocation": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2 http://cybox.mitre.org/XMLSchema/objects/Win_Registry_Key/2.1/Win_Registry_Key_Object.xsd http://cybox.mitre.org/objects#PortObject-2 http://cybox.mitre.org/XMLSchema/objects/Port/2.1/Port_Object.xsd http://stix.mitre.org/TTP-1 http://stix.mitre.org/XMLSchema/ttp/1.1.1/ttp.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2 http://www.us-cert.gov/sites/default/files/STIX_Namespace/AIS_Bundle_Marking_1.1.1_v1.0.xsd http://cybox.mitre.org/objects#LinkObject-1 http://cybox.mitre.org/XMLSchema/objects/Link/1.1/Link_Object.xsd http://cybox.mitre.org/objects#CustomObject-1 http://cybox.mitre.org/XMLSchema/objects/Custom/1.1/Custom_Object.xsd http://cybox.mitre.org/objects#DNSQueryObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Query/2.1/DNS_Query_Object.xsd http://cybox.mitre.org/objects#FileObject-2 http://cybox.mitre.org/XMLSchema/objects/File/2.1/File_Object.xsd http://stix.mitre.org/ExploitTarget-1 http://stix.mitre.org/XMLSchema/exploit_target/1.1.1/exploit_target.xsd http://cybox.mitre.org/objects#AddressObject-2 http://cybox.mitre.org/XMLSchema/objects/Address/2.1/Address_Object.xsd http://data-marking.mitre.org/Marking-1 http://stix.mitre.org/XMLSchema/data_marking/1.1.1/data_marking.xsd http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1 http://stix.mitre.org/XMLSchema/extensions/identity/ciq_3.0/1.1.1/ciq_3.0_identity.xsd http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.1.1/stix_common.xsd http://cybox.mitre.org/objects#DomainNameObject-1 http://cybox.mitre.org/XMLSchema/objects/Domain_Name/1.0/Domain_Name_Object.xsd http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1 http://stix.mitre.org/XMLSchema/extensions/marking/tlp/1.1.1/tlp_marking.xsd http://cybox.mitre.org/objects#HostnameObject-1 http://cybox.mitre.org/XMLSchema/objects/Hostname/1.0/Hostname_Object.xsd http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.1.1/stix_core.xsd http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd http://cybox.mitre.org/common-2 http://cybox.mitre.org/XMLSchema/common/2.1/cybox_common.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsType.v2.xsd http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.1/stix_default_vocabularies.xsd http://cybox.mitre.org/objects#URIObject-2 http://cybox.mitre.org/XMLSchema/objects/URI/2.1/URI_Object.xsd http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.1.1/indicator.xsd http://cybox.mitre.org/objects#EmailMessageObject-2 http://cybox.mitre.org/XMLSchema/objects/Email_Message/2.1/Email_Message_Object.xsd http://cybox.mitre.org/objects#SocketAddressObject-1 http://cybox.mitre.org/XMLSchema/objects/Socket_Address/1.1/Socket_Address_Object.xsd http://cybox.mitre.org/objects#MutexObject-2 http://cybox.mitre.org/XMLSchema/objects/Mutex/2.1/Mutex_Object.xsd http://cybox.mitre.org/objects#NetworkConnectionObject-2 http://cybox.mitre.org/XMLSchema/objects/Network_Connection/2.1/Network_Connection_Object.xsd urn:edm:edh:cyber:v3 http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_SD-EDH_Profile_Cyber.v3.xsd http://stix.mitre.org/CourseOfAction-1 http://stix.mitre.org/XMLSchema/course_of_action/1.1.1/course_of_action.xsd http://cybox.mitre.org/objects#HTTPSessionObject-2 http://cybox.mitre.org/XMLSchema/objects/HTTP_Session/2.1/HTTP_Session_Object.xsd http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.1/cybox_core.xsd http://cybox.mitre.org/objects#DNSRecordObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Record/2.1/DNS_Record_Object.xsd",
+                    "@xmlns:indicator": "http://stix.mitre.org/Indicator-2",
+                    "@xmlns:AddressObj": "http://cybox.mitre.org/objects#AddressObject-2",
+                    "@xmlns:NetworkConnectionObj": "http://cybox.mitre.org/objects#NetworkConnectionObject-2",
+                    "@xmlns:DNSRecordObj": "http://cybox.mitre.org/objects#DNSRecordObject-2",
+                    "@xmlns:edh2": "urn:edm:edh:cyber:v3",
+                    "@xmlns:CISCP": "http://us-cert.gov/ciscp",
+                    "@xmlns:stixVocabs": "http://stix.mitre.org/default_vocabularies-1",
+                    "@xmlns:PortObj": "http://cybox.mitre.org/objects#PortObject-2",
+                    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                    "@xmlns:EmailMessageObj": "http://cybox.mitre.org/objects#EmailMessageObject-2",
+                    "@xmlns:DNSQueryObj": "http://cybox.mitre.org/objects#DNSQueryObject-2",
+                    "@xmlns:stix-ciq": "http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1",
+                    "@xmlns:DomainNameObj": "http://cybox.mitre.org/objects#DomainNameObject-1",
+                    "@xmlns:NCCIC": "http://www.us-cert.gov",
+                    "@xmlns:xal": "urn:oasis:names:tc:ciq:xal:3",
+                    "@xmlns:xpil": "urn:oasis:names:tc:ciq:xpil:3",
+                    "@xmlns:WinRegistryKeyObj": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2",
+                    "@xmlns:edh2cyberMarking": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:CustomObj": "http://cybox.mitre.org/objects#CustomObject-1",
+                    "@xmlns:stix": "http://stix.mitre.org/stix-1",
+                    "@xmlns:HTTPSessionObj": "http://cybox.mitre.org/objects#HTTPSessionObject-2",
+                    "@xmlns:AIS": "http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2",
+                    "@xmlns:cyboxCommon": "http://cybox.mitre.org/common-2",
+                    "@xmlns:cyboxVocabs": "http://cybox.mitre.org/default_vocabularies-2",
+                    "@xmlns:et": "http://stix.mitre.org/ExploitTarget-1",
+                    "@xmlns:stixCommon": "http://stix.mitre.org/common-1",
+                    "@xmlns:ttp": "http://stix.mitre.org/TTP-1",
+                    "@xmlns:marking": "http://data-marking.mitre.org/Marking-1",
+                    "@xmlns:MutexObj": "http://cybox.mitre.org/objects#MutexObject-2",
+                    "@xmlns:coa": "http://stix.mitre.org/CourseOfAction-1",
+                    "@xmlns:tlpMarking": "http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1",
+                    "@xmlns:isa": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:HostnameObj": "http://cybox.mitre.org/objects#HostnameObject-1",
+                    "@xmlns:xnl": "urn:oasis:names:tc:ciq:xnl:3",
+                    "@xmlns:SocketAddressObj": "http://cybox.mitre.org/objects#SocketAddressObject-1",
+                    "@xmlns:FileObj": "http://cybox.mitre.org/objects#FileObject-2",
+                    "@xmlns:URIObj": "http://cybox.mitre.org/objects#URIObject-2",
+                    "@xmlns:LinkObj": "http://cybox.mitre.org/objects#LinkObject-1",
+                    "@xmlns:cybox": "http://cybox.mitre.org/cybox-2",
+                    "@xmlns:edh2cyberMarkingAssert": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd",
+                    "stix:STIX_Header": {
+                        "stix:Title": "NCCIC:STIX_Package-70559364-3904-461c-b22a-2c5ee090b9bd",
+                        "stix:Package_Intent": {
+                            "@xsi:type": "stixVocabs:PackageIntentVocab-1.0",
+                            "#text": "Indicators"
+                        },
+                        "stix:Description": "Detected Threats",
+                        "stix:Handling": {
+                            "marking:Marking": {
+                                "marking:Controlled_Structure": "//node() | //@*",
+                                "marking:Marking_Structure": {
+                                    "@xsi:type": "AIS:AISMarkingStructure",
+                                    "AIS:Not_Proprietary": {
+                                        "@CISA_Proprietary": "false",
+                                        "AIS:AISConsent": {
+                                            "@consent": "EVERYONE"
+                                        },
+                                        "AIS:TLPMarking": {
+                                            "@color": "WHITE"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "stix:Information_Source": {
+                            "stixCommon:Contributing_Sources": {
+                                "stixCommon:Source": {
+                                    "stixCommon:Identity": {
+                                        "@xsi:type": "stix-ciq:CIQIdentity3.0InstanceType",
+                                        "stix-ciq:Specification": {
+                                            "xpil:PartyName": {
+                                                "xnl:OrganisationName": {
+                                                    "xnl:NameElement": "Infoblox Inc"
+                                                }
+                                            },
+                                            "xpil:Addresses": {
+                                                "xpil:Address": {
+                                                    "xal:Country": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US",
+                                                            "@xal:NameCodeType": "ISO_3166-1_alpha-2"
+                                                        }
+                                                    },
+                                                    "xal:AdministrativeArea": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US-WA",
+                                                            "@xal:NameCodeType": "ISO_3166-2"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "xpil:OrganisationInfo": {
+                                                "@xpil:IndustryType": "Information Technology Sector"
+                                            }
+                                        }
+                                    },
+                                    "stixCommon:Tools": {
+                                        "cyboxCommon:Tool": {
+                                            "cyboxCommon:Metadata": {
+                                                "cyboxCommon:Value": "AIS"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "stixCommon:Time": {
+                                "cyboxCommon:Produced_Time": "2020-11-04T11:06:28Z"
+                            }
+                        }
+                    },
+                    "stix:Indicators": {
+                        "stix:Indicator": [
+                            {
+                                "@id": "NCCIC:Indicator-34ac8712-f591-4a81-95dc-c99ce690112c",
+                                "@timestamp": "2020-11-04T11:06:33Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Description": "Scanner_Generic",
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-e7a67d32-14bd-45be-af9c-fea9e714ae16",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-1ef1043e-37b7-4f58-883b-c65b952bde18",
+                                        "cybox:Properties": {
+                                            "@category": "ipv4-addr",
+                                            "@xsi:type": "AddressObj:AddressObjectType",
+                                            "AddressObj:Address_Value": {
+                                                "@condition": "Equals",
+                                                "#text": "2.2.2.2"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-9cb1be36-9b69-4f3b-bd32-5d571db5bce9",
+                                "@timestamp": "2020-11-04T11:06:33Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Description": "Scanner_Generic",
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-552fda4b-ef98-4c65-a6e7-09a1b956eba7",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-888f97be-e76e-4bf2-a3dc-dfc71b5ae726",
+                                        "cybox:Properties": {
+                                            "@category": "ipv4-addr",
+                                            "@xsi:type": "AddressObj:AddressObjectType",
+                                            "AddressObj:Address_Value": {
+                                                "@condition": "Equals",
+                                                "#text": "3.3.3.3"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "taxii_11:Content_Binding": {
+                "@binding_id": "urn:stix.mitre.org:xml:1.1.1"
+            },
+            "taxii_11:Content": {
+                "stix:STIX_Package": {
+                    "@id": "NCCIC:STIX_Package-de7c17dd-7550-4525-b6a3-6d72653837e3",
+                    "@timestamp": "2020-11-04T12:06:25Z",
+                    "@version": "1.1.1",
+                    "@xsi:schemaLocation": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2 http://cybox.mitre.org/XMLSchema/objects/Win_Registry_Key/2.1/Win_Registry_Key_Object.xsd http://cybox.mitre.org/objects#PortObject-2 http://cybox.mitre.org/XMLSchema/objects/Port/2.1/Port_Object.xsd http://stix.mitre.org/TTP-1 http://stix.mitre.org/XMLSchema/ttp/1.1.1/ttp.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2 http://www.us-cert.gov/sites/default/files/STIX_Namespace/AIS_Bundle_Marking_1.1.1_v1.0.xsd http://cybox.mitre.org/objects#LinkObject-1 http://cybox.mitre.org/XMLSchema/objects/Link/1.1/Link_Object.xsd http://cybox.mitre.org/objects#CustomObject-1 http://cybox.mitre.org/XMLSchema/objects/Custom/1.1/Custom_Object.xsd http://cybox.mitre.org/objects#DNSQueryObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Query/2.1/DNS_Query_Object.xsd http://cybox.mitre.org/objects#FileObject-2 http://cybox.mitre.org/XMLSchema/objects/File/2.1/File_Object.xsd http://stix.mitre.org/ExploitTarget-1 http://stix.mitre.org/XMLSchema/exploit_target/1.1.1/exploit_target.xsd http://cybox.mitre.org/objects#AddressObject-2 http://cybox.mitre.org/XMLSchema/objects/Address/2.1/Address_Object.xsd http://data-marking.mitre.org/Marking-1 http://stix.mitre.org/XMLSchema/data_marking/1.1.1/data_marking.xsd http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1 http://stix.mitre.org/XMLSchema/extensions/identity/ciq_3.0/1.1.1/ciq_3.0_identity.xsd http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.1.1/stix_common.xsd http://cybox.mitre.org/objects#DomainNameObject-1 http://cybox.mitre.org/XMLSchema/objects/Domain_Name/1.0/Domain_Name_Object.xsd http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1 http://stix.mitre.org/XMLSchema/extensions/marking/tlp/1.1.1/tlp_marking.xsd http://cybox.mitre.org/objects#HostnameObject-1 http://cybox.mitre.org/XMLSchema/objects/Hostname/1.0/Hostname_Object.xsd http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.1.1/stix_core.xsd http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd http://cybox.mitre.org/common-2 http://cybox.mitre.org/XMLSchema/common/2.1/cybox_common.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsType.v2.xsd http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.1/stix_default_vocabularies.xsd http://cybox.mitre.org/objects#URIObject-2 http://cybox.mitre.org/XMLSchema/objects/URI/2.1/URI_Object.xsd http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.1.1/indicator.xsd http://cybox.mitre.org/objects#EmailMessageObject-2 http://cybox.mitre.org/XMLSchema/objects/Email_Message/2.1/Email_Message_Object.xsd http://cybox.mitre.org/objects#SocketAddressObject-1 http://cybox.mitre.org/XMLSchema/objects/Socket_Address/1.1/Socket_Address_Object.xsd http://cybox.mitre.org/objects#MutexObject-2 http://cybox.mitre.org/XMLSchema/objects/Mutex/2.1/Mutex_Object.xsd http://cybox.mitre.org/objects#NetworkConnectionObject-2 http://cybox.mitre.org/XMLSchema/objects/Network_Connection/2.1/Network_Connection_Object.xsd urn:edm:edh:cyber:v3 http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_SD-EDH_Profile_Cyber.v3.xsd http://stix.mitre.org/CourseOfAction-1 http://stix.mitre.org/XMLSchema/course_of_action/1.1.1/course_of_action.xsd http://cybox.mitre.org/objects#HTTPSessionObject-2 http://cybox.mitre.org/XMLSchema/objects/HTTP_Session/2.1/HTTP_Session_Object.xsd http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.1/cybox_core.xsd http://cybox.mitre.org/objects#DNSRecordObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Record/2.1/DNS_Record_Object.xsd",
+                    "@xmlns:indicator": "http://stix.mitre.org/Indicator-2",
+                    "@xmlns:AddressObj": "http://cybox.mitre.org/objects#AddressObject-2",
+                    "@xmlns:NetworkConnectionObj": "http://cybox.mitre.org/objects#NetworkConnectionObject-2",
+                    "@xmlns:DNSRecordObj": "http://cybox.mitre.org/objects#DNSRecordObject-2",
+                    "@xmlns:edh2": "urn:edm:edh:cyber:v3",
+                    "@xmlns:CISCP": "http://us-cert.gov/ciscp",
+                    "@xmlns:stixVocabs": "http://stix.mitre.org/default_vocabularies-1",
+                    "@xmlns:PortObj": "http://cybox.mitre.org/objects#PortObject-2",
+                    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                    "@xmlns:EmailMessageObj": "http://cybox.mitre.org/objects#EmailMessageObject-2",
+                    "@xmlns:DNSQueryObj": "http://cybox.mitre.org/objects#DNSQueryObject-2",
+                    "@xmlns:stix-ciq": "http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1",
+                    "@xmlns:DomainNameObj": "http://cybox.mitre.org/objects#DomainNameObject-1",
+                    "@xmlns:NCCIC": "http://www.us-cert.gov",
+                    "@xmlns:xal": "urn:oasis:names:tc:ciq:xal:3",
+                    "@xmlns:xpil": "urn:oasis:names:tc:ciq:xpil:3",
+                    "@xmlns:WinRegistryKeyObj": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2",
+                    "@xmlns:edh2cyberMarking": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:CustomObj": "http://cybox.mitre.org/objects#CustomObject-1",
+                    "@xmlns:stix": "http://stix.mitre.org/stix-1",
+                    "@xmlns:HTTPSessionObj": "http://cybox.mitre.org/objects#HTTPSessionObject-2",
+                    "@xmlns:AIS": "http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2",
+                    "@xmlns:cyboxCommon": "http://cybox.mitre.org/common-2",
+                    "@xmlns:cyboxVocabs": "http://cybox.mitre.org/default_vocabularies-2",
+                    "@xmlns:et": "http://stix.mitre.org/ExploitTarget-1",
+                    "@xmlns:stixCommon": "http://stix.mitre.org/common-1",
+                    "@xmlns:ttp": "http://stix.mitre.org/TTP-1",
+                    "@xmlns:marking": "http://data-marking.mitre.org/Marking-1",
+                    "@xmlns:MutexObj": "http://cybox.mitre.org/objects#MutexObject-2",
+                    "@xmlns:coa": "http://stix.mitre.org/CourseOfAction-1",
+                    "@xmlns:tlpMarking": "http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1",
+                    "@xmlns:isa": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:HostnameObj": "http://cybox.mitre.org/objects#HostnameObject-1",
+                    "@xmlns:xnl": "urn:oasis:names:tc:ciq:xnl:3",
+                    "@xmlns:SocketAddressObj": "http://cybox.mitre.org/objects#SocketAddressObject-1",
+                    "@xmlns:FileObj": "http://cybox.mitre.org/objects#FileObject-2",
+                    "@xmlns:URIObj": "http://cybox.mitre.org/objects#URIObject-2",
+                    "@xmlns:LinkObj": "http://cybox.mitre.org/objects#LinkObject-1",
+                    "@xmlns:cybox": "http://cybox.mitre.org/cybox-2",
+                    "@xmlns:edh2cyberMarkingAssert": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd",
+                    "stix:STIX_Header": {
+                        "stix:Title": "NCCIC:STIX_Package-de7c17dd-7550-4525-b6a3-6d72653837e3",
+                        "stix:Package_Intent": {
+                            "@xsi:type": "stixVocabs:PackageIntentVocab-1.0",
+                            "#text": "Indicators"
+                        },
+                        "stix:Description": "Detected Threats",
+                        "stix:Handling": {
+                            "marking:Marking": {
+                                "marking:Controlled_Structure": "//node() | //@*",
+                                "marking:Marking_Structure": {
+                                    "@xsi:type": "AIS:AISMarkingStructure",
+                                    "AIS:Not_Proprietary": {
+                                        "@CISA_Proprietary": "false",
+                                        "AIS:AISConsent": {
+                                            "@consent": "EVERYONE"
+                                        },
+                                        "AIS:TLPMarking": {
+                                            "@color": "WHITE"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "stix:Information_Source": {
+                            "stixCommon:Contributing_Sources": {
+                                "stixCommon:Source": {
+                                    "stixCommon:Identity": {
+                                        "@xsi:type": "stix-ciq:CIQIdentity3.0InstanceType",
+                                        "stix-ciq:Specification": {
+                                            "xpil:PartyName": {
+                                                "xnl:OrganisationName": {
+                                                    "xnl:NameElement": "Infoblox Inc"
+                                                }
+                                            },
+                                            "xpil:Addresses": {
+                                                "xpil:Address": {
+                                                    "xal:Country": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US",
+                                                            "@xal:NameCodeType": "ISO_3166-1_alpha-2"
+                                                        }
+                                                    },
+                                                    "xal:AdministrativeArea": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US-WA",
+                                                            "@xal:NameCodeType": "ISO_3166-2"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "xpil:OrganisationInfo": {
+                                                "@xpil:IndustryType": "Information Technology Sector"
+                                            }
+                                        }
+                                    },
+                                    "stixCommon:Tools": {
+                                        "cyboxCommon:Tool": {
+                                            "cyboxCommon:Metadata": {
+                                                "cyboxCommon:Value": "AIS"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "stixCommon:Time": {
+                                "cyboxCommon:Produced_Time": "2020-11-04T12:06:23Z"
+                            }
+                        }
+                    },
+                    "stix:Indicators": {
+                        "stix:Indicator": [
+                            {
+                                "@id": "NCCIC:Indicator-67609b93-b146-4642-a00b-8614edbc019e",
+                                "@timestamp": "2020-11-04T12:06:25Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Description": "MalwareDownload_Generic",
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-7d9aad16-797e-49bf-95fa-80a4416d3b2a",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-8cfafffe-22c6-41a8-a7c3-8031d091bbe7",
+                                        "cybox:Properties": {
+                                            "@category": "ipv4-addr",
+                                            "@xsi:type": "AddressObj:AddressObjectType",
+                                            "AddressObj:Address_Value": {
+                                                "@condition": "Equals",
+                                                "#text": "4.4.4.4"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-acd981f5-0382-4f4c-9fe1-1a0a76bccd0c",
+                                "@timestamp": "2020-11-04T12:06:25Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Description": "MalwareDownload_Generic",
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-ba267c71-026c-4e68-942d-b7aed5843eac",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-8d0a5ccf-d5c0-41e2-89df-6a1d24c26e6c",
+                                        "cybox:Properties": {
+                                            "@category": "ipv4-addr",
+                                            "@xsi:type": "AddressObj:AddressObjectType",
+                                            "AddressObj:Address_Value": {
+                                                "@condition": "Equals",
+                                                "#text": "5.5.5.5"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "taxii_11:Content_Binding": {
+                "@binding_id": "urn:stix.mitre.org:xml:1.1.1"
+            },
+            "taxii_11:Content": {
+                "stix:STIX_Package": {
+                    "@id": "NCCIC:STIX_Package-62a2b49a-75af-46c8-988e-180d0ee02aa1",
+                    "@timestamp": "2020-11-04T13:06:26Z",
+                    "@version": "1.1.1",
+                    "@xsi:schemaLocation": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2 http://cybox.mitre.org/XMLSchema/objects/Win_Registry_Key/2.1/Win_Registry_Key_Object.xsd http://cybox.mitre.org/objects#PortObject-2 http://cybox.mitre.org/XMLSchema/objects/Port/2.1/Port_Object.xsd http://stix.mitre.org/TTP-1 http://stix.mitre.org/XMLSchema/ttp/1.1.1/ttp.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2 http://www.us-cert.gov/sites/default/files/STIX_Namespace/AIS_Bundle_Marking_1.1.1_v1.0.xsd http://cybox.mitre.org/objects#LinkObject-1 http://cybox.mitre.org/XMLSchema/objects/Link/1.1/Link_Object.xsd http://cybox.mitre.org/objects#CustomObject-1 http://cybox.mitre.org/XMLSchema/objects/Custom/1.1/Custom_Object.xsd http://cybox.mitre.org/objects#DNSQueryObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Query/2.1/DNS_Query_Object.xsd http://cybox.mitre.org/objects#FileObject-2 http://cybox.mitre.org/XMLSchema/objects/File/2.1/File_Object.xsd http://stix.mitre.org/ExploitTarget-1 http://stix.mitre.org/XMLSchema/exploit_target/1.1.1/exploit_target.xsd http://cybox.mitre.org/objects#AddressObject-2 http://cybox.mitre.org/XMLSchema/objects/Address/2.1/Address_Object.xsd http://data-marking.mitre.org/Marking-1 http://stix.mitre.org/XMLSchema/data_marking/1.1.1/data_marking.xsd http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1 http://stix.mitre.org/XMLSchema/extensions/identity/ciq_3.0/1.1.1/ciq_3.0_identity.xsd http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.1.1/stix_common.xsd http://cybox.mitre.org/objects#DomainNameObject-1 http://cybox.mitre.org/XMLSchema/objects/Domain_Name/1.0/Domain_Name_Object.xsd http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1 http://stix.mitre.org/XMLSchema/extensions/marking/tlp/1.1.1/tlp_marking.xsd http://cybox.mitre.org/objects#HostnameObject-1 http://cybox.mitre.org/XMLSchema/objects/Hostname/1.0/Hostname_Object.xsd http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.1.1/stix_core.xsd http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd http://cybox.mitre.org/common-2 http://cybox.mitre.org/XMLSchema/common/2.1/cybox_common.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsType.v2.xsd http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.1/stix_default_vocabularies.xsd http://cybox.mitre.org/objects#URIObject-2 http://cybox.mitre.org/XMLSchema/objects/URI/2.1/URI_Object.xsd http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.1.1/indicator.xsd http://cybox.mitre.org/objects#EmailMessageObject-2 http://cybox.mitre.org/XMLSchema/objects/Email_Message/2.1/Email_Message_Object.xsd http://cybox.mitre.org/objects#SocketAddressObject-1 http://cybox.mitre.org/XMLSchema/objects/Socket_Address/1.1/Socket_Address_Object.xsd http://cybox.mitre.org/objects#MutexObject-2 http://cybox.mitre.org/XMLSchema/objects/Mutex/2.1/Mutex_Object.xsd http://cybox.mitre.org/objects#NetworkConnectionObject-2 http://cybox.mitre.org/XMLSchema/objects/Network_Connection/2.1/Network_Connection_Object.xsd urn:edm:edh:cyber:v3 http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_SD-EDH_Profile_Cyber.v3.xsd http://stix.mitre.org/CourseOfAction-1 http://stix.mitre.org/XMLSchema/course_of_action/1.1.1/course_of_action.xsd http://cybox.mitre.org/objects#HTTPSessionObject-2 http://cybox.mitre.org/XMLSchema/objects/HTTP_Session/2.1/HTTP_Session_Object.xsd http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.1/cybox_core.xsd http://cybox.mitre.org/objects#DNSRecordObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Record/2.1/DNS_Record_Object.xsd",
+                    "@xmlns:indicator": "http://stix.mitre.org/Indicator-2",
+                    "@xmlns:AddressObj": "http://cybox.mitre.org/objects#AddressObject-2",
+                    "@xmlns:NetworkConnectionObj": "http://cybox.mitre.org/objects#NetworkConnectionObject-2",
+                    "@xmlns:DNSRecordObj": "http://cybox.mitre.org/objects#DNSRecordObject-2",
+                    "@xmlns:edh2": "urn:edm:edh:cyber:v3",
+                    "@xmlns:CISCP": "http://us-cert.gov/ciscp",
+                    "@xmlns:stixVocabs": "http://stix.mitre.org/default_vocabularies-1",
+                    "@xmlns:PortObj": "http://cybox.mitre.org/objects#PortObject-2",
+                    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                    "@xmlns:EmailMessageObj": "http://cybox.mitre.org/objects#EmailMessageObject-2",
+                    "@xmlns:DNSQueryObj": "http://cybox.mitre.org/objects#DNSQueryObject-2",
+                    "@xmlns:stix-ciq": "http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1",
+                    "@xmlns:DomainNameObj": "http://cybox.mitre.org/objects#DomainNameObject-1",
+                    "@xmlns:NCCIC": "http://www.us-cert.gov",
+                    "@xmlns:xal": "urn:oasis:names:tc:ciq:xal:3",
+                    "@xmlns:xpil": "urn:oasis:names:tc:ciq:xpil:3",
+                    "@xmlns:WinRegistryKeyObj": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2",
+                    "@xmlns:edh2cyberMarking": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:CustomObj": "http://cybox.mitre.org/objects#CustomObject-1",
+                    "@xmlns:stix": "http://stix.mitre.org/stix-1",
+                    "@xmlns:HTTPSessionObj": "http://cybox.mitre.org/objects#HTTPSessionObject-2",
+                    "@xmlns:AIS": "http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2",
+                    "@xmlns:cyboxCommon": "http://cybox.mitre.org/common-2",
+                    "@xmlns:cyboxVocabs": "http://cybox.mitre.org/default_vocabularies-2",
+                    "@xmlns:et": "http://stix.mitre.org/ExploitTarget-1",
+                    "@xmlns:stixCommon": "http://stix.mitre.org/common-1",
+                    "@xmlns:ttp": "http://stix.mitre.org/TTP-1",
+                    "@xmlns:marking": "http://data-marking.mitre.org/Marking-1",
+                    "@xmlns:MutexObj": "http://cybox.mitre.org/objects#MutexObject-2",
+                    "@xmlns:coa": "http://stix.mitre.org/CourseOfAction-1",
+                    "@xmlns:tlpMarking": "http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1",
+                    "@xmlns:isa": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:HostnameObj": "http://cybox.mitre.org/objects#HostnameObject-1",
+                    "@xmlns:xnl": "urn:oasis:names:tc:ciq:xnl:3",
+                    "@xmlns:SocketAddressObj": "http://cybox.mitre.org/objects#SocketAddressObject-1",
+                    "@xmlns:FileObj": "http://cybox.mitre.org/objects#FileObject-2",
+                    "@xmlns:URIObj": "http://cybox.mitre.org/objects#URIObject-2",
+                    "@xmlns:LinkObj": "http://cybox.mitre.org/objects#LinkObject-1",
+                    "@xmlns:cybox": "http://cybox.mitre.org/cybox-2",
+                    "@xmlns:edh2cyberMarkingAssert": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd",
+                    "stix:STIX_Header": {
+                        "stix:Title": "NCCIC:STIX_Package-62a2b49a-75af-46c8-988e-180d0ee02aa1",
+                        "stix:Package_Intent": {
+                            "@xsi:type": "stixVocabs:PackageIntentVocab-1.0",
+                            "#text": "Indicators"
+                        },
+                        "stix:Description": "Detected Threats",
+                        "stix:Handling": {
+                            "marking:Marking": {
+                                "marking:Controlled_Structure": "//node() | //@*",
+                                "marking:Marking_Structure": {
+                                    "@xsi:type": "AIS:AISMarkingStructure",
+                                    "AIS:Not_Proprietary": {
+                                        "@CISA_Proprietary": "false",
+                                        "AIS:AISConsent": {
+                                            "@consent": "EVERYONE"
+                                        },
+                                        "AIS:TLPMarking": {
+                                            "@color": "WHITE"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "stix:Information_Source": {
+                            "stixCommon:Contributing_Sources": {
+                                "stixCommon:Source": {
+                                    "stixCommon:Identity": {
+                                        "@xsi:type": "stix-ciq:CIQIdentity3.0InstanceType",
+                                        "stix-ciq:Specification": {
+                                            "xpil:PartyName": {
+                                                "xnl:OrganisationName": {
+                                                    "xnl:NameElement": "Infoblox Inc"
+                                                }
+                                            },
+                                            "xpil:Addresses": {
+                                                "xpil:Address": {
+                                                    "xal:Country": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US",
+                                                            "@xal:NameCodeType": "ISO_3166-1_alpha-2"
+                                                        }
+                                                    },
+                                                    "xal:AdministrativeArea": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US-WA",
+                                                            "@xal:NameCodeType": "ISO_3166-2"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "xpil:OrganisationInfo": {
+                                                "@xpil:IndustryType": "Information Technology Sector"
+                                            }
+                                        }
+                                    },
+                                    "stixCommon:Tools": {
+                                        "cyboxCommon:Tool": {
+                                            "cyboxCommon:Metadata": {
+                                                "cyboxCommon:Value": "AIS"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "stixCommon:Time": {
+                                "cyboxCommon:Produced_Time": "2020-11-04T13:06:24Z"
+                            }
+                        }
+                    },
+                    "stix:Indicators": {
+                        "stix:Indicator": [
+                            {
+                                "@id": "NCCIC:Indicator-18bbbbf5-df6d-4ced-9b24-2c465fb2edc9",
+                                "@timestamp": "2020-11-04T13:06:26Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Description": "MalwareDownload_Generic",
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-cf7b8b1f-bcd6-4cc0-bf06-5cbb3f4adf87",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-0d70f54d-067d-4b57-abd0-a44979d40ab7",
+                                        "cybox:Properties": {
+                                            "@category": "ipv4-addr",
+                                            "@xsi:type": "AddressObj:AddressObjectType",
+                                            "AddressObj:Address_Value": {
+                                                "@condition": "Equals",
+                                                "#text": "6.6.6.6"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-2afaf2d6-50a2-4860-a4da-414aef39bb91",
+                                "@timestamp": "2020-11-04T13:06:26Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Description": "MalwareDownload_Generic",
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-7aa750a4-ed51-4274-8343-5bd0a56406c7",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-0fed689a-dd67-482a-9994-4426104af33a",
+                                        "cybox:Properties": {
+                                            "@category": "ipv4-addr",
+                                            "@xsi:type": "AddressObj:AddressObjectType",
+                                            "AddressObj:Address_Value": {
+                                                "@condition": "Equals",
+                                                "#text": "7.7.7.7"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ]
+}
