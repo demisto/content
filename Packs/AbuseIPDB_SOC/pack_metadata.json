@@ -1,0 +1,17 @@
+{
+    "name": "AbuseIPDB_SOC",
+    "description": "Hello,\nI made a change on line 127 & 135 to display the ISP value return by the API to the markdown table and the context\nChange has been made on the latest version the of the integration\nCould you merge this change to the XSOAR live integration version ?",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "xthourou",
+    "url": "",
+    "email": "",
+    "created": "2021-03-23T08:28:13Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "xthourou"
+    ]
+}
