@@ -88,31 +88,6 @@ GROUP_DETAILED_FIELDS = [
 
 
 class Client(BaseClient):
-    def __init__(self, **kwargs):
-        self.session = requests.Session()
-        super().__init__(**kwargs)
-
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-                      params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
-                      return_empty_response=False, retries=0, status_list_to_retry=None,
-                      backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                      error_handler=None, empty_valid_codes=None, **kwargs):
-        address = full_url if full_url else urljoin(self._base_url, url_suffix)
-        res = self._session.request(
-            method,
-            address,
-            verify=self._verify,
-            params=params,
-            data=data,
-            json=json_data,
-            files=files,
-            headers=headers,
-            auth=auth,
-            timeout=timeout,
-            **kwargs
-        )
-        return res.json()
-
     def login(self, username: str, password: str) -> None:
         encoded_username = base64.b64encode(username.encode('utf-8')).decode('utf-8')
         encoded_password = base64.b64encode(password.encode('utf-8')).decode('utf-8')
