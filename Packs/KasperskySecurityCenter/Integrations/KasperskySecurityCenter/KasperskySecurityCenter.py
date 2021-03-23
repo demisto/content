@@ -71,12 +71,12 @@ GROUP_DETAILED_FIELDS = [
     'grp_full_name',
     'level',
     'KLSRV_HSTSTAT_CRITICAL',
-    'KLSRV_HSTSTAT_WARNING'
+    'KLSRV_HSTSTAT_WARNING',
     'KLGRP_GRP_GROUPID_GP',
-    'c_grp_autoInstallPackageId'
+    'c_grp_autoInstallPackageId',
     'grp_from_unassigned',
     'grp_enable_fscan',
-    'KLSRVH_SRV_DN'
+    'KLSRVH_SRV_DN',
     'KLVSRV_ID',
     'KLVSRV_DN',
     'KLGRP_CHLDGRP_CNT',
