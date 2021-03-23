@@ -4106,7 +4106,7 @@ script:
         must be in the same VPC.
       name: sourceSecurityGroupName
     - description: The AWS Region, if not specified the default region will be used.
-      name: region
+      name: region2.0.0.17715
     - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
     - description: An identifier for the assumed role session.
@@ -4124,7 +4124,7 @@ script:
       values exactly.
     execution: true
     name: aws-ec2-revoke-security-group-egress-rule
-  dockerimage: demisto/boto3:2.0.0.17615
+  dockerimage: demisto/boto3:2.0.0.17715
   runonce: false
   script: ''
   subtype: python2
