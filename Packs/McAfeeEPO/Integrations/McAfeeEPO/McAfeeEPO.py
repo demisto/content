@@ -13,198 +13,177 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-EPO_SYSTEM_ATTRIBUTE_MAP = {
-    'EPOComputerProperties.ComputerName': 'Name',
-    'EPOComputerProperties.DomainName': 'Domain',
-    'EPOComputerProperties.IPHostName': 'Hostname',
-    'EPOComputerProperties.IPAddress': 'IPAddress',
-    'EPOComputerProperties.OSType': 'OS',
-    'EPOComputerProperties.OSVersion': 'OSVersion',
-    'EPOComputerProperties.CPUType': 'Processor',
-    'EPOComputerProperties.NumOfCPU': 'Processors',
-    'EPOComputerProperties.TotalPhysicalMemory': 'Memory',
-}
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    def epo_help(self, suffix: str) -> str:
+        params = {
+            ":output": "json"
+        }
+        return self._http_request(
+            'get',
+            url_suffix=suffix,
+            params=params,
+            resp_type='text'
+        )
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    def epo_get_latest_dat(self, dat_url: str) -> str:
+        return self._http_request(
+            'get',
+            full_url=dat_url,
+            resp_type='text'
+        )
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
+    def epo_get_system_tree_group(self, suffix: str, query: str) -> str:
+        params = {
+            ":output": "json"
+        }
+        if query:
+            params['searchText'] = query
 
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
+        return self._http_request(
+            'get',
+            url_suffix=suffix,
+            params=params,
+            resp_type='text'
+        )
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def epo_find_systems(self, suffix: str, group_id: str) -> str:
+        params = {
+            ":output": "json"
+        }
+        if group_id:
+            params['groupId'] = group_id
 
-    def epo_help(self, dummy: str) -> Dict[str, str]:
+        return self._http_request(
+            'get',
+            url_suffix=suffix,
+            params=params,
+            resp_type='text'
+        )
 
-        return {"dummy": dummy}
 
 ''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
 ''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
+        client.epo_help(suffix='core.help')
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
     return message
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def epo_help_command(client: Client) -> CommandResults:
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+    suffix = 'core.help'
+    commands = json.loads(client.epo_help(suffix=suffix)[3:])
+    commands_dict = {}
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    for command in commands:
+        split = command.split(' - ')
+        if len(split) == 2:
+            commands_dict[split[0].split(' ')[0]] = split[1]
+        else:
+            commands_dict[split[0].split(' ')[0]] = 'No Description'
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
+        outputs_prefix='McAfeeEPO.Help',
         outputs_key_field='',
-        outputs=result,
+        outputs=commands_dict,
     )
 
 
-def epo_help_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def epo_get_latest_dat_command(client: Client) -> CommandResults:
+    dat_url = 'http://update.nai.com/products/commonupdater/gdeltaavv.ini'
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    raw_response = client.epo_get_latest_dat(dat_url=dat_url)
+    current_version = {
+        'CurrentVersion': raw_response.split('\r\n\r\n')[0].split('CurrentVersion=')[1]
+    }
 
     return CommandResults(
-        outputs_prefix='McAfeeEPO',
-        outputs_key_field='',
-        outputs=result,
+        outputs_prefix='McAfeeEPO.LatestDat',
+        outputs_key_field='current_version',
+        outputs=current_version,
     )
+
+
+def epo_get_system_tree_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    suffix = 'system.findGroups'
+    query = args.get('query', None)
+    groups = json.loads(client.epo_get_system_tree_group(suffix=suffix, query=query)[3:])
+
+    return CommandResults(
+        outputs_prefix='McAfeeEPO.SystemGroups',
+        outputs_key_field='groupId',
+        outputs=groups,
+    )
+
+
+def epo_find_systems_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    suffix = 'epogroup.findSystems'
+    group_id = args.get('groupId', None)
+    systems = json.loads(client.epo_find_systems(suffix=suffix, group_id=group_id)[3:])
+    found_systems = []
+
+    for system in systems:
+        system_details = {}
+        for key in system:
+            system_details[key.split('.')[1]] = system[key]
+        found_systems.append(system_details)
+
+    return CommandResults(
+        outputs_prefix='McAfeeEPO.Systems',
+        outputs_key_field='AgentGUID',
+        outputs=found_systems,
+    )
+
 
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
 
-    :return:
-    :rtype:
-    """
-
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('apikey')
-
-    # get the service API url
     base_url = urljoin(demisto.params()['url'], '/remote')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
+    username = demisto.params().get('credentials', {}).get('identifier', '')
+    password = demisto.params().get('credentials', {}).get('password', '')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
         headers: Dict = {}
-
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+            auth=(username, password)
+        )
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
         elif demisto.command() == 'epo-help':
-            return_results(epo_help_command(client, demisto.args()))
+            return_results(epo_help_command(client))
         elif demisto.command() == 'epo-get-latest-dat':
-            return_results(epo_get_latest_dat_command(client, demisto.args()))
-        elif demisto.command() == 'epo-get-current-dat':
-            return_results(epo_get_current_dat_command(client, demisto.args()))
-        elif demisto.command() == 'epo-update-client-dat':
-            return_results(epo_update_client_dat_command(client, demisto.args()))
-        elif demisto.command() == 'epo-update-repository':
-            return_results(epo_update_repository_command(client, demisto.args()))
+            return_results(epo_get_latest_dat_command(client))
         elif demisto.command() == 'epo-get-system-tree-group':
             return_results(epo_get_system_tree_group_command(client, demisto.args()))
         elif demisto.command() == 'epo-find-systems':
             return_results(epo_find_systems_command(client, demisto.args()))
-        elif demisto.command() == 'epo-wakeup-agent':
-            return_results(epo_wakeup_agent_command(client, demisto.args()))
-        elif demisto.command() == 'epo-apply-tag':
-            return_results(epo_apply_tag_command(client, demisto.args()))
-        elif demisto.command() == 'epo-clear-tag':
-            return_results(epo_clear_tag_command(client, demisto.args()))
-        elif demisto.command() == 'epo-get-tables':
-            return_results(epo-get-tables_command(client, demisto.args()))
-        elif demisto.command() == 'epo-query-table':
-            return_results(epo_query_table_command(client, demisto.args()))
-        elif demisto.command() == 'epo-get-version':
-            return_results(epo_get_version_command(client, demisto.args()))
-        elif demisto.command() == 'epo-move-system':
-            return_results(epo_move_system_command(client, demisto.args()))
-        elif demisto.command() == 'epo-command':
-            return_results(epo_command_command(client, demisto.args()))
-        elif demisto.command() == 'epo-advanced-command':
-            return_results(epo_advanced_command_command(client, demisto.args()))
+
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
