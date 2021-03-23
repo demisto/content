@@ -695,6 +695,7 @@ def test_expanse_list_pocs(requests_mock):
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_pocs["data"][: int(MOCK_LIMIT)]
 
+
 def test_expanse_create_poc(requests_mock):
     """
     Given:
@@ -721,6 +722,7 @@ def test_expanse_create_poc(requests_mock):
     assert result.outputs_prefix == "Expanse.PointOfContact"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_poc
+
 
 def test_expanse_assign_single_poc_to_iprange(mocker, requests_mock):
     """
@@ -769,6 +771,7 @@ def test_expanse_assign_single_poc_to_iprange(mocker, requests_mock):
     assert result.outputs_key_field is None
     assert result.outputs is None
     assert result.readable_output == "Operation complete"
+
 
 def test_expanse_get_iprange(requests_mock):
     """

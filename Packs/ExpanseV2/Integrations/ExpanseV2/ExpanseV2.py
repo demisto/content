@@ -118,7 +118,7 @@ class Client(BaseClient):
         hdr = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "Expanse_XSOAR/0.0.1",
+            "User-Agent": "Expanse_XSOAR/1.1.0",
         }
         super().__init__(base_url, verify=verify, proxy=proxy, headers=hdr, **kwargs)
 
@@ -1056,6 +1056,7 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=readable_output, outputs_prefix="Expanse.Issue", outputs_key_field="id", outputs=issues
     )
 
+
 def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
@@ -1096,10 +1097,10 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
     services = list(
         islice(
             client.get_services(limit=max_page_size, content_search=content_search, provider=provider,
-                              business_units=business_units, service_type=service_type,
-                              inet_search=inet_search, domain_search=domain_search, port_number=port_number,
-                              activity_status=activity_status, discovery_type=discovery_type,
-                              tags=tags, country_code=country_code, sort=sort),
+                                business_units=business_units, service_type=service_type,
+                                inet_search=inet_search, domain_search=domain_search, port_number=port_number,
+                                activity_status=activity_status, discovery_type=discovery_type,
+                                tags=tags, country_code=country_code, sort=sort),
             total_results
         )
     )
