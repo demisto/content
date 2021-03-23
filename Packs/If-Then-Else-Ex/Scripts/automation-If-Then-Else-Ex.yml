@@ -242,13 +242,24 @@ script: |
 
   if __name__ in ('__builtin__', 'builtins', '__main__'):
       args = demisto.args()
+      transformer_value_key = args.get('transformer_value_key')
+      lhs = args.get('lhs')
+      rhs = args.get('rhs')
+      if transformer_value_key:
+          try:
+              lhs = lhs if lhs == transformer_value_key else lhs
+          except (ValueError, TypeError, AttributeError) as e:
+              pass
+          try:
+              rhs = rhs if rhs == transformer_value_key else rhs
+          except (ValueError, TypeError, AttributeError) as e:
+              pass
 
-      if compare(args.get('lhs'), args.get('rhs'), args.get('operator', '')):
+      if compare(lhs, rhs, args.get('operator', '')):
           value = args.get('then')
       else:
           value = args.get('else')
 
-      transformer_value_key = args.get('transformer_value_key')
       if transformer_value_key:
           try:
               value = args.get('value') if value == transformer_value_key else value
