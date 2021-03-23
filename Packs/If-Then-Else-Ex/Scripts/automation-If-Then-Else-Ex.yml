@@ -11,6 +11,8 @@ args:
   description: The operator to compare lhs to rhs
   name: operator
   predefined:
+  - '==='
+  - '!=='
   - ==
   - '!='
   - '>'
@@ -126,84 +128,131 @@ script: |
         :param operator: The name of the operation.
         :return: Return True if the value matches the pattern, False otherwise.
       """
-      if operator in ('==', 'matches'):
-          return lhs == rhs
+      negative_condition = None
+      try:
+          if operator == "===":
+              negative_condition = False
+              return type(lhs) == type(rhs) and lhs == rhs
 
-      elif operator in ('!=', "doesn't match"):
-          return lhs != rhs
+          elif operator == "!==":
+              negative_condition = True
+              return type(lhs) != type(rhs) or lhs != rhs
 
-      elif operator == '>':
-          return lhs > rhs
+          elif operator in ("==", "matches"):
+              negative_condition = False
+              return str(lhs) == str(rhs)
 
-      elif operator == '>=':
-          return lhs >= rhs
+          elif operator in ("!=", "doesn't match"):
+              negative_condition = True
+              return compare(lhs, rhs, "==")
 
-      elif operator == '<':
-          return lhs < rhs
+          elif operator == ">":
+              negative_condition = False
+              try:
+                  if isinstance(lhs, (int, float)) and isinstance(rhs, (int, float)):
+                      return lhs > rhs
+                  return float(lhs) > float(rhs)
+              except (ValueError, TypeError, AttributeError) as e:
+                  pass
+              return str(lhs) > str(rhs)
 
-      elif operator == '<=':
-          return lhs <= rhs
+          elif operator == ">=":
+              negative_condition = False
+              try:
+                  if isinstance(lhs, (int, float)) and isinstance(rhs, (int, float)):
+                      return lhs >= rhs
+                  return float(lhs) > float(rhs)
+              except (ValueError, TypeError, AttributeError) as e:
+                  pass
+              return str(lhs) >= str(rhs)
 
-      elif operator == "matches caseless":
-          return lhs.lower() == rhs.lower()
+          elif operator == '<':
+              negative_condition = False
+              return not compare(lhs, rhs, ">=")
 
-      elif operator == "doesn't match caseless":
-          return lhs.lower() != rhs.lower()
+          elif operator == '<=':
+              negative_condition = False
+              return not compare(lhs, rhs, ">")
 
-      elif operator == "wildcard: matches":
-          return match_pattern(rhs, lhs, False, PATALG_WILDCARD)
+          elif operator == "matches caseless":
+              negative_condition = False
+              return str(lhs).lower() == str(rhs).lower()
 
-      elif operator == "wildcard: matches caseless":
-          return match_pattern(rhs, lhs, True, PATALG_WILDCARD)
+          elif operator == "doesn't match caseless":
+              negative_condition = True
+              return not compare(lhs, rhs, "matches caseless")
 
-      elif operator == "wildcard: doesn't match":
-          return not match_pattern(rhs, lhs, False, PATALG_WILDCARD)
+          elif operator == "wildcard: matches":
+              negative_condition = False
+              return match_pattern(rhs, lhs, False, PATALG_WILDCARD)
 
-      elif operator == "wildcard: doesn't match caseless":
-          return not match_pattern(rhs, lhs, True, PATALG_WILDCARD)
+          elif operator == "wildcard: matches caseless":
+              negative_condition = False
+              return match_pattern(rhs, lhs, True, PATALG_WILDCARD)
 
-      elif operator == "regex: matches":
-          return match_pattern(rhs, lhs, False, PATALG_REGEX)
+          elif operator == "wildcard: doesn't match":
+              negative_condition = True
+              return not match_pattern(rhs, lhs, False, PATALG_WILDCARD)
 
-      elif operator == "regex: matches caseless":
-          return match_pattern(rhs, lhs, True, PATALG_REGEX)
+          elif operator == "wildcard: doesn't match caseless":
+              negative_condition = True
+              return not match_pattern(rhs, lhs, True, PATALG_WILDCARD)
 
-      elif operator == "regex: doesn't match":
-          return not match_pattern(rhs, lhs, False, PATALG_REGEX)
+          elif operator == "regex: matches":
+              negative_condition = False
+              return match_pattern(rhs, lhs, False, PATALG_REGEX)
 
-      elif operator == "regex: doesn't match caseless":
-          return not match_pattern(rhs, lhs, True, PATALG_REGEX)
+          elif operator == "regex: matches caseless":
+              negative_condition = False
+              return match_pattern(rhs, lhs, True, PATALG_REGEX)
 
-      elif operator == "in list":
-          return lhs in rhs.split(',')
+          elif operator == "regex: doesn't match":
+              negative_condition = True
+              return not match_pattern(rhs, lhs, False, PATALG_REGEX)
 
-      elif operator == "in caseless list":
-          return lower(lhs) in rhs.lower().split(',')
+          elif operator == "regex: doesn't match caseless":
+              negative_condition = True
+              return not match_pattern(rhs, lhs, True, PATALG_REGEX)
 
-      elif operator == "not in list":
-          return not compare(lhs, "in list", rhs)
+          elif operator == "in list":
+              negative_condition = False
+              return lhs in rhs.split(',')
 
-      elif operator == "not in caseless list":
-          return not compare(lhs, "in caseless list", rhs)
+          elif operator == "in caseless list":
+              negative_condition = False
+              return lower(lhs) in rhs.lower().split(',')
 
-      else:
-          raise ValueError(f'Unknown Operator: {operator}')
+          elif operator == "not in list":
+              negative_condition = True
+              return not compare(lhs, "in list", rhs)
+
+          elif operator == "not in caseless list":
+              negative_condition = True
+              return not compare(lhs, "in caseless list", rhs)
+
+          else:
+              raise ValueError(f'Unknown Operator: {operator}')
+
+      except (ValueError, TypeError, AttributeError) as e:
+          if negative_condition is None:
+              raise
+          return negative_condition
+      return False
+
 
   if __name__ in ('__builtin__', 'builtins', '__main__'):
       args = demisto.args()
-      try:
-          if compare(args.get('lhs'), args.get('rhs'), args.get('operator', '')):
-              value = args.get('then')
-          else:
-              value = args.get('else')
-      except (ValueError, TypeError, AttributeError):
+
+      if compare(args.get('lhs'), args.get('rhs'), args.get('operator', '')):
+          value = args.get('then')
+      else:
           value = args.get('else')
 
       transformer_value_key = args.get('transformer_value_key')
       if transformer_value_key:
           try:
               value = args.get('value') if value == transformer_value_key else value
-          except (ValueError, TypeError) as e:
+          except (ValueError, TypeError, AttributeError) as e:
               pass
 
       demisto.results(value)
