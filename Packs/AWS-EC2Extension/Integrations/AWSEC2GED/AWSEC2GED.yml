@@ -4076,7 +4076,8 @@ script:
         idempotency of the request.
       type: String
   - arguments:
-    - name: groupId
+    - description: The ID of the security group.
+      name: groupId
       required: true
     - description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
         type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify
