@@ -296,22 +296,22 @@ def list_hosts(client: Client, args: Dict) -> CommandResults:
         command_results_args = {
             'outputs_prefix': 'KasperskySecurityCenter.Host',
             'outputs_key_field': 'KLHST_WKS_HOSTNAME',
-            'outputs': outputs,
+            'outputs': outputs,  # type: ignore[dict-item]
             'readable_output': tableToMarkdown(
                 'Hosts List',
                 outputs,
                 ['KLHST_WKS_HOSTNAME', 'KLHST_WKS_OS_NAME', 'KLHST_WKS_FQDN']
             ),
-            'raw_response': results,
+            'raw_response': results,  # type: ignore[dict-item]
         }
-    return CommandResults(**command_results_args)
+    return CommandResults(**command_results_args)  # type: ignore[arg-type]
 
 
 def get_host(client: Client, args: Dict) -> CommandResults:
     hostname = args.get('hostname')
     wstr_filter = f'KLHST_WKS_HOSTNAME = "{hostname}"'
     response = client.list_hosts_request(wstr_filter=wstr_filter, fields_to_return=HOST_DETAILED_FIELDS)
-    str_accessor = response.get('strAccessor')
+    str_accessor = response.get('strAccessor', '')
     results = client.get_results(str_accessor)
     iter_array = results.get('pChunk', {}).get('KLCSP_ITERATOR_ARRAY')
     if iter_array and isinstance(iter_array, list) and iter_array[0].get('value'):
@@ -336,24 +336,24 @@ def list_groups(client: Client, args: Dict) -> CommandResults:
     wstr_filter = args.get('filter', '')
     limit = arg_to_number(args.get('limit', 50))
     response = client.list_groups_request(wstr_filter=wstr_filter, fields_to_return=GROUP_FIELDS)
-    str_accessor = response.get('strAccessor')
+    str_accessor = response.get('strAccessor', '')
     results = client.get_results(str_accessor, limit)
-    outputs = [group.get('value') for group in results.get('pChunk', {}).get('KLCSP_ITERATOR_ARRAY')]
+    outputs = [group.get('value') for group in results.get('pChunk', {}).get('KLCSP_ITERATOR_ARRAY', [])]
     if not outputs:
         command_results_args = {'readable_output': 'No groups found.'}
     else:
         command_results_args = {
             'outputs_prefix': 'KasperskySecurityCenter.Group',
             'outputs_key_field': 'id',
-            'outputs': outputs,
+            'outputs': outputs,  # type: ignore[dict-item]
             'readable_output': tableToMarkdown('Groups List', outputs),
-            'raw_response': results,
+            'raw_response': results,  # type: ignore[dict-item]
         }
-    return CommandResults(**command_results_args)
+    return CommandResults(**command_results_args)  # type: ignore[arg-type]
 
 
 def add_group(client: Client, args: Dict) -> CommandResults:
-    name = args.get('name')
+    name = args.get('name', '')
     parent_id = arg_to_number(args.get('parent_id'))
     response = client.add_group_request(name, parent_id)
     outputs = {'id': response.get('PxgRetVal'), 'name': name}
@@ -369,7 +369,7 @@ def add_group(client: Client, args: Dict) -> CommandResults:
 def delete_group(client: Client, args: Dict) -> CommandResults:
     group_id = arg_to_number(args.get('group_id'))
     flags = arg_to_number(args.get('flags', 1))
-    response = client.delete_group_request(group_id, flags)
+    response = client.delete_group_request(group_id, flags)  # type: ignore[arg-type]
     return CommandResults(
         readable_output='Delete group action was submitted',
         raw_response=response,
@@ -385,15 +385,15 @@ def list_software_applications(client: Client) -> CommandResults:
         command_results_args = {
             'outputs_prefix': 'KasperskySecurityCenter.Inventory.Software',
             'outputs_key_field': 'ProductID',
-            'outputs': outputs,
+            'outputs': outputs,  # type: ignore[dict-item]
             'readable_output': tableToMarkdown(
                 'Inventory Software Applications',
                 outputs,
                 headers=['DisplayName', 'Publisher', 'DisplayVersion'],
             ),
-            'raw_response': response,
+            'raw_response': response,  # type: ignore[dict-item]
         }
-    return CommandResults(**command_results_args)
+    return CommandResults(**command_results_args)  # type: ignore[arg-type]
 
 
 def list_software_patches(client: Client) -> CommandResults:
@@ -405,19 +405,19 @@ def list_software_patches(client: Client) -> CommandResults:
         command_results_args = {
             'outputs_prefix': 'KasperskySecurityCenter.Inventory.Patch',
             'outputs_key_field': 'PatchID',
-            'outputs': outputs,
+            'outputs': outputs,  # type: ignore[dict-item]
             'readable_output': tableToMarkdown(
                 'Inventory Software Patches',
                 outputs,
                 headers=['DisplayName', 'Publisher', 'DisplayVersion'],
             ),
-            'raw_response': response,
+            'raw_response': response,  # type: ignore[dict-item]
         }
-    return CommandResults(**command_results_args)
+    return CommandResults(**command_results_args)  # type: ignore[arg-type]
 
 
 def list_host_software_applications(client: Client, args: Dict) -> CommandResults:
-    hostname = args.get('hostname')
+    hostname = args.get('hostname', '')
     response = client.list_host_software_applications_request(hostname)
     outputs = [app.get('value') for app in response.get('PxgRetVal', {}).get('GNRL_EA_PARAM_1', [])]
     if not outputs:
@@ -427,19 +427,19 @@ def list_host_software_applications(client: Client, args: Dict) -> CommandResult
             'outputs_prefix': f'KasperskySecurityCenter.Host(val.KLHST_WKS_HOSTNAME && val.KLHST_WKS_HOSTNAME == '
                               f'{hostname}).Software',
             'outputs_key_field': 'ProductID',
-            'outputs': outputs,
+            'outputs': outputs,  # type: ignore[dict-item]
             'readable_output': tableToMarkdown(
                 f'Host {hostname} Software Applications',
                 outputs,
                 headers=['DisplayName', 'Publisher', 'DisplayVersion'],
             ),
-            'raw_response': response,
+            'raw_response': response,  # type: ignore[dict-item]
         }
-    return CommandResults(**command_results_args)
+    return CommandResults(**command_results_args)  # type: ignore[arg-type]
 
 
 def list_host_software_patches(client: Client, args: Dict) -> CommandResults:
-    hostname = args.get('hostname')
+    hostname = args.get('hostname', '')
     response = client.list_host_software_patches_request(hostname)
     outputs = [app.get('value') for app in response.get('PxgRetVal', {}).get('GNRL_EA_PARAM_1', [])]
     if not outputs:
@@ -449,47 +449,47 @@ def list_host_software_patches(client: Client, args: Dict) -> CommandResults:
             'outputs_prefix': f'KasperskySecurityCenter.Host(val.KLHST_WKS_HOSTNAME && val.KLHST_WKS_HOSTNAME == '
                               f'{hostname}).Patch',
             'outputs_key_field': 'PatchID',
-            'outputs': outputs,
+            'outputs': outputs,  # type: ignore[dict-item]
             'readable_output': tableToMarkdown(
                 f'Host {hostname} Software Patches',
                 outputs,
                 headers=['DisplayName', 'Publisher', 'DisplayVersion'],
             ),
-            'raw_response': response,
+            'raw_response': response,  # type: ignore[dict-item]
         }
-    return CommandResults(**command_results_args)
+    return CommandResults(**command_results_args)  # type: ignore[arg-type]
 
 
 def list_policies(client: Client, args: Dict) -> CommandResults:
     group_id = arg_to_number(args.get('group_id', -1))
-    response = client.list_policies_request(group_id)
+    response = client.list_policies_request(group_id)  # type: ignore[arg-type]
     outputs = [policy.get('value') for policy in response.get('PxgRetVal', [])]
     if not outputs:
         command_results_args = {'readable_output': 'No policies found.'}
     else:
         command_results_args = {
-            'outputs_prefix': f'KasperskySecurityCenter.Policy',
+            'outputs_prefix': 'KasperskySecurityCenter.Policy',
             'outputs_key_field': 'KLPOL_ID',
-            'outputs': outputs,
+            'outputs': outputs,  # type: ignore[dict-item]
             'readable_output': tableToMarkdown(
                 'Policies List',
                 outputs,
                 headers=['KLPOL_ID', 'KLPOL_DN', 'KLPOL_PRODUCT', 'KLPOL_VERSION'],
             ),
-            'raw_response': response,
+            'raw_response': response,  # type: ignore[dict-item]
         }
-    return CommandResults(**command_results_args)
+    return CommandResults(**command_results_args)  # type: ignore[arg-type]
 
 
 def get_policy(client: Client, args: Dict) -> CommandResults:
     policy_id = arg_to_number(args.get('policy_id'))
-    response = client.get_policy_request(policy_id)
+    response = client.get_policy_request(policy_id)  # type: ignore[arg-type]
     outputs = response.get('PxgRetVal', {})
     if not outputs:
         command_results_args = {'readable_output': 'No policies found.'}
     else:
         command_results_args = {
-            'outputs_prefix': f'KasperskySecurityCenter.Policy',
+            'outputs_prefix': 'KasperskySecurityCenter.Policy',
             'outputs_key_field': 'KLPOL_ID',
             'outputs': outputs,
             'readable_output': tableToMarkdown(
@@ -497,9 +497,9 @@ def get_policy(client: Client, args: Dict) -> CommandResults:
                 outputs,
                 headers=['KLPOL_ID', 'KLPOL_DN', 'KLPOL_PRODUCT', 'KLPOL_VERSION'],
             ),
-            'raw_response': response,
+            'raw_response': response,  # type: ignore[dict-item]
         }
-    return CommandResults(**command_results_args)
+    return CommandResults(**command_results_args)  # type: ignore[arg-type]
 
 
 def main():

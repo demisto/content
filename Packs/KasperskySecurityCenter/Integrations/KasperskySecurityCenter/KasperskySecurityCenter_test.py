@@ -3,7 +3,6 @@ import json
 
 import pytest
 
-import demistomock as demisto
 from KasperskySecurityCenter import (GROUP_FIELDS, HOST_DETAILED_FIELDS,
                                      HOST_FIELDS, Client, add_group,
                                      delete_group, get_host, get_policy,
