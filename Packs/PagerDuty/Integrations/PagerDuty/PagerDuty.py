@@ -617,7 +617,7 @@ def resolve_event(incident_key=None, serviceKey=SERVICE_KEY):
                         'parameters or in the command to process this action.')
 
     action_response = resolve_or_ack_incident('resolve', incident_key, serviceKey)
-    time.sleep(1)  # wait until the incident will update
+    time.sleep(3)  # wait until the incident will update
 
     res = http_request('GET', SERVER_URL + GET_INCIDENTS_SUFFIX, {'incident_key': incident_key})
     _, contexts, _ = parse_incident_data(res.get('incidents', []))
@@ -633,7 +633,7 @@ def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY):
                         'parameters or in the command to process this action.')
 
     action_response = resolve_or_ack_incident('acknowledge', incident_key, serviceKey)
-    time.sleep(1)  # wait until the incident will update
+    time.sleep(3)  # wait until the incident will update
 
     res = http_request('GET', SERVER_URL + GET_INCIDENTS_SUFFIX, {'incident_key': incident_key})
     _, contexts, _ = parse_incident_data(res.get('incidents', []))
