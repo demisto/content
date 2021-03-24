@@ -28,7 +28,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 152.5,
           "y": 50
         }
       }
@@ -67,8 +67,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 370
+          "x": 152.5,
+          "y": 440
         }
       }
     note: false
@@ -92,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1155,
-          "y": 1770
+          "x": -990,
+          "y": 2610
         }
       }
     note: false
@@ -103,12 +103,12 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 6d4a2318-be66-4429-8b91-23dc889ca007
+    taskid: 326e36dd-d7cb-4001-85e4-061ec01226ef
     type: regular
     task:
-      id: 6d4a2318-be66-4429-8b91-23dc889ca007
+      id: 326e36dd-d7cb-4001-85e4-061ec01226ef
       version: -1
-      name: Remove compliance search
+      name: Remove search
       description: Remove the compliance search by name from the Security & Compliance
         Center.
       script: '|||o365-sc-remove-search'
@@ -128,8 +128,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1390,
-          "y": 1595
+          "x": -980,
+          "y": 2380
         }
       }
     note: false
@@ -153,7 +153,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "9"
     scriptarguments:
       retry-count:
         simple: "10"
@@ -166,8 +166,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 1595
+          "x": -250,
+          "y": 2300
         }
       }
     note: false
@@ -235,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 195
+          "x": 152.5,
+          "y": 240
         }
       }
     note: false
@@ -305,8 +305,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 545
+          "x": 152.5,
+          "y": 660
         }
       }
     note: false
@@ -337,8 +337,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
-          "y": 720
+          "x": 810,
+          "y": 860
         }
       }
     note: false
@@ -380,8 +380,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1165,
-          "y": 895
+          "x": 810,
+          "y": 1240
         }
       }
     note: false
@@ -451,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 1070
+          "x": 152.5,
+          "y": 1420
         }
       }
     note: false
@@ -485,8 +485,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1245
+          "x": 730,
+          "y": 1600
         }
       }
     note: false
@@ -530,8 +530,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 1420
+          "x": 730,
+          "y": 2100
         }
       }
     note: false
@@ -575,8 +575,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 152.5,
+          "y": 2090
         }
       }
     note: false
@@ -604,8 +604,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 720
+          "x": -340,
+          "y": 860
         }
       }
     note: false
@@ -633,8 +633,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1245
+          "x": -320,
+          "y": 1600
         }
       }
     note: false
@@ -670,8 +670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 1595
+          "x": 1310,
+          "y": 2090
         }
       }
     note: false
@@ -696,9 +696,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1785,
-        "width": 1720,
-        "x": 50,
+        "height": 2625,
+        "width": 2680,
+        "x": -990,
         "y": 50
       }
     }
