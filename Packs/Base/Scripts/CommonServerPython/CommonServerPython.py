@@ -5330,7 +5330,7 @@ if 'requests' in sys.modules:
             self._auth = auth
             self._session = requests.Session()
             if not proxy:
-                self._session.trust_env = False
+                handle_proxy()
 
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
