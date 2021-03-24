@@ -32,7 +32,7 @@ def get_all_projects(token):
     res = []
     try:
         client = get_asana_client(token)
-        workspaces = client.workspaces.find_all(). # pylint: disable=no-member
+        workspaces = client.workspaces.find_all()  # pylint: disable=no-member
         for workspace in workspaces:
             projects = get_projects_in_workspace(workspace['gid'], client)
             res.extend(projects)
