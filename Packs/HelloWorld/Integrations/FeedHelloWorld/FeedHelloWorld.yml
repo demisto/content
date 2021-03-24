@@ -49,19 +49,6 @@ configuration:
   - WHITE
   required: false
   type: 15
-- defaultvalue: suddenDeath
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-- defaultvalue: '20160'
-  name: feedExpirationInterval
-  required: false
-  type: 1
 - defaultvalue: '30'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -102,11 +89,6 @@ configuration:
   name: feedExpirationInterval
   type: 1
   required: false
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
-  required: false
-  type: 0
 display: HelloWorld Feed
 name: HelloWorld Feed
 script:
@@ -123,7 +105,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: helloworld-get-indicators
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   feed: true
   isfetch: false
   longRunning: false
