@@ -3214,6 +3214,10 @@
         {
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "VirusTotal (API v3)",
+            "playbookID": "VirusTotalV3-test"
         }
     ],
     "skipped_tests": {
@@ -3368,7 +3372,6 @@
         "FireEyeFeed": "License expired Issue: 31838",
         "Akamai WAF": "Issue 32318",
         "FraudWatch": "Issue 34299",
-
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",

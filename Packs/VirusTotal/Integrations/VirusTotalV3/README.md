@@ -36,8 +36,7 @@ not exists.
 ### vt-comments-get:
 - Added argument: resource_type. If not supplied, will try to determine if the *resource* argument is a hash or a url.
 - Added argument: limit - gets the latest comments with the given limit.
-- Removed argument: *before*. Use the 'limit' argument instead to limit the results returned from the integration (breaks bc)
-- New output path: According to the given resource_type:
+- New output path:
     - VirusTotal.Comments
 - Removed output path: All previous output paths removed (breaks bc)
 
@@ -45,7 +44,7 @@ not exists.
 - added argument: resource_type to distinguish between resourced type. If not supplied, will try to determine if the *resource* argument is a hash or a url.
 - comment: will be the text field in the comment.
 
-### file-rescan -> vt-file-rescan:
+### file-rescan:
 - New output path: VirusTotal.FileSubmission.id
 - Preserved output: vtScanID
 - Removed output path: vtLink

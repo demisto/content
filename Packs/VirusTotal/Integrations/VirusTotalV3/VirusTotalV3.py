@@ -6,6 +6,8 @@ API Documentation:
 from collections import defaultdict
 from typing import Callable
 
+from dateparser import parse
+
 from CommonServerPython import *
 
 INTEGRATION_NAME = "VirusTotal"
@@ -19,9 +21,11 @@ class Client(BaseClient):
         is_premium: Shall use the premium api (mostly for reputation commands)
     """
     is_premium: bool
+    reliability: DBotScoreReliability
 
     def __init__(self, params: dict):
         self.is_premium = argToBoolean(params['is_premium_api'])
+        self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params['feedReliability'])
         super().__init__(
             'https://www.virustotal.com/api/v3/',
             verify=not argToBoolean(params.get('insecure')),
@@ -74,6 +78,17 @@ class Client(BaseClient):
     # endregion
 
     # region Comments call
+    def delete_comment(self, id_: str):
+        """
+        See Also:
+            https://developers.virustotal.com/v3.0/reference#comment-id-delete
+        """
+        self._http_request(
+            'DELETE',
+            f'comments/{id_}',
+            resp_type='response'
+        )
+
     def get_ip_comments(self, ip: str, limit: int) -> dict:
         """
         See Also:
@@ -1039,7 +1054,8 @@ def build_domain_output(
             DBotScoreType.DOMAIN,
             INTEGRATION_NAME,
             score=score,
-            malicious_description=logs
+            malicious_description=logs,
+            reliability=client.reliability
         )
     )
     if not extended_data:
@@ -1053,7 +1069,7 @@ def build_domain_output(
         readable_output=tableToMarkdown(
             f'Domain data of {domain}',
             {
-                'last_modified': epoch_to_timestamp(attributes['last_modification_date']),
+                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
                 **data,
                 **whois,
                 **attributes
@@ -1098,7 +1114,8 @@ def build_url_output(
             url,
             DBotScoreType.URL,
             INTEGRATION_NAME,
-            score,
+            score=score,
+            reliability=client.reliability,
             malicious_description=logs
         )
     )
@@ -1155,7 +1172,8 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
             DBotScoreType.IP,
             INTEGRATION_NAME,
             score=score,
-            malicious_description=logs
+            malicious_description=logs,
+            reliability=client.reliability
         )
     )
     if not extended_data:
@@ -1169,7 +1187,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
             {
                 **data,
                 **attributes,
-                'last_modified': epoch_to_timestamp(attributes['last_modification_date']),
+                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
                 'positives': f'{positive_engines}/{detection_engines}'
             },
             headers=['id', 'network', 'country', 'last_modified', 'reputation', 'positives']
@@ -1180,6 +1198,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
 
 
 def build_file_output(
+        client: Client,
         score_calculator: ScoreCalculator,
         file_hash: str,
         raw_response: dict,
@@ -1198,7 +1217,8 @@ def build_file_output(
             DBotScoreType.FILE,
             integration_name=INTEGRATION_NAME,
             score=score,
-            malicious_description=logs
+            malicious_description=logs,
+            reliability=client.reliability
         ),
         name=exiftool.get('OriginalFileName'),
         size=attributes.get('size'),
@@ -1388,7 +1408,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict) 
             # If anything happens, just keep going
             demisto.debug(f'Could not process file: "{file}"\n {str(exception)}')
             continue
-        results.append(build_file_output(score_calculator, file, raw_response, extended_data))
+        results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
     return results
 
 
@@ -1544,11 +1564,16 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
     added limit
     """
     limit = arg_to_number_must_int(
-        args['limit'],
+        args.get('limit'),
         arg_name='limit',
         required=True
     )
     resource = args['resource']
+    if before := args.get('before'):
+        before = parse(before)
+        assert before is not None, f'Could not parse the before date "{before}"'
+        before = before.replace(tzinfo=None)
+
     resource_type = args.get('resource_type')
     if not resource_type:
         try:
@@ -1570,7 +1595,8 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         raw_response = client.get_domain_comments(resource, limit)
     else:
         raise DemistoException(f'Could not find resource type of "{resource_type}"')
-    data = raw_response['data']
+
+    data = raw_response.get('data', {})
     context = {
         'indicator': resource,
         'comments': data
@@ -1579,6 +1605,12 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
     for comment in data:
         attributes = comment.get('attributes', {})
         votes = attributes.get('votes', {})
+
+        if date := parse(str(attributes.get('date'))):
+            date = date.replace(tzinfo=None)
+
+        if date and before and date > before:
+            continue
         comments.append({
             'Date': epoch_to_timestamp(attributes.get('date')),
             'Text': attributes.get('text'),
@@ -1591,7 +1623,7 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         f'{INTEGRATION_ENTRY_CONTEXT}.Comments',
         'id',
         readable_output=tableToMarkdown(
-            f'Virus total comments of {resource_type}: "{resource}"',
+            f'Virus Total comments of {resource_type}: "{resource}"',
             comments,
             headers=['Date', 'Text', 'Positive Votes', 'Abuse Votes', 'Negative Votes']
         ),
@@ -1616,18 +1648,35 @@ def add_comments_command(client: Client, args: dict) -> CommandResults:
     resource_type = resource_type.lower()
     if resource_type == 'ip':
         raise_if_ip_not_valid(resource)
-        client.add_comment_to_ip(resource, comment)
+        raw_response = client.add_comment_to_ip(resource, comment)
     elif resource_type == 'url':
-        client.add_comment_to_url(resource, comment)
+        raw_response = client.add_comment_to_url(resource, comment)
     elif resource_type == 'domain':
-        client.add_comment_to_domain(resource, comment)
+        raw_response = client.add_comment_to_domain(resource, comment)
     elif resource_type == 'file':
         raise_if_hash_not_valid(resource)
-        client.add_comment_to_file(resource, comment)
+        raw_response = client.add_comment_to_file(resource, comment)
     else:
         raise DemistoException(f'Could not find resource type of "{resource_type}"')
+    data = raw_response['data']
+    attributes = data.get('attributes', {})
+    votes = attributes.get('votes', {})
     return CommandResults(
-        readable_output=f'Comment has been added to {resource_type}: {resource}'
+        f'{INTEGRATION_ENTRY_CONTEXT}.Comments.comments',
+        'id',
+        readable_output=tableToMarkdown(
+            f'Comment has been added!',
+            {
+                'Date': epoch_to_timestamp(attributes.get('date')),
+                'Text': attributes.get('text'),
+                'Positive Votes': votes.get('positive'),
+                'Abuse Votes': votes.get('abuse'),
+                'Negative Votes': votes.get('negative')
+            },
+            headers=['Date', 'Text', 'Positive Votes', 'Abuse Votes', 'Negative Votes']
+        ),
+        outputs=data,
+        raw_response=raw_response
     )
 
 
@@ -1783,6 +1832,13 @@ def check_module(client: Client) -> str:
     return 'ok'
 
 
+def delete_comment(client: Client, args: dict) -> CommandResults:
+    """Delete a comments"""
+    id_ = args['id']
+    client.delete_comment(id_)
+    return CommandResults(readable_output=f'Comment {id_} has been deleted!')
+
+
 def main(params: dict, args: dict, command: str):
     results: Union[CommandResults, str, List[CommandResults]]
     handle_proxy()
@@ -1809,13 +1865,15 @@ def main(params: dict, args: dict, command: str):
         results = add_comments_command(client, args)
     elif command == f'{COMMAND_PREFIX}-comments-get-by-id':
         results = get_comments_by_id_command(client, args)
+    elif command == f'{COMMAND_PREFIX}-comments-delete':
+        results = delete_comment(client, args)
     elif command == 'file-rescan':
         results = file_rescan_command(client, args)
     elif command == 'file-scan':
         results = file_scan(client, args)
     elif command == f'{COMMAND_PREFIX}-file-scan-upload-url':
         results = get_upload_url(client)
-    elif command == f'{COMMAND_PREFIX}-url-scan':
+    elif command == f'url-scan':
         results = scan_url_command(client, args)
     elif command == f'{COMMAND_PREFIX}-search':
         results = search_command(client, args)
