@@ -485,7 +485,7 @@ def main():
     try:
         handle_proxy()
         client = Client(
-            base_url=urljoin(params.get('url'), '/api/v1.0'),
+            base_url=urljoin(params.get('server'), '/api/v1.0'),
             verify=not params.get('insecure'),
             proxy=params.get('proxy'),
         )

@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL (e.g., https://kaspersky.domain.com:13299)
-  name: url
+  name: server
   required: true
   type: 0
 - display: Username
