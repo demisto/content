@@ -67,6 +67,7 @@ You need to collect several pieces of information in order to configure the inte
     * __Sync Incident Owners__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
+    * __Incident Statuses to Fetch__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
@@ -158,6 +159,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional | 
+| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_other, resolved_auto | Optional |
 
 
 ##### Context Output
