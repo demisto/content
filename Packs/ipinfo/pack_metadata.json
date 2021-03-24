@@ -1,5 +1,5 @@
 {
-    "name": "ipinfo",
+    "name": "Ipinfo",
     "description": "Use the ipinfo.io API to get data about an IP address",
     "support": "xsoar",
     "currentVersion": "1.0.1",
