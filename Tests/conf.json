@@ -424,17 +424,17 @@
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
+            "playbookID": "MicrosoftGraphMail-Test_dev",
             "instance_names": "ms_graph_mail_dev"
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
+            "playbookID": "MicrosoftGraphMail-Test_dev_no_oproxy",
             "instance_names": "ms_graph_mail_dev_no_oproxy"
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
+            "playbookID": "MicrosoftGraphMail-Test_prod",
             "instance_names": "ms_graph_mail_prod"
         },
         {
@@ -1369,13 +1369,13 @@
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v10.2.0",
-            "playbookID": "McAfee ESM v2 - Test",
+            "playbookID": "McAfee ESM v2 - Test v10.2.0",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v10.3.0",
-            "playbookID": "McAfee ESM v2 - Test",
+            "playbookID": "McAfee ESM v2 - Test v10.3.0",
             "fromversion": "5.0.0"
         },
         {
@@ -1388,19 +1388,19 @@
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v10.2.0",
-            "playbookID": "McAfee ESM Watchlists - Test",
+            "playbookID": "McAfee ESM Watchlists - Test v10.2.0",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v10.3.0",
-            "playbookID": "McAfee ESM Watchlists - Test",
+            "playbookID": "McAfee ESM Watchlists - Test v10.3.0",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v11.3",
-            "playbookID": "McAfee ESM Watchlists - Test",
+            "playbookID": "McAfee ESM Watchlists - Test v11.3",
             "fromversion": "5.0.0"
         },
         {
@@ -1709,17 +1709,17 @@
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
             "instance_names": "microsoft_defender_atp_prod"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test dev",
             "instance_names": "microsoft_defender_atp_dev"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed"
         },
         {
@@ -1754,12 +1754,12 @@
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Security Test",
+            "playbookID": "Microsoft Graph Security Test dev",
             "instance_names": "ms_graph_security_dev"
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Security Test",
+            "playbookID": "Microsoft Graph Security Test prod",
             "instance_names": "ms_graph_security_prod"
         },
         {
@@ -1774,51 +1774,51 @@
         },
         {
             "integrations": "Microsoft Graph Groups",
-            "playbookID": "Microsoft Graph Groups - Test",
+            "playbookID": "Microsoft Graph Groups - Test dev",
             "instance_names": "ms_graph_groups_dev"
         },
         {
             "integrations": "Microsoft Graph Groups",
-            "playbookID": "Microsoft Graph Groups - Test",
+            "playbookID": "Microsoft Graph Groups - Test prod",
             "instance_names": "ms_graph_groups_prod"
         },
         {
             "integrations": "Microsoft_Graph_Files",
-            "playbookID": "test_MsGraphFiles",
+            "playbookID": "test_MsGraphFiles dev",
             "instance_names": "ms_graph_files_dev",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft_Graph_Files",
-            "playbookID": "test_MsGraphFiles",
+            "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Calendar",
-            "playbookID": "Microsoft Graph Calendar - Test",
+            "playbookID": "Microsoft Graph Calendar - Test dev",
             "instance_names": "ms_graph_calendar_dev"
         },
         {
             "integrations": "Microsoft Graph Calendar",
-            "playbookID": "Microsoft Graph Calendar - Test",
+            "playbookID": "Microsoft Graph Calendar - Test prod",
             "instance_names": "ms_graph_calendar_prod"
         },
         {
             "integrations": "Microsoft Graph Device Management",
-            "playbookID": "MSGraph_DeviceManagement_Test",
+            "playbookID": "MSGraph_DeviceManagement_Test_dev",
             "instance_names": "ms_graph_device_management_oproxy_dev",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
-            "playbookID": "MSGraph_DeviceManagement_Test",
+            "playbookID": "MSGraph_DeviceManagement_Test_prod",
             "instance_names": "ms_graph_device_management_oproxy_prod",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
-            "playbookID": "MSGraph_DeviceManagement_Test",
+            "playbookID": "MSGraph_DeviceManagement_Test_self_deployed_prod",
             "instance_names": "ms_graph_device_management_self_deployed_prod",
             "fromversion": "5.0.0"
         },
@@ -3213,6 +3213,14 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "LogPoint SIEM Integration",
+            "playbookID": "LogPoint SIEM Integration - Test Playbook 1"
+        },
+        {
+            "integrations": "LogPoint SIEM Integration",
+            "playbookID": "LogPoint SIEM Integration - Test Playbook 2"
+        },
+        {
             "integrations": "Cisco Stealthwatch",
             "fromversion": "5.5.0",
             "playbookID": "Cisco Stealthwatch Test"
@@ -3280,7 +3288,6 @@
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
         "O365-SecurityAndCompliance-Test": "Issue 32364",
-        "pyEWS_Test": "Issue 27942",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
@@ -3295,7 +3302,9 @@
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
-        "Slack Test Playbook": "Issue 33448"
+        "Slack Test Playbook": "Issue 33448",
+        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
+        "AWS - CloudWatchLogs Test Playbook": "Issue 29828"
     },
     "skipped_integrations": {
         
@@ -3433,7 +3442,6 @@
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "SplunkPy": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
-        "McAfee ESM v2": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
