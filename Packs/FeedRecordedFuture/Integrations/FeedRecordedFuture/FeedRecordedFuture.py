@@ -1,4 +1,5 @@
 import gzip
+import json
 
 from CommonServerPython import *
 # IMPORTS
@@ -344,12 +345,14 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
                     raw_json['score'] = score = client.calculate_indicator_score(risk)
                     raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
                 lower_case_evidence_details_keys = []
-                evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
-                if evidence_details:
-                    raw_json['EvidenceDetails'] = evidence_details
-                    for rule in evidence_details:
-                        rule = dict((key.lower(), value) for key, value in rule.items())
-                        lower_case_evidence_details_keys.append(rule)
+                evidence_details_value = item.get('EvidenceDetails', '{}')
+                if evidence_details_value:
+                    evidence_details = json.loads(evidence_details_value).get('EvidenceDetails', [])
+                    if evidence_details:
+                        raw_json['EvidenceDetails'] = evidence_details
+                        for rule in evidence_details:
+                            rule = dict((key.lower(), value) for key, value in rule.items())
+                            lower_case_evidence_details_keys.append(rule)
                 risk_string = item.get('RiskString')
                 if isinstance(risk_string, str):
                     raw_json['RiskString'] = format_risk_string(risk_string)
