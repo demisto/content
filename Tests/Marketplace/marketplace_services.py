@@ -1211,12 +1211,12 @@ class Pack(object):
     def get_modified_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
                                          changelog: dict, modified_rn_files: list) -> dict[str, str]:
         """
-        In the case where an rn file was changed, this function return the right format of the new content
-        of the release note suitable for the changelog file.
+        In the case where an rn file was changed, this function returns the new content
+        of the release note in the format suitable for the changelog file.
         In general, if two rn files are created before the pack is being uploaded to the Marketplace,
         the rn files are being aggregated and the latter version is the one that is being used as a key in the changelog
         file, and the aggregated rns as the value.
-        Hence, in the case of changing an rn as such, this function re-aggregates the all of the rns under the
+        Hence, in the case of changing an rn as such, this function re-aggregates all of the rns under the
         corresponding version key, and returns the aggregated data, in the right format, as value under that key.
 
         Args:
@@ -1232,7 +1232,7 @@ class Pack(object):
 
         """
         # No modified rn files, return None
-        if not len(modified_rn_files):
+        if len(modified_rn_files) == 0:
             return None
 
         modified_versions_dict = {}
@@ -1286,7 +1286,6 @@ class Pack(object):
                     rn_lines = rn_file.read()
                 same_block_versions_dict[current_version] = self._clean_release_notes(rn_lines).strip()
         return same_block_versions_dict, str(higher_nearest_version)
-
 
 
     def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion) -> \
@@ -1365,8 +1364,7 @@ class Pack(object):
             by comparing the old and the new commit hash.
         Returns:
             The names of the modified release notes file out of the given list only,
-            as in the names of the files that are under ReleaseNotes directory.
-            The names should be in the format of 'filename.md'.
+            as in the names of the files that are under ReleaseNotes directory in the format of 'filename.md'.
 
         """
         modified_rn_files = []
@@ -1385,6 +1383,7 @@ class Pack(object):
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
             pack_was_modified (bool): whether the pack modified or not.
+            modified_files_paths (list): list of paths of the pack's modified file
 
         Returns:
             bool: whether the operation succeeded.
@@ -1409,7 +1408,7 @@ class Pack(object):
                     # Handling modified old release notes files, if there are any
                     rn_files_names = self.get_rn_files_names(modified_files_paths)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
-                        release_notes_dir,changelog_latest_rn_version, changelog, rn_files_names )
+                        release_notes_dir, changelog_latest_rn_version, changelog, rn_files_names)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
@@ -1494,7 +1493,6 @@ class Pack(object):
                           f"Additional info: {e}")
         finally:
             return task_status, not_updated_build
-
 
     def create_local_changelog(self, build_index_folder_path):
         """ Copies the pack index changelog.json file to the pack path

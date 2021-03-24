@@ -995,7 +995,7 @@ def main():
 
         task_status, modified_files_paths = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
                                                                  previous_commit_hash)
-        pack_was_modified = len(modified_files_paths) > 0
+        pack_was_modified = len(modified_files_paths) > 0 # insert to function
 
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
@@ -1015,7 +1015,8 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified,
+                                                                    modified_files_paths)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
