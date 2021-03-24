@@ -18,7 +18,7 @@ If the indicator was found to be suspicious only by the rules thresholds, the in
 
 ### Premium analysis: Relationship Files Threshold
 If the organization is using the premium subscription of VirusTotal, you can use the premium API analysis.
-The premium API analysis will check 3 file relationships of each indicator (domain, url. and ip).
+The premium API analysis will check 3 file relationships of each indicator (domain, url, and ip).
 If the relationship is found to be malicious, the indicator will be considered malicious.
 If the relationship is found to be suspicious and the basic score is suspicious, the indicator will be considered malicious.
 If the relationship is found to be suspicious, the indicator will be considered suspicious.
@@ -39,7 +39,7 @@ not exist.
 
 ### vt-comments-get:
 - Added the *resource_type* argument. If not supplied, will try to determine if the *resource* argument is a hash or a URL.
-- Added the *limit* argument: Gets the latest comments with the given limit.
+- Added the *limit* argument: Gets the latest comments within the given limit.
 - New output path: *VirusTotal.Comments*.
 - Removed output path: All previous output paths have been removed (breaks backward compatibility).
 
@@ -47,7 +47,7 @@ not exist.
 - Added the *resource_type* argument:  Distinguishes between resource types. If not supplied, will try to determine if the *resource* argument is a hash or a URL.
 - comment: The text field in the comment.
 
-### file-rescan:
+### file-rescan -> vt-file-rescan:
 - New output path: *VirusTotal.FileSubmission.id*
 - Preserved output: *vtScanID*
 - Removed output path: *vtLink*
@@ -66,10 +66,10 @@ not exist.
 - New output path: *VirusTotal.FileUploadURL*
 - Preserved output: *vtUploadURL*
 
-new commands:
+## New Commands
 ---
-- vt-search
-- vt-ip-passive-dns-data
-- vt-file-sandbox-report
-- vt-comments-get-by-id
-- vt-analysis-get
+- ***vt-search***
+- ***vt-ip-passive-dns-data***
+- ***vt-file-sandbox-report***
+- ***vt-comments-get-by-id***
+- ***vt-analysis-get***
