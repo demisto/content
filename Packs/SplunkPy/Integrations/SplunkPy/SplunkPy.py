@@ -1029,13 +1029,14 @@ def get_modified_remote_data_command(service, args):
     return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_notable_ids))
 
 
-def update_remote_system_command(args, params, proxy):
+def update_remote_system_command(args, params, service, auth_token):
     """ Pushes changes in XSOAR incident into the corresponding notable event in Splunk Server.
 
     Args:
         args (dict): Demisto args
         params (dict): Demisto params
-        proxy (bool): Use system proxy settings or not
+        service (splunklib.client.Service): Splunk service object
+        auth_token (str) - The authentication token to use
 
     Returns:
         notable_id (str): The notable id
@@ -1062,11 +1063,11 @@ def update_remote_system_command(args, params, proxy):
             demisto.info('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
             base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
             try:
-                session_key = get_session_key(proxy, params, base_url)
+                session_key = service.token if not auth_token else None
                 response_info = updateNotableEvents(
-                    sessionKey=session_key, baseurl=base_url, comment=changed_data['comment'],
-                    status=changed_data['status'], urgency=changed_data['urgency'], owner=changed_data['owner'],
-                    eventIDs=[notable_id]
+                    baseurl=base_url, comment=changed_data['comment'], status=changed_data['status'],
+                    urgency=changed_data['urgency'], owner=changed_data['owner'], eventIDs=[notable_id],
+                    auth_token=auth_token, sessionKey=session_key
                 )
                 msg = response_info.get('message')
                 if 'success' not in response_info or not response_info['success']:
@@ -1416,8 +1417,8 @@ def updateNotableEvents(baseurl, comment, status=None, urgency=None, owner=None,
     eventIDs -- A list of notable event IDs (must be provided if a search ID is not provided)
     searchID -- An ID of a search. All of the events associated with this search will be modified
      unless a list of eventIDs are provided that limit the scope to a sub-set of the results.
-     auth_token - The authentication token to use
-     sessionKey -- The session key to use
+    auth_token - The authentication token to use
+    sessionKey -- The session key to use
     """
 
     # Make sure that the session ID was provided
@@ -2224,7 +2225,7 @@ def main():
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, demisto.args())
     elif command == 'update-remote-system':
-        update_remote_system_command(demisto.args(), demisto.params(), proxy)
+        update_remote_system_command(demisto.args(), demisto.params(), service, auth_token)
     else:
         raise NotImplementedError('Command not implemented: {}'.format(command))
 
