@@ -810,15 +810,19 @@ script:
             break;
         case 'guardicore-get-incidents':
             var isDateExist = false;
-            var regEx = /^\d{4}-\d{2}-\d{2}$/;
+            var regEx = /^\d{2}-\d{2}-\d{4}$/;
             console.log("Arguments are: "+ JSON.stringify(args));
 
             if (args["to_time"] && args["from_time"]){
                 isDateExist = true;
                 if (args["to_time"].match(regEx) && args["from_time"].match(regEx) ){
-                    args["to_time"] = args["to_time"] + "T00:00:00Z"
-                    args["from_time"] = args["from_time"] + "T00:00:00Z"
-                } else { throw 'Argument \'to_time\' or \'from_time\' is not with the right format. Format should be: YYYY-MM-DD'}
+                    splittedDateTo=args["to_time"].split("-");
+                    args["to_time"] = String(new Date(parseInt(splittedDate[2], 10), parseInt(splittedDate[1], 10) - 1 , parseInt(splittedDate[0]), 10).getTime());
+
+                    splittedDateFrom=args["from_time"].split("-");
+                    args["from_time"] = String(new Date(parseInt(splittedDateFrom[2], 10), parseInt(splittedDateFrom[1], 10) - 1 , parseInt(splittedDateFrom[0]), 10).getTime());
+
+                } else { throw 'Argument \'to_time\' or \'from_time\' is not with the right format. Format should be: DD-MM-YYYY'}
             }
 
             if (!isDateExist){
