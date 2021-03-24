@@ -2,6 +2,10 @@
 Use the SplunkPy integration to fetch incidents from Splunk ES, and query results by SID.
 ***
 
+To use Splunk token authentication, enter the text: `_token` to the **Username** field and your token value to the **Password** field.
+To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens).
+***
+
 ### Fetching noteble events.
 The integration allows for fetching Splunk notable events using A default query. The query can be changed and modified to support different Splunk use cases. (See Existing Users session)
 

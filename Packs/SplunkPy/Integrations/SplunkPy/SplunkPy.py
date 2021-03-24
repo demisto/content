@@ -1403,13 +1403,12 @@ def convert_to_str(obj):
     return str(obj)
 
 
-def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
-                        searchID=None):
+def updateNotableEvents(baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
+                        searchID=None, auth_token=None, sessionKey=None):
     """
     Update some notable events.
 
     Arguments:
-    sessionKey -- The session key to use
     comment -- A description of the change or some information about the notable events
     status -- A status (only required if you are changing the status of the event)
     urgency -- An urgency (only required if you are changing the urgency of the event)
@@ -1417,11 +1416,13 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     eventIDs -- A list of notable event IDs (must be provided if a search ID is not provided)
     searchID -- An ID of a search. All of the events associated with this search will be modified
      unless a list of eventIDs are provided that limit the scope to a sub-set of the results.
+     auth_token - The authentication token to use
+     sessionKey -- The session key to use
     """
 
     # Make sure that the session ID was provided
-    if sessionKey is None:
-        raise Exception("A session key was not provided")
+    if not sessionKey and not auth_token:
+        raise Exception("A session_key/auth_token was not provided")
 
     # Make sure that rule IDs and/or a search ID is provided
     if eventIDs is None and searchID is None:
@@ -1448,7 +1449,10 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     if searchID is not None:
         args['searchID'] = searchID
 
-    auth_header = {'Authorization': 'Splunk %s' % sessionKey}
+    if not auth_token:
+        auth_header = {'Authorization': sessionKey}
+    else:
+        auth_header = {'Authorization': 'Bearer %s' % auth_token}
 
     args['output_mode'] = 'json'
 
@@ -1837,37 +1841,10 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def get_session_key(proxy, params, base_url):
-    """
-
-    Args:
-        proxy (bool): Use system proxy settings or not
-        params (dict): Demisto params
-        base_url (str): The base URL for the request
-
-    Returns:
-        session_key (str): The Splunk session key
-
-    """
-    if not proxy:
-        os.environ["HTTPS_PROXY"] = ""
-        os.environ["HTTP_PROXY"] = ""
-        os.environ["https_proxy"] = ""
-        os.environ["http_proxy"] = ""
-    username = params['authentication']['identifier']
-    password = params['authentication']['password']
-    auth_req = requests.post(base_url + 'services/auth/login',
-                             data={'username': username, 'password': password, 'output_mode': 'json'},
-                             verify=VERIFY_CERTIFICATE)
-
-    session_key = auth_req.json()['sessionKey']
-    return session_key
-
-
-def splunk_edit_notable_event_command(proxy):
+def splunk_edit_notable_event_command(service, auth_token):
     params = demisto.params()
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
-    sessionKey = get_session_key(proxy, params, base_url)
+    sessionKey = service.token if not auth_token else None
 
     eventIDs = None
     if demisto.get(demisto.args(), 'eventIDs'):
@@ -1877,16 +1854,17 @@ def splunk_edit_notable_event_command(proxy):
     if demisto.get(demisto.args(), 'status'):
         status = int(demisto.args()['status'])
 
-    response_info = updateNotableEvents(sessionKey=sessionKey, baseurl=base_url,
+    response_info = updateNotableEvents(baseurl=base_url,
                                         comment=demisto.get(demisto.args(), 'comment'), status=status,
                                         urgency=demisto.get(demisto.args(), 'urgency'),
-                                        owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
+                                        owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs,
+                                        auth_token=auth_token, sessionKey=sessionKey)
     if 'success' not in response_info or not response_info['success']:
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Could not update notable "
                                      "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
-    else:
-        demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
+
+    demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
 def splunk_job_status(service):
@@ -2158,10 +2136,18 @@ def main():
         'host': demisto.params()['host'],
         'port': demisto.params()['port'],
         'app': demisto.params().get('app', '-'),
-        'username': demisto.params()['authentication']['identifier'],
-        'password': demisto.params()['authentication']['password'],
         'verify': VERIFY_CERTIFICATE
     }
+
+    auth_token = None
+    username = demisto.params()['authentication']['identifier']
+    password = demisto.params()['authentication']['password']
+    if username == '_token':
+        connection_args['splunkToken'] = password
+        auth_token = password
+    else:
+        connection_args['username'] = username
+        connection_args['password'] = password
 
     if use_requests_handler:
         handle_proxy()
@@ -2200,7 +2186,7 @@ def main():
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service)
     elif command == 'splunk-notable-event-edit':
-        splunk_edit_notable_event_command(proxy)
+        splunk_edit_notable_event_command(service, auth_token)
     elif command == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':
