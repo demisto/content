@@ -63,9 +63,11 @@ script: >
           if (isSubPlaybookKey) {
               key = 'subplaybook-${currentPlaybookID}.' + key;
           }
-          var result = executeCommand('delContext', {key: key});
-          if(!result || result.type === entryTypes.error) {
-              errorsStr = errorsStr + "\n" + result.Contents;
+          if (key !== "DBotScore") {
+              var result = executeCommand('delContext', {key: key});
+              if(!result || result.type === entryTypes.error) {
+                  errorsStr = errorsStr + "\n" + result.Contents;
+              }
           }
       }
       var message;
