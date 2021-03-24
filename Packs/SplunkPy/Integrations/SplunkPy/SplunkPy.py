@@ -144,11 +144,11 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
             last_run_object.update({DUMMY: DUMMY})
 
     if len(notables) < FETCH_LIMIT:
-        updated_last_run_object = {'time': now, 'offset': 0}
+        updated_fetch_timeframe = {'time': now, 'offset': 0}
     else:
-        updated_last_run_object = {'time': last_run, 'offset': search_offset + FETCH_LIMIT}
+        updated_fetch_timeframe = {'time': last_run, 'offset': search_offset + FETCH_LIMIT}
 
-    last_run_object.update(updated_last_run_object)
+    last_run_object.update(updated_fetch_timeframe)
     demisto.setLastRun(last_run_object)
 
 
@@ -641,18 +641,17 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
         if searchable_query:
             status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
             if status:
-                searchable_query += " earliest={} latest={}".format(earliest_offset, latest_offset)
+                if "latest" not in searchable_query:
+                    searchable_query = "latest={} ".format(latest_offset) + searchable_query
+                if "earliest" not in searchable_query:
+                    searchable_query = "earliest={} ".format(earliest_offset) + searchable_query
                 kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
                 query = build_search_query({"query": searchable_query})
                 demisto.debug("Drilldown query for notable {}: {}".format(notable_data[EVENT_ID], query))
                 try:
                     job = service.jobs.create(query, **kwargs)
                 except Exception as e:
-                    err = str(e)
-                    demisto.error(
-                        "Caught an exception in drilldown_enrichment function. Additional Info: {}".format(err)
-                    )
-                    raise e
+                    demisto.error("Caught an exception in drilldown_enrichment function: {}".format(str(e)))
             else:
                 demisto.info('Failed getting the drilldown timeframe for notable {}'.format(notable_data[EVENT_ID]))
         else:
@@ -688,8 +687,7 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
         try:
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
-            demisto.error("Caught an exception in drilldown_enrichment function. Additional Info: {}".format(str(e)))
-            raise e
+            demisto.error("Caught an exception in drilldown_enrichment function: {}".format(str(e)))
     else:
         demisto.info('No users were found in notable. {}'.format(error_msg))
 
@@ -721,8 +719,7 @@ def asset_enrichment(service, notable_data, num_enrichment_events):
         try:
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
-            demisto.error("Caught an exception in asset_enrichment function. Additional Info: {}".format(str(e)))
-            raise e
+            demisto.error("Caught an exception in asset_enrichment function: {}".format(str(e)))
     else:
         demisto.info('No assets were found in notable. {}'.format(error_msg))
 
@@ -775,12 +772,17 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
         demisto.debug("Trying to handle open enrichment {}".format(notable.id))
         for enrichment in notable.enrichments:
             if enrichment.status == Enrichment.IN_PROGRESS:
-                job = client.Job(service=service, sid=enrichment.id)
-                if job.is_ready():
-                    demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
-                    for item in results.ResultsReader(job.results()):
-                        enrichment.data.append(item)
-                    enrichment.status = Enrichment.SUCCESSFUL
+                try:
+                    job = client.Job(service=service, sid=enrichment.id)
+                    if job.is_ready():
+                        demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
+                        for item in results.ResultsReader(job.results()):
+                            enrichment.data.append(item)
+                        enrichment.status = Enrichment.SUCCESSFUL
+                except Exception as e:
+                    demisto.error("Caught an exception while retrieving {} enrichment results for notable {}: "
+                                  "{}".format(enrichment.type, notable.id, str(e)))
+                    enrichment.status = Enrichment.FAILED
 
         if notable.handled():
             task_status = True
