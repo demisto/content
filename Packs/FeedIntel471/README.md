@@ -1,1 +1,1 @@
-Note: Support for this pack will be moving to the partner around 2021-04-23.
+Note: Support for this pack will be moving to the partner around 2021-04-24.
