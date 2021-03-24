@@ -16,6 +16,7 @@
 <li><strong>Use system proxy</strong></li>
 <li><strong>Previous days to fetch</strong></li>
 <li><strong>Credentials</strong></li>
+<li><strong>Incident Soc Statuses to Fetch</strong></li>
 </ul>
 </li>
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
