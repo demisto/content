@@ -1,5 +1,5 @@
-Data center breach detection
-This integration was integrated and tested with version v3.0 of GuardiCore
+Data center breach detection.
+This integration was integrated and tested with version v3.0 of GuardiCore API.
 ## Configure GuardiCore on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -216,4 +216,3 @@ Searches within the network log (with filters).
 | destination | Filter by destination (hostname or IP address). | Optional | 
 | port | Filter by port number. | Optional | 
 | uuid | Filter by Event ID. | Optional | 
-
