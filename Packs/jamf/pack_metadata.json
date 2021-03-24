@@ -1,5 +1,5 @@
 {
-  "name": "jamf",
+  "name": "Jamf",
   "description": "Jamf device management",
   "support": "xsoar",
   "currentVersion": "1.0.0",
