@@ -9,13 +9,6 @@ Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Feed Required Parameters: https://xsoar.pan.dev/docs/integrations/feeds#required-parameters
 Linting: https://xsoar.pan.dev/docs/integrations/linting
 
-When building a Cortex XSOAR feed integration that is reusable, a lot of effort
-must be placed in the design. We recommend to fill a Design Document template,
-that allows you to capture Use Cases, Requirements and Inputs/Outputs.
-
-Example Design document for the this Integration (HelloWorld):
-https://docs.google.com/document/d/1wETtBEKg37PHNU8tYeB56M1LE314ux086z3HFeF_cX0
-
 
 The API
 --------------
