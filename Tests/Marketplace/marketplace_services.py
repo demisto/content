@@ -1048,7 +1048,7 @@ class Pack(object):
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
         finally:
-            return task_status, modified_files_paths
+            return task_status, modified_files_paths, pack_was_modified
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
                           private_content=False, pack_artifacts_path=None):
@@ -1287,7 +1287,6 @@ class Pack(object):
                 same_block_versions_dict[current_version] = self._clean_release_notes(rn_lines).strip()
         return same_block_versions_dict, str(higher_nearest_version)
 
-
     def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion) -> \
             Tuple[str, str]:
         """
@@ -1375,7 +1374,7 @@ class Pack(object):
         return modified_rn_files
 
     def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False,
-                              modified_files_paths: list=[]):
+                              modified_files_paths: list = []):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -2704,6 +2703,3 @@ def get_last_upload_commit_hash(content_repo, index_folder_path):
         logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
                          f'repo. Additional info:\n {e}')
         sys.exit(1)
-
-
-
