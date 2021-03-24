@@ -32,7 +32,7 @@ def get_all_projects(token):
     res = []
     try:
         client = get_asana_client(token)
-        workspaces = client.workspaces.find_all()
+        workspaces = client.workspaces.find_all(). # pylint: disable=no-member
         for workspace in workspaces:
             projects = get_projects_in_workspace(workspace['gid'], client)
             res.extend(projects)
@@ -63,7 +63,7 @@ def get_project(pid, token):
     project = {}
     try:
         client = get_asana_client(token)
-        project = client.projects.find_by_id(pid)
+        project = client.projects.find_by_id(pid)  # pylint: disable=no-member
         return CommandResults(
             outputs_prefix='asana',
             outputs_key_field='project',
@@ -90,7 +90,7 @@ def create_task_in_project(pid, name, token):
     """
     try:
         client = get_asana_client(token)
-        client.tasks.create({'projects': pid, 'name': name})
+        client.tasks.create({'projects': pid, 'name': name})  # pylint: disable=no-member
         demisto.results(f'Task {name} successfully added to project')
     except:
         demisto.results('Task creation failed')
