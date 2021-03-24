@@ -112,7 +112,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: KasperskySecurityCenter.Host.KLHST_INSTANCEID
+              simple: KasperskySecurityCenter.Host.KLHST_WKS_DN
             iscontext: true
       - - operator: isExists
           left:
