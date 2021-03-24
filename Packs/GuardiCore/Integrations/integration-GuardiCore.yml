@@ -817,7 +817,7 @@ script:
                 isDateExist = true;
                 if (args["to_time"].match(regEx) && args["from_time"].match(regEx) ){
                     splittedDateTo=args["to_time"].split("-");
-                    args["to_time"] = String(new Date(parseInt(splittedDate[2], 10), parseInt(splittedDate[1], 10) - 1 , parseInt(splittedDate[0]), 10).getTime());
+                    args["to_time"] = String(new Date(parseInt(splittedDateTo[2], 10), parseInt(splittedDateTo[1], 10) - 1 , parseInt(splittedDateTo[0]), 10).getTime());
 
                     splittedDateFrom=args["from_time"].split("-");
                     args["from_time"] = String(new Date(parseInt(splittedDateFrom[2], 10), parseInt(splittedDateFrom[1], 10) - 1 , parseInt(splittedDateFrom[0]), 10).getTime());
