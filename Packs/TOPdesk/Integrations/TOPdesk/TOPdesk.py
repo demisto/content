@@ -20,7 +20,6 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 INTEGRATION_NAME = 'TOPdesk'
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DATE_FORMAT_FULL = "%Y-%m-%dT%H:%M:%S.%f%z"
 MAX_API_PAGE_SIZE = 10000
 FIRST_REST_API_VERSION_WITH_NEW_QUERY = "3.4.0"
@@ -627,10 +626,8 @@ def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults
             'Department': person.get('department', None),
             'City': person.get('city', None),
             'BranchName': person.get('branch', {}).get('name', None) if person.get('branch') else None,
-            'Room': None
+            'Room': person.get('location', {}).get('room', None) if person.get('location') else None
         }
-        if person.get('location', None):
-            readable_person['Room'] = person.get('location', None).get('room', None)
 
         readable_persons.append(readable_person)
 
@@ -891,7 +888,7 @@ def incident_touch_command(args: Dict[str, Any], client_func: Callable, action: 
     """This function implements incident_create and incident_update commands.
 
     Try setting caller as a reqistered caller. If caller is not registered, set the caller argument as caller name.
-    A registered caller is one that has a TOPdesk account that can e linked to the call.
+    A registered caller is one that has a TOPdesk account that can be linked to the call.
 
     Args:
         args: The arguments of the command.
@@ -902,13 +899,13 @@ def incident_touch_command(args: Dict[str, Any], client_func: Callable, action: 
     """
 
     try:
-        args['registered_caller'] = True
+        args['registered_caller'] = True  # Try to link a caller id to the incident.
         return incident_func_command(args=args,
                                      client_func=client_func,
                                      action=action)
     except Exception as e:
-        if "'callerLookup.id' cannot be parsed" in str(e):
-            args['registered_caller'] = False
+        if "'callerLookup.id' cannot be parsed" in str(e):  # If couldn't find a caller with the provided id.
+            args['registered_caller'] = False  # Create incident with an unregistered caller name.
             return incident_func_command(args=args,
                                          client_func=client_func,
                                          action=action)
@@ -1031,18 +1028,18 @@ def fetch_incidents(client: Client,
             incident_created_time = creation_datetime
         else:
             incident_created_time = last_fetch_datetime
-        if int(last_fetch_datetime.timestamp()) < int(incident_created_time.timestamp()):
+        if float(last_fetch_datetime.timestamp()) < float(incident_created_time.timestamp()):
 
             incident = {
                 'name': f"TOPdesk incident {topdesk_incident['number']}",
                 'details': json.dumps(topdesk_incident),
-                'occurred': incident_created_time.strftime(DATE_FORMAT),
+                'occurred': incident_created_time.strftime(DATE_FORMAT_FULL),
                 'rawJSON': json.dumps(topdesk_incident)}
 
             if incident not in incidents:  # Do not fetch duplicates
                 incidents.append(incident)
 
-        if latest_created_time.timestamp() < incident_created_time.timestamp():
+        if float(latest_created_time.timestamp()) < float(incident_created_time.timestamp()):
             latest_created_time = incident_created_time
 
     return {'last_fetch': latest_created_time.strftime(DATE_FORMAT_FULL)}, incidents

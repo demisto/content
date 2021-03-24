@@ -746,18 +746,18 @@ def test_unsupported_old_query_param(client, command_args):
 @pytest.mark.parametrize('topdesk_incidents_override, last_fetch_time, updated_fetch_time', [
     ([{  # Last fetch is before incident creation
         'number': 'TEST-1',
-        'creationDate': '2020-02-10T06:32:36Z',
+        'creationDate': '2020-02-10T06:32:36.303000+0000',
         'will_be_fetched': True
-    }], '2020-01-11T06:32:36.303000+0000', '2020-02-10T06:32:36.000000+0000'),
+    }], '2020-01-11T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
     ([{  # Last fetch is after one incident creation and before other.
         'number': 'TEST-1',
-        'creationDate': '2020-01-10T06:32:36Z',
+        'creationDate': '2020-01-10T06:32:36.303000+0000',
         'will_be_fetched': False
     }, {
         'number': 'TEST-2',
-        'creationDate': '2020-03-10T06:32:36Z',
+        'creationDate': '2020-03-10T06:32:36.303000+0000',
         'will_be_fetched': True
-    }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.000000+0000'),
+    }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.303000+0000'),
     ([{  # Last fetch is at incident creation
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36.303+0000',
@@ -765,13 +765,13 @@ def test_unsupported_old_query_param(client, command_args):
     }], '2020-02-10T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
     ([{  # Same incident returned twice.
         'number': 'TEST-1',
-        'creationDate': '2020-03-10T06:32:36Z',
+        'creationDate': '2020-03-10T06:32:36.303000+0000',
         'will_be_fetched': True
     }, {
         'number': 'TEST-1',
-        'creationDate': '2020-03-10T06:32:36Z',
+        'creationDate': '2020-03-10T06:32:36.303000+0000',
         'will_be_fetched': False
-    }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.000000+0000'),
+    }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.303000+0000'),
 ])
 def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last_fetch_time, updated_fetch_time):
     """Unit test

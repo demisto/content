@@ -1,5 +1,5 @@
 TOPdesk’s Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform.
-This integration was integrated and tested with version xx of TOPdesk
+This integration was integrated and tested with version 10.8.8 of TOPdesk
 
 ## Use cases
 1. Get, update, create, TOPdesk incidents, as well as (de-)escalate, (un)archive or upload files to the incidents.
@@ -86,6 +86,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Get list of subcategories.
 
+#### Permissions
+**Operator**: With 1st/2nd line incident permission; Category/Branch/Operator filters apply
+
+**Person**: Unrestricted access
 
 #### Base Command
 
@@ -147,6 +151,10 @@ Get list of subcategories.
 ***
 Get list of categories.
 
+#### Permissions
+**Operator**: With 1st/2nd line incident permission; Category/Branch/Operator filters apply
+
+**Person**: Unrestricted access
 
 #### Base Command
 
@@ -199,6 +207,10 @@ Get list of categories.
 ***
 Get list of entry types.
 
+#### Permissions
+**Operator**: With 1st/2nd line incident permission; Category/Branch/Operator filters apply
+
+**Person**: No access
 
 #### Base Command
 
@@ -251,6 +263,10 @@ Get list of entry types.
 ***
 Get list of entry types.
 
+#### Permissions
+**Operator**: With 1st/2nd line incident permission; Category/Branch/Operator filters apply
+
+**Person**: Unrestricted access
 
 #### Base Command
 
@@ -303,6 +319,10 @@ Get list of entry types.
 ***
 Get list of deescalation reasons.
 
+#### Permissions
+**Operator**: With 1st and 2nd line incident write permission; Feature must be enabled.
+
+**Person**: No access
 
 #### Base Command
 
@@ -353,6 +373,10 @@ Get list of deescalation reasons.
 ***
 Get list of escalation reasons.
 
+#### Permissions
+**Operator**: With 1st line incident write permission and write permission for escalating incidents
+
+**Person**: No access
 
 #### Base Command
 
@@ -405,6 +429,10 @@ Get list of escalation reasons.
 ***
 Get list of archiving reasons.
 
+#### Permissions
+**Operator**: Incident write permission and archiving permission; Category/Branch/Operator filters apply;
+
+**Person**: No access
 
 #### Base Command
 
@@ -457,7 +485,15 @@ Get list of archiving reasons.
 ***
 Get list of persons.
 
+#### Permissions
+**Operator**: With read permission on persons; Branch filters apply
 
+Visible fields in response: all
+
+**Person**: Only accessible when phonebook is enabled.
+ 
+Visible fields in response: id, dynamicName, phoneNumber, mobileNumber, fax, email, jobTitle, department, department.id, department.name, city, departmentFree, branch, branch.id, branch.name, location, location.id, location.branch, location.branch.id, location.branch.name, location.name, location.room
+ 
 #### Base Command
 
 `topdesk-persons-list`
@@ -695,6 +731,10 @@ Get list of persons.
 ***
 Get list of operators.
 
+#### Permissions
+**Operator**: With read permission on operators; Branch/Operator filters apply
+
+**Person**: No access
 
 #### Base Command
 
@@ -952,6 +992,10 @@ Get list of operators.
 ***
 Get list of branches.
 
+#### Permissions
+**Operator**: Branch filters apply
+
+**Person**: Only accessible when branches are editable in the SSP. Returns only id and name.
 
 #### Base Command
 
@@ -1385,6 +1429,10 @@ Get list of branches.
 ***
 Get list of incidents.
 
+#### Permissions
+**Operator**: With read permission on 1st/2nd line incident; Category/Branch/Operator filters apply
+
+**Person**: Accessible; Person visibility settings apply
 
 #### Base Command
 
@@ -1692,6 +1740,19 @@ Create an incident in TOPdesk.
 The command first uses the callerLookup option and tries to attach an existing user to the caller field of the incident. 
 If the callerLookup shows up empty, the command will create an incident with an unregistered caller with a name as provided in the caller option.
 
+#### Permissions: 
+**Operator**: With create permission on 1st/2nd line incident, partials require 2nd line create permission
+
+**Person**: Can only create first line incidents for himself. Only the following fields can be set depending on the setting for the new call form:
+ - request
+ - briefDescription
+ - callType
+ - category
+ - subcategory
+ - object
+ - location
+ - operatorGroup
+ 
 #### Base Command
 
 `topdesk-incident-create`
@@ -1994,7 +2055,16 @@ If the callerLookup shows up empty, the command will create an incident with an 
 ***
 Update an incident in TOPdesk.
 
+#### Permissions: 
+**Operator**: With edit permission on 1st/2nd line incident; Category/Branch/Operator filters apply
 
+**Person**: Accessible; Person visibility settings apply.
+Depending on settings, the following fields can be updated:
+- action
+- closed
+- feedbackRating
+- feedbackMessage
+ 
 #### Base Command
 
 `topdesk-incident-update`
@@ -2300,6 +2370,10 @@ Update an incident in TOPdesk.
 ***
 Escalate an incident in TOPdesk.
 
+#### Permissions
+**Operator**: With 1st line incident write permission and write permission for escalating incidents; Category/Branch/Operator filters apply
+
+**Person**: No access
 
 #### Base Command
 
@@ -2593,6 +2667,11 @@ Escalate an incident in TOPdesk.
 ### topdesk-incident-deescalate
 ***
 Deescalate an incident in TOPdesk.
+
+#### Permissions
+**Operator**: With 1st and 2nd line incident write permission; Category/Branch/Operator filters apply; Feature must be enabled
+
+**Person**: No access
 
 
 #### Base Command
@@ -2889,6 +2968,10 @@ Deescalate an incident in TOPdesk.
 ***
 Archive an incident in TOPdesk.
 
+#### Permissions
+**Operator**: Incident write permission and archiving permission; Category/Branch/Operator filters apply;
+
+**Person**: No access
 
 #### Base Command
 
@@ -3195,6 +3278,11 @@ Archive an incident in TOPdesk.
 Unarchive an incident in TOPdesk.
 
 
+#### Permissions
+**Operator**: Incident write permission and archiving permission; Category/Branch/Operator filters apply;
+
+**Person**: No access
+
 #### Base Command
 
 `topdesk-incident-unarchive`
@@ -3493,6 +3581,10 @@ Unarchive an incident in TOPdesk.
 ***
 Upload an attachment to an incident in TOPdesk.
 
+#### Permissions
+**Operator**: With edit permission on 1st/2nd line incident; Category/Branch/Operator filters apply
+
+**Person**: Accessible; Person visibility settings apply.
 
 #### Base Command
 
