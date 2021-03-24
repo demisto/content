@@ -2845,7 +2845,7 @@ def main() -> None:
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, params, args))
 
-        elif demisto.command() == 'get-modified-remote-data':
+        elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, params, args))
 
         else:
