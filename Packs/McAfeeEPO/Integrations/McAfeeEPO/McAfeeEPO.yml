@@ -59,6 +59,56 @@ script:
     description: Finds computers within a specified group in the ePO tree
     execution: false
     name: epo-find-systems
+  - arguments:
+    - default: false
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Executes an ePO command
+    execution: false
+    name: epo-command
+  - arguments:
+    - default: false
+      description: Table Name
+      isArray: false
+      name: table
+      required: false
+      secret: false
+    deprecated: false
+    description: Get ePO Tables
+    execution: false
+    name: epo-get-tables
+  - arguments:
+    - default: false
+      description: ePO Table to Query
+      isArray: false
+      name: table
+      required: true
+      secret: false
+    - default: false
+      description: Select the columns to return , space seperated , example "column1
+        column2"
+      isArray: false
+      name: columns
+      required: false
+      secret: false
+    - default: false
+      description: Query Filter, example "eq EPOEvents.ThreatType 'virus'"
+      isArray: false
+      name: query_filter
+      required: false
+      secret: false
+    - default: false
+      description: asc EPOEvents.ReceivedUTC
+      isArray: false
+      name: order_by
+      required: false
+      secret: false
+    deprecated: false
+    description: Execute an Ad-Hoc Query
+    execution: false
+    name: epo-query
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false

@@ -65,6 +65,40 @@ class Client(BaseClient):
             resp_type='text'
         )
 
+    def epo_get_tables(self, suffix: str, table: str = None) -> str:
+        params = {
+            ":output": "json"
+        }
+        if table:
+            params['table'] = table
+
+        return self._http_request(
+            'get',
+            url_suffix=suffix,
+            params=params,
+            resp_type='text'
+        )
+
+    def epo_query(self, suffix: str, table: str, columns: str = None, query_filter: str = None,
+                  order_by: str = None) -> str:
+        params = {
+            ":output": "json",
+            "target": table
+        }
+        if columns:
+            params['select'] = '(select '+columns+')'
+        if query_filter:
+            params['where'] = '(where ('+query_filter+'))'
+        if order_by:
+            params['order'] = order_by
+
+        return self._http_request(
+            'get',
+            url_suffix=suffix,
+            params=params,
+            resp_type='text'
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -150,6 +184,60 @@ def epo_find_systems_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
+def epo_get_tables_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    suffix = 'core.listTables'
+    table = args.get('table', None)
+    tables = []
+    if table:
+        try:
+            raw_response = json.loads(client.epo_get_tables(suffix=suffix, table=table)[3:])
+            tables.append(raw_response)
+        except Exception:
+            return_error(client.epo_get_tables(suffix=suffix, table=table))
+    else:
+        raw_responses = json.loads(client.epo_get_tables(suffix=suffix)[3:])
+        for response in raw_responses:
+            response.pop('columns')
+            response.pop('foreignKeys')
+            response.pop('relatedTables')
+            tables.append(response)
+
+    return CommandResults(
+        outputs_prefix='McAfeeEPO.Tables',
+        outputs_key_field='target',
+        outputs=tables,
+    )
+
+
+def epo_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    suffix = 'core.executeQuery'
+    table = args.get('table', None)
+    columns = args.get('columns', None)
+    query_filter = args.get('query_filter', None)
+    order_by = args.get('order_by', None)
+    raw_responses = None
+    query_results = []
+
+    try:
+        raw_responses = client.epo_query(suffix=suffix, table=table, columns=columns,
+                                         query_filter=query_filter, order_by=order_by)
+        raw_results = json.loads(client.epo_query(suffix=suffix, table=table, columns=columns,
+                                                  query_filter=query_filter, order_by=order_by)[3:])
+        for result in raw_results:
+            result_details = {}
+            for key in result:
+                result_details[key.split('.')[1]] = result[key]
+            query_results.append(result_details)
+    except Exception:
+        return_error(raw_responses)
+
+    return CommandResults(
+        outputs_prefix='McAfeeEPO.QueryResults',
+        outputs_key_field='TargetCreateTime',
+        outputs=query_results,
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -183,6 +271,10 @@ def main() -> None:
             return_results(epo_get_system_tree_group_command(client, demisto.args()))
         elif demisto.command() == 'epo-find-systems':
             return_results(epo_find_systems_command(client, demisto.args()))
+        elif demisto.command() == 'epo-get-tables':
+            return_results(epo_get_tables_command(client, demisto.args()))
+        elif demisto.command() == 'epo-query':
+            return_results(epo_query_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
