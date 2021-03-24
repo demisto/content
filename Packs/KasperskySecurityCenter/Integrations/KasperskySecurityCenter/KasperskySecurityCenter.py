@@ -480,7 +480,6 @@ def get_policy(client: Client, args: Dict) -> CommandResults:
 def main():
     command = demisto.command()
     params = demisto.params()
-    # internal = demisto.params().get('internal') # TODO
 
     try:
         handle_proxy()

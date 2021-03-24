@@ -11,10 +11,6 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Internal user (i.e. Created in Security Center and not a windows user)
-  name: internal
-  required: false
-  type: 8
 - display: Trust any certificate (insecure)
   name: insecure
   required: false

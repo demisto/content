@@ -22,7 +22,6 @@ The user should be assigned to a role with the relevant devices in scope, and th
     | --- | --- |
     | Server URL (e.g., https://kaspersky.domain.com:13299) | True |
     | Username | True |
-    | Internal user (i.e. Created in Security Center and not a windows user) | False |
     | Trust any certificate (insecure) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
