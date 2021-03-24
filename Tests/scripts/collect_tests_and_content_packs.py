@@ -1184,6 +1184,9 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
         (string, string). The boundaries of the lowest from version (defaults to 0.0.0)
          and highest to version (defaults to 99.99.99)
     """
+    if all_modified_files_paths == {'Tests/Marketplace/landingPage_sections.json'}:
+        logging.debug('landingPage_sections.json is the only modified file, running only marketplace instances')
+        return '6.0.0', '99.99.99'
     modified_packs = modified_packs if modified_packs else set([])
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
