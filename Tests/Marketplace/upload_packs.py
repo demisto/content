@@ -993,9 +993,8 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, modified_files_paths = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                                 previous_commit_hash)
-        pack_was_modified = len(modified_files_paths) > 0 # insert to function
+        task_status, modified_files_paths, pack_was_modified = pack.detect_modified(
+            content_repo, index_folder_path, current_commit_hash, previous_commit_hash)
 
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name

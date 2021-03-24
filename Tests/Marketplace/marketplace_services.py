@@ -1017,6 +1017,7 @@ class Pack(object):
         """
         task_status = False
         modified_files_paths = []
+        pack_was_modified = False
 
         try:
             pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
@@ -1040,7 +1041,7 @@ class Pack(object):
 
                     if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
                         logging.info(f"Detected modified files in {self._pack_name} pack")
-                        task_status = True
+                        task_status, pack_was_modified = True
                         modified_files_paths.append(modified_file.a_path)
                         return
 
