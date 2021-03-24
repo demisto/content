@@ -1,0 +1,79 @@
+id: test_MsGraphFiles prod
+version: -1
+name: test_MsGraphFiles prod
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 07eb8a8e-19fb-4c32-82d1-938de2c0925b
+    type: start
+    task:
+      id: 07eb8a8e-19fb-4c32-82d1-938de2c0925b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 7fdcc5c1-7e07-4b72-b485-28cdd63609d0
+    type: regular
+    task:
+      id: 7fdcc5c1-7e07-4b72-b485-28cdd63609d0
+      version: -1
+      name: set playbook to test_MsGraphFiles
+      description: set playbook for current incident to test_MsGraphFiles
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: test_MsGraphFiles
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

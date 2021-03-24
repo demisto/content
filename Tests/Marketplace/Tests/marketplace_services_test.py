@@ -11,7 +11,7 @@ from freezegun import freeze_time
 from datetime import datetime, timedelta
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
-    get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
+    get_updated_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, PACKS_FOLDER
 
 CHANGELOG_DATA_INITIAL_VERSION = {
@@ -501,19 +501,19 @@ class TestHelperFunctions:
 
     @pytest.mark.parametrize("current_string_version,compared_content_item,expected_result",
                              [
-                                 ("1.2.3", {"fromversion": "2.1.0"}, "2.1.0"),
-                                 ("1.2.3", {"fromVersion": "2.1.0"}, "2.1.0"),
-                                 ("5.5.2", {"fromversion": "2.1.0"}, "5.5.2"),
-                                 ("5.5.2", {"fromVersion": "2.1.0"}, "5.5.2"),
+                                 ("1.2.3", {"fromversion": "2.1.0"}, "1.2.3"),
+                                 ("1.2.3", {"fromVersion": "2.1.0"}, "1.2.3"),
+                                 ("5.5.2", {"fromversion": "2.1.0"}, "2.1.0"),
+                                 ("5.5.2", {"fromVersion": "2.1.0"}, "2.1.0"),
                                  ("5.5.0", {}, "5.5.0"),
                                  ("1.0.0", {}, "1.0.0")
                              ])
-    def test_get_higher_server_version(self, current_string_version, compared_content_item, expected_result):
+    def test_get_updated_server_version(self, current_string_version, compared_content_item, expected_result):
         """ Tests the comparison of server versions (that are collected in collect_content_items function.
-            Higher server semantic version should be returned.
+            Lower server semantic version should be returned.
         """
-        result = get_higher_server_version(current_string_version=current_string_version,
-                                           compared_content_item=compared_content_item, pack_name="dummy")
+        result = get_updated_server_version(current_string_version=current_string_version,
+                                            compared_content_item=compared_content_item, pack_name="dummy")
 
         assert result == expected_result
 
