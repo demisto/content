@@ -47,20 +47,23 @@ not exist.
 - Added the *resource_type* argument:  Distinguishes between resource types. If not supplied, will try to determine if the *resource* argument is a hash or a URL.
 - comment: The text field in the comment.
 
-### file-rescan -> vt-file-rescan:
-- New output path: *VirusTotal.FileSubmission.id*
+### file-rescan:
+- New output path: *VirusTotal.Submission.id*
 - Preserved output: *vtScanID*
-- Removed output path: *vtLink*
+- Removed output path: *vtLink* - The V3 API does not returns a link to the GUI anymore.
+
 
 ### file-scan
 - New output path: *VirusTotal.Submission*
 - Preserved output: *vtScanID*
-- Removed output path: *vtLink*
+- Removed output path: *vtLink* - The V3 API does not returns a link to the GUI anymore.
+
 
 ### url-scan 
 - New output path: *VirusTotal.Submission*
 - Preserved output: *vtScanID*
-- Removed output path: *vtLink*
+- Removed output path: *vtLink* - The V3 API does not returns a link to the GUI anymore.
+ - The V3 API does not returns a link to the GUI anymore.
 
 ### vt-file-scan-upload-url: 
 - New output path: *VirusTotal.FileUploadURL*
