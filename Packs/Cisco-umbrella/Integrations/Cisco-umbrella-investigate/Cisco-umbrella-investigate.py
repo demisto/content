@@ -442,7 +442,7 @@ def get_domain_related(domain):
     return related_list
 
 
-def get_domain_security_command(rlb: str):
+def get_domain_security_command(rlb):
     # Initialize
     contents = []
     context = {}
@@ -664,7 +664,7 @@ def get_ip_dns_history(ip):
     return {'features': features, 'response': response}
 
 
-def get_ip_malicious_domains_command(rlb: str):
+def get_ip_malicious_domains_command(rlb):
     # Initialize
     contents = []
     context = {}
@@ -720,7 +720,7 @@ def get_ip_malicious_domains(ip):
     return res
 
 
-def get_domain_command(rlb: str):
+def get_domain_command(rlb):
     # Initialize
     contents = []
     context = {}
@@ -1048,7 +1048,7 @@ def get_domain_query_volume(domain, start_date_string, stop_date_string, match):
     return {'dates': dates, 'queries': queries}
 
 
-def get_domain_details_command(rlb: str):
+def get_domain_details_command(rlb):
     # Initialize
     contents = []
     context = {}
@@ -1460,7 +1460,7 @@ def get_whois_for_domain(domain):
     return res
 
 
-def get_malicious_domains_for_ip_command(rlb: str):
+def get_malicious_domains_for_ip_command(rlb):
     # Initialize
     contents = []
     context = {}
