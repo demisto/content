@@ -11,7 +11,7 @@ HOST_FIELDS = [
     'KLHST_WKS_OS_NAME',
     'KLHST_WKS_GROUPID',
     'KLHST_WKS_DNSDOMAIN',
-    'KLHST_INSTANCEID',
+    'KLHST_WKS_DN',
 ]
 
 HOST_DETAILED_FIELDS = [
@@ -275,7 +275,7 @@ def list_hosts(client: Client, args: Dict) -> CommandResults:
             'readable_output': tableToMarkdown(
                 'Hosts List',
                 outputs,
-                ['KLHST_WKS_HOSTNAME', 'KLHST_WKS_OS_NAME', 'KLHST_WKS_FQDN']
+                ['KLHST_WKS_HOSTNAME', 'KLHST_WKS_DN', 'KLHST_WKS_OS_NAME', 'KLHST_WKS_FQDN']
             ),
             'raw_response': results,  # type: ignore[dict-item]
         }
@@ -291,6 +291,12 @@ def get_host(client: Client, args: Dict) -> CommandResults:
     iter_array = results.get('pChunk', {}).get('KLCSP_ITERATOR_ARRAY')
     if iter_array and isinstance(iter_array, list) and iter_array[0].get('value'):
         outputs = iter_array[0]['value']
+        endpoint = Common.Endpoint(
+            id=outputs.get('KLHST_WKS_HOSTNAME'),
+            hostname=outputs.get('KLHST_WKS_DN'),
+            domain=outputs.get('KLHST_WKS_DNSDOMAIN'),
+            os=outputs.get('KLHST_WKS_OS_NAME'),
+        )
         command_results_args = {
             'outputs_prefix': 'KasperskySecurityCenter.Host',
             'outputs_key_field': 'KLHST_WKS_HOSTNAME',
@@ -301,6 +307,7 @@ def get_host(client: Client, args: Dict) -> CommandResults:
                 ['KLHST_WKS_HOSTNAME', 'KLHST_WKS_OS_NAME', 'KLHST_WKS_FQDN', 'KLHST_WKS_DN', 'KLHST_WKS_NAG_VERSION']
             ),
             'raw_response': results,
+            'indicator': endpoint,
         }
     else:
         command_results_args = {'readable_output': 'No host found.'}

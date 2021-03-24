@@ -40,15 +40,14 @@ Returns a list of hosts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter which contains a condition over host attributes, e.g., KLHST_WKS_OS_NAME = "Microsoft Windows Server 2016". See the integration documentation for the search filter syntax. | Optional | 
-| limit | The maximum number of hosts to return. Default is 50. | Optional | 
-
+| filter | Filter which contains a condition over host attributes, e.g., KLHST_WKS_OS_NAME = "Microsoft Windows Server 2016". See the integration documentation for the search filter syntax. | Optional | |
+| limit | The maximum number of hosts to return. Default is 50. | Optional | |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KasperskySecurityCenter.Host.KLHST_INSTANCEID | String | Network agent ID. | 
+| KasperskySecurityCenter.Host.KLHST_WKS_DN | String | Host display name. |
 | KasperskySecurityCenter.Host.KLHST_WKS_DNSDOMAIN | String | DNS suffix. | 
 | KasperskySecurityCenter.Host.KLHST_WKS_DNSNAME | String | DNS name without DNS suffix. | 
 | KasperskySecurityCenter.Host.KLHST_WKS_FQDN | String | Host FQDN name. | 
@@ -65,7 +64,7 @@ Returns a list of hosts.
 {
     "KasperskySecurityCenter": {
         "Host": {
-            "KLHST_INSTANCEID": "025ed285-389b-44c5-a9ef-6e723f7d9466",
+            "KLHST_WKS_DN": "EC2AMAZ-U66K3KL",
             "KLHST_WKS_DNSDOMAIN": "eu-west-2.compute.internal",
             "KLHST_WKS_DNSNAME": "ip-172-32-34-237",
             "KLHST_WKS_FQDN": "ip-172-32-34-237.eu-west-2.compute.internal",
@@ -80,9 +79,9 @@ Returns a list of hosts.
 #### Human Readable Output
 
 >### Hosts List
->|KLHST_WKS_HOSTNAME|KLHST_WKS_OS_NAME|KLHST_WKS_FQDN|
->|---|---|---|
->| 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 | 	Microsoft Windows Server 2016 | ip-172-32-34-237.eu-west-2.compute.internal |
+>|KLHST_WKS_HOSTNAME|KLHST_WKS_DN|KLHST_WKS_OS_NAME|KLHST_WKS_FQDN|
+>|---|---|---|---|
+>| 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 | EC2AMAZ-U66K3JK |	Microsoft Windows Server 2016 | ip-172-32-34-237.eu-west-2.compute.internal |
 
 
 ### ksc-host-get
@@ -104,6 +103,11 @@ Returns details of a host
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Endpoint.ID | String | The unique ID within the tool retrieving the endpoint. |
+| Endpoint.OS | String | Endpoint OS. |
+| Endpoint.Hostname | String | The hostname that is mapped to this endpoint. |
+| Endpoint.Domain | String | The domain of the endpoint. |
+| KasperskySecurityCenter.Host.KLHST_WKS_DN | String | Host display name. |
 | KasperskySecurityCenter.Host.KLHST_INSTANCEID | String | Network agent ID. | 
 | KasperskySecurityCenter.Host.KLHST_WKS_DNSDOMAIN | String | DNS suffix. | 
 | KasperskySecurityCenter.Host.KLHST_WKS_DNSNAME | String | DNS name without DNS suffix. | 
@@ -140,6 +144,12 @@ Returns details of a host
 #### Context Example
 ```json
 {
+    "Endpoint": {
+        "ID": "4328e16f-bf83-47c3-8d0b-0fdf79f9d673",
+        "OS": "Microsoft Windows Server 2016",
+        "Hostname": "EC2AMAZ-U66K3L",
+        "Domain": "eu-west-2.compute.internal"
+    },
     "KasperskySecurityCenter": {
         "Host": {
             "KLHST_INSTANCEID": "025ed285-389b-44c5-a9ef-6e723f7d9466",

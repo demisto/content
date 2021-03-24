@@ -42,8 +42,8 @@ script:
     execution: false
     name: ksc-hosts-list
     outputs:
-    - contextPath: KasperskySecurityCenter.Host.KLHST_INSTANCEID
-      description: Network agent ID.
+    - contextPath: KasperskySecurityCenter.Host.KLHST_WKS_DN
+      description: Host display name.
       type: String
     - contextPath: KasperskySecurityCenter.Host.KLHST_WKS_DNSDOMAIN
       description: DNS suffix.
@@ -76,6 +76,21 @@ script:
     execution: false
     name: ksc-host-get
     outputs:
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retrieving the endpoint.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint OS.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+    - contextPath: KasperskySecurityCenter.Host.KLHST_WKS_DN
+      description: Host display name.
+      type: String
     - contextPath: KasperskySecurityCenter.Host.KLHST_INSTANCEID
       description: Network agent ID.
       type: String
