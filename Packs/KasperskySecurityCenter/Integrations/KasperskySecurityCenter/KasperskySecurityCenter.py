@@ -254,7 +254,7 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    client.list_hosts_request()
+    client.list_hosts_request(fields_to_return=HOST_FIELDS)
     return 'ok'
 
 

@@ -4,6 +4,14 @@ This integration was integrated and tested with version 12 of Kaspersky Security
 
 **Note**: The integration is in beta because it only covers a subset of the endpoints and API use cases.
 
+## Prerequisites
+
+The user should be assigned to a role with the relevant devices in scope, and the following access rights:
+- Basic functionality - Read
+- Management of administration groups - Modify
+
+    <img height="350" width="700" src="./../../doc_imgs/role.png" />
+
 ## Configure Kaspersky Security Center on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
