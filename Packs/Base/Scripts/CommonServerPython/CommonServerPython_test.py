@@ -521,12 +521,47 @@ def test_hash_djb2():
 
 def test_camelize():
     non_camalized = [{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}]
-    expected_output = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
-    assert camelize(non_camalized, '_') == expected_output
+    expected_output_upper_camel = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
+    expected_output_lower_camel = [{'chookityBop': 'asdasd'}, {'abC': 'd e', 'nop': 'qr_st', 'fghIjk': 'lm'}]
+    assert camelize(non_camalized, '_') == expected_output_upper_camel
+    assert camelize(non_camalized, '_', upper_camel=True) == expected_output_upper_camel
+    assert camelize(non_camalized, '_', upper_camel=False) == expected_output_lower_camel
 
     non_camalized2 = {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}
-    expected_output2 = {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}
-    assert camelize(non_camalized2, '_') == expected_output2
+    expected_output2_upper_camel = {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}
+    expected_output2_lower_camel = {'abC': 'd e', 'nop': 'qr_st', 'fghIjk': 'lm'}
+    assert camelize(non_camalized2, '_') == expected_output2_upper_camel
+    assert camelize(non_camalized2, '_', upper_camel=True) == expected_output2_upper_camel
+    assert camelize(non_camalized2, '_', upper_camel=False) == expected_output2_lower_camel
+
+    non_camalized = [{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}]
+    expected_output_upper_camel = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
+    expected_output2_lower_camel = [{'chookityBop': 'asdasd'}, {'abC': 'd e', 'nop': 'qr_st', 'fghIjk': 'lm'}]
+    assert camelize(non_camalized, '_',) == expected_output_upper_camel
+    assert camelize(non_camalized, '_', upper_camel=True) == expected_output_upper_camel
+    assert camelize(non_camalized, '_', upper_camel=False) == expected_output2_lower_camel
+
+
+def test_camelize_string():
+    from CommonServerPython import camelize_string
+    non_camalized = ['chookity_bop', 'ab_c', 'fgh_ijk', 'nop']
+    expected_output_upper_camel = ['ChookityBop', 'AbC', 'FghIjk', 'Nop']
+    expected_output_lower_camel = ['chookityBop', 'abC', 'fghIjk', 'nop']
+    for i in range(len(non_camalized)):
+        assert camelize_string(non_camalized[i], '_') == expected_output_upper_camel[i]
+        assert camelize_string(non_camalized[i], '_', upper_camel=True) == expected_output_upper_camel[i]
+        assert camelize_string(non_camalized[i], '_', upper_camel=False) == expected_output_lower_camel[i]
+
+
+def test_underscoreToCamelCase():
+    from CommonServerPython import underscoreToCamelCase
+    non_camalized = ['chookity_bop', 'ab_c', 'fgh_ijk', 'nop']
+    expected_output_upper_camel = ['ChookityBop', 'AbC', 'FghIjk', 'Nop']
+    expected_output_lower_camel = ['chookityBop', 'abC', 'fghIjk', 'nop']
+    for i in range(len(non_camalized)):
+        assert underscoreToCamelCase(non_camalized[i]) == expected_output_upper_camel[i]
+        assert underscoreToCamelCase(non_camalized[i], upper_camel=True) == expected_output_upper_camel[i]
+        assert underscoreToCamelCase(non_camalized[i], upper_camel=False) == expected_output_lower_camel[i]
 
 
 # Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set

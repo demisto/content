@@ -4051,7 +4051,7 @@ class Common(object):
             return ret_value
 
 
-def camelize_string(src_str, delim='_'):
+def camelize_string(src_str, delim='_', upper_camel=True):
     """
     Transform snake_case to CamelCase
 
@@ -4061,11 +4061,20 @@ def camelize_string(src_str, delim='_'):
     :type delim: ``str``
     :param delim: indicator category.
 
+    :type upper_camel: ``bool``
+    :param upper_camel: if True then transform it to camel case with the first letter capitalised, otherwise not.
+
     :return: A CammelCase string.
     :rtype: ``str``
     """
+    if not src_str:  # empty string
+        return ""
     components = src_str.split(delim)
-    return ''.join(map(lambda x: x.title(), components))
+    camelize_without_first_char = ''.join(map(lambda x: x.title(), components[1:]))
+    if upper_camel:
+        return components[0].title() + camelize_without_first_char
+    else:
+        return components[0].lower() + camelize_without_first_char
 
 
 class IndicatorsTimeline:
@@ -4573,7 +4582,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
-def camelize(src, delim=' '):
+def camelize(src, delim=' ', upper_camel=True):
     """
         Convert all keys of a dictionary (or list of dictionaries) to CamelCase (with capital first letter)
 
@@ -4583,6 +4592,9 @@ def camelize(src, delim=' '):
         :type delim: ``str``
         :param delim: The delimiter between two words in the key (e.g. delim=' ' for "Start Date"). Default ' '.
 
+        :type upper_camel: ``bool``
+        :param upper_camel: if True then transform it to camel case with the first letter capitalised, otherwise not.
+
         :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
         :rtype: ``dict`` or ``list``
     """
@@ -4591,10 +4603,14 @@ def camelize(src, delim=' '):
         if callable(getattr(src_str, "decode", None)):
             src_str = src_str.decode('utf-8')
         components = src_str.split(delim)
-        return ''.join(map(lambda x: x.title(), components))
+        camelize_without_first_char = ''.join(map(lambda x: x.title(), components[1:]))
+        if upper_camel:
+            return components[0].title() + camelize_without_first_char
+        else:
+            return components[0].lower() + camelize_without_first_char
 
     if isinstance(src, list):
-        return [camelize(phrase, delim) for phrase in src]
+        return [camelize(phrase, delim, upper_camel=upper_camel) for phrase in src]
     return {camelize_str(key): value for key, value in src.items()}
 
 
@@ -4665,12 +4681,15 @@ pascalRegex = re.compile('([A-Z]?[a-z]+)')
 # ############################## REGEX FORMATTING end ###############################
 
 
-def underscoreToCamelCase(s):
+def underscoreToCamelCase(s, upper_camel=True):
     """
        Convert an underscore separated string to camel case
 
        :type s: ``str``
        :param s: The string to convert (e.g. hello_world) (required)
+
+       :type upper_camel: ``bool``
+       :param upper_camel: if True then transform it to camel case with the first letter capitalised, otherwise not.
 
        :return: The converted string (e.g. HelloWorld)
        :rtype: ``str``
@@ -4679,7 +4698,11 @@ def underscoreToCamelCase(s):
         return s
 
     components = s.split('_')
-    return ''.join(x.title() for x in components)
+    camel_without_first_char = ''.join(x.title() for x in components[1:])
+    if upper_camel:
+        return components[0].title() + camel_without_first_char
+    else:
+        return components[0].lower() + camel_without_first_char
 
 
 def camel_case_to_underscore(s):
