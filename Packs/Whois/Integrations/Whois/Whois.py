@@ -8274,7 +8274,7 @@ def is_good_query_result(raw_result):
     return 'NOT FOUND' not in raw_result and 'No match' not in raw_result
 
 
-def create_outputs(whois_result, domain, query=None):
+def create_outputs(whois_result, domain, reliability, query=None):
     md = {'Name': domain}
     ec = {'Name': domain,
           'QueryResult': is_good_query_result(str(whois_result.get('raw', 'NOT FOUND')))}
@@ -8351,23 +8351,20 @@ def create_outputs(whois_result, domain, query=None):
     standard_ec['Whois'] = ec
     standard_ec['Whois']['QueryValue'] = query
 
-    dbot_score = {
-        'Score': 0,
-        'Indicator': domain,
-        'Type': 'domain',
-        'Vendor': 'Whois'
-    }
-    return md, standard_ec, dbot_score
+    dbot_score = Common.DBotScore(indicator=domain, indicator_type='domain', integration_name='Whois', score=0,
+                                  reliability=reliability)
+
+    return md, standard_ec, dbot_score.to_context()
 
 
 '''COMMANDS'''
 
 
-def domain_command():
+def domain_command(reliability):
     domains = demisto.args().get('domain', [])
     for domain in argToList(domains):
         whois_result = get_whois(domain)
-        md, standard_ec, dbot_score = create_outputs(whois_result, domain)
+        md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
@@ -8381,11 +8378,11 @@ def domain_command():
         })
 
 
-def whois_command():
+def whois_command(reliability):
     query = demisto.args().get('query')
     domain = get_domain_from_query(query)
     whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain, query)
+    md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
@@ -8446,14 +8443,22 @@ def main():
     LOG('command is {}'.format(str(demisto.command())))
     org_socket = socket.socket
     command = demisto.command()
+
+    reliability = demisto.params().get('integrationReliability', 'B - Usually reliable')
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
     try:
         setup_proxy()
         if command == 'test-module':
             test_command()
         elif command == 'whois':
-            whois_command()
+            whois_command(reliability)
         elif command == 'domain':
-            domain_command()
+            domain_command(reliability)
     except Exception as e:
         LOG(e)
         return_error(str(e))
