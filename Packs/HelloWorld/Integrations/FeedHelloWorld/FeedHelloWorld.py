@@ -193,6 +193,8 @@ class Client(BaseClient):
             indicators = res.split('\n')
 
             for indicator in indicators:
+                # Infer the type of the indicator using 'auto_detect_indicator_type(indicator)' function
+                # (defined in CommonServerPython).
                 if auto_detect_indicator_type(indicator):
                     result.append({
                         'value': indicator,
@@ -202,7 +204,7 @@ class Client(BaseClient):
 
         except ValueError as err:
             demisto.debug(str(err))
-            raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
+            raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}')
         return result
 
 
