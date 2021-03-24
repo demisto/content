@@ -120,64 +120,15 @@ then this is the command that will be executed at the specified Feed Fetch Inter
 ``test-module`` - this is the command that is run when the Test button in the configuration
  panel of a feed integration is clicked.
 
-
-
-Command functions, when invoked through an XSOAR command usually return data
-using the ``CommandResults`` class, that is then passed to ``return_results()``
-in the ``main()`` function.
-``return_results()`` is defined in ``CommonServerPython.py`` to return
-the data to XSOAR. ``return_results()`` actually wraps ``demisto.results()``.
-You should never use ``demisto.results()`` directly.
-
-Sometimes you will need to return values in a format that is not compatible
-with ``CommandResults`` (for example files): in that case you must return a
-data structure that is then pass passed to ``return.results()``.
-
-In any case you should never call ``return_results()`` directly from the
-command functions.
-
-When you use create the CommandResults object in command functions, you
-usually pass some types of data:
-
-- Human Readable: usually in Markdown format. This is what is presented to the
-analyst in the War Room. You can use ``tableToMarkdown()``, defined in
-``CommonServerPython.py``, to convert lists and dicts in Markdown and pass it
-to ``return_results()`` using the ``readable_output`` argument, or the
-``return_results()`` function will call ``tableToMarkdown()`` automatically for
-you.
-
-- Context Output: this is the machine readable data, JSON based, that XSOAR can
-parse and manage in the Playbooks or Incident's War Room. The Context Output
-fields should be defined in your feed integration YML file and is important during
-the design phase. Make sure you define the format and follow best practices.
-You can use ``demisto-sdk json-to-outputs`` to autogenerate the YML file
-outputs section. Context output is passed as the ``outputs`` argument in ``demisto_results()``,
-and the prefix is passed via the ``outputs_prefix``
-argument.
-
 More information on Context Outputs, Standards, DBotScore and demisto-sdk:
 https://xsoar.pan.dev/docs/integrations/code-conventions#outputs
 https://xsoar.pan.dev/docs/integrations/context-and-outputs
 https://xsoar.pan.dev/docs/integrations/context-standards
 https://xsoar.pan.dev/docs/integrations/dbot
 https://github.com/demisto/demisto-sdk/blob/master/demisto_sdk/commands/json_to_outputs/README.md
-
-Also, when you write data in the Context, you want to make sure that if you
-return updated information for an entity, to update it and not append to
-the list of entities. To update data in the Context,
-you can define which is the key attribute to use, such as ``outputs_key_field='id'``.
-This means that you are using the ``id`` key to determine whether adding a new entry
-in the context or updating an existing one that has the same ID.
-You can look at the examples to understand how it works.
-
-More information here:
 https://xsoar.pan.dev/docs/integrations/context-and-outputs
 https://xsoar.pan.dev/docs/integrations/code-conventions#outputs
 https://xsoar.pan.dev/docs/integrations/dt
-
-- Raw Output: this is usually the raw result from your API and is used for
-troubleshooting purposes or for invoking your command from Automation Scripts.
-If not specified, ``return_results()`` will use the same data as ``outputs``.
 
 
 Main Function
