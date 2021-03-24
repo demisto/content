@@ -53,15 +53,6 @@
                 "index": 0,
                 "sectionItemType": "field",
                 "startCol": 0
-              },
-              {
-                "endCol": 4,
-                "fieldId": "thehivetasks",
-                "height": 53,
-                "id": "f236b980-c536-11ea-ad4d-2d20f6373c92",
-                "index": 2,
-                "sectionItemType": "field",
-                "startCol": 0
               }
             ],
             "maxW": 3,
