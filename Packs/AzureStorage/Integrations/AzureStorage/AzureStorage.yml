@@ -837,6 +837,9 @@ script:
     - contextPath: AzureStorage.BlobServiceProperties.sku.tier
       description: The SKU tier.
       type: String
+  - deprecated: false
+    execution: false
+    name: azure-storage-blob-containers-update
   dockerimage: demisto/crypto:1.0.0.16776
   feed: false
   isfetch: false
