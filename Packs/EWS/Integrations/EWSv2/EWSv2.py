@@ -1209,7 +1209,7 @@ def parse_incident_from_item(item, is_fetch):
                     demisto.debug("Length of message subject is greater than 255, item.save could not handle it, "
                                   "cutting the subject.")
                     sub_subject = "Length of subject greater than 255 characters. " \
-                                  "Partially subject: {}".format(item.subject[:180])
+                                  "Partial subject: {}".format(item.subject[:180])
                     item.subject = sub_subject
                     item.save()
                 else:
