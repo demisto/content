@@ -17,6 +17,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
+    "associatedTypes": [],
     "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false,

@@ -3,8 +3,9 @@ version: -1
 fromversion: 5.5.0
 name: Carbon Black Defense Find Events
 description: Finds events using a search query (or device_id, etc.). One of the parameters
-  is required. It returns a list of events with general information. For detailed information
-  about an event, use the "find event details" playbook with an event ID.
+  is required. It returns a list of events with general information. For detailed
+  information about an event, use the "find event details" playbook with an event
+  ID.
 starttaskid: "0"
 tasks:
   "0":
@@ -292,21 +293,22 @@ inputs:
 - key: device_external_ip
   value: {}
   required: false
-  description: The IP address of the endpoint according to Carbon Black Cloud.
-    This IP address can differ from the device_internal_ip due to network proxy or NAT. 
+  description: The IP address of the endpoint according to Carbon Black Cloud. This
+    IP address can differ from the device_internal_ip due to network proxy or NAT.
     Can be either IPv4 or IPv6 format.
   playbookInputQuery:
 - key: device_id
   value:
     simple: "3925348"
   required: false
-  description: The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across
-    all Carbon Black Cloud environments.
+  description: The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique
+    across all Carbon Black Cloud environments.
   playbookInputQuery:
 - key: device_internal_ip
   value: {}
   required: false
-  description: The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format.
+  description: The IP address of the endpoint reported by the sensor. Can be either
+    IPv4 or IPv6 format.
   playbookInputQuery:
 - key: device_name
   value: {}
@@ -316,7 +318,8 @@ inputs:
 - key: device_os
   value: {}
   required: false
-  description: 'The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX".'
+  description: 'The operating system of the endpoint. Possible values: "WINDOWS",
+    "MAC", "LINUX".'
   playbookInputQuery:
 - key: device_timestamp
   value: {}
@@ -362,8 +365,8 @@ inputs:
 - key: process_hash
   value: {}
   required: false
-  description: The MD5 and/or SHA-256 hash of the actor process binary. The order may
-    vary when two hashes are reported.
+  description: The MD5 and/or SHA-256 hash of the actor process binary. The order
+    may vary when two hashes are reported.
   playbookInputQuery:
 - key: process_name
   value: {}

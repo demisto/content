@@ -1,10 +1,10 @@
 {
-    "id": "incident_vector",
+    "id": "incident_alertcategory",
     "version": -1,
-    "name": "Vector",
+    "name": "Alert Category",
     "ownerOnly": false,
-    "description": "vector",
-    "cliName": "vector",
+    "description": "Alert Category",
+    "cliName": "alertcategory",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -17,10 +17,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedTypes": [
-        "Carbon Black Endpoint Standard"
-    ],
-    "associatedToAll": false,
+    "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,

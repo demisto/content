@@ -1,0 +1,116 @@
+{
+    "name": "Carbon Black Endpoint Standard Incoming Mapper",
+    "description": "Maps incoming Carbon Black alert fields.",
+    "feed": false,
+    "id": "60ac2988-3cc1-4ae3-8dea-a6a3c834080c",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "mapping": {
+        "Carbon Black Endpoint Standard": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Category": {
+                    "complex": null,
+                    "simple": "category"
+                },
+                "Alert Severity": {
+                    "complex": null,
+                    "simple": "severity"
+                },
+                "Changed": {
+                    "complex": null,
+                    "simple": "workflow.changed_by"
+                },
+                "Comment": {
+                    "complex": null,
+                    "simple": "workflow.comment"
+                },
+                "Description": {
+                    "complex": null,
+                    "simple": "reason"
+                },
+                "Device Id": {
+                    "complex": null,
+                    "simple": "device_id"
+                },
+                "Device Name": {
+                    "complex": null,
+                    "simple": "device_name"
+                },
+                "Device Username": {
+                    "complex": null,
+                    "simple": "device_username"
+                },
+                "First Event Time": {
+                    "complex": null,
+                    "simple": "first_event_time"
+                },
+                "Last Event Time": {
+                    "complex": null,
+                    "simple": "last_event_time"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "last_update_time"
+                },
+                "OS": {
+                    "complex": null,
+                    "simple": "device_os"
+                },
+                "OS Version": {
+                    "complex": null,
+                    "simple": "device_os_version"
+                },
+                "Policy ID": {
+                    "complex": null,
+                    "simple": "policy_id"
+                },
+                "Process Id": {
+                    "complex": null,
+                    "simple": "process_guid"
+                },
+                "Process Name": {
+                    "complex": null,
+                    "simple": "process_name"
+                },
+                "Report Id": {
+                    "complex": null,
+                    "simple": "report_id"
+                },
+                "Reputation": {
+                    "complex": null,
+                    "simple": "threat_cause_reputation"
+                },
+                "SHA256": {
+                    "complex": null,
+                    "simple": "threat_cause_actor_sha256"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "workflow.state"
+                },
+                "Tags": {
+                    "complex": null,
+                    "simple": "tags"
+                },
+                "Target Value": {
+                    "complex": null,
+                    "simple": "target_value"
+                },
+                "Threat Category": {
+                    "complex": null,
+                    "simple": "threat_cause_threat_category"
+                },
+                "Threat Id": {
+                    "complex": null,
+                    "simple": "threat_id"
+                },
+                "Vector": {
+                    "complex": null,
+                    "simple": "threat_cause_vector"
+                }
+            }
+        }
+    }
+}

@@ -2,8 +2,8 @@ id: Carbon Black Defense Find Processes
 version: -1
 fromversion: 5.5.0
 name: Carbon Black Defense Find Processes
-description: Find processes using a search query (or device_id, etc.). One of the parameters
-  is required. Returns a list of processes.
+description: Find processes using a search query (or device_id, etc.). One of the
+  parameters is required. Returns a list of processes.
 starttaskid: "0"
 tasks:
   "0":
@@ -280,8 +280,8 @@ inputs:
 - key: alert_category
   value: {}
   required: false
-  description: A Carbon Black Cloud classification for events tagged to an alert
-    indicating whether the event is a “threat” or “observed”.
+  description: A Carbon Black Cloud classification for events tagged to an alert indicating
+    whether the event is a “threat” or “observed”.
   playbookInputQuery:
 - key: blocked_hash
   value: {}
@@ -292,8 +292,8 @@ inputs:
 - key: device_external_ip
   value: {}
   required: false
-  description: The IP address of the endpoint according to Carbon Black Cloud.
-    This IP address can differ from the device_internal_ip due to network proxy or NAT. 
+  description: The IP address of the endpoint according to Carbon Black Cloud. This
+    IP address can differ from the device_internal_ip due to network proxy or NAT.
     Can be either IPv4 or IPv6 format.
   playbookInputQuery:
 - key: device_id
@@ -305,7 +305,8 @@ inputs:
 - key: device_internal_ip
   value: {}
   required: false
-  description: The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format.
+  description: The IP address of the endpoint reported by the sensor. Can be either
+    IPv4 or IPv6 format.
   playbookInputQuery:
 - key: device_name
   value: {}
@@ -361,8 +362,8 @@ inputs:
 - key: process_hash
   value: {}
   required: false
-  description: The MD5 and/or SHA-256 hash of the actor process binary. The order may
-    vary when two hashes are reported.
+  description: The MD5 and/or SHA-256 hash of the actor process binary. The order
+    may vary when two hashes are reported.
   playbookInputQuery:
 - key: process_name
   value: {}

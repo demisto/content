@@ -4,7 +4,7 @@
 
 ### Create Access Levels and API Keys
 
-There are two versions of the API - V3 and V6. V6 includes all the APIs except for the Policy APIs. Therefore, in addition to creating an API key and API secret key, you also need to create a custom API key and a custom API secret key.
+There are two versions of the API - V3 and V6. V6 includes all the APIs except for the Policy APIs. Therefore, in addition to creating an API key and API secret key, you also need to create a custom API key and a custom API secret key for the policy related commands.
 Click [here](https://developer.carbonblack.com/reference/carbon-black-cloud/cb-defense/latest/rest-api) for more information about the versions.
 
 #### Create a Custom Access Level
