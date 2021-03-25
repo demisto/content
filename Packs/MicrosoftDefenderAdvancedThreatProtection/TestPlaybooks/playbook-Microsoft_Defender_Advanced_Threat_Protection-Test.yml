@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bbe558a5-322d-409a-8481-fd453f50ad17
+    taskid: cf5ae92f-7471-4d75-8e57-f8f56901a9fc
     type: start
     task:
-      id: bbe558a5-322d-409a-8481-fd453f50ad17
+      id: cf5ae92f-7471-4d75-8e57-f8f56901a9fc
       version: -1
       name: ""
       iscommand: false
@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 50
         }
       }
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 14082da1-924e-4b6d-8ddb-89b2be9e4a75
+    taskid: 54859700-b0a7-41c7-8313-e437692e2d40
     type: regular
     task:
-      id: 14082da1-924e-4b6d-8ddb-89b2be9e4a75
+      id: 54859700-b0a7-41c7-8313-e437692e2d40
       version: -1
       name: Get ATP list alerts
       script: '|||microsoft-atp-list-alerts'
@@ -66,10 +66,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: e54988c1-9fbc-416c-81a9-a2cd471e1396
+    taskid: 3d416bd3-ef4a-4541-81d1-745a046bca96
     type: condition
     task:
-      id: e54988c1-9fbc-416c-81a9-a2cd471e1396
+      id: 3d416bd3-ef4a-4541-81d1-745a046bca96
       version: -1
       name: Assert an alert was fetched
       type: condition
@@ -109,10 +109,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 9b4dfca0-dfb9-4747-8bfc-feb744538894
+    taskid: 0f0b087c-3564-4ee9-87b4-1d7cf1022660
     type: condition
     task:
-      id: 9b4dfca0-dfb9-4747-8bfc-feb744538894
+      id: 0f0b087c-3564-4ee9-87b4-1d7cf1022660
       version: -1
       name: Assert right machine was fetched
       type: condition
@@ -149,10 +149,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 7c20ceeb-fc28-481b-8334-ec2953a81d59
+    taskid: bd79a552-7906-46c4-8733-067f295ef900
     type: title
     task:
-      id: 7c20ceeb-fc28-481b-8334-ec2953a81d59
+      id: bd79a552-7906-46c4-8733-067f295ef900
       version: -1
       name: Done
       type: title
@@ -162,7 +162,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 2295
         }
       }
@@ -173,10 +173,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 233e1eda-117f-4372-8b57-17be17e2803a
+    taskid: bc4642a7-41f1-4584-8698-c693f1e033f5
     type: regular
     task:
-      id: 233e1eda-117f-4372-8b57-17be17e2803a
+      id: bc4642a7-41f1-4584-8698-c693f1e033f5
       version: -1
       name: Get machines by health status
       description: Retrieves a collection of machines that have communicated with
@@ -212,10 +212,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: cfb963ed-ae69-4ec0-8592-45ea7eb09df8
+    taskid: 90e21740-c9d5-47a1-80d7-74613086516d
     type: regular
     task:
-      id: cfb963ed-ae69-4ec0-8592-45ea7eb09df8
+      id: 90e21740-c9d5-47a1-80d7-74613086516d
       version: -1
       name: Create alert with time as name
       script: '|||microsoft-atp-create-alert'
@@ -283,10 +283,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: eef84a06-1462-43a5-8c6e-b363a2f29215
+    taskid: da624c6b-3908-48a0-8851-956884f734ce
     type: condition
     task:
-      id: eef84a06-1462-43a5-8c6e-b363a2f29215
+      id: da624c6b-3908-48a0-8851-956884f734ce
       version: -1
       name: Assert alert created
       type: condition
@@ -320,10 +320,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 6cd4667e-c4b0-40a0-8311-31ce26fb7e1b
+    taskid: db613c28-8355-4a20-8e40-f59f804392f1
     type: regular
     task:
-      id: 6cd4667e-c4b0-40a0-8311-31ce26fb7e1b
+      id: db613c28-8355-4a20-8e40-f59f804392f1
       version: -1
       name: Advance query
       script: '|||microsoft-atp-advanced-hunting'
@@ -353,10 +353,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 97a04323-a1e2-4096-81eb-3a8aae0c3367
+    taskid: 8fbe20d9-2881-4de1-85f4-6818c45c2902
     type: condition
     task:
-      id: 97a04323-a1e2-4096-81eb-3a8aae0c3367
+      id: 8fbe20d9-2881-4de1-85f4-6818c45c2902
       version: -1
       name: Assert query results
       type: condition
@@ -390,10 +390,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 5d40cf49-a043-4cc8-861c-077dc3515c9d
+    taskid: 61b3ef41-78ee-4895-8a9c-674cad6260d0
     type: regular
     task:
-      id: 5d40cf49-a043-4cc8-861c-077dc3515c9d
+      id: 61b3ef41-78ee-4895-8a9c-674cad6260d0
       version: -1
       name: Get machine related to file
       description: Get a collection of machines related to a given file hash.
@@ -407,6 +407,7 @@ tasks:
       - "29"
       - "26"
       - "28"
+      - "44"
     scriptarguments:
       file:
         simple: 36c5d12033b2eaf251bae61c00690ffb17fddc87
@@ -418,7 +419,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 370
         }
       }
@@ -429,10 +430,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: bd37e98b-5207-4545-832b-d60faf350a79
+    taskid: 5d446010-f828-477a-8437-bc2af05ed254
     type: regular
     task:
-      id: bd37e98b-5207-4545-832b-d60faf350a79
+      id: 5d446010-f828-477a-8437-bc2af05ed254
       version: -1
       name: Get alert related files
       description: Retrieves the files associated to a specific alert.
@@ -474,10 +475,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 9fe4eaa2-d2c9-4f35-8417-f3118481efcd
+    taskid: 10a20d4f-f24d-4697-8808-144c6ee8e9d8
     type: regular
     task:
-      id: 9fe4eaa2-d2c9-4f35-8417-f3118481efcd
+      id: 10a20d4f-f24d-4697-8808-144c6ee8e9d8
       version: -1
       name: Get file related alerts
       description: Retrieves a collection of alerts related to a given file hash.
@@ -520,10 +521,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 4f7c5e22-d48d-43be-8cc4-d8ed4634f39f
+    taskid: b8f9b54a-0175-4f0e-8e9e-206ad5eb9aec
     type: regular
     task:
-      id: 4f7c5e22-d48d-43be-8cc4-d8ed4634f39f
+      id: b8f9b54a-0175-4f0e-8e9e-206ad5eb9aec
       version: -1
       name: Delete context
       description: Delete field from context
@@ -545,7 +546,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 195
         }
       }
@@ -556,10 +557,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: db30a4fc-cc43-47b7-82e8-6740fcd6f964
+    taskid: 74d89565-d486-4a32-8eb5-180023810143
     type: regular
     task:
-      id: db30a4fc-cc43-47b7-82e8-6740fcd6f964
+      id: 74d89565-d486-4a32-8eb5-180023810143
       version: -1
       name: Get file statistics
       description: Retrieves the statistics for the given file.
@@ -602,10 +603,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 5de1b894-9f4c-409e-8acc-2e949c42462e
+    taskid: c8da42e8-2c73-4b36-8bf2-672af859e936
     type: regular
     task:
-      id: 5de1b894-9f4c-409e-8acc-2e949c42462e
+      id: c8da42e8-2c73-4b36-8bf2-672af859e936
       version: -1
       name: Get machine action data
       description: Return the machine's actions. If you set an action id it will return
@@ -649,10 +650,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 5fcfe8ee-2a24-440d-837f-7345f3b056b0
+    taskid: 9843dbcb-3102-4c9d-80f4-829506e737ce
     type: regular
     task:
-      id: 5fcfe8ee-2a24-440d-837f-7345f3b056b0
+      id: 9843dbcb-3102-4c9d-80f4-829506e737ce
       version: -1
       name: Get domain statistics
       description: Retrieves the statistics on the given domain.
@@ -683,10 +684,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: a4600ea9-fcba-4012-88c7-3cb6d4e7af98
+    taskid: 3b2db1d2-9679-45bd-8fd0-cab5e8a4737a
     type: regular
     task:
-      id: a4600ea9-fcba-4012-88c7-3cb6d4e7af98
+      id: 3b2db1d2-9679-45bd-8fd0-cab5e8a4737a
       version: -1
       name: Get ip statistics
       description: Retrieves the statistics for the given IP.
@@ -717,10 +718,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 0ff1d5db-dd25-4686-8be5-602e0955d0ca
+    taskid: f53e7396-a7d3-449f-89d2-be9ddbbd25f1
     type: regular
     task:
-      id: 0ff1d5db-dd25-4686-8be5-602e0955d0ca
+      id: f53e7396-a7d3-449f-89d2-be9ddbbd25f1
       version: -1
       name: Get user alerts
       description: Retrieves a collection of alerts related to a given user ID.
@@ -751,10 +752,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 1dd80bb4-b4c6-433f-8498-3ed861a5b86a
+    taskid: de8ae37d-8f06-4031-879e-7a186915cb6c
     type: regular
     task:
-      id: 1dd80bb4-b4c6-433f-8498-3ed861a5b86a
+      id: de8ae37d-8f06-4031-879e-7a186915cb6c
       version: -1
       name: Get user machines
       description: Retrieves a collection of machines related to a given user ID.
@@ -785,10 +786,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 02e4f822-68e9-4775-8cfb-a71f994e95ec
+    taskid: c758267a-61c0-4354-8b56-db6a7f70f54b
     type: regular
     task:
-      id: 02e4f822-68e9-4775-8cfb-a71f994e95ec
+      id: c758267a-61c0-4354-8b56-db6a7f70f54b
       version: -1
       name: Add machine tag
       description: Adds or remove tag to a specific Machine.
@@ -831,10 +832,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 1d7b0a8f-484f-4365-8cc6-27ce3d8c186b
+    taskid: 5b449ae2-3091-4d43-8ab8-2503e8419e1c
     type: regular
     task:
-      id: 1d7b0a8f-484f-4365-8cc6-27ce3d8c186b
+      id: 5b449ae2-3091-4d43-8ab8-2503e8419e1c
       version: -1
       name: Remove machine tag
       description: Adds or remove tag to a specific Machine.
@@ -869,10 +870,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 37a07936-c5d0-4c41-83f8-88538aa1d22d
+    taskid: d2dce830-ee1d-4465-807f-d8057c2d68c5
     type: regular
     task:
-      id: 37a07936-c5d0-4c41-83f8-88538aa1d22d
+      id: d2dce830-ee1d-4465-807f-d8057c2d68c5
       version: -1
       name: Get file related machines
       description: Get a collection of machines related to a given file hash.
@@ -905,10 +906,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 62ff61c7-b92a-4693-8480-220d3105dee7
+    taskid: 21d1ff73-e7da-4b55-8bef-9640ff1389e9
     type: regular
     task:
-      id: 62ff61c7-b92a-4693-8480-220d3105dee7
+      id: 21d1ff73-e7da-4b55-8bef-9640ff1389e9
       version: -1
       name: update alert
       description: Update the properties of an alert entity
@@ -952,14 +953,83 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+  "44":
+    id: "44"
+    taskid: 1b966347-fc62-4c17-8e71-fdf6d2f4a3c4
+    type: regular
+    task:
+      id: 1b966347-fc62-4c17-8e71-fdf6d2f4a3c4
+      version: -1
+      name: Start Investigation
+      description: Start an automated investigation on a machine.
+      script: '|||microsoft-atp-start-investigation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      comment:
+        simple: testing
+      machine_id:
+        simple: ${MicrosoftATP.FileMachine.Machines.ID}
+      timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 240b6d06-4b68-4ed3-85c2-87970c011250
+    type: regular
+    task:
+      id: 240b6d06-4b68-4ed3-85c2-87970c011250
+      version: -1
+      name: List investigations
+      description: Retrieves a collection of investigations or retrieves a specific
+        investigation by its ID.
+      script: '|||microsoft-atp-list-investigations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id: {}
+      limit:
+        simple: "5"
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2310,
-        "width": 1670,
+        "width": 2100,
         "x": 50,
         "y": 50
       }
