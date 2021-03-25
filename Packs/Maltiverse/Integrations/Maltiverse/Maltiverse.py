@@ -39,7 +39,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, auth_token=None, reliability='DBotScoreReliability.C'):
+    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, auth_token=None, reliability=DBotScoreReliability.C):
         self.auth_token = auth_token
         self.reliability = reliability
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'})
