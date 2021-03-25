@@ -801,6 +801,11 @@ script:
         description: Link to the request.
         type: String
     description: Adds comments to files and URLs.
+  - name: vt-file-scan-upload-url
+    outputs:
+    - contextPath: VirusTotal.FileUploadURL
+      description: The special upload URL for large files.
+    description: Premium API. Get a special URL for files larger than 32 MB.
   - name: vt-comments-delete
     arguments:
     - name: id
@@ -808,12 +813,6 @@ script:
       default: true
       description: Comment ID
     description: Delete a comment.
-    - name: vt-file-scan-upload-url
-    arguments: []
-    outputs:
-    - contextPath: VirusTotal.FileUploadURL
-      description: The special upload URL for large files.
-    description: Premium API. Get a special URL for files larger than 32 MB.
   - name: vt-comments-get
     arguments:
     - name: resource
@@ -838,10 +837,10 @@ script:
     - name: before
       description: Fetch only comments before the given time.
     outputs:
-      - contextPath: VirusTotal.Comments.id
-        description: ID that contains the comment (the given hash, domain, url, or ip).
-        type: String
-      - contextPath: VirusTotal.Comments.comments.attributes.date
+    - contextPath: VirusTotal.Comments.id
+      description: ID that contains the comment (the given hash, domain, url, or ip).
+      type: String
+    - contextPath: VirusTotal.Comments.comments.attributes.date
       description: The date of the comment in epoch format.
       type: Number
     - contextPath: VirusTotal.Comments.comments.attributes.text
