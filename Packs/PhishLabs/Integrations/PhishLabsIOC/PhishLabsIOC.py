@@ -719,7 +719,9 @@ def main():
         command_func: Callable = command_dict[demisto.command()]  # type:ignore[assignment]
         if demisto.command() == 'fetch-incidents':
             RAISE_EXCEPTION_ON_ERROR = True
-        command_func(client, **args)
+            command_func(client, **args)
+        else:
+            command_func(client)
 
     except Exception as e:
         if RAISE_EXCEPTION_ON_ERROR:
