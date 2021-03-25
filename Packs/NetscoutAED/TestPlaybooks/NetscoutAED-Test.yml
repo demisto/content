@@ -1,0 +1,2292 @@
+id: 7d8b6e5e-9594-49b1-8e89-06c85d0c49dc
+version: 47
+vcShouldKeepItemLegacyProdMachine: false
+name: NetscoutAED-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 11fdbf45-f068-4afb-8064-9a1f040913f4
+    type: start
+    task:
+      id: 11fdbf45-f068-4afb-8064-9a1f040913f4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 80100418-9148-4fb7-80d5-7ca15a80463d
+    type: regular
+    task:
+      id: 80100418-9148-4fb7-80d5-7ca15a80463d
+      version: -1
+      name: List of countries
+      description: gets a country or list of countries (country name and ISO-standardized
+        country code)
+      script: '|||netscout-aed-country-code-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 59b37661-3dab-46b6-8b77-fa31eedd4896
+    type: condition
+    task:
+      id: 59b37661-3dab-46b6-8b77-fa31eedd4896
+      version: -1
+      name: Verify list of countries results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: NetscoutAED.Countries.country_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: NetscoutAED.Countries.iso_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NetscoutAED.Countries.country_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NetscoutAED.Countries.iso_code
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 77cce2ed-0227-49d4-8113-868a738cfdc3
+    type: regular
+    task:
+      id: 77cce2ed-0227-49d4-8113-868a738cfdc3
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 018ab5cc-0a78-4c02-8644-5d9e7be3f00a
+    type: regular
+    task:
+      id: 018ab5cc-0a78-4c02-8644-5d9e7be3f00a
+      version: -1
+      name: Remove country from outbound blacklisted list
+      description: Removes one or more countries from the outbound blacklist.
+      script: '|||netscout-aed-outbound-blacklisted-countries-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      country:
+        simple: US
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: a8b48651-41c7-47d4-87fa-552f95a24027
+    type: regular
+    task:
+      id: a8b48651-41c7-47d4-87fa-552f95a24027
+      version: -1
+      name: Get list of outbound blacklisted countries
+      description: Gets the countries on the outbound blacklist. By default, 10 blacklisted
+        countries are returned.
+      script: '|||netscout-aed-outbound-blacklisted-countries-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1a88adcd-3773-40d1-8fea-85310c04ef4c
+    type: condition
+    task:
+      id: 1a88adcd-3773-40d1-8fea-85310c04ef4c
+      version: -1
+      name: Verify that the country was removed from both lists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: notIn
+          left:
+            value:
+              simple: US
+          right:
+            value:
+              simple: NetscoutAED.Outbound.Blacklisted.Countries.country
+            iscontext: true
+      - - operator: notIn
+          left:
+            value:
+              simple: US
+            iscontext: true
+          right:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Countries.country
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1e9f771f-ca68-4b91-8d76-11178ab9dda7
+    type: regular
+    task:
+      id: 1e9f771f-ca68-4b91-8d76-11178ab9dda7
+      version: -1
+      name: Add country to the outbound blacklisted list
+      description: Adds one or more countries to the outbound blacklist.
+      script: '|||netscout-aed-outbound-blacklisted-countries-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      country:
+        simple: US
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ec19980b-59ad-4705-8653-790d95c1517f
+    type: condition
+    task:
+      id: ec19980b-59ad-4705-8653-790d95c1517f
+      version: -1
+      name: Verify that countries were added
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Blacklisted.Countries.country
+            iscontext: true
+          right:
+            value:
+              simple: US
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Countries.country
+            iscontext: true
+          right:
+            value:
+              simple: US
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 69ae0614-52a2-41a9-87ca-7f9bf68eb7b8
+    type: title
+    task:
+      id: 69ae0614-52a2-41a9-87ca-7f9bf68eb7b8
+      version: -1
+      name: Done checking countries commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: b96493ff-badd-4cde-8017-d05a4e944289
+    type: regular
+    task:
+      id: b96493ff-badd-4cde-8017-d05a4e944289
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8bb471e8-4510-4ce0-8ee2-c91566d2418b
+    type: regular
+    task:
+      id: 8bb471e8-4510-4ce0-8ee2-c91566d2418b
+      version: -1
+      name: Add country to the inbound blacklisted list
+      description: Adds one or more countries to the inbound blacklist by pgid or
+        cid.
+      script: '|||netscout-aed-inbound-blacklisted-countries-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      country:
+        simple: US
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 28ec4b8d-ac6d-48f9-8d4e-0b679103f58e
+    type: regular
+    task:
+      id: 28ec4b8d-ac6d-48f9-8d4e-0b679103f58e
+      version: -1
+      name: Remove country from inbound blacklisted list
+      description: Removes one or more countries from the blacklist for a specific
+        protection group or for all protection groups.
+      script: '|||netscout-aed-inbound-blacklisted-countries-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      country:
+        simple: US
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 32f4c8ff-b147-4e0e-8c51-aea5e160a87d
+    type: regular
+    task:
+      id: 32f4c8ff-b147-4e0e-8c51-aea5e160a87d
+      version: -1
+      name: Get list of inbound blacklisted countries
+      description: Gets the inbound blacklisted countries. By default, 10 blacklisted
+        countries are returned. To return blacklisted countries for specific protection
+        groups, specify a list of protection group IDs or central configuration IDs.
+        An ID of -1 selects countries that are globally blacklisted.
+      script: '|||netscout-aed-inbound-blacklisted-countries-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b44b03d1-c5ca-45ae-80f1-cd93a3a8626a
+    type: regular
+    task:
+      id: b44b03d1-c5ca-45ae-80f1-cd93a3a8626a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: f9ba0022-d972-4225-8fb2-894d2059f377
+    type: regular
+    task:
+      id: f9ba0022-d972-4225-8fb2-894d2059f377
+      version: -1
+      name: Add host to the outbound blacklisted list
+      description: Adds one or more hosts to the outbound blacklist.
+      script: '|||netscout-aed-outbound-blacklisted-hosts-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      host_address:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 8b4facc6-040a-426c-8793-84239448d960
+    type: regular
+    task:
+      id: 8b4facc6-040a-426c-8793-84239448d960
+      version: -1
+      name: Add host to the inbound blacklisted list
+      description: Adds one or more hosts to the inbound blacklisted list.
+      script: '|||netscout-aed-inbound-blacklisted-hosts-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      host_address:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 6a83c291-ef60-42ab-8b97-b009bf116b41
+    type: regular
+    task:
+      id: 6a83c291-ef60-42ab-8b97-b009bf116b41
+      version: -1
+      name: Add host to the outbound whitelisted list
+      description: Adds one or more hosts to the outbound whitelisted list
+      script: '|||netscout-aed-outbound-whitelisted-hosts-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      host_address:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 567646a7-a44d-413b-8846-fc471dd3f091
+    type: regular
+    task:
+      id: 567646a7-a44d-413b-8846-fc471dd3f091
+      version: -1
+      name: Add host to the inbound whitelisted list
+      description: Adds one or more hosts to the inbound whitelisted list.
+      script: '|||netscout-aed-inbound-whitelisted-hosts-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      host_address:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: cab12b4b-cf1b-4910-895b-92caebb6b753
+    type: condition
+    task:
+      id: cab12b4b-cf1b-4910-895b-92caebb6b753
+      version: -1
+      name: Verify that hosts were added
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Blacklisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Whitelisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Whitelisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 669f6b67-ddc1-45fc-84ac-df8a4280bc0b
+    type: regular
+    task:
+      id: 669f6b67-ddc1-45fc-84ac-df8a4280bc0b
+      version: -1
+      name: Update host in the outbound blacklisted list
+      description: Replaces all the hosts on the outbound blacklisted list.
+      script: '|||netscout-aed-outbound-blacklisted-hosts-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      host_address:
+        simple: 7.7.7.7
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 48609e59-96fe-4ffe-8b5e-e0834b006bed
+    type: regular
+    task:
+      id: 48609e59-96fe-4ffe-8b5e-e0834b006bed
+      version: -1
+      name: Update host in the inbound blacklisted list
+      description: Replaces all the hosts on the inbound blacklist.
+      script: '|||netscout-aed-inbound-blacklisted-hosts-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      host_address:
+        simple: 7.7.7.7
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 814985cf-acb3-4c08-89fe-ba7c53a0e0a6
+    type: regular
+    task:
+      id: 814985cf-acb3-4c08-89fe-ba7c53a0e0a6
+      version: -1
+      name: update host in the outbound whitelisted list
+      description: Replaces all the hosts on the outbound whitelisted list.
+      script: '|||netscout-aed-outbound-whitelisted-hosts-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      host_address:
+        simple: 2.2.2.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 8e18a58d-2c9b-44c6-832d-e9530e7ec9fc
+    type: regular
+    task:
+      id: 8e18a58d-2c9b-44c6-832d-e9530e7ec9fc
+      version: -1
+      name: Update host in the inbound whitelisted list
+      description: Replaces all the hosts on the inbound whitelist.
+      script: '|||netscout-aed-inbound-whitelisted-hosts-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      host_address:
+        simple: 2.2.2.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: b952ea75-76c7-4ed7-8e1d-b49d2a41e76a
+    type: condition
+    task:
+      id: b952ea75-76c7-4ed7-8e1d-b49d2a41e76a
+      version: -1
+      name: Verify that hosts were updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Blacklisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Whitelisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Whitelisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Blacklisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 7.7.7.7
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 7.7.7.7
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Whitelisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Whitelisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 599a0d24-752a-4ab1-84ce-d6db3e8cc076
+    type: regular
+    task:
+      id: 599a0d24-752a-4ab1-84ce-d6db3e8cc076
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: a2dbcaf9-86e2-4c77-851b-e6f904c066ae
+    type: regular
+    task:
+      id: a2dbcaf9-86e2-4c77-851b-e6f904c066ae
+      version: -1
+      name: Get list of outbound blacklisted host
+      description: Gets the outbound blacklisted hosts. By default, 10 blacklisted
+        hosts are returned.
+      script: '|||netscout-aed-outbound-blacklisted-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: eb8ba44f-6b90-423d-8c0e-961ba31f2d4f
+    type: regular
+    task:
+      id: eb8ba44f-6b90-423d-8c0e-961ba31f2d4f
+      version: -1
+      name: Get list of inbound blacklisted hosts
+      description: Gets the inbound blacklisted hosts. By default, 10 blacklisted
+        hosts are returned. To return blacklisted hosts for specific protection groups,
+        specify a list of protection group IDs or central configuration IDs. An ID
+        of -1 selects hosts that are globally blacklisted.
+      script: '|||netscout-aed-inbound-blacklisted-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 9f4387bb-9d92-4b58-8119-a5e0bdb87f8a
+    type: regular
+    task:
+      id: 9f4387bb-9d92-4b58-8119-a5e0bdb87f8a
+      version: -1
+      name: Get list of outbound whitelisted hosts
+      description: Gets the outbound whitelisted hosts. By default, 10 whitelisted
+        hosts are returned.
+      script: '|||netscout-aed-outbound-whitelisted-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 60dcfd15-d576-4e01-84e7-e573491eb4c6
+    type: regular
+    task:
+      id: 60dcfd15-d576-4e01-84e7-e573491eb4c6
+      version: -1
+      name: Get list of inbound whitelisted hosts
+      description: Get the whitelisted hosts. By default, 10 whitelisted hosts are
+        returned. To return whitelisted hosts for specific protection groups, specify
+        a list of protection group IDs or central configuration IDs. An ID of -1 selects
+        hosts that are globally whitelisted.
+      script: '|||netscout-aed-inbound-whitelisted-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: b00d1117-6a92-49cd-81a0-34934e5700a3
+    type: condition
+    task:
+      id: b00d1117-6a92-49cd-81a0-34934e5700a3
+      version: -1
+      name: Verify that hosts were removed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Blacklisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Whitelisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Whitelisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Blacklisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 7.7.7.7
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 7.7.7.7
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Outbound.Whitelisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Whitelisted.Hosts.host_address
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: a30430f3-c132-4027-89e5-746cd4b738eb
+    type: title
+    task:
+      id: a30430f3-c132-4027-89e5-746cd4b738eb
+      version: -1
+      name: Done checking hosts commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: ac5816d4-7bfb-427c-8c8c-95142e625592
+    type: regular
+    task:
+      id: ac5816d4-7bfb-427c-8c8c-95142e625592
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 65f91680-7f3a-455f-869b-4679f92798b1
+    type: regular
+    task:
+      id: 65f91680-7f3a-455f-869b-4679f92798b1
+      version: -1
+      name: Remove host in the outbound blacklisted list
+      description: Removes one or more hosts or CIDRS from the outbound blacklist.
+      script: '|||netscout-aed-outbound-blacklisted-hosts-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      host_address:
+        simple: 7.7.7.7
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: b1e6642d-4a1c-47bb-8d5d-7f60df7c3b17
+    type: regular
+    task:
+      id: b1e6642d-4a1c-47bb-8d5d-7f60df7c3b17
+      version: -1
+      name: Remove host in the inbound blacklisted list
+      description: Removes one or more hosts or CIDRs from the blacklist for a specific
+        protection group or for all protection groups.
+      script: '|||netscout-aed-inbound-blacklisted-hosts-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      host_address:
+        simple: 7.7.7.7
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 6eceb9c8-86af-4fce-88b6-71cdc75876ce
+    type: regular
+    task:
+      id: 6eceb9c8-86af-4fce-88b6-71cdc75876ce
+      version: -1
+      name: Remove host in the outbound whitelisted list
+      description: Removes one or more hosts or CIDRs from the outbound whitelist.
+      script: '|||netscout-aed-outbound-whitelisted-hosts-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      host_address:
+        simple: 2.2.2.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 4c63b10b-1489-4229-8f78-8aa12c3bcf74
+    type: regular
+    task:
+      id: 4c63b10b-1489-4229-8f78-8aa12c3bcf74
+      version: -1
+      name: Remove host in the inbound whitelisted list
+      description: Removes one or more hosts or CIDRs from the whitelist for a specific
+        protection group or for all protection groups.
+      script: '|||netscout-aed-inbound-whitelisted-hosts-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      host_address:
+        simple: 2.2.2.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 5026b708-bec8-4fee-88b7-6827b4df15d8
+    type: regular
+    task:
+      id: 5026b708-bec8-4fee-88b7-6827b4df15d8
+      version: -1
+      name: Get list of outbound blacklisted host
+      description: Gets the outbound blacklisted hosts. By default, 10 blacklisted
+        hosts are returned.
+      script: '|||netscout-aed-outbound-blacklisted-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: eb585531-b87c-458b-80e5-60bbf0a1bc93
+    type: regular
+    task:
+      id: eb585531-b87c-458b-80e5-60bbf0a1bc93
+      version: -1
+      name: Get list of inbound blacklisted hosts
+      description: Gets the inbound blacklisted hosts. By default, 10 blacklisted
+        hosts are returned. To return blacklisted hosts for specific protection groups,
+        specify a list of protection group IDs or central configuration IDs. An ID
+        of -1 selects hosts that are globally blacklisted.
+      script: '|||netscout-aed-inbound-blacklisted-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: ef69be9b-2568-4a8e-818d-77daca559734
+    type: regular
+    task:
+      id: ef69be9b-2568-4a8e-818d-77daca559734
+      version: -1
+      name: Get list of outbound whitelisted hosts
+      description: Gets the outbound whitelisted hosts. By default, 10 whitelisted
+        hosts are returned.
+      script: '|||netscout-aed-outbound-whitelisted-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 073762a8-21cc-494f-8f02-1e455418067b
+    type: regular
+    task:
+      id: 073762a8-21cc-494f-8f02-1e455418067b
+      version: -1
+      name: Get list of inbound whitelisted hosts
+      description: Get the whitelisted hosts. By default, 10 whitelisted hosts are
+        returned. To return whitelisted hosts for specific protection groups, specify
+        a list of protection group IDs or central configuration IDs. An ID of -1 selects
+        hosts that are globally whitelisted.
+      script: '|||netscout-aed-inbound-whitelisted-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 8d586a33-2e26-467b-8260-e977b053c372
+    type: regular
+    task:
+      id: 8d586a33-2e26-467b-8260-e977b053c372
+      version: -1
+      name: Get protection groups list
+      description: Gets a list of the protection groups.
+      script: '|||netscout-aed-protection-groups-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: e2ce2068-f0a0-4b72-89d3-00ff47a9753d
+    type: condition
+    task:
+      id: e2ce2068-f0a0-4b72-89d3-00ff47a9753d
+      version: -1
+      name: Verify list of protection groups
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: NetscoutAED.Protection_Groups.pgid
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: NetscoutAED.Protection_Groups.pgid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NetscoutAED.Protection_Groups.pgid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NetscoutAED.Protection_Groups.pgid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: c5759f7c-f861-44e9-8444-3579d8b49838
+    type: title
+    task:
+      id: c5759f7c-f861-44e9-8444-3579d8b49838
+      version: -1
+      name: Done checking protection groups commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 9e835fe4-b0b7-45a8-8946-487a8e1793f7
+    type: regular
+    task:
+      id: 9e835fe4-b0b7-45a8-8946-487a8e1793f7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: e9dd9ea6-83f1-40ef-8246-024a07d895de
+    type: regular
+    task:
+      id: e9dd9ea6-83f1-40ef-8246-024a07d895de
+      version: -1
+      name: Add domains to the inbound blacklisted list
+      description: Adds one or more domains to the blacklist by pgid or cid.
+      script: '|||netscout-aed-inbound-blacklisted-domains-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      domain:
+        simple: google.com,sport.co.il
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: bc2d6337-58bc-4be4-8b36-cd05ceb9160e
+    type: condition
+    task:
+      id: bc2d6337-58bc-4be4-8b36-cd05ceb9160e
+      version: -1
+      name: Verify that domains were added to the inbound blacklisted list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Domains.domain
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Domains.domain
+            iscontext: true
+          right:
+            value:
+              simple: sport.co.il
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: b090fef8-b13f-4dea-837c-b549235d9d04
+    type: regular
+    task:
+      id: b090fef8-b13f-4dea-837c-b549235d9d04
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: ce73e8a5-a55c-435a-8471-c9eaf9bb6cb4
+    type: regular
+    task:
+      id: ce73e8a5-a55c-435a-8471-c9eaf9bb6cb4
+      version: -1
+      name: Get list of inbound blacklisted domains
+      description: Gets the blacklisted domains. By default, 10 blacklisted domains
+        are returned. To return blacklisted domains for specific protection groups,
+        specify a list of protection group IDs or central configuration IDs. An ID
+        of -1 selects domains that are globally blacklisted.
+      script: '|||netscout-aed-inbound-blacklisted-domains-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 97ae772c-b6cf-4f0e-8173-e2400f0817b0
+    type: condition
+    task:
+      id: 97ae772c-b6cf-4f0e-8173-e2400f0817b0
+      version: -1
+      name: Verify that one of the domains was removed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Domains.domain
+            iscontext: true
+          right:
+            value:
+              simple: sport.co.il
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Domains.domain
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: a3e04873-c21c-46bb-8110-900190be4f1d
+    type: regular
+    task:
+      id: a3e04873-c21c-46bb-8110-900190be4f1d
+      version: -1
+      name: Remove one of the domains from the inbound blacklisted domains
+      description: Removes one or more domains from the blacklist for a specific protection
+        group or for all protection groups.
+      script: '|||netscout-aed-inbound-blacklisted-domains-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: afc2241d-3c1d-4b9a-858d-7885c48df471
+    type: regular
+    task:
+      id: afc2241d-3c1d-4b9a-858d-7885c48df471
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 7a559e28-86eb-4c2d-84fd-2c9edc8783bf
+    type: regular
+    task:
+      id: 7a559e28-86eb-4c2d-84fd-2c9edc8783bf
+      version: -1
+      name: Add urls to the inbound blacklisted list
+      description: Adds one or more URLs to the blacklist by pgid or cid.
+      script: '|||netscout-aed-inbound-blacklisted-urls-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      url:
+        simple: www.google.com,www.sport.co.il
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 1762aa1b-7ed0-477a-856e-35c7a89a5eee
+    type: condition
+    task:
+      id: 1762aa1b-7ed0-477a-856e-35c7a89a5eee
+      version: -1
+      name: Verify that urls were added to the inbound blacklisted list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Urls.url
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Urls.url
+            iscontext: true
+          right:
+            value:
+              simple: www.sport.co.il
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 0a4a8069-3168-4ab6-8986-c299acbe5491
+    type: regular
+    task:
+      id: 0a4a8069-3168-4ab6-8986-c299acbe5491
+      version: -1
+      name: Remove one of the urls from the inbound blacklisted domains
+      description: Removes one or more URLs from the blacklist for a specific protection
+        group or for all protection groups.
+      script: '|||netscout-aed-inbound-blacklisted-urls-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      url:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 452ab65b-dc07-4ae3-8d83-3e1107833d00
+    type: regular
+    task:
+      id: 452ab65b-dc07-4ae3-8d83-3e1107833d00
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 3fcfcb8c-1f81-4d9f-8637-c5e03e79dbce
+    type: regular
+    task:
+      id: 3fcfcb8c-1f81-4d9f-8637-c5e03e79dbce
+      version: -1
+      name: Get list of inbound blacklisted urls
+      description: Gets the blacklisted URLs. By default, 10 blacklisted URLs are
+        returned. To return blacklisted URLs for specific protection groups, specify
+        a list of protection group IDs or central configuration IDs. An ID of -1 selects
+        URLs that are globally blacklisted.
+      script: '|||netscout-aed-inbound-blacklisted-urls-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 1f93c784-6257-4de5-808b-cdec41f029df
+    type: condition
+    task:
+      id: 1f93c784-6257-4de5-808b-cdec41f029df
+      version: -1
+      name: Verify that one of the urls was removed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Urls.url
+            iscontext: true
+          right:
+            value:
+              simple: www.sport.co.il
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: NetscoutAED.Inbound.Blacklisted.Urls.url
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: aa821690-4b74-4034-8ca8-cfd81f0379b8
+    type: title
+    task:
+      id: aa821690-4b74-4034-8ca8-cfd81f0379b8
+      version: -1
+      name: Done checking domains commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: afb3f56b-c6b3-4df2-8159-e7640d03eeb4
+    type: title
+    task:
+      id: afb3f56b-c6b3-4df2-8159-e7640d03eeb4
+      version: -1
+      name: Done checking urls commands
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 10240,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
