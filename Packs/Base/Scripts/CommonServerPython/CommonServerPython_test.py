@@ -1238,6 +1238,153 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
+    def test_outputs_without_outputs_prefix(self):
+        """
+        Given
+        - outputs as a list without output_prefix
+
+        When
+        - Returins results
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import CommandResults
+        with pytest.raises(ValueError, match='outputs_prefix'):
+            CommandResults(outputs=[])
+
+    def test_dbot_score_is_in_to_context_ip(self):
+        """
+        Given
+        - IP indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and IP output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = '1.1.1.1'
+        raw_response = {'id': indicator_id}
+        indicator = Common.IP(
+            indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.IP,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='Indicator!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.IP.CONTEXT_PATH in entry_context
+
+    def test_dbot_score_is_in_to_context_file(self):
+        """
+        Given
+        - File indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and File output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = '63347f5d946164a23faca26b78a91e1c'
+        raw_response = {'id': indicator_id}
+        indicator = Common.File(
+            md5=indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.FILE,
+                'Indicator',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.File.CONTEXT_PATH in entry_context
+
+    def test_dbot_score_is_in_to_context_domain(self):
+        """
+        Given
+        - domain indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and File output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = 'example.com'
+        raw_response = {'id': indicator_id}
+        indicator = Common.Domain(
+            indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.DOMAIN,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.Domain.CONTEXT_PATH in entry_context
+
+    def test_dbot_score_is_in_to_context_url(self):
+        """
+        Given
+        - domain indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and File output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = 'https://example.com'
+        raw_response = {'id': indicator_id}
+        indicator = Common.URL(
+            indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.URL,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.URL.CONTEXT_PATH in entry_context
+
     def test_multiple_outputs_keys(self):
         """
         Given
