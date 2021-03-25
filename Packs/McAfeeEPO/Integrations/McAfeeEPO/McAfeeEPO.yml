@@ -20,6 +20,18 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: '86400000'
+  display: First fetch time in miliseconds
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: av.detect
+  display: ePO Event Type
+  hidden: false
+  name: alert_type
+  required: false
+  type: 0
 description: An Integration with McAfee ePO for Endpoint Security Use Cases
 display: McAfee ePO v2
 name: McAfeeEPOv2
@@ -61,15 +73,6 @@ script:
     name: epo-find-systems
   - arguments:
     - default: false
-      isArray: false
-      required: false
-      secret: false
-    deprecated: false
-    description: Executes an ePO command
-    execution: false
-    name: epo-command
-  - arguments:
-    - default: false
       description: Table Name
       isArray: false
       name: table
@@ -109,9 +112,13 @@ script:
     description: Execute an Ad-Hoc Query
     execution: false
     name: epo-query
+  - deprecated: false
+    description: Fetch Sample Alerts using the configuration parameters
+    execution: false
+    name: epo-fetch-sample-alerts
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false

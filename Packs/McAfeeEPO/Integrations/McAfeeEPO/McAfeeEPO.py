@@ -5,19 +5,41 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Any, Dict, Tuple, List, Optional, cast
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''
+MAX_INCIDENTS_TO_FETCH = 10
 
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
+
+    def search_alerts(self, alert_type: str, max_results: int, start_time: int) -> str:
+        params = {
+            ':output': 'json',
+            'select': f'(select (top {max_results}) EPOEvents.ServerID EPOEvents.EventTimeLocal '
+                      f'EPOEvents.AgentGUID EPOEvents.AnalyzerName EPOEvents.AnalyzerHostName '
+                      f'EPOEvents.AnalyzerMAC EPOEvents.ThreatCategory  EPOEvents.ThreatEventID '
+                      f'EPOEvents.ThreatSeverity  EPOEvents.ThreatName EPOEvents.ThreatType  '
+                      f'EPOEvents.ThreatActionTaken EPOEvents.ThreatHandled EPOEvents.AnalyzerDetectionMethod '
+                      f'EPOEvents.SourceIPV4 EPOEvents.TargetIPV4 EPOEvents.TargetHostName EPOEvents.TargetUserName '
+                      f'EPOEvents.TargetFileName )',
+            'target': 'EPOEvents',
+            'where': f'(where (and (eq EPOEvents.ThreatCategory "{alert_type}") (newerThan EPOEvents.EventTimeLocal {start_time})))',
+            'order': '(order(asc EPOEvents.EventTimeLocal))'
+        }
+        return self._http_request(
+            'get',
+            url_suffix='core.executeQuery',
+            params=params,
+            resp_type='text'
+        )
 
     def epo_help(self, suffix: str) -> str:
         params = {
@@ -116,6 +138,59 @@ def test_module(client: Client) -> str:
         else:
             raise e
     return message
+
+
+def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
+                    first_fetch_time: Optional[int], alert_type: Optional[str]
+                    ) -> Tuple[Dict[str, int], List[dict]]:
+    last_fetch = last_run.get('last_fetch', None)
+    if last_fetch is None:
+        last_fetch = first_fetch_time
+    else:
+        last_fetch = int(last_fetch)
+    latest_created_time = cast(int, last_fetch)
+
+    incidents = []
+    raw_response = None
+
+    try:
+        raw_response = client.search_alerts(
+            alert_type=alert_type,
+            max_results=max_results,
+            start_time=last_fetch,
+        )
+        raw_alerts = json.loads(raw_response[3:])
+        alerts = []
+
+        for alert in raw_alerts:
+            alert_details = {}
+            for key in alert:
+                alert_details[key.split('.')[1]] = alert[key]
+            alerts.append(alert_details)
+
+        for alert in alerts:
+            incident_created_time = int(alert.get('created', '0'))
+            incident_created_time_ms = incident_created_time * 1000
+            if last_fetch:
+                if incident_created_time <= last_fetch:
+                    continue
+            incident_name = alert['name']
+            incident = {
+                'name': incident_name,
+                'occurred': timestamp_to_datestring(incident_created_time_ms),
+                'rawJSON': json.dumps(alert)
+            }
+
+            incidents.append(incident)
+
+            if incident_created_time > latest_created_time:
+                latest_created_time = incident_created_time
+
+        # Save the next_run as a dict with the last_fetch key to be stored
+        next_run = {'last_fetch': latest_created_time}
+        return next_run, incidents
+    except Exception:
+        return_error(raw_response)
 
 
 def epo_help_command(client: Client) -> CommandResults:
@@ -221,8 +296,7 @@ def epo_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     try:
         raw_responses = client.epo_query(suffix=suffix, table=table, columns=columns,
                                          query_filter=query_filter, order_by=order_by)
-        raw_results = json.loads(client.epo_query(suffix=suffix, table=table, columns=columns,
-                                                  query_filter=query_filter, order_by=order_by)[3:])
+        raw_results = json.loads(raw_responses[3:])
         for result in raw_results:
             result_details = {}
             for key in result:
@@ -238,6 +312,29 @@ def epo_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def epo_fetch_sample_alerts_command(client: Client, alert_type: str, max_results: int, first_fetch_time: int, last_run:str) -> CommandResults:
+
+    raw_response = client.search_alerts(
+        max_results=max_results,
+        start_time=first_fetch_time,
+        alert_type=alert_type
+    )
+    raw_alerts = json.loads(raw_response[3:])
+    alerts = []
+
+    for alert in raw_alerts:
+        alert_details = {}
+        for key in alert:
+            alert_details[key.split('.')[1]] = alert[key]
+        alerts.append(alert_details)
+
+    return CommandResults(
+        outputs_prefix='McAfeeEPO.SampleAlerts',
+        outputs_key_field='groupId',
+        outputs=alerts,
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -248,7 +345,13 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
     username = demisto.params().get('credentials', {}).get('identifier', '')
     password = demisto.params().get('credentials', {}).get('password', '')
-
+    first_fetch_time = demisto.params().get('first_fetch', '86400')
+    alert_type = demisto.params().get('alert_type', 'av.detect')
+    max_results = arg_to_number(
+        arg=demisto.params().get('max_fetch'),
+        arg_name='max_fetch',
+        required=False
+    )
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers: Dict = {}
@@ -263,6 +366,18 @@ def main() -> None:
         if demisto.command() == 'test-module':
             result = test_module(client)
             return_results(result)
+        elif demisto.command() == 'fetch-incidents':
+            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+                max_results = MAX_INCIDENTS_TO_FETCH
+            next_run, incidents = fetch_incidents(
+                client=client,
+                max_results=max_results,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=first_fetch_time,
+                alert_type=alert_type
+            )
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
         elif demisto.command() == 'epo-help':
             return_results(epo_help_command(client))
         elif demisto.command() == 'epo-get-latest-dat':
@@ -275,6 +390,14 @@ def main() -> None:
             return_results(epo_get_tables_command(client, demisto.args()))
         elif demisto.command() == 'epo-query':
             return_results(epo_query_command(client, demisto.args()))
+        elif demisto.command() == 'epo-fetch-sample-alerts':
+            return_results(epo_fetch_sample_alerts_command(
+                client=client,
+                max_results=max_results,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=first_fetch_time,
+                alert_type=alert_type)
+            )
 
     # Log exceptions and return errors
     except Exception as e:
