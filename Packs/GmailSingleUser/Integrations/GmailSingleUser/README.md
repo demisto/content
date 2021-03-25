@@ -117,6 +117,7 @@ Sends an email using Gmail.
 | Gmail.SentMail.Subject | String | The subject of the email. | 
 | Gmail.SentMail.Body | Unknown | The plain-text version of the email. | 
 | Gmail.SentMail.MailBox | String | The mailbox from which the mail was sent. | 
+| Gmail.SentMail.BodyHTML | String | The HTML version of the email. |
 
 
 ##### Command Example
