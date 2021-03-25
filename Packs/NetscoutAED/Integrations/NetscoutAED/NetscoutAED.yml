@@ -95,10 +95,10 @@ script:
     execution: false
     name: netscout-aed-country-code-list
     outputs:
-    - contextPath: NetscoutAED.Cuntries.country_name
+    - contextPath: NetscoutAED.Countries.country_name
       description: The country's name
       type: String
-    - contextPath: NetscoutAED.Cuntries.iso_code
+    - contextPath: NetscoutAED.Countries.iso_code
       description: The ISO-standardized country code
       type: String
   - arguments:
@@ -517,7 +517,7 @@ script:
       name: profiling
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -624,7 +624,7 @@ script:
       name: active
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -1072,7 +1072,7 @@ script:
     - contextPath: NetscoutAED.Inbound.Blacklisted.Domains.pgid
       description: List of protection group ID.
       type: Unknown
-    - contextPath: NetscoutAED.Inbound.Blacklisted.domains.update_time
+    - contextPath: NetscoutAED.Inbound.Blacklisted.Domains.update_time
       description: The time that the domain was added to the list.
       type: Unknown
   - arguments:

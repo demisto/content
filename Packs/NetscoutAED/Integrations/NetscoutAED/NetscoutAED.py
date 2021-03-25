@@ -195,7 +195,7 @@ def init_commands_dict() -> dict:
                                                         'meta_data': merge_dicts(outbound_blacklisted, {'op': 'POST'})},
 
         'netscout-aed-outbound-blacklisted-hosts-update': {'func': handle_host_addition_and_updates_commands,
-                                                           'meta_data': merge_dicts(outbound_blacklisted, {'op': 'POST'})},
+                                                           'meta_data': merge_dicts(outbound_blacklisted, {'op': 'PUT'})},
         'netscout-aed-outbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                            'meta_data': outbound_blacklisted},
 
@@ -205,7 +205,7 @@ def init_commands_dict() -> dict:
         'netscout-aed-inbound-blacklisted-hosts-add': {'func': handle_host_addition_and_updates_commands,
                                                        'meta_data': merge_dicts(inbound_blacklisted, {'op': 'POST'})},
         'netscout-aed-inbound-blacklisted-hosts-update': {'func': handle_host_addition_and_updates_commands,
-                                                          'meta_data': merge_dicts(inbound_blacklisted, {'op': 'POST'})},
+                                                          'meta_data': merge_dicts(inbound_blacklisted, {'op': 'PUT'})},
         'netscout-aed-inbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                           'meta_data': inbound_blacklisted},
 
@@ -215,7 +215,7 @@ def init_commands_dict() -> dict:
         'netscout-aed-outbound-whitelisted-hosts-add': {'func': handle_host_addition_and_updates_commands,
                                                         'meta_data': merge_dicts(outbound_whitelisted, {'op': 'POST'})},
         'netscout-aed-outbound-whitelisted-hosts-update': {'func': handle_host_addition_and_updates_commands,
-                                                           'meta_data': merge_dicts(outbound_whitelisted, {'op': 'POST'})},
+                                                           'meta_data': merge_dicts(outbound_whitelisted, {'op': 'PUT'})},
         'netscout-aed-outbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                            'meta_data': outbound_whitelisted},
 
@@ -225,7 +225,7 @@ def init_commands_dict() -> dict:
         'netscout-aed-inbound-whitelisted-hosts-add': {'func': handle_host_addition_and_updates_commands,
                                                        'meta_data': merge_dicts(inbound_whitelisted, {'op': 'POST'})},
         'netscout-aed-inbound-whitelisted-hosts-update': {'func': handle_host_addition_and_updates_commands,
-                                                          'meta_data': merge_dicts(inbound_whitelisted, {'op': 'POST'})},
+                                                          'meta_data': merge_dicts(inbound_whitelisted, {'op': 'PUT'})},
         'netscout-aed-inbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                           'meta_data': inbound_whitelisted},
 
@@ -321,6 +321,9 @@ def serialize_protection_groups(list_of_protection_groups: list) -> None:
                 item['protectionLevel'] = 2
             elif protection_level == 'high':
                 item['protectionLevel'] = 3
+        profiling = item.get('profiling')
+        if profiling:
+            item['profiling'] = 1 if profiling == 'true' else 0
 
 
 ''' COMMAND FUNCTIONS '''
@@ -421,7 +424,7 @@ def handle_country_list_commands(client: Client, demisto_args: dict,
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.blacklisted.Countries',
+        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.Blacklisted.Countries',
         outputs_key_field='country',
         outputs=countries_list,
         raw_response=raw_result,
@@ -719,12 +722,13 @@ def handle_protection_groups_list_commands(client: Client, demisto_args: dict) -
     """
     remove_nulls_from_dictionary(demisto_args)
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    serialize_protection_groups([demisto_args])
     raw_result = client.protection_group_list_command(demisto_args)
     protection_group_list = copy.deepcopy(raw_result.get('protection-groups', []))
     deserialize_protection_groups(protection_group_list)
     objects_time_to_readable_time(protection_group_list, 'timeCreated')
 
-    headers = ['name', 'pgid', 'protection_level', 'active', 'server_name', 'time_created']
+    headers = ['name', 'pgid', 'protection_level', 'active', 'server_name', 'profiling', 'profiling_duration', 'time_created']
 
     readable_output = tableToMarkdown('Protection Groups', protection_group_list, headers=headers,
                                       headerTransform=string_to_table_header, removeNull=True)
@@ -754,19 +758,22 @@ def handle_protection_groups_update_commands(client: Client, demisto_args: dict)
 
     """
 
-    remove_nulls_from_dictionary(demisto_args)
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
     pgid = demisto_args.get('pgid')
     if not pgid:
         raise DemistoException(
             "You must provide pgid in order to update the protection group.")
+    if demisto_args.get('profiling') == 'true' and not demisto_args.get('profiling_duration'):
+        raise DemistoException(
+            "You must provide profiling duration when profiling is set to true.")
 
+    remove_nulls_from_dictionary(demisto_args)
+    demisto_args = camelize(demisto_args, "_", upper_camel=False)
     serialize_protection_groups([demisto_args])
     raw_result = client.protection_group_patch_command(demisto_args)
     protection_group_list = [copy.deepcopy(raw_result)]
     deserialize_protection_groups(protection_group_list)
     objects_time_to_readable_time(protection_group_list, 'timeCreated')
-    headers = ['name', 'pgid', 'protection_level', 'active', 'server_name', 'time_created']
+    headers = ['name', 'pgid', 'protection_level', 'active', 'server_name', 'profiling', 'profiling_duration', 'time_created']
     msg = f"Successfully updated the protection group object with protection group id: {pgid}"
 
     readable_output = msg + '\n' + tableToMarkdown('Protection Groups', protection_group_list, headers=headers,
