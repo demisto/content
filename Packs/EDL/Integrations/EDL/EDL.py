@@ -11,7 +11,6 @@ from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
 from typing import Callable, List, Any, Dict, cast, Tuple
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
-from threading import RLock
 
 
 class Handler:
@@ -40,7 +39,6 @@ EDL_COLLAPSE_ERR_MSG: str = 'The Collapse parameter can only get the following: 
 EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
 EDL_LOCAL_CACHE: dict = {}
-LOCK: RLock = RLock()
 ''' REFORMATTING REGEXES '''
 _PROTOCOL_REMOVAL = re.compile('^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^((?:[a-z]+:)*//([a-z0-9\-\.]+)|([a-z0-9\-\.]+))(?:\:[0-9]+)*')
@@ -132,7 +130,6 @@ def refresh_edl_context(request_args: RequestArguments) -> str:
 
     Returns: List(IoCs in output format)
     """
-    global EDL_LOCAL_CACHE
     now = datetime.now()
     # poll indicators into edl from demisto
     iocs = find_indicators_to_limit(request_args.query, request_args.limit, request_args.offset)
@@ -158,8 +155,6 @@ def refresh_edl_context(request_args: RequestArguments) -> str:
 
     out_dict["last_run"] = date_to_timestamp(now)
     out_dict["current_iocs"] = iocs
-    with LOCK:
-        EDL_LOCAL_CACHE = out_dict
     set_integration_context(out_dict)
     return out_dict[EDL_VALUES_KEY]
 
@@ -410,13 +405,10 @@ def get_ioc_values_str_from_cache(edl_cache: dict,
 
         iocs = iocs[request_args.offset: request_args.limit + request_args.offset]
         returned_dict, _ = create_values_for_returned_dict(iocs, request_args=request_args)
-        with LOCK:
-            # using LOCK since edl_cache might be EDL_LOCAL_CACHE
-            edl_cache['last_output'] = returned_dict
         set_integration_context(edl_cache)
 
     else:
-        returned_dict = edl_cache.get('last_output', {})
+        returned_dict = edl_cache
 
     return returned_dict.get(EDL_VALUES_KEY, '')
 
@@ -478,7 +470,7 @@ def route_edl_values() -> Response:
 
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
-    edl_cache = get_integration_context() if on_demand else EDL_LOCAL_CACHE
+    edl_cache = get_integration_context()
 
     values = get_edl_ioc_values(
         on_demand=on_demand,
@@ -527,7 +519,6 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
             2: COLLAPSE_TO_CIDR
         }
         collapse_ips = collapse_options[collapse_ips]
-
     return RequestArguments(query, limit, offset, strip_port, drop_invalids, collapse_ips)
 
 
