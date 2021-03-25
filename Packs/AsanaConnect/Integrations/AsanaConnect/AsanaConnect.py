@@ -41,8 +41,8 @@ def get_all_projects(token):
             outputs_key_field='projects',
             outputs=res
         )
-    except:
-        demisto.results("Request failed")
+    except Execption as err:
+        demisto.results(f"Request failed due to {err}")
 
 
 def get_project(pid, token):
@@ -69,8 +69,8 @@ def get_project(pid, token):
             outputs_key_field='project',
             outputs=project
         )
-    except:
-        demisto.results("Request failed")
+    except Exception as err:
+        demisto.results(f"Request failed due to {err}")
 
 
 def create_task_in_project(pid, name, token):
@@ -92,8 +92,8 @@ def create_task_in_project(pid, name, token):
         client = get_asana_client(token)
         client.tasks.create({'projects': pid, 'name': name})
         demisto.results(f'Task {name} successfully added to project')
-    except:
-        demisto.results('Task creation failed')
+    except Exception as err:
+        demisto.results(f'Task creation failed due to {err}')
 
 
 def test_module(token):
