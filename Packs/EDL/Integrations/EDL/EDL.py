@@ -342,7 +342,17 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
     if len(ipv6_formatted_indicators) > 0:
         ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
         formatted_indicators.extend(ipv6_formatted_indicators)
-    return {EDL_VALUES_KEY: list_to_str(formatted_indicators, '\n')}, len(formatted_indicators)
+    out_dict = {
+        EDL_VALUES_KEY: list_to_str(formatted_indicators, '\n'),
+        "current_iocs": iocs,
+        "last_limit": request_args.limit,
+        "last_offset": request_args.offset,
+        "drop_invalids": request_args.drop_invalids,
+        "url_port_stripping": request_args.url_port_stripping,
+        "collapse_ips": request_args.collapse_ips,
+        "last_query": request_args.query
+    }
+    return out_dict, len(formatted_indicators)
 
 
 def get_edl_ioc_values(on_demand: bool,
