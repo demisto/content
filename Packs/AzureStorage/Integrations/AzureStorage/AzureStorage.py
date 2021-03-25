@@ -252,30 +252,77 @@ class ASClient:
             json_data={'properties': properties}
         )
 
-    def storage_blob_containers_update_request(self, args):
+    def storage_blob_containers_create_update_request(self, args):
+        """
+                Send the user arguments for the create/update blob container in the request body to the API.
+            Args:
+                args: The user arguments.
 
+            Returns:
+                The json response from the API call.
+        """
         properties = {}
 
         if 'default_encryption_scope' in args:
             properties['defaultEncryptionScope'] = args.get('default_encryption_scope')
 
         if 'deny_encryption_scope_override' in args:
-            properties['denyEncryptionScopeOverride'] = args.get('deny_encryption_scope_override')
-
-        if 'metadata' in args:
-            properties['metadata'] = {'metadata': args.get('metadata')}
+            properties['denyEncryptionScopeOverride'] = argToBoolean(args.get('deny_encryption_scope_override'))
 
         if 'public_access' in args:
             properties['publicAccess'] = args.get('public_access')
 
         return self.ms_client.http_request(
-            method='PATCH',
+            method='PUT',
             url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
                        f'{args["account_name"]}/blobServices/default/containers/{args["container_name"]}',
             params={
                 'api-version': API_VERSION,
             },
             json_data={'properties': properties}
+        )
+
+    def storage_blob_containers_list_request(self, args):
+        """
+                Send the get blob container/s request to the API.
+            Args:
+                args: The user arguments.
+
+            Returns:
+                The json response from the API call.
+        """
+
+        url = f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/' \
+              f'{args["account_name"]}/blobServices/default/containers/{args.get("container_name", "")}'
+
+        # if 'container_name' in args:
+        #     url += f'/{args["container_name"]}'
+
+        params = {
+            'api-version': API_VERSION,
+        }
+
+        if 'include_deleted' in args and args['include_deleted'] == 'true':
+            params['$include'] = 'deleted'
+
+        if 'maxpagesize' in args:
+            params['$maxpagesize'] = args["maxpagesize"]
+
+        return self.ms_client.http_request(
+            method='GET',
+            url_suffix=url,
+            params=params,
+        )
+
+    def storage_blob_containers_delete_request(self, args):
+
+        return self.ms_client.http_request(
+            method='DELETE',
+            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
+                       f'{args["account_name"]}/blobServices/default/containers/{args["container_name"]}',
+            params={
+                'api-version': API_VERSION,
+            }
         )
 
 
@@ -475,9 +522,18 @@ def storage_blob_service_properties_set(client: ASClient, args: Dict):
     )
 
 
-def storage_blob_containers_update(client, args):
+def storage_blob_containers_create_update(client, args):
+    """
+            Creates or updates a given blob container.
+        Args:
+            client: The microsoft client.
+            args: The users arguments, (like account name, container name).
 
-    response = client.storage_blob_containers_update_request(args)
+        Returns:
+            CommandResults: The command results in MD table and context data.
+    """
+
+    response = client.storage_blob_containers_create_update_request(args)
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
         subscription_id = subscription_id.group(1)
@@ -492,20 +548,78 @@ def storage_blob_containers_update(client, args):
         'Name': response.get('name'),
         'Account Name': account_name,
         'Subscription ID': subscription_id,
-        'Resource Group': resource_group
+        'Resource Group': resource_group,
+        'Public Access': response.get('properties', {}).get('publicAccess')
     }
 
     return CommandResults(
-        outputs_prefix='AzureStorage.BlobServiceProperties',
+        outputs_prefix='AzureStorage.BlobContainer',
         outputs_key_field='id',
         outputs=response,
         readable_output=tableToMarkdown(
-            'Azure Storage Blob Service Properties',
+            'Azure Storage Blob Containers Properties',
             readable_output,
-            ['Name', 'Account Name', 'Subscription ID', 'Resource Group'],
+            ['Name', 'Account Name', 'Subscription ID', 'Resource Group', 'Public Access'],
         ),
         raw_response=response
     )
+
+
+def storage_blob_containers_list(client, args):
+    """
+            Gets a blob container if an container name is specified, and a list of blob containers if not.
+        Args:
+            client: The microsoft client.
+            args: The users arguments, (like account name, container name).
+
+        Returns:
+            CommandResults: The command results in MD table and context data.
+    """
+
+    response = client.storage_blob_containers_list_request(args)
+    containers = response.get('value', [response])
+
+    readable_output = []
+    for container in containers:
+
+        if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', container.get('id', '')):
+            subscription_id = subscription_id.group(1)
+
+        if resource_group := re.search('resourceGroups/(.+?)/providers', container.get('id', '')):
+            resource_group = resource_group.group(1)
+
+        if account_name := re.search('storageAccounts/(.+?)/blobServices', container.get('id', '')):
+            account_name = account_name.group(1)
+
+        readable_output.append({
+            'Container Name': container.get('name'),
+            'Account Name': account_name,
+            'Subscription ID': subscription_id,
+            'Resource Group': resource_group,
+            'Public Access': container.get('properties', {}).get('publicAccess'),
+            'Lease State': container.get('properties', {}).get('leaseState'),
+            'Last Modified Time': container.get('properties', {}).get('lastModifiedTime')
+        })
+
+    return CommandResults(
+        outputs_prefix='AzureStorage.BlobContainer',
+        outputs_key_field='id',
+        outputs=containers,
+        readable_output=tableToMarkdown(
+            'Azure Storage Blob Containers list',
+            readable_output,
+            ['Container Name', 'Account Name', 'Subscription ID', 'Resource Group', 'Public Access', 'Lease State',
+             'Last Modified Time'],
+        ),
+        raw_response=response
+    )
+
+
+def storage_blob_containers_delete(client, args):
+
+    response = client.storage_blob_containers_delete_request(args)
+    # return_error(response.status_code)
+    return response
 
 
 # Authentication Functions
@@ -567,8 +681,12 @@ def main() -> None:
             return_results(storage_blob_service_properties_get(client, args))
         elif command == 'azure-storage-blob-service-properties-set':
             return_results(storage_blob_service_properties_set(client, args))
-        elif command == 'azure-storage-blob-containers-update':
-            return_results(storage_blob_containers_update(client, args))
+        elif command == 'azure-storage-blob-containers-create-update':
+            return_results(storage_blob_containers_create_update(client, args))
+        elif command == 'azure-storage-blob-containers-list':
+            return_results(storage_blob_containers_list(client, args))
+        elif command == 'azure-storage-blob-container-delete':
+            return_results(storage_blob_containers_delete(client, args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
