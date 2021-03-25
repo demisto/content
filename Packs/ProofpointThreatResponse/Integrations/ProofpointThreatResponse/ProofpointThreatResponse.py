@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -521,13 +520,13 @@ def fetch_incidents_command():
         for incident in filtered_incidents_list:
             incident_creation_time = datetime.strptime(incident['created_at'], TIME_FORMAT)
             if incident_creation_time > state_parsed_fetch:
-                id = incident.get('id')
-                inc = {
-                    'name': 'ProofPoint_TRAP - ID {}'.format(id),
+                id_ = incident.get('id')
+                incident = {
+                    'name': 'ProofPoint_TRAP - ID {}'.format(id_),
                     'rawJSON': json.dumps(incident),
                     'occurred': incident['created_at']
                 }
-                incidents.append(inc)
+                incidents.append(incident)
 
         if incidents:
             last_fetch_time = incidents[-1]['occurred']
