@@ -1,0 +1,581 @@
+category: Case Management
+commonfields:
+  id: Opsgeniev2
+  version: -1
+configuration:
+- defaultvalue: https://api.opsgenie.com
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Must be created from the Teams API Integration section.
+  display: API Token
+  hidden: false
+  name: token
+  required: false
+  type: 4
+description: Integration with Atlassian OpsGenie V2
+display: Opsgenie v2
+name: Opsgeniev2
+fromversion: 6.0.0
+tests:
+  - No tests
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Maximum results to return
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: OpsGenie field to sort by
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    deprecated: false
+    description: List the current alerts from OpsGenie.
+    execution: false
+    name: opsgenie-list-alerts
+    outputs:
+      - contextPath: OpsGenieV2.Alerts.acknowledged
+        description: State of Acknoweledgement
+        type: Boolean
+      - contextPath: OpsGenieV2.Alerts.alias
+        description: Alert Alias
+        type: String
+      - contextPath: OpsGenieV2.Alerts.count
+        description: Count of Alert occurences
+        type: Number
+      - contextPath: OpsGenieV2.Alerts.createdAt
+        description: Time alert created
+        type: Date
+      - contextPath: OpsGenieV2.Alerts.id
+        description: ID of alert
+        type: String
+      - contextPath: OpsGenieV2.Alerts.integration.id
+        description: ID of integration
+        type: String
+      - contextPath: OpsGenieV2.Alerts.integration.name
+        description: Integration name
+        type: String
+      - contextPath: OpsGenieV2.Alerts.integration.type
+        description: Type of integration
+        type: String
+      - contextPath: OpsGenieV2.Alerts.isSeen
+        description: Whether alert has been seen
+        type: Boolean
+      - contextPath: OpsGenieV2.Alerts.lastOccurredAt
+        description: Time alert last occured
+        type: Date
+      - contextPath: OpsGenieV2.Alerts.message
+        description: Alert Message
+        type: String
+      - contextPath: OpsGenieV2.Alerts.owner
+        description: Owner of Alert
+        type: String
+      - contextPath: OpsGenieV2.Alerts.ownerTeamId
+        description: Team ID of Owner
+        type: String
+      - contextPath: OpsGenieV2.Alerts.priority
+        description: Alert Priority
+        type: String
+      - contextPath: OpsGenieV2.Alerts.responders.id
+        description: ID of responders
+        type: String
+      - contextPath: OpsGenieV2.Alerts.responders.type
+        description: Type of Responders
+        type: String
+      - contextPath: OpsGenieV2.Alerts.seen
+        description: Seen status of alert
+        type: Boolean
+      - contextPath: OpsGenieV2.Alerts.snoozed
+        description: Whether alert has been snoozed
+        type: Boolean
+      - contextPath: OpsGenieV2.Alerts.source
+        description: Source of Alert
+        type: String
+      - contextPath: OpsGenieV2.Alerts.status
+        description: Status of Alert
+        type: String
+      - contextPath: OpsGenieV2.Alerts.teams.id
+        description: ID Of teams associated with Alert
+        type: String
+      - contextPath: OpsGenieV2.Alerts.tinyId
+        description: Shorter ID for alert
+        type: String
+      - contextPath: OpsGenieV2.Alerts.updatedAt
+        description: Last Updated time for Alert
+        type: Date
+      - contextPath: OpsGenieV2.Alerts.report.ackTime
+        description: Acknoweledgement Time of Alert
+        type: Number
+      - contextPath: OpsGenieV2.Alerts.report.acknowledgedBy
+        description: User that Acknolwedged the alert
+        type: String
+      - contextPath: OpsGenieV2.Alerts.report.closeTime
+        description: Time Alarm closed
+        type: Number
+      - contextPath: OpsGenieV2.Alerts.report.closedBy
+        description: Who Closed the alarm
+        type: String
+
+  - arguments:
+    - default: false
+      description: Alert message.
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    - default: false
+      description: Client-defined identifier of the alert
+      isArray: false
+      name: alias
+      required: false
+      secret: false
+    - default: false
+      description: Description field of the alert that is generally used to provide
+        a detailed information about the alert.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Dictionary of team/user/escalation/schedule for notifications.
+        Dictionary containing type and ID.
+      isArray: true
+      name: responders
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Incident Priority.
+      isArray: false
+      name: priority
+      predefined:
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
+      required: false
+      secret: false
+    description: Create an Alert in opsgenie
+    deprecated: false
+    execution: false
+    name: opsgenie-create-alert
+    outputs:
+      - contextPath: OpsGenieV2.CreatedAlert.action
+        description: Action of this Request
+        type: String
+      - contextPath: OpsGenieV2.CreatedAlert.alertId
+        description: ID Of created Alert
+        type: String
+      - contextPath: OpsGenieV2.CreatedAlert.alias
+        description: Alais of created Alert
+        type: String
+      - contextPath: OpsGenieV2.CreatedAlert.integrationId
+        description: Integration of created Alert
+        type: String
+      - contextPath: OpsGenieV2.CreatedAlert.isSuccess
+        description: If the request was successful
+        type: Boolean
+      - contextPath: OpsGenieV2.CreatedAlert.processedAt
+        description: When the request was processed
+        type: Date
+      - contextPath: OpsGenieV2.CreatedAlert.requestId
+        description: The ID of the request
+        type: String
+      - contextPath: OpsGenieV2.CreatedAlert.status
+        description: The human readable result of the request
+        type: String
+      - contextPath: OpsGenieV2.CreatedAlert.success
+        description: Bool, whether the request was a success
+        type: Boolean
+
+  - arguments:
+    - default: false
+      description: The ID of the alert from opsgenie
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an Alert from OpsGenie
+    execution: false
+    name: opsgenie-delete-alert
+    outputs:
+      - contextPath: OpsGenieV2.DeletedAlert.action
+        description: Action of this Request
+        type: String
+      - contextPath: OpsGenieV2.DeletedAlert.alertId
+        description: ID Of Deleted Alert
+        type: String
+      - contextPath: OpsGenieV2.DeletedAlert.alias
+        description: Alais of created Alert
+        type: String
+      - contextPath: OpsGenieV2.DeletedAlert.integrationId
+        description: Integration of created Alert
+        type: String
+      - contextPath: OpsGenieV2.DeletedAlert.isSuccess
+        description: If the request was successful
+        type: Boolean
+      - contextPath: OpsGenieV2.DeletedAlert.processedAt
+        description: When the request was processed
+        type: Date
+      - contextPath: OpsGenieV2.DeletedAlert.requestId
+        description: The ID of the request
+        type: String
+      - contextPath: OpsGenieV2.DeletedAlert.status
+        description: The human readable result of the request
+        type: String
+      - contextPath: OpsGenieV2.DeletedAlert.success
+        description: Bool, whether the request was a success
+        type: Boolean
+
+  - arguments:
+    - default: false
+      description: The ID of the alert from opsgenie
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an Alert from OpsGenie
+    execution: false
+    name: opsgenie-get-alert
+    outputs:
+      - contextPath: OpsGenieV2.Alert.acknowledged
+        description: State of Acknoweledgement
+        type: Boolean
+      - contextPath: OpsGenieV2.Alert.alias
+        description: Alert Alias
+        type: String
+      - contextPath: OpsGenieV2.Alert.count
+        description: Count of Alert occurences
+        type: Number
+      - contextPath: OpsGenieV2.Alert.createdAt
+        description: Time alert created
+        type: Date
+      - contextPath: OpsGenieV2.Alert.id
+        description: ID of alert
+        type: String
+      - contextPath: OpsGenieV2.Alert.integration.id
+        description: ID of integration
+        type: String
+      - contextPath: OpsGenieV2.Alert.integration.name
+        description: Integration name
+        type: String
+      - contextPath: OpsGenieV2.Alert.integration.type
+        description: Type of integration
+        type: String
+      - contextPath: OpsGenieV2.Alert.isSeen
+        description: Whether alert has been seen
+        type: Boolean
+      - contextPath: OpsGenieV2.Alert.lastOccurredAt
+        description: Time alert last occured
+        type: Date
+      - contextPath: OpsGenieV2.Alert.message
+        description: Alert Message
+        type: String
+      - contextPath: OpsGenieV2.Alert.owner
+        description: Owner of Alert
+        type: String
+      - contextPath: OpsGenieV2.Alert.ownerTeamId
+        description: Team ID of Owner
+        type: String
+      - contextPath: OpsGenieV2.Alert.priority
+        description: Alert Priority
+        type: String
+      - contextPath: OpsGenieV2.Alert.responders.id
+        description: ID of responders
+        type: String
+      - contextPath: OpsGenieV2.Alert.responders.type
+        description: Type of Responders
+        type: String
+      - contextPath: OpsGenieV2.Alert.seen
+        description: Seen status of alert
+        type: Boolean
+      - contextPath: OpsGenieV2.Alert.snoozed
+        description: Whether alert has been snoozed
+        type: Boolean
+      - contextPath: OpsGenieV2.Alert.source
+        description: Source of Alert
+        type: String
+      - contextPath: OpsGenieV2.Alert.status
+        description: Status of Alert
+        type: String
+      - contextPath: OpsGenieV2.Alert.teams.id
+        description: ID Of teams associated with Alert
+        type: String
+      - contextPath: OpsGenieV2.Alert.tinyId
+        description: Shorter ID for alert
+        type: String
+      - contextPath: OpsGenieV2.Alert.updatedAt
+        description: Last Updated time for Alert
+        type: Date
+      - contextPath: OpsGenieV2.Alert.report.ackTime
+        description: Acknoweledgement Time of Alert
+        type: Number
+      - contextPath: OpsGenieV2.Alert.report.acknowledgedBy
+        description: User that Acknolwedged the alert
+        type: String
+      - contextPath: OpsGenieV2.Alert.report.closeTime
+        description: Time Alarm closed
+        type: Number
+      - contextPath: OpsGenieV2.Alert.report.closedBy
+        description: Who Closed the alarm
+        type: String
+
+  - arguments:
+    - default: false
+      description: The ID of the alert from opsgenie
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Acknowledge an alert in OpsGenie
+    execution: false
+    name: opsgenie-ack-alert
+    outputs:
+      - contextPath: OpsGenieV2.AckedAlert.action
+        description: Action of this Request
+        type: String
+      - contextPath: OpsGenieV2.AckedAlert.alertId
+        description: ID Of created Alert
+        type: String
+      - contextPath: OpsGenieV2.AckedAlert.alias
+        description: Alais of created Alert
+        type: String
+      - contextPath: OpsGenieV2.AckedAlert.integrationId
+        description: Integration of created Alert
+        type: String
+      - contextPath: OpsGenieV2.AckedAlert.isSuccess
+        description: If the request was successful
+        type: Boolean
+      - contextPath: OpsGenieV2.AckedAlert.processedAt
+        description: When the request was processed
+        type: Date
+      - contextPath: OpsGenieV2.AckedAlert.requestId
+        description: The ID of the request
+        type: String
+      - contextPath: OpsGenieV2.AckedAlert.status
+        description: The human readable result of the request
+        type: String
+      - contextPath: OpsGenieV2.AckedAlert.success
+        description: Bool, whether the request was a success
+        type: Boolean
+
+  - arguments:
+    - default: false
+      description: Schedule to retrieve from LR
+      isArray: false
+      name: schedule-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the provided Schedule (by ID) from LR
+    execution: false
+    name: opsgenie-get-schedule
+    outputs:
+      - contextPath: OpsGenieV2.Schedule.description
+        description: Description of Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedule.enabled
+        description: If this schedule is enabled
+        type: Boolean
+      - contextPath: OpsGenieV2.Schedule.id
+        description: ID Of schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedule.name
+        description: Name of Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedule.ownerTeam.id
+        description: ID Of the team owning this schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedule.ownerTeam.name
+        description: Name of Team owning this Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedule.rotations.id
+        description: ID of rotations on this Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedule.rotations.length
+        description: Length of Rotations on this Schedule
+        type: Number
+      - contextPath: OpsGenieV2.Schedule.rotations.name
+        description: Name of Rotation on this Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedule.rotations.participants.id
+        description: ID Of Partipant attached to this schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedule.rotations.participants.type
+        description: Type of Participant attached to this Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedule.rotations.participants.username
+        description: Username of Participant Attached to this Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedule.rotations.startDate
+        description: Start Date of this Schedule
+        type: Date
+      - contextPath: OpsGenieV2.Schedule.rotations.type
+        description: Type of this Rotation
+        type: String
+      - contextPath: OpsGenieV2.Schedule.timezone
+        description: Timezone of this Schedule
+        type: String
+
+  - arguments:
+    - default: false
+      description: Max number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: OpsGenie field to sort on
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    deprecated: false
+    description: List Schedules
+    execution: false
+    name: opsgenie-list-schedules
+    outputs:
+      - contextPath: OpsGenieV2.Schedules.description
+        description: Description of Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedules.enabled
+        description: If this schedule is enabled
+        type: Boolean
+      - contextPath: OpsGenieV2.Schedules.id
+        description: ID Of schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedules.name
+        description: Name of Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedules.ownerTeam.id
+        description: ID Of the team owning this schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedules.ownerTeam.name
+        description: Name of Team owning this Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedules.rotations.id
+        description: ID of rotations on this Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedules.rotations.length
+        description: Length of Rotations on this Schedule
+        type: Number
+      - contextPath: OpsGenieV2.Schedules.rotations.name
+        description: Name of Rotation on this Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedules.rotations.participants.id
+        description: ID Of Partipant attached to this schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedules.rotations.participants.type
+        description: Type of Participant attached to this Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedules.rotations.participants.username
+        description: Username of Participant Attached to this Schedule
+        type: String
+      - contextPath: OpsGenieV2.Schedules.rotations.startDate
+        description: Start Date of this Schedule
+        type: Date
+      - contextPath: OpsGenieV2.Schedules.rotations.type
+        description: Type of this Rotation
+        type: String
+      - contextPath: OpsGenieV2.Schedules.timezone
+        description: Timezone of this Schedule
+        type: String
+
+  - arguments:
+    - default: false
+      description: Schedule from which to return on-call users
+      isArray: false
+      name: schedule-id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the on-call users for the provided schedule
+    execution: false
+    name: opsgenie-get-on-call
+    outputs:
+      - contextPath: OpsGenieV2.OnCall._parent.enabled
+        description: If this OnCall is Enabled
+        type: Boolean
+      - contextPath: OpsGenieV2.OnCall._parent.id
+        description: ID Of parent schedule
+        type: String
+      - contextPath: OpsGenieV2.OnCall._parent.name
+        description: Name of parent Schedule
+        type: String
+      - contextPath: OpsGenieV2.OnCall.onCallParticipants.id
+        description: ID Of oncall participant
+        type: String
+      - contextPath: OpsGenieV2.OnCall.onCallParticipants.name
+        description: Name of oncall participant
+        type: String
+      - contextPath: OpsGenieV2.OnCall.onCallParticipants.type
+        description: Type of OnCall participant
+        type: String
+
+  - arguments:
+    - default: false
+      description: ID Of opsgenie alert
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Close an OpsGenie Alert
+    execution: false
+    name: opsgenie-close-alert
+    outputs:
+      - contextPath: OpsGenieV2.CloseAlert.action
+        description: Action of this Request
+        type: String
+      - contextPath: OpsGenieV2.CloseAlert.alertId
+        description: ID Of created Alert
+        type: String
+      - contextPath: OpsGenieV2.CloseAlert.alias
+        description: Alais of created Alert
+        type: String
+      - contextPath: OpsGenieV2.CloseAlert.integrationId
+        description: Integration of created Alert
+        type: String
+      - contextPath: OpsGenieV2.CloseAlert.isSuccess
+        description: If the request was successful
+        type: Boolean
+      - contextPath: OpsGenieV2.CloseAlert.processedAt
+        description: When the request was processed
+        type: Date
+      - contextPath: OpsGenieV2.CloseAlert.requestId
+        description: The ID of the request
+        type: String
+      - contextPath: OpsGenieV2.CloseAlert.status
+        description: The human readable result of the request
+        type: String
+      - contextPath: OpsGenieV2.CloseAlert.success
+        description: Bool, whether the request was a success
+        type: Boolean
+
+  dockerimage: demisto/python3:3.9.2.17246
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

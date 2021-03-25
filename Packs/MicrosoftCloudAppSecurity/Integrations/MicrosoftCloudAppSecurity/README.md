@@ -41,7 +41,7 @@ Command to dismiss multiple alerts matching the specified filters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | Multiple alerts matching the specified filters.<br/>Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f". | Optional | 
-| customer_filters | Filter that the customer builds himself. | Optional | 
+| custom_filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. Example for Custom Filter: {"entity .policy":{"eq":"Impossible travel"}}. For more information about filter syntax, please see [Microsoft Docs](https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters). | Optional | 
 | comment | Comment about why the alerts are dismissed. | Optional | 
 
 
@@ -75,7 +75,7 @@ List alerts command - prints list alerts
 | service | Filter alerts related to the specified service appId. | Optional | 
 | instance | Filter alerts related to the specified instances. | Optional | 
 | resolution_status | Filter by alert resolution status. | Optional | 
-| customer_filters | Filter that the customer builds himself. (If the customer use "customer_filters" other filters will not work) | Optional | 
+| custom_filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. Example for Custom Filter: {"entity .policy":{"eq":"Impossible travel"}}. For more information about filter syntax, please see [Microsoft Docs](https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters). | Optional | 
 | alert_id | alert id | Optional | 
 | username | Username. (Usually its an email address) | Optional | 
 
@@ -147,7 +147,7 @@ Command to resolve multiple alerts matching the specified filters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | Multiple alerts matching the specified filters.<br/>Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f". | Optional | 
-| customer_filters | Filter that the customer builds himself. | Optional | 
+| custom_filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. Example for Custom Filter: {"entity .policy":{"eq":"Impossible travel"}}. For more information about filter syntax, please see [Microsoft Docs](https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters). | Optional | 
 | comment | Comment about why the alerts are dismissed. | Optional | 
 
 
@@ -188,7 +188,7 @@ Command for list of activities matching the specified filters.
 | username | Filter activities by the user who performed the activity. | Optional | 
 | taken_action | Filter activities by the actions taken on them. | Optional | 
 | source | Filter all activities by source type. | Optional | 
-| customer_filters | Filter that the customer builds himself. (If the customer use "customer_filters" other filters will not work) | Optional | 
+| custom_filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. Example for Custom Filter: {"entity .policy":{"eq":"Impossible travel"}}. For more information about filter syntax, please see [Microsoft Docs](https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters). | Optional | 
 | activity_id | The ID of the activity. | Optional | 
 
 
@@ -271,7 +271,7 @@ Command to fetch a list of files matching the specified filters.
 | sharing | Filter files with the specified sharing levels. | Optional | 
 | extension | Filter files by a given file extension. | Optional | 
 | quarantined | Filter Is the file quarantined. | Optional | 
-| customer_filters | Filter that the customer builds himself. (If the customer use "customer_filters" other filters will not work) | Optional | 
+| custom_filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. Example for Custom Filter: {"entity .policy":{"eq":"Impossible travel"}}. For more information about filter syntax, please see [Microsoft Docs](https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters). | Optional | 
 | file_id | Filter by file id | Optional | 
 
 
@@ -389,7 +389,7 @@ Command for basic information about the users and accounts using your organizati
 | is_admin | Filter entities that are admins. | Optional | 
 | is_external | The entity's affiliation. | Optional | 
 | status | Filter entities by status. | Optional | 
-| customer_filters | Filter that the customer builds himself. (If the customer use "customer_filters" other filters will not work) | Optional | 
+| custom_filter | A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. Example for Custom Filter: {"entity .policy":{"eq":"Impossible travel"}}. For more information about filter syntax, please see [Microsoft Docs](https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters). | Optional | 
 
 
 #### Context Output

@@ -11,8 +11,8 @@ from freezegun import freeze_time
 from datetime import datetime, timedelta
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
-    get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
-    store_successful_and_failed_packs_in_ci_artifacts
+    get_updated_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
+    store_successful_and_failed_packs_in_ci_artifacts, PACKS_FOLDER
 
 CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
@@ -88,13 +88,15 @@ class TestMetadataParsing:
         assert parsed_metadata['currentVersion'] == '2.3.0'
         assert parsed_metadata['versionInfo'] == "dummy_build_number"
         assert parsed_metadata['commit'] == "dummy_commit"
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", "Use Case"]
+        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", "Use Case"}
+        assert len(parsed_metadata['tags']) == 3
         assert parsed_metadata['categories'] == ["Messaging"]
         assert parsed_metadata['contentItems'] == {}
         assert 'integrations' in parsed_metadata
         assert parsed_metadata['useCases'] == ["Some Use Case"]
         assert parsed_metadata['keywords'] == ["dummy keyword", "Additional dummy keyword"]
         assert parsed_metadata['downloads'] == 10
+        assert parsed_metadata['searchRank'] == 10
         assert 'dependencies' in parsed_metadata
 
     def test_parsed_metadata_empty_input(self, dummy_pack):
@@ -119,6 +121,7 @@ class TestMetadataParsing:
         assert parsed_metadata['certification'] == Metadata.CERTIFIED
         assert parsed_metadata['price'] == 0
         assert parsed_metadata['serverMinVersion'] == "dummy_server_version"
+        assert parsed_metadata['searchRank'] == 10
 
     @pytest.mark.parametrize("pack_metadata_input,expected",
                              [({"price": "120"}, 120), ({"price": 120}, 120), ({"price": "FF"}, 0)])
@@ -139,8 +142,8 @@ class TestMetadataParsing:
 
     def test_new_tag_added(self, dummy_pack_metadata, dummy_pack):
         """
-        Given a new pack (created less than 30 days ago)
-        Then: add "New" tag
+        Given a certified new pack (created less than 30 days ago)
+        Then: add "New" tag and raise the searchRank
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
         parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
@@ -150,12 +153,13 @@ class TestMetadataParsing:
                                                           commit_hash="dummy_commit", downloads_count=10,
                                                           is_feed_pack=False)
 
-        assert parsed_metadata['tags'] == ['tag number one', 'Tag number two', 'Use Case', 'New']
+        assert set(parsed_metadata['tags']) == {'tag number one', 'Tag number two', 'Use Case', 'New'}
+        assert parsed_metadata['searchRank'] == 20
 
     def test_new_tag_removed(self, dummy_pack_metadata, dummy_pack):
         """
-        Given a pack that was created more than 30 days ago
-        Then: remove "New" tag
+        Given a certified pack that was created more than 30 days ago
+        Then: remove "New" tag and make sure the searchRank is reduced
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
         if 'New' not in dummy_pack_metadata['tags']:
@@ -167,7 +171,121 @@ class TestMetadataParsing:
                                                           commit_hash="dummy_commit", downloads_count=10,
                                                           is_feed_pack=False)
 
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
+        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", 'Use Case'}
+        assert parsed_metadata['searchRank'] == 10
+
+    def test_section_tags_added(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given:
+            Pack
+        When:
+            Parsing a pack metadata
+        Then:
+            add the 'Featured' landingPage section tag and raise the searchRank
+        """
+        section_tags = {
+            "sections": ["Trending",
+                         "Featured",
+                         "Getting Started"],
+            "Featured": [
+                "Test Pack Name"
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False, landing_page_sections=section_tags)
+
+        assert set(parsed_metadata['tags']) == {'tag number one', 'Tag number two', 'Use Case', 'Featured'}
+        assert parsed_metadata['searchRank'] == 20
+
+    def test_deprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given: a certified pack
+        When: All the integrations in it are deprecated.
+        Then: calculate the search rank
+        """
+        content_items = {
+            "integration": [
+                {
+                    "name": "packname (Deprecated)",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                }
+            ],
+            "playbook": [
+                {
+                    "name": "test plakbook",
+                    "description": "test playbook description"
+                }
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata,
+                                                          pack_content_items=content_items,
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['searchRank'] == -40
+
+    def test_partdeprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given: a certified pack
+        When: Only one of the two integrations is deprecated.
+        Then: calculate the search rank
+        """
+        content_items = {
+            "integration": [
+                {
+                    "name": "packname (Deprecated)",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                },
+                {
+                    "name": "packname2",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                },
+
+            ],
+            "playbook": [
+                {
+                    "name": "test plakbook",
+                    "description": "test playbook description"
+                }
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata,
+                                                          pack_content_items=content_items,
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['searchRank'] == 10
 
     def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata, dummy_pack):
         """
@@ -186,7 +304,7 @@ class TestMetadataParsing:
                                                           build_number="dummy_build_number", commit_hash="dummy_commit",
                                                           downloads_count=10, is_feed_pack=False)
 
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
+        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", 'Use Case'}
 
     @pytest.mark.parametrize('is_feed_pack, tags',
                              [(True, ["tag number one", "Tag number two", 'TIM']),
@@ -282,6 +400,55 @@ class TestParsingInternalFunctions:
 
         assert result_certification == Metadata.CERTIFIED
 
+    @pytest.mark.parametrize("pack_integration_images, display_dependencies_images, expected", [
+        ([], [], []),
+        ([], ["DummyPack"],
+         [{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}]),
+        ([{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}],
+         ["DummyPack", "DummyPack2"],
+         [{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"},
+          {"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]),
+        ([{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}],
+         ["DummyPack2"],
+         [{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}])
+    ])
+    def test_get_all_pack_images(self, pack_integration_images, display_dependencies_images, expected):
+        """
+           Tests that all the pack's images are being collected without duplication, according to the pack dependencies,
+           and without the contribution details suffix if exists.
+           All test cases getting the same dependencies_data (all level pack's dependencies data) dictionary.
+           Given:
+               - Empty pack_integration_images, empty display_dependencies_images
+               - Empty pack_integration_images, display_dependencies_images with one pack
+               - pack_integration_images with DummyIntegration, display_dependencies_images DummyPack1 and DummyPack2
+               - pack_integration_images with DummyIntegration2 without contribution details suffix,
+                 display_dependencies_images DummyPack2
+
+           When:
+               - Getting all pack images when formatting pack's metadata.
+
+           Then:
+               - Validates that all_pack_images is empty.
+               - Validates that all_pack_images list was updated according to the packs dependencies.
+               - Validates that all_pack_images list was updated without duplications.
+               - Validates that all_pack_images list was updated without the contribution details suffix.
+       """
+
+        dependencies_data = {
+            "DummyPack": {
+                "integrations": [{
+                    "name": "DummyIntegration",
+                    "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}]},
+            "DummyPack2": {
+                "integrations": [{
+                    "name": "DummyIntegration2 (Partner Contribution)",
+                    "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]}}
+
+        all_pack_images = Pack._get_all_pack_images(pack_integration_images, display_dependencies_images,
+                                                    dependencies_data)
+
+        assert expected == all_pack_images
+
 
 class TestHelperFunctions:
     """ Class for testing helper functions that are used in marketplace_services and upload_packs modules.
@@ -334,19 +501,19 @@ class TestHelperFunctions:
 
     @pytest.mark.parametrize("current_string_version,compared_content_item,expected_result",
                              [
-                                 ("1.2.3", {"fromversion": "2.1.0"}, "2.1.0"),
-                                 ("1.2.3", {"fromVersion": "2.1.0"}, "2.1.0"),
-                                 ("5.5.2", {"fromversion": "2.1.0"}, "5.5.2"),
-                                 ("5.5.2", {"fromVersion": "2.1.0"}, "5.5.2"),
+                                 ("1.2.3", {"fromversion": "2.1.0"}, "1.2.3"),
+                                 ("1.2.3", {"fromVersion": "2.1.0"}, "1.2.3"),
+                                 ("5.5.2", {"fromversion": "2.1.0"}, "2.1.0"),
+                                 ("5.5.2", {"fromVersion": "2.1.0"}, "2.1.0"),
                                  ("5.5.0", {}, "5.5.0"),
                                  ("1.0.0", {}, "1.0.0")
                              ])
-    def test_get_higher_server_version(self, current_string_version, compared_content_item, expected_result):
+    def test_get_updated_server_version(self, current_string_version, compared_content_item, expected_result):
         """ Tests the comparison of server versions (that are collected in collect_content_items function.
-            Higher server semantic version should be returned.
+            Lower server semantic version should be returned.
         """
-        result = get_higher_server_version(current_string_version=current_string_version,
-                                           compared_content_item=compared_content_item, pack_name="dummy")
+        result = get_updated_server_version(current_string_version=current_string_version,
+                                            compared_content_item=compared_content_item, pack_name="dummy")
 
         assert result == expected_result
 
@@ -400,27 +567,6 @@ class TestHelperFunctions:
         assert not os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
         assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
-
-    @pytest.mark.parametrize('file_name, result', [
-        ('Author_image.png', False),
-        ('Integration_image.png', True),
-        ('Integration_image.jpeg', False)
-    ])
-    def test_is_integration_image(self, file_name, result):
-        """
-           Given:
-               - Image name of an author.
-               - Image name of integration.
-               - Image name of integration with the wrong extension.
-            When:
-            - Checking whether the image in integration image or not
-           Then:
-               - Validate that the answer is False
-               - Validate that the answer is True
-               - Validate that the answer is False
-       """
-        from Tests.Marketplace.marketplace_services import is_integration_image
-        assert is_integration_image(file_name) == result
 
 
 class TestVersionSorting:
@@ -858,14 +1004,18 @@ class TestImagesUpload:
        """
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
-                                           'image_path': f'/path/{temp_image_name}'}]
+                                           'image_path': f'/path/{temp_image_name}',
+                                           'integration_path_basename': 'fake_unified_integration_path'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
+        mocker.patch("marketplace_services_test.Pack.need_to_upload_integration_image", return_value=True)
         mocker.patch('builtins.open', mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
+        dummy_file = mocker.MagicMock()
+        dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
-        task_status, integration_images = dummy_pack.upload_integration_images(storage_bucket=dummy_storage_bucket)
+        task_status, integration_images = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file], True)
 
         assert task_status
         assert len(expected_result) == len(integration_images)
@@ -889,20 +1039,43 @@ class TestImagesUpload:
        """
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
-                                           'image_path': f'/path/{temp_image_name}'}]
+                                           'image_path': f'/path/{temp_image_name}',
+                                           'integration_path_basename': 'fake_unified_integration_path'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
+        mocker.patch("marketplace_services_test.Pack.need_to_upload_integration_image", return_value=True)
         mocker.patch("builtins.open", mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
+        dummy_file = mocker.MagicMock()
+        dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
-        task_status, integration_images = dummy_pack.upload_integration_images(storage_bucket=dummy_storage_bucket)
+        task_status, integration_images = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file], True)
 
         assert task_status
         assert len(expected_result) == len(integration_images)
         assert integration_images == expected_result
 
-    def test_copy_and_upload_integration_images(self, mocker, dummy_pack):
+    @pytest.mark.parametrize("display_name", [
+        'Integration Name (Developer Contribution)',
+        'Integration Name (Community Contribution) ',
+        'Integration Name',
+        'Integration Name (Partner Contribution)',
+        'Integration Name(Partner Contribution)'
+    ])
+    def test_remove_contrib_suffix_from_name(self, dummy_pack, display_name):
+        """
+           Given:
+               - Integration name.
+           When:
+               - Uploading integrations images to gcs.
+           Then:
+               - Validates that the contribution details were removed
+       """
+
+        assert "Integration Name" == dummy_pack.remove_contrib_suffix_from_name(display_name)
+
+    def test_copy_integration_images(self, mocker, dummy_pack):
         """
            Given:
                - Integration image.
@@ -915,13 +1088,13 @@ class TestImagesUpload:
         dummy_prod_bucket = mocker.MagicMock()
         blob_name = "content/packs/TestPack/IntegrationName_image.png"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
-        mocker.patch("Tests.Marketplace.marketplace_services.is_integration_image", return_value=True)
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
-        task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket)
+        images_data = {"TestPack": {BucketUploadFlow.INTEGRATIONS: [os.path.basename(blob_name)]}}
+        task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket, images_data)
         assert task_status
 
-    def test_copy_and_upload_author_image(self, mocker, dummy_pack):
+    def test_copy_author_image(self, mocker, dummy_pack):
         """
            Given:
                - Author image.
@@ -934,8 +1107,9 @@ class TestImagesUpload:
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         blob_name = "content/packs/TestPack/Author_image.png"
+        images_data = {"TestPack": {BucketUploadFlow.AUTHOR: True}}
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
-        task_status = dummy_pack.copy_author_image(dummy_prod_bucket, dummy_build_bucket)
+        task_status = dummy_pack.copy_author_image(dummy_prod_bucket, dummy_build_bucket, images_data)
         assert task_status
 
 
@@ -1638,24 +1812,28 @@ class TestGetSuccessfulAndFailedPacks:
                - Verify that we get an empty dictionary
                - Verify that we get the expected dictionary
        """
-        from Tests.Marketplace.marketplace_services import get_successful_and_failed_packs
+        from Tests.Marketplace.marketplace_services import get_upload_data
         file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
 
         # Case 1: assert file does not exist
-        successful, failed, private_packs = get_successful_and_failed_packs(file,
-                                                                            BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        successful, failed, private_packs, images = get_upload_data(
+            file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
+        )
         assert successful == {}
         assert failed == {}
         assert private_packs == {}
+        assert images == {}
 
         # Case 2: assert empty file
         with open(file, "w") as f:
             f.write('')
-        successful, failed, private_packs = get_successful_and_failed_packs(file,
-                                                                            BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        successful, failed, private_packs, images = get_upload_data(
+            file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
+        )
         assert successful == {}
         assert failed == {}
         assert private_packs == {}
+        assert images == {}
 
         # Case 3: assert valid file
         with open(file, "w") as f:
@@ -1678,11 +1856,18 @@ class TestGetSuccessfulAndFailedPacks:
                             f"{BucketUploadFlow.STATUS}": "status3",
                             f"{BucketUploadFlow.AGGREGATED}": True
                         }
+                    },
+                    f"{BucketUploadFlow.IMAGES}": {
+                        "TestPack1": {
+                            f"{BucketUploadFlow.AUTHOR}": True,
+                            f"{BucketUploadFlow.INTEGRATIONS}": ["integration_image.png"]
+                        }
                     }
                 }
             }))
-        successful, failed, private_packs = get_successful_and_failed_packs(file,
-                                                                            BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        successful, failed, private_packs, images = get_upload_data(
+            file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
+        )
         assert successful == {"TestPack1": {
             f"{BucketUploadFlow.STATUS}": "status1",
             f"{BucketUploadFlow.AGGREGATED}": True
@@ -1699,6 +1884,15 @@ class TestGetSuccessfulAndFailedPacks:
         ans = 'TestPack2' in failed_list
         assert ans
 
+        assert "TestPack1" in images
+        test_pack_images = images.get("TestPack1", {})
+        assert BucketUploadFlow.AUTHOR in test_pack_images
+        assert test_pack_images.get(BucketUploadFlow.AUTHOR, False)
+        assert BucketUploadFlow.INTEGRATIONS in test_pack_images
+        integration_images = test_pack_images.get(BucketUploadFlow.INTEGRATIONS, [])
+        assert len(integration_images) == 1
+        assert integration_images[0] == "integration_image.png"
+
         assert private_packs == {"TestPack3": {
             f"{BucketUploadFlow.STATUS}": "status3",
             f"{BucketUploadFlow.AGGREGATED}": True
@@ -1706,3 +1900,63 @@ class TestGetSuccessfulAndFailedPacks:
         private_successful_list = [*private_packs]
         ans = 'TestPack3' in private_successful_list
         assert ans
+
+
+class TestImageClassification:
+    """ Test class for all image classifications.
+    """
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        return Pack(pack_name="TestPack", pack_path="dummy_path")
+
+    @pytest.mark.parametrize('file_path, result', [
+        ('Packs/TestPack/Author_image.png', False),
+        ('Packs/TestPack/Integration_image.png', True),
+        ('Packs/TestPack/Integration_image.jpeg', False),
+        ('Integration_image.png', False),
+        ('Integration_pic.png', False),
+    ])
+    def test_is_integration_image(self, file_path, result, dummy_pack):
+        """
+           Given:
+               - File path of an author image.
+               - File path of an integration image.
+               - File path of an integration image with the wrong extension.
+               - File path not starting with Packs/TestPack
+               - File path not containing the 'image' constant
+            When:
+            - Checking whether the image in integration image or not
+           Then:
+               - Validate that the answer is False
+               - Validate that the answer is True
+               - Validate that the answer is False
+               - Validate that the answer is False
+               - Validate that the answer is False
+       """
+        assert dummy_pack.is_integration_image(file_path) is result
+
+    @pytest.mark.parametrize('file_path, result', [
+        ('Packs/TestPack/Author_image.png', True),
+        ('Packs/TestPack/Author_image.jpeg', False),
+        ('Packs/TestPack/Integration_image.png', False),
+        ('Author_image.png', False)
+    ])
+    def test_is_author_image(self, file_path, result, dummy_pack):
+        """
+           Given:
+               - File path of an author image.
+               - File path of an author image with bad suffix.
+               - File path of an integration image.
+               - File path not starting with Packs/TestPack
+            When:
+            - Checking whether the image in integration image or not
+           Then:
+               - Validate that the answer is True
+               - Validate that the answer is False
+               - Validate that the answer is False
+               - Validate that the answer is False
+       """
+        assert dummy_pack.is_author_image(file_path) is result

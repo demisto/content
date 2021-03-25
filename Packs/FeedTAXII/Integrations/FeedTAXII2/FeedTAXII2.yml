@@ -81,6 +81,12 @@ configuration:
   name: collection_to_fetch
   required: false
   type: 0
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: 'false'
+  required: false
+  type: 8
 - additionalinfo: When enabled, fetch-indicators will try to fetch the entire feed
     for every fetch. When disabled, fetch-indicators will try to fetch just the latest
     entries (since the last fetch).
