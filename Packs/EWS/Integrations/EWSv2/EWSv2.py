@@ -1205,7 +1205,7 @@ def parse_incident_from_item(item, is_fetch):
                 time.sleep(0.5)
                 item.save()
             except ValueError as e:
-                if len(item.subject) > 255:
+                if item.subject and len(item.subject) > 255:
                     demisto.debug("Length of message subject is greater than 255, item.save could not handle it, "
                                   "cutting the subject.")
                     sub_subject = "Length of subject greater than 255 characters. " \
