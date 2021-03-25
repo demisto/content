@@ -1210,7 +1210,7 @@ class Pack(object):
         return changelog, changelog_latest_rn_version
 
     def get_modified_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
-                                         changelog: dict, modified_rn_files: list) -> dict:
+                                         changelog: dict, modified_rn_files: list):
         """
         In the case where an rn file was changed, this function returns the new content
         of the release note in the format suitable for the changelog file.
