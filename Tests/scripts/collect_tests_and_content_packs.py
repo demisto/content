@@ -230,6 +230,9 @@ def collect_tests_and_content_packs(
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
             caught_missing_test = True
+            logging.error("chanoch test_playbook_id: {}".format(test_playbook_id))
+            logging.error("chanoch test_ids: {}".format(test_ids))
+            logging.error("chanoch skipped_tests: {}".format(skipped_tests))
             logging.error("The playbook {} does not appear in the conf.json file,"
                           " which means no test with it will run. please update the conf.json file accordingly"
                           .format(test_playbook_name))
