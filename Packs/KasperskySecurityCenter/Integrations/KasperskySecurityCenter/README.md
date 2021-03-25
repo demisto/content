@@ -22,7 +22,9 @@ The user should be assigned to a role with the relevant devices in scope, and th
     | --- | --- |
     | Server URL (e.g., https://kaspersky.domain.com:13299) | True |
     | Username | True |
-    | Trust any certificate (insecure) | False |
+    | Password | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
