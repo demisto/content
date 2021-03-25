@@ -1200,7 +1200,6 @@ def parse_incident_from_item(item, is_fetch):
         if MARK_AS_READ and is_fetch:
             item.is_read = True
             try:
-                demisto.debug("Subject is: {}".format(item.subject))
                 item.save()
             except ErrorIrresolvableConflict:
                 time.sleep(0.5)
