@@ -19,17 +19,17 @@ INDICATORS_EC = [
     (
         'attach-phishlabs',
         {
-            "fileName": "EECO_RFQ__453100Q.pdf",
+            "fileName": "test.pdf",
             "mimeType": "application/pdf",
             "md5": "6680e7e593c8286ac51e332d8f72aeec",
-            "sha256": "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
+            "sha256": "1111111111111111111111111111111111111111111111111111",
             "malicious": "false"
         },
         {
-            'fileName': "EECO_RFQ__453100Q.pdf",
+            'fileName': "test.pdf",
             'MimeType': "application/pdf",
             'MD5': "6680e7e593c8286ac51e332d8f72aeec",
-            'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
+            'SHA256': "1111111111111111111111111111111111111111111111111111",
             'Malicious': "false"
         }
     ),
@@ -58,7 +58,7 @@ INDICATORS_EC = [
 
 INDICATORS_DBOT_EC = [
     (
-        Client(base_url='http://xxx.com'),
+        Client(base_url='http://test.com'),
         'url-ec',
         {
             "url": "https://google.com/",
@@ -83,26 +83,26 @@ INDICATORS_DBOT_EC = [
         )
     ),
     (
-        Client(base_url='http://xxx.com'),
+        Client(base_url='http://test.com'),
         'file-ec',
         {
-            "fileName": "EECO_RFQ__453100Q.pdf",
+            "fileName": "test.pdf",
             "mimeType": "application/pdf",
             "md5": "6680e7e593c8286ac51e332d8f72aeec",
-            "sha256": "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
+            "sha256": "1111111111111111111111111111111111111111111111111111",
             "malicious": "false"
         },
         (
             {
-                'Indicator': "EECO_RFQ__453100Q.pdf",
+                'Indicator': "test.pdf",
                 'Reliability': 'B - Usually reliable',
                 'Type': 'File',
                 'Vendor': "PhishLabs IOC - EIR",
                 'Score': 1
             },
             {
-                'Name': "EECO_RFQ__453100Q.pdf",
-                'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
+                'Name': "test.pdf",
+                'SHA256': "1111111111111111111111111111111111111111111111111111",
                 'MD5': "6680e7e593c8286ac51e332d8f72aeec",
                 'Malicious': {
                     'Vendor': "PhishLabs IOC - EIR",
@@ -116,7 +116,7 @@ INDICATORS_DBOT_EC = [
 
 INDICATORS_TO_LIST_EC = [
     (
-        Client(base_url='http://xxx.com'),
+        Client(base_url='http://test.com'),
         'url-ec',
         [
             {
@@ -213,10 +213,10 @@ RAW_RESPONSE_TO_CONTEXT = [
                 ],
                 "attachments": [
                     {
-                        "fileName": "EECO_RFQ__453100Q.pdf",
+                        "fileName": "test.pdf",
                         "mimeType": "application/pdf",
                         "md5": "6680e7e593c8286ac51e332d8f72aeec",
-                        "sha256": "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
+                        "sha256": "1111111111111111111111111111111111111111111111111111",
                         "malicious": "false"
                     }
                 ],
@@ -259,10 +259,10 @@ RAW_RESPONSE_TO_CONTEXT = [
                     ],
                     'Attachment': [
                         {
-                            'fileName': "EECO_RFQ__453100Q.pdf",
+                            'fileName': "test.pdf",
                             'MimeType': "application/pdf",
                             'MD5': "6680e7e593c8286ac51e332d8f72aeec",
-                            'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
+                            'SHA256': "1111111111111111111111111111111111111111111111111111",
                             'Malicious': "false"
                         }
                     ]
@@ -278,8 +278,8 @@ RAW_RESPONSE_TO_CONTEXT = [
         ],
         [
             {
-                'Name': "EECO_RFQ__453100Q.pdf",
-                'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
+                'Name': "test.pdf",
+                'SHA256': "1111111111111111111111111111111111111111111111111111",
                 'MD5': "6680e7e593c8286ac51e332d8f72aeec",
                 'Malicious': {
                     'Vendor': "PhishLabs IOC - EIR",
@@ -298,7 +298,7 @@ RAW_RESPONSE_TO_CONTEXT = [
         ],
         [
             {
-                'Indicator': "EECO_RFQ__453100Q.pdf",
+                'Indicator': "test.pdf",
                 'Reliability': 'B - Usually reliable',
                 'Type': 'File',
                 'Vendor': "PhishLabs IOC - EIR",
@@ -342,6 +342,6 @@ class TestHelperFunctions:
 
     def test_raw_response_to_context(self):
         from PhishLabsIOC_EIR import raw_response_to_context
-        client = Client(base_url='http://xxx.com')
+        client = Client(base_url='http://test.com')
         result = raw_response_to_context(client=client, incidents=RAW_RESPONSE_TO_CONTEXT[0])
         assert result == RAW_RESPONSE_TO_CONTEXT[1]
