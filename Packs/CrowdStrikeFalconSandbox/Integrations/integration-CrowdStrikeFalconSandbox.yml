@@ -1495,5 +1495,5 @@ script:
   runonce: false
 tests:
 - VxStream Test
-- detonate_file_-_generic_test
+- Detonate File - Generic Test
 fromversion: 5.0.0
