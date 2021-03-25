@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 import requests
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, cast
-
+from datetime import datetime
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -143,6 +143,7 @@ def test_module(client: Client) -> str:
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], alert_type: Optional[str]
                     ) -> Tuple[Dict[str, int], List[dict]]:
+
     last_fetch = last_run.get('last_fetch', None)
     if last_fetch is None:
         last_fetch = first_fetch_time
@@ -169,15 +170,16 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
             alerts.append(alert_details)
 
         for alert in alerts:
-            incident_created_time = int(alert.get('created', '0'))
-            incident_created_time_ms = incident_created_time * 1000
+            incident_created_time = int(datetime.strptime(alert.get('EventTimeLocal', '0'), '%Y-%m-%dT%H:%M:%S%z').
+                                        timestamp()*1000)
+
             if last_fetch:
                 if incident_created_time <= last_fetch:
                     continue
-            incident_name = alert['name']
+            incident_name = alert['ThreatName']
             incident = {
                 'name': incident_name,
-                'occurred': timestamp_to_datestring(incident_created_time_ms),
+                'occurred': timestamp_to_datestring(incident_created_time),
                 'rawJSON': json.dumps(alert)
             }
 
@@ -186,7 +188,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
 
-        # Save the next_run as a dict with the last_fetch key to be stored
         next_run = {'last_fetch': latest_created_time}
         return next_run, incidents
     except Exception:
@@ -312,7 +313,8 @@ def epo_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def epo_fetch_sample_alerts_command(client: Client, alert_type: str, max_results: int, first_fetch_time: int, last_run:str) -> CommandResults:
+def epo_fetch_sample_alerts_command(client: Client, alert_type: str, max_results: int, first_fetch_time: int,
+                                    last_run: Dict[str, int]) -> CommandResults:
 
     raw_response = client.search_alerts(
         max_results=max_results,
@@ -328,6 +330,9 @@ def epo_fetch_sample_alerts_command(client: Client, alert_type: str, max_results
             alert_details[key.split('.')[1]] = alert[key]
         alerts.append(alert_details)
 
+    for alert in alerts:
+        incident_created_time = datetime.strptime(alert.get('EventTimeLocal', '0'), '%Y-%m-%dT%H:%M:%S%z')
+        print (incident_created_time.timestamp())
     return CommandResults(
         outputs_prefix='McAfeeEPO.SampleAlerts',
         outputs_key_field='groupId',
@@ -345,7 +350,11 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
     username = demisto.params().get('credentials', {}).get('identifier', '')
     password = demisto.params().get('credentials', {}).get('password', '')
-    first_fetch_time = demisto.params().get('first_fetch', '86400')
+    first_fetch_time = arg_to_datetime(
+        arg=demisto.params().get('first_fetch', '3 days'),
+        arg_name='First fetch time',
+    )
+    first_fetch_milliseconds = int((datetime.now().timestamp() - first_fetch_time.timestamp())*1000)
     alert_type = demisto.params().get('alert_type', 'av.detect')
     max_results = arg_to_number(
         arg=demisto.params().get('max_fetch'),
@@ -373,7 +382,7 @@ def main() -> None:
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time,
+                first_fetch_time=first_fetch_milliseconds,
                 alert_type=alert_type
             )
             demisto.setLastRun(next_run)
@@ -395,7 +404,7 @@ def main() -> None:
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time,
+                first_fetch_time=first_fetch_milliseconds,
                 alert_type=alert_type)
             )
 
