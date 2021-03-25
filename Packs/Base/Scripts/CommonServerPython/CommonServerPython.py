@@ -4364,7 +4364,7 @@ class CommandResults:
                 human_readable = tableToMarkdown('Results', self.outputs)
             if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
-                formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field)
+                formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
                                                      for key_field in self._outputs_key_field])
                 outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs

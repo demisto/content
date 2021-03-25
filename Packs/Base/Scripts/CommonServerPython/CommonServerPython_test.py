@@ -1413,7 +1413,7 @@ class TestCommandResults:
         results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-               'File(val.sha1 == obj.sha1 && val.sha256 == obj.sha256 && val.md5 == obj.md5)'
+               'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
 
     def test_output_prefix_includes_dt(self):
         """
@@ -1662,7 +1662,7 @@ class TestCommandResults:
             'Contents': tickets,
             'HumanReadable': tableToMarkdown('Results', tickets),
             'EntryContext': {
-                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+                'Jira.Ticket(val.ticket_id && val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
