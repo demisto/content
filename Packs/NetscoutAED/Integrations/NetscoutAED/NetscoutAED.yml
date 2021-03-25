@@ -552,12 +552,16 @@ script:
       description: True if the protection group mode is active, false if inactive.
       type: Boolean
     - contextPath: NetscoutAED.Protection_Groups.bps_dropped
+      description: Number of dropped bps
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.bps_passed
+      description: Number of passed bps
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.bytes_dropped
+      description: Number of dropped bytes
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.bytes_passed
+      description: Number of passed bytes
       type: Unknown
     - contextPath: NetscoutAED.Protection_Groups.description
       description: Description of the protection group.
@@ -566,15 +570,19 @@ script:
       description: Protection group name.
       type: String
     - contextPath: NetscoutAED.Protection_Groups.packets_dropped
+      description: Number of dropped packets
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.packets_passed
+      description: Number of passed packets
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.pgid
       description: Protection group identifier.
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.pps_passed
+      description: Number of passed pps
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.pps_dropped
+      description: Number of dropped pps
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.prefixes
       description: List of ‘,’ delimited prefixes belonging to the protection group.
@@ -642,12 +650,16 @@ script:
       description: True if the protection group mode is active, false if inactive.
       type: Boolean
     - contextPath: NetscoutAED.Protection_Groups.bps_dropped
+      description: Number of dropped bps
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.bps_passed
+      description: Number of passed packets
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.bytes_dropped
+      description: Number of dropped bytes
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.bytes_passed
+      description: Number of passed bytes
       type: Unknown
     - contextPath: NetscoutAED.Protection_Groups.description
       description: Description of the protection group.
@@ -656,15 +668,19 @@ script:
       description: Protection group name.
       type: String
     - contextPath: NetscoutAED.Protection_Groups.packets_dropped
+      description: Number of dropped packets
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.packets_passed
+      description: Number of passed packets
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.pgid
       description: Protection group identifier.
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.pps_passed
+      description: Number of passed pps
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.pps_dropped
+      description: Number of dropped pps
       type: Number
     - contextPath: NetscoutAED.Protection_Groups.prefixes
       description: List of ‘,’ delimited prefixes belonging to the protection group.
@@ -1220,7 +1236,7 @@ script:
     description: Removes one or more hosts or CIDRs from the outbound whitelist.
     execution: false
     name: netscout-aed-outbound-whitelisted-hosts-remove
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: false
   longRunning: false

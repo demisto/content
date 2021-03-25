@@ -1,6 +1,5 @@
-id: 7d8b6e5e-9594-49b1-8e89-06c85d0c49dc
-version: 47
-vcShouldKeepItemLegacyProdMachine: false
+id: NetscoutAED-Test
+version: -1
 name: NetscoutAED-Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -30,8 +30,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 80100418-9148-4fb7-80d5-7ca15a80463d
@@ -62,8 +60,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 59b37661-3dab-46b6-8b77-fa31eedd4896
@@ -114,8 +110,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 77cce2ed-0227-49d4-8113-868a738cfdc3
@@ -148,8 +142,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 018ab5cc-0a78-4c02-8644-5d9e7be3f00a
@@ -182,8 +174,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: a8b48651-41c7-47d4-87fa-552f95a24027
@@ -214,8 +204,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 1a88adcd-3773-40d1-8fea-85310c04ef4c
@@ -263,8 +251,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 1e9f771f-ca68-4b91-8d76-11178ab9dda7
@@ -297,8 +283,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: ec19980b-59ad-4705-8653-790d95c1517f
@@ -345,8 +329,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 69ae0614-52a2-41a9-87ca-7f9bf68eb7b8
@@ -358,6 +340,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -374,8 +357,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: b96493ff-badd-4cde-8017-d05a4e944289
@@ -408,8 +389,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 8bb471e8-4510-4ce0-8ee2-c91566d2418b
@@ -443,8 +422,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 28ec4b8d-ac6d-48f9-8d4e-0b679103f58e
@@ -478,8 +455,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 32f4c8ff-b147-4e0e-8c51-aea5e160a87d
@@ -512,8 +487,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: b44b03d1-c5ca-45ae-80f1-cd93a3a8626a
@@ -546,8 +519,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: f9ba0022-d972-4225-8fb2-894d2059f377
@@ -580,8 +551,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 8b4facc6-040a-426c-8793-84239448d960
@@ -614,8 +583,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 6a83c291-ef60-42ab-8b97-b009bf116b41
@@ -648,8 +615,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: 567646a7-a44d-413b-8846-fc471dd3f091
@@ -682,8 +647,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: cab12b4b-cf1b-4910-895b-92caebb6b753
@@ -746,8 +709,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: 669f6b67-ddc1-45fc-84ac-df8a4280bc0b
@@ -780,8 +741,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: 48609e59-96fe-4ffe-8b5e-e0834b006bed
@@ -814,8 +773,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: 814985cf-acb3-4c08-89fe-ba7c53a0e0a6
@@ -848,8 +805,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 8e18a58d-2c9b-44c6-832d-e9530e7ec9fc
@@ -882,8 +837,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: b952ea75-76c7-4ed7-8e1d-b49d2a41e76a
@@ -978,8 +931,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: 599a0d24-752a-4ab1-84ce-d6db3e8cc076
@@ -1012,8 +963,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: a2dbcaf9-86e2-4c77-851b-e6f904c066ae
@@ -1044,8 +993,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: eb8ba44f-6b90-423d-8c0e-961ba31f2d4f
@@ -1078,8 +1025,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: 9f4387bb-9d92-4b58-8119-a5e0bdb87f8a
@@ -1110,8 +1055,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "30":
     id: "30"
     taskid: 60dcfd15-d576-4e01-84e7-e573491eb4c6
@@ -1144,8 +1087,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: b00d1117-6a92-49cd-81a0-34934e5700a3
@@ -1240,8 +1181,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "32":
     id: "32"
     taskid: a30430f3-c132-4027-89e5-746cd4b738eb
@@ -1253,6 +1192,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1269,8 +1209,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: ac5816d4-7bfb-427c-8c8c-95142e625592
@@ -1303,8 +1241,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "35":
     id: "35"
     taskid: 65f91680-7f3a-455f-869b-4679f92798b1
@@ -1337,8 +1273,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "36":
     id: "36"
     taskid: b1e6642d-4a1c-47bb-8d5d-7f60df7c3b17
@@ -1372,8 +1306,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "37":
     id: "37"
     taskid: 6eceb9c8-86af-4fce-88b6-71cdc75876ce
@@ -1406,8 +1338,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "38":
     id: "38"
     taskid: 4c63b10b-1489-4229-8f78-8aa12c3bcf74
@@ -1441,8 +1371,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "39":
     id: "39"
     taskid: 5026b708-bec8-4fee-88b7-6827b4df15d8
@@ -1473,8 +1401,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "40":
     id: "40"
     taskid: eb585531-b87c-458b-80e5-60bbf0a1bc93
@@ -1507,8 +1433,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "41":
     id: "41"
     taskid: ef69be9b-2568-4a8e-818d-77daca559734
@@ -1539,8 +1463,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "42":
     id: "42"
     taskid: 073762a8-21cc-494f-8f02-1e455418067b
@@ -1573,8 +1495,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "43":
     id: "43"
     taskid: 8d586a33-2e26-467b-8260-e977b053c372
@@ -1604,8 +1524,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "44":
     id: "44"
     taskid: e2ce2068-f0a0-4b72-89d3-00ff47a9753d
@@ -1656,8 +1574,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "45":
     id: "45"
     taskid: c5759f7c-f861-44e9-8444-3579d8b49838
@@ -1669,6 +1585,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "46"
@@ -1685,8 +1602,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "46":
     id: "46"
     taskid: 9e835fe4-b0b7-45a8-8946-487a8e1793f7
@@ -1719,8 +1634,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "47":
     id: "47"
     taskid: e9dd9ea6-83f1-40ef-8246-024a07d895de
@@ -1753,8 +1666,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "48":
     id: "48"
     taskid: bc2d6337-58bc-4be4-8b36-cd05ceb9160e
@@ -1801,8 +1712,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "49":
     id: "49"
     taskid: b090fef8-b13f-4dea-837c-b549235d9d04
@@ -1835,8 +1744,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "50":
     id: "50"
     taskid: ce73e8a5-a55c-435a-8471-c9eaf9bb6cb4
@@ -1869,8 +1776,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "51":
     id: "51"
     taskid: 97ae772c-b6cf-4f0e-8173-e2400f0817b0
@@ -1917,8 +1822,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "52":
     id: "52"
     taskid: a3e04873-c21c-46bb-8110-900190be4f1d
@@ -1952,8 +1855,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "53":
     id: "53"
     taskid: afc2241d-3c1d-4b9a-858d-7885c48df471
@@ -1986,8 +1887,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "54":
     id: "54"
     taskid: 7a559e28-86eb-4c2d-84fd-2c9edc8783bf
@@ -2020,8 +1919,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "55":
     id: "55"
     taskid: 1762aa1b-7ed0-477a-856e-35c7a89a5eee
@@ -2068,8 +1965,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "56":
     id: "56"
     taskid: 0a4a8069-3168-4ab6-8986-c299acbe5491
@@ -2103,8 +1998,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "57":
     id: "57"
     taskid: 452ab65b-dc07-4ae3-8d83-3e1107833d00
@@ -2137,8 +2030,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "58":
     id: "58"
     taskid: 3fcfcb8c-1f81-4d9f-8637-c5e03e79dbce
@@ -2171,8 +2062,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "59":
     id: "59"
     taskid: 1f93c784-6257-4de5-808b-cdec41f029df
@@ -2219,8 +2108,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "60":
     id: "60"
     taskid: aa821690-4b74-4034-8ca8-cfd81f0379b8
@@ -2232,6 +2119,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "53"
@@ -2248,8 +2136,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "61":
     id: "61"
     taskid: afb3f56b-c6b3-4df2-8159-e7640d03eeb4
@@ -2261,6 +2147,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -2274,8 +2161,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -2290,3 +2175,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''
