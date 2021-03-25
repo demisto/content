@@ -22,6 +22,8 @@ The Generic Webhook integration is used to create incidents on event triggers. T
 
 You can now trigger the webhook URL: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/webhook`
 
+Please note the instance name is case sensitive.
+
 **Note**: The ***Listen Port*** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.
 
 ## Usage
