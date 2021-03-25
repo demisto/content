@@ -402,6 +402,7 @@ def filter_incidents(incidents_list):
     Returns:
         list. The filtered incidents list
     """
+    demisto.debug(f'Number of incidents prior to the filter is: {len(incidents_list)}')
     filtered_incidents_list = []
     params = demisto.params()
     sources_list = argToList(params.get('event_sources'))
@@ -415,6 +416,7 @@ def filter_incidents(incidents_list):
                                                                                               abuse_disposition_values):
             filtered_incidents_list.append(incident)
 
+    demisto.debug(f'Number of incidents after to the filter is: {len(filtered_incidents_list)}')
     return filtered_incidents_list
 
 
@@ -427,9 +429,9 @@ def get_incidents_request(params):
     Returns:
         list. The incidents returned from the API call
     """
-    fullurl = BASE_URL + 'api/incidents'
+    full_url = BASE_URL + 'api/incidents'
     incidents_list = requests.get(
-        fullurl,
+        full_url,
         headers={
             'Content-Type': 'application/json',
             'Authorization': API_KEY
@@ -442,9 +444,9 @@ def get_incidents_request(params):
         if incidents_list.status_code == 502 or incidents_list.status_code == 504:
             return_error('The operation failed. There is a possibility you are trying to get too many incidents.\n'
                          'You may consider adding a filter argument to the command.\n'
-                         'URL: {}, StatusCode: {}'.format(fullurl, incidents_list.status_code))
+                         'URL: {}, StatusCode: {}'.format(full_url, incidents_list.status_code))
         else:
-            return_error('The operation failed. URL: {}, StatusCode: {}'.format(fullurl, incidents_list.status_code))
+            return_error('The operation failed. URL: {}, StatusCode: {}'.format(full_url, incidents_list.status_code))
 
     return incidents_list.json()
 
@@ -508,8 +510,14 @@ def fetch_incidents_command():
         }
 
         state_parsed_fetch = datetime.strptime(last_fetch[state], TIME_FORMAT)
+
+        demisto.debug(f'Fetching Proofpoint Threat Response incidents. with params:{str(request_params)}')
         incidents_list = get_incidents_batch_by_time_request(request_params)
+        demisto.debug(f'Fetched {len(incidents_list)} Proofpoint Threat Response incidents.')
+
         filtered_incidents_list = filter_incidents(incidents_list)
+        demisto.debug(f'Obtained {len(incidents_list)} filtered Proofpoint Threat Response incidents.')
+
         for incident in filtered_incidents_list:
             incident_creation_time = datetime.strptime(incident['created_at'], TIME_FORMAT)
             if incident_creation_time > state_parsed_fetch:
