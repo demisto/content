@@ -11,6 +11,7 @@ from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
 from typing import Callable, List, Any, Dict, cast, Tuple
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
+from threading import RLock
 
 
 class Handler:
@@ -19,10 +20,17 @@ class Handler:
         demisto.info(msg)
 
 
+class ErrorHandler:
+    @staticmethod
+    def write(msg):
+        demisto.error(msg)
+
+
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
 PAGE_SIZE: int = 2000
 DEMISTO_LOGGER: Handler = Handler()
+ERROR_LOGGER: ErrorHandler = ErrorHandler()
 APP: Flask = Flask('demisto-edl')
 EDL_VALUES_KEY: str = 'dmst_edl_values'
 EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
@@ -31,6 +39,8 @@ EDL_COLLAPSE_ERR_MSG: str = 'The Collapse parameter can only get the following: 
                             '1 - Collapse to Ranges, 2 - Collapse to CIDRS'
 EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
+EDL_LOCAL_CACHE: dict = {}
+LOCK: RLock = RLock()
 ''' REFORMATTING REGEXES '''
 _PROTOCOL_REMOVAL = re.compile('^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^((?:[a-z]+:)*//([a-z0-9\-\.]+)|([a-z0-9\-\.]+))(?:\:[0-9]+)*')
@@ -122,6 +132,7 @@ def refresh_edl_context(request_args: RequestArguments) -> str:
 
     Returns: List(IoCs in output format)
     """
+    global EDL_LOCAL_CACHE
     now = datetime.now()
     # poll indicators into edl from demisto
     iocs = find_indicators_to_limit(request_args.query, request_args.limit, request_args.offset)
@@ -147,6 +158,8 @@ def refresh_edl_context(request_args: RequestArguments) -> str:
 
     out_dict["last_run"] = date_to_timestamp(now)
     out_dict["current_iocs"] = iocs
+    with LOCK:
+        EDL_LOCAL_CACHE = out_dict
     set_integration_context(out_dict)
     return out_dict[EDL_VALUES_KEY]
 
@@ -339,7 +352,7 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
 
 def get_edl_ioc_values(on_demand: bool,
                        request_args: RequestArguments,
-                       integration_context: dict,
+                       edl_cache: dict,
                        cache_refresh_rate: str = None) -> str:
     """
     Get the ioc list to return in the edl
@@ -347,45 +360,45 @@ def get_edl_ioc_values(on_demand: bool,
     Args:
         on_demand: Whether on demand configuration is set to True or not
         request_args: the request arguments
-        integration_context: The integration context
+        edl_cache: The integration context
         cache_refresh_rate: The cache_refresh_rate configuration value
 
     Returns:
         string representation of the iocs
     """
-    last_run = integration_context.get('last_run')
-    last_query = integration_context.get('last_query')
-    current_iocs = integration_context.get('current_iocs')
+    last_run = edl_cache.get('last_run')
+    last_query = edl_cache.get('last_query')
+    current_iocs = edl_cache.get('current_iocs')
 
     # on_demand ignores cache
     if on_demand:
-        if request_args.is_request_change(integration_context):
-            values_str = get_ioc_values_str_from_context(integration_context, request_args=request_args,
-                                                         iocs=current_iocs)
+        if request_args.is_request_change(edl_cache):
+            values_str = get_ioc_values_str_from_cache(edl_cache, request_args=request_args,
+                                                       iocs=current_iocs)
 
         else:
-            values_str = get_ioc_values_str_from_context(integration_context, request_args=request_args)
+            values_str = get_ioc_values_str_from_cache(edl_cache, request_args=request_args)
     else:
         if last_run:
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
-            if last_run <= cache_time or request_args.is_request_change(integration_context) or \
+            if last_run <= cache_time or request_args.is_request_change(edl_cache) or \
                     request_args.query != last_query:
                 values_str = refresh_edl_context(request_args)
             else:
-                values_str = get_ioc_values_str_from_context(integration_context, request_args=request_args)
+                values_str = get_ioc_values_str_from_cache(edl_cache, request_args=request_args)
         else:
             values_str = refresh_edl_context(request_args)
     return values_str
 
 
-def get_ioc_values_str_from_context(integration_context: dict,
-                                    request_args: RequestArguments,
-                                    iocs: list = None) -> str:
+def get_ioc_values_str_from_cache(edl_cache: dict,
+                                  request_args: RequestArguments,
+                                  iocs: list = None) -> str:
     """
     Extracts output values from cache
 
     Args:
-        integration_context: The integration context
+        edl_cache: The integration context or EDL_LOCAL_CACHE
         request_args: The request args
         iocs: The current raw iocs data saved in the integration context
     Returns:
@@ -397,11 +410,13 @@ def get_ioc_values_str_from_context(integration_context: dict,
 
         iocs = iocs[request_args.offset: request_args.limit + request_args.offset]
         returned_dict, _ = create_values_for_returned_dict(iocs, request_args=request_args)
-        integration_context['last_output'] = returned_dict
-        set_integration_context(integration_context)
+        with LOCK:
+            # using LOCK since edl_cache might be EDL_LOCAL_CACHE
+            edl_cache['last_output'] = returned_dict
+        set_integration_context(edl_cache)
 
     else:
-        returned_dict = integration_context.get('last_output', {})
+        returned_dict = edl_cache.get('last_output', {})
 
     return returned_dict.get(EDL_VALUES_KEY, '')
 
@@ -448,6 +463,8 @@ def route_edl_values() -> Response:
     Main handler for values saved in the integration context
     """
     params = demisto.params()
+    before = datetime.now()
+    DEMISTO_LOGGER.write(f"Time before execution: {str(before)}")
 
     credentials = params.get('credentials') if params.get('credentials') else {}
     username: str = credentials.get('identifier', '')
@@ -460,13 +477,17 @@ def route_edl_values() -> Response:
             return Response(err_msg, status=401)
 
     request_args = get_request_args(request.args, params)
+    on_demand = params.get('on_demand')
+    edl_cache = get_integration_context() if on_demand else EDL_LOCAL_CACHE
 
     values = get_edl_ioc_values(
-        on_demand=params.get('on_demand'),
+        on_demand=on_demand,
         request_args=request_args,
-        integration_context=get_integration_context(),
+        edl_cache=edl_cache,
         cache_refresh_rate=params.get('cache_refresh_rate'),
     )
+    after = datetime.now()
+    DEMISTO_LOGGER.write(f"Time after execution: {str(after)}. Delta: {str(after - before)}")
     return Response(values, status=200, mimetype='text/plain')
 
 
@@ -580,7 +601,7 @@ def run_long_running(params: Dict, is_test: bool = False):
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=DEMISTO_LOGGER, error_log=ERROR_LOGGER)
         if is_test:
             server_process = Process(target=server.serve_forever)
             server_process.start()

@@ -41,7 +41,7 @@ class TestHelperFunctions:
             ioc_list = edl.get_edl_ioc_values(
                 on_demand=False,
                 request_args=request_args,
-                integration_context=iocs_text_dict,
+                edl_cache=iocs_text_dict,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
@@ -61,7 +61,7 @@ class TestHelperFunctions:
             ioc_list = edl.get_edl_ioc_values(
                 on_demand=False,
                 request_args=request_args,
-                integration_context=iocs_text_dict,
+                edl_cache=iocs_text_dict,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
