@@ -850,9 +850,9 @@ script:
     - name: tag
       description: Filter by tag.
     - name: from_time
-      description: From which date to fetch incidents, format is YYYY-MM-DD
+      description: From which date to fetch incidents, format is DD-MM-YYYY
     - name: to_time
-      description: Until which date to fetch incidents, format is YYYY-MM-DD
+      description: Until which date to fetch incidents, format is DD-MM-YYY
     - name: incident_type
       description: Filter by type of incidents, e.g. Deception, Lateral Movement.
     - name: source
