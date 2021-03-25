@@ -1,8 +1,8 @@
 commonfields:
-  id: Threat Grid test
+  id: Threat Grid
   version: -1
-name: Threat Grid test
-display: Cisco Threat Grid test
+name: Threat Grid
+display: Cisco Threat Grid
 category: Forensics & Malware Analysis
 description: Query and upload samples to Cisco threat grid.
 configuration:
