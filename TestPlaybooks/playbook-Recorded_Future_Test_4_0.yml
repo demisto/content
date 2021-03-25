@@ -313,7 +313,7 @@ tasks:
       id: a9f7cbb4-6b76-465f-89e7-3286d8f15c9c
       version: -1
       name: domain
-      description: Look up threat intel information for a domain or DNS in Recorded
+      description: Look up threat intel nnninformation for a domain or DNS in Recorded
         Future.
       script: Recorded Future|||domain
       type: regular
