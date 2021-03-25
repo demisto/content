@@ -36,4 +36,4 @@ This playbook does not use any scripts.
 | CiscoStealthwatch.SecurityEventResults | The results of the search. | unknown |
 
 ## Playbook Image
-![Setup Account](./../../doc_files/CiscoStealthWatch-List-Security-Events-Playbook.png)
+![Setup Account](./../doc_files/CiscoStealthWatch-List-Security-Events-Playbook.png)
