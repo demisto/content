@@ -400,19 +400,9 @@ def get_threat_summary_by_id():
     """
     Get threat summary information for a sample given the id
     """
-    demisto.debug("Start get_threat_summary_by_id")
-
     sample_id = demisto.getArg('id')
-    demisto.debug("sample_id: {0}".format(sample_id))
-
     request = req('GET', SUB_API + 'samples/' + sample_id + '/threat')
-    demisto.debug("request: {0}".format(request))
-
     r = request.json()
-    demisto.debug("r: {0}".format(r))
-    print(f'request: {request}')
-    print(f'r: {r}')
-
     sample = {
         'ID': sample_id,
         'MaxSeverity': demisto.get(r, 'data.max-severity'),
@@ -421,10 +411,15 @@ def get_threat_summary_by_id():
         'MaxConfidence': demisto.get(r, 'data.max-confidence'),
         'ThreatFeeds': demisto.get(r, 'data.bis')
     }
+    sha256 = demisto.get(r, 'sha256')
+    sha1 = demisto.get(r, 'sha1')
+    md5 = demisto.get(r, 'md5')
+    indicator = Common.File(sha256=sha256, md5=md5, sha1=sha1, dbot_score=calc_score(sample['Score']))
+
     dbot = {
         'Vendor': 'ThreatGrid',
         'Type': 'Sample ID',
-        'Indicator': sample['ID'],
+        'Indicator': indicator,
         'Score': calc_score(sample['Score'])
     }
     md = tableToMarkdown('ThreatGrid - Threat Summary', [sample],
