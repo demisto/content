@@ -1,0 +1,13 @@
+{
+    "name": "Netscout Arbor Edge Defense - AED",
+    "description": "Use the NetscoutAED Integration to detects and stops both inbound threats\n  and outbound malicious communication from compromised internal devices.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
