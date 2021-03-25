@@ -1,0 +1,17 @@
+{
+    "name": "Cyble",
+    "description": "This integration pack contains the connector logic to Cyble Threat Intelligence Feed. It provides the XSOAR with the ability to fetch indicators from Cyble to populate into the indicators' list.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "zh-lim",
+    "url": "",
+    "email": "",
+    "created": "2021-03-25T07:28:34Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "zh-lim"
+    ]
+}
