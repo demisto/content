@@ -130,7 +130,7 @@ script:
       description: Risk last seen timestamp
       type: date
     - contextPath: Domain.Tags
-      description: Tags that are associated with the Domain
+      description: Tags that are associated with the Domain.
       type: String
     - contextPath: Domain.CommunityNotes.note
       description: A summary note on the mentioning of the domain in a source monitored by Recorded Future.
@@ -207,7 +207,7 @@ script:
       description: Risk last seen timestamp
       type: date
     - contextPath: IP.Tags
-      description: Tags that are associated with the Domain
+      description: Tags that are associated with the IP.
       type: String
     - contextPath: IP.CommunityNotes.note
       description: A summary note on the mentioning of the IP in a source monitored by Recorded Future.
@@ -298,7 +298,7 @@ script:
       description: Risk last seen timestamp
       type: date
     - contextPath: File.Tags
-      description: Tags that are associated with the Domain
+      description: Tags that are associated with the file.
       type: String
     - contextPath: File.CommunityNotes.note
       description: A summary note on the mentioning of the file in a source monitored by Recorded Future.
@@ -655,7 +655,7 @@ script:
       description: Risk last seen timestamp
       type: date
     - contextPath: URL.Tags
-      description: Tags that are associated with the Domain
+      description: Tags that are associated with the URL.
       type: String
     - contextPath: URL.CommunityNotes.note
       description: A summary note on the mentioning of the URL in a source monitored by Recorded Future.
