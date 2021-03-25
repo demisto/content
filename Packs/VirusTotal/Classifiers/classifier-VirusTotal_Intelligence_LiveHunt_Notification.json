@@ -1,50 +1,28 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "A mapper of VirusTotal Intelligence LiveHunt Notification",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "VirusTotal Intelligence LiveHunt Notification",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": {
-		"VirusTotal Intelligence LiveHunt Notification": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Country": {
-					"complex": null,
-					"simple": "attributes.source_country"
-				},
-				"Tags": {
-					"complex": null,
-					"simple": "attributes.tags"
-				},
-				"rule_name": {
-					"complex": null,
-					"simple": "attributes.rule_name"
-				}
-			}
-		}
-	},
-	"name": "VirusTotal Intelligence LiveHunt Notification",
-	"nameRaw": "VirusTotal Intelligence LiveHunt Notification",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "A mapper of VirusTotal Intelligence LiveHunt Notification",
+    "feed": false,
+    "id": "VirusTotal Intelligence LiveHunt Notification",
+    "mapping": {
+        "VirusTotal Intelligence LiveHunt Notification": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Country": {
+                    "complex": null,
+                    "simple": "attributes.source_country"
+                },
+                "Tags": {
+                    "complex": null,
+                    "simple": "attributes.tags"
+                },
+                "rule_name": {
+                    "complex": null,
+                    "simple": "attributes.rule_name"
+                }
+            }
+        }
+    },
+    "name": "VirusTotal Intelligence LiveHunt Notification",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

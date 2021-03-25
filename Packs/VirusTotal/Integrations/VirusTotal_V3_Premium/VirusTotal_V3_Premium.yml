@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: VirusTotal - Premium API - V3
+  id: VirusTotal - Premium - (API v3)
   version: -1
 configuration:
 - display: ""
@@ -43,15 +43,15 @@ configuration:
   required: false
   type: 8
 description: Analyze suspicious hashes, URLs, domains, and IP addresses
-display: VirusTotal - Premium API - V3
-name: VirusTotal - Premium API - V3
+display: VirusTotal - Premium - (API v3)
+name: VirusTotal - Premium - (API v3)
 script:
   commands:
   - arguments:
     - default: true
       description: SHA-256, SHA-1 or MD5 identifying the file.
       isArray: false
-      name: file
+      name: hash
       required: true
       secret: false
     outputs:
@@ -89,7 +89,7 @@ script:
     deprecated: false
     description: Downloads file from VirusTotal
     execution: false
-    name: vt-premium-file-download
+    name: vt-private-download-file
   - arguments:
     - default: true
       description: A commma separated list of hashes (SHA-256, SHA-1, or MD5) for
@@ -129,10 +129,10 @@ script:
     deprecated: false
     description: Creates a password-protected ZIP file containing files from VirusTotal.
     execution: false
-    name: vt-premium-zip-create
+    name: vt-private-zip-create
   - arguments:
     - default: true
-      description: A zip ID. Can be retrieved from the output of vt-premium-zip-create.
+      description: A zip ID. Can be retrieved from the output of vt-private-zip-create.
       isArray: false
       name: zip_id
       required: true
@@ -162,10 +162,10 @@ script:
     deprecated: false
     description: Retrieve information about a ZIP file.
     execution: false
-    name: vt-premium-zip-get
+    name: vt-private-zip-get
   - arguments:
     - default: true
-      description: A zip ID. Can be retrieved from the output of vt-premium-zip-create.
+      description: A zip ID. Can be retrieved from the output of vt-private-zip-create.
       isArray: false
       name: zip_id
       required: true
@@ -205,7 +205,7 @@ script:
     deprecated: false
     description: Download a ZIP file.
     execution: false
-    name: vt-premium-zip-download
+    name: vt-private-zip-download
   - arguments:
     - default: true
       description: Sandbox report ID. Can be aquired from vt-file-sandbox-report.
@@ -248,7 +248,7 @@ script:
     deprecated: false
     description: Extracted PCAP from a sandbox analysis.
     execution: false
-    name: vt-premium-file-sandbox-pcap
+    name: vt-private-file-sandbox-pcap
   - arguments:
     - default: false
       description: Search query.
@@ -299,6 +299,9 @@ script:
       required: false
       secret: false
     outputs:
+    - contextPath: VirusTotal.IntelligenceSearch.Query
+      description: Original query. Use to identify the search.
+      type: String
     - contextPath: VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.harmless
       description: number of reports saying that is harmless.
       type: Number
@@ -339,10 +342,41 @@ script:
     deprecated: false
     description: Search for files.
     execution: false
-    name: vt-premium-intelligence-search
+    name: vt-private-intelligence-search
+  - arguments:
+    - default: false
+      description: File search query. For example, query="type:peexe size:90kb+ positives:5+
+        behaviour:'taskkill'"
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      isArray: false
+      name: fullResponse
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    outputs:
+    - contextPath: VirusTotal.SearchFile.SearchResult
+      description: The hashes of files that fit the query
+      type: string
+    - contextPath: VirusTotal.SearchFile.Query
+      description: Original search query
+      type: string
+    deprecated: false
+    description: Search for files.
+    execution: false
+    name: vt-private-search-file
   - arguments:
     - default: true
-      description: Ruleset identifier. Can be retreived from the vt-premium-livehunt-rules-list
+      description: Ruleset identifier. Can be retreived from the vt-private-livehunt-rules-list
         command.
       isArray: false
       name: id
@@ -385,7 +419,7 @@ script:
     deprecated: false
     description: Retrieve VT Hunting livehunt rulesets.
     execution: false
-    name: vt-premium-livehunt-rules-get-by-id
+    name: vt-private-livehunt-rules-get-by-id
   - arguments:
     - default: false
       description: Return the rulesets matching the given criteria only.
@@ -467,7 +501,7 @@ script:
     deprecated: false
     description: Retrieve VT Hunting livehunt rulesets.
     execution: false
-    name: vt-premium-livehunt-rules-list
+    name: vt-private-livehunt-rules-list
   - arguments:
     - default: false
       description: Name of the rule.
@@ -541,10 +575,10 @@ script:
     deprecated: false
     description: Create a new VT Hunting Livehunt ruleset.
     execution: false
-    name: vt-premium-livehunt-rules-create
+    name: vt-private-livehunt-rules-create
   - arguments:
     - default: true
-      description: Rule identifier. Can be retrieved from the vt-premium-livehunt-rules-list
+      description: Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list
         command.
       isArray: false
       name: id
@@ -616,7 +650,7 @@ script:
     deprecated: false
     description: Update a VT Hunting Livehunt ruleset.
     execution: false
-    name: vt-premium-livehunt-rules-update
+    name: vt-private-livehunt-rules-update
   - arguments:
     - default: true
       description: Ruleset identifier
@@ -627,7 +661,7 @@ script:
     deprecated: false
     description: Delete a VT Hunting Livehunt ruleset.
     execution: false
-    name: vt-premium-livehunt-rules-delete
+    name: vt-private-livehunt-rules-delete
   - arguments:
     - default: false
       description: Maximum number of notifications to retrieve. Maximum can be up
@@ -708,7 +742,7 @@ script:
     deprecated: false
     description: Retrieve VT Hunting Livehunt notifications.
     execution: false
-    name: vt-premium-livehunt-notifications-list
+    name: vt-private-livehunt-notifications-list
   - arguments:
     - default: false
       description: String to search with in the hunting notification tags.
@@ -773,7 +807,7 @@ script:
       description: date when the object itself was last modified. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.type_tag
-      description: tag representing the file type. Can be used in vt-premium-intelligence-search
+      description: tag representing the file type. Can be used in vt-private-intelligence-search
       type: String
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.times_submitted
       description: number of times the file has been posted to VirusTotal.
@@ -794,7 +828,7 @@ script:
       description: most recent date the file was posted to VirusTotal. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.downloadable
-      description: true if the file can be downloaded, false otherwise. (use vt-premium-file-download
+      description: true if the file can be downloaded, false otherwise. (use vt-private-file-download
         to download the file)
       type: Boolean
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.sha256
@@ -906,10 +940,10 @@ script:
     deprecated: false
     description: Retrieve file objects for VT Hunting Livehunt notifications.
     execution: false
-    name: vt-premium-livehunt-notifications-files-list
+    name: vt-private-livehunt-notifications-files-list
   - arguments:
     - default: true
-      description: Rule identifier. Can be retrieved from the vt-premium-livehunt-rules-list
+      description: Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list
         command.
       isArray: false
       name: id
@@ -938,7 +972,7 @@ script:
     deprecated: false
     description: Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
     execution: false
-    name: vt-premium-livehunt-rule-list-files
+    name: vt-private-livehunt-rule-list-files
   - arguments:
     - default: false
       description: Return the jobs matching the given criteria only.
@@ -1008,7 +1042,7 @@ script:
     deprecated: false
     description: Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
     execution: false
-    name: vt-premium-retrohunt-jobs-list
+    name: vt-private-retrohunt-jobs-list
   - arguments:
     - default: true
       description: Job identifier
@@ -1065,7 +1099,7 @@ script:
     deprecated: false
     description: Retrieve a retrohunt job.
     execution: false
-    name: vt-premium-retrohunt-jobs-get-by-id
+    name: vt-private-retrohunt-jobs-get-by-id
   - arguments:
     - default: true
       description: Job identifier
@@ -1139,7 +1173,7 @@ script:
       description: date when the object itself was last modified. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.type_tag
-      description: tag representing the file type. Can be used in vt-premium-intelligence-search
+      description: tag representing the file type. Can be used in vt-private-intelligence-search
       type: String
     - contextPath: VirusTotal.RetroHuntJobFiles.attributes.capabilities_tags
       description: list of representative tags related to the file's capabilities
@@ -1259,19 +1293,13 @@ script:
     deprecated: false
     description: Retrieve matches for a retrohunt job matching file relationship.
     execution: false
-    name: vt-premium-retrohunt-jobs-get-matching-files
+    name: vt-private-retrohunt-jobs-get-matching-files
   - arguments:
     - default: false
       description: The rules to create.
       isArray: false
       name: rules
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of emails to notify.
-      isArray: false
-      name: notification_email
-      required: false
       secret: false
     - default: false
       description: The "main" corpus is a composition of files sent to VirusTotal
@@ -1356,7 +1384,7 @@ script:
     deprecated: false
     description: Create a new retrohunt job.
     execution: false
-    name: vt-premium-retrohunt-jobs-create
+    name: vt-private-retrohunt-jobs-create
   - arguments:
     - default: true
       description: User ID or API key. If not supplied, will use the API Key configured
@@ -1534,7 +1562,7 @@ script:
     deprecated: false
     description: Retrieve user's API usage.
     execution: false
-    name: vt-premium-quota-limits-list
+    name: vt-private-quota-limits-list
   isfetch: true
   runonce: false
   script: '-'

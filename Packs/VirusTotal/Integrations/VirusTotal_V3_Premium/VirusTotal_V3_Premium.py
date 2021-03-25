@@ -17,7 +17,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 # region Globals
 
 INTEGRATION_NAME = "VirusTotal"
-COMMAND_PREFIX = "vt-premium"
+COMMAND_PREFIX = "vt-private"
 INTEGRATION_ENTRY_CONTEXT = "VirusTotal"
 
 
@@ -563,12 +563,12 @@ def test_module(client: Client) -> str:
 
 def download_file(client: Client, args: dict) -> dict:
     """Download a file."""
-    file = args['file']
+    file = args['hash']
     raise_if_hash_not_valid(file)
     response = client.download_file(file)
     content = response.content
     content_disposition = response.headers.get('Content-Disposition', '')
-    file_name = get_file_name(content_disposition)
+    file_name = f'{get_file_name(content_disposition)}-vt-file'
     return fileResult(file_name, content)
 
 
@@ -957,6 +957,27 @@ def fetch_incidents(client: Client, params: dict, last_run_date: datetime) -> Tu
     return incidents, last_run_date
 
 
+def search_file(client: Client, args: dict) -> CommandResults:
+    query = args['query']
+    limit = 1000 if argToBoolean(args.get('fullResponse')) else 50
+    raw_response = client.search_intelligence(query, limit=limit, descriptors_only=True)
+    hashes = [item['id'] for item in raw_response.get('data', []) if item.get('id')]
+    return CommandResults(
+        f'{INTEGRATION_ENTRY_CONTEXT}.SearchFile',
+        'Query',
+        readable_output=tableToMarkdown(
+            f'Found hashes for query: "{query}"',
+            hashes,
+            headers=['Found hashes']
+        ),
+        outputs={
+            'Query': query,
+            'SearchResult': hashes
+        },
+        raw_response=raw_response
+    )
+
+
 def main():
     """main function, parses params and runs command functions
     """
@@ -975,7 +996,7 @@ def main():
         else:
             if command == 'test-module':
                 results = test_module(client)
-            elif command == f'{COMMAND_PREFIX}-file-download':
+            elif command == f'{COMMAND_PREFIX}-download-file':
                 results = download_file(client, args)
             elif command == f'{COMMAND_PREFIX}-zip-create':
                 results = create_zip(client, args)
@@ -987,6 +1008,8 @@ def main():
                 results = get_pcap_behaviour(client, args)
             elif command == f'{COMMAND_PREFIX}-intelligence-search':
                 results = search_intelligence(client, args)
+            elif command in (f'{COMMAND_PREFIX}-search-file', 'vt-private-search-file'):
+                results = search_file(client, args)
             elif command == f'{COMMAND_PREFIX}-livehunt-rules-list':
                 results = list_livehunt_rules(client, args)
             elif command == f'{COMMAND_PREFIX}-livehunt-rules-get-by-id':
