@@ -242,7 +242,7 @@ script:
     - contextPath: Expanse.Service.certificates.certificate.subject
       description: 'The subject in the certificate'
       type: String
-    - contextPath: EExpanse.Service.certificates.certificate.subjectAlternativeNames
+    - contextPath: Expanse.Service.certificates.certificate.subjectAlternativeNames
       description: 'The subject alternative names in the certificate'
       type: String
     - contextPath: Expanse.Service.certificates.certificate.subjectCountry
@@ -2573,7 +2573,7 @@ script:
     - default: false
       description: ID of the certificate to assign pocs to.
       isArray: false
-      name: pocs
+      name: asset_id
       required: true
       secret: false
     - default: false
