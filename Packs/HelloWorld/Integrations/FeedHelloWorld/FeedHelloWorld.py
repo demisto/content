@@ -178,13 +178,13 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
 
+        result = []
+
         res = self._http_request('GET',
                                  url_suffix='',
                                  full_url=self._base_url,
                                  resp_type='text',
                                  )
-
-        result = []
 
         # In this case the feed output is in text format, so extracting the indicators from the response requires
         # iterating over it's lines solely. Other feeds could be in other kinds of formats (CSV, MISP, etc.), or might
@@ -254,14 +254,23 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
             'type': type_,
         }
 
-        # create indicator object for each value
+        # Create indicator object for each value.
+        # The object consists of a dictionary with required and optional keys and values, as described blow.
         for key, val in item.items():
             raw_data.update({key: val})
         indicator_obj = {
+            # The indicator value.
             'value': value,
+            # The indicator type as defined in Cortex XSOAR.
+            # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
             'type': type_,
+            # The name of the service supplying this feed.
             'service': 'HelloWorld',
+            # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
+            # One can use this section in order to map custom indicator fields previously defined
+            # in Cortex XSOAR to their values.
             'fields': {},
+            # A dictionary of the raw data returned from the feed source about the indicator.
             'rawJSON': raw_data
         }
 
