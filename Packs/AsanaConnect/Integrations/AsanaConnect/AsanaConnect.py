@@ -41,7 +41,7 @@ def get_all_projects(token):
             outputs_key_field='projects',
             outputs=res
         )
-    except:
+    except Exception:
         demisto.results("Request failed")
 
 
@@ -69,7 +69,7 @@ def get_project(pid, token):
             outputs_key_field='project',
             outputs=project
         )
-    except:
+    except Exception:
         demisto.results("Request failed")
 
 
@@ -92,7 +92,7 @@ def create_task_in_project(pid, name, token):
         client = get_asana_client(token)
         client.tasks.create({'projects': pid, 'name': name})  # pylint: disable=no-member
         demisto.results(f'Task {name} successfully added to project')
-    except:
+    except Exception:
         demisto.results('Task creation failed')
 
 
