@@ -115,23 +115,23 @@ class Client(BaseClient):
         )
         return data
 
-    # # @obenacot DEPRECATED
-    # def dismiss_bulk_alerts(self, request_data: dict):
-    #     data = self._http_request(
-    #         method='POST',
-    #         url_suffix='/alerts/close_false_positive/',
-    #         json_data=request_data
-    #     )
-    #     return data
 
-    # # @obenacot DEPRECATED
-    # def resolve_bulk_alerts(self, request_data: dict):
-    #     data = self._http_request(
-    #         method='POST',
-    #         url_suffix='/alerts/close_true_positive/',
-    #         json_data=request_data
-    #     )
-    #     return data
+    def dismiss_bulk_alerts(self, request_data: dict):
+        data = self._http_request(
+            method='POST',
+            url_suffix='/alerts/close_false_positive/',
+            json_data=request_data
+        )
+        return data
+
+
+    def resolve_bulk_alerts(self, request_data: dict):
+        data = self._http_request(
+            method='POST',
+            url_suffix='/alerts/close_true_positive/',
+            json_data=request_data
+        )
+        return data
 
     def close_benign(self, request_data: dict):
         return self._http_request(
@@ -190,50 +190,10 @@ class Client(BaseClient):
         )
 
 
-def args_to_filter_alerts(arguments: dict):
-    request_data: Dict[str, Any] = {}
-    filters: Dict[str, Any] = {}
-
-    for key, value in arguments.items():
-        if key in ['skip', 'limit']:
-            request_data[key] = int(value)
-        if key == 'entity.ip':
-            filters[key] = {'eq': value}
-        if key == 'entity.service':
-            filters[key] = {'eq': int(value)}
-        if key == 'entity.instance':
-            filters[key] = {'eq': int(value)}
-        if key == 'entity.policy':
-            filters[key] = {'eq': value}
-        if key == 'entity.file':
-            filters[key] = {'eq': value}
-        if key == 'alertOpen':
-            filters[key] = {'eq': bool(value)}
-        if key == 'severity':
-            filters[key] = {'eq': SEVERITY_OPTIONS[value]}
-        if key == 'resolutionStatus':
-            filters[key] = {'eq': RESOLUTION_STATUS_OPTIONS[value]}
-        if key == 'read':
-            filters[key] = {'eq': bool(value)}
-        if key == 'date':
-            filters[key] = {'eq': date_to_timestamp(value)}
-        if key == 'resolutionDate':
-            filters[key] = {'eq': date_to_timestamp(value)}
-        if key == 'risk':
-            filters[key] = {'eq': int(value)}
-        if key == 'alertType':
-            filters[key] = {'eq': int(value)}
-        if key == 'source':
-            filters[key] = {'eq': value}
-
-    request_data['filters'] = filters
-    return request_data
-
-
-def args_to_filter_list(arguments: dict):
+def args_to_filter(arguments: dict):
     """
-    Function combines common filters of **all** related entities
-    (Activities, Alerts, Files, Data Entities etc.)
+    Common filters of **all** related entities (Activities, Alerts, Files, Data Entities etc.)
+    For more info please check
 
     """
     request_data: Dict[str, Any] = {}
@@ -276,8 +236,8 @@ def args_to_filter_list(arguments: dict):
 
 
 def args_to_filter_close_alerts(alert_ids: Any, custom_filter: Optional[Any], arguments: dict,
-                                comment: Any, reason: Any, sendFeedback: bool, feedbackText: Any,
-                                allowContact: bool, contactEmail: Any):
+                                comment: Any = '', reason: Any = '', sendFeedback: bool = False, feedbackText: Any = '',
+                                allowContact: bool = False, contactEmail: Any = ''):
     request_data: Dict[str, Any] = {}
     filters = {}
 
@@ -288,7 +248,7 @@ def args_to_filter_close_alerts(alert_ids: Any, custom_filter: Optional[Any], ar
     elif custom_filter:
         request_data = json.loads(custom_filter)
     elif arguments:
-        request_data = args_to_filter_alerts(arguments)
+        request_data = args_to_filter(arguments)
     else:
         raise DemistoException("Error: You must enter ids or arguments to filter.")
 
@@ -432,40 +392,38 @@ def list_alerts_command(client: Client, args: dict):
         return CommandResults(readable_output=human_readable)
 
 
-# @obenacot DEPRECATED
-# def bulk_dismiss_alert_command(client: Client, args: dict):
-#     alert_ids = args.get('alert_ids')
-#     custom_filter = args.get('custom_filter')
-#     comment = args.get('comment')
-#     request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment)
-#     dismissed_alerts_data = {}
-#     try:
-#         dismissed_alerts_data = client.dismiss_bulk_alerts(request_data)
-#     except Exception as e:
-#         if 'alertsNotFound' in str(e):
-#             raise DemistoException('Error: This alert id is already dismissed or does not exist.')
-#     number_of_dismissed_alerts = dismissed_alerts_data['closed_false_positive']
-#     return CommandResults(
-#         readable_output=f'{number_of_dismissed_alerts} alerts dismissed',
-#         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
-#         outputs_key_field='_id'
-#     )
+def bulk_dismiss_alert_command(client: Client, args: dict):
+    alert_ids = args.get('alert_ids')
+    custom_filter = args.get('custom_filter')
+    comment = args.get('comment')
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment)
+    dismissed_alerts_data = {}
+    try:
+        dismissed_alerts_data = client.dismiss_bulk_alerts(request_data)
+    except Exception as e:
+        if 'alertsNotFound' in str(e):
+            raise DemistoException('Error: This alert id is already dismissed or does not exist.')
+    number_of_dismissed_alerts = dismissed_alerts_data['closed_false_positive']
+    return CommandResults(
+        readable_output=f'{number_of_dismissed_alerts} alerts dismissed',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+        outputs_key_field='_id'
+    )
 
 
-# @obenacot DEPRECATED
-# def bulk_resolve_alert_command(client: Client, args: dict):
-#     alert_ids = args.get('alert_ids')
-#     custom_filter = args.get('custom_filter')
-#     comment = args.get('comment')
-#     request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment)
-#     resolve_alerts = client.resolve_bulk_alerts(request_data)
-#     number_of_resolved_alerts = resolve_alerts['closed_true_positive']
-#     return CommandResults(
-#         readable_output=f'{number_of_resolved_alerts} alerts resolved',
-#         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
-#         outputs_key_field='alert_id',
-#         outputs=resolve_alerts
-#     )
+def bulk_resolve_alert_command(client: Client, args: dict):
+    alert_ids = args.get('alert_ids')
+    custom_filter = args.get('custom_filter')
+    comment = args.get('comment')
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, None, comment)
+    resolve_alerts = client.resolve_bulk_alerts(request_data)
+    number_of_resolved_alerts = resolve_alerts['closed_true_positive']
+    return CommandResults(
+        readable_output=f'{number_of_resolved_alerts} alerts resolved',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+        outputs_key_field='alert_id',
+        outputs=resolve_alerts
+    )
 
 
 def activity_to_human_readable(activity: dict):
@@ -799,13 +757,13 @@ def main():
         elif demisto.command() == 'microsoft-cas-alerts-list':
             return_results(list_alerts_command(client, demisto.args()))
 
-        # # @obenacot: DEPRECATED
-        # elif demisto.command() == 'microsoft-cas-alert-dismiss-bulk':
-        #     return_results(bulk_dismiss_alert_command(client, demisto.args()))
-        #
-        # # @obenacot: DEPRECATED
-        # elif demisto.command() == 'microsoft-cas-alert-resolve-bulk':
-        #     return_results(bulk_resolve_alert_command(client, demisto.args()))
+        # @obenacot: DEPRECATED
+        elif demisto.command() == 'microsoft-cas-alert-dismiss-bulk':
+            return_results(bulk_dismiss_alert_command(client, demisto.args()))
+
+        # @obenacot: DEPRECATED
+        elif demisto.command() == 'microsoft-cas-alert-resolve-bulk':
+            return_results(bulk_resolve_alert_command(client, demisto.args()))
 
         elif demisto.command() == 'microsoft-cas-activities-list':
             return_results(list_activities_command(client, demisto.args()))
