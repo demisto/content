@@ -198,19 +198,23 @@ def epo_help_command(client: Client) -> CommandResults:
 
     suffix = 'core.help'
     commands = json.loads(client.epo_help(suffix=suffix)[3:])
-    commands_dict = {}
-
+    commands_help = []
     for command in commands:
+        command_dict = {}
         split = command.split(' - ')
         if len(split) == 2:
-            commands_dict[split[0].split(' ')[0]] = split[1]
+            command_dict['Command'] = split[0].split(' ')[0]
+            command_dict['CommandArguments'] = split[0].split(' ')[1:]
+            command_dict['Description'] = split[1]
         else:
-            commands_dict[split[0].split(' ')[0]] = 'No Description'
-
+            command_dict['Command'] = split[0].split(' ')[0]
+            command_dict['CommandArguments'] = split[0].split(' ')[1:]
+            command_dict['Description'] = 'No Description'
+        commands_help.append(command_dict)
     return CommandResults(
         outputs_prefix='McAfeeEPO.Help',
-        outputs_key_field='',
-        outputs=commands_dict,
+        outputs_key_field='Command',
+        outputs=commands_help,
     )
 
 
