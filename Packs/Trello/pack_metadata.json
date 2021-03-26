@@ -1,0 +1,101 @@
+{
+	"id": "8b69249a-48dd-43e8-84eb-1b78b3a41ff7",
+	"version": 0,
+	"modified": "0001-01-01T00:00:00Z",
+	"sortValues": null,
+	"packID": "",
+	"itemVersion": "",
+	"fromServerVersion": "",
+	"toServerVersion": "",
+	"vcShouldIgnore": false,
+	"vcShouldKeepItemLegacyProdMachine": false,
+	"commitMessage": "",
+	"shouldCommit": false,
+	"currentVersion": "",
+	"name": "Trello",
+	"description": "",
+	"updated": "0001-01-01T00:00:00Z",
+	"created": "2021-03-23T04:31:32.531749361Z",
+	"support": "internalContribution",
+	"author": "Admin",
+	"authorImage": "",
+	"supportDetails": {
+		"url": "",
+		"email": ""
+	},
+	"beta": false,
+	"deprecated": false,
+	"certification": "none",
+	"serverMinVersion": "",
+	"serverMaxVersion": "",
+	"general": null,
+	"tags": null,
+	"rawTags": null,
+	"categories": null,
+	"contentItems": {
+		"integration": null,
+		"automation": null,
+		"incidentfield": null,
+		"incidenttype": null,
+		"indicatorfield": null,
+		"reputation": null,
+		"report": null,
+		"dashboard": null,
+		"playbook": null,
+		"classifier": null,
+		"layoutscontainer": null,
+		"widget": null
+	},
+	"contentItemTypes": null,
+	"integrations": null,
+	"useCases": null,
+	"rawUseCases": null,
+	"keywords": null,
+	"rawKeywords": null,
+	"dependencies": {
+		"Active_Directory_Query": {
+			"mandatory": true,
+			"minVersion": "1.1.6",
+			"name": "Active Directory Query",
+			"certification": "certified",
+			"author": "Cortex XSOAR"
+		},
+		"CommonPlaybooks": {
+			"mandatory": true,
+			"minVersion": "1.8.12",
+			"name": "Common Playbooks",
+			"certification": "certified",
+			"author": "Cortex XSOAR"
+		},
+		"CommonScripts": {
+			"mandatory": true,
+			"minVersion": "1.3.22",
+			"name": "Common Scripts",
+			"certification": "certified",
+			"author": "Cortex XSOAR"
+		},
+		"Phishing": {
+			"mandatory": true,
+			"minVersion": "2.2.0",
+			"name": "Phishing",
+			"certification": "certified",
+			"author": "Cortex XSOAR"
+		},
+		"rasterize": {
+			"mandatory": true,
+			"minVersion": "1.0.7",
+			"name": "Rasterize",
+			"certification": "certified",
+			"author": "Cortex XSOAR"
+		}
+	},
+	"legacy": false,
+	"price": 0,
+	"premium": false,
+	"installMessage": "",
+	"versionInfo": "",
+	"eulaLink": "",
+	"previewOnly": false,
+	"downloads": 0,
+	"searchRank": 0
+}

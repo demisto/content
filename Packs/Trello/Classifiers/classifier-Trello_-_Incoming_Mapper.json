@@ -1,0 +1,82 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "a1be1481-cc66-4b81-8491-6fb6e9a7b9e5",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 5,
+	"mapping": {
+		"Trello": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Trello Board ID": {
+					"complex": null,
+					"simple": "create_action.board_id"
+				},
+				"Trello Board Name": {
+					"complex": null,
+					"simple": "create_action.list_name"
+				},
+				"Trello Card ID": {
+					"complex": null,
+					"simple": "ID"
+				},
+				"Trello Card URL": {
+					"complex": null,
+					"simple": "url"
+				},
+				"Trello Created By": {
+					"complex": null,
+					"simple": "create_action.memberCreator.fullName"
+				},
+				"Trello Details": {
+					"complex": null,
+					"simple": "desc"
+				},
+				"Trello List ID": {
+					"complex": null,
+					"simple": "create_action.list_id"
+				},
+				"Trello List Name": {
+					"complex": null,
+					"simple": "create_action.board_name"
+				},
+				"Trello SLA": {
+					"complex": null,
+					"simple": "due"
+				},
+				"details": {
+					"complex": null,
+					"simple": "desc"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {}
+		}
+	},
+	"name": "Trello - Incoming Mapper",
+	"nameRaw": "Trello - Incoming Mapper",
+	"packID": "8b69249a-48dd-43e8-84eb-1b78b3a41ff7",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
