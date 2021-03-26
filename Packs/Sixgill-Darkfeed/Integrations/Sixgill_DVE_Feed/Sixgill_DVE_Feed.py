@@ -2,8 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-''' IMPORTS '''
-from typing import Dict, Callable, Optional
+""" IMPORTS """
+from typing import Dict, Callable, Optional, Any
 from collections import OrderedDict
 import traceback
 import requests
@@ -16,54 +16,59 @@ from sixgill.sixgill_utils import is_indicator
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' CONSTANTS '''
-CHANNEL_CODE = '7698e8287dfde53dcd13082be750a85a'
+""" CONSTANTS """
+CHANNEL_CODE = "7698e8287dfde53dcd13082be750a85a"
 MAX_INDICATORS = 1000
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 SUSPICIOUS_FEED_IDS = ["darkfeed_003"]
-DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DEMISTO_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 VERIFY = not demisto.params().get("insecure", True)
 SESSION = requests.Session()
-DESCRIPTION_FIELD_ORDER = OrderedDict([
-    ('Description', 'eventdescription'),
-    ('Created', 'creationdate'),
-    ('Modified', 'modified'),
-    ('External id', 'externalid'),
-    ('Sixgill DVE score - current', 'sixgilldvescorecurrent'),
-    ('Sixgill DVE score - highest ever date', 'sixgilldvescorehighesteverdate'),
-    ('Sixgill DVE score - highest ever', 'sixgilldvescorehighestever'),
-    ('Sixgill - Previously exploited probability', 'sixgillpreviouslyexploitedprobability'),
-    ('Event Name', 'eventname'),
-    ('Event Type', 'eventtype'),
-    ('Event Action', 'eventaction'),
-    ('Previous level', 'previouslevel'),
-    ('Event Description', 'eventdescription'),
-    ('Event Datetime', 'eventdatetime'),
-    ('CVSS 3.1 score', 'cvss31score'),
-    ('CVSS 3.1 severity', 'cvss31severity'),
-    ('NVD Link', 'nvdlink'),
-    ('NVD - last modified date', 'nvdlastmodifieddate'),
-    ('NVD - publication date', 'nvdpublicationdate'),
-    ('CVSS 2.0 score', 'cvss20score'),
-    ('CVSS 2.0 severity', 'cvss20severity'),
-    ('NVD Vector - V2.0', 'nvdvectorv20'),
-    ('NVD Vector - V3.1', 'nvdvectorv31')
-    ])
+DESCRIPTION_FIELD_ORDER = OrderedDict(
+    [
+        ("Description", "eventdescription"),
+        ("Created", "creationdate"),
+        ("Modified", "modified"),
+        ("External id", "externalid"),
+        ("Sixgill DVE score - current", "sixgilldvescorecurrent"),
+        ("Sixgill DVE score - highest ever date", "sixgilldvescorehighesteverdate"),
+        ("Sixgill DVE score - highest ever", "sixgilldvescorehighestever"),
+        ("Sixgill - Previously exploited probability", "sixgillpreviouslyexploitedprobability"),
+        ("Event Name", "eventname"),
+        ("Event Type", "eventtype"),
+        ("Event Action", "eventaction"),
+        ("Previous level", "previouslevel"),
+        ("Event Description", "eventdescription"),
+        ("Event Datetime", "eventdatetime"),
+        ("CVSS 3.1 score", "cvss31score"),
+        ("CVSS 3.1 severity", "cvss31severity"),
+        ("NVD Link", "nvdlink"),
+        ("NVD - last modified date", "nvdlastmodifieddate"),
+        ("NVD - publication date", "nvdpublicationdate"),
+        ("CVSS 2.0 score", "cvss20score"),
+        ("CVSS 2.0 severity", "cvss20severity"),
+        ("NVD Vector - V2.0", "nvdvectorv20"),
+        ("NVD Vector - V3.1", "nvdvectorv31"),
+    ]
+)
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def module_command_test(*args):
     """
     Performs basic Auth request
     """
-    response = SESSION.send(request=SixgillAuthRequest(demisto.params()['client_id'],
-                                                       demisto.params()['client_secret'], CHANNEL_CODE).prepare(),
-                            verify=VERIFY)
+    response = SESSION.send(
+        request=SixgillAuthRequest(
+            demisto.params()["client_id"], demisto.params()["client_secret"], CHANNEL_CODE
+        ).prepare(),
+        verify=VERIFY,
+    )
     if not response.ok:
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
-    return 'ok', None, 'ok'
+    return "ok", None, "ok"
 
 
 def get_description(fileds_obj):
@@ -78,29 +83,30 @@ def create_fields(stix_obj, event_obj, nvd_obj, score_obj, ext_id):
     fields = {}
     try:
         fields = {
-                "description": "",
-                "creationdate": stix_obj.get("created", ""),
-                "modified": stix_obj.get("modified", ""),
-                "externalid": ext_id,
-                "sixgilldvescorecurrent": score_obj.get("current", ""),
-                "sixgilldvescorehighesteverdate": score_obj.get("highest", {}).get("date", ""),
-                "sixgilldvescorehighestever": score_obj.get("highest", {}).get("value", ""),
-                "sixgillpreviouslyexploitedprobability": score_obj.get("previouslyExploited", ""),
-                "eventname": event_obj.get("name", ""),
-                "eventtype": event_obj.get("type", ""),
-                "eventaction": event_obj.get("action", ""),
-                "previouslevel": event_obj.get("prev_level", ""),
-                "eventdescription": event_obj.get("description", ""),
-                "eventdatetime": event_obj.get("event_datetime", ""),
-                "cvss31score": nvd_obj.get("base_score_v3", ""),
-                "cvss31severity": nvd_obj.get("base_severity_v3", ""),
-                "nvdlink": nvd_obj.get("link", ""),
-                "nvdlastmodifieddate": nvd_obj.get("modified", ""),
-                "nvdpublicationdate": nvd_obj.get("published", ""),
-                "cvss20score": nvd_obj.get("score_2_0", ""),
-                "cvss20severity": nvd_obj.get("severity_2_0", ""),
-                "nvdvectorv20": nvd_obj.get("vector_v2", ""),
-                "nvdvectorv31": nvd_obj.get("vector_v3", "")}
+            "description": "",
+            "creationdate": stix_obj.get("created", ""),
+            "modified": stix_obj.get("modified", ""),
+            "externalid": ext_id,
+            "sixgilldvescorecurrent": score_obj.get("current", ""),
+            "sixgilldvescorehighesteverdate": score_obj.get("highest", {}).get("date", ""),
+            "sixgilldvescorehighestever": score_obj.get("highest", {}).get("value", ""),
+            "sixgillpreviouslyexploitedprobability": score_obj.get("previouslyExploited", ""),
+            "eventname": event_obj.get("name", ""),
+            "eventtype": event_obj.get("type", ""),
+            "eventaction": event_obj.get("action", ""),
+            "previouslevel": event_obj.get("prev_level", ""),
+            "eventdescription": event_obj.get("description", ""),
+            "eventdatetime": event_obj.get("event_datetime", ""),
+            "cvss31score": nvd_obj.get("base_score_v3", ""),
+            "cvss31severity": nvd_obj.get("base_severity_v3", ""),
+            "nvdlink": nvd_obj.get("link", ""),
+            "nvdlastmodifieddate": nvd_obj.get("modified", ""),
+            "nvdpublicationdate": nvd_obj.get("published", ""),
+            "cvss20score": nvd_obj.get("score_2_0", ""),
+            "cvss20severity": nvd_obj.get("severity_2_0", ""),
+            "nvdvectorv20": nvd_obj.get("vector_v2", ""),
+            "nvdvectorv31": nvd_obj.get("vector_v3", ""),
+        }
     except Exception as err:
         demisto.error(err)
         demisto.error(traceback.format_exc())
@@ -108,7 +114,7 @@ def create_fields(stix_obj, event_obj, nvd_obj, score_obj, ext_id):
 
 
 def stix_to_indicator(stix_obj, tags: list = [], tlp_color: Optional[str] = None):
-    indicator = {}
+    indicator: Dict[str, Any] = {}
     try:
         ext_obj = stix_obj.get("external_references", [])
         ext_id = ""
@@ -126,16 +132,18 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: Optional[str] = None
         indicator["score"] = 3
         indicator["fields"] = fields
         if tlp_color:
-            indicator['fields']['trafficlightprotocol'] = tlp_color
+            indicator["fields"]["trafficlightprotocol"] = tlp_color
         if tags:
-            indicator['fields']['tags'] = list(set(tags))
+            indicator["fields"]["tags"] = list(set(tags))
     except Exception as err:
         demisto.error(err)
         demisto.error(traceback.format_exc())
     return indicator
 
 
-def fetch_indicators_command(client, limit: int = 0, get_indicators_mode: bool = False, tags: list = [], tlp_color: Optional[str] = None):
+def fetch_indicators_command(
+    client, limit: int = 0, get_indicators_mode: bool = False, tags: list = [], tlp_color: Optional[str] = None
+):
     indicators_list = []
     try:
         records = client.get_bundle()
@@ -156,7 +164,7 @@ def fetch_indicators_command(client, limit: int = 0, get_indicators_mode: bool =
 
 
 def get_indicators_command(client, args):
-    limit = int(args.get('limit'))
+    limit = int(args.get("limit"))
     final_indicators = fetch_indicators_command(client, limit, True)
     human_readable = tableToMarkdown("Indicators from Sixgill DVE Feed:", final_indicators)
     return human_readable, {}, final_indicators
@@ -170,22 +178,23 @@ def get_limit(str_limit, default_limit):
 
 
 def main():
-    max_indicators = get_limit(demisto.params().get('maxIndicators', MAX_INDICATORS), MAX_INDICATORS)
+    max_indicators = get_limit(demisto.params().get("maxIndicators", MAX_INDICATORS), MAX_INDICATORS)
     SESSION.proxies = handle_proxy()
-    client = SixgillFeedClient(demisto.params()['client_id'],
-                               demisto.params()['client_secret'],
-                               CHANNEL_CODE, FeedStream.DVEFEED,
-                               bulk_size=max_indicators, verify=VERIFY)
+    client = SixgillFeedClient(
+        demisto.params()["client_id"],
+        demisto.params()["client_secret"],
+        CHANNEL_CODE,
+        FeedStream.DVEFEED,
+        bulk_size=max_indicators,
+        verify=VERIFY,
+    )
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
-    tags = argToList(demisto.params().get('feedTags', []))
-    tlp_color = demisto.params().get('tlp_color')
-    commands: Dict[str, Callable] = {
-        'test-module': module_command_test,
-        'sixgill-get-dve-feed': get_indicators_command
-    }
+    demisto.info(f"Command being called is {command}")
+    tags = argToList(demisto.params().get("feedTags", []))
+    tlp_color = demisto.params().get("tlp_color")
+    commands: Dict[str, Callable] = {"test-module": module_command_test, "sixgill-get-dve-feed": get_indicators_command}
     try:
-        if demisto.command() == 'fetch-indicators':
+        if demisto.command() == "fetch-indicators":
             indicators = fetch_indicators_command(client, tags=tags, tlp_color=tlp_color)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
@@ -194,8 +203,8 @@ def main():
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Error failed to execute {demisto.command()}, error: [{e}]')
+        return_error(f"Error failed to execute {demisto.command()}, error: [{e}]")
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()
