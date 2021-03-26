@@ -108,7 +108,7 @@ script:
     description: Fetching Sixgill DVE Feed indicators
     execution: false
     name: sixgill-get-dve-feed
-  dockerimage: devdemisto/sixgill:1.0.0.17531
+  dockerimage: demisto/sixgill:1.0.0.17759
   feed: true
   isfetch: false
   longRunning: false
