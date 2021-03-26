@@ -7,7 +7,8 @@ import demistomock as demisto
 bundle_index = 0
 submitted_indicators = 0
 mocked_get_token_response = '''{"access_token": "fababfafbh"}'''
-iocs_bundle = [{
+iocs_bundle = [
+    {
     "id": "bundle--f00374ec-429c-40cb-b7bb-61f920814775",
     "objects": [
         {
@@ -315,7 +316,33 @@ iocs_bundle = [{
     ],
     "spec_version": "2.0",
     "type": "bundle"
-}]
+},
+    {
+  "id": "bundle--f00374ec-429c-40cb-b7bb-61f920814775",
+  "objects": [
+    {
+      "created": "2017-01-20T00:00:00.000Z",
+      "definition": {
+        "tlp": "amber"
+      },
+      "definition_type": "tlp",
+      "id": "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82",
+      "type": "marking-definition"
+    },
+    {
+      "created": "2019-12-26T00:00:00Z",
+      "definition": {
+        "statement": "Copyright Sixgill 2020. All rights reserved."
+      },
+      "definition_type": "statement",
+      "id": "marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+      "type": "marking-definition"
+    }
+  ],
+  "spec_version": "2.0",
+  "type": "bundle"
+}
+]
 
 expected_ioc_output = [
     {
@@ -373,7 +400,7 @@ expected_ioc_output = [
         "fields": {
             "description": "Description: Trend of Github commits related to CVE-2020-15392\nCreated: "
                            "2020-09-06T20:33:33.538Z\nModified: 2020-09-06T20:33:33.538Z\nExternal id: "
-                           "CVE-2020-15392\nType: x-cybersixgill-com-cve-event\nSixgill DVE score - current: "
+                           "CVE-2020-15392\nSixgill DVE score - current: "
                            "0.02\nSixgill DVE score - highest ever date: 2020-07-27T00:00Z\nSixgill DVE score - "
                            "highest ever: 0.02\nSixgill - Previously exploited probability: 0.07\nEvent Name: "
                            "trend_Github_commits\nEvent Type: github_authoring\nEvent Action: trend\nPrevious level: "
@@ -386,7 +413,6 @@ expected_ioc_output = [
             "creationdate": "2020-09-06T20:33:33.538Z",
             "modified": "2020-09-06T20:33:33.538Z",
             "externalid": "CVE-2020-15392",
-            "sixgilltype": "x-cybersixgill-com-cve-event",
             "sixgilldvescorecurrent": 0.02,
             "sixgilldvescorehighesteverdate": "2020-07-27T00:00Z",
             "sixgilldvescorehighestever": 0.02,
@@ -463,7 +489,7 @@ expected_ioc_output = [
         "fields": {
             "description": "Description: CVE-2020-2021 is trending on Twitter.\nCreated: "
                            "2020-08-19T23:08:05.709Z\nModified: 2020-08-19T23:08:05.709Z\nExternal id: "
-                           "CVE-2020-2021\nType: x-cybersixgill-com-cve-event\nSixgill DVE score - current: "
+                           "CVE-2020-2021\nSixgill DVE score - current: "
                            "9.13\nSixgill DVE score - highest ever date: 2020-07-14T00:00Z\nSixgill DVE score - "
                            "highest ever: 9.25\nSixgill - Previously exploited probability: 5.32\nEvent Name: "
                            "trend_Twitter\nEvent Type: dark_mention\nEvent Action: trend\nPrevious level: "
@@ -476,7 +502,6 @@ expected_ioc_output = [
             "creationdate": "2020-08-19T23:08:05.709Z",
             "modified": "2020-08-19T23:08:05.709Z",
             "externalid": "CVE-2020-2021",
-            "sixgilltype": "x-cybersixgill-com-cve-event",
             "sixgilldvescorecurrent": 9.13,
             "sixgilldvescorehighesteverdate": "2020-07-14T00:00Z",
             "sixgilldvescorehighestever": 9.25,
@@ -553,7 +578,7 @@ expected_ioc_output = [
         "fields": {
             "description": "Description: CVE-2020-12828 is trending on Twitter.\nCreated: "
                            "2020-08-19T23:08:05.709Z\nModified: 2020-08-19T23:08:05.709Z\nExternal id: "
-                           "CVE-2020-12828\nType: x-cybersixgill-com-cve-event\nSixgill DVE score - current: "
+                           "CVE-2020-12828\nSixgill DVE score - current: "
                            "8.33\nSixgill DVE score - highest ever date: 2020-07-25T00:00Z\nSixgill DVE score - "
                            "highest ever: 8.4\nSixgill - Previously exploited probability: 5.07\nEvent Name: "
                            "trend_Twitter\nEvent Type: dark_mention\nEvent Action: trend\nPrevious level: "
@@ -566,7 +591,6 @@ expected_ioc_output = [
             "creationdate": "2020-08-19T23:08:05.709Z",
             "modified": "2020-08-19T23:08:05.709Z",
             "externalid": "CVE-2020-12828",
-            "sixgilltype": "x-cybersixgill-com-cve-event",
             "sixgilldvescorecurrent": 8.33,
             "sixgilldvescorehighesteverdate": "2020-07-25T00:00Z",
             "sixgilldvescorehighestever": 8.4,
@@ -643,7 +667,7 @@ expected_ioc_output = [
         "fields": {
             "description": "Description: CVE-2020-9771 is trending on Twitter.\nCreated: "
                            "2020-08-19T23:08:05.709Z\nModified: 2020-08-19T23:08:05.709Z\nExternal id: "
-                           "CVE-2020-9771\nType: x-cybersixgill-com-cve-event\nSixgill DVE score - current: "
+                           "CVE-2020-9771\nSixgill DVE score - current: "
                            "None\nSixgill DVE score - highest ever date: None\nSixgill DVE score - highest ever: "
                            "None\nSixgill - Previously exploited probability: None\nEvent Name: trend_Twitter\nEvent "
                            "Type: dark_mention\nEvent Action: trend\nPrevious level: prev_level\nEvent Description: "
@@ -655,7 +679,6 @@ expected_ioc_output = [
             "creationdate": "2020-08-19T23:08:05.709Z",
             "modified": "2020-08-19T23:08:05.709Z",
             "externalid": "CVE-2020-9771",
-            "sixgilltype": "x-cybersixgill-com-cve-event",
             "sixgilldvescorecurrent": None,
             "sixgilldvescorehighesteverdate": None,
             "sixgilldvescorehighestever": None,
@@ -733,7 +756,7 @@ expected_ioc_output = [
         "fields": {
             "description": "Description: Sixgill Current score of CVE-2015-6086 changed from Low to None.\nCreated: "
                            "2020-08-25T17:16:52.536Z\nModified: 2020-08-25T17:16:52.536Z\nExternal id: "
-                           "CVE-2015-6086\nType: x-cybersixgill-com-cve-event\nSixgill DVE score - current: "
+                           "CVE-2015-6086\nSixgill DVE score - current: "
                            "None\nSixgill DVE score - highest ever date: 2016-04-14T00:00Z\nSixgill DVE score - "
                            "highest ever: 7.02\nSixgill - Previously exploited probability: 1.51\nEvent Name: "
                            "Sixgill_score_level_change\nEvent Type: score_level\nEvent Action: modified\nPrevious "
@@ -746,7 +769,6 @@ expected_ioc_output = [
             "creationdate": "2020-08-25T17:16:52.536Z",
             "modified": "2020-08-25T17:16:52.536Z",
             "externalid": "CVE-2015-6086",
-            "sixgilltype": "x-cybersixgill-com-cve-event",
             "sixgilldvescorecurrent": None,
             "sixgilldvescorehighesteverdate": "2016-04-14T00:00Z",
             "sixgilldvescorehighestever": 7.02,
@@ -824,7 +846,7 @@ expected_ioc_output = [
         "fields": {
             "description": "Description: Sixgill Current score of CVE-2015-6086 changed from Low to None.\nCreated: "
                            "2020-08-25T17:16:52.536Z\nModified: 2020-08-25T17:16:52.536Z\nExternal id: "
-                           "CVE-2015-6086\nType: x-cybersixgill-com-cve-event\nSixgill DVE score - current: "
+                           "CVE-2015-6086\nSixgill DVE score - current: "
                            "None\nSixgill DVE score - highest ever date: 2016-04-14T00:00Z\nSixgill DVE score - "
                            "highest ever: 7.02\nSixgill - Previously exploited probability: 1.51\nEvent Name: "
                            "Sixgill_score_level_change\nEvent Type: score_level\nEvent Action: modified\nPrevious "
@@ -837,7 +859,6 @@ expected_ioc_output = [
             "creationdate": "2020-08-25T17:16:52.536Z",
             "modified": "2020-08-25T17:16:52.536Z",
             "externalid": "CVE-2015-6086",
-            "sixgilltype": "x-cybersixgill-com-cve-event",
             "sixgilldvescorecurrent": None,
             "sixgilldvescorehighesteverdate": "2016-04-14T00:00Z",
             "sixgilldvescorehighestever": 7.02,
@@ -901,7 +922,6 @@ def mocked_request(*args, **kwargs):
                 MockedResponse(200, json.dumps(iocs_bundle[bundle_index])),
         },
     }
-
     response_dict = response_dict.get(method)
     response = response_dict.get(end_point)
 

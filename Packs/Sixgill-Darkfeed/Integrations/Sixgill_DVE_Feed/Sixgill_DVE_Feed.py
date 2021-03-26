@@ -29,7 +29,6 @@ DESCRIPTION_FIELD_ORDER = OrderedDict([
     ('Created', 'creationdate'),
     ('Modified', 'modified'),
     ('External id', 'externalid'),
-    ('Type', 'sixgilltype'),
     ('Sixgill DVE score - current', 'sixgilldvescorecurrent'),
     ('Sixgill DVE score - highest ever date', 'sixgilldvescorehighesteverdate'),
     ('Sixgill DVE score - highest ever', 'sixgilldvescorehighestever'),
@@ -63,7 +62,6 @@ def module_command_test(*args):
                                                        demisto.params()['client_secret'], CHANNEL_CODE).prepare(),
                             verify=VERIFY)
     if not response.ok:
-        print(response)
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
     return 'ok', None, 'ok'
 
@@ -84,7 +82,6 @@ def create_fields(stix_obj, event_obj, nvd_obj, score_obj, ext_id):
                 "creationdate": stix_obj.get("created", ""),
                 "modified": stix_obj.get("modified", ""),
                 "externalid": ext_id,
-                "sixgilltype": stix_obj.get("type", ""),
                 "sixgilldvescorecurrent": score_obj.get("current", ""),
                 "sixgilldvescorehighesteverdate": score_obj.get("highest", {}).get("date", ""),
                 "sixgilldvescorehighestever": score_obj.get("highest", {}).get("value", ""),

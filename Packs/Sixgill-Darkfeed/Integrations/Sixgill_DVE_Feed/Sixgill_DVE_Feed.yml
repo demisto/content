@@ -68,6 +68,23 @@ configuration:
   - WHITE
   required: false
   type: 15
+- display: ''
+  name: feedExpirationPolicy
+  options:
+    - never
+    - interval
+    - indicatorType
+    - suddenDeath
+  required: false
+  type: 17
+- display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
@@ -91,7 +108,7 @@ script:
     description: Fetching Sixgill DVE Feed indicators
     execution: false
     name: sixgill-get-dve-feed
-  dockerimage: demisto/sixgill:1.0.0.17759
+  dockerimage: devdemisto/sixgill:1.0.0.17531
   feed: true
   isfetch: false
   longRunning: false
@@ -100,3 +117,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.5.0
