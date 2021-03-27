@@ -858,7 +858,7 @@ Retrieves data for specified policy.
 >| 1 | Kaspersky Endpoint Security for Windows (11.5.0) | KES | 11.0.0.0 |
 
 ## Search Filter Syntax
-A number of commandds are using a search filter that has syntax resembling one from RFC 2254.
+A number of commands are using a search filter that has syntax resembling one from RFC 2254.
 
 ```
     filter     = "(" filtercomp ")"
