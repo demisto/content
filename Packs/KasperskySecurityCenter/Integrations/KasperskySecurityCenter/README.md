@@ -857,3 +857,36 @@ Retrieves data for specified policy.
 >|---|---|---|---|
 >| 1 | Kaspersky Endpoint Security for Windows (11.5.0) | KES | 11.0.0.0 |
 
+## Search Filter Syntax
+A number of commandds are using a search filter that has syntax resembling one from RFC 2254.
+
+```
+    filter     = "(" filtercomp ")"
+    filtercomp = and / or / not / item
+    and        = "&" filterlist
+    or         = "|" filterlist
+    not        = "!" filter
+    filterlist = 1*filter
+    item       = simple
+    simple     = attr filtertype value
+    filtertype = equal / greater / less / notequal
+    equal      = "="
+    greater    = ">"
+    less       = "<"
+    notequal   = "<>"
+    attr       = AttributeDescription 
+    value      = Integer / Quoted string / UTC time / Binary
+```
+
+- **Integer** must be provided as signed decimal.
+- **Quoted string** may contain following wildcards. If 'value' in 'simple' has wildcards then 'filtertype' must be 'equal'
+
+  |Wildcard|Description|
+  |---|---|
+  | ? | Any single character. |
+  | * | Any string of zero or more characters. |
+  | [ ] | Any single character within the specified range ([a-f]) or set ([abcdef]). |
+  | [^] | Any single character not within the specified range ([^a-f]) or set ([^abcdef]). |
+
+- **UTC time** can be specified either in absolute or relative format. Absolute format: T"YYYY-MM-DD hh:mm:ss" Example: T"2005-04-27 23:59:01" To specify UTC time in relative format the 'Pseudovalue' CURTIME([<signed integer delta>]) may be used as "current time (in UTC) + \<signed integer delta\>"
+- **Binary** must be provided as hex with '0x' prefix. For example, 0xF41748C0BEF943a6AE2C5D1010F046A.
