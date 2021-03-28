@@ -20,7 +20,10 @@ MAX_INCIDENTS_TO_FETCH = 10
 
 class Client(BaseClient):
 
-    def search_alerts(self, alert_type: str, max_results: int, start_time: int) -> str:
+    def search_alerts(self, alert_types: list, max_results: int, start_time: int) -> str:
+        alert_types_filter = ""
+        for alert_type in alert_types:
+            alert_types_filter += f' (eq EPOEvents.ThreatCategory "{alert_type}")'
         params = {
             ':output': 'json',
             'select': f'(select (top {max_results}) EPOEvents.ServerID EPOEvents.EventTimeLocal '
@@ -31,7 +34,7 @@ class Client(BaseClient):
                       f'EPOEvents.SourceIPV4 EPOEvents.TargetIPV4 EPOEvents.TargetHostName EPOEvents.TargetUserName '
                       f'EPOEvents.TargetFileName )',
             'target': 'EPOEvents',
-            'where': f'(where (and (eq EPOEvents.ThreatCategory "{alert_type}") (newerThan EPOEvents.EventTimeLocal {start_time})))',
+            'where': f'(where (and (or {alert_types_filter}) (newerThan EPOEvents.EventTimeLocal {start_time})))',
             'order': '(order(asc EPOEvents.EventTimeLocal))'
         }
         return self._http_request(
@@ -121,6 +124,36 @@ class Client(BaseClient):
             resp_type='text'
         )
 
+    def epo_find_policies(self, suffix: str, keyword: str) -> str:
+        params = {
+            ":output": "json"
+        }
+        if keyword:
+            params['searchText'] = keyword
+
+        return self._http_request(
+            'get',
+            url_suffix=suffix,
+            params=params,
+            resp_type='text'
+        )
+
+    def epo_assign_policy(self, suffix: str, policy_id: str, type_id: str, product_id: str, names: str) -> str:
+        params = {
+            ":output": "json",
+            "objectId": policy_id,
+            "typeId": type_id,
+            "productId": product_id,
+            "names": names
+        }
+
+        return self._http_request(
+            'get',
+            url_suffix=suffix,
+            params=params,
+            resp_type='text'
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -141,7 +174,7 @@ def test_module(client: Client) -> str:
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], alert_type: Optional[str]
+                    first_fetch_time: Optional[int], alert_types: Optional[list]
                     ) -> Tuple[Dict[str, int], List[dict]]:
 
     last_fetch = last_run.get('last_fetch', None)
@@ -156,7 +189,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     try:
         raw_response = client.search_alerts(
-            alert_type=alert_type,
+            alert_types=alert_types,
             max_results=max_results,
             start_time=last_fetch,
         )
@@ -168,11 +201,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
             for key in alert:
                 alert_details[key.split('.')[1]] = alert[key]
             alerts.append(alert_details)
-
         for alert in alerts:
             incident_created_time = int(datetime.strptime(alert.get('EventTimeLocal', '0'), '%Y-%m-%dT%H:%M:%S%z').
                                         timestamp()*1000)
-
             if last_fetch:
                 if incident_created_time <= last_fetch:
                     continue
@@ -313,13 +344,13 @@ def epo_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def epo_fetch_sample_alerts_command(client: Client, alert_type: str, max_results: int, first_fetch_time: int,
+def epo_fetch_sample_alerts_command(client: Client, alert_types: list, max_results: int, first_fetch_time: int,
                                     last_run: Dict[str, int]) -> CommandResults:
 
     raw_response = client.search_alerts(
         max_results=max_results,
         start_time=first_fetch_time,
-        alert_type=alert_type
+        alert_types=alert_types
     )
     raw_alerts = json.loads(raw_response[3:])
     alerts = []
@@ -330,13 +361,62 @@ def epo_fetch_sample_alerts_command(client: Client, alert_type: str, max_results
             alert_details[key.split('.')[1]] = alert[key]
         alerts.append(alert_details)
 
-    for alert in alerts:
-        incident_created_time = datetime.strptime(alert.get('EventTimeLocal', '0'), '%Y-%m-%dT%H:%M:%S%z')
-        print (incident_created_time.timestamp())
     return CommandResults(
         outputs_prefix='McAfeeEPO.SampleAlerts',
         outputs_key_field='groupId',
         outputs=alerts,
+    )
+
+
+def epo_find_policies_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    suffix = 'policy.find'
+    keyword = args.get('keyword', None)
+    policies = json.loads(client.epo_find_policies(suffix=suffix, keyword=keyword)[3:])
+    found_policies = []
+
+    for policy in policies:
+        policy_details = {}
+        for key in policy:
+            policy_details[key] = policy[key]
+        found_policies.append(policy_details)
+
+    return CommandResults(
+        outputs_prefix='McAfeeEPO.Policies',
+        outputs_key_field='typeId,objectId',
+        outputs=found_policies,
+    )
+
+
+def epo_assign_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    suffix = 'policy.assignToSystem'
+    policy_id = args.get('policy_id', None)
+    type_id = args.get('type_id', None)
+    product_id = args.get('product_id', None)
+    endpoints = args.get('endpoints', None)
+    groups = args.get('groups', None)
+    names = None
+    if endpoints and groups:
+        names = endpoints + ',' + groups
+    elif endpoints:
+        names = endpoints
+    elif groups:
+        names = groups
+    else:
+        return_error('Please provide either either endpoints or groups to assign a policy to')
+    raw_results = json.loads(client.epo_assign_policy(suffix=suffix, policy_id=policy_id, type_id=type_id,
+                                                   product_id=product_id, names=names)[3:])
+    results = []
+
+    for result in raw_results:
+        result_details = {}
+        for key in result:
+            result_details[key] = result[key]
+        results.append(result_details)
+
+    return CommandResults(
+        outputs_prefix='McAfeeEPO.PolicyAssignTasks',
+        outputs_key_field='id',
+        outputs=results,
     )
 
 
@@ -355,7 +435,7 @@ def main() -> None:
         arg_name='First fetch time',
     )
     first_fetch_milliseconds = int((datetime.now().timestamp() - first_fetch_time.timestamp())*1000)
-    alert_type = demisto.params().get('alert_type', 'av.detect')
+    alert_types = demisto.params().get('alert_types', 'av.detect').split(',')
     max_results = arg_to_number(
         arg=demisto.params().get('max_fetch'),
         arg_name='max_fetch',
@@ -383,7 +463,7 @@ def main() -> None:
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_milliseconds,
-                alert_type=alert_type
+                alert_types=alert_types
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
@@ -405,8 +485,12 @@ def main() -> None:
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_milliseconds,
-                alert_type=alert_type)
+                alert_types=alert_types)
             )
+        elif demisto.command() == 'epo-find-policies':
+            return_results(epo_find_policies_command(client, demisto.args()))
+        elif demisto.command() == 'epo-assign-policy':
+            return_results(epo_assign_policy_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

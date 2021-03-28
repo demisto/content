@@ -29,7 +29,7 @@ configuration:
 - defaultvalue: av.detect
   display: ePO Event Type
   hidden: false
-  name: alert_type
+  name: alert_types
   required: false
   type: 0
 description: An Integration with McAfee ePO for Endpoint Security Use Cases
@@ -116,6 +116,52 @@ script:
     description: Fetch Sample Alerts using the configuration parameters
     execution: false
     name: epo-fetch-sample-alerts
+  - arguments:
+    - default: false
+      description: Policy match keyword
+      isArray: false
+      name: keyword
+      required: false
+      secret: false
+    deprecated: false
+    description: Finds policies matching a specified keyword
+    execution: false
+    name: epo-find-policies
+  - arguments:
+    - default: false
+      description: ePO Policy ID
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: ePO Policy Type ID
+      isArray: false
+      name: type_id
+      required: true
+      secret: false
+    - default: false
+      description: ePO Policy Product ID
+      isArray: false
+      name: product_id
+      required: true
+      secret: false
+    - default: false
+      description: Comma seperated list of endpoints to assign the policy to
+      isArray: false
+      name: endpoints
+      required: false
+      secret: false
+    - default: false
+      description: Comma seperated list of groups to assign the policy to
+      isArray: false
+      name: groups
+      required: false
+      secret: false
+    deprecated: false
+    description: Assign Policy to Endpoints or Endpoint Groups
+    execution: false
+    name: epo-assign-policy
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true

@@ -1,0 +1,91 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "To Map Incidents fetched from McAfee ePO's EPOEvents Table",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "023a2f10-a709-47d6-8189-014b34dfaf32",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 0,
+	"mapping": {
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Action": {
+					"complex": null,
+					"simple": "ThreatActionTaken"
+				},
+				"Agent ID": {
+					"complex": null,
+					"simple": "AgentGUID"
+				},
+				"Destination Hostname": {
+					"complex": null,
+					"simple": "TargetHostName"
+				},
+				"Destination IP": {
+					"complex": null,
+					"simple": "TargetIPV4"
+				},
+				"Event ID": {
+					"complex": null,
+					"simple": "ThreatEventID"
+				},
+				"File Path": {
+					"complex": null,
+					"simple": "TargetFileName"
+				},
+				"MAC Address": {
+					"complex": null,
+					"simple": "AnalyzerMAC"
+				},
+				"Source Hostname": {
+					"complex": null,
+					"simple": "AnalyzerHostName"
+				},
+				"Source IP": {
+					"complex": null,
+					"simple": "SourceIPV4"
+				},
+				"Source Username": {
+					"complex": null,
+					"simple": "TargetUserName"
+				},
+				"Threat Level": {
+					"complex": null,
+					"simple": "ThreatType"
+				},
+				"Threat Name": {
+					"complex": null,
+					"simple": "ThreatName"
+				},
+				"Threat Resource": {
+					"complex": null,
+					"simple": "AnalyzerDetectionMethod"
+				}
+			}
+		}
+	},
+	"name": "Mcafee ePO Mapper",
+	"nameRaw": "Mcafee ePO Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
