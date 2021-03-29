@@ -860,7 +860,7 @@ def create_retrohunt_jobs(client: Client, args: dict) -> CommandResults:
         f'{INTEGRATION_ENTRY_CONTEXT}.RetroHuntJob',
         'id',
         readable_output=tableToMarkdown(
-            'Retrohunt job has been successfully created!',
+            'Retrohunt job has been successfully created',
             {
                 **data,
                 **data.get('attributes', {})
@@ -877,15 +877,21 @@ def get_retrohunt_job_by_id(client: Client, args: dict) -> CommandResults:
     id_ = args['id']
     raw_response = client.get_retrohunt_job_by_id(id_)
     data = raw_response.get('data', {})
+    readable_inputs = {
+        **data,
+        **data.get('attributes', {})
+    }
+    if creation_date := readable_inputs.get('creation_date'):
+        readable_inputs['creation_date'] = parse(str(creation_date))
+    if finish_date := readable_inputs.get('finish_date'):
+        readable_inputs['finish_date'] = parse(str(finish_date))
+
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.RetroHuntJob',
         'id',
         readable_output=tableToMarkdown(
-            'Retrohunt job has been successfully created!',
-            {
-                **data,
-                **data.get('attributes', {})
-            }
+            f'Retrohunt job: {id_}',
+
         ),
         outputs=data,
         raw_response=raw_response
