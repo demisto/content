@@ -951,7 +951,7 @@ def test_endpoint_scan_command_scan_all_endpoints_no_filters_error(requests_mock
     client._headers = {}
     err_msg = 'To scan all the endpoints run this command with the \'all\' argument as True ' \
               'and without any other filters.'
-    with pytest.raises(ValueError, match=err_msg):
+    with pytest.raises(Exception, match=err_msg):
         endpoint_scan_command(client, {})
 
 
