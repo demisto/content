@@ -59,7 +59,7 @@ def main():
         if demisto.command() == 'test-module':
             argDict = demisto.args()
             argDict['url'] = "https://paloaltonetworks.com"
-            raw_screenshot = get_screenshot(argDict)
+            get_screenshot(argDict)
             demisto.results("ok")
 
         elif demisto.command() == 'screenshot-machine-get-screenshot':
