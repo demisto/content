@@ -5,7 +5,7 @@
  "locked": false,
  "name": "Jira Incident",
  "prevName": "Jira Incident",
- "color": "#536DFE",
+ "color": "#A3C9FF",
  "hours": 0,
  "days": 0,
  "weeks": 0,
@@ -18,6 +18,14 @@
  "autorun": false,
  "disabled": false,
  "reputationCalc": 0,
+ "onChangeRepAlg": 1,
  "layout": "a8cef2a7-8272-44f6-8445-e0668a751a3a",
+ "detached": false,
+ "extractSettings": {
+  "mode": "All",
+  "fieldCliNameToExtractSettings": {
+
+  }
+ },
  "fromVersion": "6.0.0"
 }
