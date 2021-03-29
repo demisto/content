@@ -18,6 +18,20 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 description: Provides data enrichment for domains.
 display: Whois
 name: Whois
@@ -506,7 +520,7 @@ script:
     - contextPath: IP.feed_related_indicators.type
       description: The type of the indicators that are associated with the IP
       type: string
-  dockerimage: devdemisto/ippysocks:1.0.0.17516
+  dockerimage: devdemisto/ippysocks:1.0.0.17687
   feed: false
   isfetch: false
   longRunning: false

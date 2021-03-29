@@ -11,6 +11,7 @@ This integration was integrated and tested with version 1.0 of Whois
     | Return Errors | False |
     | Proxy URL | False |
     | Use system proxy settings | False |
+    | Source Reliability | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -378,8 +379,8 @@ Provides data enrichment for domains.
         ],
         "Name": "google.com",
         "NameServers": [
-            "ns2.google.com",
             "ns1.google.com",
+            "ns2.google.com",
             "ns3.google.com",
             "ns4.google.com"
         ],
