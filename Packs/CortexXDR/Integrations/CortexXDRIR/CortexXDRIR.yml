@@ -1738,7 +1738,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to scan all of the endpoints or not. Default is false.
+      description: Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency.
       isArray: false
       name: all
       predefined:
@@ -1748,7 +1748,7 @@ script:
       secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
-      command with argument all=true.
+      command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan
   - deprecated: false

@@ -2243,7 +2243,8 @@ def endpoint_scan_command(client, args):
 
     # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
     err_msg = 'To scan all the endpoints run this command with the \'all\' argument as True ' \
-              'and without any other filters.'
+              'and without any other filters. This may cause performance issues.\n' \
+              'To scan some of the endpoints, please use the filter arguments.'
     if all_:
         if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
                 or ip_list or group_name or platform or alias or hostname:
