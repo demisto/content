@@ -7,7 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username (Basich Authentication)
+- display: Username (Basic Authentication)
   name: username
   required: false
   type: 0
