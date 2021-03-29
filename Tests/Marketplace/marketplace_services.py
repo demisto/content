@@ -2225,12 +2225,19 @@ class Pack(object):
 
 
 class PackIgnored(object):
+    """ A class that represents all pack files/directories to be ignored if a change is detected in any of them
+
+    ROOT_FILES: The files in the pack root directory
+    NESTED_FILES: The files to be ignored inside the pack entities directories. Empty list = all files.
+    NESTED_DIRS: The 2nd level directories under the pack entities directories to ignore all of their files.
+
+    """
     ROOT_FILES = [Pack.SECRETS_IGNORE, Pack.PACK_IGNORE]
     NESTED_FILES = {
         PackFolders.INTEGRATIONS.value: ["README.md", "Pipfile", "Pipfile.lock", "_test.py", "commands.txt"],
         PackFolders.SCRIPTS.value: ["README.md", "Pipfile", "Pipfile.lock", "_test.py"],
         PackFolders.TEST_PLAYBOOKS.value: [],
-        PackFolders.PLAYBOOKS.value: ["_README.md"]
+        PackFolders.PLAYBOOKS.value: ["_README.md"],
     }
     NESTED_DIRS = [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value]
 
@@ -2626,11 +2633,10 @@ def is_ignored_pack_file(modified_file_path_parts):
         if pack_folder in modified_file_path_parts:
             if not file_suffixes:  # Ignore all pack folder files
                 return True
-            else:
-                if modified_file_path_parts:
-                    for file_suffix in file_suffixes:
-                        if file_suffix in modified_file_path_parts[-1]:
-                            return True
+
+            for file_suffix in file_suffixes:
+                if file_suffix in modified_file_path_parts[-1]:
+                    return True
 
     for pack_folder in PackIgnored.NESTED_DIRS:
         if pack_folder in modified_file_path_parts:

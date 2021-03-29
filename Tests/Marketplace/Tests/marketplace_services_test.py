@@ -455,7 +455,7 @@ class TestHelperFunctions:
     """ Class for testing helper functions that are used in marketplace_services and upload_packs modules.
     """
 
-    @pytest.mark.parametrize('modified_file_path_parts, output', [
+    @pytest.mark.parametrize('modified_file_path_parts, expected_result', [
         (['Packs', 'A', PackFolders.INTEGRATIONS.value, 'A', 'test_data', 'a.json'], True),
         (['Packs', 'A', PackFolders.TEST_PLAYBOOKS.value, 'playbook-wow.yml'], True),
         (['Packs', 'A', '.pack-ignore'], True),
@@ -470,10 +470,10 @@ class TestHelperFunctions:
         (['Packs', 'A', Pack.USER_METADATA], False),
         (['Packs', 'A', PackFolders.INTEGRATIONS.value, 'A', 'A.py'], False)
     ])
-    def test_is_ignored_pack_file(self, modified_file_path_parts, output, mocker):
+    def test_is_ignored_pack_file(self, modified_file_path_parts, expected_result, mocker):
         mocker.patch.object(glob, 'glob', return_value=['Packs/A/Integrations/A/test_data/a.json'])
         mocker.patch.object(os.path, 'isdir', return_value=True)
-        assert is_ignored_pack_file(modified_file_path_parts) is output
+        assert is_ignored_pack_file(modified_file_path_parts) is expected_result
 
     @pytest.mark.parametrize("input_data,capitalize_input,expected_result",
                              [
