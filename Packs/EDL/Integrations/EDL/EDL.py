@@ -21,7 +21,7 @@ class Handler:
 
 class ErrorHandler:
     @staticmethod
-    def write(msg):
+    def write(msg: str):
         demisto.error(msg)
 
 
@@ -376,12 +376,12 @@ def get_edl_ioc_values(on_demand: bool,
     Returns:
         string representation of the iocs
     """
+    if not edl_cache:
+        global EDL_LOCAL_CACHE
+        edl_cache = EDL_LOCAL_CACHE or {}
     if on_demand:
         # on_demand saves the EDL to integration_context
-        edl_cache = get_integration_context()
-    elif not edl_cache:
-        global EDL_LOCAL_CACHE
-        edl_cache = EDL_LOCAL_CACHE
+        edl_cache = get_integration_context() or {}
     last_run = edl_cache.get('last_run')
     last_query = edl_cache.get('last_query')
     current_iocs = edl_cache.get('current_iocs')
