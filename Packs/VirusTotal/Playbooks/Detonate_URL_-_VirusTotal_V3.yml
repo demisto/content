@@ -1,6 +1,5 @@
-id: 56ec09f6-496a-4b66-8974-fb6be3784694
-version: 8
-vcShouldKeepItemLegacyProdMachine: false
+id: Detonate URL - VirusTotal V3
+version: -1
 name: Detonate URL - VirusTotal V3
 description: Detonate URL through VirusTotal V3 integration.
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -31,12 +31,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "1":
     id: "1"
     taskid: 17262ca9-15d6-4d3b-85a1-4f5d91128b2b
     type: condition
     task:
+      description: ""
       id: 17262ca9-15d6-4d3b-85a1-4f5d91128b2b
       version: -1
       name: Is VirusTotal V3 enabled?
@@ -88,12 +88,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "2":
     id: "2"
     taskid: 7cf30ee8-4521-460c-8c42-aa0ece81265b
     type: condition
     task:
+      description: ""
       id: 7cf30ee8-4521-460c-8c42-aa0ece81265b
       version: -1
       name: Is there a URL to detonate?
@@ -127,7 +127,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "3":
     id: "3"
     taskid: fa9b4bec-d46a-498e-8da9-b89518218731
@@ -161,7 +160,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "5":
     id: "5"
     taskid: 4c8c6c5e-28d9-4843-8031-57596a5f2504
@@ -174,6 +172,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -212,7 +211,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "6":
     id: "6"
     taskid: 99077345-9d21-4d96-88bd-d8003b009cf7
@@ -248,7 +246,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "7":
     id: "7"
     taskid: b8f2766b-7395-4a9a-8577-40502aa55ceb
@@ -260,6 +257,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -273,7 +271,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -291,7 +288,7 @@ inputs:
   value: {}
   required: false
   description: Entry ID of the file to detonate
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: VirusTotal.Analysis.data.attributes.stats.harmless
   description: Number of engines found the indicator harmless.
@@ -328,3 +325,10 @@ outputs:
   type: string
 - contextPath: VirusTotal.Analysis.id
   description: The analysis ID.
+  type: string
+fromversion: "5.5.0"
+tests:
+- VirusTotalV3-test
+- virusTotal-test-playbook
+- virusTotaI-test-preferred-vendors
+- vt-detonate test
