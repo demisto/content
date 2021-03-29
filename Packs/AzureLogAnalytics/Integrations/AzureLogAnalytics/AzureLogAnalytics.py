@@ -23,13 +23,11 @@ SAVED_SEARCH_HEADERS = [
 
 LOG_ANALYTICS_RESOURCE = 'https://api.loganalytics.io'
 AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
-REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 
 
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
-                 subscription_id, resource_group_name, workspace_name, verify, proxy,
-                 azure_ad_endpoint='https://login.microsoftonline.com'):
+                 subscription_id, resource_group_name, workspace_name, verify, proxy):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
@@ -52,8 +50,7 @@ class Client:
             auth_code=auth_code,
             ok_codes=(200, 204, 400, 401, 403, 404, 409),
             multi_resource=True,
-            resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE],
-            azure_ad_endpoint=azure_ad_endpoint
+            resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE]
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
@@ -327,8 +324,7 @@ def main():
             resource_group_name=params.get('resourceGroupName'),
             workspace_name=params.get('workspaceName'),
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False),
-            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
+            proxy=params.get('proxy', False)
         )
 
         commands = {
