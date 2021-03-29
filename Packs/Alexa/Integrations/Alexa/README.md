@@ -1,4 +1,5 @@
 Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.
+This integration was integrated and tested with Amazon Web Information Services.
 ## Configure Alexa Rank Indicator on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
