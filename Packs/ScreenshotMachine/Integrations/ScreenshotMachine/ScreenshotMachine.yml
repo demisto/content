@@ -76,11 +76,11 @@ script:
     - description: leave secret phrase empty, if not needed
       name: md5Secret
     description: Retrieve screenshot
-    name: screenshot
-  dockerimage: demisto/python:2.7.18.17246
+    name: screenshot-machine-get-screenshot
+  dockerimage: demisto/python3:3.9.2.17957
   runonce: false
   script: ''
-  subtype: python2
+  subtype: python3
   type: python
 fromversion: 6.0.0
 tests:
