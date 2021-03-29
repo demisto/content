@@ -2,7 +2,7 @@ commonfields:
   id: Recorded Future v2
   version: -1
 name: Recorded Future v2
-display: Recorded Future v2
+display: Recorded Future v2.1
 category: Data Enrichment & Threat Intelligence
 image:
 description: Unique threat intel technology that automatically serves up relevant
