@@ -429,7 +429,7 @@ outputs:
   type: string
 - contextPath: OpenCTI.Indicator.data
   description: New indicator data.
-fromversion: 5.5.0
+fromversion: 5.0.0
 tests:
 - OpenCTI Test
 description: Create indicator at OpenCTI.

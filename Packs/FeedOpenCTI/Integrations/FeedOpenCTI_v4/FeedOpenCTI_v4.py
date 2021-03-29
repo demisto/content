@@ -201,7 +201,8 @@ def main():
     params = demisto.params()
     args = demisto.args()
 
-    api_key = params.get('apikey')
+    credentials = params.get('credentials', {})
+    api_key = credentials.get('password')
     base_url = params.get('base_url').strip('/')
     indicator_types = params.get('indicator_types', ['ALL'])
     max_fetch = params.get('max_indicator_to_fetch')

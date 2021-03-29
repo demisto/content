@@ -8,11 +8,12 @@ configuration:
   name: base_url
   required: true
   type: 0
-- display: API Key
-  hidden: false
-  name: apikey
-  required: true
-  type: 4
+- display: API Key (leave empty. Fill in the API key in the password field.)
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: false
+  hiddenusername: true
 - additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported
     in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key,
     and URL. Other types will not cause automatic indicator creation in XSOAR.'

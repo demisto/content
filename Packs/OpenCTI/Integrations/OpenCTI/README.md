@@ -1,5 +1,4 @@
-Manages indicators from OpenCTI. Compatible with OpenCTI v4.* instances.
-This integration was integrated and tested with version v4.0.7 of OpenCTI
+Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API version.
 ## Configure OpenCTI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,7 +8,7 @@ This integration was integrated and tested with version v4.0.7 of OpenCTI
     | **Parameter** | **Required** |
     | --- | --- |
     | Base URL | True |
-    | API Key | True |
+    | API Key (leave empty. Fill in the API key in the password field.) | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
@@ -29,11 +28,11 @@ Gets indicators from OpenCTI.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. The default value is "50". Maximum value is "500". | Optional | 
-| score_start | Score range start to filter by. Possible range is 1-100. . | Optional | 
-| score_end | Score range end to filter by. Possible range is 1-100. . | Optional | 
-| indicator_types | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File", "Host", "IP", "IPv6", "Registry Key", and "URL". The default is "ALL". Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
-| last_run_id | The last ID from the previous call from which to begin pagination for this call. You can find this value at OpenCTI.IndicatorsList.LastRunID context path. | Optional | 
+| limit | The maximum number of indicators to return. Default value is 50. Maximum value is 500. | Optional | 
+| score_start | Score minimum value to filter by. Values range is 1-100. | Optional | 
+| score_end | Score maximum value to filter by. Values range is 1-100.| Optional | 
+| indicator_types | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
+| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.IndicatorsList.LastRunID context path. | Optional | 
 
 
 #### Context Output
@@ -42,18 +41,18 @@ Gets indicators from OpenCTI.
 | --- | --- | --- |
 | OpenCTI.Indicators.IndicatorsList.type | String | Indicator type. | 
 | OpenCTI.Indicators.IndicatorsList.value | String | Indicator value. | 
-| OpenCTI.Indicators.IndicatorsList.id | String | Indicator id. | 
-| OpenCTI.Indicators.IndicatorsList.createdBy | Unknown | The creator of indicator. | 
+| OpenCTI.Indicators.IndicatorsList.id | String | Indicator ID. | 
+| OpenCTI.Indicators.IndicatorsList.createdBy | Unknown | The creator of the indicator. | 
 | OpenCTI.Indicators.IndicatorsList.score | Number | Indicator score. | 
-| OpenCTI.Indicators.IndicatorsList.description | String | Indicator Description. | 
+| OpenCTI.Indicators.IndicatorsList.description | String | Indicator description. | 
 | OpenCTI.Indicators.IndicatorsList.labels | Unknown | Indicator labels. | 
 | OpenCTI.Indicators.IndicatorsList.marking | Unknown | Indicator marking definitions. | 
 | OpenCTI.Indicators.IndicatorsList.externalReferences | Unknown | Indicator external references. | 
-| OpenCTI.Indicators.LastRunID | String | the id of the last fetch to use pagination. | 
+| OpenCTI.Indicators.LastRunID | String | The last ID of the previous fetch to use for pagination. | 
 
 
 #### Command Example
-```!opencti-get-indicators limit=2 indicator_types="IP"```
+```!opencti-get-indicators score_start=20 score_end=70 indicator_types=Domain```
 
 #### Context Example
 ```json
@@ -62,10 +61,10 @@ Gets indicators from OpenCTI.
         "Indicators": {
             "IndicatorsList": [
                 {
-                    "createdBy": "1e12fe87-db3e-4838-8391-6910547bf60d",
-                    "description": "test_desc",
+                    "createdBy": "0c7cb378-64c3-4809-b423-986ac7cecf91",
+                    "description": "test",
                     "externalReferences": [],
-                    "id": "700c8187-2dce-4aeb-bf3a-0864cb7b02c7",
+                    "id": "7ed5946a-81a2-4490-8be8-06d3633a41fb",
                     "labels": [
                         "devdemisto"
                     ],
@@ -73,25 +72,77 @@ Gets indicators from OpenCTI.
                         "TLP:AMBER"
                     ],
                     "score": 70,
-                    "type": "IP",
-                    "value": "1.2.3.4"
+                    "type": "Domain",
+                    "value": "TestDomainDocs.com"
                 },
                 {
-                    "createdBy": "1e12fe87-db3e-4838-8391-6910547bf60d",
-                    "description": "test fetch one",
+                    "createdBy": null,
+                    "description": null,
                     "externalReferences": [],
-                    "id": "33bd535b-fa1c-41e2-a6f9-80d82dd29a9b",
-                    "labels": [
-                        "devdemisto",
-                        "test-label-1"
+                    "id": "ebe37223-f455-4122-b83d-3cfb8d8784ea",
+                    "labels": [],
+                    "marking": [
+                        "TLP:AMBER"
                     ],
-                    "marking": [],
-                    "score": 100,
-                    "type": "IP",
-                    "value": "1.1.1.1"
+                    "score": 50,
+                    "type": "Domain",
+                    "value": "test1111"
+                },
+                {
+                    "createdBy": null,
+                    "description": "sdfghjk",
+                    "externalReferences": [
+                        {
+                            "created": "2021-02-09T14:50:39.587Z",
+                            "createdById": null,
+                            "description": null,
+                            "entity_type": "External-Reference",
+                            "external_id": null,
+                            "hash": null,
+                            "id": "c42f673d-b2fa-40df-8ae3-c5cb25626663",
+                            "modified": "2021-02-09T14:50:39.587Z",
+                            "source_name": "source test",
+                            "standard_id": "external-reference--e1b0cc44-a5bd-5729-9d1f-765b0d8e59e7",
+                            "url": "www.test.com"
+                        },
+                        {
+                            "created": "2021-02-22T09:37:46.634Z",
+                            "createdById": null,
+                            "description": null,
+                            "entity_type": "External-Reference",
+                            "external_id": null,
+                            "hash": null,
+                            "id": "a46acbf0-9996-400e-bc5d-f756c48f52c1",
+                            "modified": "2021-02-22T09:37:46.634Z",
+                            "source_name": "TestPlaybook",
+                            "standard_id": "external-reference--be9a7896-80c0-5ec9-80e7-fd072c1808c9",
+                            "url": "www.testplaybook.com"
+                        },
+                        {
+                            "created": "2021-02-21T15:06:39.147Z",
+                            "createdById": null,
+                            "description": null,
+                            "entity_type": "External-Reference",
+                            "external_id": null,
+                            "hash": null,
+                            "id": "62ae7aec-e9e4-4c2a-b789-dfe6c213d391",
+                            "modified": "2021-02-21T15:06:39.147Z",
+                            "source_name": "name_test",
+                            "standard_id": "external-reference--76fed957-9221-56db-8457-65816e4b0fdd",
+                            "url": "http://test.com"
+                        }
+                    ],
+                    "id": "74faf2e8-bbab-4a1a-a548-58db202c5e57",
+                    "labels": [],
+                    "marking": [
+                        "TLP:WHITE"
+                    ],
+                    "score": 50,
+                    "type": "Domain",
+                    "value": "xcvbnm"
                 }
             ],
-            "lastRunID": "YXJyYXljb25uZWN0aW9uOjI="
+            "lastRunID": "YXJyYXljb25uZWN0aW9uOjM="
         }
     }
 }
@@ -102,8 +153,9 @@ Gets indicators from OpenCTI.
 >### Indicators
 >|type|value|id|
 >|---|---|---|
->| IP | 1.2.3.4 | 700c8187-2dce-4aeb-bf3a-0864cb7b02c7 |
->| IP | 1.1.1.1 | 33bd535b-fa1c-41e2-a6f9-80d82dd29a9b |
+>| Domain | TestDomainDocs.com | 7ed5946a-81a2-4490-8be8-06d3633a41fb |
+>| Domain | test1111 | ebe37223-f455-4122-b83d-3cfb8d8784ea |
+>| Domain | xcvbnm | 74faf2e8-bbab-4a1a-a548-58db202c5e57 |
 
 
 ### opencti-indicator-delete
@@ -126,7 +178,7 @@ Delete indicator.
 There is no context output for this command.
 
 #### Command Example
-```!opencti-indicator-delete id=1fc593e8-2c7e-45a3-bc08-976db9ae54d7```
+```!opencti-indicator-delete id=74faf2e8-bbab-4a1a-a548-58db202c5e57```
 
 #### Human Readable Output
 
@@ -134,7 +186,7 @@ There is no context output for this command.
 
 ### opencti-indicator-field-update
 ***
-Update indicator field. Available fields to update - score, description.
+Update the indicator field. The fields that can be updated are: score, description.
 
 
 #### Base Command
@@ -153,7 +205,7 @@ Update indicator field. Available fields to update - score, description.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Indicator.id | String | Updated indicator id. | 
+| OpenCTI.Indicator.id | String | Updated indicator ID. | 
 
 
 #### Command Example
@@ -186,13 +238,13 @@ Create new indicator.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The indicator type to create. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File-md5", "File-sha1", "File-sha256", "Host", "IP", "IPV6", "Registry Key", and "URL". Possible values are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPv6, Registry Key, URL. | Required | 
-| created_by | Organization id. Use opencti-organization-list to find all organizations id at opencti, or use opencti-organization-create to create new organization id. | Optional | 
-| marking_id | Indicator marking id. Use opencti-marking-definition-list to find all marking definitions id at opencti. | Optional | 
-| label_id | Indicator label id. Use opencti-label-list to find all labels id at opencti, or use opencti-label-create to create new label. | Optional | 
-| external_references_id | External References URL. Use opencti-external-reference-create to create new external reference. | Optional | 
+| type | The indicator type to create. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPV6, Registry Key, and URL. Possible values are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPv6, Registry Key, URL. | Required | 
+| created_by | Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID. | Optional | 
+| marking_id | Indicator marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Optional | 
+| label_id | Indicator label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. | Optional | 
+| external_references_id | External references URL. Use opencti-external-reference-create to create a new external reference. | Optional | 
 | description | Indicator description. | Optional | 
-| score | Indicator score - number between 0 - 100. Default score value 50. | Optional | 
+| score | Indicator score. Values range is 0 - 100. Default value is 50. | Optional | 
 | value | Indicator value. | Optional | 
 
 
@@ -200,7 +252,7 @@ Create new indicator.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Indicator.id | String | New indicator id. | 
+| OpenCTI.Indicator.id | String | New indicator ID. | 
 | OpenCTI.Indicator.value | String | New indicator value. | 
 | OpenCTI.Indicator.type | String | New indicator type. | 
 
@@ -227,7 +279,7 @@ Create new indicator.
 
 ### opencti-indicator-field-add
 ***
-Add field to indicator. Avalible fields to add - marking defenition, label.
+Add a field to the indicator. Fields that can be added are marking definition and label.
 
 
 #### Base Command
@@ -239,7 +291,7 @@ Add field to indicator. Avalible fields to add - marking defenition, label.
 | --- | --- | --- |
 | id | Indicator ID. | Required | 
 | field | Indicator field to add. Possible values are: marking, label. | Required | 
-| value | Value of the field to add. Enter label id or marking id. Use opencti-label-list to find all labels id at opencti, or use opencti-label-create to create new label. Use opencti-marking-definition-list to find all marking definitions id at opencti. | Required | 
+| value | Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required | 
 
 
 #### Context Output
@@ -255,7 +307,7 @@ There is no context output for this command.
 
 ### opencti-indicator-field-remove
 ***
-Remove field from indicator. Avalible fields to remove - marking defenition, label.
+Remove indicator field value. Fields which values can be removed are marking definition and label.
 
 
 #### Base Command
@@ -267,7 +319,7 @@ Remove field from indicator. Avalible fields to remove - marking defenition, lab
 | --- | --- | --- |
 | id | Indicator ID. | Required | 
 | field | Indicator field to update. Possible values are: marking, label. | Required | 
-| value | Value of the field to remove. Enter label id or marking id. Use opencti-label-list to find all labels id at opencti or opencti-marking-definition-list to find all marking definitions id at opencti. | Required | 
+| value | Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI. | Required | 
 
 
 #### Context Output
@@ -283,7 +335,7 @@ There is no context output for this command.
 
 ### opencti-organization-list
 ***
-Get list of all organizations.
+Get a list of all organizations in OpenCTI.
 
 
 #### Base Command
@@ -293,17 +345,17 @@ Get list of all organizations.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of organizations to return per fetch. The default value is "50". Maximum value is "200". Default is 50. | Optional | 
-| last_run_id | The last ID from the previous call from which to begin pagination for this call. You can find this value at OpenCTI.Organizations.organizationsLastRun context path. | Optional | 
+| limit | The maximum number of organizations to return per fetch. Default value is 50. Maximum value is 200. Default is 50. | Optional | 
+| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Organizations.organizationsLastRun context path. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Organizations.OrganizationsList.id | String | Organization id. | 
+| OpenCTI.Organizations.OrganizationsList.id | String | Organization ID. | 
 | OpenCTI.Organizations.OrganizationsList.name | String | Organization name. | 
-| OpenCTI.Organizations.organizationsLastRun | String | the id of the last fetch to use pagination. | 
+| OpenCTI.Organizations.organizationsLastRun | String | The last ID of the previous fetch to use for pagination. | 
 
 
 #### Command Example
@@ -313,19 +365,23 @@ Get list of all organizations.
 ```json
 {
     "OpenCTI": {
-        "Organizations": {
-            "OrganizationsList": [
-                {
-                    "id": "1e12fe87-db3e-4838-8391-6910547bf60d",
-                    "name": "Test_Organization"
-                },
-                {
-                    "id": "11ddff08-8933-46d7-ab22-31f49496499f",
-                    "name": "ExampleOrganization"
-                }
-            ],
-            "organizationsLastRun": "YXJyYXljb25uZWN0aW9uOjI="
-        }
+        "Organizations": [
+            {
+                "OrganizationsList": [
+                    {
+                        "id": "1e12fe87-db3e-4838-8391-6910547bf60d",
+                        "name": "Test_Organization"
+                    },
+                    {
+                        "id": "11ddff08-8933-46d7-ab22-31f49496499f",
+                        "name": "ExampleOrganization"
+                    }
+                ]
+            },
+            {
+                "organizationsLastRun": "YXJyYXljb25uZWN0aW9uOjI="
+            }
+        ]
     }
 }
 ```
@@ -341,7 +397,7 @@ Get list of all organizations.
 
 ### opencti-organization-create
 ***
-Create organization.
+Create a new organization.
 
 
 #### Base Command
@@ -351,7 +407,7 @@ Create organization.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of organization to create. | Required | 
+| name | Name of the organization to create. | Required | 
 | description | Description of the organization. | Optional | 
 | reliability | Reliability of the organization. Possible values are: A, B, C, D, E, F. | Optional | 
 
@@ -360,7 +416,7 @@ Create organization.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Organization.id | String | New organization id. | 
+| OpenCTI.Organization.id | String | New organization ID. | 
 
 
 #### Command Example
@@ -393,17 +449,17 @@ Get list of all labels.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of labels to return per fetch. The default value is "50". Default is 50. | Optional | 
-| last_run_id | The last ID from the previous call from which to begin pagination for this call. You can find this value at OpenCTI.Labels.labelsLastRun context path. | Optional | 
+| limit | The maximum number of labels to return per fetch. Default is 50. | Optional | 
+| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Labels.labelsLastRun context path. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Labels.LabelsList.id | String | Label id. | 
+| OpenCTI.Labels.LabelsList.id | String | Label ID. | 
 | OpenCTI.Labels.LabelsList.value | String | Label name. | 
-| OpenCTI.Labels.labelsLastRun | String | the id of the last fetch to use pagination. | 
+| OpenCTI.Labels.labelsLastRun | String | The last ID of the previous fetch to use for pagination. | 
 
 
 #### Command Example
@@ -441,7 +497,7 @@ Get list of all labels.
 
 ### opencti-label-create
 ***
-Create label.
+Create a new label.
 
 
 #### Base Command
@@ -451,14 +507,14 @@ Create label.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of label to create. | Required | 
+| name | Name of the new label to create. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.Label.id | String | New label id. | 
+| OpenCTI.Label.id | String | New label ID. | 
 
 
 #### Command Example
@@ -491,15 +547,15 @@ Create external reference.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | External References URL. | Required | 
-| source_name | External References Source Name. | Required | 
+| url | External references URL. | Required | 
+| source_name | External references source name. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.externalReference.id | String | New external reference id. | 
+| OpenCTI.externalReference.id | String | New external reference ID. | 
 
 
 #### Command Example
@@ -522,7 +578,7 @@ Create external reference.
 
 ### opencti-marking-definition-list
 ***
-Get list of all marking definitions.
+Get a list of all marking definitions.
 
 
 #### Base Command
@@ -532,17 +588,17 @@ Get list of all marking definitions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of marking definitions to return per fetch. The default value is "50". Default is 50. | Optional | 
-| last_run_id | The last ID from the previous call from which to begin pagination for this call. You can find this value at OpenCTI.MarkingDefinitions.markingsLastRun context path. | Optional | 
+| limit | The maximum number of marking definitions to return per fetch. Default is 50. | Optional | 
+| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.MarkingDefinitions.markingsLastRun context path. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenCTI.MarkingDefinitions.MarkingDefinitionsList.id | String | Label id. | 
-| OpenCTI.MarkingDefinitions.MarkingDefinitionsList.value | String | Label name. | 
-| OpenCTI.MarkingDefinitions.markingsLastRun | String | the id of the last fetch to use pagination. | 
+| OpenCTI.MarkingDefinitions.MarkingDefinitionsList.id | String | Marking definition ID. | 
+| OpenCTI.MarkingDefinitions.MarkingDefinitionsList.value | String | Marking definition name. | 
+| OpenCTI.MarkingDefinitions.markingsLastRun | String | The last ID of the previous fetch to use for pagination. | 
 
 
 #### Command Example
