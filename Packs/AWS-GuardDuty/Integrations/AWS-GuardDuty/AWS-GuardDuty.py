@@ -534,7 +534,7 @@ def parse_incident_from_finding(finding):
     incident['details'] = finding['Description']
     incident['occurred'] = finding['CreatedAt']
     incident['severity'] = severity_mapping(finding['Severity'])
-    incident['rawJSON'] = json.dumps(finding)
+    incident['rawJSON'] = json.dumps(finding, cls=DatetimeEncoder)
     return incident
 
 
@@ -727,9 +727,9 @@ def main():
         LOG(e.message)
 
     except Exception as e:
-        LOG(e.message)
-        return_error('Error has occurred in the AWS EC2 Integration: {code}\n {message}'.format(
-                     code=type(e), message=e.message))
+        LOG(e)
+        return_error('Error has occurred in the AWS GuardDuty Integration: {code}\n {message}'.format(
+                     code=type(e), message=e))
 
 
 # python2 uses __builtin__ python3 uses builtins
