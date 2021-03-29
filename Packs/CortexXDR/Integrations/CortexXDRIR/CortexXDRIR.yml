@@ -1735,9 +1735,19 @@ script:
       name: hostname
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to scan all the endpoints or not. default is false.
+      isArray: false
+      name: all
+      predefined:
+        - true
+        - false
+      required: false
+      secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
-      command with no filters.
+      command with the filter all as True.
     execution: true
     name: xdr-endpoint-scan
   - deprecated: false
