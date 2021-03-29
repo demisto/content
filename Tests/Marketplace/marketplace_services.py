@@ -192,7 +192,7 @@ class Pack(object):
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
-        self._sever_min_version = "1.0.0"  # initialized min version
+        self._server_min_version = "99.99.99"  # initialized min version
         self._latest_version = None  # pack latest version found in changelog
         self._support_type = None  # initialized in load_user_metadata function
         self._current_version = None  # initialized in load_user_metadata function
@@ -336,10 +336,10 @@ class Pack(object):
     def server_min_version(self):
         """ str: server min version according to collected items.
         """
-        if not self._sever_min_version or self._sever_min_version == "1.0.0":
+        if not self._server_min_version or self._server_min_version == "99.99.99":
             return Metadata.SERVER_DEFAULT_MIN_VERSION
         else:
-            return self._sever_min_version
+            return self._server_min_version
 
     @property
     def downloads_count(self):
@@ -1478,8 +1478,8 @@ class Pack(object):
                     logging.debug(
                         f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
                     # updated min server version from current content item
-                    self._sever_min_version = get_higher_server_version(self._sever_min_version, content_item,
-                                                                        self._pack_name)
+                    self._server_min_version = get_updated_server_version(self._server_min_version, content_item,
+                                                                          self._pack_name)
 
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
@@ -2461,7 +2461,7 @@ def convert_price(pack_id, price_value_input=None):
         return 0
 
 
-def get_higher_server_version(current_string_version, compared_content_item, pack_name):
+def get_updated_server_version(current_string_version, compared_content_item, pack_name):
     """ Compares two semantic server versions and returns the higher version between them.
 
     Args:
@@ -2472,21 +2472,21 @@ def get_higher_server_version(current_string_version, compared_content_item, pac
     Returns:
         str: latest version between compared versions.
     """
-    higher_version_result = current_string_version
+    lower_version_result = current_string_version
 
     try:
         compared_string_version = compared_content_item.get('fromversion') or compared_content_item.get(
-            'fromVersion') or "1.0.0"
+            'fromVersion') or "99.99.99"
         current_version, compared_version = LooseVersion(current_string_version), LooseVersion(compared_string_version)
 
-        if current_version < compared_version:
-            higher_version_result = compared_string_version
+        if current_version > compared_version:
+            lower_version_result = compared_string_version
     except Exception:
         content_item_name = compared_content_item.get('name') or compared_content_item.get(
             'display') or compared_content_item.get('id') or compared_content_item.get('details', '')
         logging.exception(f"{pack_name} failed in version comparison of content item {content_item_name}.")
     finally:
-        return higher_version_result
+        return lower_version_result
 
 
 def get_content_git_client(content_repo_path: str):
