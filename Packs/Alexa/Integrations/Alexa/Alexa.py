@@ -30,8 +30,7 @@ def alexa_fallback_command(domain, use_ssl, proxies):
     return formatted_result
 
 
-def alexa_domain_command(use_ssl, proxies, threshold, benign, reliability):
-    domain = demisto.args().get('domain')
+def alexa_domain_command(domain, use_ssl, proxies, threshold, benign, reliability):
     try:
         resp = requests.request('GET',
                                 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain),
@@ -103,7 +102,9 @@ def test_module_command(use_ssl, proxies):
 """EXECUTION BLOCK"""
 try:
     params = demisto.params()
-    args = {
+    domain = demisto.args().get('domain')
+
+    instance_params = {
         'threshold': int(params.get('threshold', 2000000)),
         'benign': int(params.get('benign', 0)),
         'use_ssl': not params.get('insecure', False),
@@ -112,15 +113,15 @@ try:
     reliability = params.get('integrationReliability', DBotScoreReliability.A)
 
     if DBotScoreReliability.is_valid_type(reliability):
-        args['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        instance_params['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     if demisto.command() == 'test-module':
-        test_result = test_module_command(args['use_ssl'], args['proxies'])
+        test_result = test_module_command(instance_params['use_ssl'], instance_params['proxies'])
         demisto.results(test_result)
     if demisto.command() == 'domain':
-        alexa_domain_command(**args)
+        alexa_domain_command(domain, **instance_params)
 except Exception as e:
     LOG(e)
     LOG.print_log(False)
