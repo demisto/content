@@ -1748,7 +1748,7 @@ script:
       secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
-      command with filter all as True.
+      command with argument all=true.
     execution: true
     name: xdr-endpoint-scan
   - deprecated: false
