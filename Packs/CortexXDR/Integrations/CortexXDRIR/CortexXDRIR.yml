@@ -1737,6 +1737,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: 'false'
       description: Whether to scan all the endpoints or not. default is false.
       isArray: false
       name: all
