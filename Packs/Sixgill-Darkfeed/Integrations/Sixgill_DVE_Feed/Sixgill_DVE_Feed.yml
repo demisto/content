@@ -99,7 +99,7 @@ script:
   - arguments:
     - default: true
       defaultValue: '5'
-      description: 'No of records to display in War Room'
+      description: 'The number of records to display in War Room'
       isArray: false
       name: limit
       required: false
