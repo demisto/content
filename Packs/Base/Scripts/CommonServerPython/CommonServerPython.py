@@ -2323,7 +2323,6 @@ class Common(object):
             self.tags = tags
             self.malware_family = malware_family
 
-
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
 
@@ -2431,6 +2430,7 @@ class Common(object):
     class FeedRelatedIndicators(object):
         """
         FeedRelatedIndicators class
+         Implements Subject Indicators that are associated with Another indicator
 
         :type value: ``str``
         :param value: Indicators that are associated with the indicator.
