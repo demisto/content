@@ -11,6 +11,6 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": ["Use Case"],
     "keywords": []
 }
