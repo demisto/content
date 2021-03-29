@@ -170,7 +170,7 @@ def check_reviewers(reviewers, pr_author, version, modified_files, pack, pr_numb
             )
 
     else:
-        print(f"{pack} pack No reviewers were found.")
+        print(f'{pack} pack No reviewers were found.')
 
 
 def main():
