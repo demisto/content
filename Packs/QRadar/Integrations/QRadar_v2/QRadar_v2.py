@@ -1,13 +1,9 @@
 import concurrent.futures
-import json
-import time
-import traceback
 from copy import deepcopy
 from threading import Lock
-from typing import Callable, Dict, List, Optional
+from typing import Callable
 from urllib import parse
 
-import requests
 import urllib3
 from requests.exceptions import HTTPError
 
