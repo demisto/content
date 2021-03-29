@@ -51,14 +51,14 @@ from IncidentsCheck_Widget_IncidentsErrorsInfo import main
                 'Task ID': '5',
                 'Task Name': 'Get account info from Active Directory'}],
       'total': 4}),
-    ([{'Type': 'error'}], {'data': [{'Command Name': 'N\\A',
-                                     'Incident Creation Date': 'N\\A',
-                                     'Incident ID': 'N\\A',
-                                     'Incident Owner': 'N\\A',
-                                     'Number of Errors': 'N\\A',
-                                     'Playbook Name': 'N\\A',
-                                     'Task ID': 'N\\A',
-                                     'Task Name': 'N\\A'}],
+    ([{'Type': 'error'}], {'data': [{'Command Name': 'N/A',
+                                     'Incident Creation Date': 'N/A',
+                                     'Incident ID': 'N/A',
+                                     'Incident Owner': 'N/A',
+                                     'Number of Errors': 'N/A',
+                                     'Playbook Name': 'N/A',
+                                     'Task ID': 'N/A',
+                                     'Task Name': 'N/A'}],
                            'total': 1})
 ])
 def test_script(mocker, list_, expected):
