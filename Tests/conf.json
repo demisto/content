@@ -3225,6 +3225,11 @@
             "integrations": "Cisco Stealthwatch",
             "fromversion": "5.5.0",
             "playbookID": "Cisco Stealthwatch Test"
+        },
+        {
+            "integrations": "OpenCTI",
+            "playbookID": "OpenCTI Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
