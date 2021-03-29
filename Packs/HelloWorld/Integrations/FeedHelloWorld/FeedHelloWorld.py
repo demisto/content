@@ -333,15 +333,15 @@ def main():
 
     params = demisto.params()
 
-    # get the service API url
+    # Get the service API url
     base_url = params.get('url')
 
-    # if your Client class inherits from BaseClient, SSL verification is
+    # If your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
     insecure = not params.get('insecure', False)
 
-    # if your Client class inherits from BaseClient, system proxy is handled
+    # If your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
 
@@ -374,7 +374,7 @@ def main():
         elif command == 'fetch-indicators':
             # This is the command that initiates a request to the feed endpoint and create new indicators objects from
             # the data fetched. If the integration instance is configured to fetch indicators, then this is the command
-            # that will be executed at the specified Feed Fetch Interval
+            # that will be executed at the specified feed fetch interval.
             indicators = fetch_indicators_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
@@ -384,7 +384,7 @@ def main():
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(traceback.format_exc())  # Print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
