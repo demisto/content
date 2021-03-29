@@ -1235,3 +1235,4 @@ script:
   dockerimage: demisto/python3:3.9.2.17957
 tests:
 - VirusTotal-V3-test-playbook
+- VirusTotal V3 Detonate Test

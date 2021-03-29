@@ -328,7 +328,4 @@ outputs:
   type: string
 fromversion: "5.5.0"
 tests:
-- VirusTotalV3-test
-- virusTotal-test-playbook
-- virusTotaI-test-preferred-vendors
-- vt-detonate test
+- VirusTotal V3 Detonate Test
