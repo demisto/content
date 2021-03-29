@@ -21,7 +21,7 @@ def site_lookup(params):
 
 def decode_screenshot(r):
     i = BytesIO(r.content)
-    res = fileResult('myfile', i.read(), file_type=EntryTypes.ENTRY_INFO_FILE)
+    res = fileResult('myfile', i.read(), file_type=EntryType.ENTRY_INFO_FILE)
 
     return res
 
