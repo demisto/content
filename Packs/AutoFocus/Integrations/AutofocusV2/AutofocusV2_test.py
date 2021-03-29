@@ -257,7 +257,7 @@ def test_get_tags_for_tags_and_malware_family_fields():
      """
     import AutofocusV2
     tags = AutofocusV2.get_tags_for_tags_and_malware_family_fields(TAGS_FROM_RESPONSE)
-    assert tags == ['NJRat', 'Unit42.NJRat', 'Bladabindi', 'RemoteAccessTrojan', 'NanoCoreRAT', 'Unit42.NanoCoreRAT']
+    assert tags == ['NJRat', 'RemoteAccessTrojan', 'Unit42.NanoCoreRAT', 'NanoCoreRAT', 'Bladabindi', 'Unit42.NJRat']
 
 
 TAGS_FROM_RESPONSE = [

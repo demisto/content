@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: AutoFocus V2
+  id: AutoFocus V2 copy
   version: -1
 configuration:
 - display: API Key
@@ -35,8 +35,8 @@ configuration:
   type: 0
 description: Use the Palo Alto Networks AutoFocus integration to distinguish the most
   important threats from everyday commodity attacks.
-display: Palo Alto Networks AutoFocus v2
-name: AutoFocus V2
+display: Palo Alto Networks AutoFocus v2 copy
+name: AutoFocus V2 copy
 script:
   commands:
   - arguments:
@@ -425,6 +425,9 @@ script:
       type: String
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MalwareFamily
+      description: The malware family associated with the file.
       type: String
     - contextPath: File.Tags
       description: Tags of the file.

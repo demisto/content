@@ -1534,7 +1534,8 @@ def search_file_command(file, reliability):
         file = Common.File(
             sha256=sha256,
             dbot_score=dbot_score,
-            tags=get_tags_for_generic_context(tags),
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
         )
 
         command_results.append(CommandResults(
@@ -1564,7 +1565,13 @@ def get_tags_for_generic_context(tags: Optional[list]):
 
 
 def get_tags_for_tags_and_malware_family_fields(tags: Optional[list], is_malware_family=False):
-    """get specific tags for the tgas and malware_family fields"""
+    """get specific tags for the tgas and malware_family fields
+    Args
+        tags (Optional[list]): tags from the response
+        is_malware_family (bool): indicating whether it is for the malware_family field
+    return:
+        List[str]: list of tags without duplicates and empty elements
+    """
     if not tags:
         return None
     results = []
@@ -1576,7 +1583,8 @@ def get_tags_for_tags_and_malware_family_fields(tags: Optional[list], is_malware
         if not is_malware_family:
             for group in item.get('tagGroups', [{}]):
                 results.append(group.get('tag_group_name'))
-    return list(dict.fromkeys(remove_empty_elements(results)))
+    # Returns a list without duplicates and empty elements
+    return list(set(filter(None, results)))
 
 
 def get_export_list_command(args):
