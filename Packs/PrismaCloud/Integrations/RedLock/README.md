@@ -20,7 +20,7 @@
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-**Note:** Further info on creating access keys for Prisma Cloud is availalbe [here](https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin/manage-prisma-cloud-administrators/create-access-keys.html).
+**Note:** Further info on creating access keys for Prisma Cloud is available [here](https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin/manage-prisma-cloud-administrators/create-access-keys.html).
 
 
 ## Commands
