@@ -24,7 +24,7 @@ configuration:
   type: 8
   required: false
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: A - Completely reliable
+  defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: feedReliability
   type: 15
@@ -671,6 +671,7 @@ script:
       required: true
       default: true
       description: The file entry ID to submit.
+      isArray: true
     - name: uploadURL
       description: Premium API extension. Special upload URL for files larger than
         32 MB. Can be acquired from the vt-file-scan-upload-url command.
@@ -1231,6 +1232,6 @@ script:
         type: String
     description: Retrieves resolutions of the given IP.
   runonce: false
-  dockerimage: demisto/python3:3.9.2.17246
+  dockerimage: demisto/python3:3.9.2.17957
 tests:
 - VirusTotal-V3-test-playbook

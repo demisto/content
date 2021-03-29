@@ -1479,34 +1479,44 @@ def file_rescan_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def file_scan(client: Client, args: dict) -> CommandResults:
+def file_scan(client: Client, args: dict) -> List[CommandResults]:
     """
     1 API Call
     """
-    entry_id = args['entryID']
+    entry_ids = argToList(args['entryID'])
     upload_url = args.get('uploadURL')
-    file_obj = demisto.getFilePath(entry_id)
-    file_path = file_obj['path']
-    raw_response = client.file_scan(file_path, upload_url=upload_url)
-    data = raw_response.get('data', {})
-    # add current file as identifiers
-    data.update(
-        get_file_context(entry_id)
-    )
+    if len(entry_ids) > 1 and upload_url:
+        raise DemistoException('You can supply only one entry ID with an upload URL.')
+    results = list()
+    for entry_id in entry_ids:
+        try:
+            file_obj = demisto.getFilePath(entry_id)
+            file_path = file_obj['path']
+            raw_response = client.file_scan(file_path, upload_url=upload_url)
+            data = raw_response.get('data', {})
+            # add current file as identifiers
+            data.update(
+                get_file_context(entry_id)
+            )
 
-    context = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
-        'vtScanID': data.get('id')  # BC preservation
-    }
-    return CommandResults(
-        readable_output=tableToMarkdown(
-            f'The file has been submitted "{file_obj["name"]}"',
-            data,
-            headers=['id', 'EntryID', 'MD5', 'SHA1', 'SHA256']
-        ),
-        outputs=context,
-        raw_response=raw_response
-    )
+            context = {
+                f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
+                'vtScanID': data.get('id')  # BC preservation
+            }
+            results.append(CommandResults(
+                readable_output=tableToMarkdown(
+                    f'The file has been submitted "{file_obj["name"]}"',
+                    data,
+                    headers=['id', 'EntryID', 'MD5', 'SHA1', 'SHA256']
+                ),
+                outputs=context,
+                raw_response=raw_response
+            ))
+        except Exception as exc:
+            err = f'Could not process {entry_id=}.'
+            demisto.debug(f'{err}\n{str(exc)}')
+            results.append(CommandResults(readable_output=err))
+    return results
 
 
 def get_upload_url(client: Client) -> CommandResults:
@@ -1665,7 +1675,7 @@ def add_comments_command(client: Client, args: dict) -> CommandResults:
         f'{INTEGRATION_ENTRY_CONTEXT}.Comments.comments',
         'id',
         readable_output=tableToMarkdown(
-            f'Comment has been added!',
+            'Comment has been added!',
             {
                 'Date': epoch_to_timestamp(attributes.get('date')),
                 'Text': attributes.get('text'),
@@ -1873,7 +1883,7 @@ def main(params: dict, args: dict, command: str):
         results = file_scan(client, args)
     elif command == f'{COMMAND_PREFIX}-file-scan-upload-url':
         results = get_upload_url(client)
-    elif command == f'url-scan':
+    elif command == 'url-scan':
         results = scan_url_command(client, args)
     elif command == f'{COMMAND_PREFIX}-search':
         results = search_command(client, args)
