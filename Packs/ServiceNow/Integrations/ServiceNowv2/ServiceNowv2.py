@@ -563,7 +563,11 @@ class Client(BaseClient):
                 else:
                     res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
                                            params=params, auth=self._auth, verify=self._verify, proxies=self._proxies)
-
+            demisto.debug(f'res.text is: {res.text}')
+            try:
+                demisto.debug(f'res.content is: {res.content}')
+            except Exception as err:
+                demisto.debug(f'error while parsing content: {err}')
             if "Instance Hibernating page" in res.text:
                 raise DemistoException(
                     "A connection was established but the instance is in hibernate mode.\n"
@@ -1882,7 +1886,8 @@ def fetch_incidents(client: Client) -> list:
     parsed_snow_time = datetime.strptime(snow_time, '%Y-%m-%d %H:%M:%S')
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
-
+    res_message = f'res is: {res}, \nquery_params are: {query_params}'
+    demisto.debug(res_message)
     for result in res.get('result', []):
         labels = []
 
