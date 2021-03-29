@@ -198,7 +198,7 @@ script:
 
 
     function getAlertsCommand() {
-        result = getAlerts()
+        result = getAlerts('false')
         var retArray = [];
         result.data.forEach(function(arrayItem) {
             var id = arrayItem._id;
