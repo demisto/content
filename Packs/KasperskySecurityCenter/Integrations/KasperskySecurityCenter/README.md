@@ -888,5 +888,5 @@ A number of commands are using a search filter that has syntax resembling one fr
   | [ ] | Any single character within the specified range ([a-f]) or set ([abcdef]). |
   | [^] | Any single character not within the specified range ([^a-f]) or set ([^abcdef]). |
 
-- **UTC time** can be specified either in absolute or relative format. Absolute format: T"YYYY-MM-DD hh:mm:ss" Example: T"2005-04-27 23:59:01" To specify UTC time in relative format the 'Pseudovalue' CURTIME([<signed integer delta>]) may be used as "current time (in UTC) + \<signed integer delta\>"
+- **UTC time** can be specified either in absolute or relative format. Absolute format: T"YYYY-MM-DD hh:mm:ss" Example: T"2005-04-27 23:59:01" To specify UTC time in relative format the 'Pseudovalue' CURTIME([\<signed integer delta\>]) may be used as "current time (in UTC) + \<signed integer delta\>"
 - **Binary** must be provided as hex with '0x' prefix. For example, 0xF41748C0BEF943a6AE2C5D1010F046A.
