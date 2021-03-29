@@ -505,8 +505,8 @@ def fetch_incidents(client, last_run: dict, board_id: str, list_id_filter: str):
     # Now, we list all the lists on the board
     lists = client.list_lists(board_id)
     cards = []
-    for l in lists:
-        list_id = l.get("id")
+    for list_item in lists:
+        list_id = list_item.get("id")
         # Finally, we get all the active cards
         cards_response = client.list_cards(list_id)
         cards = cards + normalise_card_fields(cards_response)
@@ -574,12 +574,12 @@ def get_remote_data(client, args):
     # If the card is closed/archived, add a closeIncident entry
     entries = []
     if new_incident_data.get("closed"):
-        demisto.debug(f'Trello card has been archived.')
+        demisto.debug('Trello card has been archived.')
         entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
-                'closeReason': f'Trello Card archived.'
+                'closeReason': 'Trello Card archived.'
             },
             'ContentsFormat': EntryFormat.JSON
         })
