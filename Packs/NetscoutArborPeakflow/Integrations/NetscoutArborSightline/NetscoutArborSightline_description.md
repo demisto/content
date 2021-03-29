@@ -1,8 +1,8 @@
-## BaseIntegration Help
+## Netscout Arbor Sightline Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+### Generate API Key
+In order to generate a new API Key follow the documentation at `<MyServerURL>/api/sp/doc/accessing/accessing.html#rest-api-tokens`
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### Configuration params
+**NOTE**: No need to enter a value in the **API Token** field. It can be left blank (visible only on 6.0.2 and lower versions).
 

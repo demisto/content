@@ -8,11 +8,12 @@ configuration:
     name: url
     required: true
     type: 0
-  - additionalinfo: The API Key to use for connection
-    display: API Key
+  - additionalinfo: API Key (leave empty. Fill in the API Key in the password field.)
+    displaypassword: API Key
     name: api_token
     required: true
-    type: 4
+    hiddenusername: true
+    type: 9
   - display: Fetch incidents
     name: isFetch
     required: false
@@ -113,14 +114,14 @@ configuration:
   - additionalinfo: 'The operator to apply on the ''Importance'' parameter. For example:
     if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
     with importance grater to 1 will be fetched. Default is ''=''.'
-    defaultvalue: =
+    defaultvalue: '='
     display: Importance Operator
     hidden: false
     name: importance_operator
     options:
-      - =
-      - >
-      - <
+      - '='
+      - '>'
+      - '<'
     required: false
     type: 15
   - additionalinfo: Alert status to filter by. If none was chosen, all statuses will
@@ -227,7 +228,7 @@ script:
         - name: importance_operator
           auto: PREDEFINED
           predefined:
-            - <
+            - '<'
             - '='
             - '>'
           description: 'The operator to apply on the importance argument (''>'' is grater than, ''<'' is smaller than,
