@@ -981,17 +981,31 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list) -> Dict[str, Any]:
+    def generate_files_dict_with_specific_os(self, windows: list, linux: list, macos: list) -> Dict[str, list]:
+        if not windows and not linux and not macos:
+            raise ValueError('You should enter at least one path.')
+
         files = {}
         if windows:
             files['windows'] = windows
         if linux:
             files['linux'] = linux
         if macos:
-            files['linux'] = macos
+            files['macos'] = macos
 
-        if not windows and not linux and not macos:
-            raise ValueError('You should enter at least one path.')
+        return files
+
+    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list, file_path_list: list)\
+            -> Dict[str, Any]:
+        # there are 2 options, either the paths are given with separation to a specific os or without
+        # it using generic_file_path
+        if file_path_list:
+            files = self.generate_files_dict(
+                endpoint_id_list=endpoint_id_list,
+                file_path_list=file_path_list
+            )
+        else:
+            files = self.generate_files_dict_with_specific_os(windows=windows, linux=linux, macos=macos)
 
         request_data: Dict[str, Any] = {
             'filters': [
@@ -1011,6 +1025,33 @@ class Client(BaseClient):
             timeout=self.timeout
         )
         return reply.get('reply')
+
+    def generate_files_dict(self, endpoint_id_list: list, file_path_list: list) -> Dict[str, Any]:
+        files: dict = {"windows": [], "linux": [], "macos": []}
+
+        if len(endpoint_id_list) != len(file_path_list):
+            raise ValueError("The endpoint_ids list must be in the same length as the generic_file_path")
+
+        for endpoint_id, file_path in zip(endpoint_id_list, file_path_list):
+            endpoints = self.get_endpoints(endpoint_id_list=[endpoint_id])
+
+            if len(endpoints) == 0 or not isinstance(endpoints, list):
+                raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
+
+            endpoint = endpoints[0]
+            endpoint_os_type = endpoint.get('os_type')
+
+            if 'windows' in endpoint_os_type.lower():
+                files['windows'].append(file_path)
+            elif 'linux' in endpoint_os_type.lower():
+                files['linux'].append(file_path)
+            elif 'macos' in endpoint_os_type.lower():
+                files['macos'].append(file_path)
+
+        # remove keys with no value
+        files = {k: v for k, v in files.items() if v}
+
+        return files
 
     def retrieve_file_details(self, action_id: int) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
@@ -2677,13 +2718,16 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
     windows: list = argToList(args.get('windows_file_paths'))
     linux: list = argToList(args.get('linux_file_paths'))
     macos: list = argToList(args.get('mac_file_paths'))
+    file_path_list: list = argToList(args.get('generic_file_path'))
 
     reply = client.retrieve_file(
         endpoint_id_list=endpoint_id_list,
         windows=windows,
         linux=linux,
-        macos=macos
+        macos=macos,
+        file_path_list=file_path_list
     )
+
     result = {'action_id': reply.get('action_id')}
     return (
         tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),

@@ -1364,6 +1364,61 @@ def test_retrieve_files_command(requests_mock):
     assert raw_response == {'action_id': 1773}
 
 
+def test_retrieve_files_command_using_general_file_path(requests_mock):
+    """
+    Given:
+        - endpoint_ids
+        - generic_file_path
+    When
+        - A user desires to retrieve a file.
+    Then
+        - Assert the returned markdown, context data and raw response are as expected.
+    """
+    from CortexXDRIR import retrieve_files_command, Client
+    from CommonServerPython import tableToMarkdown, string_to_table_header
+
+    retrieve_expected_result = {
+        'PaloAltoNetworksXDR.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
+    result = {'action_id': 1773}
+
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    hr, context, raw_response = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
+                                                                'generic_file_path': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
+
+    assert hr == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
+    assert context == retrieve_expected_result
+    assert raw_response == {'action_id': 1773}
+
+
+def test_retrieve_files_command_using_general_file_path_without_valid_endpint(requests_mock):
+    """
+    Given:
+        - endpoint_ids
+        - generic_file_path
+    When
+        - A user desires to retrieve a file.
+        - The endpoint is invalid
+    Then
+        - Assert the returned markdown, context data and raw response are as expected.
+    """
+    from CortexXDRIR import retrieve_files_command, Client
+    get_endpoints_response = {"reply": {"result_count": 1, "endpoints": []}}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    with pytest.raises(ValueError) as error:
+        retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
+                                        'generic_file_path': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
+    assert str(error.value) == "Error: Endpoint aeec6a2cc92e46fab3b6f621722e9916 was not found"
+
+
 def test_retrieve_file_details_command(requests_mock):
     """
     Given:
