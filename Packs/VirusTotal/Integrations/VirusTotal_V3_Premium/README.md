@@ -1,4 +1,5 @@
-Analyze suspicious hashes, URLs, domains, and IP addresses
+Use the premium API capabilities of VirusTotal. Analyse retro hunts, read live hunt notifications and download files from VirusTotal.
+The differences between VirusTotal's Public API and Premium API can be found [in VirusTotal v3 API documentation](https://developers.virustotal.com/v3.0/reference#public-vs-premium-api).
 
 This integration was integrated and tested with version API v3 of VirusTotal - Premium - (API v3)
 
@@ -9,14 +10,7 @@ This integration was integrated and tested with version API v3 of VirusTotal - P
 - Group several files from VirusTotal into a password-protected ZIP file.
 - Get a PCAP file generated from VirusTotal's sandbox for further analysis. 
 
-
 ## Configure VirusTotal - Premium - (API v3) on Cortex XSOAR  
-
-### Acquire API Key 
-Your API key can be found in your VirusTotal account user menu:  
-![](https://files.readme.io/ddeb298-Screen_Shot_2019-10-17_at_3.17.04_PM.png)  
-Your API key carries all your privileges, so keep it secure and don't share it with anyone.
-
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for VirusTotal - Premium - (API v3).
 3. Click **Add instance** to create and configure a new integration instance.
@@ -33,6 +27,11 @@ Your API key carries all your privileges, so keep it secure and don't share it w
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Acquire API Key 
+Your API key can be found in your VirusTotal account user menu:  
+![](https://files.readme.io/ddeb298-Screen_Shot_2019-10-17_at_3.17.04_PM.png)  
+Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ## Fetch Incidents
 Fetch incidents will fetch livehunt notifications of the given ruleset or identifier. 

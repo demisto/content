@@ -11,10 +11,6 @@
     "required": false,
     "neverSetAsRequired": false,
     "isReadOnly": false,
-    "selectValues": [
-        "cybergate",
-        "b213a4c4c70220868bf4b85808c9178f89bb6dea85e9f3336731d831bfb7e186"
-    ],
     "useAsKpi": false,
     "locked": false,
     "system": false,
@@ -27,5 +23,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.5.0"
 }
