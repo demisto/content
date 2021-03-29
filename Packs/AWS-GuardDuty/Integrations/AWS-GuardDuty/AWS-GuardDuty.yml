@@ -1143,7 +1143,7 @@ script:
     description: Marks specified Amazon GuardDuty findings as useful or not useful.
     execution: false
     name: aws-gd-update-findings-feedback
-  dockerimage: demisto/boto3py3:1.0.0.17463
+  dockerimage: demisto/boto3py3:1.0.0.17940
   feed: false
   isfetch: true
   longRunning: false
