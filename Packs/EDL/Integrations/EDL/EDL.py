@@ -121,12 +121,13 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_edl_context(request_args: RequestArguments) -> str:
+def refresh_edl_context(request_args: RequestArguments, save_integration_context: bool = False) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
 
     Parameters:
         request_args: Request arguments
+        save_integration_context: Flag to save the result to integration context instead of LOCAL_CACHE
 
     Returns: List(IoCs in output format)
     """
@@ -155,7 +156,11 @@ def refresh_edl_context(request_args: RequestArguments) -> str:
 
     out_dict["last_run"] = date_to_timestamp(now)
     out_dict["current_iocs"] = iocs
-    set_integration_context(out_dict)
+    if save_integration_context:
+        set_integration_context(out_dict)
+    else:
+        global EDL_LOCAL_CACHE
+        EDL_LOCAL_CACHE = out_dict
     return out_dict[EDL_VALUES_KEY]
 
 
@@ -357,7 +362,7 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
 
 def get_edl_ioc_values(on_demand: bool,
                        request_args: RequestArguments,
-                       edl_cache: dict,
+                       edl_cache: dict = None,
                        cache_refresh_rate: str = None) -> str:
     """
     Get the ioc list to return in the edl
@@ -371,6 +376,12 @@ def get_edl_ioc_values(on_demand: bool,
     Returns:
         string representation of the iocs
     """
+    if on_demand:
+        # on_demand saves the EDL to integration_context
+        edl_cache = get_integration_context()
+    elif not edl_cache:
+        global EDL_LOCAL_CACHE
+        edl_cache = EDL_LOCAL_CACHE
     last_run = edl_cache.get('last_run')
     last_query = edl_cache.get('last_query')
     current_iocs = edl_cache.get('current_iocs')
@@ -409,13 +420,14 @@ def get_ioc_values_str_from_cache(edl_cache: dict,
     Returns:
         string representation of the iocs
     """
+    global EDL_LOCAL_CACHE
     if iocs:
         if request_args.offset > len(iocs):
             return ''
 
         iocs = iocs[request_args.offset: request_args.limit + request_args.offset]
         returned_dict, _ = create_values_for_returned_dict(iocs, request_args=request_args)
-        set_integration_context(edl_cache)
+        EDL_LOCAL_CACHE = returned_dict
 
     else:
         returned_dict = edl_cache
@@ -465,8 +477,6 @@ def route_edl_values() -> Response:
     Main handler for values saved in the integration context
     """
     params = demisto.params()
-    before = datetime.now()
-    DEMISTO_LOGGER.write(f"Time before execution: {str(before)}")
 
     credentials = params.get('credentials') if params.get('credentials') else {}
     username: str = credentials.get('identifier', '')
@@ -480,16 +490,12 @@ def route_edl_values() -> Response:
 
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
-    edl_cache = get_integration_context()
 
     values = get_edl_ioc_values(
         on_demand=on_demand,
         request_args=request_args,
-        edl_cache=edl_cache,
         cache_refresh_rate=params.get('cache_refresh_rate'),
     )
-    after = datetime.now()
-    DEMISTO_LOGGER.write(f"Time after execution: {str(after)}. Delta: {str(after - before)}")
     return Response(values, status=200, mimetype='text/plain')
 
 
@@ -640,7 +646,7 @@ def update_edl_command(args: Dict, params: Dict):
     drop_invalids = args.get('drop_invalids', '').lower() == 'true'
     offset = try_parse_integer(args.get('offset', 0), EDL_OFFSET_ERR_MSG)
     request_args = RequestArguments(query, limit, offset, url_port_stripping, drop_invalids, collapse_ips)
-    indicators = refresh_edl_context(request_args)
+    indicators = refresh_edl_context(request_args, save_integration_context=True)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'EDL was updated successfully'
     return hr, {}, indicators

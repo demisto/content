@@ -22,7 +22,7 @@ class TestHelperFunctions:
             ioc_list = get_edl_ioc_values(
                 on_demand=True,
                 request_args=request_args,
-                integration_context=integration_context
+                edl_cache=integration_context
             )
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
