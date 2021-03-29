@@ -11,6 +11,7 @@ This integration was integrated and tested with version v1.0 of Microsoft Graph 
     | Application ID | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    | Azure AD endpoint | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

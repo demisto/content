@@ -5,11 +5,8 @@ from CommonServerUserPython import *
 from typing import Dict, Optional
 
 import urllib3
-import re
 
 urllib3.disable_warnings()
-
-REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 
 
 class Client:
@@ -551,14 +548,8 @@ def list_joined_teams(client: Client, args: Dict) -> CommandResults:
 
 
 def start_auth(client: Client) -> CommandResults:
-    response = client.ms_client.device_auth_request()
-    message = response.get('message')
-    url = re.search(REGEX_SEARCH_URL, message).group("url")  # type:ignore
-    user_code = response.get('user_code')
-    return CommandResults(readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [{url}]({url})
- and enter the code **{user_code}** to authenticate.
-2. Run the **!microsoft-teams-auth-complete** command in the War Room.""")
+    result = client.ms_client.start_auth('!microsoft-teams-auth-complete')
+    return CommandResults(readable_output=result)
 
 
 def complete_auth(client: Client) -> str:

@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 import urllib3
 import traceback
 from typing import List, Union
-import re
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -15,7 +14,6 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2020-05-01'
-REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 
 ''' CLIENT CLASS '''
 
@@ -323,14 +321,8 @@ def test_connection(client: AzureNSGClient, params: dict) -> str:
 
 @logger
 def start_auth(client: AzureNSGClient) -> CommandResults:
-    response = client.ms_client.device_auth_request()
-    message = response.get('message')
-    url = re.search(REGEX_SEARCH_URL, message).group("url")  # type:ignore
-    user_code = response.get('user_code')
-    return CommandResults(readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [{url}]({url})
- and enter the code **{user_code}** to authenticate.
-2. Run the **!azure-nsg-auth-complete** command in the War Room.""")
+    result = client.ms_client.start_auth('!azure-nsg-auth-complete')
+    return CommandResults(readable_output=result)
 
 
 @logger

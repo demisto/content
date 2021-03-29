@@ -126,7 +126,7 @@ script:
     description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
     execution: false
     name: msgraph-api-test
-  dockerimage: demisto/crypto:1.0.0.16776
+  dockerimage: demisto/crypto:1.0.0.17856
   feed: false
   isfetch: false
   longRunning: false
@@ -136,3 +136,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests

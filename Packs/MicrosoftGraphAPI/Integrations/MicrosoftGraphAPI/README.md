@@ -58,6 +58,7 @@ The integration supports only Application permission type, and does not support 
 | tenant_id | Tenant ID (Required for using self deployed Azure app) | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+| azure_ad_endpoint | Azure AD endpoint associated with national cloud | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

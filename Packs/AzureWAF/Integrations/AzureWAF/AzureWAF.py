@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 from typing import Any, Union
 from MicrosoftApiModule import *
 import urllib3
-import re
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -22,7 +21,6 @@ BASE_URL = 'https://management.azure.com'
 SUBSCRIPTION_PATH = 'subscriptions/{}'
 RESOURCE_PATH = 'resourceGroups/{}'
 POLICY_PATH = 'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies'
-REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 
 ''' CLIENT CLASS '''
 
@@ -124,14 +122,8 @@ def test_connection(client: AzureWAFClient, params: Dict):
 
 @logger
 def start_auth(client: AzureWAFClient) -> CommandResults:
-    response = client.ms_client.device_auth_request()
-    message = response.get('message')
-    url = re.search(REGEX_SEARCH_URL, message).group("url")  # type:ignore
-    user_code = response.get('user_code')
-    return CommandResults(readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [{url}]({url})
-and enter the code **{user_code}** to authenticate.
-2. Run the **!azure-waf-auth-complete** command in the War Room.""")
+    result = client.ms_client.start_auth('!azure-waf-auth-complete')
+    return CommandResults(readable_output=result)
 
 
 @logger

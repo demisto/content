@@ -23,6 +23,7 @@ The application must have *user_impersonation* permission and must allow public 
     | resource_group_name | Default Resource Group Name | True |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
+    | azure_ad_endpoint | Azure AD endpoint associated with national cloud | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
