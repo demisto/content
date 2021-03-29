@@ -8319,6 +8319,7 @@ def create_outputs(whois_result, domain, reliability, query=None):
         ec.update({'Registrar': {'Name': whois_result.get('registrar')}})
         standard_ec['WHOIS']['Registrar'] = whois_result.get('registrar')
         md['Registrar'] = whois_result.get('registrar')
+        standard_ec['Registrar'] = {'Name': whois_result.get('registrar')}
     if 'id' in whois_result:
         ec['ID'] = whois_result.get('id')
         md['ID'] = whois_result.get('id')
@@ -8410,7 +8411,7 @@ def get_whois_ip(ip):
     return ip_obj.lookup_rdap(depth=1)
 
 
-def ip_command(ips):
+def ip_command(ips, reliability):
     results = []
     for ip in argToList(ips):
         response = get_whois_ip(ip)
@@ -8419,7 +8420,8 @@ def ip_command(ips):
             indicator=ip,
             indicator_type=DBotScoreType.IP,
             integration_name='Whois',
-            score=Common.DBotScore.NONE
+            score=Common.DBotScore.NONE,
+            reliability=reliability
         )
         related_feed = Common.FeedRelatedIndicators(
             value=response.get('network', {}).get('cidr'),
@@ -8521,7 +8523,7 @@ def main():
 
     try:
         if command == 'ip':
-            return_results(ip_command(demisto.args().get('ip')))
+            return_results(ip_command(demisto.args().get('ip'), reliability))
         else:
             org_socket = socket.socket
             setup_proxy()
