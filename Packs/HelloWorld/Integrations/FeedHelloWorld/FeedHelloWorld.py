@@ -257,7 +257,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         # Create indicator object for each value.
         # The object consists of a dictionary with required and optional keys and values, as described blow.
         for key, value in item.items():
-            raw_data.update({key: value}) # remove
+            raw_data.update({key: value})
         indicator_obj = {
             # The indicator value.
             'value': value_,
