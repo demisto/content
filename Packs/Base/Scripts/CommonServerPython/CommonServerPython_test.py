@@ -2055,7 +2055,7 @@ class TestBaseClient:
         res = self.client._http_request('get', 'event', resp_type='response')
         assert isinstance(res, requests.Response)
 
-    def test_http_request_proxy_false(self, mocker):
+    def test_http_request_proxy_false(self):
         from CommonServerPython import BaseClient
         import requests_mock
 
@@ -2063,7 +2063,6 @@ class TestBaseClient:
         os.environ['https_proxy'] = 'https://testproxy:8899'
 
         os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
-        mocker.patch.object(demisto, 'params', return_value={'insecure': False, 'proxy': False})
         client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=False, verify=True)
 
         with requests_mock.mock() as m:
@@ -2075,7 +2074,7 @@ class TestBaseClient:
             assert not m.last_request.proxies
             assert m.called is True
 
-    def test_http_request_proxy_true(self, mocker):
+    def test_http_request_proxy_true(self):
         from CommonServerPython import BaseClient
         import requests_mock
 
@@ -2083,7 +2082,6 @@ class TestBaseClient:
         os.environ['https_proxy'] = 'https://testproxy:8899'
 
         os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
-        mocker.patch.object(demisto, 'params', return_value={'insecure': False, 'proxy': True})
         client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=True)
 
         with requests_mock.mock() as m:
@@ -2096,6 +2094,21 @@ class TestBaseClient:
                 'http': 'http://testproxy:8899',
                 'https': 'https://testproxy:8899'
             }
+            assert m.called is True
+
+    def test_http_request_verify_false(self):
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=False)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify is False
             assert m.called is True
 
     def test_http_request_not_ok(self, requests_mock):

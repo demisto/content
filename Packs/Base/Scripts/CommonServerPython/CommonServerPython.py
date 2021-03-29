@@ -5330,7 +5330,14 @@ if 'requests' in sys.modules:
             self._auth = auth
             self._session = requests.Session()
             if not proxy:
-                handle_proxy()
+                for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+                    if k in os.environ:
+                        del os.environ[k]
+
+            if not verify:
+                for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
+                    if k in os.environ:
+                        del os.environ[k]
 
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
