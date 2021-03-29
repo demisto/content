@@ -1,6 +1,6 @@
 args:
 - default: true
-  description: The array to join if it has single element
+  description: The array to encode
   isArray: true
   name: value
   required: true
