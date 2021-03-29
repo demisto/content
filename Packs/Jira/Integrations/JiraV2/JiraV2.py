@@ -1067,17 +1067,19 @@ def get_user_info_data():
                             auth=get_auth())
 
 
-def get_modified_remote_data_command(args):
+def get_modified_remote_data_command(args, fetch_query):
     """
     available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last
     update. If the command is implemented in the integration, the get-remote-data command will only be performed on
     incidents returned from this command, rather than on all existing incidents.
     :param args: args['last_update']: Date string represents the last time we retrieved modified incidents for this
      integration.
+     :param fetch_query: additional query to get only wanted modified issues.
     :return: GetModifiedRemoteDataResponse: this is the object that maintains a list of incident ids to run
      'get-remote-data' on.
     """
     remote_args = GetModifiedRemoteDataArgs(args)
+
     modified_issues_ids = []
     HEADERS['Accept'] = "application/json"
     try:
@@ -1092,8 +1094,12 @@ def get_modified_remote_data_command(args):
                               f' {res.json()}')
             last_update: datetime = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})\
                 .strftime('%Y-%m-%d %H:%M')
+            if fetch_query:
+                get_updated_issues_query = f'{fetch_query} AND updated > "{last_update}"'
+            else:
+                get_updated_issues_query = f'updated > "{last_update}"'
             demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
-            _, _, context = issue_query_command(f'updated > "{last_update}"', max_results=100)
+            _, _, context = issue_query_command(get_updated_issues_query, max_results=100)
             modified_issues = context.get('issues', [])
             modified_issues_ids = [issue.get('id') for issue in modified_issues if issue.get('id')]
             demisto.debug(f'Performing get-modified-remote-data command. Issue IDs to update in XSOAR:'
@@ -1261,7 +1267,7 @@ def main():
         elif demisto.command() == 'jira-list-transitions':
             return_results(list_transitions_command(demisto.args()))
         elif demisto.command() == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(demisto.args()))
+            return_results(get_modified_remote_data_command(demisto.args(), fetch_query))
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 

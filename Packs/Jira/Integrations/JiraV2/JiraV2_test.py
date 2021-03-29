@@ -903,7 +903,7 @@ def test_get_modified_data_command(mocker):
         return_value=(None, None, {"issues": [{"id": "123"}]}),
     )
 
-    modified_ids = get_modified_remote_data_command({"lastUpdate": "0"})
+    modified_ids = get_modified_remote_data_command({"lastUpdate": "0"}, '')
     assert modified_ids.modified_incident_ids == ["123"]
 
 
@@ -926,7 +926,7 @@ def test_get_modified_data_command_when_getting_exception_for_get_user_info_data
     mocker.patch(
         "JiraV2.get_user_info_data", side_effect=Mock(side_effect=Exception("Test"))
     )
-    modified_ids = get_modified_remote_data_command({"lastUpdate": "0"})
+    modified_ids = get_modified_remote_data_command({"lastUpdate": "0"}, '')
     assert mocked_demisto_error.call_count == 1
     assert modified_ids.modified_incident_ids == []
 
@@ -957,7 +957,7 @@ def test_get_modified_data_command_when_getting_not_ok_status_code_for_get_user_
     mocker.patch("JiraV2.get_user_info_data", return_value=response)
     mocked_demisto_error = mocker.patch.object(demisto, "error")
 
-    modified_ids = get_modified_remote_data_command({"lastUpdate": "0"})
+    modified_ids = get_modified_remote_data_command({"lastUpdate": "0"}, '')
     assert mocked_demisto_error.call_count == 1
     assert modified_ids.modified_incident_ids == []
 
