@@ -952,7 +952,7 @@ def test_endpoint_scan_command_scan_all_endpoints_no_filters_error(requests_mock
     match = 'To scan all the endpoints run this command with the \'all\' argument as True' \
             ' and without any other filters.'
     with pytest.raises(ValueError, match=match):
-        endpoint_scan_command(client)
+        endpoint_scan_command(client, {})
 
 
 def test_sort_all_list_incident_fields():
