@@ -550,14 +550,17 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params: dict) -> str:
     """Tests API connectivity and authentication'
     A simple call to list_livehunt_rules
 
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    client.list_livehunt_rules(limit=1)
+    if argToBoolean(params.get('isFetch')):
+        fetch_incidents(client, params, get_last_run_time(last_run={}))
+    else:
+        client.list_livehunt_rules(limit=1)
     return 'ok'
 
 
@@ -807,6 +810,37 @@ def list_notifications_files_list(client: Client, args: dict) -> CommandResults:
     )
 
 
+def list_notifications_files_list_by_hash(client: Client, args: dict) -> List[CommandResults]:
+    """Retrieve file objects for VT Hunting Livehunt notifications by hash."""
+    hashes_only = [hash_ for hash_ in argToList(args.get('hash')) if get_hash_type(hash_) != 'Unknown']
+    cursor = args.get('cursor')
+    results = list()
+    for hash_ in hashes_only:
+        try:
+            outputs = raw_response = client.list_notifications_files(hash_, cursor, limit=1)
+            if not arg_to_boolean_can_be_none(args.get('extended_data')):
+                outputs = copy.deepcopy(raw_response)
+                outputs['data'] = decrease_data_size(outputs.get('data', []))
+            results.append(CommandResults(
+                f'{INTEGRATION_ENTRY_CONTEXT}.LiveHuntFiles',
+                'id',
+                readable_output=tableToMarkdown(
+                    'Notifications file listed:',
+                    [
+                        {**item.get('attributes', {}), 'id': item.get('id')} for item in raw_response.get('data', [])
+                    ],
+                    headers=['id', 'meaningful_name', 'last_analysis_stats']
+                ),
+                outputs=outputs,
+                raw_response=raw_response
+            ))
+        except Exception as exc:
+            err = f'Could not process hash "{hash_}"'
+            demisto.debug(f'{err}\n{exc}')
+            results.append(CommandResults(readable_output=err))
+    return results
+
+
 def list_files_by_rule(client: Client, args: dict) -> CommandResults:
     """Get a VT Hunting Livehunt ruleset by hunting notification files relationship."""
     id_ = args['id']
@@ -882,16 +916,18 @@ def get_retrohunt_job_by_id(client: Client, args: dict) -> CommandResults:
         **data.get('attributes', {})
     }
     if creation_date := readable_inputs.get('creation_date'):
-        readable_inputs['creation_date'] = parse(str(creation_date))
+        if creation_date := parse(str(creation_date)) and isinstance(creation_date, datetime):
+            readable_inputs['creation_date'] = creation_date.replace(microsecond=0).isoformat()
     if finish_date := readable_inputs.get('finish_date'):
-        readable_inputs['finish_date'] = parse(str(finish_date))
+        if finish_date := parse(str(finish_date)) and isinstance(finish_date, datetime):
+            readable_inputs['finish_date'] = finish_date.replace(microsecond=0).isoformat()
 
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.RetroHuntJob',
         'id',
         readable_output=tableToMarkdown(
             f'Retrohunt job: {id_}',
-
+            readable_inputs
         ),
         outputs=data,
         raw_response=raw_response
@@ -941,7 +977,8 @@ def get_quota_limits(client: Client, args: dict) -> CommandResults:
 
 def fetch_incidents(client: Client, params: dict, last_run_date: datetime) -> Tuple[List[dict], datetime]:
     tag = params.get('tag')
-    raw_response = client.list_notifications(from_time=last_run_date, tag=tag, limit=40)
+    max_fetch = arg_to_number_must_int(params.get('max_fetch'))
+    raw_response = client.list_notifications(from_time=last_run_date, tag=tag, limit=max_fetch)
     incidents = list()
     for notification in raw_response.get('data', []):
         attributes = notification.get('attributes', {})
@@ -987,7 +1024,7 @@ def search_file(client: Client, args: dict) -> CommandResults:
 def main():
     """main function, parses params and runs command functions
     """
-    results: Union[str, CommandResults, dict]
+    results: Union[str, CommandResults, dict, List[CommandResults]]
     command = demisto.command()
     args = demisto.args()
     demisto.debug(f'Command being called is {command}')
@@ -1001,7 +1038,7 @@ def main():
             demisto.incidents(incidents)
         else:
             if command == 'test-module':
-                results = test_module(client)
+                results = test_module(client, params)
             elif command == f'{COMMAND_PREFIX}-download-file':
                 results = download_file(client, args)
             elif command == f'{COMMAND_PREFIX}-zip-create':
@@ -1030,6 +1067,8 @@ def main():
                 results = list_notifications(client, args)
             elif command == f'{COMMAND_PREFIX}-livehunt-notifications-files-list':
                 results = list_notifications_files_list(client, args)
+            elif command == f'{COMMAND_PREFIX}-livehunt-notifications-files-get-by-hash':
+                results = list_notifications_files_list_by_hash(client, args)
             elif command == f'{COMMAND_PREFIX}-livehunt-rule-list-files':
                 results = list_files_by_rule(client, args)
             elif command == f'{COMMAND_PREFIX}-retrohunt-jobs-list':

@@ -23,7 +23,13 @@
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
-        "fieldCliNameToExtractSettings": {}
+        "fieldCliNameToExtractSettings": {
+            "filehash": {
+                "extractAsIsIndicatorTypeId": "unifiedFileRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            }
+        }
     },
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.5.0"
 }

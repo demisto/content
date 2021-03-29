@@ -20,6 +20,7 @@ configuration:
   type: 13
 - defaultvalue: '40'
   name: max_fetch
+  display: Maximum number of incidents per fetch
   required: false
   type: 0
 - defaultvalue: 3 days
@@ -745,7 +746,7 @@ script:
     name: vt-private-livehunt-notifications-list
   - arguments:
     - default: false
-      description: String to search with in the hunting notification tags.
+      description: String to search within the hunting notification tags.
       isArray: false
       name: filter
       required: false
@@ -941,6 +942,197 @@ script:
     description: Retrieve file objects for VT Hunting Livehunt notifications.
     execution: false
     name: vt-private-livehunt-notifications-files-list
+  - arguments:
+    - default: false
+      description: Hashes to search within VirusTotal. Will search only hashes and will ignore any other value.
+      isArray: true
+      name: hash
+      required: true
+      secret: false
+    - default: false
+      description: Continuation cursor.
+      isArray: false
+      name: cursor
+      required: false
+      secret: false
+    outputs:
+    - contextPath: VirusTotal.LiveHuntFiles.meta.count
+      description: Total file's count.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.meta.cursor
+      description: Cursor of the call
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.type_description
+      description: describes the file type.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.tlsh
+      description: Trend Micro's TLSH hash
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.vhash
+      description: in-house similarity clustering algorithm value, based on a simple
+        structural feature hash allows you to find similar files.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.exiftool
+      description: exiftool is a program for extracting Exif metadata from different
+        file formats. Metadata shown may vary depending on the file type, and given
+        the nature of Exif metadata, some fields may appear or not.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.trid.file_type
+      description: TrID is a utility designed to identify file types from their binary
+        signatures.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.trid.probability
+      description: probability of file format identification (given as percentage).
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.creation_date
+      description: extracted when possible from the file's metadata. Indicates when
+        it was built or compiled. It can also be faked by malware creators. UTC timestamp.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.reputation
+      description: file's score calculated from all votes posted by the VirusTotal
+        community.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.names
+      description: all file names associated with the file.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_modification_date
+      description: date when the object itself was last modified. UTC timestamp.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.type_tag
+      description: tag representing the file type. Can be used in vt-private-intelligence-search
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.times_submitted
+      description: number of times the file has been posted to VirusTotal.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.total_votes.harmless
+      description: number of positive votes.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.total_votes.malicious
+      description: number of negative votes.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.size
+      description: file size in bytes.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.type_extension
+      description: specifies file extension.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_submission_date
+      description: most recent date the file was posted to VirusTotal. UTC timestamp.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.downloadable
+      description: true if the file can be downloaded, false otherwise. (use vt-private-file-download
+        to download the file)
+      type: Boolean
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.sha256
+      description: SHA-256 of the file.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.tags
+      description: The file's tags.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_date
+      description: most recent scan date. UTC timestamp.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.unique_sources
+      description: indicates from how many different sources the file has been posted
+        from.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.first_submission_date
+      description: date when the file was first seen in VirusTotal. UTC timestamp.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.ssdeep
+      description: SSDeep of the file.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.md5
+      description: MD5 of the file.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.sha1
+      description: SHA-1 if the file
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.magic
+      description: magic identifier of this app in hex format.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.main_icon.raw_md5
+      description: MD5 of the file's icon.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.main_icon.dhash
+      description: The dhash of the file's icon
+      type: Date
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.harmless
+      description: number of reports saying that is harmless.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.type-unsupported
+      description: number of AV engines that don't support that type of file.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.suspicious
+      description: number of reports saying that is suspicious.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.confirmed-timeout
+      description: number of AV engines that reach a timeout when analysing that file.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.timeout
+      description: number of timeouts when analysing this URL/file.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.failure
+      description: number of AV engines that fail when analysing that file.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.malicious
+      description: number of reports saying that is malicious
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.last_analysis_stats.undetected
+      description: number of reports saying that is undetected.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.attributes.meaningful_name
+      description: the most interesting name out of all file's names.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.type
+      description: Type of the entry (file)
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.id
+      description: file ID
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.links.self
+      description: link to the file
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_id
+      description: The notification ID the file is connected to
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_key
+      description: The notification's source key
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_tags
+      description: notification tags.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_name
+      description: matched rule's ruleset name.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_source_country
+      description: The notification's source country of the notification
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.rule_name
+      description: contains the names of all rules in the ruleset.
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_snippet
+      description: The notification snippet ID
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.ruleset_id
+      description: VirusTotal's ruleset ID.
+      type: Date
+    - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.notification_date
+      description: The notification date in epch.
+      type: Number
+    - contextPath: VirusTotal.LiveHuntFiles.data.context_attributes.match_in_subfile
+      description: whether the match was in a subfile or not.
+      type: Boolean
+    - contextPath: VirusTotal.LiveHuntFiles.links.self
+      description: Link to the current apge
+      type: String
+    - contextPath: VirusTotal.LiveHuntFiles.links.next
+      description: Link to the next page
+      type: String
+    deprecated: false
+    description: Retrieve file objects for VT Hunting Livehunt notifications.
+    execution: false
+    name: vt-private-livehunt-notifications-files-get-by-hash
   - arguments:
     - default: true
       description: Rule identifier. Can be retrieved from the vt-private-livehunt-rules-list
@@ -1568,7 +1760,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.2.17246
+  dockerimage: demisto/python3:3.9.2.17957
 defaultmapperin: VirusTotal Intelligence LiveHunt Notification
 fromversion: 5.5.0
 tests:
