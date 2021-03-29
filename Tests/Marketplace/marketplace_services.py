@@ -1238,6 +1238,7 @@ class Pack(object):
 
         modified_versions_dict = {}
 
+        # Found modified rn files
         for rn_filename in modified_rn_files:
             _version = rn_filename.replace('.md', '')
             version = _version.replace('_', '.')
