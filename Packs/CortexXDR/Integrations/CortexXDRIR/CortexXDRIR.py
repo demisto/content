@@ -2242,16 +2242,17 @@ def endpoint_scan_command(client, args):
     all_ = argToBoolean(args.get('all', 'false'))
 
     # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
+    err_msg = 'To scan all the endpoints run this command with the \'all\' argument as True ' \
+              'and without any other filters.'
     if all_:
-        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen\
+        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
                 or ip_list or group_name or platform or alias or hostname:
-            raise Exception('To scan all the endpoints run this command with the \'all\' argument as True'
-                            ' and without any other filters.')
+            raise Exception(err_msg)
     else:
-        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen\
-            and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform\
+        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
                 and not alias and not hostname:
-            raise Exception ('To scan all the endpoints run this command with the \'all\' argument as True.')
+            raise Exception(err_msg)
 
     reply = client.endpoint_scan(
         endpoint_id_list=argToList(endpoint_id_list),
