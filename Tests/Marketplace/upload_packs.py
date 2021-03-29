@@ -1014,6 +1014,7 @@ def main():
             pack.cleanup()
             continue
 
+        logging.info("Calling prepare release notes")
         task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified,
                                                                     modified_files_paths)
         if not task_status:

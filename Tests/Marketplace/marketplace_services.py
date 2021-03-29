@@ -1239,18 +1239,21 @@ class Pack(object):
         modified_versions_dict = {}
 
         # Found modified rn files
+        logging.info("Found modified rn files")
         for rn_filename in modified_rn_files:
             _version = rn_filename.replace('.md', '')
             version = _version.replace('_', '.')
             # Should only apply on modified files that are not the last rn file
             if LooseVersion(version) < changelog_latest_rn_version:
                 # The case where the version is a key in the changelog file
+                logging.info("The version is a key in the changelog file")
                 if changelog.get(version):
                     with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
                         rn_lines = rn_file.read()
                     modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
                 # The case where the version is not a key in the changelog file
                 else:
+                    logging.info("The version is not a key in the changelog file")
                     same_block_versions_dict, higher_nearest_version = self.get_same_block_versions(release_notes_dir,
                                                                                                     version, changelog)
                     modified_versions_dict[higher_nearest_version] = aggregate_release_notes_for_marketplace(
@@ -1395,6 +1398,7 @@ class Pack(object):
 
         try:
             # load changelog from downloaded index
+            logging.info("Loading changelog")
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
             if os.path.exists(changelog_index_path):
                 changelog, changelog_latest_rn_version = self.get_changelog_latest_rn(changelog_index_path)
@@ -1437,6 +1441,7 @@ class Pack(object):
                             changelog[latest_release_notes] = version_changelog
 
                         if modified_release_notes_lines_dict:
+                            logging.info("Creating changelog entries for modified rn")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict:
                                 changelog_entry = self._create_changelog_entry(
                                     release_notes=modified_release_notes_lines,
