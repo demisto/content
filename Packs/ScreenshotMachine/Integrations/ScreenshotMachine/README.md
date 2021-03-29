@@ -1,5 +1,4 @@
 Uses screenshot machine to get a screenshot
-This integration was integrated and tested with version xx of Screenshot Machine
 ## Configure Screenshot Machine on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -21,7 +20,7 @@ Retrieve screenshot
 
 #### Base Command
 
-`screenshot`
+`screenshot-machine-get-screenshot`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
