@@ -279,11 +279,10 @@ def select_outputs(result, output_keys):
         # output = camelize(output)
         return output
     elif type(result) is list:
-        output = []
+        output = []  # type: ignore[assignment]
         for r in result:
             new_r = {capitalize(k): r[k] for k in output_keys}
-            # new_r = camelize(new_r)
-            output.append(new_r)
+            output.append(new_r)  # type: ignore[attr-defined]
         return output
 
 
@@ -504,7 +503,7 @@ def fetch_incidents(client, last_run: dict, board_id: str, list_id_filter: str):
 
     # Now, we list all the lists on the board
     lists = client.list_lists(board_id)
-    cards = []
+    cards: List = []
     for list_item in lists:
         list_id = list_item.get("id")
         # Finally, we get all the active cards

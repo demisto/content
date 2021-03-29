@@ -11,13 +11,13 @@ This test suite runs both unit tests and integration tests
 
  * Integration tests are run if API_KEY and API_TOKEN are provided
  * Integration tests can save the output of individual calls to ./test_data if GEN_TEST_DATA
- * Unit tests use data from the static JSON test data (appended with _unit) in the ./test_data directory. 
+ * Unit tests use data from the static JSON test data (appended with _unit) in the ./test_data directory.
 
 Envvars:
     API_TOKEN: If configured, runs integration tests.
     API_KEY: Key assocaited with API token
     TEST_BOARD: ID of Trello board to use as testing ground
-    GEN_TEST_DATA: If set, copies the raw output* of the API queries into ./test_data 
+    GEN_TEST_DATA: If set, copies the raw output* of the API queries into ./test_data
 https://trello.com/app-key
 """
 
@@ -43,7 +43,7 @@ def testclient():
     """
     Setup a test client, used as a fixture for Integration tests.
     """
-    base_url = PARAMS.get("url") + "/1"
+    base_url = PARAMS.get("url") + "/1"  # type: ignore[operator]
     client = Client(
         PARAMS.get("key"),
         PARAMS.get("token"),
@@ -120,7 +120,7 @@ def test_fetch(mocker):
     assert len(incidents) > 0
     assert incidents[0].get("name")
     # Same thing again, except this time we remove the list_id filter
-    last_run, incidents = fetch_incidents(mock_client, last_run, "blah", None)
+    last_run, incidents = fetch_incidents(mock_client, last_run, "blah", None)  # type: ignore[arg-type]
     assert len(incidents) > 0
     assert incidents[0].get("name")
 
@@ -220,10 +220,10 @@ def fetch_tester(testclient, board_id):
     last_run = {
         "last_fetch": None
     }
-    next_run, incidents = fetch_incidents(testclient, last_run, board_id, None)
+    next_run, incidents = fetch_incidents(testclient, last_run, board_id, None)  # type: ignore[arg-type]
     # First fetch should return something
     assert len(incidents) > 0
-    next_run, incidents = fetch_incidents(testclient, next_run, board_id, None)
+    next_run, incidents = fetch_incidents(testclient, next_run, board_id, None)  # type: ignore[arg-type]
     # Second fetch should be empty
     assert len(incidents) == 0
 
