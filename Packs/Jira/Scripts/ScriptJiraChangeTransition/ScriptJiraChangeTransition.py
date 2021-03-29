@@ -86,7 +86,7 @@ def main():
                 )
         else:
             output = create_output(
-                'Failed to get a list of transaction because could not get "dbotMirrorId" from incident.'
+                f'Failed to get a list of transaction because could not get "dbotMirrorId" from incident.'
             )
 
     except Exception as ex:

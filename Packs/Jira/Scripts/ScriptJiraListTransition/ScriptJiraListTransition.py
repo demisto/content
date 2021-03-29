@@ -37,13 +37,12 @@ def main():
                     )
             else:
                 output = create_output(
-                    f"Error occurred while running script-JiraListTransition. expected a list as response but got:"
-                    f" {type(res)}. The response is: {res} "
+                    f"Error occurred while running script-JiraListTransition. expected a list as response but got: {type(res)}. The response is: {res}"
                 )
         else:
             output = create_output(
-                'Error occurred while running script-JiraListTransition because could not get "dbotMirrorId" from '
-                'incident. '
+                f'Error occurred while running script-JiraListTransition because could not get "dbotMirrorId" from '
+                f'incident. '
             )
     except Exception as ex:
         output = create_output(
