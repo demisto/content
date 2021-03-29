@@ -24,7 +24,7 @@ INVALID_LICENSE_HINT = '''
 #### Looks like we run out of money and lost our XSOAR license.
 
 #### Don't be alarmed, we can handle it together.
-#### goto the [secret place]()
+#### goto the [secret place](https://portal.demisto.works/acc_Content#/WarRoom/61676/6qcPiZNxSocCNBfUfnFzVj@61676)
 '''
 
 SUCCESS_MESSAGE = '''
@@ -61,11 +61,14 @@ def is_valid_license_temp(time_from: datetime, time_to: datetime):
         time_to.date().strftime('%Y-%m-%d') == '2020-12-25',
     ]
 
-    demisto.debug(f'WidgetLicenseErrorGifs - is_correct_date_range: {validate}')
+    demisto.debug(f'WidgetLicenseErrorText - is_correct_date_range: {validate}')
     return all(validate)
 
 
 def is_valid_license():
+    # TODO: if server 6.2:
+    #  res = demisto.internalHttpRequest('GET', '/license')
+    #  license_info = res.get('body')
     res = demisto.executeCommand('demisto-api-get', {'uri': '/license'})
     if is_error(res):
         raise DemistoException('Failed to run command: demisto-api-get')
