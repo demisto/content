@@ -247,20 +247,20 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
 
     # extract values from iterator
     for item in iterator:
-        value = item.get('value')
+        value_ = item.get('value')
         type_ = item.get('type')
         raw_data = {
-            'value': value,
+            'value': value_,
             'type': type_,
         }
 
         # Create indicator object for each value.
         # The object consists of a dictionary with required and optional keys and values, as described blow.
-        for key, val in item.items():
-            raw_data.update({key: val})
+        for key, value in item.items():
+            raw_data.update({key: value})
         indicator_obj = {
             # The indicator value.
-            'value': value,
+            'value': value_,
             # The indicator type as defined in Cortex XSOAR.
             # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
             'type': type_,
