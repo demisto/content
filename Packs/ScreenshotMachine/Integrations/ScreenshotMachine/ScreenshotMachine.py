@@ -1,8 +1,9 @@
 import hashlib
 from io import BytesIO
+import traceback
+import requests
 
 import demistomock as demisto  # noqa: F401
-import requests
 from CommonServerPython import *  # noqa: F401
 
 API_KEY = demisto.params().get('apikey')
@@ -71,9 +72,8 @@ def main():
             return_error('Command not found.')
 
     except Exception as e:
-        LOG(e.message)
-        LOG.print_log()
-        demisto.error(e)
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
