@@ -1,8 +1,6 @@
 import pytest
 import os
 import json
-from CommonServerPython import *
-from unittest.mock import call
 from Trello import Client, select_outputs, select_outputs_camelize
 
 """
@@ -20,9 +18,7 @@ Envvars:
     API_KEY: Key assocaited with API token
     TEST_BOARD: ID of Trello board to use as testing ground
     GEN_TEST_DATA: If set, copies the raw output* of the API queries into ./test_data 
-    
 https://trello.com/app-key
-
 """
 
 PARAMS = {
