@@ -257,7 +257,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         # Create indicator object for each value.
         # The object consists of a dictionary with required and optional keys and values, as described blow.
         for key, value in item.items():
-            raw_data.update({key: value})
+            raw_data.update({key: value}) # remove
         indicator_obj = {
             # The indicator value.
             'value': value_,
@@ -302,7 +302,7 @@ def get_indicators_command(client: Client,
     feed_tags = argToList(params.get('feedTags', ''))
     indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
     human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators,
-                                     headers=['value', 'type'], removeNull=True)
+                                     headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='',
