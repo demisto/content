@@ -370,11 +370,13 @@ script:
     name: get-mapping-data
   - arguments:
     - default: false
+      description: ID to get
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
+      description: Last update
       isArray: false
       name: lastUpdate
       required: false
