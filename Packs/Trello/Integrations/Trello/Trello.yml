@@ -365,6 +365,7 @@ script:
       description: Board ID
       type: Unknown
   - deprecated: false
+    description: Used for mirroring
     execution: false
     name: get-mapping-data
   - arguments:
@@ -379,6 +380,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Used by mirroring
     execution: false
     name: get-remote-data
   - arguments:
@@ -389,6 +391,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: List all the labels in a given board
     execution: false
     name: list-labels
     outputs:
@@ -433,6 +436,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Create a new trello label
     execution: false
     name: create-label
     outputs:
