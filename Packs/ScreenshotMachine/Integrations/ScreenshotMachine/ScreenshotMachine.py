@@ -10,30 +10,30 @@ API_KEY = demisto.params().get('apikey')
 
 
 def site_lookup(params):
-    a = "http://api.screenshotmachine.com"
-    r = requests.get(a, params=params, allow_redirects=True)
+    api_url = "http://api.screenshotmachine.com"
+    r = requests.get(api_url, params=params, allow_redirects=True)
 
     if r.status_code < 200 or r.status_code >= 300:
         return_error(
-            'Failed to update Content.\nURL: {}, Status Code: {}, Response: {}'.format(a, r.status_code, r.text))
+            'Failed to update Content.\nURL: {}, Status Code: {}, Response: {}'.format(api_url, r.status_code, r.text)
+        )
 
     return r
 
 
 def decode_screenshot(r):
     i = BytesIO(r.content)
-    res = fileResult('myfile', i.read(), file_type=EntryType.ENTRY_INFO_FILE)
+    res = fileResult('myfile', i.read(), file_type=EntryType.IMAGE)
 
     return res
 
 
 def generateHash(url, secretKey):
-
-    return hashlib.md5(url + secretKey).hexdigest()
+    string_to_hash = url + secretKey
+    return hashlib.md5(string_to_hash.encode('utf-8')).hexdigest()
 
 
 def get_screenshot(argDict):
-
     md5Secret = argDict.get('md5Secret', "")
     url = argDict.get("url")
     md5Hash = generateHash(url, md5Secret)
