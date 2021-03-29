@@ -969,6 +969,7 @@ def main():
 
     # starting iteration over packs
     for pack in packs_list:
+        logging.info("******here1*******")
         task_status, user_metadata = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
@@ -976,27 +977,33 @@ def main():
             continue
 
         task_status, pack_content_items = pack.collect_content_items()
+        logging.info("******here2*******")
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
             continue
 
         task_status, integration_images = pack.upload_integration_images(storage_bucket, diff_files_list, True)
+        logging.info("******here3*******")
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
         task_status, author_image = pack.upload_author_image(storage_bucket, diff_files_list, True)
+        logging.info("******here4*******")
+
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
             continue
 
+        logging.info("******here5*******")
         task_status, modified_files_paths, pack_was_modified = pack.detect_modified(
             content_repo, index_folder_path, current_commit_hash, previous_commit_hash)
 
         if not task_status:
+            logging.info("******here6*******")
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
             continue
@@ -1009,6 +1016,7 @@ def main():
                                            packs_statistic_df=packs_statistic_df,
                                            pack_was_modified=pack_was_modified,
                                            landing_page_sections=landing_page_sections)
+        logging.info("******here7*******")
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
