@@ -1,6 +1,6 @@
 {
     "name": "Feed OpenCTI",
-    "description": "Ingest indicator feeds from OpenCTI.",
+    "description": "Ingest indicators from the OpenCTI feed.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",

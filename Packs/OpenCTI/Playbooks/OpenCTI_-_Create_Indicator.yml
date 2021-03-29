@@ -37,11 +37,11 @@ tasks:
     task:
       id: ef8501f6-a2ff-4a30-88b8-28139e8566aa
       version: -1
-      name: Check if label provided?
+      name: Was a label provided?
       type: condition
       iscommand: false
       brand: ""
-      description: 'Check if label provided?'
+      description: 'Was a label provided?'
     nexttasks:
       '#default#':
       - "7"
@@ -76,7 +76,7 @@ tasks:
       id: 1ba7eb11-e1ea-41ea-812f-74c233ccf2c1
       version: -1
       name: opencti-label-create
-      description: Create label.
+      description: Create the label in OpenCTI.
       script: '|||opencti-label-create'
       type: regular
       iscommand: true
@@ -108,7 +108,7 @@ tasks:
       id: 2317fbed-8bfb-4bc9-83cb-bc7e2ac77e12
       version: -1
       name: Verify Output
-      description: Verify Output
+      description: Verify the label was created successfully.
       type: condition
       iscommand: false
       brand: ""
@@ -143,8 +143,8 @@ tasks:
     task:
       id: 8fe0a73f-f9b6-417b-809d-86a4083ef96e
       version: -1
-      name: Check if external reference provided?
-      description: Check if external reference provided?
+      name: Was an external reference provided?
+      description: Was an external reference provided?
       type: condition
       iscommand: false
       brand: ""
@@ -187,7 +187,7 @@ tasks:
       id: b019e6c7-31ec-468d-8d45-3d2ea8324c5f
       version: -1
       name: opencti-external-reference-create
-      description: Create external reference.
+      description: Create the external reference in OpenCTI.
       script: '|||opencti-external-reference-create'
       type: regular
       iscommand: true
@@ -221,7 +221,7 @@ tasks:
       id: 5b6f679f-8931-4d43-8ab6-c13ab3f5f8b4
       version: -1
       name: Verify Output
-      description: Verify Output
+      description: Verify the external reference was created successfully.
       type: condition
       iscommand: false
       brand: ""
@@ -257,7 +257,7 @@ tasks:
       id: 296a0d14-77b1-4fc3-8a39-483983b45ae6
       version: -1
       name: opencti-create-indicator
-      description: Create new indicator.
+      description: Create the new indicator in OpenCTI.
       script: '|||opencti-indicator-create'
       type: regular
       iscommand: true
@@ -304,8 +304,8 @@ tasks:
     task:
       id: a50a3d95-af54-4b06-86f6-10dfb831a548
       version: -1
-      name: 'Check if indicator created? '
-      description: 'Check if indicator created? '
+      name: 'Was the indicator created? '
+      description: 'Was the indicator created? '
       type: condition
       iscommand: false
       brand: ""
@@ -374,38 +374,38 @@ inputs:
 - key: label_name
   value: {}
   required: false
-  description: Label name to add to new indicator.
+  description: A label name to add to the new indicator.
   playbookInputQuery: null
 - key: type
   value: {}
   required: true
-  description: 'The indicator type to create. Possible values:  "Account", "Domain",
-    "Email", "File-md5", "File-sha1", "File-sha256", "Host", "IP", "IPV6", "Registry
-    Key" and "URL".'
+  description: 'The type of indicator to create. Possible values:  Account, Domain,
+    Email, File-md5, File-sha1, File-sha256, Host, IP, IPV6, Registry
+    Key and URL.'
   playbookInputQuery: null
 - key: marking_definition_id
   value: {}
   required: false
-  description: 'Marking definition id to add to new indicator. Use opencti-marking-definition-list
-    to get marking id. '
+  description: 'The marking definition ID to add to the new indicator. Use opencti-marking-definition-list
+    to get the marking definition ID.'
   playbookInputQuery: null
 - key: created_by_id
   value: {}
   required: false
-  description: Creator of the new indicator. Use opencti-organization-list to find
-    all organizations id at opencti, or use  opencti-organization-create to create
-    new organization id.
+  description: Creator of the new indicator. Use opencti-organization-list to get the IDs
+    of all the organizations in opencti, or use  opencti-organization-create to create a 
+    new organization ID.
   playbookInputQuery: null
 - key: external_reference_source_name
   value: {}
   required: false
-  description: External References Source Name. In order to use external references,
+  description: External references source name. In order to use external references,
     external_reference_url and external_reference_source_name are mandatory.
   playbookInputQuery: null
 - key: external_reference_url
   value: {}
   required: false
-  description: External References URL. In order to use external references, external_reference_url
+  description: External references URL. In order to use external references, external_reference_url
     and external_reference_source_name are mandatory.
   playbookInputQuery: null
 - key: description
@@ -416,7 +416,7 @@ inputs:
 - key: score
   value: {}
   required: false
-  description: 'New indicator score. Valid value: number between 0 to 100.'
+  description: 'New indicator score. Valid values are 0 - 100.'
   playbookInputQuery: null
 - key: value
   value: {}
@@ -425,11 +425,11 @@ inputs:
   playbookInputQuery: null
 outputs:
 - contextPath: OpenCTI.Indicator.id
-  description: New indicator id.
+  description: New indicator ID.
   type: string
 - contextPath: OpenCTI.Indicator.data
   description: New indicator data.
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
 - OpenCTI Test
 description: Create indicator at OpenCTI.
