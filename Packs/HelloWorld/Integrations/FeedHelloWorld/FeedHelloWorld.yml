@@ -72,12 +72,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Supports CSV values.
-  display: Tags
-  hidden: false
-  name: feedTags
-  required: false
-  type: 0
 - display: ''
   name: feedExpirationPolicy
   type: 17
