@@ -520,7 +520,22 @@ script:
     - contextPath: IP.feed_related_indicators.type
       description: The type of the indicators that are associated with the IP
       type: string
-  dockerimage: devdemisto/ippysocks:1.0.0.17687
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  dockerimage: demisto/ippysocks:1.0.0.17687
   feed: false
   isfetch: false
   longRunning: false
