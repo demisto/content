@@ -11,9 +11,7 @@ import requests
 import urllib3
 from requests.exceptions import HTTPError
 
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
