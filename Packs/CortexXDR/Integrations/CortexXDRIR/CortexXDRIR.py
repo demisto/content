@@ -2239,7 +2239,7 @@ def endpoint_scan_command(client, args):
     alias = args.get('alias')
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
-    all_ = argToBoolean(args.get('all'))
+    all_ = argToBoolean(args.get('all', 'false'))
 
     # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
     if all_:

@@ -12,7 +12,7 @@
         "alias":"123",
         "isolate":"true",
         "hostname":"123",
-        "all": "false"
+        "all":"false"
   },
     "api_response": {
     "reply":
