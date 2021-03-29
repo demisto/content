@@ -661,8 +661,12 @@ def generate_field_value(client, field_name, field_data, field_val):
     # when field type is Users/Groups List
     # for example: {"Policy Owner":{"users":[20],"groups":[30]}}
     elif field_type == 8:
-        users = field_val.get('users')
-        groups = field_val.get('groups')
+        try:
+            users = field_val.get('users')
+            groups = field_val.get('groups')
+        except AttributeError as e:
+            raise DemistoException(f"Field name: {field_name} must be a dictionary type and include a list under \"users\" key or \"groups\" key")
+
         field_val = {'UserList': [], 'GroupList': []}
         if users:
             for user in users:
@@ -1298,5 +1302,5 @@ def main():
         return_error(f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}')
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins', "__main__"):
     main()
