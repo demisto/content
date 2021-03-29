@@ -1742,8 +1742,8 @@ script:
       isArray: false
       name: all
       predefined:
-        - true
-        - false
+        - 'true'
+        - 'false'
       required: false
       secret: false
     deprecated: false
