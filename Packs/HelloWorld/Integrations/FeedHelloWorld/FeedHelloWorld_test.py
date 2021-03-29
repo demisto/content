@@ -54,7 +54,7 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 from FeedHelloWorld import Client, get_indicators_command, fetch_indicators_command
-from CommonServerPython import tableToMarkdown
+from CommonServerPython import tableToMarkdown, string_to_table_header
 import json
 import io
 
