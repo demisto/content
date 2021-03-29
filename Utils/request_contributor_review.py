@@ -155,7 +155,21 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
             print(f"{pack} pack has no default github reviewer")
 
 
-def check_reviewers(reviewers, pr_author, version, modified_files, pack, pr_number, github_token, verify_ssl):
+def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files: list, pack: str,
+                    pr_number: str, github_token: str, verify_ssl: bool):
+    """ Tag user on pr and ask for review if there are reviewers, and this is not new pack.
+
+    Args:
+        reviewers(set): reviwers to review the changes.
+        pr_author(str): Author of the pr.
+        version(str): pack version, from packmetadata.
+        modified_files(list): list of modified files
+        pack(str): pack name
+        pr_number(str): pr number on github
+        github_token(str): github token provided by the user
+        verify_ssl(bool): verify ssl
+
+    """
     if reviewers:
         if pr_author != 'xsoar-bot' or version != '1.0.0':
             pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
@@ -170,7 +184,7 @@ def check_reviewers(reviewers, pr_author, version, modified_files, pack, pr_numb
             )
 
     else:
-        print(f'{pack} pack No reviewers were found.')
+        print(f'{pack} pack no reviewers were found.')
 
 
 def main():
