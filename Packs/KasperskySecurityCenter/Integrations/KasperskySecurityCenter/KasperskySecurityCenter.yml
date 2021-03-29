@@ -169,7 +169,7 @@ script:
       description: Reboot request reasons mask.
       type: Number
     - contextPath: KasperskySecurityCenter.Host.KLHST_WKS_RBT_REQUIRED
-      description: If reboot is required.
+      description: Whether a reboot is required.
       type: Boolean
     - contextPath: KasperskySecurityCenter.Host.KLHST_WKS_RTP_AV_BASES_TIME.value
       description: Anti-virus bases time.
