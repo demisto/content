@@ -1042,7 +1042,7 @@ def fetch_incidents(rest_client, last_run):
     next_run = last_run
 
     max_fetch = int(demisto.params()['max_fetch'])
-    max_fetch_per_tenant = floor(len(tenant_mappings) / max_fetch) if len(tenant_mappings) > max_fetch else 1
+    max_fetch_per_tenant = floor(max_fetch / len(tenant_mappings)) if len(tenant_mappings) > max_fetch else 1
     # get incidents for each tenant
     for internal_tenant_id, external_tenant_id in tenant_mappings.items():
         # Get the last fetch time for tenant, if exists, which will be used as the 'search from here onward' time
