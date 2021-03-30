@@ -1449,15 +1449,21 @@ class Pack(object):
                         if modified_release_notes_lines_dict:
                             logging.info("Creating changelog entries for modified rn")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
-                                print('$$$$$$$$$$$$')
-                                print(modified_release_notes_lines)
-                                print('$$$$$$$$$$$$')
+                                logging.info('$$$$$$$$$$$$ modified_release_notes_lines:')
+                                logging.info(modified_release_notes_lines)
+                                logging.info('$$$$$$$$$$$$')
                                 changelog_entry = self._create_changelog_entry(
                                     release_notes=modified_release_notes_lines,
                                     version_display_name=version,
                                     build_number=build_number,
                                     new_version=False)
+                                logging.info('$$$$$$$$$$$$ old changelog[version]:')
+                                logging.info(changelog[version])
+                                logging.info('$$$$$$$$$$$$')
                                 changelog[version] = changelog_entry
+                                logging.info('$$$$$$$$$$$$ new changelog[version]:')
+                                logging.info(changelog_entry)
+                                logging.info('$$$$$$$$$$$$')
 
                 else:  # will enter only on initial version and release notes folder still was not created
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
