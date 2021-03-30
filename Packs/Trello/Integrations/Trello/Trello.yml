@@ -368,10 +368,6 @@ script:
     - contextPath: Trello.Actions.BoardId
       description: Board ID
       type: Unknown
-  - deprecated: false
-    description: Used for mirroring
-    execution: false
-    name: get-mapping-data
   - arguments:
     - default: false
       description: ID to get
