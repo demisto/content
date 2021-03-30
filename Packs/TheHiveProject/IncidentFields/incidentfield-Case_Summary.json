@@ -13,7 +13,7 @@
   "id": "incident_thehivecasesummary",
   "isReadOnly": false,
   "locked": false,
-  "name": "Case Summary",
+  "name": "TheHive Case Summary",
   "neverSetAsRequired": false,
   "ownerOnly": false,
   "required": false,

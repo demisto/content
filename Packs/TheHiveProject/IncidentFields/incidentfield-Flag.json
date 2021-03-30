@@ -10,7 +10,7 @@
   "id": "incident_thehiveflag",
   "isReadOnly": false,
   "locked": false,
-  "name": "Flag",
+  "name": "TheHive Flag",
   "neverSetAsRequired": false,
   "ownerOnly": false,
   "required": false,

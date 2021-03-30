@@ -13,7 +13,7 @@
   "id": "incident_thehivecaseresolutionstatus",
   "isReadOnly": false,
   "locked": false,
-  "name": "Case Resolution Status",
+  "name": "TheHive Case Resolution Status",
   "neverSetAsRequired": false,
   "ownerOnly": false,
   "required": false,

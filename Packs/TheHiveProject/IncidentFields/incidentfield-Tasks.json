@@ -72,7 +72,7 @@
   "id": "incident_thehivetasks",
   "isReadOnly": true,
   "locked": false,
-  "name": "Tasks",
+  "name": "TheHive Tasks",
   "neverSetAsRequired": false,
   "ownerOnly": false,
   "required": false,
