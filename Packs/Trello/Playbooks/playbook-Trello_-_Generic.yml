@@ -262,6 +262,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: Check for indicators in the incident, to add to Trello comment
       brand: ""
       id: 1d0b1ae2-6b56-464b-876d-995917691e2c
       iscommand: false
@@ -333,6 +334,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: Check the provided playbook inputs and, if set, move the card. 
       brand: ""
       id: 3b81e041-4576-4ac3-85a6-7112176427ec
       iscommand: false

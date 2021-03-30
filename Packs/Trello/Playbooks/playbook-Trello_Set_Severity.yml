@@ -117,6 +117,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: Check Severity
       brand: ""
       id: 98fb624b-0c79-4dd0-87a0-c79f8c8dbf40
       iscommand: false
@@ -150,6 +151,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: Create the Unknown label in Trello 
       brand: ""
       id: 6a3aae7c-d0b0-4177-8e34-d068121ce905
       iscommand: true
@@ -216,6 +218,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: Create the low label in Trello
       brand: ""
       id: bca5d7c8-6882-472a-8ebf-c09f11eaffc0
       iscommand: true
@@ -250,6 +253,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: Create the informational label in Trello
       brand: ""
       id: 105ecd74-c985-407c-837d-49eb9ce53bb2
       iscommand: true
@@ -284,6 +288,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: Create the medium label in Trello
       brand: ""
       id: b774aa2f-0ae9-4c1b-871d-4ba3dab9fde1
       iscommand: true
@@ -318,6 +323,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: Create the high label in Trello
       brand: ""
       id: 15b67a4a-d0f2-45ad-8f0b-7b9be222f15b
       iscommand: true
@@ -352,6 +358,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: Create the critical label in Trello
       brand: ""
       id: 5742394b-a672-41bd-8628-0fc9cdc602e2
       iscommand: true
