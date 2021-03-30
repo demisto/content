@@ -1046,7 +1046,7 @@ class Pack(object):
                     if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
                         if not is_ignored_pack_file(modified_file_path_parts):
                             logging.info(f"Detected modified files in {self._pack_name} pack")
-                            task_status, pack_was_modified = True
+                            task_status, pack_was_modified = True, True
                             modified_files_paths.append(modified_file.a_path)
                             return
                         else:
