@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 86e2dc19-6b2a-4c94-8564-7014fb0e2da8
+    taskid: e88009b5-107c-4956-8d3c-f56337826296
     type: start
     task:
-      id: 86e2dc19-6b2a-4c94-8564-7014fb0e2da8
+      id: e88009b5-107c-4956-8d3c-f56337826296
       version: -1
       name: ""
       iscommand: false
@@ -33,11 +33,11 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 17262ca9-15d6-4d3b-85a1-4f5d91128b2b
+    taskid: 19cc02a3-4cd2-4847-80fb-492f4f653092
     type: condition
     task:
-      description: ""
-      id: 17262ca9-15d6-4d3b-85a1-4f5d91128b2b
+      description: Is VirusTotal V3 enabled?
+      id: 19cc02a3-4cd2-4847-80fb-492f4f653092
       version: -1
       name: Is VirusTotal V3 enabled?
       type: condition
@@ -90,11 +90,11 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 8aecd9cb-af5d-44e9-8111-f0270c4af4de
+    taskid: 7fcd82bc-2f05-4b65-8ae7-ab0ae20ba565
     type: condition
     task:
-      description: ""
-      id: 8aecd9cb-af5d-44e9-8111-f0270c4af4de
+      description: Is there a file to detonate?
+      id: 7fcd82bc-2f05-4b65-8ae7-ab0ae20ba565
       version: -1
       name: Is there a file to detonate?
       type: condition
@@ -129,10 +129,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: b551c236-d993-4464-82e8-ee41647ba7f8
+    taskid: 12d27617-e257-4fbb-8552-29765711198f
     type: regular
     task:
-      id: b551c236-d993-4464-82e8-ee41647ba7f8
+      id: 12d27617-e257-4fbb-8552-29765711198f
       version: -1
       name: Send file to VirusTotal
       description: Submits a file for scanning. Use vt-analysis-get to get the scan
@@ -164,10 +164,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 4c8c6c5e-28d9-4843-8031-57596a5f2504
+    taskid: d78e7bf7-9f19-417f-8e7a-6e89df877d67
     type: playbook
     task:
-      id: 4c8c6c5e-28d9-4843-8031-57596a5f2504
+      id: d78e7bf7-9f19-417f-8e7a-6e89df877d67
       version: -1
       name: GenericPolling
       playbookName: GenericPolling
@@ -215,10 +215,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 99077345-9d21-4d96-88bd-d8003b009cf7
+    taskid: 670b86df-5b33-4cbb-8250-1ce88d1c8312
     type: regular
     task:
-      id: 99077345-9d21-4d96-88bd-d8003b009cf7
+      id: 670b86df-5b33-4cbb-8250-1ce88d1c8312
       version: -1
       name: Get analysis from VirusTotal
       description: Retrives resolutions of the given ip.
@@ -250,10 +250,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: b8f2766b-7395-4a9a-8577-40502aa55ceb
+    taskid: ae4abf66-7f04-4f3b-820e-9b149711fc86
     type: title
     task:
-      id: b8f2766b-7395-4a9a-8577-40502aa55ceb
+      id: ae4abf66-7f04-4f3b-820e-9b149711fc86
       version: -1
       name: Done
       type: title
@@ -287,8 +287,11 @@ view: |-
   }
 inputs:
 - key: FileEntryID
-  value: {}
-  required: false
+  value:
+    complex:
+      root: File
+      accessor: EntryID
+  required: true
   description: Entry ID of the file to detonate
   playbookInputQuery:
 outputs:

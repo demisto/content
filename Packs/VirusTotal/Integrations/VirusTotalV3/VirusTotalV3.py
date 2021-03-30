@@ -1404,11 +1404,11 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict) 
         raise_if_hash_not_valid(file)
         try:
             raw_response = client.file(file)
-        except Exception as exception:
+            results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
+        except Exception as exc:
             # If anything happens, just keep going
-            demisto.debug(f'Could not process file: "{file}"\n {str(exception)}')
-            continue
-        results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
+            results.append(CommandResults(readable_output=f'Could not process file: "{file}"\n {str(exc)}'))
+
     return results
 
 
@@ -1479,6 +1479,12 @@ def file_rescan_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_sha256_from_entry_id(entry_id: str) -> str:
+    """Gets SHA256 of context ID"""
+    context = demisto.context()
+    return demisto.dt(context, f'File(val.EntryID === "{entry_id}").SHA256')
+
+
 def file_scan(client: Client, args: dict) -> List[CommandResults]:
     """
     1 API Call
@@ -1498,10 +1504,15 @@ def file_scan(client: Client, args: dict) -> List[CommandResults]:
             data.update(
                 get_file_context(entry_id)
             )
-
+            id_ = data.get('id')
+            # New scanned files ID will be only a number. Should connect them with f-SHA256-ID_.
+            if isinstance(id_, str) and id_.isnumeric() or isinstance(id_, int):
+                sha256 = get_sha256_from_entry_id(entry_id)
+                id_ = f'f-{sha256}-{id_}'
+                data['id'] = id_
             context = {
                 f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
-                'vtScanID': data.get('id')  # BC preservation
+                'vtScanID': id_  # BC preservation
             }
             results.append(CommandResults(
                 readable_output=tableToMarkdown(
@@ -1735,7 +1746,7 @@ def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
     raw_response = client.file_sandbox_report(file_hash, limit)
     data = raw_response['data']
     return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.SandboxReport'
+        f'{INTEGRATION_ENTRY_CONTEXT}.SandboxReport',
         'id',
         readable_output=tableToMarkdown(
             f'Sandbox Reports for file hash: {file_hash}',

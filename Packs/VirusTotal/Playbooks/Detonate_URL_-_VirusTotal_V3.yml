@@ -285,10 +285,13 @@ view: |-
   }
 inputs:
 - key: URL
-  value: {}
+  value:
+    complex:
+      root: URL
+      accessor: Data
   required: false
   description: Entry ID of the file to detonate
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: VirusTotal.Analysis.data.attributes.stats.harmless
   description: Number of engines found the indicator harmless.
