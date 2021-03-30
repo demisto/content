@@ -11,7 +11,7 @@ import shutil
 import yaml
 import google.auth
 from google.cloud import storage
-from google.cloud import bigquery
+# from google.cloud import bigquery
 import enum
 import base64
 import urllib.parse
@@ -1230,7 +1230,8 @@ class Pack(object):
             release_notes_dir (str): the path to the release notes dir
             changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
             changelog (dict): the changelog from the production bucket.
-            modified_rn_files (list): a list of the rn files that were modified according to the last commit.
+            modified_rn_files (list): a list of the rn files that were modified according to the last commit in
+             'filename.md' format.
 
         Returns:
             A dict of modified version and their release notes contents, for modified
@@ -1258,13 +1259,14 @@ class Pack(object):
             logging.info('$$$$$$$$$$$$')
             # Should only apply on modified files that are not the last rn file
             if LooseVersion(version) < changelog_latest_rn_version:
-                # The case where the version is a key in the changelog file
-                if changelog.get(version):
-                    logging.info("The version is a key in the changelog file")
+                # The case where the version is a key in the changelog file,
+                # and the value is not an aggregated release note
+                if self.is_the_only_rn_in_block(release_notes_dir, version, changelog):
+                    logging.info("The version is a key in the changelog file and alone")
                     with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
                         rn_lines = rn_file.read()
                     modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
-                # The case where the version is not a key in the changelog file
+                # The case where the version is not a key in the changelog file or it is a key of aggregated content
                 else:
                     logging.info("The version is not a key in the changelog file")
                     same_block_versions_dict, higher_nearest_version = self.get_same_block_versions(release_notes_dir,
@@ -1279,6 +1281,32 @@ class Pack(object):
                         same_block_versions_dict)
 
         return modified_versions_dict
+
+    def is_the_only_rn_in_block(self, release_notes_dir: str, version: str, changelog: dict):
+        """
+        Check if the given version is a key of an aggregated changelog block, as in its value in the changelog
+        doesn't contains other release notes that have been aggregated in previous uploads.
+        If that is the case, the adjacent previous release note in the changelog will be equal to the one in the
+        release notes directory, and this function asserts that.
+        Args:
+            release_notes_dir: the path to the release notes dir.
+            version (str): the wanted version.
+            changelog (dict): the changelog from the production bucket.
+
+        Returns:
+            True if this version's value in the changelog is not an aggregated release notes block. False otherwise.
+        """
+        if changelog.get(version):
+            all_rn_versions = []
+            changelog_versions = [LooseVersion(item) for item in changelog.keys()]
+            for filename in sorted(os.listdir(release_notes_dir)):
+                _version = filename.replace('.md', '')
+                version = _version.replace('_', '.')
+                all_rn_versions.append(LooseVersion(version))
+            lower_versions_all_versions = [item for item in all_rn_versions if item < version]
+            lower_versions_in_changelog = [item for item in changelog_versions if item < version]
+            return max(lower_versions_all_versions) == max(lower_versions_in_changelog)
+        return False
 
     def get_same_block_versions(self, release_notes_dir: str, version: str, changelog: dict):
         """

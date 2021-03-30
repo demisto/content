@@ -741,6 +741,65 @@ class TestChangelogCreation:
         assert task_status is True
         assert not_updated_build is False
 
+    def test_prepare_release_notes_updated_existing_release_notes(self, mocker, dummy_pack):
+        """
+           Given:
+               - Modified release notes lines based on modified release notes files found,
+                and valid current changelog found in index.
+               here i should mock get_modified_rn_lines and only check prepare_rn func
+           When:
+               - Fixing an existing release notes file.
+           Then:
+               - Assert the new changelog contains the modified release notes lines.
+        """
+
+    def test_get_modified_release_notes_lines(self, mocker, dummy_pack):
+        """
+           Given:
+               - Modified release note file and valid current changelog found in index.
+           When:
+               - Fixing an existing release notes file.
+           Then:
+               - Assert the returned release notes lines contains the modified release note.
+        """
+
+        release_notes_dir = 'Irrelevant/Test/Path'
+        changelog_latest_rn_version = LooseVersion('1.0.3')
+        modified_rn_files = ['1_0_2.md']
+        original_changelog = {
+            "1.0.1": {
+                "releaseNotes": "dummy release notes",
+                "displayName": "1.0.0",
+                "released": "2020-05-05T13:39:33Z"
+            },
+            "1.0.3": {'releaseNotes': '\n#### Scripts\n##### SanePdfReports\n- Updated the Docker image to:'\
+             '*demisto/sane-pdf-reports:1.0.0.15795*.\n\n##### CommonServerPython\n- Moved all IAM classes to'\
+              'separate module - **IAMApiModule**.\n', 'displayName': '1.0.3 - 264879', 'released':
+               '2021-01-27T23:01:58Z'}
+        }
+        modified_rn_lines = '\n#### Scripts\n##### SanePdfReports\n- Updated the Docker image to:' \
+                            ' *demisto/sane-pdf-reports:1.0.0.15795*.\n- ADDED RELEASE NOTE\n\n#####' \
+                            ' CommonServerPython\n- Moved all IAM classes to separate module - **IAMApiModule**.\n'
+        new_changelog = {
+            "1.0.1": {
+                "releaseNotes": "dummy release notes",
+                "displayName": "1.0.0",
+                "released": "2020-05-05T13:39:33Z"
+            },
+            "1.0.3": {'releaseNotes': '\n#### Scripts\n##### SanePdfReports\n- Updated the Docker image to:'\
+             '*demisto/sane-pdf-reports:1.0.0.15795*.\n- ADDED RELEASE NOTE\n\n##### CommonServerPython\n-'\
+              'Moved all IAM classes to separate module - **IAMApiModule**.\n', 'displayName': '1.7.2 - R314972',
+               'released': '2021-03-30T13:40:09Z'}}
+        modified_rn_file = '\n#### Scripts\n##### SanePdfReports\n- Updated the Docker image to: *demisto/sane-pdf-reports:1.0.0.15795*.\n- ADDED RELEASE NOTE'
+        mocker.patch("builtins.open", mock_open(read_data=modified_rn_file))
+        same_block_version_dict = {'1.0.2': '\n#### Scripts\n##### SanePdfReports\n- Updated the Docker image to:' \
+                            ' *demisto/sane-pdf-reports:1.0.0.15795*.\n- ADDED RELEASE NOTE\n\n#####' \
+                            ' CommonServerPython\n', '1.0.3': '\n#### Scripts\n##### CommonServerPython\n- Moved all IAM classes to separate module - **IAMApiModule**.'}
+        higher_version = '1.0.3'
+        mocker.patch("Tests.Marketplace.marketplace_services.Pack.get_same_block_versions", return_value=(same_block_version_dict, higher_version))
+        modified_versions_dict = dummy_pack.get_modified_release_notes_lines(release_notes_dir, changelog_latest_rn_version, original_changelog, modified_rn_files)
+        assert modified_versions_dict == {'1.0.3': modified_rn_lines}
+
     def test_assert_production_bucket_version_matches_release_notes_version_positive(self, dummy_pack):
         """
            Given:
