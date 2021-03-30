@@ -2380,6 +2380,5 @@ script:
   subtype: python3
   type: python
 tests:
-- servicenow_test_v2
-- ServiceNow_OAuth_Test
+  - No test - not a real integration
 fromversion: 5.0.0
