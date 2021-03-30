@@ -770,7 +770,8 @@ def test_expanse_assign_single_poc_to_iprange(mocker, requests_mock):
     assert result.outputs_prefix is None
     assert result.outputs_key_field is None
     assert result.outputs is None
-    assert result.readable_output == "Operation complete"
+    assert result.readable_output == "Operation complete (ASSIGN ['f491b7ef-a7b9-4644-af90-36dc0a6b2000'] " \
+                                     "to c871feab-7d38-4cc5-9d36-5dad76f6b389)"
 
 
 def test_expanse_get_iprange(requests_mock):
