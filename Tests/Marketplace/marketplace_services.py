@@ -1252,8 +1252,8 @@ class Pack(object):
             # Should only apply on modified files that are not the last rn file
             if LooseVersion(version) < changelog_latest_rn_version:
                 # The case where the version is a key in the changelog file
-                logging.info("The version is a key in the changelog file")
                 if changelog.get(version):
+                    logging.info("The version is a key in the changelog file")
                     with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
                         rn_lines = rn_file.read()
                     modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
@@ -1448,7 +1448,7 @@ class Pack(object):
 
                         if modified_release_notes_lines_dict:
                             logging.info("Creating changelog entries for modified rn")
-                            for version, modified_release_notes_lines in modified_release_notes_lines_dict:
+                            for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 changelog_entry = self._create_changelog_entry(
                                     release_notes=modified_release_notes_lines,
                                     version_display_name=version,
