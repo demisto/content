@@ -665,8 +665,9 @@ def generate_field_value(client, field_name, field_data, field_val):
             users = field_val.get('users')
             groups = field_val.get('groups')
         except AttributeError:
-            raise DemistoException(f"Value under field name: {field_name} must be a dictionary type and include a list"
-                                   f" under \"users\" key or \"groups\" key")
+            raise DemistoException(f"The value of the field: {field_name} must be a dictionary type and include a list"
+                                   f" under \"users\" key or \"groups\" key e.g: {{\"Policy Owner\":{{\"users\":[20],"
+                                   f"\"groups\":[30]}}}}")
 
         field_val = {'UserList': [], 'GroupList': []}
         if users:
