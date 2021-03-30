@@ -374,7 +374,8 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '')
         with pytest.raises(DemistoException) as e:
             generate_field_value(client, "test", {'Type': 8}, 'user1, user2')
-        assert "The value of the field: test must be a dictionary type" in str(e.value)
+        assert "The value of the field: test must be a dictionary type and include a list under \"users\" key or " \
+               "\"groups\" key e.g: {\"Policy Owner\":{\"users\":[20],\"groups\":[30]}}" in str(e.value)
 
     @pytest.mark.parametrize('field_value, result', [
         ([1, 2], [{"ContentID": 1}, {"ContentID": 2}]),
