@@ -1,5 +1,5 @@
 Interact with the Trello task manager
-This integration was integrated and tested with version xx of Trello
+This integration was integrated and tested with version 1.0.0 of Trello
 ## Configure Trello on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
