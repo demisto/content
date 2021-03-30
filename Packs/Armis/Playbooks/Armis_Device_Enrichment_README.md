@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-- Armis
+Armis
 
 ### Scripts
 
@@ -18,7 +18,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-- armis-search-devices
+armis-search-devices
 
 ## Playbook Inputs
 
@@ -34,7 +34,7 @@ This playbook does not use any scripts.
 
 | **Path**                      | **Description**                     | **Type** |
 | ----------------------------- | ----------------------------------- | -------- |
-| Device ID                     | Device ID                           | string   |
+| Device ID                     | Device ID.                          | string   |
 | Armis.SearchDevices.name      | Device name.                        | string   |
 | Armis.SearchDevices.riskLevel | Device risk level defined by Armis. | number   |
 | Armis.SearchDevices.ipaddress | IPv4 address.                       | string   |
