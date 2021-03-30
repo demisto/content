@@ -1048,14 +1048,12 @@ class Pack(object):
                             logging.info(f"Detected modified files in {self._pack_name} pack")
                             task_status, pack_was_modified = True, True
                             modified_files_paths.append(modified_file.a_path)
-                            return
                         else:
                             logging.debug(f'{modified_file.a_path} is an ignored file')
             task_status = True
+            return task_status, modified_files_paths, pack_was_modified
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
-        finally:
-            return task_status, modified_files_paths, pack_was_modified
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
                           private_content=False, pack_artifacts_path=None):
