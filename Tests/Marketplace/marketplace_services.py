@@ -1472,6 +1472,7 @@ class Pack(object):
                                     release_notes=modified_release_notes_lines,
                                     version_display_name=version,
                                     build_number=build_number,
+                                    pack_was_modified=True,
                                     new_version=False)
                                 logging.info('$$$$$$$$$$$$ old changelog[version]:')
                                 logging.info(changelog[version])
