@@ -70,7 +70,7 @@ script:
     deprecated: false
     description: Finds computers within a specified group in the ePO tree
     execution: false
-    name: epo-find-systems
+    name: epo-get-systems
   - arguments:
     - default: false
       description: Table Name
@@ -162,6 +162,17 @@ script:
     description: Assign Policy to Endpoints or Endpoint Groups
     execution: false
     name: epo-assign-policy
+  - arguments:
+    - default: false
+      description: Search keyword
+      isArray: false
+      name: keyword
+      required: true
+      secret: false
+    deprecated: false
+    description: Find systems by search keyword
+    execution: false
+    name: epo-find-systems
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true

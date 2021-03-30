@@ -76,7 +76,7 @@ class Client(BaseClient):
             resp_type='text'
         )
 
-    def epo_find_systems(self, suffix: str, group_id: str) -> str:
+    def epo_get_systems(self, suffix: str, group_id: str) -> str:
         params = {
             ":output": "json"
         }
@@ -145,6 +145,19 @@ class Client(BaseClient):
             "typeId": type_id,
             "productId": product_id,
             "names": names
+        }
+
+        return self._http_request(
+            'get',
+            url_suffix=suffix,
+            params=params,
+            resp_type='text'
+        )
+
+    def epo_find_systems(self, suffix: str, keyword: str) -> str:
+        params = {
+            ":output": "json",
+            "searchText": keyword
         }
 
         return self._http_request(
@@ -276,10 +289,10 @@ def epo_get_system_tree_group_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def epo_find_systems_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def epo_get_systems_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     suffix = 'epogroup.findSystems'
     group_id = args.get('groupId', None)
-    systems = json.loads(client.epo_find_systems(suffix=suffix, group_id=group_id)[3:])
+    systems = json.loads(client.epo_get_systems(suffix=suffix, group_id=group_id)[3:])
     found_systems = []
 
     for system in systems:
@@ -424,6 +437,25 @@ def epo_assign_policy_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
+def epo_find_systems_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    suffix = 'system.find'
+    keyword = args.get('keyword', None)
+    systems = json.loads(client.epo_find_systems(suffix=suffix, keyword=keyword)[3:])
+    found_systems = []
+
+    for system in systems:
+        system_details = {}
+        for key in system:
+            system_details[key.split('.')[1]] = system[key]
+        found_systems.append(system_details)
+
+    return CommandResults(
+        outputs_prefix='McAfeeEPO.Systems',
+        outputs_key_field='AgentGUID',
+        outputs=found_systems,
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -477,8 +509,8 @@ def main() -> None:
             return_results(epo_get_latest_dat_command(client))
         elif demisto.command() == 'epo-get-system-tree-group':
             return_results(epo_get_system_tree_group_command(client, demisto.args()))
-        elif demisto.command() == 'epo-find-systems':
-            return_results(epo_find_systems_command(client, demisto.args()))
+        elif demisto.command() == 'epo-get-systems':
+            return_results(epo_get_systems_command(client, demisto.args()))
         elif demisto.command() == 'epo-get-tables':
             return_results(epo_get_tables_command(client, demisto.args()))
         elif demisto.command() == 'epo-query':
@@ -495,6 +527,8 @@ def main() -> None:
             return_results(epo_find_policies_command(client, demisto.args()))
         elif demisto.command() == 'epo-assign-policy':
             return_results(epo_assign_policy_command(client, demisto.args()))
+        elif demisto.command() == 'epo-find-systems':
+            return_results(epo_find_systems_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
