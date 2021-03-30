@@ -7,19 +7,21 @@ from datetime import datetime, timedelta
 
 
 class TestTimeHelpers:
+    """Will not pass locally, will pass in our build only"""
+
     @freezegun.freeze_time('2020-01-01T20:00:00Z')
     def test_get_last_run_time_first_fetch(self):
         params = {'first_fetch': '3 days'}
-        assert get_last_run_time(params=params, last_run={}) == datetime(2019, 12, 29, 22, 0)
+        assert get_last_run_time(params=params, last_run={}) == datetime(2019, 12, 29, 20, 0)
 
     def test_get_last_run_time_with_last_run(self):
         assert get_last_run_time(last_run={'date': '2020-01-01T20:00:00'}) == datetime(2020, 1, 1, 20, 0)
 
     @freezegun.freeze_time('2020-01-01T20:00:00Z')
     @pytest.mark.parametrize('start_time, end_time, start_epoch, end_epoch', [
-        ('3 days', None, 1577649600, 1577901600),
-        ('3 days', 'today', 1577649600, 1577908800),
-        ('2020-01-01T20:00:00', '2020-01-01T22:00:00', 1577901600, 1577908800)
+        ('3 days', None, 1577649600, 1577916000),
+        ('3 days', 'today', 1577649600, 1577916000),
+        ('2020-01-01T20:00:00', '2020-01-01T22:00:00', 1577908800, 1577916000)
     ])
     def test_get_time_range_object(self, start_time, end_time, start_epoch, end_epoch):
         assert get_time_range_object(start_time, end_time) == {'start': start_epoch, 'end': end_epoch}

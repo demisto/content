@@ -977,7 +977,7 @@ def get_quota_limits(client: Client, args: dict) -> CommandResults:
 
 def fetch_incidents(client: Client, params: dict, last_run_date: datetime) -> Tuple[List[dict], datetime]:
     tag = params.get('tag')
-    max_fetch = arg_to_number_must_int(params.get('max_fetch'))
+    max_fetch = arg_to_number_must_int(params.get('max_fetch', 10))
     raw_response = client.list_notifications(from_time=last_run_date, tag=tag, limit=max_fetch)
     incidents = list()
     for notification in raw_response.get('data', []):
