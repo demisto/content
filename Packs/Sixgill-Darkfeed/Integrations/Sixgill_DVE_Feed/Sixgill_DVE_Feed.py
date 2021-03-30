@@ -17,6 +17,7 @@ from sixgill.sixgill_utils import is_indicator
 requests.packages.urllib3.disable_warnings()
 
 """ CONSTANTS """
+INTEGRATION_NAME = "Sixgil_DVE_Feed"
 CHANNEL_CODE = "7698e8287dfde53dcd13082be750a85a"
 MAX_INDICATORS = 1000
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -67,7 +68,7 @@ def module_command_test(*args):
         verify=VERIFY,
     )
     if not response.ok:
-        raise Exception("Auth request failed - please verify client_id, and client_secret.")
+        raise DemistoException("Auth request failed - please verify client_id, and client_secret.")
     return "ok", None, "ok"
 
 
@@ -108,8 +109,8 @@ def create_fields(stix_obj, event_obj, nvd_obj, score_obj, ext_id):
             "nvdvectorv31": nvd_obj.get("vector_v3", ""),
         }
     except Exception as err:
-        demisto.error(err)
-        demisto.error(traceback.format_exc())
+        err_msg = f'Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}'
+        raise DemistoException(err_msg)
     return fields
 
 
@@ -136,8 +137,8 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: Optional[str] = None
         if tags:
             indicator["fields"]["tags"] = ",".join(list(set(tags)))
     except Exception as err:
-        demisto.error(err)
-        demisto.error(traceback.format_exc())
+        err_msg = f'Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}'
+        raise DemistoException(err_msg)
     return indicator
 
 
@@ -158,8 +159,8 @@ def fetch_indicators_command(
         if not get_indicators_mode:
             client.commit_indicators()
     except Exception as err:
-        demisto.error(err)
-        demisto.error(traceback.format_exc())
+        err_msg = f'Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}'
+        raise DemistoException(err_msg)
     return indicators_list
 
 
@@ -201,9 +202,9 @@ def main():
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)
-    except Exception as e:
+    except Exception as err:
         demisto.error(traceback.format_exc())
-        return_error(f"Error failed to execute {demisto.command()}, error: [{e}]")
+        return_error(f"Error failed to execute {demisto.command()}, error: [{err}]")
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":

@@ -15,17 +15,14 @@ To obtain access to Cybersixgill DVE Score feed via Cortex XSOAR, please contact
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Client Id |  | True |
-    | Client Secret |  | True |
-    | None |  | False |
-    | Trust any certificate (not secure) |  | False |
+    | Client Id | Sixgill API client ID. | True |
+    | Client Secret | Sixgill API client secret. | True |
+    | Trust any certificate (not secure) | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp  | False |
     | Fetch indicators |  | False |
     | Feed Fetch Interval |  | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    |  |  | False |
-    |  |  | False |
     | Bypass exclusion list |  | False |
     | Tags | Supports CSV values. | False |
 
@@ -45,7 +42,7 @@ Fetching Sixgill DVE Feed indicators
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | No of records to display in War Room. Default is 5. | Optional | 
+| limit | The number of records to display in War Room. Default is 5. | Optional | 
 
 
 #### Context Output
