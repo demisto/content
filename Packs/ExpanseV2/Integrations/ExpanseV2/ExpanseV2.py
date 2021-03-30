@@ -1124,7 +1124,9 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 
 def get_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    service_id = args.get('service_id')
+    if not (service_id := args.get('service_id')):
+        raise ValueError('service_id not specified')
+
     service = client.get_service_by_id(service_id=service_id)
 
     readable_output = tableToMarkdown(
@@ -1734,6 +1736,8 @@ def manage_asset_tags_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 def manage_asset_pocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     operation_type = args.get('operation_type')
+    if operation_type not in ASSET_POC_OPERATIONS:
+        raise ValueError(f'Operation type must be one of {",".join(ASSET_POC_OPERATIONS)}')
 
     asset_type = args.get('asset_type')
     if not asset_type or asset_type not in TAGGABLE_ASSET_TYPE_MAP:
@@ -1741,6 +1745,9 @@ def manage_asset_pocs_command(client: Client, args: Dict[str, Any]) -> CommandRe
     mapped_asset_type = TAGGABLE_ASSET_TYPE_MAP[asset_type]
 
     asset_id = args.get('asset_id')
+    if not asset_id:
+        raise ValueError('Asset id must be provided')
+
     poc_ids = argToList(args.get('pocs'))
     poc_emails = argToList(args.get('poc_emails'))
 
