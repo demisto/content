@@ -664,8 +664,9 @@ def generate_field_value(client, field_name, field_data, field_val):
         try:
             users = field_val.get('users')
             groups = field_val.get('groups')
-        except AttributeError as e:
-            raise DemistoException(f"Field name: {field_name} must be a dictionary type and include a list under \"users\" key or \"groups\" key")
+        except AttributeError:
+            raise DemistoException(f"Value under field name: {field_name} must be a dictionary type and include a list"
+                                   f" under \"users\" key or \"groups\" key")
 
         field_val = {'UserList': [], 'GroupList': []}
         if users:
