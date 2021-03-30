@@ -1449,6 +1449,9 @@ class Pack(object):
                         if modified_release_notes_lines_dict:
                             logging.info("Creating changelog entries for modified rn")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
+                                print('$$$$$$$$$$$$')
+                                print(modified_release_notes_lines)
+                                print('$$$$$$$$$$$$')
                                 changelog_entry = self._create_changelog_entry(
                                     release_notes=modified_release_notes_lines,
                                     version_display_name=version,
