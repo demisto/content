@@ -1,7 +1,6 @@
 {
  "id": "Jira Incident",
  "version": -1,
- "vcShouldIgnore": false,
  "locked": false,
  "name": "Jira Incident",
  "prevName": "Jira Incident",
@@ -18,14 +17,6 @@
  "autorun": false,
  "disabled": false,
  "reputationCalc": 0,
- "onChangeRepAlg": 1,
- "layout": "a8cef2a7-8272-44f6-8445-e0668a751a3a",
- "detached": false,
- "extractSettings": {
-  "mode": "All",
-  "fieldCliNameToExtractSettings": {
-
-  }
- },
+ "layout": "Jira Incident Layout",
  "fromVersion": "6.0.0"
 }
