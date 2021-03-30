@@ -2,7 +2,7 @@ from typing import Dict, List
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
+import json
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 
@@ -28,6 +28,11 @@ def is_valid_args(args: Dict):
             except UnicodeDecodeError as ex:
                 error_msg.append(f'Error while parsing the argument: "{_key}" '
                                  f'\nError:\n- "{str(ex)}"')
+            except TypeError:
+                try:
+                    _ = json.dumps(value)
+                except Exception as e:
+                    error_msg.append(f'Error while parsing the argument: "{_key}" \nError:\n- "{str(e)}"')
 
     if len(error_msg) != 0:
         raise DemistoException('\n'.join(error_msg))
