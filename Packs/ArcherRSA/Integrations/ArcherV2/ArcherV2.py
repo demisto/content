@@ -1304,5 +1304,5 @@ def main():
         return_error(f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}')
 
 
-if __name__ in ('__builtin__', 'builtins', "__main__"):
+if __name__ in ('__builtin__', 'builtins'):
     main()
