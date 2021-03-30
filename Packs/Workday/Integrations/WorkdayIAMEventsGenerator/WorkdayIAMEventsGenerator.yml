@@ -5,45 +5,118 @@ commonfields:
 configuration:
 - display: Long running instance
   name: longRunning
-  required: false
+  required: true
   type: 8
-- display: Port mapping (<port> or <host port>:<docker port>)
+- defaultvalue: '5000'
+  display: Port mapping (<port> or <host port>:<docker port>)
   name: longRunningPort
-  required: false
+  required: true
   type: 0
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-description: Generates mock reports and events from Workday. Use these for testing
+description: Generates mock reports and events for Workday IAM. Use these for testing
   and development.
 display: Workday IAM Event Generator (Beta)
 name: Workday_IAM_Event_Generator
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: The event type.
-      isArray: false
-      name: event_type
-      predefined:
-      - hire
-      - update
-      - terminate
-      - rehire
-      required: true
-      secret: false
     - default: false
       description: The user email for the event.
       isArray: false
       name: user_email
+      required: true
+      secret: false
+    - default: false
+      description: The new user first name.
+      isArray: false
+      name: first_name
+      required: false
+      secret: false
+    - default: false
+      description: The new user last name.
+      isArray: false
+      name: last_name
       required: false
       secret: false
     deprecated: false
-    description: Generate workday event.
+    description: Generate workday new hire event.
     execution: false
-    name: generate-event
+    name: workday-generate-hire-event
+  - arguments:
+    - default: false
+      description: The user email for the event.
+      isArray: false
+      name: user_email
+      required: true
+      secret: false
+    - default: false
+      description: The user updated title.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: The user city.
+      isArray: false
+      name: city
+      required: false
+      secret: false
+    - default: false
+      description: The updated street address.
+      isArray: false
+      name: street_address
+      required: false
+      secret: false
+    - default: false
+      description: 'The last hire date for the user.  For example: "06/15/2020". This
+        will trigger "terminate" event.'
+      isArray: false
+      name: last_day_of_work
+      required: false
+      secret: false
+    deprecated: false
+    description: Generate workday update event.
+    execution: false
+    name: workday-generate-update-event
+  - arguments:
+    - default: false
+      description: The user email for the event.
+      isArray: false
+      name: user_email
+      required: true
+      secret: false
+    deprecated: false
+    description: Generate workday rehire event.
+    execution: false
+    name: workday-generate-rehire-event
+  - arguments:
+    - default: false
+      description: 'The last hire date of the user. For example: "06/15/2020". The
+        default is today.'
+      isArray: false
+      name: last_day_of_work
+      required: false
+      secret: false
+    - default: false
+      description: The user email to termniate.
+      isArray: false
+      name: user_email
+      required: true
+      secret: false
+    - default: false
+      description: 'The user termination date. For example: "06/15/2020". The default
+        is today.'
+      isArray: false
+      name: termination_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Generate workday terminate event.
+    execution: false
+    name: workday-generate-terminate-event
   - deprecated: false
     description: Reset the integration context to fetch the first run reports.
     execution: false

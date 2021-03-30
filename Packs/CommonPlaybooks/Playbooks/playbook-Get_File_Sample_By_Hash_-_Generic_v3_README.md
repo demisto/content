@@ -6,8 +6,9 @@ This playbook returns a file sample correlating to a hash in the War Room using 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get the binary file from Carbon Black by its MD5 hash
 * Get File Sample By Hash - Cylance Protect v2
+* Get the binary file from Carbon Black by its MD5 hash
+* Code42 File Download
 
 ### Integrations
 This playbook does not use any integrations.
@@ -25,6 +26,7 @@ This playbook does not use any commands.
 | --- | --- | --- | --- |
 | MD5 | The MD5 hash value for the file to retrieve. |  | Optional |
 | SHA256 | The SHA256 hash value for the file to retrieve. |  | Optional |
+| NewFilename | A new name for the retrieved file. If left empty, the filename will not change. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -45,4 +47,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Get File Sample By Hash - Generic v3](https://raw.githubusercontent.com/demisto/content/1580c5f43aa249d9807756354341ada4621d9bfa/Packs/CommonPlaybooks/doc_files/Get_File_Sample_By_Hash_-_Generic_v3.png)
+![Get File Sample By Hash - Generic v3](https://raw.githubusercontent.com/demisto/content/da182ee3ae5a35f346aa358fc86d89dba28716d9/Packs/CommonPlaybooks/doc_files/Get_File_Sample_By_Hash_-_Generic_v3.png)
