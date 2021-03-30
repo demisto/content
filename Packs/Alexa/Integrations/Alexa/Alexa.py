@@ -102,7 +102,6 @@ def test_module_command(use_ssl, proxies):
 """EXECUTION BLOCK"""
 try:
     params = demisto.params()
-    domain = demisto.args().get('domain')
 
     instance_params = {
         'threshold': int(params.get('threshold', 2000000)),
@@ -121,6 +120,7 @@ try:
         test_result = test_module_command(instance_params['use_ssl'], instance_params['proxies'])
         demisto.results(test_result)
     if demisto.command() == 'domain':
+        domain = demisto.args().get('domain')
         alexa_domain_command(domain, **instance_params)
 except Exception as e:
     LOG(e)
