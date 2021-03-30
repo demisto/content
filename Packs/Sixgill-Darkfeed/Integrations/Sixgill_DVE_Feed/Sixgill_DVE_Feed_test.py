@@ -309,7 +309,7 @@ expected_ioc_output = [
                     ,
                 'modified': '2020-07-15T16:52Z',
                 'published': '2020-07-07T14:15Z',
-                'score_2_0': 5,
+                'score_2_0': 5.0,
                 'severity_2_0': 'MEDIUM',
                 'vector_v2': 'AV:N/AC:L/Au:N/C:P/I:N/A:N',
                 'vector_v3': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N'
@@ -319,7 +319,7 @@ expected_ioc_output = [
                              'value': 0.02},
                              'previouslyExploited': 0.07}},
             },
-        'score': 3,
+        'score': '3',
         'fields': {
             'description': '''Description: Trend of Github commits related to CVE-2020-15392
 Created: 2020-09-06T20:33:33.538Z
@@ -365,7 +365,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N
                 ,
             'nvdlastmodifieddate': '2020-07-15T16:52Z',
             'nvdpublicationdate': '2020-07-07T14:15Z',
-            'cvss20score': 5,
+            'cvss20score': 5.0,
             'cvss20severity': 'MEDIUM',
             'nvdvectorv20': 'AV:N/AC:L/Au:N/C:P/I:N/A:N',
             'nvdvectorv31': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N'
@@ -413,7 +413,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N
                              'value': 9.25},
                              'previouslyExploited': 5.32}},
             },
-        'score': 3,
+        'score': '3',
         'fields': {
             'description': '''Description: CVE-2020-2021 is trending on Twitter.
 Created: 2020-08-19T23:08:05.709Z
@@ -453,7 +453,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
             'eventdescription': 'CVE-2020-2021 is trending on Twitter.'
                 ,
             'eventdatetime': '2020-06-30T00:00Z',
-            'cvss31score': 10,
+            'cvss31score': 10.0,
             'cvss31severity': 'CRITICAL',
             'nvdlink': 'https://nvd.nist.gov/vuln/detail/CVE-2020-2021'
                 ,
@@ -498,7 +498,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
                     ,
                 'modified': '2020-06-02T16:55Z',
                 'published': '2020-05-21T17:15Z',
-                'score_2_0': 10,
+                'score_2_0': 10.0,
                 'severity_2_0': 'HIGH',
                 'vector_v2': 'AV:N/AC:L/Au:N/C:C/I:C/A:C',
                 'vector_v3': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H'
@@ -508,7 +508,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
                              'value': 8.4},
                              'previouslyExploited': 5.07}},
             },
-        'score': 3,
+        'score': '3',
         'fields': {
             'description': '''Description: CVE-2020-12828 is trending on Twitter.
 Created: 2020-08-19T23:08:05.709Z
@@ -554,7 +554,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
                 ,
             'nvdlastmodifieddate': '2020-06-02T16:55Z',
             'nvdpublicationdate': '2020-05-21T17:15Z',
-            'cvss20score': 10,
+            'cvss20score': 10.0,
             'cvss20severity': 'HIGH',
             'nvdvectorv20': 'AV:N/AC:L/Au:N/C:C/I:C/A:C',
             'nvdvectorv31': 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H'
@@ -600,7 +600,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
                              'value': None},
                              'previouslyExploited': None}},
             },
-        'score': 3,
+        'score': '3',
         'fields': {
             'description': '''Description: CVE-2020-9771 is trending on Twitter.
 Created: 2020-08-19T23:08:05.709Z
@@ -694,7 +694,7 @@ NVD Vector - V3.1: None
                              'value': 7.02},
                              'previouslyExploited': 1.51}},
             },
-        'score': 3,
+        'score': '3',
         'fields': {
             'description': '''Description: Sixgill Current score of CVE-2015-6086 changed from Low to None.
 Created: 2020-08-25T17:16:52.536Z
@@ -788,7 +788,7 @@ NVD Vector - V3.1: None
                              'value': 7.02},
                              'previouslyExploited': 1.51}},
             },
-        'score': 3,
+        'score': '3',
         'fields': {
             'description': '''Description: Sixgill Current score of CVE-2015-6086 changed from Low to None.
 Created: 2020-08-25T17:16:52.536Z
