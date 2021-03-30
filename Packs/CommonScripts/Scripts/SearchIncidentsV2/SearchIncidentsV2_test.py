@@ -56,4 +56,4 @@ def test_is_valid_args_with_int():
 
     """
     output = is_valid_args({'id': 123})
-    assert output == True, f'is_valid_args({123}) returns: {output}. expected: {True}'
+    assert output is True
