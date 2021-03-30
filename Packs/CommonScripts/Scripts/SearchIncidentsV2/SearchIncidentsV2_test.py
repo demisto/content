@@ -41,3 +41,19 @@ def test_is_valid_args(_input, expected_output):
         output = False
 
     assert output == expected_output, f'is_valid_args({_input}) returns: {output}. expected: {expected_output}'
+
+
+def test_is_valid_args_with_int():
+    """
+    Given:
+        - an incident id from type int
+
+    When:
+        - running the script as a playbook task
+
+    Then:
+        - validating that the incident is is a valid input
+
+    """
+    output = is_valid_args({'id': 123})
+    assert output == True, f'is_valid_args({123}) returns: {output}. expected: {True}'
