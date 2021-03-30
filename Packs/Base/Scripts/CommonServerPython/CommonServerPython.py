@@ -2427,35 +2427,35 @@ class Common(object):
                 'OriginalName': self.original_name,
             }
 
-    class FeedRelatedIndicators(object):
-        """
-        FeedRelatedIndicators class
-         Implements Subject Indicators that are associated with Another indicator
-
-        :type value: ``str``
-        :param value: Indicators that are associated with the indicator.
-
-        :type indicator_type: ``str``
-        :param indicator_type: The type of the indicators that are associated with the indicator.
-
-        :type description: ``str``
-        :param description: The description of the indicators that are associated with the indicator.
-
-        :return: None
-        :rtype: ``None``
-        """
-
-        def __init__(self, value=None, indicator_type=None, description=None):
-            self.value = value
-            self.indicator_type = indicator_type
-            self.description = description
-
-        def to_context(self):
-            return {
-                'value': self.value,
-                'type': self.indicator_type,
-                'description': self.description
-            }
+    # class FeedRelatedIndicators(object):
+    #     """
+    #     FeedRelatedIndicators class
+    #      Implements Subject Indicators that are associated with Another indicator
+    #
+    #     :type value: ``str``
+    #     :param value: Indicators that are associated with the indicator.
+    #
+    #     :type indicator_type: ``str``
+    #     :param indicator_type: The type of the indicators that are associated with the indicator.
+    #
+    #     :type description: ``str``
+    #     :param description: The description of the indicators that are associated with the indicator.
+    #
+    #     :return: None
+    #     :rtype: ``None``
+    #     """
+    #
+    #     def __init__(self, value=None, indicator_type=None, description=None):
+    #         self.value = value
+    #         self.indicator_type = indicator_type
+    #         self.description = description
+    #
+    #     def to_context(self):
+    #         return {
+    #             'value': self.value,
+    #             'type': self.indicator_type,
+    #             'description': self.description
+    #         }
 
     class File(Indicator):
         """
@@ -2833,12 +2833,12 @@ class Common(object):
             self.admin_email = admin_email
             self.admin_phone = admin_phone
             self.admin_country = admin_country
-            self.tags = tags
+            # self.tags = tags
 
             self.domain_status = domain_status
             self.name_servers = name_servers
-            self.feed_related_indicators = feed_related_indicators
-            self.malware_family = malware_family
+            # self.feed_related_indicators = feed_related_indicators
+            # self.malware_family = malware_family
 
             self.dbot_score = dbot_score
 
@@ -2909,14 +2909,14 @@ class Common(object):
                 domain_context['NameServers'] = self.name_servers
                 whois_context['NameServers'] = domain_context['NameServers']
 
-            if self.tags:
-                domain_context['Tags'] = self.tags
-
-            if self.feed_related_indicators:
-                domain_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
-
-            if self.malware_family:
-                domain_context['MalwareFamily'] = self.malware_family
+            # if self.tags:
+            #     domain_context['Tags'] = self.tags
+            #
+            # if self.feed_related_indicators:
+            #     domain_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+            #
+            # if self.malware_family:
+            #     domain_context['MalwareFamily'] = self.malware_family
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {
