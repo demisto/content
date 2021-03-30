@@ -1,0 +1,1889 @@
+id: QRadar Generic
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: QRadar Generic
+description: This is a generic playbook to be executed for the QRadar Generic incident
+  type. The playbook performs all the common parts of the investigation, including
+  notifying the SOC, enriching the data for indicators and users, calculating the
+  severity, assigning the incident, notifying the SIEM admin for false positives and
+  more.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 08854949-08a5-4873-8f01-b3935c78675f
+    type: start
+    task:
+      id: 08854949-08a5-4873-8f01-b3935c78675f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a04c8331-e7c5-4107-8605-b6ee82d4639d
+    type: condition
+    task:
+      id: a04c8331-e7c5-4107-8605-b6ee82d4639d
+      version: -1
+      name: Should indicators be extracted and enriched?
+      description: Checks whether the Enrich playbook input is set to True.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      left: {}
+      right: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Enrich
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c74d18c6-9939-4701-828f-149cddba2b8d
+    type: title
+    task:
+      id: c74d18c6-9939-4701-828f-149cddba2b8d
+      version: -1
+      name: Start Remediation SLA Timer
+      description: Assigns a random analyst to this incident.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: aca20665-33d5-4e20-866b-0b8f73cd90fc
+    type: title
+    task:
+      id: aca20665-33d5-4e20-866b-0b8f73cd90fc
+      version: -1
+      name: Enrich Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: e3efbacf-f8e3-4291-8ab7-459037ce9a64
+    type: collection
+    task:
+      id: e3efbacf-f8e3-4291-8ab7-459037ce9a64
+      version: -1
+      name: Manually review the incident
+      description: Manually review and investigate this incident.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Investigation Notes
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Investigation Notes
+      description: Provide notes regarding the investigation.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4b1a5788-3cef-4857-8023-dcd01dfa8793
+    type: regular
+    task:
+      id: 4b1a5788-3cef-4857-8023-dcd01dfa8793
+      version: -1
+      name: Close investigation
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: |-
+          Closed By: ${Investigation Notes.Answers.name}
+          ${Investigation Notes.Answers.0}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 3390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 354e53b0-0132-44d6-895e-0f6e0a248cd9
+    type: regular
+    task:
+      id: 354e53b0-0132-44d6-895e-0f6e0a248cd9
+      version: -1
+      name: Extract indicators from incident
+      description: Extracts all indicators from the incident and enriches the indicators
+        by using the reputation command defined for each indicator type.
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        complex:
+          root: incident
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: e6df7983-dd60-487d-8fce-70f7f5766175
+    type: playbook
+    task:
+      id: e6df7983-dd60-487d-8fce-70f7f5766175
+      version: -1
+      name: Entity Enrichment - Generic v2
+      playbookName: Entity Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: de6f9320-320d-4bd6-820f-b612a7a0c2c7
+    type: title
+    task:
+      id: de6f9320-320d-4bd6-820f-b612a7a0c2c7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 3540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: fd2276ce-b8ca-43f2-8d91-1ad091484e27
+    type: regular
+    task:
+      id: fd2276ce-b8ca-43f2-8d91-1ad091484e27
+      version: -1
+      name: Send investigation report to SOC
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+              right:
+                value:
+                  simple: report_Investigation_Summary
+          accessor: EntryID
+      attachNames: {}
+      bcc: {}
+      body:
+        complex:
+          root: ${demistoUrls
+          accessor: investigation}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |
+                    Link to the incident
+              suffix: {}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        complex:
+          root: inputs.SocMailSubject
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.id
+                iscontext: true
+      to:
+        simple: ${inputs.SocEmailAddress}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 3210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 1b3aae31-8d82-401d-87cf-d0148d0b278b
+    type: condition
+    task:
+      id: 1b3aae31-8d82-401d-87cf-d0148d0b278b
+      version: -1
+      name: Was this a true positive?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      False Positive:
+      - "29"
+      True Positive:
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: ff1b9850-ef10-4d42-80e3-39b72d8d01f8
+    type: regular
+    task:
+      id: ff1b9850-ef10-4d42-80e3-39b72d8d01f8
+      version: -1
+      name: Generate Investigation Summary Report
+      description: |-
+        A script to generate the investigation summary report automatically
+        can be used in the post-processing flow as well.
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      name: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: b419c44d-1762-4553-8493-f9d7606af7bc
+    type: condition
+    task:
+      id: b419c44d-1762-4553-8493-f9d7606af7bc
+      version: -1
+      name: Use Calculate Severity?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.UseCalculateSeverity
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 670d8449-b528-465d-8b3f-6e22cda63229
+    type: condition
+    task:
+      id: 670d8449-b528-465d-8b3f-6e22cda63229
+      version: -1
+      name: Was the SOC email address provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SocEmailAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 355b3075-9035-4285-82b0-c4d63679b10c
+    type: condition
+    task:
+      id: 355b3075-9035-4285-82b0-c4d63679b10c
+      version: -1
+      name: Was the SIEM admin email address provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SiemAdminEmailAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 0c7b3033-c209-4a87-8ef5-63fbd907f68d
+    type: regular
+    task:
+      id: 0c7b3033-c209-4a87-8ef5-63fbd907f68d
+      version: -1
+      name: Assign an analyst to the incident
+      description: Assigns a random analyst to this incident.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      assignBy:
+        simple: random
+      email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 381f98db-b60a-4514-89d8-959cd9189cb3
+    type: title
+    task:
+      id: 381f98db-b60a-4514-89d8-959cd9189cb3
+      version: -1
+      name: Post Incident Activity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 4dfa75fe-917f-4eed-894a-3f2dfda362fc
+    type: collection
+    task:
+      id: 4dfa75fe-917f-4eed-894a-3f2dfda362fc
+      version: -1
+      name: Provide data for rule adjustment
+      type: collection
+      iscommand: false
+      brand: ""
+      description: 'Provide data to adjust the rule in order to avoid similar false
+        positives in the future.'
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which rules need to be adjusted?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Which indicators need to be excluded?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Data for rule adjustment by the SIEM admin
+      description: Provide what should be adjusted in the rule
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 75317a1a-1b21-43d7-8ed1-eab2b3d7bd67
+    type: regular
+    task:
+      id: 75317a1a-1b21-43d7-8ed1-eab2b3d7bd67
+      version: -1
+      name: Send email to SIEM admin
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        complex:
+          root: Data for rule adjustment by the SIEM admin
+          accessor: Answers
+          transformers:
+          - operator: Stringify
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: |
+                    Link to offense
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.linktooffense
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: "\nRules to adjust - "
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Data for rule adjustment by the SIEM admin.Answers.0
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: "\nValues to exclude - "
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Data for rule adjustment by the SIEM admin.Answers.1
+                iscontext: true
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        complex:
+          root: inputs.SiemAdminMailSubject
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.idoffense
+                iscontext: true
+      to:
+        simple: ${inputs.SiemAdminEmailAddress}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 8873fc30-eabd-4137-8f78-8ba80684a2a0
+    type: regular
+    task:
+      id: 8873fc30-eabd-4137-8f78-8ba80684a2a0
+      version: -1
+      name: Determine incident severity according to offense info
+      description: Sets the incident severity according to the FieldToSetSeverityFrom
+        and ScaleToSetSeverityFrom playbook inputs, which specify the relevant offense
+        field and the scale for the severity translation.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      app: {}
+      appendMultiSelect: {}
+      appendTags: {}
+      applicationid: {}
+      applicationname: {}
+      assetid: {}
+      assettable: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      commandline: {}
+      compliancenotes: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      credibilityoffense: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      descriptionasset: {}
+      descriptionoffense: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationipoffense: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationnetworkoffense: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      deviceid: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      displayname: {}
+      dnsname: {}
+      domainoffense: {}
+      dstports: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      id: {}
+      idasset: {}
+      idoffense: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      iotincidenturl: {}
+      ipaddressasset: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmirroredintime: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      linktooffense: {}
+      listofrulesevent: {}
+      listofrulesoffense: {}
+      location: {}
+      locationasset: {}
+      locationregion: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      lowlevelcategoriesoffense: {}
+      macaddress: {}
+      macaddressasset: {}
+      magnitudeoffense: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      numberofeventsinoffense: {}
+      numberoffetchedevents: {}
+      numberofflows: {}
+      numberoflogsources: {}
+      occurred: {}
+      offenseinactive: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      region: {}
+      regionid: {}
+      relevanceoffense: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      servicenowassignedto: {}
+      servicenowassignmentgroup: {}
+      servicenowcaller: {}
+      servicenowcallerid: {}
+      servicenowcategory: {}
+      servicenowclosedby: {}
+      servicenowcloseddate: {}
+      servicenowdescription: {}
+      servicenowduedate: {}
+      servicenowescalation: {}
+      servicenowimpact: {}
+      servicenownotify: {}
+      servicenowopeneddate: {}
+      servicenowpriority: {}
+      servicenowrecordid: {}
+      servicenowresolutioncode: {}
+      servicenowresolutionnotes: {}
+      servicenowresolvedtime: {}
+      servicenowseverity: {}
+      servicenowstate: {}
+      servicenowtablename: {}
+      servicenowticketnumber: {}
+      servicenowurgency: {}
+      severity:
+        complex:
+          root: inputs.FieldToSetSeverityFrom
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 1,2,3,4,5,6,7,8,9,10
+              mapped_values:
+                value:
+                  simple: inputs.ScaleToSetSeverityFrom
+                iscontext: true
+      severityoffense: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceipoffense: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourcenetworkoffense: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      statusoffense: {}
+      streetaddress: {}
+      subcategory: {}
+      subtype: {}
+      surname: {}
+      switchidasset: {}
+      switchportidasset: {}
+      systems: {}
+      targetfirewallversion: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      trafficdirection: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      typeoffense: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userid: {}
+      username: {}
+      usernamecountoffense: {}
+      usernames: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmanualseverity: {}
+      xdrmediumseverityalertcount: {}
+      xdrmodificationtime: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+      xsoarReadOnlyRoles: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 226309cb-824c-486f-8b8a-f977f03bba67
+    type: title
+    task:
+      id: 226309cb-824c-486f-8b8a-f977f03bba67
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: d8d79caa-94a4-4f02-8bda-d306a1357b34
+    type: regular
+    task:
+      id: d8d79caa-94a4-4f02-8bda-d306a1357b34
+      version: -1
+      name: Set as false positive
+      description: Sets the incident status as false positive.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      app: {}
+      appendMultiSelect: {}
+      appendTags: {}
+      applicationid: {}
+      applicationname: {}
+      assetid: {}
+      assettable: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      city: {}
+      closeNotes: {}
+      closeReason:
+        simple: False Positive
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      commandline: {}
+      compliancenotes: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      credibilityoffense: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      descriptionasset: {}
+      descriptionoffense: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationipoffense: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationnetworkoffense: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      deviceid: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      displayname: {}
+      dnsname: {}
+      domainoffense: {}
+      dstports: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      id: {}
+      idasset: {}
+      idoffense: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      iotincidenturl: {}
+      ipaddressasset: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmirroredintime: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      linktooffense: {}
+      listofrulesevent: {}
+      listofrulesoffense: {}
+      location: {}
+      locationasset: {}
+      locationregion: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      lowlevelcategoriesoffense: {}
+      macaddress: {}
+      macaddressasset: {}
+      magnitudeoffense: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      numberofeventsinoffense: {}
+      numberoffetchedevents: {}
+      numberofflows: {}
+      numberoflogsources: {}
+      occurred: {}
+      offenseinactive: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      region: {}
+      regionid: {}
+      relevanceoffense: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      servicenowassignedto: {}
+      servicenowassignmentgroup: {}
+      servicenowcaller: {}
+      servicenowcallerid: {}
+      servicenowcategory: {}
+      servicenowclosedby: {}
+      servicenowcloseddate: {}
+      servicenowdescription: {}
+      servicenowduedate: {}
+      servicenowescalation: {}
+      servicenowimpact: {}
+      servicenownotify: {}
+      servicenowopeneddate: {}
+      servicenowpriority: {}
+      servicenowrecordid: {}
+      servicenowresolutioncode: {}
+      servicenowresolutionnotes: {}
+      servicenowresolvedtime: {}
+      servicenowseverity: {}
+      servicenowstate: {}
+      servicenowtablename: {}
+      servicenowticketnumber: {}
+      servicenowurgency: {}
+      severity: {}
+      severityoffense: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceipoffense: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourcenetworkoffense: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      statusoffense: {}
+      streetaddress: {}
+      subcategory: {}
+      subtype: {}
+      surname: {}
+      switchidasset: {}
+      switchportidasset: {}
+      systems: {}
+      targetfirewallversion: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      trafficdirection: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      typeoffense: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userid: {}
+      username: {}
+      usernamecountoffense: {}
+      usernames: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmanualseverity: {}
+      xdrmediumseverityalertcount: {}
+      xdrmodificationtime: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+      xsoarReadOnlyRoles: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 88147dfd-8093-46f6-8a63-5ef810b03328
+    type: title
+    task:
+      id: 88147dfd-8093-46f6-8a63-5ef810b03328
+      version: -1
+      name: SIEM Admin
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: e02854a2-f41b-444b-8953-067035e160ca
+    type: title
+    task:
+      id: e02854a2-f41b-444b-8953-067035e160ca
+      version: -1
+      name: SOC Summary
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
+    type: playbook
+    task:
+      id: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
+      version: -1
+      name: Calculate Severity - Standard
+      playbookName: Calculate Severity - Standard
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 9a80f6b4-18be-413a-8397-794a919efa0b
+    type: condition
+    task:
+      id: 9a80f6b4-18be-413a-8397-794a919efa0b
+      version: -1
+      name: Use custom severity?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "1"
+      use custom:
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: use custom
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: inputs.UseCustomSeveritySettings
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_15_True Positive": 0.62,
+      "18_15_#default#": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4385,
+        "width": 1360,
+        "x": -220,
+        "y": -780
+      }
+    }
+  }
+inputs:
+- key: Enrich
+  value:
+    simple: "true"
+  required: false
+  description: Determines whether to enrich all indicators in the incident. Default
+    is True.
+  playbookInputQuery:
+- key: OnCall
+  value:
+    simple: "false"
+  required: false
+  description: Set to true to assign only the user that is currently on shift. Default
+    is False. Requires Cortex XSOAR v5.5 or later.
+  playbookInputQuery:
+- key: SocEmailAddress
+  value: {}
+  required: false
+  description: The SOC team's email address.
+  playbookInputQuery:
+- key: SocMailSubject
+  value:
+    simple: 'XSOAR Summary report, ID - '
+  required: false
+  description: The subject of the email to send to the SOC.
+  playbookInputQuery:
+- key: SiemAdminEmailAddress
+  value: {}
+  required: false
+  description: The SIEM admin's email address.
+  playbookInputQuery:
+- key: UseCalculateSeverity
+  value:
+    simple: "true"
+  required: false
+  description: Determines whether to use the Calculate Severity playbook to calculate
+    the incident severity. Default is True. If the playbook isn't used, the severity
+    is determined by the QRadar magnitude value.
+  playbookInputQuery:
+- key: SiemAdminMailSubject
+  value:
+    simple: 'Adjustment/Exclusion for offense '
+  required: false
+  description: The subject of the email to send to the SIEM admin.
+  playbookInputQuery:
+- key: UseCustomSeveritySettings
+  value:
+    simple: "false"
+  required: false
+  description: Determines whether to use the default mapping as provided in the QRadar
+    generic mapper to set the XSOAR incident severity or set the severity using the
+    FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs. The mapper will be used by default.
+    Any value other than False will be considered as True and will cause the playbook inputs to be used.
+  playbookInputQuery:
+- key: FieldToSetSeverityFrom
+  value:
+    complex:
+      root: incident
+      accessor: magnitudeoffense
+  required: false
+  description: |
+    Specify the field to use for calculating the incident severity. The default field is magnitude. An example of another field is the severity field.
+  playbookInputQuery:
+- key: ScaleToSetSeverityFrom
+  value:
+    simple: 1,1,1,2,2,2,2,3,3,3
+  required: false
+  description: "The range of values of FieldToSetSeverityFrom is 1-10. The XSOAR incident\
+    \ severity field values range is 0-4 where\n0 - Informational\n1 - Low\n2 - Medium\n\
+    3 - High\n4 - Critical\n\nA scale is required to translate the value of FieldToSetSeverityFrom\
+    \ to a valid incident severity value. The default scale is 1,1,1,2,2,2,2,3,3,3\
+    \ \nThe meaning of the default scale is that values 1-3 of FieldToSetSeverityFrom\
+    \ will be translated to low severity (positions 1-3 in the scale), values 4-7\
+    \ will be translated to medium severity (positions 4-7 in the scale) and values\
+    \ 8-10 will be translated to high severity (positions 8-10 in the scale)."
+  playbookInputQuery:
+outputs: []
+tests:
+- No test
+fromversion: 6.0.0
