@@ -343,6 +343,17 @@ class TestArcherV2:
                                {"Name": "google", "URL": "https://google.com"}]
 
     def test_generate_field_users_groups_input(self):
+        """
+        Given:
+            Valid value from dictionary type under "fieldsToValues" argument
+
+        When:
+            - running archer-update-record
+
+        Then:
+            - assert fields are generated correctly
+
+        """
         client = Client(BASE_URL, '', '', '', '')
         field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]})
         assert field_key == 'Value'
