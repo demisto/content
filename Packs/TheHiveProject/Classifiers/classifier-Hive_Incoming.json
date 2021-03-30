@@ -1,28 +1,56 @@
 {
   "description": "Default incoming mapper for TheHive Project cases",
   "feed": false,
-  "id": "Hive - Incoming Mapper",
+  "id": "TheHive - Incoming Mapper",
   "mapping": {
-    "Hive": {
+    "TheHive": {
       "dontMapEventToLabels": true,
       "internalMapping": {
-        "Case Resolution Status": {
-          "complex": null,
-          "simple": "thehivecaseresolutionstatus"
+        "TheHive Case PAP": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "pap",
+            "transformers": [
+              {
+                "args": {
+                  "input_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "0,1,2,3"
+                    }
+                  },
+                  "mapped_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "WHITE,GREEN,AMBER,RED"
+                    }
+                  }
+                },
+                "operator": "MapValuesTransformer"
+              }
+            ]
+          },
+          "simple": ""
         },
-        "Case Status": {
+        "TheHive Case Resolution Status": {
+          "complex": null,
+          "simple": "resolutionStatus"
+        },
+        "TheHive Case Status": {
           "complex": null,
           "simple": "status"
         },
-        "Case Summary": {
+        "TheHive Case Summary": {
           "complex": null,
           "simple": "summary"
         },
-        "Case TLP": {
+        "TheHive Case TLP": {
           "complex": {
             "accessor": "",
-            "filters": [
-            ],
+            "filters": [],
             "root": "tlp",
             "transformers": [
               {
@@ -48,66 +76,17 @@
           },
           "simple": ""
         },
-        "Tasks": {
+        "TheHive Flag": {
           "complex": null,
-          "simple": "Tasks"
+          "simple": "flag"
         },
-        "Observables": {
-          "complex": {
-            "accessor": "",
-            "filters": [
-            ],
-            "root": "observables",
-            "transformers": [
-              {
-                "args": {
-                  "input_values": {
-                    "isContext": false,
-                    "value": {
-                      "complex": null,
-                      "simple": "tlp: 0,tlp: 1,tlp:2,tlp: 3"
-                    }
-                  },
-                  "mapped_values": {
-                    "isContext": false,
-                    "value": {
-                      "complex": null,
-                      "simple": "WHITE,GREEN,AMBER,RED"
-                    }
-                  }
-                },
-                "operator": "MapValuesTransformer"
-              },
-              {
-                "args": {
-                },
-                "operator": "ParseJSON"
-              }
-            ]
-          },
-          "simple": ""
+        "TheHive Observables": {
+          "complex": null,
+          "simple": "observables"
         },
-        "Tasks": {
+        "TheHive Tasks": {
           "complex": null,
           "simple": "tasks"
-        }
-      }
-    },
-    "The Hive Case": {
-      "dontMapEventToLabels": false,
-      "internalMapping": {
-        "Tasks": {
-          "complex": null,
-          "simple": "Tasks"
-        }
-      }
-    },
-    "dbot_classification_incident_type_all": {
-      "dontMapEventToLabels": true,
-      "internalMapping": {
-        "Investigation Stage": {
-          "complex": null,
-          "simple": "status"
         },
         "dbotMirrorDirection": {
           "complex": null,
@@ -129,22 +108,6 @@
           "complex": null,
           "simple": "title"
         },
-        "occurred": {
-          "complex": {
-            "accessor": "",
-            "filters": [
-            ],
-            "root": "createdAt",
-            "transformers": [
-              {
-                "args": {
-                },
-                "operator": "TimeStampToDate"
-              }
-            ]
-          },
-          "simple": ""
-        },
         "severity": {
           "complex": null,
           "simple": "severity"
@@ -152,7 +115,7 @@
       }
     }
   },
-  "name": "Hive - Incoming Mapper",
+  "name": "TheHive - Incoming Mapper",
   "type": "mapping-incoming",
   "version": -1,
   "fromVersion": "6.0.0"

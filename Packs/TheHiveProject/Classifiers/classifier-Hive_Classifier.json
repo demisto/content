@@ -1,11 +1,11 @@
 {
   "defaultIncidentType": "TheHive",
   "feed": false,
-  "id": "Hive - Classifier",
+  "id": "TheHive - Classifier",
   "keyTypeMap": {
     "case": "TheHive"
   },
-  "name": "Hive - Classifier",
+  "name": "TheHive - Classifier",
   "propagationLabels": [
     "all"
   ],
