@@ -43,6 +43,11 @@ script: >
   if (shouldDeleteAll) {
       var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(function(item) { return item.trim(); }) : [];
       var keysToKeepObj = {};
+      var DBotScore = false;
+      index = keysToKeep.indexOf("DBotScore");
+      if (index > -1) {
+        DBotScore = true
+      }
       var value;
       for (var i = 0; i < keysToKeep.length; i++) {
           value = dq(invContext, keysToKeep[i]);
