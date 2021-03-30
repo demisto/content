@@ -114,7 +114,7 @@ script:
       isArray: true
     - name: extended_data
       required: false
-      description: 'Whether to return extended data (last_analysis_results). Possible values: "true" and "false".'
+      description: 'Whether to return extended data (last_analysis_results).'
       defaultValue: false
       isArray: false
       auto: PREDEFINED
@@ -340,7 +340,7 @@ script:
       isArray: true
     - name: extended_data
       required: false
-      description: 'Whether to return extended data (last_analysis_results). Possible values: "true" and "false".'
+      description: 'Whether to return extended data (last_analysis_results).'
       defaultValue: false
       isArray: false
       auto: PREDEFINED
@@ -429,9 +429,6 @@ script:
     - contextPath: VirusTotal.IP.id
       description: ID of the IP.
       type: String
-    - contextPath: VirusTotal.IP.links.self
-      description: ''
-      type: String
     description: Checks the reputation of an IP address.
   - name: url
     arguments:
@@ -442,7 +439,7 @@ script:
       isArray: true
     - name: extended_data
       required: false
-      description: 'Whether to return extended data (last_analysis_results). Possible values: "true" and "false".'
+      description: 'Whether to return extended data (last_analysis_results).'
       defaultValue: false
       isArray: false
       auto: PREDEFINED
@@ -570,7 +567,7 @@ script:
       isArray: true
     - name: extended_data
       required: false
-      description: 'Whether to return extended data (last_analysis_results). Possible values: "true" and "false".'
+      description: 'Whether to return extended data (last_analysis_results).'
       defaultValue: false
       isArray: false
       auto: PREDEFINED
@@ -764,7 +761,7 @@ script:
     - name: resource_type
       required: false
       default: false
-      description: 'The type of the resource on which you''re commenting. Possible values: "ip", "url", "domain", "hash".'
+      description: 'The type of the resource on which you''re commenting.'
       auto: PREDEFINED
       predefined:
       - ip
@@ -828,7 +825,7 @@ script:
       required: false
       default: false
       description: 'The type of the resource on which you''re commenting. If not supplied,
-        will determine if it''s a url or a file.Possible values: "ip", "url", "domain", "hash".'
+        will determine if it''s a url or a file.'
       auto: PREDEFINED
       predefined:
       - ip
@@ -917,7 +914,7 @@ script:
         domain, IP address, tag comments.'
     - name: extended_data
       required: false
-      description: 'Whether to return extended data (last_analysis_results). Possible values: "true" and "false".'
+      description: 'Whether to return extended data (last_analysis_results).'
       defaultValue: false
       isArray: false
       auto: PREDEFINED
@@ -1180,7 +1177,7 @@ script:
       description: ID of the analysis (from file-scan, file-rescan, or url-scan)
     - name: extended_data
       required: false
-      description: 'Whether to return extended data (last_analysis_results). Possible values: "true" and "false".'
+      description: 'Whether to return extended data (last_analysis_results).'
       defaultValue: false
     outputs:
       - contextPath: VirusTotal.Analysis.data.attributes.date
