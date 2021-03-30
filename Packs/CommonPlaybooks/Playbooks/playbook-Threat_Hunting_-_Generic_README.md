@@ -61,4 +61,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Threat Hunting - Generic ](Insert the link to your image here)
+![Threat Hunting - Generic ](https://raw.githubusercontent.com/demisto/content/5a9526a5fc20646b9a583d45dc92d451acd6aa10/Packs/CommonPlaybooks/doc_files/Threat_Hunting_-_Generic.png)
