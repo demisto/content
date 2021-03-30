@@ -4,6 +4,7 @@ import stat
 import subprocess
 import fnmatch
 import re
+import glob
 import git
 import sys
 import shutil
@@ -185,6 +186,8 @@ class Pack(object):
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
+    PACK_IGNORE = ".pack-ignore"
+    SECRETS_IGNORE = ".secrets-ignore"
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -192,7 +195,7 @@ class Pack(object):
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
-        self._sever_min_version = "1.0.0"  # initialized min version
+        self._server_min_version = "99.99.99"  # initialized min version
         self._latest_version = None  # pack latest version found in changelog
         self._support_type = None  # initialized in load_user_metadata function
         self._current_version = None  # initialized in load_user_metadata function
@@ -336,10 +339,10 @@ class Pack(object):
     def server_min_version(self):
         """ str: server min version according to collected items.
         """
-        if not self._sever_min_version or self._sever_min_version == "1.0.0":
+        if not self._server_min_version or self._server_min_version == "99.99.99":
             return Metadata.SERVER_DEFAULT_MIN_VERSION
         else:
-            return self._sever_min_version
+            return self._server_min_version
 
     @property
     def downloads_count(self):
@@ -1039,9 +1042,12 @@ class Pack(object):
                     modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
 
                     if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
-                        logging.info(f"Detected modified files in {self._pack_name} pack")
-                        task_status, pack_was_modified = True, True
-                        return
+                        if not is_ignored_pack_file(modified_file_path_parts):
+                            logging.info(f"Detected modified files in {self._pack_name} pack")
+                            task_status, pack_was_modified = True, True
+                            return
+                        else:
+                            logging.debug(f'{modified_file.a_path} is an ignored file')
 
             task_status = True
         except Exception:
@@ -1478,8 +1484,8 @@ class Pack(object):
                     logging.debug(
                         f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
                     # updated min server version from current content item
-                    self._sever_min_version = get_higher_server_version(self._sever_min_version, content_item,
-                                                                        self._pack_name)
+                    self._server_min_version = get_updated_server_version(self._server_min_version, content_item,
+                                                                          self._pack_name)
 
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
@@ -2218,6 +2224,24 @@ class Pack(object):
         ])
 
 
+class PackIgnored(object):
+    """ A class that represents all pack files/directories to be ignored if a change is detected in any of them
+
+    ROOT_FILES: The files in the pack root directory
+    NESTED_FILES: The files to be ignored inside the pack entities directories. Empty list = all files.
+    NESTED_DIRS: The 2nd level directories under the pack entities directories to ignore all of their files.
+
+    """
+    ROOT_FILES = [Pack.SECRETS_IGNORE, Pack.PACK_IGNORE]
+    NESTED_FILES = {
+        PackFolders.INTEGRATIONS.value: ["README.md", "Pipfile", "Pipfile.lock", "_test.py", "commands.txt"],
+        PackFolders.SCRIPTS.value: ["README.md", "Pipfile", "Pipfile.lock", "_test.py"],
+        PackFolders.TEST_PLAYBOOKS.value: [],
+        PackFolders.PLAYBOOKS.value: ["_README.md"],
+    }
+    NESTED_DIRS = [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value]
+
+
 # HELPER FUNCTIONS
 
 
@@ -2461,7 +2485,7 @@ def convert_price(pack_id, price_value_input=None):
         return 0
 
 
-def get_higher_server_version(current_string_version, compared_content_item, pack_name):
+def get_updated_server_version(current_string_version, compared_content_item, pack_name):
     """ Compares two semantic server versions and returns the higher version between them.
 
     Args:
@@ -2472,21 +2496,21 @@ def get_higher_server_version(current_string_version, compared_content_item, pac
     Returns:
         str: latest version between compared versions.
     """
-    higher_version_result = current_string_version
+    lower_version_result = current_string_version
 
     try:
         compared_string_version = compared_content_item.get('fromversion') or compared_content_item.get(
-            'fromVersion') or "1.0.0"
+            'fromVersion') or "99.99.99"
         current_version, compared_version = LooseVersion(current_string_version), LooseVersion(compared_string_version)
 
-        if current_version < compared_version:
-            higher_version_result = compared_string_version
+        if current_version > compared_version:
+            lower_version_result = compared_string_version
     except Exception:
         content_item_name = compared_content_item.get('name') or compared_content_item.get(
             'display') or compared_content_item.get('id') or compared_content_item.get('details', '')
         logging.exception(f"{pack_name} failed in version comparison of content item {content_item_name}.")
     finally:
-        return higher_version_result
+        return lower_version_result
 
 
 def get_content_git_client(content_repo_path: str):
@@ -2588,3 +2612,39 @@ def get_last_upload_commit_hash(content_repo, index_folder_path):
         logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
                          f'repo. Additional info:\n {e}')
         sys.exit(1)
+
+
+def is_ignored_pack_file(modified_file_path_parts):
+    """ Indicates whether a pack file needs to be ignored or not.
+
+    Args:
+        modified_file_path_parts: The modified file parts, e.g. if file path is "a/b/c" then the
+         parts list is ["a", "b", "c"]
+
+    Returns:
+        (bool): True if the file should be ignored, False otherwise
+
+    """
+    for file_suffix in PackIgnored.ROOT_FILES:
+        if file_suffix in modified_file_path_parts:
+            return True
+
+    for pack_folder, file_suffixes in PackIgnored.NESTED_FILES.items():
+        if pack_folder in modified_file_path_parts:
+            if not file_suffixes:  # Ignore all pack folder files
+                return True
+
+            for file_suffix in file_suffixes:
+                if file_suffix in modified_file_path_parts[-1]:
+                    return True
+
+    for pack_folder in PackIgnored.NESTED_DIRS:
+        if pack_folder in modified_file_path_parts:
+            pack_folder_path = os.sep.join(modified_file_path_parts[:modified_file_path_parts.index(pack_folder) + 1])
+            file_path = os.sep.join(modified_file_path_parts)
+            for folder_path in [f for f in glob.glob(os.path.join(pack_folder_path, '*/*')) if os.path.isdir(f)]:
+                # Checking for all 2nd level directories. e.g. test_data directory
+                if file_path.startswith(folder_path):
+                    return True
+
+    return False

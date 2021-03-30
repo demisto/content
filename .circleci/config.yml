@@ -777,6 +777,19 @@ jobs:
                     exit 1
                   fi
       - run:
+          name: Validate landingPageSections.json
+          when: always
+          command: |
+            # Download index.zip
+            INDEX_PATH=$(mktemp)
+            gsutil cp gs://marketplace-dist/content/packs/index.zip $INDEX_PATH
+            echo "successfully downloaded index.zip into $INDEX_PATH"
+
+            UNZIP_PATH=$(mktemp -d)
+            unzip $INDEX_PATH -d $UNZIP_PATH
+
+            python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
+      - run:
           name: Slack Notifier
           shell: /bin/bash
           command: |
