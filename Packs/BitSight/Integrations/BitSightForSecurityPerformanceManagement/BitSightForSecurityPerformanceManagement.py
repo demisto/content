@@ -38,7 +38,8 @@ class Client(BaseClient):
 
         params = {
             'first_seen_gte': first_seen,
-            'last_seen_lte': last_seen
+            'last_seen_lte': last_seen,
+            'unsampled': 'true'
         }
 
         if severity_gte:
