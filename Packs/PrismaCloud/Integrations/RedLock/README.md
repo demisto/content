@@ -6,7 +6,7 @@
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL | True |
+| url | Server API URL. See [here](https://api.docs.prismacloud.io/reference) for the relevant API URL for your tenant. | True |
 | username | API Access Key | True |
 | password | API Secret | True |
 | customer | Customer name | False |
@@ -17,7 +17,12 @@
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 
+
 4. Click **Test** to validate the URLs, token, and connection.
+
+**Note:** Further info on creating access keys for Prisma Cloud is available [here](https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin/manage-prisma-cloud-administrators/create-access-keys.html).
+
+
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
