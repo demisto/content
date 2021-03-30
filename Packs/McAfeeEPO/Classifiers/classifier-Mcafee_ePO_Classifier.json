@@ -1,0 +1,33 @@
+{
+	"brands": null,
+	"defaultIncidentType": "Malware",
+	"description": "To Classify Incidents fetched from McAfee ePO's EPOEvents Table",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "c938bff8-7dff-49a1-8e70-9964d43671ef",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": null,
+	"name": "Mcafee ePO Classifier",
+	"nameRaw": "Mcafee ePO Classifier",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}

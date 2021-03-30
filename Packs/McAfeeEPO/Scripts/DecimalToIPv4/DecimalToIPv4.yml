@@ -1,0 +1,26 @@
+args:
+- default: false
+  description: Decimal value
+  isArray: false
+  name: decimal
+  required: true
+  secret: false
+comment: An automation script to convert a decimal value to an IPv4 address
+commonfields:
+  id: DecimalToIPv4
+  version: -1
+enabled: false
+name: DecimalToIPv4
+outputs:
+- contextPath: ConvertedIPv4.ipv4
+  description: The converted ip addresses
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.15759
+fromversion: 5.0.0
