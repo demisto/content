@@ -1268,7 +1268,7 @@ class Pack(object):
                     modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
                 # The case where the version is not a key in the changelog file or it is a key of aggregated content
                 else:
-                    logging.info("The version is not a key in the changelog file")
+                    logging.info("The version is not a key in the changelog file or it is a key of aggregated content")
                     same_block_versions_dict, higher_nearest_version = self.get_same_block_versions(release_notes_dir,
                                                                                                     version, changelog)
                     logging.info('$$$$$$$$$$$$ same_block_versions_dict:')
@@ -1298,13 +1298,13 @@ class Pack(object):
         """
         if changelog.get(version):
             all_rn_versions = []
-            changelog_versions = [LooseVersion(item) for item in changelog.keys()]
             for filename in sorted(os.listdir(release_notes_dir)):
                 _version = filename.replace('.md', '')
                 version = _version.replace('_', '.')
                 all_rn_versions.append(LooseVersion(version))
             lower_versions_all_versions = [item for item in all_rn_versions if item < version]
-            lower_versions_in_changelog = [item for item in changelog_versions if item < version]
+            lower_versions_in_changelog = [LooseVersion(item) for item in changelog.keys() if
+                                           LooseVersion(item) < version]
             return max(lower_versions_all_versions) == max(lower_versions_in_changelog)
         return False
 

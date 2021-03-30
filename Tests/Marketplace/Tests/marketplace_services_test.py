@@ -753,6 +753,9 @@ class TestChangelogCreation:
                - Assert the new changelog contains the modified release notes lines.
         """
 
+    def test_get_same_block_versions
+
+
     def test_get_modified_release_notes_lines(self, mocker, dummy_pack):
         """
            Given:
@@ -799,6 +802,8 @@ class TestChangelogCreation:
         mocker.patch("Tests.Marketplace.marketplace_services.Pack.get_same_block_versions", return_value=(same_block_version_dict, higher_version))
         modified_versions_dict = dummy_pack.get_modified_release_notes_lines(release_notes_dir, changelog_latest_rn_version, original_changelog, modified_rn_files)
         assert modified_versions_dict == {'1.0.3': modified_rn_lines}
+
+
 
     def test_assert_production_bucket_version_matches_release_notes_version_positive(self, dummy_pack):
         """
