@@ -521,4 +521,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.1.0
+fromversion: 6.0.0
