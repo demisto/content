@@ -994,7 +994,7 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     domain_search = args.get('domain_search')
 
     arg_list = argToList(args.get('port_number'))
-    # this will trigger exceptions if data is invalid
+    # this will trigger exceptions if the port provided isn't a valid port number 0-65535
     all(check_int(i, 'port_number', 0, 65535, True) for i in arg_list)
     port_number = ','.join(arg_list)
 
@@ -1075,6 +1075,7 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
     port_number = ','.join(arg_list)
 
     arg_list = argToList(args.get('country_code'))
+    # This will check to make sure that a provided country code is a two character alpha string
     if arg_list and not all(i.isalpha() and len(i) == 2 for i in arg_list):
         raise ValueError('country_code must be an ISO-3166 two character country code')
     country_code = ','.join([i.upper() for i in arg_list])
@@ -1089,10 +1090,9 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
         raise ValueError(f'discovery_type must include: {", ".join(SERVICE_DISCOVERY_TYPE)}')
     discovery_type = ','.join(arg_list)
 
-    arg_list = argToList(args.get('sort'))
-    if arg_list and not all(i in SERVICE_SORT_OPTIONS for i in arg_list):
+    sort = args.get('sort')
+    if sort and not sort in SERVICE_SORT_OPTIONS:
         raise ValueError(f'sort must include: {", ".join(SERVICE_SORT_OPTIONS)}')
-    sort = ','.join(arg_list)
 
     services = list(
         islice(
@@ -1116,14 +1116,15 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Expanse.Service", outputs_key_field="id", outputs=services
+        readable_output=readable_output,
+        outputs_prefix="Expanse.Service",
+        outputs_key_field="id",
+        outputs=services
     )
 
 
 def get_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    if not (service_id := args.get('service_id')):
-        raise ValueError('service_id not specified')
-
+    service_id = args.get('service_id')
     service = client.get_service_by_id(service_id=service_id)
 
     readable_output = tableToMarkdown(
@@ -1134,7 +1135,10 @@ def get_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Expanse.Service", outputs_key_field="id", outputs=service
+        readable_output=readable_output,
+        outputs_prefix="Expanse.Service",
+        outputs_key_field="id",
+        outputs=service
     )
 
 
@@ -1152,7 +1156,10 @@ def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Expanse.Issue", outputs_key_field="id", outputs=issue
+        readable_output=readable_output,
+        outputs_prefix="Expanse.Issue",
+        outputs_key_field="id",
+        outputs=issue
     )
 
 
@@ -1621,7 +1628,7 @@ def list_pocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix="Expanse.PointOfContact",
         outputs_key_field="id",
         outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Point Of Contacts found" if len(outputs) == 0 else None
+        readable_output="## No Point Of Contacts found" if len(outputs) == 0 else f"{len(outputs)} Point Of Contacts"
     )
 
 
@@ -1656,7 +1663,8 @@ def create_poc_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="Expanse.PointOfContact",
         outputs_key_field="id",
-        outputs=poc
+        outputs=poc,
+        readable_output=f"New POC created for {email}"
     )
 
 
@@ -1726,8 +1734,6 @@ def manage_asset_tags_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 def manage_asset_pocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     operation_type = args.get('operation_type')
-    if operation_type not in ASSET_POC_OPERATIONS:
-        raise ValueError(f'Operation type must be one of {",".join(ASSET_POC_OPERATIONS)}')
 
     asset_type = args.get('asset_type')
     if not asset_type or asset_type not in TAGGABLE_ASSET_TYPE_MAP:
@@ -1735,21 +1741,20 @@ def manage_asset_pocs_command(client: Client, args: Dict[str, Any]) -> CommandRe
     mapped_asset_type = TAGGABLE_ASSET_TYPE_MAP[asset_type]
 
     asset_id = args.get('asset_id')
-    if not asset_id:
-        raise ValueError('Asset id must be provided')
-
     poc_ids = argToList(args.get('pocs'))
     poc_emails = argToList(args.get('poc_emails'))
 
     if len(poc_emails) > 0:
-        [poc_ids.append(p['id']) for p in client.list_pocs() if p['email'] in poc_emails]
+        for p in client.list_pocs():
+            if p.get('email') in poc_emails:
+                poc_ids.append(p['id'])
     pocs: List[str] = list(set(poc_ids))
     if len(pocs) < 1:
         raise ValueError('Must provide valid Point of Contact IDs or emails')
 
     client.manage_asset_pocs(mapped_asset_type, operation_type, asset_id, pocs)
     return CommandResults(
-        readable_output='Operation complete'
+        readable_output=f'Operation complete ({operation_type} {pocs} to {asset_id})'
     )
 
 
@@ -2490,48 +2495,48 @@ def main() -> None:
         elif command == "expanse-assign-pocs-to-asset":
             args = demisto.args()
             args['operation_type'] = 'ASSIGN'
-            return_results(manage_asset_pocs_command(client, demisto.args()))
+            return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-unassign-pocs-from-asset":
             args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
-            return_results(manage_asset_pocs_command(client, demisto.args()))
+            return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-assign-pocs-to-iprange":
             args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'IpRange'
-            return_results(manage_asset_pocs_command(client, demisto.args()))
+            return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-unassign-pocs-from-iprange":
             args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'IpRange'
-            return_results(manage_asset_pocs_command(client, demisto.args()))
+            return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-assign-pocs-to-certificate":
             args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'Certificate'
-            return_results(manage_asset_pocs_command(client, demisto.args()))
+            return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-unassign-pocs-from-certificate":
             args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'Certificate'
-            return_results(manage_asset_pocs_command(client, demisto.args()))
+            return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-assign-pocs-to-domain":
             args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'Domain'
-            return_results(manage_asset_pocs_command(client, demisto.args()))
+            return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-unassign-pocs-from-domain":
             args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'Domain'
-            return_results(manage_asset_pocs_command(client, demisto.args()))
+            return_results(manage_asset_pocs_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
