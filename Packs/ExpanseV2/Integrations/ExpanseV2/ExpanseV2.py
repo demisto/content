@@ -1091,7 +1091,7 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
     discovery_type = ','.join(arg_list)
 
     sort = args.get('sort')
-    if sort and not sort in SERVICE_SORT_OPTIONS:
+    if sort and sort not in SERVICE_SORT_OPTIONS:
         raise ValueError(f'sort must include: {", ".join(SERVICE_SORT_OPTIONS)}')
 
     services = list(
