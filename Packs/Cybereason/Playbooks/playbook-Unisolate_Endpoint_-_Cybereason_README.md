@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Unisolate Endpoint - Cybereason](Insert the link to your image here)
+![Unisolate Endpoint - Cybereason](https://raw.githubusercontent.com/demisto/content/25dd921cf8467a148058cf3ea5f5da7ebb4a4606/Packs/Cybereason/doc_files/Unisolate_Endpoint_-_Cybereason.png)
