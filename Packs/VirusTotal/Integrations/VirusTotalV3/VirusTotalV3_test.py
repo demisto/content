@@ -1,9 +1,13 @@
 import json
 
 import pytest
-from VirusTotalV3 import (ScoreCalculator, encode_url_to_base64,
-                          epoch_to_timestamp, raise_if_hash_not_valid,
+from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
+                          encode_url_to_base64, epoch_to_timestamp,
+                          get_working_id, raise_if_hash_not_valid,
                           raise_if_ip_not_valid)
+
+import demistomock as demisto
+from CommonServerPython import DemistoException
 
 
 class TestScoreCalculator:
@@ -59,3 +63,19 @@ class TestHelpers:
     ])
     def test_epoch_to_timestamp(self, epoch_time: int, output: str):
         assert epoch_to_timestamp(epoch_time) == output
+
+    def test_encode_to_base64(self):
+        assert encode_to_base64('c59bffd0571b8c341c7b4be63bf0e3cd',
+                                1613568775) == 'YzU5YmZmZDA1NzFiOGMzNDFjN2I0YmU2M2JmMGUzY2Q6MTYxMzU2ODc3NQ=='
+
+    def test_get_working_id(self):
+        assert get_working_id('314huoh432ou', '') == '314huoh432ou'
+
+    def test_get_working_id_to_base64(self, mocker):
+        mocker.patch.object(demisto, 'dt', return_value='')
+        mocker.patch('VirusTotalV3.get_md5_by_entry_id', return_value='')
+        assert get_working_id('1461', 'aa') == 'OjE0NjE='
+
+    def test_get_working_id_no_entry(self):
+        with pytest.raises(DemistoException):
+            assert get_working_id('1451', '')

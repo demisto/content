@@ -60,18 +60,18 @@ If the relationship is found to be suspicious, the indicator will be considered 
 The premium API analysis can call up to 4 API calls per indicator. If you want to decrease the use of the API quota, you can disable it.
 
 
-## Changes by Commands
+## Changes from VirusTotal integration
 The following lists the changes in this version according to commands from VirusTotal integration.
 
 ### Reputation commands (ip, url, domain, and file)
-- Will only get information from VirusTotal. Will not analyze the indicator if it does
-not exist.
-- Added output paths: For each command, outputs will appear under *VirusTotal.IP*, *VirusTotal.Domain*, *VirusTotal.File* and *VirusTotal.URL*.
 - Removed output paths: Due to changes in VirusTotal API, *IP.VirusTotal*, *Domain.VirusTotal*, *URL.VirusTotal*, *File.VirusTotal* will no longer supported.
 instead, you can use *VirusTotal.Domain* and *VirusTotal.IP* which returns concrete indicator's reputation.
+- Added output paths: For each command, outputs will appear under *VirusTotal.IP*, *VirusTotal.Domain*, *VirusTotal.File* and *VirusTotal.URL*.
 - The *file* and *url* commands will no longer analyse the file/url sent to it, but will get the information stored in VirusTotal.  
   If you wish to analyze (detonate) the indicator, you can use the *Detonate File - VirusTotal V3* and *Detonate URL - VirusTotal V3* playbooks.
 - Each reputation command will use at least 1 API call. For advanced reputation commands, use the *Premium API* flag.
+- To each reputation command there is not a new argument *extended_data*. When set to "true", the results returned by the commands will contain  
+  additional information as *last_analysis_results* which contains the service name and its specific analyzation.
 
 ### Comments
 In VirusTotal v3 you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.
@@ -88,16 +88,446 @@ The *vtLink* output removed from all commands as it does not longer returns from
 To easily use the scan commands we suggest to use the **Detonate File - VirusTotal V3** and **Detonate URL - VirusTotal V3** playbooks.
 The command to get the report from the scans is **vt-analysis-get**.
 
-### file-rescan:
-- New output path: *VirusTotal.Submission*
-- Preserved output: *vtScanID*
-- Removed output path: *vtLink* - The V3 API does not returns a link to the GUI anymore.
+### file
+***
+Checks the file reputation of the specified hash.
 
 
-### file-scan
-- New output path: *VirusTotal.Submission*
-- Preserved output: *vtScanID*
-- Removed output path: *vtLink* - The V3 API does not returns a link to the GUI anymore.
+#### Base Command
+
+`file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required | 
+| extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.MD5 | String | Bad MD5 hash. | 
+| File.SHA1 | String | Bad SHA1 hash. | 
+| File.SHA256 | String | Bad SHA256 hash. | 
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
+| File.Malicious.Detections | Number | For malicious files, the total number of detections. | 
+| File.Malicious.TotalEngines | Number | For malicious files, the total number of engines that checked the file hash. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the DBot score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| VirusTotal.File.attributes.type_description | String | Description of the type of the file. | 
+| VirusTotal.File.attributes.tlsh | String | The locality-sensitive hashing. | 
+| VirusTotal.File.attributes.exiftool.MIMEType | String | MIME type of the file. | 
+| VirusTotal.File.attributes.names | String | Names of the file. | 
+| VirusTotal.File.attributes.javascript_info.tags | String | Tags of the JavaScript. | 
+| VirusTotal.File.attributes.exiftool.FileType | String | The file type. | 
+| VirusTotal.File.attributes.exiftool.WordCount | String | Total number of words in the file. | 
+| VirusTotal.File.attributes.exiftool.LineCount | String | Total number of lines in file. | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.info | Number | Number of IDS that marked the file as "info". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.high | Number | Number of IDS that marked the file as "high". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.medium | Number | Number of IDS that marked the file as "medium". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.low | Number | Number of IDS that marked the file as "low". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.critical | Number | Number of Sigma analysis that marked the file as "critical". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.high | Number | Number of Sigma analysis that marked the file as "high". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.medium | Number | Number of Sigma analysis that marked the file as "medium". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.low | Number | Number of Sigma analysis that marked the file as "low". | 
+| VirusTotal.File.attributes.exiftool.MIMEEncoding | String | The MIME encoding. | 
+| VirusTotal.File.attributes.exiftool.FileTypeExtension | String | The file type extension. | 
+| VirusTotal.File.attributes.exiftool.Newlines | String | Number of newlines signs. | 
+| VirusTotal.File.attributes.trid.file_type | String | The TrID file type. | 
+| VirusTotal.File.attributes.trid.probability | Number | The TrID probability. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.description | String | Description of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.source | String | Source of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.author | String | Author of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_name | String | Rule set name of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.rule_name | String | Name of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_id | String | ID of the YARA rule. | 
+| VirusTotal.File.attributes.names | String | Name of the file. | 
+| VirusTotal.File.attributes.last_modification_date | Number | The last modification date in epoch format. | 
+| VirusTotal.File.attributes.type_tag | String | Tag of the type. | 
+| VirusTotal.File.attributes.total_votes.harmless | Number | Total number of harmless votes. | 
+| VirusTotal.File.attributes.total_votes.malicious | Number | Total number of malicious votes. | 
+| VirusTotal.File.attributes.size | Number | Size of the file. | 
+| VirusTotal.File.attributes.popular_threat_classification.suggested_threat_label | String | Suggested thread label. | 
+| VirusTotal.File.attributes.popular_threat_classification.popular_threat_name | Number | The popular thread name. | 
+| VirusTotal.File.attributes.times_submitted | Number | Number of times the file was submitted. | 
+| VirusTotal.File.attributes.last_submission_date | Number | Last submission date in epoch format. | 
+| VirusTotal.File.attributes.downloadable | Boolean | Whether the file is downloadable. | 
+| VirusTotal.File.attributes.sha256 | String | SHA-256 hash of the file. | 
+| VirusTotal.File.attributes.type_extension | String | Extension of the type. | 
+| VirusTotal.File.attributes.tags | String | File tags. | 
+| VirusTotal.File.attributes.last_analysis_date | Number | Last analysis date in epoch format. | 
+| VirusTotal.File.attributes.unique_sources | Number | Unique sources. | 
+| VirusTotal.File.attributes.first_submission_date | Number | First submission date in epoch format. | 
+| VirusTotal.File.attributes.ssdeep | String | SSDeep hash of the file. | 
+| VirusTotal.File.attributes.md5 | String | MD5 hash of the file. | 
+| VirusTotal.File.attributes.sha1 | String | SHA-1 hash of the file. | 
+| VirusTotal.File.attributes.magic | String | Identification of file by the magic number. | 
+| VirusTotal.File.attributes.last_analysis_stats.harmless | Number | The number of engines that found the indicator to be harmless. | 
+| VirusTotal.File.attributes.last_analysis_stats.type-unsupported | Number | The number of engines that found the indicator to be of type unsupported. | 
+| VirusTotal.File.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
+| VirusTotal.File.attributes.last_analysis_stats.confirmed-timeout | Number | The number of engines that confirmed the timeout of the indicator. | 
+| VirusTotal.File.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
+| VirusTotal.File.attributes.last_analysis_stats.failure | Number | The number of failed analysis engines. | 
+| VirusTotal.File.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
+| VirusTotal.File.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
+| VirusTotal.File.attributes.meaningful_name | String | Meaningful name of the file. | 
+| VirusTotal.File.attributes.reputation | Number | The reputation of the file. | 
+| VirusTotal.File.type | String | Type of the indicator \(file\). | 
+| VirusTotal.File.id | String | Type ID of the indicator. | 
+| VirusTotal.File.links.self | String | Link to the response. | 
+
+
+#### Command Example
+```!file file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "Reliability": "A - Completely reliable",
+        "Score": 2,
+        "Type": "file",
+        "Vendor": "VirusTotal"
+    },
+    "File": {
+        "Extension": "txt",
+        "MD5": "bea65efcc00169dec4f7e2ed612e041f",
+        "SHA1": "24a0006bc375afc0987493f743ebc422ded9d561",
+        "SHA256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "SSDeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
+        "Size": 103,
+        "Tags": [
+            "text"
+        ],
+        "Type": "text/plain"
+    },
+    "VirusTotal": {
+        "File": {
+            "attributes": {
+                "capabilities_tags": [],
+                "crowdsourced_yara_results": [
+                    {
+                        "author": "Marc Rivero | McAfee ATR Team",
+                        "description": "Rule to detect the EICAR pattern",
+                        "rule_name": "malw_eicar",
+                        "ruleset_id": "0019ab4291",
+                        "ruleset_name": "MALW_Eicar",
+                        "source": "https://github.com/advanced-threat-research/Yara-Rules"
+                    }
+                ],
+                "downloadable": true,
+                "exiftool": {
+                    "FileType": "TXT",
+                    "FileTypeExtension": "txt",
+                    "LineCount": "1",
+                    "MIMEEncoding": "us-ascii",
+                    "MIMEType": "text/plain",
+                    "Newlines": "(none)",
+                    "WordCount": "7"
+                },
+                "first_submission_date": 1613356237,
+                "last_analysis_date": 1617088893,
+                "last_analysis_stats": {
+                    "confirmed-timeout": 0,
+                    "failure": 0,
+                    "harmless": 0,
+                    "malicious": 7,
+                    "suspicious": 0,
+                    "timeout": 1,
+                    "type-unsupported": 16,
+                    "undetected": 50
+                },
+                "last_modification_date": 1617088964,
+                "last_submission_date": 1613356237,
+                "magic": "ASCII text, with no line terminators",
+                "md5": "bea65efcc00169dec4f7e2ed612e041f",
+                "meaningful_name": "brokencert.exe",
+                "names": [
+                    "brokencert.exe"
+                ],
+                "popular_threat_classification": {
+                    "popular_threat_name": [
+                        [
+                            "eicar",
+                            7
+                        ],
+                        [
+                            "test",
+                            5
+                        ],
+                        [
+                            "file",
+                            2
+                        ]
+                    ],
+                    "suggested_threat_label": "eicar/test"
+                },
+                "reputation": 0,
+                "sha1": "24a0006bc375afc0987493f743ebc422ded9d561",
+                "sha256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+                "size": 103,
+                "ssdeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
+                "tags": [
+                    "text"
+                ],
+                "times_submitted": 1,
+                "tlsh": "T1AEB01208274FFB1ED10738340431F8F14428434D1CD4697414911174887614512D8354",
+                "total_votes": {
+                    "harmless": 0,
+                    "malicious": 0
+                },
+                "type_description": "Text",
+                "type_extension": "txt",
+                "type_tag": "text",
+                "unique_sources": 1
+            },
+            "id": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/files/6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e"
+            },
+            "type": "file"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results of file hash 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
+>|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|
+>|---|---|---|---|---|---|---|---|
+>| 24a0006bc375afc0987493f743ebc422ded9d561 | 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e | bea65efcc00169dec4f7e2ed612e041f | brokencert.exe | txt | 2021-03-30 07:22:44Z | 0 | 7/74 |
+
+
+### file
+***
+Checks the file reputation of the specified hash.
+
+
+#### Base Command
+
+`file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required | 
+| extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.MD5 | unknown | Bad MD5 hash. | 
+| File.SHA1 | unknown | Bad SHA1 hash. | 
+| File.SHA256 | unknown | Bad SHA256 hash. | 
+| File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision. | 
+| File.Malicious.Detections | unknown | For malicious files, the total number of detections. | 
+| File.Malicious.TotalEngines | unknown | For malicious files, the total number of engines that checked the file hash. | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the DBot score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| VirusTotal.File.attributes.type_description | String | Description of the type of the file. | 
+| VirusTotal.File.attributes.tlsh | String | The locality-sensitive hashing. | 
+| VirusTotal.File.attributes.exiftool.MIMEType | String | MIME type of the file. | 
+| VirusTotal.File.attributes.names | String | Names of the file. | 
+| VirusTotal.File.attributes.javascript_info.tags | String | Tags of the JavaScript. | 
+| VirusTotal.File.attributes.exiftool.FileType | String | The file type. | 
+| VirusTotal.File.attributes.exiftool.WordCount | String | Total number of words in the file. | 
+| VirusTotal.File.attributes.exiftool.LineCount | String | Total number of lines in file. | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.info | Number | Number of IDS that marked the file as "info". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.high | Number | Number of IDS that marked the file as "high". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.medium | Number | Number of IDS that marked the file as "medium". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.low | Number | Number of IDS that marked the file as "low". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.critical | Number | Number of Sigma analysis that marked the file as "critical". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.high | Number | Number of Sigma analysis that marked the file as "high". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.medium | Number | Number of Sigma analysis that marked the file as "medium". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.low | Number | Number of Sigma analysis that marked the file as "low". | 
+| VirusTotal.File.attributes.exiftool.MIMEEncoding | String | The MIME encoding. | 
+| VirusTotal.File.attributes.exiftool.FileTypeExtension | String | The file type extension. | 
+| VirusTotal.File.attributes.exiftool.Newlines | String | Number of newlines signs. | 
+| VirusTotal.File.attributes.trid.file_type | String | The TrID file type. | 
+| VirusTotal.File.attributes.trid.probability | Number | The TrID probability. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.description | String | Description of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.source | String | Source of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.author | String | Author of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_name | String | Rule set name of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.rule_name | String | Name of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_id | String | ID of the YARA rule. | 
+| VirusTotal.File.attributes.names | String | Name of the file. | 
+| VirusTotal.File.attributes.last_modification_date | Number | The last modification date in epoch format. | 
+| VirusTotal.File.attributes.type_tag | String | Tag of the type. | 
+| VirusTotal.File.attributes.total_votes.harmless | Number | Total number of harmless votes. | 
+| VirusTotal.File.attributes.total_votes.malicious | Number | Total number of malicious votes. | 
+| VirusTotal.File.attributes.size | Number | Size of the file. | 
+| VirusTotal.File.attributes.popular_threat_classification.suggested_threat_label | String | Suggested thread label. | 
+| VirusTotal.File.attributes.popular_threat_classification.popular_threat_name | Number | The popular thread name. | 
+| VirusTotal.File.attributes.times_submitted | Number | Number of times the file was submitted. | 
+| VirusTotal.File.attributes.last_submission_date | Number | Last submission date in epoch format. | 
+| VirusTotal.File.attributes.downloadable | Boolean | Whether the file is downloadable. | 
+| VirusTotal.File.attributes.sha256 | String | SHA-256 hash of the file. | 
+| VirusTotal.File.attributes.type_extension | String | Extension of the type. | 
+| VirusTotal.File.attributes.tags | String | File tags. | 
+| VirusTotal.File.attributes.last_analysis_date | Number | Last analysis date in epoch format. | 
+| VirusTotal.File.attributes.unique_sources | Number | Unique sources. | 
+| VirusTotal.File.attributes.first_submission_date | Number | First submission date in epoch format. | 
+| VirusTotal.File.attributes.ssdeep | String | SSDeep hash of the file. | 
+| VirusTotal.File.attributes.md5 | String | MD5 hash of the file. | 
+| VirusTotal.File.attributes.sha1 | String | SHA-1 hash of the file. | 
+| VirusTotal.File.attributes.magic | String | Identification of file by the magic number. | 
+| VirusTotal.File.attributes.last_analysis_stats.harmless | Number | The number of engines that found the indicator to be harmless. | 
+| VirusTotal.File.attributes.last_analysis_stats.type-unsupported | Number | The number of engines that found the indicator to be of type unsupported. | 
+| VirusTotal.File.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
+| VirusTotal.File.attributes.last_analysis_stats.confirmed-timeout | Number | The number of engines that confirmed the timeout of the indicator. | 
+| VirusTotal.File.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
+| VirusTotal.File.attributes.last_analysis_stats.failure | Number | The number of failed analysis engines. | 
+| VirusTotal.File.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
+| VirusTotal.File.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
+| VirusTotal.File.attributes.meaningful_name | String | Meaningful name of the file. | 
+| VirusTotal.File.attributes.reputation | Number | The reputation of the file. | 
+| VirusTotal.File.type | String | Type of the indicator \(file\). | 
+| VirusTotal.File.id | String | Type ID of the indicator. | 
+| VirusTotal.File.links.self | String | Link to the response. | 
+
+
+#### Command Example
+```!file file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "Reliability": "A - Completely reliable",
+        "Score": 2,
+        "Type": "file",
+        "Vendor": "VirusTotal"
+    },
+    "File": {
+        "Extension": "txt",
+        "MD5": "bea65efcc00169dec4f7e2ed612e041f",
+        "SHA1": "24a0006bc375afc0987493f743ebc422ded9d561",
+        "SHA256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "SSDeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
+        "Signature": {
+            "Authentihash": null,
+            "Copyright": null,
+            "Description": null,
+            "FileVersion": null,
+            "InternalName": null,
+            "OriginalName": null
+        },
+        "Size": 103,
+        "Tags": [
+            "text"
+        ],
+        "Type": "text/plain"
+    },
+    "VirusTotal": {
+        "File": {
+            "attributes": {
+                "capabilities_tags": [],
+                "crowdsourced_yara_results": [
+                    {
+                        "author": "Marc Rivero | McAfee ATR Team",
+                        "description": "Rule to detect the EICAR pattern",
+                        "rule_name": "malw_eicar",
+                        "ruleset_id": "0019ab4291",
+                        "ruleset_name": "MALW_Eicar",
+                        "source": "https://github.com/advanced-threat-research/Yara-Rules"
+                    }
+                ],
+                "downloadable": true,
+                "exiftool": {
+                    "FileType": "TXT",
+                    "FileTypeExtension": "txt",
+                    "LineCount": "1",
+                    "MIMEEncoding": "us-ascii",
+                    "MIMEType": "text/plain",
+                    "Newlines": "(none)",
+                    "WordCount": "7"
+                },
+                "first_submission_date": 1613356237,
+                "last_analysis_date": 1617088893,
+                "last_analysis_stats": {
+                    "confirmed-timeout": 0,
+                    "failure": 0,
+                    "harmless": 0,
+                    "malicious": 7,
+                    "suspicious": 0,
+                    "timeout": 1,
+                    "type-unsupported": 16,
+                    "undetected": 50
+                },
+                "last_modification_date": 1617088964,
+                "last_submission_date": 1613356237,
+                "magic": "ASCII text, with no line terminators",
+                "md5": "bea65efcc00169dec4f7e2ed612e041f",
+                "meaningful_name": "brokencert.exe",
+                "names": [
+                    "brokencert.exe"
+                ],
+                "popular_threat_classification": {
+                    "popular_threat_name": [
+                        [
+                            "eicar",
+                            7
+                        ],
+                        [
+                            "test",
+                            5
+                        ],
+                        [
+                            "file",
+                            2
+                        ]
+                    ],
+                    "suggested_threat_label": "eicar/test"
+                },
+                "reputation": 0,
+                "sha1": "24a0006bc375afc0987493f743ebc422ded9d561",
+                "sha256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+                "size": 103,
+                "ssdeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
+                "tags": [
+                    "text"
+                ],
+                "times_submitted": 1,
+                "tlsh": "T1AEB01208274FFB1ED10738340431F8F14428434D1CD4697414911174887614512D8354",
+                "total_votes": {
+                    "harmless": 0,
+                    "malicious": 0
+                },
+                "type_description": "Text",
+                "type_extension": "txt",
+                "type_tag": "text",
+                "unique_sources": 1
+            },
+            "id": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/files/6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e"
+            },
+            "type": "file"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results of file hash 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
+>|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|
+>|---|---|---|---|---|---|---|---|
+>| 24a0006bc375afc0987493f743ebc422ded9d561 | 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e | bea65efcc00169dec4f7e2ed612e041f | brokencert.exe | txt | 2021-03-30 07:22:44Z | 0 | 7/74 |
 
 
 ### url-scan 
@@ -214,13 +644,135 @@ Checks the file reputation of the specified hash.
 
 
 #### Command Example
-```!file file=17bb7bda507abc602bdf1b160d7f51edaccac39fd34f8dab1e793c3612cfc8c2```
+```!file file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "Reliability": "A - Completely reliable",
+        "Score": 2,
+        "Type": "file",
+        "Vendor": "VirusTotal"
+    },
+    "File": {
+        "Extension": "txt",
+        "MD5": "bea65efcc00169dec4f7e2ed612e041f",
+        "SHA1": "24a0006bc375afc0987493f743ebc422ded9d561",
+        "SHA256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "SSDeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
+        "Signature": {
+            "Authentihash": null,
+            "Copyright": null,
+            "Description": null,
+            "FileVersion": null,
+            "InternalName": null,
+            "OriginalName": null
+        },
+        "Size": 103,
+        "Tags": [
+            "text"
+        ],
+        "Type": "text/plain"
+    },
+    "VirusTotal": {
+        "File": {
+            "attributes": {
+                "capabilities_tags": [],
+                "crowdsourced_yara_results": [
+                    {
+                        "author": "Marc Rivero | McAfee ATR Team",
+                        "description": "Rule to detect the EICAR pattern",
+                        "rule_name": "malw_eicar",
+                        "ruleset_id": "0019ab4291",
+                        "ruleset_name": "MALW_Eicar",
+                        "source": "https://github.com/advanced-threat-research/Yara-Rules"
+                    }
+                ],
+                "downloadable": true,
+                "exiftool": {
+                    "FileType": "TXT",
+                    "FileTypeExtension": "txt",
+                    "LineCount": "1",
+                    "MIMEEncoding": "us-ascii",
+                    "MIMEType": "text/plain",
+                    "Newlines": "(none)",
+                    "WordCount": "7"
+                },
+                "first_submission_date": 1613356237,
+                "last_analysis_date": 1617088893,
+                "last_analysis_stats": {
+                    "confirmed-timeout": 0,
+                    "failure": 0,
+                    "harmless": 0,
+                    "malicious": 7,
+                    "suspicious": 0,
+                    "timeout": 1,
+                    "type-unsupported": 16,
+                    "undetected": 50
+                },
+                "last_modification_date": 1617088964,
+                "last_submission_date": 1613356237,
+                "magic": "ASCII text, with no line terminators",
+                "md5": "bea65efcc00169dec4f7e2ed612e041f",
+                "meaningful_name": "brokencert.exe",
+                "names": [
+                    "brokencert.exe"
+                ],
+                "popular_threat_classification": {
+                    "popular_threat_name": [
+                        [
+                            "eicar",
+                            7
+                        ],
+                        [
+                            "test",
+                            5
+                        ],
+                        [
+                            "file",
+                            2
+                        ]
+                    ],
+                    "suggested_threat_label": "eicar/test"
+                },
+                "reputation": 0,
+                "sha1": "24a0006bc375afc0987493f743ebc422ded9d561",
+                "sha256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+                "size": 103,
+                "ssdeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
+                "tags": [
+                    "text"
+                ],
+                "times_submitted": 1,
+                "tlsh": "T1AEB01208274FFB1ED10738340431F8F14428434D1CD4697414911174887614512D8354",
+                "total_votes": {
+                    "harmless": 0,
+                    "malicious": 0
+                },
+                "type_description": "Text",
+                "type_extension": "txt",
+                "type_tag": "text",
+                "unique_sources": 1
+            },
+            "id": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/files/6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e"
+            },
+            "type": "file"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->Could not process file: "17bb7bda507abc602bdf1b160d7f51edaccac39fd34f8dab1e793c3612cfc8c2"
-> Error in API call [404] - Not Found
->{"error": {"message": "File \"17bb7bda507abc602bdf1b160d7f51edaccac39fd34f8dab1e793c3612cfc8c2\" not found", "code": "NotFoundError"}}
+>### Results of file hash 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
+>|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|
+>|---|---|---|---|---|---|---|---|
+>| 24a0006bc375afc0987493f743ebc422ded9d561 | 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e | bea65efcc00169dec4f7e2ed612e041f | brokencert.exe | txt | 2021-03-30 07:22:44Z | 0 | 7/74 |
+
 
 ### ip
 ***
@@ -774,96 +1326,454 @@ Checks the reputation of a domain.
 >| down.mykings.pw |  PA | 2021-03-16 13:17:13Z | harmless: 66<br/>malicious: 8<br/>suspicious: 0<br/>undetected: 8<br/>timeout: 0 |
 
 
-### file-scan
+### file
 ***
-Submits a file for scanning. Use the vt-analysis-get command to get the scan results.
+Checks the file reputation of the specified hash.
 
 
 #### Base Command
 
-`file-scan`
+`file`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryID | The file entry ID to submit. | Required | 
-| uploadURL | Premium API extension. Special upload URL for files larger than 32 MB. Can be acquired from the vt-file-scan-upload-url command. | Optional | 
+| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required | 
+| extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.Submission.is_valid_scan_id | boolean | Is the scan ID is valid. If not, run rescan-file. | 
-| VirusTotal.Submission.type | String | The submission type. | 
-| VirusTotal.Submission.id | String | The ID of the submission. | 
-| VirusTotal.Submission.EntryID | String | The entry ID of the file detonated. | 
-| VirusTotal.Submission.Extension | String | File extension. | 
-| VirusTotal.Submission.Info | String | File info. | 
-| VirusTotal.Submission.MD5 | String | MD5 hash of the file. | 
-| VirusTotal.Submission.Name | String | Name of the file. | 
-| VirusTotal.Submission.SHA1 | String | SHA-1 hash of the file | 
-| VirusTotal.Submission.SHA256 | String | SHA-256 of the file. | 
-| VirusTotal.Submission.SHA512 | String | SHA-512 of the file. | 
-| VirusTotal.Submission.SSDeep | String | SSDeep of the file. | 
-| VirusTotal.Submission.Size | Number | Size of the file. | 
-| VirusTotal.Submission.Type | String | The type of the submission \(analysis\). | 
+| File.MD5 | unknown | Bad MD5 hash. | 
+| File.SHA1 | unknown | Bad SHA1 hash. | 
+| File.SHA256 | unknown | Bad SHA256 hash. | 
+| File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision. | 
+| File.Malicious.Detections | unknown | For malicious files, the total number of detections. | 
+| File.Malicious.TotalEngines | unknown | For malicious files, the total number of engines that checked the file hash. | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the DBot score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| VirusTotal.File.attributes.type_description | String | Description of the type of the file. | 
+| VirusTotal.File.attributes.tlsh | String | The locality-sensitive hashing. | 
+| VirusTotal.File.attributes.exiftool.MIMEType | String | MIME type of the file. | 
+| VirusTotal.File.attributes.names | String | Names of the file. | 
+| VirusTotal.File.attributes.javascript_info.tags | String | Tags of the JavaScript. | 
+| VirusTotal.File.attributes.exiftool.FileType | String | The file type. | 
+| VirusTotal.File.attributes.exiftool.WordCount | String | Total number of words in the file. | 
+| VirusTotal.File.attributes.exiftool.LineCount | String | Total number of lines in file. | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.info | Number | Number of IDS that marked the file as "info". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.high | Number | Number of IDS that marked the file as "high". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.medium | Number | Number of IDS that marked the file as "medium". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.low | Number | Number of IDS that marked the file as "low". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.critical | Number | Number of Sigma analysis that marked the file as "critical". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.high | Number | Number of Sigma analysis that marked the file as "high". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.medium | Number | Number of Sigma analysis that marked the file as "medium". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.low | Number | Number of Sigma analysis that marked the file as "low". | 
+| VirusTotal.File.attributes.exiftool.MIMEEncoding | String | The MIME encoding. | 
+| VirusTotal.File.attributes.exiftool.FileTypeExtension | String | The file type extension. | 
+| VirusTotal.File.attributes.exiftool.Newlines | String | Number of newlines signs. | 
+| VirusTotal.File.attributes.trid.file_type | String | The TrID file type. | 
+| VirusTotal.File.attributes.trid.probability | Number | The TrID probability. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.description | String | Description of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.source | String | Source of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.author | String | Author of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_name | String | Rule set name of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.rule_name | String | Name of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_id | String | ID of the YARA rule. | 
+| VirusTotal.File.attributes.names | String | Name of the file. | 
+| VirusTotal.File.attributes.last_modification_date | Number | The last modification date in epoch format. | 
+| VirusTotal.File.attributes.type_tag | String | Tag of the type. | 
+| VirusTotal.File.attributes.total_votes.harmless | Number | Total number of harmless votes. | 
+| VirusTotal.File.attributes.total_votes.malicious | Number | Total number of malicious votes. | 
+| VirusTotal.File.attributes.size | Number | Size of the file. | 
+| VirusTotal.File.attributes.popular_threat_classification.suggested_threat_label | String | Suggested thread label. | 
+| VirusTotal.File.attributes.popular_threat_classification.popular_threat_name | Number | The popular thread name. | 
+| VirusTotal.File.attributes.times_submitted | Number | Number of times the file was submitted. | 
+| VirusTotal.File.attributes.last_submission_date | Number | Last submission date in epoch format. | 
+| VirusTotal.File.attributes.downloadable | Boolean | Whether the file is downloadable. | 
+| VirusTotal.File.attributes.sha256 | String | SHA-256 hash of the file. | 
+| VirusTotal.File.attributes.type_extension | String | Extension of the type. | 
+| VirusTotal.File.attributes.tags | String | File tags. | 
+| VirusTotal.File.attributes.last_analysis_date | Number | Last analysis date in epoch format. | 
+| VirusTotal.File.attributes.unique_sources | Number | Unique sources. | 
+| VirusTotal.File.attributes.first_submission_date | Number | First submission date in epoch format. | 
+| VirusTotal.File.attributes.ssdeep | String | SSDeep hash of the file. | 
+| VirusTotal.File.attributes.md5 | String | MD5 hash of the file. | 
+| VirusTotal.File.attributes.sha1 | String | SHA-1 hash of the file. | 
+| VirusTotal.File.attributes.magic | String | Identification of file by the magic number. | 
+| VirusTotal.File.attributes.last_analysis_stats.harmless | Number | The number of engines that found the indicator to be harmless. | 
+| VirusTotal.File.attributes.last_analysis_stats.type-unsupported | Number | The number of engines that found the indicator to be of type unsupported. | 
+| VirusTotal.File.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
+| VirusTotal.File.attributes.last_analysis_stats.confirmed-timeout | Number | The number of engines that confirmed the timeout of the indicator. | 
+| VirusTotal.File.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
+| VirusTotal.File.attributes.last_analysis_stats.failure | Number | The number of failed analysis engines. | 
+| VirusTotal.File.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
+| VirusTotal.File.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
+| VirusTotal.File.attributes.meaningful_name | String | Meaningful name of the file. | 
+| VirusTotal.File.attributes.reputation | Number | The reputation of the file. | 
+| VirusTotal.File.type | String | Type of the indicator \(file\). | 
+| VirusTotal.File.id | String | Type ID of the indicator. | 
+| VirusTotal.File.links.self | String | Link to the response. | 
 
 
 #### Command Example
-```!file-scan entryID=VyoASWK4aRCWLS8T3Jc7EL@2c18b8c3-8f96-458e-8849-39fc741e78fa```
-
-#### Human Readable Output
-
->Could not process entry_id='VyoASWK4aRCWLS8T3Jc7EL@2c18b8c3-8f96-458e-8849-39fc741e78fa'.
-
-### file-rescan
-***
-Rescans an already submitted file. This avoids having to upload the file again. Use the vt-analysis-get command to get the scan results.
-
-
-#### Base Command
-
-`file-rescan`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| file | Hash of the file to rescan. Supports MD5, SHA1, and SHA256. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| VirusTotal.Submission.Type | String | The type of the submission \(analysis\). | 
-| VirusTotal.Submission.id | String | The ID of the submission | 
-| VirusTotal.Submission.hash | String | The indicator sent to rescan. | 
-
-
-#### Command Example
-```!file-rescan file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e```
+```!file file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e```
 
 #### Context Example
 ```json
 {
-    "VirusTotal": {
-        "Submission": {
-            "hash": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
-            "id": "YmVhNjVlZmNjMDAxNjlkZWM0ZjdlMmVkNjEyZTA0MWY6MTYxNzA4ODg5Mw==",
-            "type": "analysis"
-        }
+    "DBotScore": {
+        "Indicator": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "Reliability": "A - Completely reliable",
+        "Score": 2,
+        "Type": "file",
+        "Vendor": "VirusTotal"
     },
-    "vtScanID": "YmVhNjVlZmNjMDAxNjlkZWM0ZjdlMmVkNjEyZTA0MWY6MTYxNzA4ODg5Mw=="
+    "File": {
+        "Extension": "txt",
+        "MD5": "bea65efcc00169dec4f7e2ed612e041f",
+        "SHA1": "24a0006bc375afc0987493f743ebc422ded9d561",
+        "SHA256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "SSDeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
+        "Signature": {
+            "Authentihash": null,
+            "Copyright": null,
+            "Description": null,
+            "FileVersion": null,
+            "InternalName": null,
+            "OriginalName": null
+        },
+        "Size": 103,
+        "Tags": [
+            "text"
+        ],
+        "Type": "text/plain"
+    },
+    "VirusTotal": {
+        "File": {
+            "attributes": {
+                "capabilities_tags": [],
+                "crowdsourced_yara_results": [
+                    {
+                        "author": "Marc Rivero | McAfee ATR Team",
+                        "description": "Rule to detect the EICAR pattern",
+                        "rule_name": "malw_eicar",
+                        "ruleset_id": "0019ab4291",
+                        "ruleset_name": "MALW_Eicar",
+                        "source": "https://github.com/advanced-threat-research/Yara-Rules"
+                    }
+                ],
+                "downloadable": true,
+                "exiftool": {
+                    "FileType": "TXT",
+                    "FileTypeExtension": "txt",
+                    "LineCount": "1",
+                    "MIMEEncoding": "us-ascii",
+                    "MIMEType": "text/plain",
+                    "Newlines": "(none)",
+                    "WordCount": "7"
+                },
+                "first_submission_date": 1613356237,
+                "last_analysis_date": 1617088893,
+                "last_analysis_stats": {
+                    "confirmed-timeout": 0,
+                    "failure": 0,
+                    "harmless": 0,
+                    "malicious": 7,
+                    "suspicious": 0,
+                    "timeout": 1,
+                    "type-unsupported": 16,
+                    "undetected": 50
+                },
+                "last_modification_date": 1617088964,
+                "last_submission_date": 1613356237,
+                "magic": "ASCII text, with no line terminators",
+                "md5": "bea65efcc00169dec4f7e2ed612e041f",
+                "meaningful_name": "brokencert.exe",
+                "names": [
+                    "brokencert.exe"
+                ],
+                "popular_threat_classification": {
+                    "popular_threat_name": [
+                        [
+                            "eicar",
+                            7
+                        ],
+                        [
+                            "test",
+                            5
+                        ],
+                        [
+                            "file",
+                            2
+                        ]
+                    ],
+                    "suggested_threat_label": "eicar/test"
+                },
+                "reputation": 0,
+                "sha1": "24a0006bc375afc0987493f743ebc422ded9d561",
+                "sha256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+                "size": 103,
+                "ssdeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
+                "tags": [
+                    "text"
+                ],
+                "times_submitted": 1,
+                "tlsh": "T1AEB01208274FFB1ED10738340431F8F14428434D1CD4697414911174887614512D8354",
+                "total_votes": {
+                    "harmless": 0,
+                    "malicious": 0
+                },
+                "type_description": "Text",
+                "type_extension": "txt",
+                "type_tag": "text",
+                "unique_sources": 1
+            },
+            "id": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/files/6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e"
+            },
+            "type": "file"
+        }
+    }
 }
 ```
 
 #### Human Readable Output
 
->### File "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e" resubmitted.
->|Hash|Id|Type|
->|---|---|---|
->| 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e | YmVhNjVlZmNjMDAxNjlkZWM0ZjdlMmVkNjEyZTA0MWY6MTYxNzA4ODg5Mw== | analysis |
+>### Results of file hash 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
+>|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|
+>|---|---|---|---|---|---|---|---|
+>| 24a0006bc375afc0987493f743ebc422ded9d561 | 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e | bea65efcc00169dec4f7e2ed612e041f | brokencert.exe | txt | 2021-03-30 07:22:44Z | 0 | 7/74 |
+
+
+### file
+***
+Checks the file reputation of the specified hash.
+
+
+#### Base Command
+
+`file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required | 
+| extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.MD5 | unknown | Bad MD5 hash. | 
+| File.SHA1 | unknown | Bad SHA1 hash. | 
+| File.SHA256 | unknown | Bad SHA256 hash. | 
+| File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision. | 
+| File.Malicious.Detections | unknown | For malicious files, the total number of detections. | 
+| File.Malicious.TotalEngines | unknown | For malicious files, the total number of engines that checked the file hash. | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the DBot score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| VirusTotal.File.attributes.type_description | String | Description of the type of the file. | 
+| VirusTotal.File.attributes.tlsh | String | The locality-sensitive hashing. | 
+| VirusTotal.File.attributes.exiftool.MIMEType | String | MIME type of the file. | 
+| VirusTotal.File.attributes.names | String | Names of the file. | 
+| VirusTotal.File.attributes.javascript_info.tags | String | Tags of the JavaScript. | 
+| VirusTotal.File.attributes.exiftool.FileType | String | The file type. | 
+| VirusTotal.File.attributes.exiftool.WordCount | String | Total number of words in the file. | 
+| VirusTotal.File.attributes.exiftool.LineCount | String | Total number of lines in file. | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.info | Number | Number of IDS that marked the file as "info". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.high | Number | Number of IDS that marked the file as "high". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.medium | Number | Number of IDS that marked the file as "medium". | 
+| VirusTotal.File.attributes.crowdsourced_ids_stats.low | Number | Number of IDS that marked the file as "low". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.critical | Number | Number of Sigma analysis that marked the file as "critical". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.high | Number | Number of Sigma analysis that marked the file as "high". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.medium | Number | Number of Sigma analysis that marked the file as "medium". | 
+| VirusTotal.File.attributes.sigma_analysis_stats.low | Number | Number of Sigma analysis that marked the file as "low". | 
+| VirusTotal.File.attributes.exiftool.MIMEEncoding | String | The MIME encoding. | 
+| VirusTotal.File.attributes.exiftool.FileTypeExtension | String | The file type extension. | 
+| VirusTotal.File.attributes.exiftool.Newlines | String | Number of newlines signs. | 
+| VirusTotal.File.attributes.trid.file_type | String | The TrID file type. | 
+| VirusTotal.File.attributes.trid.probability | Number | The TrID probability. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.description | String | Description of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.source | String | Source of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.author | String | Author of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_name | String | Rule set name of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.rule_name | String | Name of the YARA rule. | 
+| VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_id | String | ID of the YARA rule. | 
+| VirusTotal.File.attributes.names | String | Name of the file. | 
+| VirusTotal.File.attributes.last_modification_date | Number | The last modification date in epoch format. | 
+| VirusTotal.File.attributes.type_tag | String | Tag of the type. | 
+| VirusTotal.File.attributes.total_votes.harmless | Number | Total number of harmless votes. | 
+| VirusTotal.File.attributes.total_votes.malicious | Number | Total number of malicious votes. | 
+| VirusTotal.File.attributes.size | Number | Size of the file. | 
+| VirusTotal.File.attributes.popular_threat_classification.suggested_threat_label | String | Suggested thread label. | 
+| VirusTotal.File.attributes.popular_threat_classification.popular_threat_name | Number | The popular thread name. | 
+| VirusTotal.File.attributes.times_submitted | Number | Number of times the file was submitted. | 
+| VirusTotal.File.attributes.last_submission_date | Number | Last submission date in epoch format. | 
+| VirusTotal.File.attributes.downloadable | Boolean | Whether the file is downloadable. | 
+| VirusTotal.File.attributes.sha256 | String | SHA-256 hash of the file. | 
+| VirusTotal.File.attributes.type_extension | String | Extension of the type. | 
+| VirusTotal.File.attributes.tags | String | File tags. | 
+| VirusTotal.File.attributes.last_analysis_date | Number | Last analysis date in epoch format. | 
+| VirusTotal.File.attributes.unique_sources | Number | Unique sources. | 
+| VirusTotal.File.attributes.first_submission_date | Number | First submission date in epoch format. | 
+| VirusTotal.File.attributes.ssdeep | String | SSDeep hash of the file. | 
+| VirusTotal.File.attributes.md5 | String | MD5 hash of the file. | 
+| VirusTotal.File.attributes.sha1 | String | SHA-1 hash of the file. | 
+| VirusTotal.File.attributes.magic | String | Identification of file by the magic number. | 
+| VirusTotal.File.attributes.last_analysis_stats.harmless | Number | The number of engines that found the indicator to be harmless. | 
+| VirusTotal.File.attributes.last_analysis_stats.type-unsupported | Number | The number of engines that found the indicator to be of type unsupported. | 
+| VirusTotal.File.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
+| VirusTotal.File.attributes.last_analysis_stats.confirmed-timeout | Number | The number of engines that confirmed the timeout of the indicator. | 
+| VirusTotal.File.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
+| VirusTotal.File.attributes.last_analysis_stats.failure | Number | The number of failed analysis engines. | 
+| VirusTotal.File.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
+| VirusTotal.File.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
+| VirusTotal.File.attributes.meaningful_name | String | Meaningful name of the file. | 
+| VirusTotal.File.attributes.reputation | Number | The reputation of the file. | 
+| VirusTotal.File.type | String | Type of the indicator \(file\). | 
+| VirusTotal.File.id | String | Type ID of the indicator. | 
+| VirusTotal.File.links.self | String | Link to the response. | 
+
+
+#### Command Example
+```!file file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "Reliability": "A - Completely reliable",
+        "Score": 2,
+        "Type": "file",
+        "Vendor": "VirusTotal"
+    },
+    "File": {
+        "Extension": "txt",
+        "MD5": "bea65efcc00169dec4f7e2ed612e041f",
+        "SHA1": "24a0006bc375afc0987493f743ebc422ded9d561",
+        "SHA256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+        "SSDeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
+        "Signature": {
+            "Authentihash": null,
+            "Copyright": null,
+            "Description": null,
+            "FileVersion": null,
+            "InternalName": null,
+            "OriginalName": null
+        },
+        "Size": 103,
+        "Tags": [
+            "text"
+        ],
+        "Type": "text/plain"
+    },
+    "VirusTotal": {
+        "File": {
+            "attributes": {
+                "capabilities_tags": [],
+                "crowdsourced_yara_results": [
+                    {
+                        "author": "Marc Rivero | McAfee ATR Team",
+                        "description": "Rule to detect the EICAR pattern",
+                        "rule_name": "malw_eicar",
+                        "ruleset_id": "0019ab4291",
+                        "ruleset_name": "MALW_Eicar",
+                        "source": "https://github.com/advanced-threat-research/Yara-Rules"
+                    }
+                ],
+                "downloadable": true,
+                "exiftool": {
+                    "FileType": "TXT",
+                    "FileTypeExtension": "txt",
+                    "LineCount": "1",
+                    "MIMEEncoding": "us-ascii",
+                    "MIMEType": "text/plain",
+                    "Newlines": "(none)",
+                    "WordCount": "7"
+                },
+                "first_submission_date": 1613356237,
+                "last_analysis_date": 1617088893,
+                "last_analysis_stats": {
+                    "confirmed-timeout": 0,
+                    "failure": 0,
+                    "harmless": 0,
+                    "malicious": 7,
+                    "suspicious": 0,
+                    "timeout": 1,
+                    "type-unsupported": 16,
+                    "undetected": 50
+                },
+                "last_modification_date": 1617088964,
+                "last_submission_date": 1613356237,
+                "magic": "ASCII text, with no line terminators",
+                "md5": "bea65efcc00169dec4f7e2ed612e041f",
+                "meaningful_name": "brokencert.exe",
+                "names": [
+                    "brokencert.exe"
+                ],
+                "popular_threat_classification": {
+                    "popular_threat_name": [
+                        [
+                            "eicar",
+                            7
+                        ],
+                        [
+                            "test",
+                            5
+                        ],
+                        [
+                            "file",
+                            2
+                        ]
+                    ],
+                    "suggested_threat_label": "eicar/test"
+                },
+                "reputation": 0,
+                "sha1": "24a0006bc375afc0987493f743ebc422ded9d561",
+                "sha256": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+                "size": 103,
+                "ssdeep": "3:AIO9AJraNvsgzsVqSwHqiUZ:AeJuOgzskwZ",
+                "tags": [
+                    "text"
+                ],
+                "times_submitted": 1,
+                "tlsh": "T1AEB01208274FFB1ED10738340431F8F14428434D1CD4697414911174887614512D8354",
+                "total_votes": {
+                    "harmless": 0,
+                    "malicious": 0
+                },
+                "type_description": "Text",
+                "type_extension": "txt",
+                "type_tag": "text",
+                "unique_sources": 1
+            },
+            "id": "6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/files/6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e"
+            },
+            "type": "file"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results of file hash 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
+>|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|
+>|---|---|---|---|---|---|---|---|
+>| 24a0006bc375afc0987493f743ebc422ded9d561 | 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e | bea65efcc00169dec4f7e2ed612e041f | brokencert.exe | txt | 2021-03-30 07:22:44Z | 0 | 7/74 |
 
 
 ### url-scan

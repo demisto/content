@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -79,7 +79,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
@@ -119,7 +119,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 162.5,
           "y": 370
         }
       }
@@ -144,7 +144,7 @@ tasks:
       brand: VirusTotal (API v3)
     nexttasks:
       '#none#':
-      - "8"
+      - "5"
     scriptarguments:
       entryID:
         complex:
@@ -155,7 +155,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 275,
           "y": 545
         }
       }
@@ -206,8 +206,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 1245
+          "x": 275,
+          "y": 720
         }
       }
     note: false
@@ -241,8 +241,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 1420
+          "x": 275,
+          "y": 895
         }
       }
     note: false
@@ -255,130 +255,19 @@ tasks:
     taskid: ae4abf66-7f04-4f3b-820e-9b149711fc86
     type: title
     task:
-      description: ""
       id: ae4abf66-7f04-4f3b-820e-9b149711fc86
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: d17986cd-a167-4b6e-8424-879d0d651ed9
-    type: condition
-    task:
-      id: d17986cd-a167-4b6e-8424-879d0d651ed9
-      version: -1
-      name: Is ID valid?
-      description: Is ID valid?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isTrue
-          left:
-            value:
-              complex:
-                root: VirusTotal.Submission
-                accessor: is_valid_scan_id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 387.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: 35155680-b1f7-4dc2-896a-8ad6560b9da4
-    type: regular
-    task:
-      id: 35155680-b1f7-4dc2-896a-8ad6560b9da4
-      version: -1
-      name: Rescan file hash
-      description: Rescans an already submitted file. This avoids having to upload
-        the file again. Use the vt-analysis-get command to get the scan results.
-      script: VirusTotal (API v3)|||file-rescan
-      type: regular
-      iscommand: true
-      brand: VirusTotal (API v3)
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      file:
-        complex:
-          root: inputs.File
-          accessor: SHA256
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
           "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: c92d7603-ac0b-43ae-8c40-03f1922bc584
-    type: regular
-    task:
-      id: c92d7603-ac0b-43ae-8c40-03f1922bc584
-      version: -1
-      name: Delete Scan
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: VirusTotal.Submission
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 895
         }
       }
     note: false
@@ -391,8 +280,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
-        "width": 717.5,
+        "height": 1085,
+        "width": 605,
         "x": 50,
         "y": 50
       }

@@ -1487,6 +1487,53 @@ def file_rescan_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_md5_by_entry_id(entry_id: str) -> str:
+    """Gets an MD5 from context using entry ID"""
+    try:
+        return demisto.executeCommand('getEntry', {'id': entry_id})[0]['FileMetadata']['md5']
+    except (IndexError, KeyError) as exc:
+        err = f'Could not find MD5 for {entry_id=}'
+        demisto.debug(f'{err}, {exc}')
+        raise DemistoException(err) from exc
+
+
+def encode_to_base64(md5: str, id_: Union[str, int]) -> str:
+    """Sometime the API returns the id as number only. Need to join the id with md5 in base64.
+
+    Args:
+        md5: The MD5 of the file sent to scan
+        id_: The id returned from the file scan
+
+    Returns:
+        base64 encoded of md5:id_
+    """
+    return base64.b64encode(f'{md5}:{id_}'.encode('utf-8')).decode('utf-8')
+
+
+def get_working_id(id_: str, entry_id: str) -> str:
+    """Sometimes new scanned files ID will be only a number. Should connect them with base64(MD5:_id).
+    Fixes bug in VirusTotal API.
+
+    Args:
+        entry_id: the entry id connected to the file
+        id_: id given from the API
+
+    Returns:
+        A working ID that we can use in other commands.
+    """
+    if isinstance(id_, str) and id_.isnumeric() or (isinstance(id_, int)):
+        demisto.debug(f'Got an integer id from file-scan. {id_=}, {entry_id=}')
+        try:
+            md5 = get_md5_by_entry_id(entry_id)
+        except DemistoException as exc:
+            raise DemistoException(
+                f'The id from VirusTotal is {id_}. The id should be base64(md5:id). You can try to '
+                f'create the ID manually'
+            ) from exc
+        return encode_to_base64(md5, id_)
+    return id_
+
+
 def file_scan(client: Client, args: dict) -> List[CommandResults]:
     """
     1 API Call
@@ -1507,8 +1554,7 @@ def file_scan(client: Client, args: dict) -> List[CommandResults]:
                 get_file_context(entry_id)
             )
             id_ = data.get('id')
-            # New scanned files ID will be only a number. Should connect them with f-SHA256-ID_.
-            data['is_valid_scan_id'] = not (isinstance(id_, str) and id_.isnumeric() or (isinstance(id_, int)))
+            id_ = get_working_id(id_, entry_id)
             context = {
                 f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
                 'vtScanID': id_  # BC preservation
@@ -1894,14 +1940,14 @@ def main(params: dict, args: dict, command: str):
         results = get_comments_by_id_command(client, args)
     elif command == f'{COMMAND_PREFIX}-comments-delete':
         results = delete_comment(client, args)
-    elif command == 'file-rescan':
-        results = file_rescan_command(client, args)
-    elif command == 'file-scan':
-        results = file_scan(client, args)
-    elif command == f'{COMMAND_PREFIX}-file-scan-upload-url':
-        results = get_upload_url(client)
     elif command == 'url-scan':
         results = scan_url_command(client, args)
+    elif command == 'file-scan':
+        results = file_scan(client, args)
+    elif command == 'file-rescan':
+        results = file_rescan_command(client, args)
+    elif command == f'{COMMAND_PREFIX}-file-scan-upload-url':
+        results = get_upload_url(client)
     elif command == f'{COMMAND_PREFIX}-search':
         results = search_command(client, args)
     elif command == f'{COMMAND_PREFIX}-analysis-get':
