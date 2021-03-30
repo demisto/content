@@ -1297,8 +1297,8 @@ class Pack(object):
         """
         same_block_versions_dict: dict = dict()
         versions = [LooseVersion(item) for item in changelog.keys()]
-        higher_versions = [item for item in versions if item < version]
-        lower_versions = [item for item in versions if item > version]
+        higher_versions = [item for item in versions if item > version]
+        lower_versions = [item for item in versions if item < version]
         higher_nearest_version = min(higher_versions)
         lower_nearest_version = max(lower_versions)
         for rn_filename in sorted(os.listdir(release_notes_dir)):
