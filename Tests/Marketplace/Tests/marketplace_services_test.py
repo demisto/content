@@ -753,8 +753,7 @@ class TestChangelogCreation:
                - Assert the new changelog contains the modified release notes lines.
         """
 
-    def test_get_same_block_versions
-
+    # def test_get_same_block_versions
 
     def test_get_modified_release_notes_lines(self, mocker, dummy_pack):
         """
