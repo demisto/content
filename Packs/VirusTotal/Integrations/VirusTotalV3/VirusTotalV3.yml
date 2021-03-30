@@ -676,6 +676,9 @@ script:
       description: Premium API extension. Special upload URL for files larger than
         32 MB. Can be acquired from the vt-file-scan-upload-url command.
     outputs:
+      - contextPath: VirusTotal.Submission.is_valid_scan_id
+        description: Is the scan ID is valid. If not, run rescan-file.
+        type: boolean
       - contextPath: VirusTotal.Submission.type
         description: The submission type.
         type: String

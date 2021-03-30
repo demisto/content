@@ -1080,7 +1080,8 @@ def build_domain_output(
                 'last_modified',
                 'last_analysis_stats'
             ],
-            removeNull=True
+            removeNull=True,
+            headerTransform=underscoreToCamelCase
         ),
         outputs=data,
         raw_response=raw_response
@@ -1142,7 +1143,9 @@ def build_url_output(
                 'last_http_response_content_sha256',
                 'positives',
                 'reputation'
-            ]
+            ],
+            removeNull=True,
+            headerTransform=underscoreToCamelCase
         ),
         outputs=data,
         raw_response=raw_response
@@ -1190,7 +1193,8 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
                 'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
                 'positives': f'{positive_engines}/{detection_engines}'
             },
-            headers=['id', 'network', 'country', 'last_modified', 'reputation', 'positives']
+            headers=['id', 'network', 'country', 'last_modified', 'reputation', 'positives'],
+            headerTransform=underscoreToCamelCase
         ),
         outputs=data,
         raw_response=raw_response
@@ -1255,14 +1259,16 @@ def build_file_output(
                 **data,
                 **attributes,
                 'positives': f'{malicious}/{total}',
-                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date', 0))
+                'creation date': epoch_to_timestamp(attributes.get('creation_date')),
+                'last modified': epoch_to_timestamp(attributes.get('last_modification_date', 0))
             },
             headers=[
                 'sha1', 'sha256', 'md5',
-                'meaningful_name', 'type_extension', 'creation_date',
-                'last_modified', 'reputation', 'positives'
+                'meaningful_name', 'type_extension', 'creation date',
+                'last modified', 'reputation', 'positives'
             ],
-            removeNull=True
+            removeNull=True,
+            headerTransform=underscoreToCamelCase
         ),
         outputs=data,
         raw_response=raw_response
@@ -1472,17 +1478,13 @@ def file_rescan_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown(
             f'File "{file_hash}" resubmitted.',
-            data
+            data,
+            removeNull=True,
+            headerTransform=underscoreToCamelCase
         ),
         outputs=context,
         raw_response=raw_response
     )
-
-
-def get_sha256_from_entry_id(entry_id: str) -> str:
-    """Gets SHA256 of context ID"""
-    context = demisto.context()
-    return demisto.dt(context, f'File(val.EntryID === "{entry_id}").SHA256')
 
 
 def file_scan(client: Client, args: dict) -> List[CommandResults]:
@@ -1506,10 +1508,7 @@ def file_scan(client: Client, args: dict) -> List[CommandResults]:
             )
             id_ = data.get('id')
             # New scanned files ID will be only a number. Should connect them with f-SHA256-ID_.
-            if isinstance(id_, str) and id_.isnumeric() or isinstance(id_, int):
-                sha256 = get_sha256_from_entry_id(entry_id)
-                id_ = f'f-{sha256}-{id_}'
-                data['id'] = id_
+            data['is_valid_scan_id'] = not (isinstance(id_, str) and id_.isnumeric() or (isinstance(id_, int)))
             context = {
                 f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
                 'vtScanID': id_  # BC preservation
@@ -1518,7 +1517,7 @@ def file_scan(client: Client, args: dict) -> List[CommandResults]:
                 readable_output=tableToMarkdown(
                     f'The file has been submitted "{file_obj["name"]}"',
                     data,
-                    headers=['id', 'EntryID', 'MD5', 'SHA1', 'SHA256']
+                    headers=['id', 'EntryID', 'MD5', 'SHA1', 'SHA256'],
                 ),
                 outputs=context,
                 raw_response=raw_response
@@ -1757,7 +1756,9 @@ def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
                     'link': item['links']['self']
                 } for item in data
             ],
-            headers=['analysis_date', 'last_modification_date', 'sandbox_name', 'link']
+            headers=['analysis_date', 'last_modification_date', 'sandbox_name', 'link'],
+            removeNull=True,
+            headerTransform=underscoreToCamelCase
         ),
         outputs=data,
         raw_response=raw_response
@@ -1787,7 +1788,9 @@ def passive_dns_data(client: Client, args: dict) -> CommandResults:
                     **item['attributes']
                 } for item in data
             ],
-            headers=['id', 'date', 'host_name', 'ip_address', 'resolver']
+            headers=['id', 'date', 'host_name', 'ip_address', 'resolver'],
+            removeNull=True,
+            headerTransform=underscoreToCamelCase
         ),
         outputs=data,
         raw_response=raw_response
@@ -1809,7 +1812,9 @@ def search_command(client: Client, args: dict) -> CommandResults:
         'id',
         readable_output=tableToMarkdown(
             f'Search result of query {query}',
-            data
+            [item.get('attributes') for item in data],
+            removeNull=True,
+            headerTransform=underscoreToCamelCase
         ),
         outputs=data,
         raw_response=raw_response
@@ -1835,7 +1840,8 @@ def get_analysis_command(client: Client, args: dict) -> CommandResults:
                 'id': analysis_id
 
             },
-            headers=['id', 'stats', 'status']
+            headers=['id', 'stats', 'status'],
+            headerTransform=underscoreToCamelCase
         ),
         outputs={
             **raw_response,
