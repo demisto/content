@@ -86,8 +86,8 @@ script:
         try {
             // if fetching incidents, stringify long numbers to not round down long ids
             if (stringifyData && stringifyData == 'true') {
-                var data = result.Body.data.replace(/([\[:])?(\d{11,})([,\}\]])/g, "$1\"$2\"$3");
-                return JSON.parse(data)
+                stringifyBody = result.Body.replace(/([\[:])?(\d{11,})([,\}\]])/g, "$1\"$2\"$3");
+                return JSON.parse(stringifyBody).data
             }
             body = JSON.parse(result.Body);
         } catch (ex) {
