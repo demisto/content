@@ -1,17 +1,13 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 8b69249a-48dd-43e8-84eb-1b78b3a41ff7
     propagationLabels:
     - all
-    toServerVersion: ""
-id: 1e43a471-dcd1-4b46-8ade-7935e8c445aa
+id: Trello - Generic
 inputs:
 - description: If set, after the investigation is concluded, the card will be moved
     to the given list id.
   key: MoveToList
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: 605ac66f9f37c20f9f3205d9
@@ -35,6 +31,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: adeff520-4f44-465f-813e-a2767752643b
     timertriggers: []
     type: start
@@ -100,6 +97,7 @@ tasks:
       playbookId: Entity Enrichment - Generic v3
       type: playbook
       version: -1
+      description: ''
     taskid: 0d5ecf48-f9e3-4263-8a53-2835de2361ad
     timertriggers: []
     type: playbook
@@ -128,6 +126,7 @@ tasks:
       playbookId: Calculate Severity - Generic v2
       type: playbook
       version: -1
+      description: ''
     taskid: 6ba4ad29-52d3-4dea-8333-4ae423e3e687
     timertriggers: []
     type: playbook
@@ -152,10 +151,11 @@ tasks:
       brand: ""
       id: 22e3587c-4af0-43c7-8a9b-d725265c50b4
       iscommand: false
-      name: Trello Set Severity
+      name: d729d64d-0865-41a7-89e4-95c1227dd9d5
       playbookId: d729d64d-0865-41a7-89e4-95c1227dd9d5
       type: playbook
       version: -1
+      description: ''
     taskid: 22e3587c-4af0-43c7-8a9b-d725265c50b4
     timertriggers: []
     type: playbook
@@ -399,6 +399,7 @@ tasks:
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: 906019bc-340c-4f4b-883a-db51fb1f8861
     timertriggers: []
     type: title
@@ -422,3 +423,7 @@ view: |-
       }
     }
   }
+tests:
+- c98f69a4-1154-49c1-88b8-40330fb8d6c5
+fromversion: 6.0.0
+description: Input LIST

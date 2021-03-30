@@ -1,12 +1,8 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 8b69249a-48dd-43e8-84eb-1b78b3a41ff7
     propagationLabels:
     - all
-    toServerVersion: ""
-id: d729d64d-0865-41a7-89e4-95c1227dd9d5
+id: Trello Set Severity
 inputs: []
 name: Trello Set Severity
 outputs: []
@@ -28,6 +24,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 8a2d9988-c242-4995-80b3-193b056f9eee
     timertriggers: []
     type: start
@@ -385,3 +382,7 @@ view: |-
       }
     }
   }
+tests:
+- c98f69a4-1154-49c1-88b8-40330fb8d6c5
+fromversion: 6.0.0
+description: Set the severity
