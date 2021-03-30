@@ -1001,7 +1001,7 @@ def get_remote_data_command(service, args, close_incident):
             'ContentsFormat': EntryFormat.JSON
         })
 
-    demisto.info('Updated notable {}'.format(notable_id))
+    demisto.debug('Updated notable {}'.format(notable_id))
     return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
 
@@ -1049,8 +1049,8 @@ def update_remote_system_command(args, params, service, auth_token):
     notable_id = parsed_args.remote_incident_id
 
     if parsed_args.incident_changed and delta:
-        demisto.info('Got the following delta keys {} to update incident corresponding to notable '
-                     '{}'.format(str(list(delta.keys())), notable_id))
+        demisto.debug('Got the following delta keys {} to update incident corresponding to notable '
+                      '{}'.format(str(list(delta.keys())), notable_id))
         changed_data = {'comment': None, 'status': None, 'owner': None, 'urgency': None}
         for field in delta:
             if field in ('comment', 'status', 'owner', 'urgency'):
@@ -1062,7 +1062,7 @@ def update_remote_system_command(args, params, service, auth_token):
             changed_data['status'] = '5'  # type: ignore
 
         if any(changed_data.values()):
-            demisto.info('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
+            demisto.debug('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
             base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
             try:
                 session_key = service.token if not auth_token else None
@@ -1075,7 +1075,7 @@ def update_remote_system_command(args, params, service, auth_token):
                 if 'success' not in response_info or not response_info['success']:
                     demisto.error('Failed updating notable {}: {}'.format(notable_id, msg))
                 else:
-                    demisto.info('update-remote-system for notable {}: {}'.format(notable_id, msg))
+                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id, msg))
 
             except Exception as e:
                 demisto.error('Error in Splunk outgoing mirror for incident corresponding to notable {}. '
