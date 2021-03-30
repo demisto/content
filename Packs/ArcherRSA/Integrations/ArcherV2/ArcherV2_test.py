@@ -2,7 +2,7 @@ import copy
 from datetime import datetime, timezone
 
 import pytest
-
+from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
     fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT
@@ -347,6 +347,23 @@ class TestArcherV2:
         field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]})
         assert field_key == 'Value'
         assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
+
+    def test_generate_invalid_field_users_groups_input(self):
+        """
+        Given:
+            Invalid value under "fieldsToValues" argument with type 8 (lists)
+
+        When:
+            - running archer-update-record
+
+        Then:
+            - Raise exception indicates that the value is not with the right format
+
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        with pytest.raises(DemistoException) as e:
+            generate_field_value(client, "test", {'Type': 8}, 'user1, user2')
+        assert "Value under field name: test must be a dictionary type and include a list" in str(e.value)
 
     @pytest.mark.parametrize('field_value, result', [
         ([1, 2], [{"ContentID": 1}, {"ContentID": 2}]),
