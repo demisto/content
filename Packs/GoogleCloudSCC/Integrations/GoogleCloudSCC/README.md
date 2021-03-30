@@ -300,7 +300,7 @@ Lists an organization or source's findings.
                 "category": "page",
                 "createTime": "2020-05-15T05:57:46.641Z",
                 "eventTime": "2021-02-11T09:33:30.716Z",
-                "externalUri": "http://www.apple.com",
+                "externalUri": "http://www.example.com",
                 "name": "organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d",
                 "parent": "organizations/595779152576/sources/10134421585261057824",
                 "readTime": "2021-02-11T13:52:10.594Z",
@@ -330,7 +330,7 @@ Lists an organization or source's findings.
                     "dst_longitude": -81.7091,
                     "dst_region": "North Carolina",
                     "dst_zipcode": "28655",
-                    "dstip": "184.51.49.16",
+                    "dstip": "1.2.3.4",
                     "id": "fda1f2cb566f247dac4c4c77",
                     "insertion_epoch_timestamp": "1584069016",
                     "organization_unit": "None",
@@ -345,18 +345,18 @@ Lists an organization or source's findings.
                     "src_longitude": -121.939,
                     "src_region": "California",
                     "src_zipcode": "95134",
-                    "srcip": "12.196.121.40",
+                    "srcip": "1.2.3.5",
                     "ssl_decrypt_policy": "no",
                     "tenant_name": "partners",
                     "timestamp": "1584069012",
                     "traffic_type": "Web",
                     "transaction_id": "0",
                     "type": "page",
-                    "ur_normalized": "10.2.100.13",
+                    "ur_normalized": "10.0.0.1",
                     "url": "www.apple.com",
-                    "user": "10.2.100.13",
+                    "user": "10.0.0.1",
                     "user_generated": "yes",
-                    "userip": "10.2.100.13"
+                    "userip": "10.0.0.1"
                 },
                 "state": "ACTIVE"
             },
@@ -384,7 +384,7 @@ Lists an organization or source's findings.
                 "category": "page",
                 "createTime": "2020-05-30T02:41:01.848Z",
                 "eventTime": "2020-03-16T01:38:52Z",
-                "externalUri": "http://www.linkedin.com",
+                "externalUri": "http://www.example.com",
                 "name": "organizations/595779152576/sources/10134421585261057824/findings/000031c6a21f11ea9d221217baf6db4d",
                 "parent": "organizations/595779152576/sources/10134421585261057824",
                 "readTime": "2021-02-11T13:52:10.594Z",
@@ -417,7 +417,7 @@ Lists an organization or source's findings.
                     "dst_region": "California",
                     "dst_timezone": "N/A",
                     "dst_zipcode": "N/A",
-                    "dstip": "108.174.10.10",
+                    "dstip": "1.2.3.4",
                     "id": "567a33f799d411dab82da23e",
                     "insertion_epoch_timestamp": "1584322739",
                     "organization_unit": "None",
@@ -432,18 +432,18 @@ Lists an organization or source's findings.
                     "src_longitude": -121.939,
                     "src_region": "California",
                     "src_zipcode": "95134",
-                    "srcip": "12.196.121.40",
+                    "srcip": "1.2.3.5",
                     "ssl_decrypt_policy": "yes",
                     "tenant_name": "partners",
                     "timestamp": "1584322732",
                     "traffic_type": "CloudApp",
                     "transaction_id": "0",
                     "type": "page",
-                    "ur_normalized": "10.2.100.13",
+                    "ur_normalized": "10.0.0.1",
                     "url": "www.linkedin.com",
-                    "user": "10.2.100.13",
+                    "user": "10.0.0.1",
                     "user_generated": "yes",
-                    "userip": "10.2.100.13"
+                    "userip": "10.0.0.1"
                 },
                 "state": "ACTIVE"
             }
@@ -517,7 +517,7 @@ Update an organization's or source's finding.
             "category": "page",
             "createTime": "2020-05-15T05:57:46.641Z",
             "eventTime": "2021-02-11T13:52:25.986162Z",
-            "externalUri": "http://www.apple.com",
+            "externalUri": "http://www.example.com",
             "name": "organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d",
             "parent": "organizations/595779152576/sources/10134421585261057824",
             "resourceName": "//cloudresourcemanager.googleapis.com/projects/339295427573",
@@ -539,7 +539,7 @@ Update an organization's or source's finding.
                 "dst_longitude": -81.7091,
                 "dst_region": "North Carolina",
                 "dst_zipcode": "28655",
-                "dstip": "184.51.49.16",
+                "dstip": "1.2.3.4",
                 "id": "fda1f2cb566f247dac4c4c77",
                 "insertion_epoch_timestamp": "1584069016",
                 "organization_unit": "None",
@@ -554,18 +554,18 @@ Update an organization's or source's finding.
                 "src_longitude": -121.939,
                 "src_region": "California",
                 "src_zipcode": "95134",
-                "srcip": "12.196.121.40",
+                "srcip": "1.2.3.5",
                 "ssl_decrypt_policy": "no",
                 "tenant_name": "partners",
                 "timestamp": "1584069012",
                 "traffic_type": "Web",
                 "transaction_id": "0",
                 "type": "page",
-                "ur_normalized": "10.2.100.13",
+                "ur_normalized": "10.0.0.1",
                 "url": "www.apple.com",
-                "user": "10.2.100.13",
+                "user": "10.0.0.1",
                 "user_generated": "yes",
-                "userip": "10.2.100.13"
+                "userip": "10.0.0.1"
             },
             "state": "ACTIVE"
         }
@@ -578,7 +578,7 @@ Update an organization's or source's finding.
 >### The finding has been updated successfully.
 >|Name|State|Category|Event Time|Create Time|External Uri|Resource Name|
 >|---|---|---|---|---|---|---|
->| [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.apple.com](http://www.apple.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
+>| [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.example.com](http://www.example.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
 
 
 ## Known Limitations
