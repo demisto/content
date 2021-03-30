@@ -83,15 +83,6 @@
                 "startCol": 0
               },
               {
-                "endCol": 2,
-                "fieldId": "thehivecasetlp",
-                "height": 22,
-                "id": "c46e1900-c78c-11ea-80a0-21f79fbeba0f",
-                "index": 1,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
                 "dropEffect": "move",
                 "endCol": 2,
                 "fieldId": "severity",
@@ -167,7 +158,7 @@
                 "id": "50435df0-ccc4-11ea-bdb9-5527704e87b7",
                 "index": 7,
                 "listId": "modwynvzjk-e82c4420-c606-11ea-bff0-ed572c3ba181",
-                "name": "Enable mirroring",
+                "name": "Enable mirroring (bi-directional)",
                 "scriptId": "Builtin|||setIncident",
                 "sectionItemType": "button",
                 "startCol": 0
