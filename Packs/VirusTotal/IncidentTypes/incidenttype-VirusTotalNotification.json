@@ -19,7 +19,6 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "VirusTotal Intelligence LiveHunt Notification",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

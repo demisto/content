@@ -5,7 +5,7 @@ This integration was integrated and tested with version API v3 of VirusTotal - P
 
 ## Use Cases
 - Fetch live hunt notifications as incidents
-- Use retrohunt to analyze files with custom YARA rule
+- Use retro hunt to analyze files with custom YARA rule
 - Download suspicious files from VirusTotal for further analysis.
 - Group several files from VirusTotal into a password-protected ZIP file.
 - Get a PCAP file generated from VirusTotal's sandbox for further analysis. 
@@ -42,6 +42,9 @@ The *VirusTotal Premium (API v3)* integration does not match the *VirusTotal - P
 2 commands matches the commands in *VirusTotal - Private API* and therefore, it is recommended to use the new commands in *VirusTotal Premium - (API v3)*.
 - **vt-private-search-file**
 - **vt-private-download-file**
+
+## Report commands alternatives / Enrichment
+To enrich indicators, you can use the *VirusTotal (API v3)* integration reputation commands.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
