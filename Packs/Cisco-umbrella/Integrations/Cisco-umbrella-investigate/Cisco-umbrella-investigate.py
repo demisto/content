@@ -1800,7 +1800,7 @@ try:
     base_url = params['baseURL']
     use_ssl = not params.get('insecure', False)
     malicious_threshold = int(params.get('dboscore_threshold', -100))
-    reliability = params.get('integrationReliability')
+    reliability = params.get('integrationReliability', 'B - Usually reliable')
     default_headers = {
         'Authorization': 'Bearer {}'.format(api_token),
         'Accept': 'application/json'
