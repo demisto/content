@@ -17,6 +17,10 @@ PRIVATE_BUILD_INFRA_SCRIPTS = ['Tests/scripts/validate_premium_packs.sh', 'Tests
                                'Tests/scripts/validate_index.py']
 PRIVATE_BUILD_INFRA_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
 
+NON_PRIVATE_BUILD_FILES = ['Tests/Marketplace/landingPage_sections.json',
+                           'Tests/Marketplace/validate_landing_page_sections.py',
+                           'Tests/Marketplace/Tests/validate_landing_page_sections_test.py']
+
 TRIGGER_BUILD_URL = 'https://api.github.com/repos/demisto/content-private/dispatches'
 GET_DISPATCH_WORKFLOWS_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs'
 WORKFLOW_HTML_URL = 'https://github.com/demisto/content-private/actions/runs'
@@ -61,6 +65,8 @@ def branch_has_private_build_infra_change(branch_name: str = None) -> bool:
     """
     modified_files = get_modified_files(branch_name)
     for infra_file in modified_files:
+        if infra_file in NON_PRIVATE_BUILD_FILES:
+            continue
         if infra_file in PRIVATE_BUILD_INFRA_SCRIPTS:
             return True
 

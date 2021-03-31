@@ -14,6 +14,6 @@ The playbooks included in this pack help you save time and keep your incidents i
 
 As part of this pack, you will also get out-of-the-box Cortex XDR incident type views,  with incident fields and a full layout. All of these are easily customizable to suit the needs of your organization.
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr-incident-handling-v2)_
+_For more information, visit our [Cortex XSOAR Developer Docs](hhttps://xsoar.pan.dev/docs/reference/articles/palo-alto-networks-cortex-xdr---investigation-and-response)_
 
-![Cortex XDR incident handling v2](https://github.com/demisto/content/raw/3fadebe9e16eb7c9fc28ce3bb600319ec875e3b5/Packs/CortexXDR/doc_files/Cortex_XDR_incident_handling_v2.png)
+![Cortex XDR incident handling v3](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXDR/doc_files/Cortex_XDR_incident_handling_v3.png)
