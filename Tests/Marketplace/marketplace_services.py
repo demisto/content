@@ -615,7 +615,7 @@ class Pack(object):
         if certification == Metadata.CERTIFIED:
             search_rank += 10
 
-        if name == 'DBot Facts':
+        if name == 'DBot Truth Bombs':
             search_rank += 50
 
         if content_items:

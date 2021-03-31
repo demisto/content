@@ -8,12 +8,12 @@ DBOT_NAME = 'DBot'
 
 
 def dbot_fact(category) -> Dict[str, Any]:
-    res = demisto.executeCommand('dbot-fact', {
+    res = demisto.executeCommand('dbot-truth-bomb', {
         'category': category
     })
 
     if isError(res[0]):
-        return_error('Error getting dbot fact - {}'.format(res[0]['Contents']))
+        return_error('Error getting dbot truth bomb - {}'.format(res[0]['Contents']))
 
     return res[0]['Contents']
 
