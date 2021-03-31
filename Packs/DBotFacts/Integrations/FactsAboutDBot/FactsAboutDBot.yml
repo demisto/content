@@ -33,8 +33,11 @@ script:
       - Travel
     description: Returns a random fact about DBot.
     name: dbot-fact
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.9.2.17957
   runonce: false
   script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

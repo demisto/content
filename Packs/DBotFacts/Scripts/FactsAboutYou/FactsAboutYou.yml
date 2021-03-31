@@ -19,7 +19,6 @@ commonfields:
 dockerimage: demisto/python3:3.9.2.17957
 enabled: true
 name: FactAboutYou
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -28,3 +27,6 @@ subtype: python3
 tags:
 - Utilities
 type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
