@@ -1,0 +1,49 @@
+category: Utilities
+commonfields:
+  id: Facts About DBot
+  version: -1
+configuration:
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 18b71ec7-0a6b-40d6-8f8f-885141b46b7d
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Get to know DBot better, with various of facts.
+display: Facts About DBot
+name: Facts About DBot
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: Filter fact by specific category.
+      name: category
+      predefined:
+      - Dev
+      - Career
+      - History
+      - Money
+      - Movie
+      - Music
+      - Science
+      - Sport
+      - Travel
+    description: Returns a random fact about DBot.
+    name: dbot-fact
+  dockerimage: demisto/python3:3.8.3.9324
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: HelloWorld - Asaf

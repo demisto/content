@@ -1,0 +1,38 @@
+args:
+- auto: PREDEFINED
+  description: Filter fact by specific category.
+  name: category
+  predefined:
+  - Dev
+  - Career
+  - History
+  - Money
+  - Movie
+  - Music
+  - Science
+  - Sport
+  - Travel
+comment: Reveal a fact about yourself.
+commonfields:
+  id: FactAboutYou
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 18b71ec7-0a6b-40d6-8f8f-885141b46b7d
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.2.17957
+enabled: true
+name: FactAboutYou
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
+type: python
