@@ -281,7 +281,7 @@ class Client(BaseClient):
             attachments = self.get_list(f"/incidents/id/{incident_id}/attachments")
 
         else:
-            attachments = self.get_list(f"/incidents/number/{incident_id}/attachments")
+            attachments = self.get_list(f"/incidents/number/{incident_number}/attachments")
 
         return attachments
 
@@ -403,7 +403,9 @@ def attachments_to_command_results(client: Client, attachments: List[Dict[str, A
     headers = ['Id', 'FileName', 'DownloadUrl', 'Size', 'Description', 'InvisibleForCaller', 'EntryDate', 'Operator']
     capitalized_attachments = capitalize_for_outputs(attachments)
     for capitalized_attachment in capitalized_attachments:
-        capitalized_attachment['DownloadUrl'] = f"{client._base_url}{capitalized_attachment['DownloadUrl'][8:]}"
+        full_url = '/api'.join([client._base_url.split('/api')[0],
+                                capitalized_attachment['DownloadUrl'].split('/api')[1]])
+        capitalized_attachment['DownloadUrl'] = full_url
 
     incident_identifier = incident_number if incident_number else incident_id
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} attachment of incident {incident_identifier}",
