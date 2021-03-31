@@ -2303,6 +2303,21 @@ class Common(object):
         :type positive_engines: ``int``
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
+        :type organization_name: ``str``
+        :param organization_name: The organization of the IP
+
+        :type organization_type: ``str``
+        :param organization_type:The organization type of the IP
+
+        :type tags: ``str``
+        :param tags: Tags of the IP.
+
+        :type malware_family: ``str``
+        :param malware_family: The malware family associated with the IP.
+
+        :type feed_related_indicators: ``FeedRelatedIndicators``
+        :param feed_related_indicators: Indicators that are associated with the IP.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
@@ -2312,7 +2327,9 @@ class Common(object):
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
         def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
-                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None):
+                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
+                     organization_name=None, organization_type=None, feed_related_indicators=None, tags=None,
+                     malware_family=None):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -2322,6 +2339,11 @@ class Common(object):
             self.geo_description = geo_description
             self.detection_engines = detection_engines
             self.positive_engines = positive_engines
+            self.organization_name = organization_name
+            self.organization_type = organization_type
+            self.feed_related_indicators = feed_related_indicators
+            self.tags = tags
+            self.malware_family = malware_family
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2351,11 +2373,29 @@ class Common(object):
                 if self.geo_description:
                     ip_context['Geo']['Description'] = self.geo_description
 
+            if self.organization_name or self.organization_type:
+                ip_context['Organization'] = {}
+
+                if self.organization_name:
+                    ip_context['Organization']['Name'] = self.organization_name
+
+                if self.organization_type:
+                    ip_context['Organization']['Type'] = self.organization_type
+
             if self.detection_engines:
                 ip_context['DetectionEngines'] = self.detection_engines
 
             if self.positive_engines:
                 ip_context['PositiveDetections'] = self.positive_engines
+
+            if self.feed_related_indicators:
+                ip_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+
+            if self.tags:
+                ip_context['Tags'] = self.tags
+
+            if self.malware_family:
+                ip_context['MalwareFamily'] = self.malware_family
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 ip_context['Malicious'] = {
@@ -2407,6 +2447,36 @@ class Common(object):
                 'FileVersion': self.file_version,
                 'InternalName': self.internal_name,
                 'OriginalName': self.original_name,
+            }
+
+    class FeedRelatedIndicators(object):
+        """
+        FeedRelatedIndicators class
+         Implements Subject Indicators that are associated with Another indicator
+
+        :type value: ``str``
+        :param value: Indicators that are associated with the indicator.
+
+        :type indicator_type: ``str``
+        :param indicator_type: The type of the indicators that are associated with the indicator.
+
+        :type description: ``str``
+        :param description: The description of the indicators that are associated with the indicator.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, value=None, indicator_type=None, description=None):
+            self.value = value
+            self.indicator_type = indicator_type
+            self.description = description
+
+        def to_context(self):
+            return {
+                'value': self.value,
+                'type': self.indicator_type,
+                'description': self.description
             }
 
     class File(Indicator):
@@ -2466,6 +2536,12 @@ class Common(object):
         :type tags: ``str``
         :param tags: Tags of the file.
 
+        :type feed_related_indicators: ``FeedRelatedIndicators``
+        :param feed_related_indicators: Indicators that are associated with the file.
+
+        :type malware_family: ``str``
+        :param malware_family: The malware family associated with the File.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
 
@@ -2479,7 +2555,8 @@ class Common(object):
 
         def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
                      sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
-                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None):
+                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
+                     feed_related_indicators=None, malware_family=None):
 
             self.name = name
             self.entry_id = entry_id
@@ -2499,6 +2576,8 @@ class Common(object):
             self.signature = signature
             self.actor = actor
             self.tags = tags
+            self.feed_related_indicators = feed_related_indicators
+            self.malware_family = malware_family
 
             self.dbot_score = dbot_score
 
@@ -2543,6 +2622,11 @@ class Common(object):
                 file_context['Actor'] = self.actor
             if self.tags:
                 file_context['Tags'] = self.tags
+            if self.feed_related_indicators:
+                file_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+
+            if self.malware_family:
+                file_context['MalwareFamily'] = self.malware_family
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 file_context['Malicious'] = {
@@ -2669,6 +2753,15 @@ class Common(object):
         :type category: ``str``
         :param category: The category associated with the indicator.
 
+        :type feed_related_indicators: ``FeedRelatedIndicators``
+        :param feed_related_indicators: Indicators that are associated with the URL.
+
+        :type malware_family: ``str``
+        :param malware_family: The malware family associated with the URL.
+
+        :type tags: ``str``
+        :param tags: Tags of the URL.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
 
@@ -2677,11 +2770,15 @@ class Common(object):
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
+                     feed_related_indicators=None, tags=None, malware_family=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
             self.category = category
+            self.feed_related_indicators = feed_related_indicators
+            self.tags = tags
+            self.malware_family = malware_family
 
             self.dbot_score = dbot_score
 
@@ -2698,6 +2795,15 @@ class Common(object):
 
             if self.category:
                 url_context['Category'] = self.category
+
+            if self.feed_related_indicators:
+                url_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+
+            if self.tags:
+                url_context['Tags'] = self.tags
+
+            if self.malware_family:
+                url_context['MalwareFamily'] = self.malware_family
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
@@ -2722,7 +2828,7 @@ class Common(object):
 
         def __init__(self, domain, dbot_score, dns=None, detection_engines=None, positive_detections=None,
                      organization=None, sub_domains=None, creation_date=None, updated_date=None, expiration_date=None,
-                     domain_status=None, name_servers=None,
+                     domain_status=None, name_servers=None, feed_related_indicators=None, malware_family=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
                      admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None):
@@ -2753,6 +2859,8 @@ class Common(object):
 
             self.domain_status = domain_status
             self.name_servers = name_servers
+            self.feed_related_indicators = feed_related_indicators
+            self.malware_family = malware_family
 
             self.dbot_score = dbot_score
 
@@ -2825,6 +2933,12 @@ class Common(object):
 
             if self.tags:
                 domain_context['Tags'] = self.tags
+
+            if self.feed_related_indicators:
+                domain_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+
+            if self.malware_family:
+                domain_context['MalwareFamily'] = self.malware_family
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {

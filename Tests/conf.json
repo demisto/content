@@ -3220,6 +3220,11 @@
             "integrations": "Cisco Stealthwatch",
             "fromversion": "5.5.0",
             "playbookID": "Cisco Stealthwatch Test"
+        },
+        {
+            "integrations": "OpenCTI",
+            "playbookID": "OpenCTI Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -3299,7 +3304,8 @@
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
         "Slack Test Playbook": "Issue 33448",
-        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482"
+        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
+        "test playbook - QRadarCorrelations For V2": "Issue 30876"
     },
     "skipped_integrations": {
         
@@ -3329,6 +3335,7 @@
         "SentinelOne": "No instance",
         "Vectra v2": "No instance",
         "AWS - IAM": "Issue 21401",
+        "GoogleCloudSCC": "No instance, outsourced",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "Attivo Botsink": "no instance, not going to get it",
         "VMware": "no License, and probably not going to get it",
