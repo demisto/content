@@ -63,5 +63,7 @@ runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.1.0
-fromServerVersion: 6.1.0
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: 6.1.0
 
