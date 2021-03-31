@@ -822,7 +822,7 @@ def test_get_modified_remote_data_command(mocker):
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 2, False),
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}, 'close_notable': True},
-     3, True)
+     4, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
 

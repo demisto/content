@@ -165,6 +165,7 @@ def fetch_incidents(service):
     else:
         fetch_notables(service=service, enrich_notables=False)
 
+
 # =========== Regular Fetch Mechanism ===========
 
 
@@ -609,13 +610,13 @@ def get_drilldown_timeframe(notable_data, raw):
         if info_min_time:
             earliest_offset = info_min_time
         else:
-            demisto.info("Failed retrieving info min time")
+            demisto.debug("Failed retrieving info min time")
             task_status = False
     if not latest_offset or latest_offset == "${}$".format(INFO_MAX_TIME):
         if info_max_time:
             latest_offset = info_max_time
         else:
-            demisto.info("Failed retrieving info max time")
+            demisto.debug("Failed retrieving info max time")
             task_status = False
 
     return task_status, earliest_offset, latest_offset
@@ -653,12 +654,12 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
                 except Exception as e:
                     demisto.error("Caught an exception in drilldown_enrichment function: {}".format(str(e)))
             else:
-                demisto.info('Failed getting the drilldown timeframe for notable {}'.format(notable_data[EVENT_ID]))
+                demisto.debug('Failed getting the drilldown timeframe for notable {}'.format(notable_data[EVENT_ID]))
         else:
-            demisto.info("Coldn't build search query for notable {} with the following drilldown "
-                         "search {}".format(notable_data[EVENT_ID], search))
+            demisto.debug("Coldn't build search query for notable {} with the following drilldown "
+                          "search {}".format(notable_data[EVENT_ID], search))
     else:
-        demisto.info("drill-down was not configured for notable {}".format(notable_data[EVENT_ID]))
+        demisto.debug("drill-down was not configured for notable {}".format(notable_data[EVENT_ID]))
 
     return job
 
@@ -689,7 +690,7 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
         except Exception as e:
             demisto.error("Caught an exception in drilldown_enrichment function: {}".format(str(e)))
     else:
-        demisto.info('No users were found in notable. {}'.format(error_msg))
+        demisto.debug('No users were found in notable. {}'.format(error_msg))
 
     return job
 
@@ -721,7 +722,7 @@ def asset_enrichment(service, notable_data, num_enrichment_events):
         except Exception as e:
             demisto.error("Caught an exception in asset_enrichment function: {}".format(str(e)))
     else:
-        demisto.info('No assets were found in notable. {}'.format(error_msg))
+        demisto.debug('No assets were found in notable. {}'.format(error_msg))
 
     return job
 
@@ -740,7 +741,7 @@ def handle_submitted_notables(service, incidents, cache_object):
     enrichment_timeout = arg_to_number(str(demisto.params().get('enrichment_timeout', '5')))
     notables = cache_object.submitted_notables
     total = len(notables)
-    demisto.info("Trying to handle {}/{} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES]), total))
+    demisto.debug("Trying to handle {}/{} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES]), total))
 
     for notable in notables[:MAX_HANDLE_NOTABLES]:
         task_status = handle_submitted_notable(service, notable, enrichment_timeout)
@@ -751,7 +752,7 @@ def handle_submitted_notables(service, incidents, cache_object):
     cache_object.submitted_notables = [n for n in notables if n not in handled_notables]
 
     if handled_notables:
-        demisto.info("Handled {}/{} notables.".format(len(handled_notables), total))
+        demisto.debug("Handled {}/{} notables.".format(len(handled_notables), total))
 
 
 def handle_submitted_notable(service, notable, enrichment_timeout):
@@ -786,14 +787,14 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
 
         if notable.handled():
             task_status = True
-            demisto.info("Handled open enrichment for notable {}.".format(notable.id))
+            demisto.debug("Handled open enrichment for notable {}.".format(notable.id))
         else:
-            demisto.info("Did not finish handling open enrichment for notable {}".format(notable.id))
+            demisto.debug("Did not finish handling open enrichment for notable {}".format(notable.id))
 
     else:
         task_status = True
-        demisto.info("Open enrichment {} has exceeded the enrichment timeout of {}. Submitting the notable without "
-                     "the enrichment.".format(notable.id, enrichment_timeout))
+        demisto.debug("Open enrichment {} has exceeded the enrichment timeout of {}. Submitting the notable without "
+                      "the enrichment.".format(notable.id, enrichment_timeout))
 
     return task_status
 
@@ -812,27 +813,27 @@ def submit_notables(service, incidents, cache_object):
     notables = cache_object.not_yet_submitted_notables
     total = len(notables)
     if notables:
-        demisto.info('Enriching {}/{} fetched notables'.format(len(notables[:MAX_SUBMIT_NOTABLES]), total))
+        demisto.debug('Enriching {}/{} fetched notables'.format(len(notables[:MAX_SUBMIT_NOTABLES]), total))
 
     for notable in notables[:MAX_SUBMIT_NOTABLES]:
         task_status = submit_notable(service, notable, num_enrichment_events)
         if task_status:
             cache_object.submitted_notables.append(notable)
             submitted_notables.append(notable)
-            demisto.info('Submitted enrichment request to Splunk for notable {}'.format(notable.id))
+            demisto.debug('Submitted enrichment request to Splunk for notable {}'.format(notable.id))
         else:
             incidents.append(notable.to_incident())
             failed_notables.append(notable)
-            demisto.info('Created incident from notable {} as each enrichment submission failed'.format(notable.id))
+            demisto.debug('Created incident from notable {} as each enrichment submission failed'.format(notable.id))
 
     cache_object.not_yet_submitted_notables = [n for n in notables if n not in submitted_notables + failed_notables]
 
     if submitted_notables:
-        demisto.info('Submitted {}/{} notables successfully.'.format(len(submitted_notables), total))
+        demisto.debug('Submitted {}/{} notables successfully.'.format(len(submitted_notables), total))
 
     if failed_notables:
-        demisto.info('The following {} notables failed the enrichment process: {}, creating incidents without '
-                     'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
+        demisto.debug('The following {} notables failed the enrichment process: {}, creating incidents without '
+                      'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
 
 
 def submit_notable(service, notable, num_enrichment_events):
@@ -920,7 +921,7 @@ def fetch_incidents_for_mapping(integration_context):
 
     """
     incidents = integration_context.get(INCIDENTS, [])
-    demisto.info(
+    demisto.debug(
         'Retrieving {} incidents for "Pull from instance" in Classification & Mapping.'.format(len(incidents)))
     demisto.incidents(incidents)
 
@@ -935,6 +936,7 @@ def reset_enriching_fetch_mechanism():
     set_integration_context(integration_context)
     demisto.setLastRun({})
     demisto.results("Enriching fetch mechanism was reset successfully.")
+
 
 # =========== Enriching Fetch Mechanism ===========
 
@@ -989,7 +991,7 @@ def get_remote_data_command(service, args, close_incident):
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
 
-    demisto.info('notable {} status: {}'.format(notable_id, updated_notable.get('status')))
+    demisto.debug('notable {} status: {}'.format(notable_id, updated_notable.get('status')))
     if updated_notable.get('status') == '5' and close_incident:
         demisto.info('Closing incident related to notable {}'.format(notable_id))
         entries.append({
@@ -1058,7 +1060,7 @@ def update_remote_system_command(args, params, service, auth_token):
 
         # Close notable if relevant
         if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_notable'):
-            demisto.info('Closing notable {}'.format(notable_id))
+            demisto.debug('Closing notable {}'.format(notable_id))
             changed_data['status'] = '5'  # type: ignore
 
         if any(changed_data.values()):
@@ -1081,12 +1083,13 @@ def update_remote_system_command(args, params, service, auth_token):
                 demisto.error('Error in Splunk outgoing mirror for incident corresponding to notable {}. '
                               'Error message: {}'.format(notable_id, str(e)))
         else:
-            demisto.info("Didn't find changed data to update incident corresponding to notable {}".format(notable_id))
+            demisto.debug("Didn't find changed data to update incident corresponding to notable {}".format(notable_id))
 
     else:
-        demisto.info('Incident corresponding to notable {} was not changed.'.format(notable_id))
+        demisto.debug('Incident corresponding to notable {} was not changed.'.format(notable_id))
 
     return notable_id
+
 
 # =========== Mirroring Mechanism ===========
 
@@ -1318,6 +1321,7 @@ def get_cim_mapping_field_command():
     }
 
     demisto.results(fields)
+
 
 # =========== Mapping Mechanism ===========
 
