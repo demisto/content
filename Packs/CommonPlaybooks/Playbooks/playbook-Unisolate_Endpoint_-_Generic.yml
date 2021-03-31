@@ -1,0 +1,298 @@
+id: Unisolate Endpoint - Generic
+version: -1
+name: Unisolate Endpoint - Generic
+description: "This playbook will auto Unisolate endpoints by the endpoint id that\
+  \ was provided in the playbook.\nCurrently supports the next integration:\n- Carbon\
+  \ Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n- FireEye HX \n- Cybereason\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2a0f3a1c-748a-4019-87d4-87a90fbe5bfb
+    type: start
+    task:
+      id: 2a0f3a1c-748a-4019-87d4-87a90fbe5bfb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "1"
+      - "4"
+      - "5"
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4754c18c-5119-4f4f-8ffc-8ed1c3484786
+    type: playbook
+    task:
+      id: 4754c18c-5119-4f4f-8ffc-8ed1c3484786
+      version: -1
+      name: Carbon Black Response - Unisolate Endpoint
+      description: This playbook will unisolate sensors in Carbon Black Response.
+      playbookName: Carbon Black Response - Unisolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Endpoint_ID:
+        simple: ${inputs.Endpoint_ID}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: fc28d64c-e819-4605-82f9-d056e207c7f6
+    type: playbook
+    task:
+      id: fc28d64c-e819-4605-82f9-d056e207c7f6
+      version: -1
+      name: Cortex XDR - Unisolate Endpoint
+      description: This playbook assists you to Unisolate endpoint in Cortex XDR.
+      playbookName: Cortex XDR - Unisolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Endpoint_ID:
+        simple: ${inputs.Endpoint_ID}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a42fe062-acbe-448c-82c4-f7cdfdf15b82
+    type: title
+    task:
+      id: a42fe062-acbe-448c-82c4-f7cdfdf15b82
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b49ff642-3fab-4312-8027-8c9dbcf7b967
+    type: playbook
+    task:
+      id: b49ff642-3fab-4312-8027-8c9dbcf7b967
+      version: -1
+      name: Crowdstrike Falcon - Unisolate Endpoint
+      description: This playbook will unisolate endpoints by the device id that was
+        provided in the playbook input.
+      playbookName: Crowdstrike Falcon - Unisolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Endpoint_id:
+        simple: ${inputs.Endpoint_ID}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: da66cf4a-0708-4d98-8a3d-d0b29a266a39
+    type: playbook
+    task:
+      id: da66cf4a-0708-4d98-8a3d-d0b29a266a39
+      version: -1
+      name: FireEye HX - Unisolate Endpoint
+      description: This playbook will auto Isolate endpoints by the endpoint id that
+        was provided in the playbook input.
+      playbookName: FireEye HX - Unisolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Endpoint_id:
+        simple: ${inputs.Endpoint_ID}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 919500ab-12f4-42d1-8a1c-1dc0c25a2a3b
+    type: playbook
+    task:
+      id: 919500ab-12f4-42d1-8a1c-1dc0c25a2a3b
+      version: -1
+      name: Unisolate Endpoint - Cybereason
+      playbookName: Unisolate Endpoint - Cybereason
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Endpoint_ID
+  value: {}
+  required: false
+  description: The endpoint id/device id/sensor id/agent id that you wish to unisolate
+  playbookInputQuery:
+- key: Hostname
+  value: {}
+  required: false
+  description: The hostname of the endpoint to unisolate using Cybereason.
+  playbookInputQuery:
+outputs: []
+tests:
+- Account Enrichment - Generic v2.1 - Test
+- Calculate Severity - Generic v2 - Test
+- Calculate Severity - Standard - Test
+- Test Convert file hash to corresponding hashes
+- Dedup - Generic v2 - Test
+- Detonate File - Generic Test
+- Detonate File - No Files test
+- Detonate URL - Generic Test
+- Domain Enrichment - Generic v2 - Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Extract Indicators From File - Generic v2 - Test
+- Field polling test
+- File Enrichment - Generic v2 - Test
+- Generic Polling Test
+- IP Enrichment - Generic v2 - Test
+- Retrieve File from Endpoint - Generic V2 Test
+- Send Investigation Summary Reports - Test
+- test-domain-indicator
+- URL Enrichment - Generic v2 - Test
+- Wait Until Datetime - Test
+fromversion: 5.5.0
