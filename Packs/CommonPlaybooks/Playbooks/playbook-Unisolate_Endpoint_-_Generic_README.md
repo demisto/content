@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Unisolate Endpoint - Generic](Insert the link to your image here)
+![Unisolate Endpoint - Generic](https://raw.githubusercontent.com/demisto/content/4966d5a5c9b80af03106f8da8dcd8512b3cb259e/Packs/CommonPlaybooks/doc_files/Unisolate_Endpoint_-_Generic.png)

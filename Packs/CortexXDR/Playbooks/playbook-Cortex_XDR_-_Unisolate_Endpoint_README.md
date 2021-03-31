@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - Unisolate Endpoint](Insert the link to your image here)
+![Cortex XDR - Unisolate Endpoint](https://raw.githubusercontent.com/demisto/content/4966d5a5c9b80af03106f8da8dcd8512b3cb259e/Packs/CortexXDR/doc_files/Cortex_XDR_-_Unisolate_Endpoint.png)
