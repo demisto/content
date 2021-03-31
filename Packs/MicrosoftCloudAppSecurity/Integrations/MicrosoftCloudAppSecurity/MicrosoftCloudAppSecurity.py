@@ -235,33 +235,6 @@ def args_to_filter(arguments: dict):
     return request_data
 
 
-def args_to_filter_close_alerts(alert_ids: Any, custom_filter: Optional[Any], arguments: dict,
-                                comment: Any = '', reason: Any = '', sendFeedback: bool = False, feedbackText: Any = '',
-                                allowContact: bool = False, contactEmail: Any = ''):
-    request_data: Dict[str, Any] = {}
-    filters = {}
-
-    if alert_ids:
-        ids = {'eq': alert_ids.split(',')}
-        filters['id'] = ids
-        request_data['filters'] = filters
-    elif custom_filter:
-        request_data = json.loads(custom_filter)
-    elif arguments:
-        request_data = args_to_filter(arguments)
-    else:
-        raise DemistoException("Error: You must enter ids or arguments to filter.")
-
-    request_data['comment'] = comment
-    request_data['reason'] = reason
-    request_data['sendFeedback'] = sendFeedback
-    request_data['feedbackText'] = feedbackText
-    request_data['allowContact'] = allowContact
-    request_data['contactEmail'] = contactEmail
-
-    return request_data
-
-
 def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional[Any], arguments: dict,
                                         specific_id_to_search: Any = ''):
     """
@@ -279,6 +252,51 @@ def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional
     request_data = {}
     if specific_id_to_search:
         url_suffix += specific_id_to_search
+    elif custom_filter:
+        request_data = json.loads(custom_filter)
+    else:
+        request_data = args_to_filter(arguments)
+    return request_data, url_suffix
+
+
+def args_to_filter_close_alerts(alert_ids: Any, custom_filter: Optional[Any], comment: Optional[Any] = '',
+                                reason: Optional[Any] = '', sendFeedback: bool = False,
+                                feedbackText: Optional[Any] = '', allowContact: bool = False,
+                                contactEmail: Optional[Any] = ''):
+    request_data: Dict[str, Any] = {}
+    filters = {}
+
+    if alert_ids:
+        ids = {'eq': alert_ids.split(',')}
+        filters['id'] = ids
+        request_data['filters'] = filters
+    elif custom_filter:
+        request_data = json.loads(custom_filter)
+    else:
+        raise DemistoException("Error: You must enter at least one of these arguments: alert ID, custom filter.")
+
+    request_data['comment'] = comment
+    request_data['reason'] = reason
+    request_data['sendFeedback'] = sendFeedback
+    request_data['feedbackText'] = feedbackText
+    request_data['allowContact'] = allowContact
+    request_data['contactEmail'] = contactEmail
+
+    return request_data
+
+
+def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter: Any, comments: Any):
+    """
+    Deprecated by args_to_filter_close_alerts.
+    """
+    request_data: Dict[str, Any] = {}
+    filters = {}
+    if alert_ids:
+        ids = {'eq': alert_ids.split(',')}
+        filters['id'] = ids
+        if comments:
+            request_data['comment'] = comments
+        request_data['filters'] = filters
     elif custom_filter:
         request_data = json.loads(custom_filter)
     else:
@@ -393,10 +411,13 @@ def list_alerts_command(client: Client, args: dict):
 
 
 def bulk_dismiss_alert_command(client: Client, args: dict):
+    """
+    Deprecated by: close_false_positive_command
+    """
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
-    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment)
+    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comment)
     dismissed_alerts_data = {}
     try:
         dismissed_alerts_data = client.dismiss_bulk_alerts(request_data)
@@ -412,10 +433,13 @@ def bulk_dismiss_alert_command(client: Client, args: dict):
 
 
 def bulk_resolve_alert_command(client: Client, args: dict):
+    """
+    Deprecated by: close_true_positive_command
+    """
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
-    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, None, comment)
+    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comment)
     resolve_alerts = client.resolve_bulk_alerts(request_data)
     number_of_resolved_alerts = resolve_alerts['closed_true_positive']
     return CommandResults(
@@ -643,9 +667,6 @@ def params_to_filter(severity: List[str], resolution_status: str):
 
 
 def close_benign_command(client: Client, args: dict):
-    """
-    #TODO
-    """
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
@@ -656,59 +677,60 @@ def close_benign_command(client: Client, args: dict):
     allowContact = bool(args.get('allowContact'))
     contactEmail = args.get('contactEmail')
 
-    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, arguments, comment, reason,
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment, reason,
                                                sendFeedback, feedbackText, allowContact, contactEmail)
     close_benign_alerts = client.close_benign(request_data)
+    number_of_close_benign = close_benign_alerts["close_benign"]
     return CommandResults(
-        readable_output='',
+        readable_output=f'{number_of_close_benign} alerts are classified as close benign',
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
         outputs_key_field='_id',
         outputs=close_benign_alerts)
 
 
 def close_false_positive_command(client: Client, args: dict):
-    """
-    #TODO
-    """
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
-    arguments = assign_params(**args)
     reason = CLOSE_FALSE_POSITIVE_REASON_OPTIONS.get(args.get('reason'))
     sendFeedback = bool(args.get('sendFeedback'))
     feedbackText = args.get('feedbackText')
     allowContact = bool(args.get('allowContact'))
     contactEmail = args.get('contactEmail')
 
-    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, arguments, comment, reason,
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment, reason,
                                                sendFeedback, feedbackText, allowContact, contactEmail)
-    close_false_positive = client.close_false_positive(request_data)
+    closed_false_positive_data = {}
+    try:
+        closed_false_positive_data = client.close_false_positive(request_data)
+    except Exception as e:
+        if 'alertsNotFound' in str(e):
+            raise DemistoException('Error: This alert id is already closed or does not exist.')
+    number_of_closed_false_positive_alerts = closed_false_positive_data['closed_false_positive']
+
     return CommandResults(
-        readable_output='',
+        readable_output=f'{number_of_closed_false_positive_alerts} alerts are classified as closed false positive',
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
         outputs_key_field='_id',
-        outputs=close_false_positive)
+        outputs=closed_false_positive_data)
 
 
 def close_true_positive_command(client: Client, args: dict):
-    """
-    #TODO
-    """
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
-    arguments = assign_params(**args)
     reason = CLOSE_BENIGN_REASON_OPTIONS.get(args.get('reason'))
     sendFeedback = bool(args.get('sendFeedback'))
     feedbackText = args.get('feedbackText')
     allowContact = bool(args.get('allowContact'))
     contactEmail = args.get('contactEmail')
 
-    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, arguments, comment, reason,
+    request_data = args_to_filter_close_alerts(alert_ids, custom_filter, comment, reason,
                                                sendFeedback, feedbackText, allowContact, contactEmail)
     close_true_positive = client.close_true_positive(request_data)
+    number_of_close_true_positive = close_true_positive['closed_true_positive']
     return CommandResults(
-        readable_output='',
+        readable_output=f'{number_of_close_true_positive} are classified as closed true positive',
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
         outputs_key_field='_id',
         outputs=close_true_positive)
@@ -718,7 +740,6 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-
     params = demisto.params()
     token = demisto.params().get('token')
     base_url = f'{demisto.params().get("url")}/api/v1'
@@ -757,11 +778,9 @@ def main():
         elif demisto.command() == 'microsoft-cas-alerts-list':
             return_results(list_alerts_command(client, demisto.args()))
 
-        # @obenacot: DEPRECATED
         elif demisto.command() == 'microsoft-cas-alert-dismiss-bulk':
             return_results(bulk_dismiss_alert_command(client, demisto.args()))
 
-        # @obenacot: DEPRECATED
         elif demisto.command() == 'microsoft-cas-alert-resolve-bulk':
             return_results(bulk_resolve_alert_command(client, demisto.args()))
 
