@@ -46,6 +46,7 @@ script: >
       var DBotScore = false;
       index = keysToKeep.indexOf("DBotScore");
       if (index > -1) {
+        keysToKeep.splice(index, 1);
         DBotScore = true
       }
       var value;
