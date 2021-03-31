@@ -56,7 +56,7 @@ class MsGraphClient:
 
 
 def start_auth(client: MsGraphClient) -> CommandResults:
-    result = client.ms_client.start_auth('!msgraph-auth-complete')
+    result = client.ms_client.start_auth('!msgraph-api-auth-complete')
     return CommandResults(readable_output=result)
 
 
