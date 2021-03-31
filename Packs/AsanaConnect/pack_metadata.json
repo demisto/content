@@ -1,6 +1,6 @@
 {
     "name": "Asana Connect",
-    "description": "Simple Asana Integration using Personal Access Tokens.",
+    "description": "Use the Asana Connect integration to connect to projects related to your Asana account.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "zh-lim",
