@@ -244,6 +244,23 @@ class TestArcherV2:
                 client.update_session()
             assert e
 
+    def test_update_session_fail_parsing(self, mocker):
+        """
+        Given:
+            an exception raised from _http_request who failed to pares json object
+        When:
+            - initiating session
+        Then:
+            - Raise exception with message to check the provided url
+        """
+        mocker.patch.object(Client, '_http_request', side_effect=
+                            DemistoException("Failed to parse json object from response: b\"<html><head><script>"
+                                             "window.top.location='/Default.aspx';</script></head><body></body></html>"))
+        client = Client(BASE_URL, '', '', '', '')
+        with pytest.raises(DemistoException) as e:
+            client.update_session()
+        assert "Check the given URL, can be a redirect issue" in str(e.value)
+
     def test_generate_field_contents(self):
         client = Client(BASE_URL, '', '', '', '')
         field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP[0]['mapping'])
