@@ -39,10 +39,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 4754c18c-5119-4f4f-8ffc-8ed1c3484786
+    taskid: fce5d8d1-840a-4878-82fc-807950fd1e48
     type: playbook
     task:
-      id: 4754c18c-5119-4f4f-8ffc-8ed1c3484786
+      id: fce5d8d1-840a-4878-82fc-807950fd1e48
       version: -1
       name: Carbon Black Response - Unisolate Endpoint
       description: This playbook will unisolate sensors in Carbon Black Response.
@@ -72,17 +72,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "2":
     id: "2"
-    taskid: fc28d64c-e819-4605-82f9-d056e207c7f6
+    taskid: 2bc544fa-97d1-4391-8e24-790da41231c1
     type: playbook
     task:
-      id: fc28d64c-e819-4605-82f9-d056e207c7f6
+      id: 2bc544fa-97d1-4391-8e24-790da41231c1
       version: -1
       name: Cortex XDR - Unisolate Endpoint
-      description: This playbook assists you to Unisolate endpoint in Cortex XDR.
+      description: This playbook will assist you to Unisolate endpoint with Cortex
+        XDR.
       playbookName: Cortex XDR - Unisolate Endpoint
       type: playbook
       iscommand: false
@@ -109,7 +110,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "3":
     id: "3"
@@ -138,10 +139,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: b49ff642-3fab-4312-8027-8c9dbcf7b967
+    taskid: a108aa9f-d9b9-4594-8f9f-7176e0ea21eb
     type: playbook
     task:
-      id: b49ff642-3fab-4312-8027-8c9dbcf7b967
+      id: a108aa9f-d9b9-4594-8f9f-7176e0ea21eb
       version: -1
       name: Crowdstrike Falcon - Unisolate Endpoint
       description: This playbook will unisolate endpoints by the device id that was
@@ -172,14 +173,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "5":
     id: "5"
-    taskid: da66cf4a-0708-4d98-8a3d-d0b29a266a39
+    taskid: af9905f1-9375-444b-8540-addd1b6aee7b
     type: playbook
     task:
-      id: da66cf4a-0708-4d98-8a3d-d0b29a266a39
+      id: af9905f1-9375-444b-8540-addd1b6aee7b
       version: -1
       name: FireEye HX - Unisolate Endpoint
       description: This playbook will auto Isolate endpoints by the endpoint id that
@@ -210,21 +211,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "6":
     id: "6"
-    taskid: 919500ab-12f4-42d1-8a1c-1dc0c25a2a3b
+    taskid: c62f9282-d3f7-44c5-8623-5c87c7295586
     type: playbook
     task:
-      id: 919500ab-12f4-42d1-8a1c-1dc0c25a2a3b
+      id: c62f9282-d3f7-44c5-8623-5c87c7295586
       version: -1
       name: Unisolate Endpoint - Cybereason
+      description: 'This playbook will assist you to unisolate endpoints using Cybereason
+        integration. '
       playbookName: Unisolate Endpoint - Cybereason
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -247,7 +249,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
 view: |-
   {
