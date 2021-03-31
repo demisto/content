@@ -1,11 +1,7 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 description: |-
   This playbook verifies that your FWs sent logs to the Cortex Data Lake in the last 12 hours. An email notification will be sent if it's not the case.
   This playbook is designed to run as a job.
-id: CDL FW Monitoring - cron job
+id: PAN-OS to Cortex Data Lake Monitoring - Cron Job
 inputs:
 - description: 'A comma-separated list of FW serials to monitor. Only applicable if
     no PAN-OS integration instance name was specified.'
@@ -27,7 +23,7 @@ inputs:
   required: false
   value:
     simple: ${incident.email}
-name: CDL FW Monitoring - cron job
+name: PAN-OS to Cortex Data Lake Monitoring - Cron Job
 outputs: []
 starttaskid: "0"
 tasks:

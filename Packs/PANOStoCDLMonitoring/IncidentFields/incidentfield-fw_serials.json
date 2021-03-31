@@ -8,6 +8,9 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
+    "associatedTypes": [
+        "Cortex Data Lake Monitoring"
+    ],
     "id": "incident_fwserials",
     "isReadOnly": false,
     "locked": false,
