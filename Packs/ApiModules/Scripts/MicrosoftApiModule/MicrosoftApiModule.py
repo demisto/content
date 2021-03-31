@@ -125,8 +125,8 @@ class MicrosoftClient(BaseClient):
         # In that case, logs with the warning header will be written.
         if response.status_code == 206:
             demisto.debug(str(response.headers))
-        is_response_empty_and_successful = (response.status_code in [204, 202])
-        if is_response_empty_and_successful and (return_empty_response or response.status_code == 202):
+        is_response_empty_and_successful = (response.status_code == 204)
+        if is_response_empty_and_successful and return_empty_response:
             return response
 
         # Handle 404 errors instead of raising them as exceptions:
