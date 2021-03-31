@@ -14,7 +14,7 @@ dependson:
   must:
   - panorama
   - cdl-query-traffic-logs
-dockerimage: demisto/python3:3.9.2.17246
+dockerimage: demisto/python3:3.9.2.17957
 enabled: true
 name: PANOStoCortexDataLakeMonitoring
 outputs:
