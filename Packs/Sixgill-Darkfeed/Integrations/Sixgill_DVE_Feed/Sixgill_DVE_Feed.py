@@ -119,7 +119,7 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: Optional[str] = None
     try:
         ext_obj = stix_obj.get("external_references", [])
         ext_id = ""
-        if ext_obj[0]:
+        if ext_obj and ext_obj[0]:
             ext_id = ext_obj[0].get("external_id")
         event_obj = stix_obj.get("x_sixgill_info", {}).get("event", {})
         nvd_obj = stix_obj.get("x_sixgill_info", {}).get("nvd", {})
