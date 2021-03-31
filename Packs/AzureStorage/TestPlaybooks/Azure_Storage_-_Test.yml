@@ -74,7 +74,7 @@ tasks:
       id: e546395b-8cdd-45a5-801e-7b3c8dc50a20
       version: -1
       name: azure-storage-account-list
-      description: Run this command to get the all or spesific account storage details
+      description: Run this command to get the all or specific account storage details
       script: Azure Storage|||azure-storage-account-list
       type: regular
       iscommand: true
@@ -390,7 +390,7 @@ tasks:
     task:
       id: b67b8024-a761-40b2-8314-9b94f164a784
       version: -1
-      name: Varify blob service
+      name: Verify blob service
       type: condition
       iscommand: false
       brand: ""

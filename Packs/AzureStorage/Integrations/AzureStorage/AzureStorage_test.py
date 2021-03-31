@@ -167,15 +167,15 @@ def test_storage_blob_containers_create(client, mocker):
     """
     api_response = util_load_json('test_data/blob_containers_create_update_response.json')
 
-    mocker.patch.object(ASClient, "storage_blob_containers_create_request", return_value=api_response)
+    mocker.patch.object(ASClient, "storage_blob_containers_create_update_request", return_value=api_response)
 
     result = storage_blob_containers_create(client=client, args={'account_name': 'account_name',
                                                                  'container_name': 'test'})
 
     expected_hr = '### Azure Storage Blob Containers Properties\n' \
-                  '|Name|Account Name|Subscription ID|Resource Group|Public Access|\n' \
-                  '|---|---|---|---|---|\n' \
-                  '| test | account_name | subscription_id | resource_groups |  |\n'
+                  '|Name|Account Name|Subscription ID|Resource Group|\n' \
+                  '|---|---|---|---|\n' \
+                  '| test | account_name | subscription_id | resource_groups |\n'
 
     assert result.outputs == api_response
     assert result.readable_output == expected_hr
@@ -196,7 +196,7 @@ def test_storage_blob_containers_update(client, mocker):
     """
     api_response = util_load_json('test_data/blob_containers_create_update_response.json')
 
-    mocker.patch.object(ASClient, "storage_blob_containers_update_request", return_value=api_response)
+    mocker.patch.object(ASClient, "storage_blob_containers_create_update_request", return_value=api_response)
 
     result = storage_blob_containers_update(client=client, args={'account_name': 'account_name',
                                                                  'container_name': 'test'})
@@ -229,14 +229,14 @@ def test_storage_blob_containers_list(client, mocker):
 
     result = storage_blob_containers_list(client=client, args={'account_name': 'account_name'})
 
-    expected_hr = '### Azure Storage Blob Containers list\n'\
-                 '|Container Name|Account Name|Subscription ID|Resource Group|Public ' \
-                 'Access|Lease State|Last Modified Time|\n' \
-                 '|---|---|---|---|---|---|---|\n' \
-                 '| test | account_name | subscription_id | resource_groups | None | Available ' \
-                 '| 2020-02-20T20:20:20.0000000Z |\n' \
-                 '| test2 | account_name | subscription_id | resource_groups | None | ' \
-                 'Available | 2020-02-20T20:20:20.0000000Z |\n'
+    expected_hr = '### Azure Storage Blob Containers list\n' \
+                  '|Container Name|Account Name|Subscription ID|Resource Group|Public ' \
+                  'Access|Lease State|Last Modified Time|\n' \
+                  '|---|---|---|---|---|---|---|\n' \
+                  '| test | account_name | subscription_id | resource_groups | None | Available ' \
+                  '| 2020-02-20T20:20:20.0000000Z |\n' \
+                  '| test2 | account_name | subscription_id | resource_groups | None | ' \
+                  'Available | 2020-02-20T20:20:20.0000000Z |\n'
 
     assert result.outputs == api_response.get('value')
     assert result.readable_output == expected_hr

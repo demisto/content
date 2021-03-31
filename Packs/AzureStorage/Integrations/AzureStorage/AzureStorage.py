@@ -253,11 +253,12 @@ class ASClient:
             json_data={'properties': properties}
         )
 
-    def storage_blob_containers_create_request(self, args):
+    def storage_blob_containers_create_update_request(self, args, method):
         """
                 Send the user arguments for the create blob container in the request body to the API.
             Args:
                 args: The user arguments.
+                method: The method for the http request.
 
             Returns:
                 The json response from the API call.
@@ -274,37 +275,7 @@ class ASClient:
             properties['publicAccess'] = args.get('public_access')
 
         return self.ms_client.http_request(
-            method='PUT',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'{args["account_name"]}/blobServices/default/containers/{args["container_name"]}',
-            params={
-                'api-version': API_VERSION,
-            },
-            json_data={'properties': properties}
-        )
-
-    def storage_blob_containers_update_request(self, args):
-        """
-                Send the user arguments for the update blob container in the request body to the API.
-            Args:
-                args: The user arguments.
-
-            Returns:
-                The json response from the API call.
-        """
-        properties = {}
-
-        if 'default_encryption_scope' in args:
-            properties['defaultEncryptionScope'] = args.get('default_encryption_scope')
-
-        if 'deny_encryption_scope_override' in args:
-            properties['denyEncryptionScopeOverride'] = argToBoolean(args.get('deny_encryption_scope_override'))
-
-        if 'public_access' in args:
-            properties['publicAccess'] = args.get('public_access')
-
-        return self.ms_client.http_request(
-            method='PATCH',
+            method=method,
             url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
                        f'{args["account_name"]}/blobServices/default/containers/{args["container_name"]}',
             params={
@@ -566,7 +537,7 @@ def storage_blob_containers_create(client, args):
             CommandResults: The command results in MD table and context data.
     """
 
-    response = client.storage_blob_containers_create_request(args)
+    response = client.storage_blob_containers_create_update_request(args, 'PUT')
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
         subscription_id = subscription_id.group(1)
@@ -582,7 +553,6 @@ def storage_blob_containers_create(client, args):
         'Account Name': account_name,
         'Subscription ID': subscription_id,
         'Resource Group': resource_group,
-        'Public Access': response.get('properties', {}).get('publicAccess')
     }
 
     return CommandResults(
@@ -592,7 +562,7 @@ def storage_blob_containers_create(client, args):
         readable_output=tableToMarkdown(
             'Azure Storage Blob Containers Properties',
             readable_output,
-            ['Name', 'Account Name', 'Subscription ID', 'Resource Group', 'Public Access'],
+            ['Name', 'Account Name', 'Subscription ID', 'Resource Group'],
         ),
         raw_response=response
     )
@@ -609,7 +579,7 @@ def storage_blob_containers_update(client, args):
             CommandResults: The command results in MD table and context data.
     """
 
-    response = client.storage_blob_containers_update_request(args)
+    response = client.storage_blob_containers_create_update_request(args, 'PATCH')
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
         subscription_id = subscription_id.group(1)
@@ -694,7 +664,7 @@ def storage_blob_containers_list(client, args):
 def storage_blob_containers_delete(client, args):
 
     client.storage_blob_containers_delete_request(args)
-    return 'The request to update the managed cluster was sent successfully.'
+    return 'The request to delete the blob container was sent successfully.'
 
 
 # Authentication Functions

@@ -59,7 +59,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Run this command to get the all or spesific account storage details
+    description: Run this command to get the all or specific account storage details
     execution: false
     name: azure-storage-account-list
     outputs:
@@ -226,7 +226,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the storage account, required.
+      description: The name of the storage account.
       isArray: false
       name: account_name
       required: true
@@ -250,7 +250,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicates the type of storage account, required
+      description: Indicates the type of storage account.
       isArray: false
       name: kind
       predefined:
@@ -265,7 +265,7 @@ script:
       default: false
       description: Gets or sets the location of the resource. The geo region of a
         resource cannot be changed once it is created, but if an identical geo region
-        is specified on update, the request will succeed, required.
+        is specified on update, the request will succeed.
       isArray: false
       name: location
       predefined:
@@ -318,7 +318,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicates whether indirect CName validation is enabled
+      description: Indicates whether indirect CName validation is enabled.
       isArray: false
       name: use_sub_domain_name
       predefined:
@@ -328,7 +328,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The encryption keySource
+      description: The encryption keySource.
       isArray: false
       name: enc_key_source
       predefined:
@@ -339,7 +339,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Indicating whether the service applies a secondary layer of encryption
-        with platform managed keys for data at rest
+        with platform managed keys for data at rest.
       isArray: false
       name: enc_requireInfrastructureEncryption
       predefined:
@@ -460,8 +460,8 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Run this command to create or update an spesific
-      account storage
+      Run this command to create or update a specific
+      account storage.
     execution: false
     name: azure-storage-account-create-update
     outputs:
@@ -472,10 +472,10 @@ script:
       description: Gets the Kind.
       type: String
     - contextPath: AzureStorage.StorageAccount.location
-      description: The geo-location where the resource lives
+      description: The geo-location where the resource lives.
       type: String
     - contextPath: AzureStorage.StorageAccount.name
-      description: The name of the resource
+      description: The name of the resource.
       type: String
     - contextPath: AzureStorage.StorageAccount.properties.isHnsEnabled
       description: Account HierarchicalNamespace enabled if sets to true.
@@ -628,14 +628,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the storage account, required.
+      description: The name of the storage account.
       isArray: false
       name: account_name
       required: true
       secret: false
     deprecated: false
-    description: Run this command to get the blob service properties of a spesific
-      account storage
+    description: Run this command to get the blob service properties of a specific
+      account storage.
     execution: false
     name: azure-storage-blob-service-properties-get
     outputs:
@@ -664,7 +664,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the storage account, required.
+      description: The name of the storage account.
       isArray: false
       name: account_name
       required: true
@@ -775,7 +775,7 @@ script:
     deprecated: false
     description: |-
       Run this command to set properties for
-      the blob service in a spesific account storage
+      the blob service in a specific account storage
     execution: false
     name: azure-storage-blob-service-properties-set
     outputs:
@@ -839,13 +839,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the storage account, required.
+      description: The name of the storage account.
       isArray: false
       name: account_name
       required: true
       secret: false
     - default: false
-      description: The name of the container, required.
+      description: The name of the container.
       isArray: false
       name: container_name
       required: true
@@ -880,19 +880,28 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Run this command to create or update an spesific
-      blob container
+      Run this command to create a blob container
     execution: false
     name: azure-storage-blob-containers-create
+    outputs:
+    - contextPath: AzureStorage.BlobContainer.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.type
+      description: The type of the resource.
+      type: String
   - arguments:
     - default: false
-      description: The name of the storage account, required.
+      description: The name of the storage account.
       isArray: false
       name: account_name
       required: true
       secret: false
     - default: false
-      description: The name of the container, required.
+      description: The name of the container.
       isArray: false
       name: container_name
       required: true
@@ -927,13 +936,41 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Run this command to create or update an spesific
-      blob container
+      Run this command to update an specific
+      blob container.
     execution: false
     name: azure-storage-blob-containers-update
+    outputs:
+    - contextPath: AzureStorage.BlobContainer.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.type
+      description: The type of the resource.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.properties.metadata.metadata
+      description: A name-value pair to associate with the container as metadata.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.properties.publicAccess
+      description: Specifies whether data in the container may be accessed publicly and
+        the level of access.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.properties.hasImmutabilityPolicy
+      description: The hasImmutabilityPolicy public property is set to true by SRP if
+        ImmutabilityPolicy has been created for this container. The hasImmutabilityPolicy
+        public property is set to false by SRP if ImmutabilityPolicy has not been created
+        for this container.
+      type: Boolean
+    - contextPath: AzureStorage.BlobContainer.properties.hasLegalHold
+      description: The hasLegalHold public property is set to true by SRP if there are
+        at least one existing tag. The hasLegalHold public property is set to false by
+        SRP if all existing legal hold tags are cleared out.
+      type: Boolean
   - arguments:
     - default: false
-      description: The name of the storage account, required.
+      description: The name of the storage account.
       isArray: false
       name: account_name
       required: true
@@ -963,27 +1000,61 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Run this command to get the all or spesific blob container details
+    description: Run this command to get the all or specific blob container details.
     execution: false
     name: azure-storage-blob-containers-list
+    outputs:
+    - contextPath: AzureStorage.BlobContainer.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.type
+      description: The type of the resource.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.properties.publicAccess
+      description: Specifies whether data in the container may be accessed publicly and
+        the level of access.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.properties.leaseStatus
+      description: The lease status of the container.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.properties.leaseState
+      description: Lease state of the container.
+      type: String
+    - contextPath: AzureStorage.BlobContainer.properties.lastModifiedTime
+      description: Returns the date and time the container was last modified.
+      type: Date
+    - contextPath: AzureStorage.BlobContainer.properties.hasImmutabilityPolicy
+      description: The hasImmutabilityPolicy public property is set to true by SRP if
+        ImmutabilityPolicy has been created for this container. The hasImmutabilityPolicy
+        public property is set to false by SRP if ImmutabilityPolicy has not been created
+        for this container.
+      type: Boolean
+    - contextPath: AzureStorage.BlobContainer.properties.hasLegalHold
+      description: The hasLegalHold public property is set to true by SRP if there are
+        at least one existing tag. The hasLegalHold public property is set to false by
+        SRP if all existing legal hold tags are cleared out.
+      type: Boolean
   - arguments:
     - default: false
-      description: The name of the storage account, required.
+      description: The name of the storage account.
       isArray: false
       name: account_name
       required: true
       secret: false
     - default: false
-      description: The name of the container, required.
+      description: The name of the container.
       isArray: false
       name: container_name
       required: true
       secret: false
     deprecated: false
-    description: Run this command to delete a spesific blob container.
+    description: Run this command to delete a specific blob container.
     execution: false
     name: azure-storage-blob-container-delete
-  dockerimage: demisto/crypto:1.0.0.16776
+  dockerimage: demisto/crypto:1.0.0.17856
   feed: false
   isfetch: false
   longRunning: false
