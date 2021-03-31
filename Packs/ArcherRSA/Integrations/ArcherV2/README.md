@@ -490,8 +490,8 @@ There is no context output for this command.
 
 ### archer-update-record
 ***
-Updates existing content record in the given application
-
+Updates existing content record in the given application.
+When updating a record, it is important to pay attention to the way the values are sent through the argument - fieldsToValues. For more information regarding this argument see archer-create-record description.
 
 #### Base Command
 
