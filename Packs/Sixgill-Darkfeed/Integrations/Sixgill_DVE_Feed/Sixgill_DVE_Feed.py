@@ -187,7 +187,8 @@ def main():
         CHANNEL_CODE,
         FeedStream.DVEFEED,
         bulk_size=max_indicators,
-        verify=VERIFY,
+        session=SESSION,
+        verify=VERIFY
     )
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
