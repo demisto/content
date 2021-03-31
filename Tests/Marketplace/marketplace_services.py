@@ -1245,18 +1245,11 @@ class Pack(object):
 
         modified_versions_dict = {}
 
-        logging.info('$$$$$$$$$$$$ modified_rn_files:')
-        logging.info(modified_rn_files)
-        logging.info('$$$$$$$$$$$$')
-
         # Found modified rn files
         logging.info("Found modified rn files")
         for rn_filename in modified_rn_files:
             _version = rn_filename.replace('.md', '')
             version = _version.replace('_', '.')
-            logging.info('$$$$$$$$$$$$ version:')
-            logging.info(version)
-            logging.info('$$$$$$$$$$$$')
             # Should only apply on modified files that are not the last rn file
             if LooseVersion(version) < changelog_latest_rn_version:
                 # The case where the version is a key in the changelog file,
@@ -1271,12 +1264,6 @@ class Pack(object):
                     logging.info("The version is not a key in the changelog file or it is a key of aggregated content")
                     same_block_versions_dict, higher_nearest_version = self.get_same_block_versions(release_notes_dir,
                                                                                                      version, changelog)
-                    logging.info('$$$$$$$$$$$$ same_block_versions_dict:')
-                    logging.info(same_block_versions_dict)
-                    logging.info('$$$$$$$$$$$$')
-                    logging.info('$$$$$$$$$$$$ higher_nearest_version:')
-                    logging.info(higher_nearest_version)
-                    logging.info('$$$$$$$$$$$$')
                     modified_versions_dict[higher_nearest_version] = aggregate_release_notes_for_marketplace(
                         same_block_versions_dict)
 
@@ -1464,25 +1451,12 @@ class Pack(object):
                         if modified_release_notes_lines_dict:
                             logging.info("Creating changelog entries for modified rn")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
-                                logging.info('$$$$$$$$$$$$ version (key in dict):')
-                                logging.info(version)
-                                logging.info('$$$$$$$$$$$$')
-                                logging.info('$$$$$$$$$$$$ modified_release_notes_lines (value in dict):')
-                                logging.info(modified_release_notes_lines)
-                                logging.info('$$$$$$$$$$$$')
                                 changelog_entry = self._create_changelog_entry(
                                     release_notes=modified_release_notes_lines,
                                     version_display_name=version,
                                     build_number=build_number,
                                     pack_was_modified=True,
                                     new_version=False)
-                                logging.info('$$$$$$$$$$$$ old changelog[version]:')
-                                logging.info(changelog[version])
-                                logging.info('$$$$$$$$$$$$')
-                                changelog[version] = changelog_entry
-                                logging.info('$$$$$$$$$$$$ new changelog[version]:')
-                                logging.info(changelog_entry)
-                                logging.info('$$$$$$$$$$$$')
 
                 else:  # will enter only on initial version and release notes folder still was not created
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
