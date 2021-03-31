@@ -41,10 +41,10 @@ tasks:
       version: -1
       name: whois
       description: Provides data enrichment for domains.
-      script: Whois ip|||whois
+      script: Whois|||whois
       type: regular
       iscommand: true
-      brand: Whois ip
+      brand: Whois
     nexttasks:
       '#none#':
       - "2"
@@ -225,10 +225,10 @@ tasks:
       version: -1
       name: whois
       description: Provides data enrichment for domains.
-      script: Whois ip|||whois
+      script: Whois|||whois
       type: regular
       iscommand: true
-      brand: Whois ip
+      brand: Whois
     nexttasks:
       '#none#':
       - "7"
@@ -375,10 +375,10 @@ tasks:
       version: -1
       name: domain
       description: Provides data enrichment for domains.
-      script: Whois ip|||domain
+      script: Whois|||domain
       type: regular
       iscommand: true
-      brand: Whois ip
+      brand: Whois
     nexttasks:
       '#none#':
       - "11"
@@ -491,10 +491,10 @@ tasks:
       version: -1
       name: domain
       description: Provides data enrichment for domains.
-      script: Whois ip|||domain
+      script: Whois|||domain
       type: regular
       iscommand: true
-      brand: Whois ip
+      brand: Whois
     nexttasks:
       '#none#':
       - "14"
@@ -605,10 +605,10 @@ tasks:
       version: -1
       name: ip
       description: Provides data enrichment for ips.
-      script: Whois ip|||ip
+      script: Whois|||ip
       type: regular
       iscommand: true
-      brand: Whois ip
+      brand: Whois
     nexttasks:
       '#none#':
       - "17"
