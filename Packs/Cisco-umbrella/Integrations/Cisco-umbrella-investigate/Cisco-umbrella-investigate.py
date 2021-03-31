@@ -442,7 +442,7 @@ def get_domain_related(domain):
     return related_list
 
 
-def get_domain_security_command(rlb):
+def get_domain_security_command(reliability):
     # Initialize
     contents = []
     context = {}
@@ -485,7 +485,7 @@ def get_domain_security_command(rlb):
                     'Type': 'domain',
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Score': DBotScore,
-                    'Reliability': rlb
+                    'Reliability': reliability
                 }
 
             context[outputPaths['domain']] = {
@@ -504,7 +504,7 @@ def get_domain_security_command(rlb):
             'Type': 'domain',
             'Vendor': 'Cisco Umbrella Investigate',
             'Score': 0,
-            'Reliability': rlb
+            'Reliability': reliability
 
         }
     results.append({
@@ -664,7 +664,7 @@ def get_ip_dns_history(ip):
     return {'features': features, 'response': response}
 
 
-def get_ip_malicious_domains_command(rlb):
+def get_ip_malicious_domains_command(reliability):
     # Initialize
     contents = []
     context = {}
@@ -690,7 +690,7 @@ def get_ip_malicious_domains_command(rlb):
                 'Type': 'domain',
                 'Vendor': 'Cisco Umbrella Investigate',
                 'Score': 3,
-                'Reliability': rlb
+                'Reliability': reliability
             })
 
         if contents:
@@ -720,7 +720,7 @@ def get_ip_malicious_domains(ip):
     return res
 
 
-def get_domain_command(rlb):
+def get_domain_command(reliability):
     # Initialize
     contents = []
     context = {}
@@ -809,7 +809,7 @@ def get_domain_command(rlb):
         'Type': 'domain',
         'Vendor': 'Cisco Umbrella Investigate',
         'Score': dbotscore,
-        'Reliability': rlb
+        'Reliability': reliability
     }
 
     contents.append({
@@ -1048,7 +1048,7 @@ def get_domain_query_volume(domain, start_date_string, stop_date_string, match):
     return {'dates': dates, 'queries': queries}
 
 
-def get_domain_details_command(rlb):
+def get_domain_details_command(reliability):
     # Initialize
     contents = []
     context = {}
@@ -1094,7 +1094,7 @@ def get_domain_details_command(rlb):
                     'Type': 'domain',
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Score': dbotscore,
-                    'Reliability': rlb
+                    'Reliability': reliability
                 }
                 if dbotscore == 3:
                     context[outputPaths['domain']] = {}
@@ -1460,7 +1460,7 @@ def get_whois_for_domain(domain):
     return res
 
 
-def get_malicious_domains_for_ip_command(rlb):
+def get_malicious_domains_for_ip_command(reliability):
     # Initialize
     contents = []
     context = {}
@@ -1496,7 +1496,7 @@ def get_malicious_domains_for_ip_command(rlb):
                     'Type': 'domain',
                     'Vendor': 'Cisco Umbrella Investigate',
                     'Score': 3,
-                    'Reliability': rlb
+                    'Reliability': reliability
                 })
                 context_malicious.append({
                     'Name': domain,
@@ -1800,14 +1800,14 @@ try:
     base_url = params['baseURL']
     use_ssl = not params.get('insecure', False)
     malicious_threshold = int(params.get('dboscore_threshold', -100))
-    reliability = params.get('integrationReliability', 'B - Usually reliable')
+    source_reliability = params.get('integrationReliability', 'B - Usually reliable')
     default_headers = {
         'Authorization': 'Bearer {}'.format(api_token),
         'Accept': 'application/json'
     }
 
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    if DBotScoreReliability.is_valid_type(source_reliability):
+        source_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(source_reliability)
     else:
         Exception("Please provide a valid value for the Source Reliability parameter.")
 
@@ -1828,7 +1828,7 @@ try:
     elif demisto.command() == 'investigate-umbrella-domain-related' or demisto.command() == 'umbrella-domain-related':
         demisto.results(get_domain_related_command())
     elif demisto.command() == 'investigate-umbrella-domain-security' or demisto.command() == 'umbrella-domain-security':
-        demisto.results(get_domain_security_command(reliability))
+        demisto.results(get_domain_security_command(source_reliability))
     elif demisto.command() == 'investigate-umbrella-domain-dns-history' or demisto.command() == \
             'umbrella-domain-dns-history':
         demisto.results(get_domain_dns_history_command())
@@ -1836,10 +1836,10 @@ try:
         demisto.results(get_ip_dns_history_command())
     elif demisto.command() == 'investigate-umbrella-ip-malicious-domains' or demisto.command() == \
             'umbrella-ip-malicious-domains':
-        demisto.results(get_ip_malicious_domains_command(reliability))
+        demisto.results(get_ip_malicious_domains_command(source_reliability))
     # new-commands:
     elif demisto.command() == 'domain':
-        demisto.results(get_domain_command(reliability))
+        demisto.results(get_domain_command(source_reliability))
     elif demisto.command() == 'umbrella-get-related-domains':
         demisto.results(get_related_domains_command())
     elif demisto.command() == 'umbrella-get-domain-classifiers':
@@ -1847,7 +1847,7 @@ try:
     elif demisto.command() == 'umbrella-get-domain-queryvolume':
         demisto.results(get_domain_query_volume_command())
     elif demisto.command() == 'umbrella-get-domain-details':
-        demisto.results(get_domain_details_command(reliability))
+        demisto.results(get_domain_details_command(source_reliability))
     elif demisto.command() == 'umbrella-get-domains-for-email-registrar':
         demisto.results(get_domains_for_email_registrar_command())
     elif demisto.command() == 'umbrella-get-domains-for-nameserver':
@@ -1855,7 +1855,7 @@ try:
     elif demisto.command() == 'umbrella-get-whois-for-domain':
         demisto.results(get_whois_for_domain_command())
     elif demisto.command() == 'umbrella-get-malicious-domains-for-ip':
-        demisto.results(get_malicious_domains_for_ip_command(reliability))
+        demisto.results(get_malicious_domains_for_ip_command(source_reliability))
     elif demisto.command() == 'umbrella-get-domains-using-regex':
         demisto.results(get_domain_using_regex_command())
     elif demisto.command() == 'umbrella-get-domain-timeline':
