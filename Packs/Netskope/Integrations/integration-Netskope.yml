@@ -84,7 +84,8 @@ script:
         }
         var body;
         try {
-            // if fetching incidents, stringify long numbers to not round down long ids
+            // if fetching incidents, stringify long numbers to not round down long ids, e.g:
+            // "dlp_incident_id":3747385551915191779 --> "dlp_incident_id":"3747385551915191779"
             if (stringifyData && stringifyData.toLowerCase() == 'true') {
                 stringifyBody = result.Body.replace(/([\[:])?(\d{11,})([,\}\]])/g, "$1\"$2\"$3");
                 return JSON.parse(stringifyBody).data
