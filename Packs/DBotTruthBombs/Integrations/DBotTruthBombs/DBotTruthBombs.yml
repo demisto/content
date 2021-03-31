@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Facts About DBot
+  id: DBot Truth Bombs
   version: -1
 configuration:
 - defaultvalue: "false"
@@ -13,13 +13,13 @@ configuration:
   required: false
   type: 8
 description: You thought you know DBot... guess again! Here are some super secrete facts about DBot we bet you didn't know.
-display: Facts About DBot
-name: Facts About DBot
+display: DBot Truth Bombs
+name: DBot Truth Bombs
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: Filter DBot facts by category.
+      description: Filter DBot truth bomb by category.
       name: category
       predefined:
       - Dev
@@ -32,7 +32,7 @@ script:
       - Sport
       - Travel
     description: Returns a previously undisclosed fact about DBot.
-    name: dbot-fact
+    name: dbot-truth-bomb
   dockerimage: demisto/python3:3.9.2.17957
   runonce: false
   script: ''

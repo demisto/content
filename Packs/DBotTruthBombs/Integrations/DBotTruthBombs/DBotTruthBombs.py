@@ -50,7 +50,7 @@ def get_dbot_image_path() -> str:
     image_index = random.randint(1, 16)
 
     return 'https://raw.githubusercontent.com/demisto/content/217f91f3d5bc558875bf8f915e0b63141f450fc9/' \
-           f'Packs/DBotFacts/doc_imgs/dbot{image_index}.png'
+           f'Packs/DBotTruthBombs/doc_imgs/dbot{image_index}.png'
 
 
 def get_readable_output(fact, image) -> str:
@@ -91,7 +91,7 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif command == 'dbot-fact':
+        elif command == 'dbot-truth-bomb':
             return_results(dbot_fact(client, demisto.args()))
 
     # Log exceptions and return errors

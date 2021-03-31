@@ -12,7 +12,7 @@ args:
   - Science
   - Sport
   - Travel
-comment: Reveal a fact about yourself.
+comment: Reveal some facts about yourself.
 commonfields:
   id: FactAboutYou
   version: -1
