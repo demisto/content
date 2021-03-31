@@ -883,7 +883,54 @@ script:
       Run this command to create or update an spesific
       blob container
     execution: false
-    name: azure-storage-blob-containers-create-update
+    name: azure-storage-blob-containers-create
+  - arguments:
+    - default: false
+      description: The name of the storage account, required.
+      isArray: false
+      name: account_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the container, required.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    - default: false
+      description: Default the container to use specified encryption scope for all
+        writes.
+      isArray: false
+      name: default_encryption_scope
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Block override of encryption scope from the container default.
+      isArray: false
+      name: deny_encryption_scope_override
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies the level of access.
+      isArray: false
+      name: public_access
+      predefined:
+        - Blob
+        - Container
+        - None
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Run this command to create or update an spesific
+      blob container
+    execution: false
+    name: azure-storage-blob-containers-update
   - arguments:
     - default: false
       description: The name of the storage account, required.
