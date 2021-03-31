@@ -2,7 +2,6 @@ from typing import Dict, List
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import json
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 
@@ -29,6 +28,8 @@ def is_valid_args(args: Dict):
                         error_msg.append(
                             f'Error while parsing the incident id with the value: {value}. The given type: '
                             f'{type(value)} is not a valid type for an ID. The supported id types are: int and str')
+                    elif type(value) == str:
+                        _ = bytes(value, "utf-8").decode("unicode_escape")
                 else:
                     _ = bytes(value, "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as ex:
