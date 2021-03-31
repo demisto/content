@@ -138,5 +138,5 @@ dockerimage: demisto/python:2.7.18.15765
 runas: DBotRole
 runonce: false
 tests:
-- Dedup - Generic v2 - Test
+- No test
 fromversion: 5.0.0

@@ -110,5 +110,5 @@ dockerimage: demisto/machine-learning
 runas: DBotRole
 runonce: true
 tests:
-- Dedup - Generic v2 - Test
+- No test
 fromversion: 5.0.0
