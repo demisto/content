@@ -5312,8 +5312,6 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
                                .format(indicator_type, INDICATOR_TYPE_TO_CONTEXT_KEY.keys()))
 
 
-
-
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
     class BaseClient(object):
