@@ -30,7 +30,7 @@ def is_valid_args(args: Dict):
                                  f'\nError:\n- "{str(ex)}"')
             except TypeError:
                 try:
-                    _ = json.dumps(value)
+                    _ = str(value)
                 except Exception as e:
                     error_msg.append(f'Error while parsing the argument: "{_key}" \nError:\n- "{str(e)}"')
 

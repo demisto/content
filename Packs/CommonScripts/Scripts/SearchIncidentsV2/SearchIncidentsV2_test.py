@@ -55,5 +55,5 @@ def test_is_valid_args_with_int():
         - validating that the incident is is a valid input
 
     """
-    output = is_valid_args({'id': 123})
-    assert output is True
+    is_valid_id = is_valid_args({'id': 123})
+    assert is_valid_id
