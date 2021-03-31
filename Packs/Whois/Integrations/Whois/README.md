@@ -10,6 +10,7 @@ This integration was integrated and tested with version 1.0 of Whois
 | --- | --- | --- |
 | with_error | Return Errors | False |
 | proxy_url | Proxy URL. Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080) | False |
+| Source Reliability | Reliability of the source providing the intelligence data. The default value is B - Usually reliable. | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
