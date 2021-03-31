@@ -1,7 +1,7 @@
 id: QRadar v3 Full Search
 version: -1
 name: QRadar v3 Full Search
-description: This playbook runs a QRadar query and return its results to the context.
+description: This playbook runs a QRadar query and returns its results to the context.
 starttaskid: "0"
 tasks:
   "0":
@@ -39,8 +39,8 @@ tasks:
       id: 8950e4e9-abd6-49dd-868f-1b25858b5fe8
       version: -1
       name: Create QRadar Search
-      description: Create a new asynchronous Ariel search. Returns search ID. Search
-        status and results can be polled by sending search ID to 'qradar-search-status-get'
+      description: Creates a new asynchronous Ariel search. Returns the search ID. Search
+        status and results can be polled by sending the search ID to the 'qradar-search-status-get'
         and 'qradar-search-results-get' commands. Accepts SELECT query expressions
         only.
       script: '|||qradar-search-create'
@@ -168,7 +168,7 @@ tasks:
       id: 5f590290-8d38-4183-8485-ea4f5842ce5f
       version: -1
       name: Check If Search Was Completed
-      description: Checks if the given search have been completed before calling GenericPolling
+      description: Checks if the specified search has been completed before calling GenericPolling
         sub playbook.
       type: condition
       iscommand: false
@@ -235,7 +235,7 @@ tasks:
       id: 80e8ecaf-af37-4b12-84b7-900be4486318
       version: -1
       name: Print Error Message
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a specified message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -264,7 +264,7 @@ tasks:
       id: 8187e1d4-3811-401c-8f5c-abb7d92654bb
       version: -1
       name: QRadar Get Search Status
-      description: Retrieve status information for a search, based on the search ID
+      description: Retrieves status information for a search, based on the search ID.
         parameter.
       script: '|||qradar-search-status-get'
       type: regular
@@ -297,7 +297,7 @@ tasks:
       id: cc77ab2e-2f07-421e-8a9e-2d4b8e93cee7
       version: -1
       name: 'Was Search Completed Immediately? '
-      description: Check if QRadar search was completed immediately.
+      description: Checks if the QRadar search was completed immediately.
       type: condition
       iscommand: false
       brand: ""
@@ -338,7 +338,7 @@ tasks:
       id: 79b1902f-c4c9-4f41-8c83-a850dacddcf0
       version: -1
       name: Check Search Status
-      description: Retrieve status information for a search, based on the search ID
+      description: Retrieves status information for a search, based on the search ID.
         parameter.
       script: '|||qradar-search-status-get'
       type: regular
@@ -385,7 +385,7 @@ inputs:
   value: {}
   required: false
   description: Saved search ID to execute. Mutually exclusive with query_expression.
-    Saved search ID is 'id' field returned by command 'qradar-saved-searches-list'.
+    Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list' command.
   playbookInputQuery:
 - key: range
   value: {}
@@ -396,20 +396,20 @@ inputs:
   value: {}
   required: false
   description: Replaces the default context output path for the query result (QRadar.Search.Result).
-    e.g. for output_path=QRadar.Correlations the result will be under the key 'QRadar.Correlations'
+    e.g., for output_path=QRadar.Correlations, the result will be under the 'QRadar.Correlations' key
     in the context data.
   playbookInputQuery:
 - key: interval
   value:
     simple: "1"
   required: false
-  description: Frequency that the polling command will run (in minutes).
+  description: Frequency in which the polling command will run (in minutes).
   playbookInputQuery:
 - key: timeout
   value:
     simple: "10"
   required: false
-  description: Number of times that the polling command will run until declaring a
+  description: Number of times the polling command will run until declaring a
     timeout and resuming the playbook.
   playbookInputQuery:
 outputs: []
