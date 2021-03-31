@@ -50,7 +50,7 @@ data_test_is_id_valid = [
 ]
 
 
-@pytest.mark.parametrize('id_value, expected_output', data_test_is_valid_args)
+@pytest.mark.parametrize('id_value, expected_output', data_test_is_id_valid)
 def test_is_incident_id_valid(id_value, expected_output):
     """
     Given:
@@ -67,4 +67,4 @@ def test_is_incident_id_valid(id_value, expected_output):
         is_valid_id = is_valid_args({'id': id_value})
     except DemistoException:
         is_valid_id = False
-    assert is_valid_id
+    assert is_valid_id == expected_output
