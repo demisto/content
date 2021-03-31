@@ -78,8 +78,8 @@ tasks:
         \ PAN-OS integration instance to define the list of FW to be monitored. "
       id: e479b60d-db22-48c2-83de-f21bddb76029
       iscommand: false
-      name: FW-to-CDL-monitoring
-      scriptName: FW-to-CDL-monitoring
+      name: PANOStoCortexDataLakeMonitoring
+      scriptName: PANOStoCortexDataLakeMonitoring
       type: regular
       version: -1
     taskid: e479b60d-db22-48c2-83de-f21bddb76029
