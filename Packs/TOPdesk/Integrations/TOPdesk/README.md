@@ -1,5 +1,5 @@
 TOPdesk’s Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform.
-This integration was integrated and tested with version 10.8.8 of TOPdesk
+This integration was integrated and tested with 10.08.008-on-premises-release3-build2 for Linux x86 64-bit of TOPdesk
 
 ## Use cases
 1. Get, update, create, TOPdesk incidents, as well as (de-)escalate, (un)archive or upload files to the incidents.
@@ -18,7 +18,6 @@ This integration was integrated and tested with version 10.8.8 of TOPdesk
     | Username | See section about auth details below | True |
     | Password | See section about auth details below | True |
     | Fetch incidents |  | False |
-    | Use new style FIQL query when listing branches, persons and operators. (e.g. query=status==firstLine) | See section about FIQL query below | False |
     | Maximum number of incidents per fetch |  | False |
     | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
     | The query to use when fetching incidents | Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported. | False |
@@ -73,11 +72,7 @@ Implements: `topdesk-branches-list`, `topdesk-persons-list`, `topdesk-operators-
 Supports FIQL query from versions `1.38.0` and higher.
 
 Unlike TOPdeskRestAPI, SupportingFilesAPI does not currently provide an endpoint revealing the api version.
-Therefore the choice of whether to use the FIQL query or inline parameters cannot be automatic. 
-A manual checkbox: **Use new style FIQL query when listing branches, persons and operators** was therefore added to the integration configuration.
-Checking it means the FIQL query will be used when adding the query argument to the command. 
-Otherwise the query argument will be translated to inline filtering parameters. 
-Be aware that when using the FIQL query when unsupported sometimes results in ignoring the query and might return unwanted results.
+Therefore this integration only supports SupportingFilesAPI from versions `1.38.0` and higher. 
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -98,6 +93,7 @@ Get list of subcategories.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| limit | The limit for the amount of subcategories to store in the Context Data. To store all provide the value -1. Default value is 100. | Optional |
 
 
 #### Context Output
@@ -163,6 +159,7 @@ Get list of categories.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| limit | The limit for the amount of categories to store in the Context Data. To store all provide the value -1. Default value is 100. | Optional |
 
 
 #### Context Output
@@ -219,6 +216,7 @@ Get list of entry types.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| limit | The limit for the amount of entry types to store in the Context Data. To store all provide the value -1. Default value is 100. | Optional |
 
 
 #### Context Output
@@ -275,6 +273,7 @@ Get list of entry types.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| limit | The limit for the amount of call types to store in the Context Data. To store all provide the value -1. Default value is 100. | Optional |
 
 
 #### Context Output
@@ -331,6 +330,7 @@ Get list of deescalation reasons.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| limit | The limit for the amount of deescalation reasons to store in the Context Data. To store all provide the value -1. Default value is 100. | Optional |
 
 
 #### Context Output
@@ -385,6 +385,7 @@ Get list of escalation reasons.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| limit | The limit for the amount of escalation reasons to store in the Context Data. To store all provide the value -1. Default value is 100. | Optional |
 
 
 #### Context Output
@@ -441,6 +442,7 @@ Get list of archiving reasons.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| limit | The limit for the amount of archiving reasons to store in the Context Data. To store all provide the value -1. Default value is 100. | Optional |
 
 
 #### Context Output
@@ -1771,7 +1773,7 @@ If the callerLookup shows up empty, the command will create an incident with an 
 | subcategory | Subcategory by name. Can be set by operators. It is an error to provide both an id and a name. | Optional | 
 | external_number | External number. Can only be set by operators. Max 60 characters. | Optional | 
 | main_incident | Main incident id or number, required for creating a partial incident. Can only be set by operators. | Optional | 
-
+| additional_params | Additional parameters to pass when creating an incident. (e.g. {"optionalFields1":{"text1":"test"}}) | Optional |
 
 #### Context Output
 
@@ -2085,7 +2087,7 @@ Depending on settings, the following fields can be updated:
 | subcategory | Subcategory by name. Can be set by operators. It is an error to provide both an id and a name. | Optional | 
 | external_number | External number. Can only be set by operators. Max 60 characters. | Optional | 
 | main_incident | Main incident id or number, required for creating a partial incident. Can only be set by operators. | Optional | 
-
+| additional_params | Additional parameters to pass when creating an incident. (e.g. {"optionalFields1":{"text1":"test"}}) | Oprtional |
 
 #### Context Output
 
@@ -3641,7 +3643,65 @@ Upload an attachment to an incident in TOPdesk.
 
 #### Human Readable Output
 
->### TOPdesk incidents
+>### TOPdesk Attachments
 >|Id|FileName|DownloadUrl|InvisibleForCaller|EntryDate|Operator|
->|---|---|---|---|---|
+>|---|---|---|---|---|---|
 >| some-id | tiny_upload_file | /tas/api/incidents/id/some-incident-id/attachments/some-id/download | False | 2021-03-24T13:40:47.000+0000 | xsoar operator a |
+
+
+#### Base Command
+
+`topdesk-incident-attachments-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The incident id. An id or a number must be set. If both are set incident with relevant id will be updated. | Optional | 
+| number | The incident number. An id or a number must be set. If both are set incident with relevant id will be updated. | Optional | 
+| limit | The limit for the amount of attachments to store in the Context Data. To store all provide the value -1. Default value is 100. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TOPdesk.Attachment.Id | String | Attachment's id | 
+| TOPdesk.Attachment.FileName | String | Attachment's file name | 
+| TOPdesk.Attachment.DownloadUrl | String | Attachment's download url | 
+| TOPdesk.Attachment.Size | Number | Attachment's size | 
+| TOPdesk.Attachment.Description | String | Attachment's description | 
+| TOPdesk.Attachment.InvisibleForCaller | Boolean | Attachment's invisible for caller | 
+| TOPdesk.Attachment.EntryDate | Date | Attachment's entry date | 
+| TOPdesk.Attachment.Operator.Id | String | Attachment's operator id | 
+| TOPdesk.Attachment.Operator.Name | String | Attachment's operator name | 
+| TOPdesk.Attachment.Person | Unknown | Attachment's person | 
+
+
+#### Command Example
+```!topdesk-incident-attachments-list number=XSOAR-1337```
+
+#### Context Example
+```json
+{
+    "TOPdesk": {
+        "Attachment": {
+            "DownloadUrl": "/tas/api/incidents/id/some-incident-id/attachments/some-id/download",
+            "EntryDate": "2021-03-24T13:40:47.000+0000",
+            "FileName": "tiny_upload_file",
+            "Id": "some-id",
+            "InvisibleForCaller": false,
+            "Operator": {
+              "Id": "some-operator-id",
+              "Name": "xsoar operator a"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### TOPdesk Attachments
+>|Id|FileName|DownloadUrl|InvisibleForCaller|EntryDate|Operator|
+>|---|---|---|---|---|---|
+>|some-id|tiny_upload_file|/tas/api/incidents/id/some-incident-id/attachments/some-id/download|False|2021-03-24T13:40:47.000+0000|xsoar operator a|

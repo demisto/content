@@ -20,6 +20,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 INTEGRATION_NAME = 'TOPdesk'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DATE_FORMAT_FULL = "%Y-%m-%dT%H:%M:%S.%f%z"
 MAX_API_PAGE_SIZE = 10000
 FIRST_REST_API_VERSION_WITH_NEW_QUERY = "3.4.0"
@@ -30,10 +31,9 @@ FIRST_REST_API_VERSION_WITH_NEW_QUERY = "3.4.0"
 class Client(BaseClient):
     """Client class to interact with the TOPdesk service API"""
 
-    def __init__(self, base_url, verify, auth, new_query):
+    def __init__(self, base_url, verify, auth):
         super().__init__(base_url=base_url, verify=verify, auth=auth)
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-        self.supporting_files_new_query = new_query
         self.rest_api_new_query = self.rest_api_supports_new_query()
 
     def rest_api_supports_new_query(self) -> bool:
@@ -41,14 +41,25 @@ class Client(BaseClient):
 
         Return True if the version supports new FIQL type query and False otherwise.
         """
-        rest_api_version = LooseVersion(self.get_single_endpoint("/version")["version"])
+        try:
+            rest_api_version = LooseVersion(self.get_single_endpoint("/version")["version"])
+
+        except DemistoException as e:
+            if 'Error 401' in str(e):
+                raise DemistoException('Authorization Error: make sure username and password are correctly set')
+            if '[404] - Not Found' in str(e):
+                raise DemistoException('Page Not Found: make sure the url is correctly set')
+            else:
+                raise e
+
         if rest_api_version >= LooseVersion(FIRST_REST_API_VERSION_WITH_NEW_QUERY):
             return True
         return False
 
     def get_list_with_query(self, list_type: str, start: Optional[int] = None, page_size: Optional[int] = None,
                             query: Optional[str] = None, modification_date_start: Optional[str] = None,
-                            modification_date_end: Optional[str] = None) -> List[Dict[str, Any]]:
+                            modification_date_end: Optional[str] = None, creation_date_start: Optional[str] = None,
+                            creation_date_end: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get list of objects that support start, page_size and query arguments.
 
         Args:
@@ -60,6 +71,10 @@ class Client(BaseClient):
                 this day 00:00:00, using time zone of the logged in user or operator. <yyyy-mm-dd>
             modification_date_end: Retrieve only incidents with modification date smaller or equal to
                 this day 23:59:59, using time zone of the logged in user or operator. <yyyy-mm-dd>
+            creation_date_start: Retrieve only incidents with creation date greater or equal to
+                this day 00:00:00, using time zone of the logged in user or operator. <yyyy-mm-dd>
+            creation_date_end: Retrieve only incidents with creation date smaller or equal to
+                this day 00:00:00, using time zone of the logged in user or operator. <yyyy-mm-dd>
 
         Return List of requested objects.
         """
@@ -87,7 +102,7 @@ class Client(BaseClient):
             new_query = self.rest_api_new_query
 
         else:
-            new_query = self.supporting_files_new_query
+            new_query = True
 
         query = self.convert_query_types(query, new_query)
 
@@ -98,6 +113,12 @@ class Client(BaseClient):
 
         if modification_date_end:
             request_params["modification_date_end"] = modification_date_end
+
+        if creation_date_start:
+            request_params["creation_date_start"] = creation_date_start
+
+        if creation_date_end:
+            request_params["creation_date_end"] = creation_date_end
 
         return self._http_request(
             method='GET',
@@ -243,6 +264,27 @@ class Client(BaseClient):
         os.remove(file_name)
         return response
 
+    def list_attachments(self, incident_id: Optional[str], incident_number: Optional[str]) -> List[Dict[str, Any]]:
+        """List attachments of a given incident.
+
+        Args:
+            incident_id: The incident id to list attachments of.
+            incident_number: The incident number to list attachments of.
+                If both id and number are specified, id will be used.
+
+        Return list of attachments of the incident.
+        """
+        if not incident_id and not incident_number:
+            raise ValueError('Either id or number must be specified to update incident.')
+
+        if incident_id:
+            attachments = self.get_list(f"/incidents/id/{incident_id}/attachments")
+
+        else:
+            attachments = self.get_list(f"/incidents/number/{incident_id}/attachments")
+
+        return attachments
+
     @staticmethod
     def add_filter_to_query(query: Optional[str], filter_name: str, filter_arg: str,
                             use_new_query: bool = True) -> Optional[str]:
@@ -332,6 +374,52 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def trim_results_by_limit(results: List[Any], limit: Union[int, str] = 100) -> List[Any]:
+    """Trim list of results so only a limited number is returned.
+
+    Args:
+        results: The list of results.
+        limit: The upper limit of the results to return. If limit is set to -1 all results will be returned.
+
+    Return the trimmed results.
+    """
+    if int(limit) == -1:
+        return results
+    return results[:int(limit)]
+
+
+def attachments_to_command_results(client: Client, attachments: List[Dict[str, Any]], incident_id: Optional[str],
+                                   incident_number: Optional[str]) -> CommandResults:
+    """Transform raw attachments to CommandResults.
+
+    Args:
+        client: The client from which to take the base_url for clickable links.
+        attachments: The raw attachments list from the API
+        incident_id: The incident id of the attachments.
+        incident_number: The incident number of the attachments.
+
+    Return CommandResults of attachments.
+    """
+    headers = ['Id', 'FileName', 'DownloadUrl', 'Size', 'Description', 'InvisibleForCaller', 'EntryDate', 'Operator']
+    capitalized_attachments = capitalize_for_outputs(attachments)
+    for capitalized_attachment in capitalized_attachments:
+        capitalized_attachment['DownloadUrl'] = f"{client._base_url}{capitalized_attachment['DownloadUrl'][8:]}"
+
+    incident_identifier = incident_number if incident_number else incident_id
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} attachment of incident {incident_identifier}",
+                                      capitalized_attachments,
+                                      headers=headers,
+                                      removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_NAME}.Attachment',
+        outputs_key_field='Id',
+        outputs=capitalized_attachments,
+        raw_response=attachments
+    )
+
+
 def prepare_touch_request_params(args: Dict[str, Any]) -> Dict[str, Any]:
     """Prepare request parameters for incident-create and incident-update commands.
     Convert snake_case and specific names of command to halfCamelizedCase and API names.
@@ -368,7 +456,7 @@ def prepare_touch_request_params(args: Dict[str, Any]) -> Dict[str, Any]:
                     request_params[half_camelize(optional_param)] = args.get(optional_param, None)
 
     if args.get("additional_params", None):
-        request_params.update(args["additional_params"])
+        request_params.update(json.loads(args["additional_params"]))
 
     return request_params
 
@@ -448,16 +536,21 @@ def command_with_all_fields_readable_list(results: List[Dict[str, Any]], result_
     )
 
 
-def get_incidents_with_pagination(client: Client, max_fetch: int, query: str, modification_date_start: str,
-                                  modification_date_end: Optional[str] = None) -> List[Dict[str, Any]]:
+def get_incidents_with_pagination(client: Client, max_fetch: int, query: str,
+                                  modification_date_start: Optional[str] = None,
+                                  modification_date_end: Optional[str] = None,
+                                  creation_date_start: Optional[str] = None,
+                                  creation_date_end: Optional[str] = None) -> List[Dict[str, Any]]:
     """Implement pagination for fetching incidents.
 
     Args:
         client: The client from which to make the requests.
         max_fetch: Maximum number of incidents to fetch.
         query: A filter query for the incidents to fetch.
-        modification_date_start: The start date from which to fetch.
-        modification_date_end: The end date from which to fetch.
+        modification_date_start: The start modification date from which to fetch.
+        modification_date_end: The end modification date from which to fetch.
+        creation_date_start: The start creation date from which to fetch.
+        creation_date_end: The end creation date from which to fetch.
 
     Return all incidents fetched.
     """
@@ -476,7 +569,9 @@ def get_incidents_with_pagination(client: Client, max_fetch: int, query: str, mo
                                                 page_size=page_size,
                                                 query=query,
                                                 modification_date_start=modification_date_start,
-                                                modification_date_end=modification_date_end)
+                                                modification_date_end=modification_date_end,
+                                                creation_date_start=creation_date_start,
+                                                creation_date_end=creation_date_end)
         start += page_size
     return incidents
 
@@ -692,98 +787,122 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def entry_types_command(client: Client) -> CommandResults:
+def entry_types_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get entry types list from TOPdesk.
 
     Args:
         client: The client to preform command on.
+        args: The arguments of the command, specifically 'limit' will be used.
 
     Return CommadResults of list of EntryType."""
     entry_types = client.get_list('/incidents/entry_types')
+    entry_types = trim_results_by_limit(entry_types, args.get('limit', 100))
+
     return command_with_all_fields_readable_list(results=entry_types,
                                                  result_name='entry types',
                                                  output_prefix='EntryType',
                                                  outputs_key_field='Id')
 
 
-def call_types_command(client: Client) -> CommandResults:
+def call_types_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get call types list from TOPdesk.
 
     Args:
         client: The client to preform command on.
+        args: The arguments of the command, specifically 'limit' will be used.
 
     Return CommadResults of list of CallType."""
 
     call_types = client.get_list("/incidents/call_types")
+    call_types = trim_results_by_limit(call_types, args.get('limit', 100))
+
     return command_with_all_fields_readable_list(results=call_types,
                                                  result_name='call types',
                                                  output_prefix='CallType',
                                                  outputs_key_field='Id')
 
 
-def categories_command(client: Client) -> CommandResults:
+def categories_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get categories list from TOPdesk
 
     Args:
         client: The client to preform command on.
+        args: The arguments of the command, specifically 'limit' will be used.
 
     Return CommadResults of list of Category."""
 
     categories = client.get_list("/incidents/categories")
+    categories = trim_results_by_limit(categories, args.get('limit', 100))
+
     return command_with_all_fields_readable_list(results=categories,
                                                  result_name='categories',
                                                  output_prefix='Category',
                                                  outputs_key_field='Id')
 
 
-def escalation_reasons_command(client: Client) -> CommandResults:
+def escalation_reasons_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get escalation reasons list from TOPdesk.
 
     Args:
         client: The client to preform command on.
+        args: The arguments of the command, specifically 'limit' will be used.
 
     Return CommadResults of list of EscalationReason."""
     escalation_reasons = client.get_list("/incidents/escalation-reasons")
+    escalation_reasons = trim_results_by_limit(escalation_reasons, args.get('limit', 100))
+
     return command_with_all_fields_readable_list(results=escalation_reasons,
                                                  result_name='escalation reasons',
                                                  output_prefix='EscalationReason',
                                                  outputs_key_field='Id')
 
 
-def deescalation_reasons_command(client: Client) -> CommandResults:
+def deescalation_reasons_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
     """Get deescalation reasons list from TOPdesk.
 
     Args:
         client: The client to preform command on.
+        args: The arguments of the command, specifically 'limit' will be used.
 
     Return CommadResults of list of DeescalationReason."""
-    deescalation_reasons = client.get_list("/incidents/deescalation-reasons")
+    try:
+        deescalation_reasons = client.get_list("/incidents/deescalation-reasons")
+        deescalation_reasons = trim_results_by_limit(deescalation_reasons, args.get('limit', 100))
+
+    except DemistoException as e:
+        if '[404] - Not Found' in str(e):
+            return 'Page Not Found: make sure deescalation feature is enabled in TOPdesk.'
+
     return command_with_all_fields_readable_list(results=deescalation_reasons,
                                                  result_name='deescalation reasons',
                                                  output_prefix='DeescalationReason',
                                                  outputs_key_field='Id')
 
 
-def archiving_reasons_command(client: Client) -> CommandResults:
+def archiving_reasons_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get archiving reasons list from TOPdesk.
 
     Args:
         client: The client to preform command on.
+        args: The arguments of the command, specifically 'limit' will be used.
 
     Return CommadResults of list of ArchiveReason."""
 
     archiving_reasons = client.get_list("/archiving-reasons")
+    archiving_reasons = trim_results_by_limit(archiving_reasons, args.get('limit', 100))
+
     return command_with_all_fields_readable_list(results=archiving_reasons,
                                                  result_name='archiving reasons',
                                                  output_prefix='ArchiveReason',
                                                  outputs_key_field='Id')
 
 
-def subcategories_command(client: Client) -> CommandResults:
+def subcategories_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get subcategories list from TOPdesk.
 
     Args:
         client: The client to preform command on.
+        args: The arguments of the command, specifically 'limit' will be used.
 
     Return CommadResults of list of subcategories."""
 
@@ -791,6 +910,8 @@ def subcategories_command(client: Client) -> CommandResults:
 
     if len(subcategories) == 0:
         return CommandResults(readable_output='No subcategories found')
+
+    subcategories = trim_results_by_limit(subcategories, args.get('limit', 100))
 
     subcategories_with_categories = []
     for subcategory in subcategories:
@@ -817,6 +938,25 @@ def subcategories_command(client: Client) -> CommandResults:
         outputs=capitalize_for_outputs(subcategories),
         raw_response=subcategories
     )
+
+
+def list_attachments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Get attachments list from TOPdesk incident.
+
+    Args:
+        client: The client to preform command on.
+        args: The arguments of the command, specifically 'limit' will be used.
+
+    Return CommadResults of list of attachments."""
+    attachments = client.list_attachments(incident_id=args.get('incident_id', None),
+                                          incident_number=args.get('incident_number', None))
+
+    if len(attachments) == 0:
+        return CommandResults(readable_output='No attachments found')
+
+    attachments = trim_results_by_limit(attachments, args.get('limit', 100))
+    return attachments_to_command_results(client, attachments, args.get('incident_id', None),
+                                          args.get('incident_number', None))
 
 
 def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -967,22 +1107,8 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
     if not response.get("downloadUrl", None):
         raise Exception(f"Failed uploading file: {response}")
 
-    headers = ['Id', 'FileName', 'DownloadUrl', 'Size', 'Description',
-               'InvisibleForCaller', 'EntryDate', 'Operator']
-    capitalized_output = capitalize_for_outputs([response])
-
-    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} attachment of incident {args.get('number', None)}",
-                                      capitalized_output,
-                                      headers=headers,
-                                      removeNull=True)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.Attachment',
-        outputs_key_field='Id',
-        outputs=capitalized_output,
-        raw_response=response
-    )
+    return attachments_to_command_results(client, [response], args.get('incident_id', None),
+                                          args.get('incident_number', None))
 
 
 ''' FETCH & MIRRORING COMMANDS'''
@@ -1015,12 +1141,12 @@ def fetch_incidents(client: Client,
     latest_created_time = last_fetch_datetime
     incidents: List[Dict[str, Any]] = []
 
-    modification_date_start = last_fetch_datetime.strftime("<%Y-%m-%d>")
+    creation_date_start = last_fetch_datetime.strftime("<%Y-%m-%d>")
 
     topdesk_incidents = get_incidents_with_pagination(client=client,
                                                       max_fetch=int(demisto_params.get('max_fetch', 10)),
                                                       query=demisto_params.get('query', None),
-                                                      modification_date_start=modification_date_start)
+                                                      creation_date_start=creation_date_start)
 
     for topdesk_incident in topdesk_incidents:
         if topdesk_incident.get('creationDate', None):
@@ -1033,7 +1159,7 @@ def fetch_incidents(client: Client,
             incident = {
                 'name': f"TOPdesk incident {topdesk_incident['number']}",
                 'details': json.dumps(topdesk_incident),
-                'occurred': incident_created_time.strftime(DATE_FORMAT_FULL),
+                'occurred': incident_created_time.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(topdesk_incident)}
 
             if incident not in incidents:  # Do not fetch duplicates
@@ -1082,16 +1208,17 @@ def main() -> None:
 
     # get the service API url
     demisto_params = demisto.params()
-    base_url = urljoin(demisto_params['url'], '/api')
+    base_url = urljoin(demisto_params.get('url'), '/api')
     verify_certificate = not demisto_params.get('insecure', False)
+    credentials = demisto_params.get('credentials')
 
     demisto.debug(f'Command being called is {demisto.command()}')
+
     try:
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            auth=(demisto.params().get('username'), demisto.params().get('password')),
-            new_query=demisto_params['new_query'])
+            auth=(credentials.get('identifier'), credentials.get('password')))
 
         if demisto.command() == 'test-module':
             result = test_module(client, demisto.getLastRun(), demisto_params)
@@ -1102,23 +1229,25 @@ def main() -> None:
         elif demisto.command() == 'topdesk-operators-list':
             return_results(list_operators_command(client, demisto.args()))
         elif demisto.command() == 'topdesk-entry-types-list':
-            return_results(entry_types_command(client))
+            return_results(entry_types_command(client, demisto.args()))
         elif demisto.command() == 'topdesk-call-types-list':
-            return_results(call_types_command(client))
+            return_results(call_types_command(client, demisto.args()))
         elif demisto.command() == 'topdesk-categories-list':
-            return_results(categories_command(client))
+            return_results(categories_command(client, demisto.args()))
         elif demisto.command() == 'topdesk-escalation-reasons-list':
-            return_results(escalation_reasons_command(client))
+            return_results(escalation_reasons_command(client, demisto.args()))
         elif demisto.command() == 'topdesk-deescalation-reasons-list':
-            return_results(deescalation_reasons_command(client))
+            return_results(deescalation_reasons_command(client, demisto.args()))
         elif demisto.command() == 'topdesk-archiving-reasons-list':
-            return_results(archiving_reasons_command(client))
+            return_results(archiving_reasons_command(client, demisto.args()))
         elif demisto.command() == 'topdesk-subcategories-list':
-            return_results(subcategories_command(client))
+            return_results(subcategories_command(client, demisto.args()))
         elif demisto.command() == 'topdesk-branches-list':
             return_results(branches_command(client, demisto.args()))
         elif demisto.command() == 'topdesk-incidents-list':
             return_results(get_incidents_list_command(client, demisto.args()))
+        elif demisto.command() == 'topdesk-incident-attachments-list':
+            return_results(list_attachments_command(client, demisto.args()))
 
         elif demisto.command() == 'topdesk-incident-create':
             return_results(incident_touch_command(args=demisto.args(),

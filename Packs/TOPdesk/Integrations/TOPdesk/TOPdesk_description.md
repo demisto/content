@@ -2,10 +2,10 @@
 
 Some of TOPdesk's user types include person and operator. Each user type has a different set of actions that he is allowed to perfom.
 For example, a person can only update incidents he created while an operator can update a wider range of incidents.
-For more details on permissions specific to commands visit the TOPdesk integration documentation.
 
 In general, if an account is able to perform the requested command in TOPdesk's UI it should be able to perform it using this integration.
-- Make sure you use the right account for your needs and that the account used has permissions to make all needed requests.
+- Make sure you use the right account for your needs and that the account used has permissions to make all needed requests. 
+For more details on permissions specific to commands visit the TOPdesk integration documentation.
 
 ### Setup TOPdesk's application password
 1. Login to TOPdesk with the designated account.

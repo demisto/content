@@ -8,21 +8,11 @@ configuration:
   required: true
   type: 0
 - display: Username
-  name: username
+  name: credentials
   required: true
-  type: 0
-- display: Password
-  name: password
-  required: true
-  type: 4
+  type: 9
 - display: Fetch incidents
   name: isFetch
-  required: false
-  type: 8
-- defaultvalue: true
-  display: Use new style FIQL query when listing branches, persons and operators. (e.g. query=status==firsLine)
-  additionalinfo: Getting lists with new style FIQL query is available from SupportingFilesAPI version 1.38.0. If the checkbox is unchecked, old style queries will be used. Filtering TOPdesk incidents will not be affected by this configuration. More information is available in the TOPdesk integration documentation.
-  name: new_query
   required: false
   type: 8
 - defaultvalue: '10'
@@ -59,7 +49,12 @@ display: TOPdesk
 name: TOPdesk
 script:
   commands:
-  - arguments: []
+  - arguments:
+    - description: The limit for the amount of subcategories to store in the Context Data. To store all provide the value -1. Default value is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get list of subcategories.
     name: topdesk-subcategories-list
@@ -76,7 +71,12 @@ script:
     - contextPath: TOPdesk.Subcategory.Category.Name
       description: Category name of the subcategory.
       type: String
-  - arguments: []
+  - arguments:
+    - description: The limit for the amount of categories to store in the Context Data. To store all provide the value -1. Default value is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get list of categories.
     name: topdesk-categories-list
@@ -87,7 +87,12 @@ script:
     - contextPath: TOPdesk.Category.Name
       description: Category name.
       type: String
-  - arguments: []
+  - arguments:
+    - description: The limit for the amount of entry types to store in the Context Data. To store all provide the value -1. Default value is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get list of entry types.
     name: topdesk-entry-types-list
@@ -98,9 +103,14 @@ script:
     - contextPath: TOPdesk.EntryType.Name
       description: EntryType name.
       type: String
-  - arguments: []
+  - arguments:
+    - description: The limit for the amount of call types to store in the Context Data. To store all provide the value -1. Default value is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
-    description: Get list of entry types.
+    description: Get list of call types.
     execution: false
     name: topdesk-call-types-list
     outputs:
@@ -110,7 +120,12 @@ script:
     - contextPath: TOPdesk.CallType.Name
       description: CallType name.
       type: String
-  - arguments: []
+  - arguments:
+    - description: The limit for the amount of deescalation reasons to store in the Context Data. To store all provide the value -1. Default value is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get list of deescalation reasons.
     name: topdesk-deescalation-reasons-list
@@ -121,7 +136,12 @@ script:
     - contextPath: TOPdesk.DeescalationReason.Name
       description: Deescalation reason name.
       type: String
-  - arguments: []
+  - arguments:
+    - description: The limit for the amount of escalation reasons to store in the Context Data. To store all provide the value -1. Default value is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get list of escalation reasons.
     name: topdesk-escalation-reasons-list
@@ -132,7 +152,12 @@ script:
     - contextPath: TOPdesk.EscalationReason.Name
       description: Escalation reason name.
       type: String
-  - arguments: []
+  - arguments:
+    - description: The limit for the amount of archiving reasons to store in the Context Data. To store all provide the value -1. Default value is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get list of archiving reasons.
     name: topdesk-archiving-reasons-list
@@ -143,6 +168,58 @@ script:
     - contextPath: TOPdesk.ArchiveReason.Name
       description: Archiving reason name.
       type: String
+  - arguments:
+    - description: The limit for the amount of attachments to store in the Context Data. To store all provide the value -1. Default value is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - description: The incident id. An id or a number must be set. If both are
+        set, the id will be used.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - description: The incident number. An id or a number must be set. If both are
+        set, the id will be used.
+      isArray: false
+      name: incident_number
+      required: false
+      secret: false
+    deprecated: false
+    description: Get list of attachments of a certain TOPdesk incident.
+    name: topdesk-incident-attachments-list
+    outputs:
+    - contextPath: TOPdesk.Attachment.Id
+      description: Attachment's id
+      type: String
+    - contextPath: TOPdesk.Attachment.FileName
+      description: Attachment's file name
+      type: String
+    - contextPath: TOPdesk.Attachment.DownloadUrl
+      description: Attachment's download url
+      type: String
+    - contextPath: TOPdesk.Attachment.Size
+      description: Attachment's size
+      type: Number
+    - contextPath: TOPdesk.Attachment.Description
+      description: Attachment's description
+      type: String
+    - contextPath: TOPdesk.Attachment.InvisibleForCaller
+      description: Attachment's invisible for caller
+      type: Boolean
+    - contextPath: TOPdesk.Attachment.EntryDate
+      description: Attachment's entry date
+      type: Date
+    - contextPath: TOPdesk.Attachment.Operator.Id
+      description: Attachment's operator id
+      type: String
+    - contextPath: TOPdesk.Attachment.Operator.Name
+      description: Attachment's operator name
+      type: String
+    - contextPath: TOPdesk.Attachment.Person
+      description: Attachment's person
+      type: Unknown
   - arguments:
     - description: The offset at which to start listing the persons at. Must be greater
         or equal to 0, default is 0.
@@ -2104,7 +2181,7 @@ script:
       type: Date
   - arguments:
     - description: The caller id for this incident. For an unregistered caller provide
-        a name.
+        a name. For a list of registered persons or operator ids run !topdesk-persons-list or !topdesk-operators-list.
       isArray: false
       name: caller
       required: true
@@ -2143,19 +2220,19 @@ script:
       - 'true'
       - 'false'
     - description: Entry type by name. Can only be set by operators. XSOAR is
-        set by default for mirroring.
+        set by default for mirroring. For a list of available entry types run !topdesk-entry-types-list.
       isArray: false
       name: entry_type
       required: false
       secret: false
     - description: Category by name. Can be set by operators. It is an error
-        to provide both an id and a name.
+        to provide both an id and a name. For a list of available categories run !topdesk-categories-list.
       isArray: false
       name: category
       required: false
       secret: false
     - description: Subcategory by name. Can be set by operators. It is an error
-        to provide both an id and a name.
+        to provide both an id and a name. For a list of available subcategories run !topdesk-subcategories-list.
       isArray: false
       name: subcategory
       required: false
@@ -2169,6 +2246,11 @@ script:
         Can only be set by operators.
       isArray: false
       name: main_incident
+      required: false
+      secret: false
+    - description: Additional parameters to pass when creating an incident. (e.g. {"optionalFields1":{"text1":"test"}})
+      isArray: false
+      name: additional_params
       required: false
       secret: false
     deprecated: false
@@ -2795,7 +2877,7 @@ script:
       required: false
       secret: false
     - description: The caller id for this incident. For an unregistered caller provide
-        a name.
+        a name. For a list of registered persons or operator ids run !topdesk-persons-list or !topdesk-operators-list.
       isArray: false
       name: caller
       required: false
@@ -2809,20 +2891,17 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Entry type by name. Can only be set by operators. XSOAR is
-        set by default for mirroring.
+    - description: Entry type by name. Can only be set by operators. For a list of available entry types run !topdesk-entry-types-list.
       isArray: false
       name: entry_type
       required: false
       secret: false
-    - description: Category by name. Can be set by operators. It is an error
-        to provide both an id and a name.
+    - description: Category by name. Can be set by operators. For a list of available categories run !topdesk-categories-list.
       isArray: false
       name: category
       required: false
       secret: false
-    - description: Subcategory by name. Can be set by operators. It is an error
-        to provide both an id and a name.
+    - description: Subcategory by name. Can be set by operators. For a list of available subcategories run !topdesk-subcategories-list.
       isArray: false
       name: subcategory
       required: false
@@ -2836,6 +2915,11 @@ script:
         Can only be set by operators.
       isArray: false
       name: main_incident
+      required: false
+      secret: false
+    - description: Additional parameters to pass when updating an incident. (e.g. {"optionalFields1":{"text1":"test"}})
+      isArray: false
+      name: additional_params
       required: false
       secret: false
     deprecated: false

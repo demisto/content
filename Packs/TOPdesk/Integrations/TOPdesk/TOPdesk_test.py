@@ -22,8 +22,7 @@ def client(requests_mock):
     return Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        auth=('some_username', 'some_password'),
-        new_query=True
+        auth=('some_username', 'some_password')
     )
 
 
@@ -108,7 +107,7 @@ def test_list_command(client, requests_mock, command, command_api_url, mock_resp
     """
     requests_mock.get(
         command_api_url, json=mock_response)
-    command_results = command(client)
+    command_results = command(client, {})
     assert command_results.outputs_prefix == expected_results['outputs_prefix']
     assert command_results.outputs_key_field == expected_results['outputs_key_field']
     assert command_results.outputs == capitalize_for_outputs(mock_response)
@@ -325,11 +324,14 @@ def test_attachment_upload_command(client,
     command_results = attachment_upload_command(client=client,
                                                 args=command_args)
 
+    output_attachment = response_attachment
+    output_attachment['downloadUrl'] = 'https://test.com/api/v1/incidents/id/incident_id/attachments/some-id/download'
+
     assert requests_mock.called
     assert b'mock text file for attachment up' in requests_mock.last_request._request.body
     assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.Attachment'
     assert command_results.outputs_key_field == 'Id'
-    assert command_results.outputs == capitalize_for_outputs([response_attachment])
+    assert command_results.outputs == capitalize_for_outputs([output_attachment])
 
 
 @pytest.mark.parametrize('create_func, command_args, command_api_url, mock_response_file,'
@@ -610,29 +612,29 @@ def test_get_incidents_with_pagination(client,
 
 @pytest.mark.parametrize('command, new_query, command_args, command_api_request', [
     (list_persons_command,
-     False,  # Old query
-     {"query": "status=firstLine"},
-     'https://test.com/api/v1/persons?status=firstLine'),
-    (list_persons_command,
-     False,  # Old query
+     False,  # Rest old query
      {"query": "status=firstLine&id=5"},
-     'https://test.com/api/v1/persons?status=firstLine&id=5'),
+     'https://test.com/api/v1/persons?query=status==firstLine&id==5'),
     (list_persons_command,
-     False,  # Old query
-     {"query": "status=firstLine&id==5"},
-     'https://test.com/api/v1/persons?status=firstLine&id=5'),
-    (list_persons_command,
-     False,  # Old query
-     {"query": "status==firstLine"},
-     'https://test.com/api/v1/persons?status=firstLine'),
+     False,  # Rest old query
+     {"query": "status=firstLine"},
+     'https://test.com/api/v1/persons?query=status==firstLine'),
     (list_operators_command,
      False,  # Old query
      {"query": "status=firstLine"},
-     'https://test.com/api/v1/operators?status=firstLine'),
+     'https://test.com/api/v1/operators?query=status==firstLine'),
+    (list_operators_command,
+     False,  # Old query
+     {"query": "status==firstLine"},
+     'https://test.com/api/v1/operators?query=status==firstLine'),
     (branches_command,
      False,  # Old query
      {"query": "status=firstLine"},
-     'https://test.com/api/v1/branches?status=firstLine'),
+     'https://test.com/api/v1/branches?query=status==firstLine'),
+    (branches_command,
+     False,  # Old query
+     {"query": "status==firstLine"},
+     'https://test.com/api/v1/branches?query=status==firstLine'),
     (get_incidents_list_command,
      False,  # Old query
      {"query": "status=firstLine"},
@@ -653,30 +655,6 @@ def test_get_incidents_with_pagination(client,
      False,  # Old query
      {"query": 'caller_id=some_caller', "status": "firstLine", "branch_id": "some_branch"},
      'https://test.com/api/v1/incidents?caller_id=some_caller&status=firstLine&branch=some_branch'),
-    (list_persons_command,
-     True,  # New query
-     {"query": "status==firstLine"},
-     'https://test.com/api/v1/persons?query=status==firstLine'),
-    (list_persons_command,
-     True,  # New query
-     {"query": "status=firstLine"},
-     'https://test.com/api/v1/persons?query=status==firstLine'),
-    (list_persons_command,
-     True,  # New query
-     {"query": "status=firstLine&id=5"},
-     'https://test.com/api/v1/persons?query=status==firstLine&id==5'),
-    (list_operators_command,
-     True,  # New query
-     {"query": "status==firstLine"},
-     'https://test.com/api/v1/operators?query=status==firstLine'),
-    (list_operators_command,
-     True,  # New query
-     {"query": "status!=firstLine"},
-     'https://test.com/api/v1/operators?query=status!=firstLine'),
-    (branches_command,
-     True,  # New query
-     {"query": "status==firstLine"},
-     'https://test.com/api/v1/branches?query=status==firstLine'),
     (get_incidents_list_command,
      True,  # New query
      {"query": "status==firstLine"},
@@ -717,8 +695,7 @@ def test_old_new_query(requests_mock,
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        auth=('some_username', 'some_password'),
-        new_query=new_query
+        auth=('some_username', 'some_password')
     )
     requests_mock.get(command_api_request, json=[{}])
     command(client=client, args=command_args)
@@ -747,29 +724,35 @@ def test_unsupported_old_query_param(client, command_args):
     ([{  # Last fetch is before incident creation
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36.303000+0000',
+        'occurred': '2020-02-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-01-11T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
     ([{  # Last fetch is after one incident creation and before other.
         'number': 'TEST-1',
         'creationDate': '2020-01-10T06:32:36.303000+0000',
+        'occurred': '2020-01-10T06:32:36Z',
         'will_be_fetched': False
     }, {
         'number': 'TEST-2',
         'creationDate': '2020-03-10T06:32:36.303000+0000',
+        'occurred': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.303000+0000'),
     ([{  # Last fetch is at incident creation
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36.303+0000',
+        'occurred': '2020-02-10T06:32:36Z',
         'will_be_fetched': False
     }], '2020-02-10T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
     ([{  # Same incident returned twice.
         'number': 'TEST-1',
         'creationDate': '2020-03-10T06:32:36.303000+0000',
+        'occurred': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
     }, {
         'number': 'TEST-1',
         'creationDate': '2020-03-10T06:32:36.303000+0000',
+        'occurred': '2020-03-10T06:32:36Z',
         'will_be_fetched': False
     }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.303000+0000'),
 ])
@@ -796,7 +779,7 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
             expected_incidents.append({
                 'name': f"TOPdesk incident {incident_override['number']}",
                 'details': json.dumps(response_incident),
-                'occurred': incident_override['creationDate'],
+                'occurred': incident_override['occurred'],
                 'rawJSON': json.dumps(response_incident),
             })
 
