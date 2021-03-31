@@ -145,18 +145,46 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
                     reviewers.add(github_user)
                     print(f"Found {github_user} default reviewer of pack {pack}")
 
-            if reviewers:
-                pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
-                              and Path(file).parts[1] == pack}
-                tag_user_on_pr(reviewers=reviewers, pr_number=pr_number, pack=pack, pack_files=pack_files,
-                               github_token=github_token, verify_ssl=verify_ssl)
-            else:
-                print(f"{pack} pack No reviewers were found.")
+            check_reviewers(reviewers=reviewers, pr_author=pr_author, version=pack_metadata.get('currentVersion'),
+                            modified_files=modified_files, pack=pack, pr_number=pr_number, github_token=github_token,
+                            verify_ssl=verify_ssl)
 
         elif pack_metadata.get('support') == XSOAR_SUPPORT:
             print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
         else:
             print(f"{pack} pack has no default github reviewer")
+
+
+def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files: list, pack: str,
+                    pr_number: str, github_token: str, verify_ssl: bool):
+    """ Tag user on pr and ask for review if there are reviewers, and this is not new pack.
+
+    Args:
+        reviewers(set): reviwers to review the changes.
+        pr_author(str): Author of the pr.
+        version(str): pack version, from packmetadata.
+        modified_files(list): list of modified files
+        pack(str): pack name
+        pr_number(str): pr number on github
+        github_token(str): github token provided by the user
+        verify_ssl(bool): verify ssl
+
+    """
+    if reviewers:
+        if pr_author != 'xsoar-bot' or version != '1.0.0':
+            pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
+                          and Path(file).parts[1] == pack}
+            tag_user_on_pr(
+                reviewers=reviewers,
+                pr_number=pr_number,
+                pack=pack,
+                pack_files=pack_files,
+                github_token=github_token,
+                verify_ssl=verify_ssl
+            )
+
+    else:
+        print(f'{pack} pack no reviewers were found.')
 
 
 def main():

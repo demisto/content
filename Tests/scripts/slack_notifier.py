@@ -9,7 +9,7 @@ import requests
 from circleci.api import Api as circle_api
 from slack import WebClient as SlackClient
 
-from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs
+from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_upload_data
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import str2bool, run_command
 
@@ -141,25 +141,26 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         }] + steps_fields
 
     if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
-        successful_packs, failed_packs, successful_private_packs_dict = get_successful_and_failed_packs(
+        successful_packs, failed_packs, successful_private_packs, _ = get_upload_data(
             packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         )
         if successful_packs:
             steps_fields += [{
                 "title": "Successful Packs:",
-                "value": "\n".join(sorted([pack_name for pack_name in {*successful_packs}])),
+                "value": "\n".join(sorted([pack_name for pack_name in {*successful_packs}], key=lambda s: s.lower())),
                 "short": False
             }]
         if failed_packs:
             steps_fields += [{
                 "title": "Failed Packs:",
-                "value": "\n".join(sorted([pack_name for pack_name in {*failed_packs}])),
+                "value": "\n".join(sorted([pack_name for pack_name in {*failed_packs}], key=lambda s: s.lower())),
                 "short": False
             }]
-        if successful_private_packs_dict:
+        if successful_private_packs:
             steps_fields += [{
                 "title": "Successful Private Packs:",
-                "value": "\n".join(sorted([pack_name for pack_name in {*successful_private_packs_dict}])),
+                "value": "\n".join(sorted([pack_name for pack_name in {*successful_private_packs}],
+                                          key=lambda s: s.lower())),
                 "short": False
             }]
 
