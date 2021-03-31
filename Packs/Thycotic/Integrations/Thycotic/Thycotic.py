@@ -15,13 +15,10 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
-    def __init__(self, server_url: str, username: str, password: str, proxy: bool,
-                 verify: bool, credential_objects: str, is_fetch_credential: bool):
+    def __init__(self, server_url: str, username: str, password: str, proxy: bool, verify: bool):
         super().__init__(base_url=server_url, proxy=proxy, verify=verify)
         self._username = username
         self._password = password
-        self._is_fetch_credential = is_fetch_credential
-        self._credential_objects = credential_objects
         self._token = self._generate_token()
         self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
 
@@ -209,12 +206,12 @@ class Client(BaseClient):
     def userDelete(self, id: str) -> str:
         return self._http_request("DELETE", url_suffix="/api/v1/users/" + str(id))
 
-    def getCredentials(self) -> str:
+    def getCredentials(self, sync: str) -> str:
         credentials = {}
-        secretID = self.searchSecretIdByName(self._credential_objects)
+        secretID = self.searchSecretIdByName(sync)
 
         if len(secretID) == 1:
-            credentials['name'] = self._credential_objects
+            credentials['name'] = sync
             credentials['user'] = self.getUsernameById(secretID[0])
             credentials['password'] = self.getPasswordById(secretID[0])
         else:
@@ -454,12 +451,12 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newPassword: 
     )
 
 
-def test_module(client) -> str:
-    if client._is_fetch_credential:
-        if len(client._credential_objects) == 0:
+def test_module(client, param: dict) -> str:
+    if param.get('isFetchCredentials'):
+        if len(param.get('credentialobjects')) == 0:
             return "Enter secret name."
 
-        if client.getCredentials() == "":
+        if client.getCredentials(param.get('credentialobjects')) == "":
             return "Failed search secret name for sync"
 
     if client._token == '':
@@ -468,9 +465,9 @@ def test_module(client) -> str:
     return "ok"
 
 
-def fetch_credentials(client):
+def fetch_credentials(client, param: dict):
     credentials = []
-    jsonCredential = client.getCredentials()
+    jsonCredential = client.getCredentials(param.get('credentialobjects'))
     if jsonCredential != "":
         credentials.append(json.loads(jsonCredential))
 
@@ -485,8 +482,6 @@ def main():
     url = demisto.params().get('url')
     proxy = demisto.params().get('proxy', False)
     verify = not demisto.params().get('insecure', False)
-    credential_objects = demisto.params().get('credentialobjects')
-    is_fetch_credential = demisto.params().get('isFetchCredentials')
 
     LOG(f'Command being called is {demisto.command()}')
 
@@ -516,9 +511,7 @@ def main():
                         username=username,
                         password=password,
                         proxy=proxy,
-                        verify=verify,
-                        credential_objects=credential_objects,
-                        is_fetch_credential=is_fetch_credential)
+                        verify=verify)
 
         if demisto.command() in thycotic_commands:
             return_results(
@@ -527,11 +520,11 @@ def main():
 
         elif demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, demisto.params())
             demisto.results(result)
 
         elif demisto.command() == "fetch-credentials":
-            fetch_credentials(client)
+            fetch_credentials(client, demisto.params())
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
