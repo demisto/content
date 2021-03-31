@@ -453,7 +453,7 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newPassword: 
 
 def test_module(client, param: dict) -> str:
     if param.get('isFetchCredentials'):
-        if len(param.get('credentialobjects')) == 0:
+        if len(str(param.get('credentialobjects'))) == 0:
             return "Enter secret name."
 
         if client.getCredentials(param.get('credentialobjects')) == "":
