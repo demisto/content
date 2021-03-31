@@ -168,7 +168,7 @@ def test_get_search_job_result_command_with_matches(mocker):
         'complete': True, 'processedFiles': 1, 'totalMatches': 1
     }
     mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
-    command_results = get_search_job_result(client, args={'job_id': '111'})
+    command_results = get_search_job_result(client, args={'job_id': '111'})[0]
     output = command_results.to_context().get('EntryContext', {})
     expected_result = {
         'status': 'completed', 'category': 'forensic_api_result', 'totalFiles': 1,
@@ -220,7 +220,7 @@ def test_get_search_job_result_command_with_matches_and_limit(mocker):
         'complete': True, 'processedFiles': 1, 'totalMatches': 3
     }
     mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
-    command_results = get_search_job_result(client, args={'job_id': '111', 'limit': '2'})
+    command_results = get_search_job_result(client, args={'job_id': '111', 'limit': '2'})[0]
     output = command_results.to_context().get('EntryContext', {})
 
     assert len(output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', {}).get('streamResults')) == 2
@@ -245,7 +245,7 @@ def test_get_search_job_result_command_without_matches(mocker):
         'complete': True, 'processedFiles': 0, 'totalMatches': 0
     }
     mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
-    command_results = get_search_job_result(client, args={'job_id': '222'})
+    command_results = get_search_job_result(client, args={'job_id': '222'})[0]
 
     output = command_results.to_context().get('EntryContext', {})
     expected_result = {

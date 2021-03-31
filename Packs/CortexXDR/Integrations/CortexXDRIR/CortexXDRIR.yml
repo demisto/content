@@ -1735,9 +1735,20 @@ script:
       name: hostname
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency.
+      isArray: false
+      name: all
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
-      command with no filters.
+      command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan
   - deprecated: false
@@ -2092,6 +2103,15 @@ script:
       description: A comma-separated list of file paths on the Mac platform.
       isArray: true
       name: mac_file_paths
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of file paths in any platform. Can be used
+        instead of the mac/windows/linux file paths. The order of the files path list
+        must be parellel to the endpoints list order, therefore, the first file path
+        in the list is related to the first endpoint and so on.
+      isArray: true
+      name: generic_file_path
       required: false
       secret: false
     deprecated: false
@@ -2605,7 +2625,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
-  dockerimage: demisto/python3:3.9.2.17246
+  dockerimage: demisto/python3:3.9.2.17957
   feed: false
   isfetch: true
   ismappable: true
