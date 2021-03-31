@@ -4,7 +4,7 @@ Nefarious attackers coming in at you from all fronts. Ransomware, phishing, malw
 
 Well, now you can. Our latest DBot Truth Bombs content pack allows you to channel the man and the myth behind Walker, Texas Ranger - yeah, you know who we’re talking about - while you go about your daily business of annihilating your cyber enemies with our other Palo Alto Networks products. 
 
-![DBot](https://raw.githubusercontent.com/demisto/content/217f91f3d5bc558875bf8f915e0b63141f450fc9/Packs/DBotTruthBombs/doc_imgs/dbot17.png)
+![DBot](https://raw.githubusercontent.com/demisto/content/9784db67bb70839f1122ff5753d66cefbe2ca0d1/Packs/DBotTruthBombs/doc_imgs/dbot17.png)
 
 This Content Pack packs heat:
  - Automates the injection of humor at scale into your daily routine.

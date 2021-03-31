@@ -49,7 +49,7 @@ def test_module(client: Client) -> str:
 def get_dbot_image_path() -> str:
     image_index = random.randint(1, 16)
 
-    return 'https://raw.githubusercontent.com/demisto/content/217f91f3d5bc558875bf8f915e0b63141f450fc9/' \
+    return 'https://raw.githubusercontent.com/demisto/content/9784db67bb70839f1122ff5753d66cefbe2ca0d1/' \
            f'Packs/DBotTruthBombs/doc_imgs/dbot{image_index}.png'
 
 
