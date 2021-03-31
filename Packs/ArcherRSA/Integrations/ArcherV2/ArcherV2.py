@@ -291,7 +291,7 @@ class Client(BaseClient):
             res = self._http_request('POST', '/api/core/security/login', json_data=body)
         except DemistoException as e:
             if '<html>' in str(e):
-                raise DemistoException(f"Check the given URL, can be a redirect issue. Failed with error: {str(e)}")
+                raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
             raise e
         is_successful_response = res.get('IsSuccessful')
         if not is_successful_response:
