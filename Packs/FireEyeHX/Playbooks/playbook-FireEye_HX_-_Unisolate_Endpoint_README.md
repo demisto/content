@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![FireEye HX - Unisolate Endpoint](Insert the link to your image here)
+![FireEye HX - Unisolate Endpoint](https://raw.githubusercontent.com/demisto/content/44ad983ed305797eb04c7c22e0928892ebb61380/Packs/FireEyeHX/doc_files/FireEye_HX_-_Unisolate_Endpoint.png)

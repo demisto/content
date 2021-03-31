@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Crowdstrike Falcon - Unisolate Endpoint](Insert the link to your image here)
+![Crowdstrike Falcon - Unisolate Endpoint](https://raw.githubusercontent.com/demisto/content/44ad983ed305797eb04c7c22e0928892ebb61380/Packs/CrowdStrikeFalcon/doc_files/Crowdstrike_Falcon_-_Unisolate_Endpoint.png)
