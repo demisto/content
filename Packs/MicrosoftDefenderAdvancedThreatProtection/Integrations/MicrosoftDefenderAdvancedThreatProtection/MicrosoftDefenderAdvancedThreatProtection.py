@@ -543,12 +543,13 @@ class MsClient:
         cmd_url = '/investigations'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def start_investigation(self, machine_id, comment):
+    def start_investigation(self, machine_id, comment, timeout):
         """Start automated investigation on a machine.
 
         Args:
             machine_id (str): The Machine ID
             comment (str): Comment to associate with the action
+            timeout (int): Connection timeout
 
         Returns:
             dict. Investigation's entity
@@ -557,7 +558,7 @@ class MsClient:
         json_data = {
             'Comment': comment,
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, timeout=timeout)
 
     def get_domain_statistics(self, domain):
         """Retrieves the statistics on the given domain.
@@ -1542,7 +1543,8 @@ def start_investigation_command(client: MsClient, args: dict):
                'ComputerDNSName', 'TriggeringAlertID']
     machine_id = args.get('machine_id')
     comment = args.get('comment')
-    response = client.start_investigation(machine_id, comment)
+    timeout = int(args.get('timeout', 50))
+    response = client.start_investigation(machine_id, comment, timeout)
     investigation_id = response['id']
     investigation_data = get_investigation_data(response)
     human_readable = tableToMarkdown(f'Starting investigation {investigation_id} on {machine_id} machine:',

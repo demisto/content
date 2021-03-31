@@ -1,5 +1,5 @@
 {
-    "name": "SumoLogic",
+    "name": "Sumo Logic",
     "description": "Cloud-based service for logs & metrics management",
     "support": "xsoar",
     "currentVersion": "1.0.6",

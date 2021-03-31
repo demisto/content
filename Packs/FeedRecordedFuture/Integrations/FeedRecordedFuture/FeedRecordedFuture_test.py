@@ -77,12 +77,22 @@ build_iterator_answer_url = [
     }]
 ]
 
+build_iterator_no_evidence_details_value = [
+    [{
+        'EvidenceDetails': None,
+        'Name': '192.168.1.1',
+        'Risk': '50',
+        'RiskString': '4/37'
+    }]
+]
+
 GET_INDICATOR_INPUTS = [
     ('ip', build_iterator_answer_ip, '192.168.1.1', 'IP'),
     ('domain', build_iterator_answer_domain, 'domaintools.com', 'Domain'),
     ('domain', build_iterator_answer_domain_glob, '*domaintools.com', 'DomainGlob'),
     ('hash', build_iterator_answer_hash, '52483514f07eb14570142f6927b77deb7b4da99f', 'File'),
-    ('url', build_iterator_answer_url, 'www.securityadvisor.io', 'URL')
+    ('url', build_iterator_answer_url, 'www.securityadvisor.io', 'URL'),
+    ('ip', build_iterator_no_evidence_details_value, '192.168.1.1', 'IP')
 ]
 
 

@@ -1067,6 +1067,41 @@
 <td style="width: 81px;">date</td>
 <td style="width: 334px;">Risk last seen timestamp</td>
 </tr>
+<tr>
+<td style="width: 325px;">Domain.Tags</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">Tags that are associated with the Domain.</td>
+</tr>
+<tr>
+<td style="width: 325px;">Domain.CommunityNotes.note</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">A summary note on the mentioning of the domain in a source monitored by Recorded Future.</td>
+</tr>
+<tr>
+<td style="width: 325px;">Domain.CommunityNotes.timestamp</td>
+<td style="width: 81px;">date</td>
+<td style="width: 334px;">The timestamp in which the community note was created.</td>
+</tr>
+<tr>
+<td style="width: 325px;">Domain.Publications.source</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">The publication's source.</td>
+</tr>
+<tr>
+<td style="width: 325px;">Domain.Publications.title</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">The title of the published information.</td>
+</tr>
+<tr>
+<td style="width: 325px;">Domain.Publications.link</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">A link to the published information.</td>
+</tr>
+<tr>
+<td style="width: 325px;">Domain.Publications.timestamp</td>
+<td style="width: 81px;">date</td>
+<td style="width: 334px;">The timestamp in which the information was published.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1211,6 +1246,41 @@
 <td style="width: 211px;">IP.RecordedFuture.LastSeen</td>
 <td style="width: 46px;">date</td>
 <td style="width: 483px;">Risk last seen timestamp</td>
+</tr>
+<tr>
+<td style="width: 325px;">IP.Tags</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">Tags that are associated with the IP.</td>
+</tr>
+<tr>
+<td style="width: 325px;">IP.CommunityNotes.note</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">A summary note on the mentioning of the IP in a source monitored by Recorded Future.</td>
+</tr>
+<tr>
+<td style="width: 325px;">IP.CommunityNotes.timestamp</td>
+<td style="width: 81px;">date</td>
+<td style="width: 334px;">The timestamp in which the community note was created.</td>
+</tr>
+<tr>
+<td style="width: 325px;">IP.Publications.source</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">The publication's source.</td>
+</tr>
+<tr>
+<td style="width: 325px;">IP.Publications.title</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">The title of the published information.</td>
+</tr>
+<tr>
+<td style="width: 325px;">IP.Publications.link</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">A link to the published information.</td>
+</tr>
+<tr>
+<td style="width: 325px;">IP.Publications.timestamp</td>
+<td style="width: 81px;">date</td>
+<td style="width: 334px;">The timestamp in which the information was published.</td>
 </tr>
 </tbody>
 </table>
@@ -1386,6 +1456,41 @@
 <td style="width: 62px;">date</td>
 <td style="width: 462px;">Risk last seen timestamp</td>
 </tr>
+<tr>
+<td style="width: 325px;">File.Tags</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">Tags that are associated with the File.</td>
+</tr>
+<tr>
+<td style="width: 325px;">File.CommunityNotes.note</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">A summary note on the mentioning of the file in a source monitored by Recorded Future.</td>
+</tr>
+<tr>
+<td style="width: 325px;">File.CommunityNotes.timestamp</td>
+<td style="width: 81px;">date</td>
+<td style="width: 334px;">The timestamp in which the community note was created.</td>
+</tr>
+<tr>
+<td style="width: 325px;">File.Publications.source</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">The publication's source.</td>
+</tr>
+<tr>
+<td style="width: 325px;">File.Publications.title</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">The title of the published information.</td>
+</tr>
+<tr>
+<td style="width: 325px;">File.Publications.link</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">A link to the published information.</td>
+</tr>
+<tr>
+<td style="width: 325px;">File.Publications.timestamp</td>
+<td style="width: 81px;">date</td>
+<td style="width: 334px;">The timestamp in which the information was published.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1524,6 +1629,41 @@
 <td style="width: 306px;">URL.RecordedFuture.LastSeen</td>
 <td style="width: 83px;">date</td>
 <td style="width: 351px;">Risk last seen timestamp</td>
+</tr>
+<tr>
+<td style="width: 325px;">URL.Tags</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">Tags that are associated with the URL.</td>
+</tr>
+<tr>
+<td style="width: 325px;">URL.CommunityNotes.note</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">A summary note on the mentioning of the URL in a source monitored by Recorded Future.</td>
+</tr>
+<tr>
+<td style="width: 325px;">URL.CommunityNotes.timestamp</td>
+<td style="width: 81px;">date</td>
+<td style="width: 334px;">The timestamp in which the community note was created.</td>
+</tr>
+<tr>
+<td style="width: 325px;">URL.Publications.source</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">The publication's source.</td>
+</tr>
+<tr>
+<td style="width: 325px;">URL.Publications.title</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">The title of the published information.</td>
+</tr>
+<tr>
+<td style="width: 325px;">URL.Publications.link</td>
+<td style="width: 81px;">String</td>
+<td style="width: 334px;">A link to the published information.</td>
+</tr>
+<tr>
+<td style="width: 325px;">URL.Publications.timestamp</td>
+<td style="width: 81px;">date</td>
+<td style="width: 334px;">The timestamp in which the information was published.</td>
 </tr>
 </tbody>
 </table>
