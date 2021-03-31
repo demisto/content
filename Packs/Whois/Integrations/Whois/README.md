@@ -6,12 +6,12 @@ This integration was integrated and tested with version 1.0 of Whois
 2. Search for Whois.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Return Errors | False |
-    | Proxy URL | False |
-    | Use system proxy settings | False |
-    | Source Reliability | True |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Return Errors | | False |
+    | Proxy URL | Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command | False |
+    | Use system proxy settings | | False |
+    | Source Reliability | | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
