@@ -73,10 +73,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 defaultclassifier: QSS Classifier
 defaultmapperin: QSS Mapper
 description: QSS integration helps you to fetch Cases from Q-SCMP and add new cases

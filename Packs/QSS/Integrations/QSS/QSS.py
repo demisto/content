@@ -17,7 +17,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
-HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
+QSS_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 ''' CLIENT CLASS '''
 
@@ -55,7 +55,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix='',
+            url_suffix='/rest/noauth/third_party/read_object/xsoar/v1',
             params=request_params
         )
 
@@ -145,13 +145,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     for alert in alerts:
 
-        incident_created_time = int(alert.get('created_sec', '0'))
+        incident_created_time = int(alert.get('last_update_sec', '0'))
 
         if last_fetch:
             if incident_created_time <= last_fetch:
                 continue
 
-        incident_name = 'SOC Case ' + alert['reference']
+        incident_name = 'SOC Case ' + alert.get('reference')
 
         demisto.debug("JSON debug alert")
         demisto.debug(json.dumps(alert))
