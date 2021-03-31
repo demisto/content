@@ -180,7 +180,6 @@ def test_ip_command(mocker):
     assert len(result) == 2
     assert result[0].outputs_prefix == 'Whois.IP'
     assert result[0].outputs.get('query') == '4.4.4.4'
-    print (result[0].indicator.to_context())
     assert result[0].indicator.to_context() == {
         'IP(val.Address && val.Address == obj.Address)': {
             'Organization': {'Name': u'LEVEL3, US'},
