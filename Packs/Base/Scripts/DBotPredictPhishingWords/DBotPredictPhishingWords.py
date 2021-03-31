@@ -6,8 +6,9 @@ from nltk import word_tokenize
 
 from CommonServerPython import *
 
-DEFAULT_MODEL_TYPE = 'default_type'
 
+DEFAULT_MODEL_TYPE = 'default_type'
+TORCH_TYPE = 'torch'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 
 
@@ -43,13 +44,7 @@ def handle_error(message, is_return_error):
         sys.exit(0)
 
 
-def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
-                           word_threshold, top_word_limit, is_return_error, set_incidents_fields=False):
-    model_data, model_type = get_model_data(model_name, model_store_type, is_return_error)
-    if model_type.strip() == '':
-        model_type = DEFAULT_MODEL_TYPE
-    phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
-    text = "%s \n%s" % (email_subject, email_body)
+def preprocess_text(text, model_type, is_return_error):
     if model_type == DEFAULT_MODEL_TYPE:
         language = demisto.args().get('language', 'English')
         tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
@@ -60,10 +55,29 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         if is_error(res[0]):
             handle_error(res[0]['Contents'], is_return_error)
         tokenized_text_result = res[0]['Contents']
-        input_text = tokenized_text_result['hashedTokenizedText'] if tokenized_text_result.get('hashedTokenizedText') else \
+        input_text = tokenized_text_result['hashedTokenizedText'] if tokenized_text_result.get(
+            'hashedTokenizedText') else \
             tokenized_text_result['tokenizedText']
-    elif model_type == 'torch':
-        input_text = text.lower()
+        if tokenized_text_result.get('hashedTokenizedText'):
+            words_to_token_maps = tokenized_text_result['wordsToHashedTokens']
+        else:
+            words_to_token_maps = tokenized_text_result['originalWordsToTokens']
+
+    elif model_type == TORCH_TYPE:
+        input_text = text
+        words_to_token_maps = {w: w.lower() for w in word_tokenize(text)}
+    return input_text, words_to_token_maps
+
+
+def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
+                           word_threshold, top_word_limit, is_return_error, set_incidents_fields=False):
+    model_data, model_type = get_model_data(model_name, model_store_type, is_return_error)
+    if model_type.strip() == '':
+        model_type = DEFAULT_MODEL_TYPE
+    phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
+    text = "%s \n%s" % (email_subject, email_body)
+    input_text, words_to_token_maps = preprocess_text(text, model_type, is_return_error)
+
     filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
     if filtered_text_number_of_words == 0:
         handle_error("The model does not contain any of the input text words", is_return_error)
@@ -81,13 +95,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     if predicted_prob < label_threshold:
         handle_error("Label probability is {:.2f} and it's below the input confidence threshold".format(
             predicted_prob), is_return_error)
-    if model_type == DEFAULT_MODEL_TYPE:
-        if tokenized_text_result.get('hashedTokenizedText'):
-            words_to_token_maps = tokenized_text_result['wordsToHashedTokens']
-        else:
-            words_to_token_maps = tokenized_text_result['originalWordsToTokens']
-    elif model_type == 'torch':
-        words_to_token_maps = {w:w.lower() for w in word_tokenize(text)}
+
 
     positive_tokens = OrderedSet(explain_result['PositiveWords'])
     negative_tokens = OrderedSet(explain_result['NegativeWords'])
