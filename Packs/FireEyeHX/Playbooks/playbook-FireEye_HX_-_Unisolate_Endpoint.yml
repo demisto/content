@@ -1,0 +1,268 @@
+id: FireEye HX - Unisolate Endpoint
+version: -1
+name: FireEye HX - Unisolate Endpoint
+description: This playbook will auto Isolate endpoints by the endpoint id that was
+  provided in the playbook input.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 66ce18d3-a5eb-40c8-8424-597028d068df
+    type: start
+    task:
+      id: 66ce18d3-a5eb-40c8-8424-597028d068df
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d399bde9-dd8a-4de5-8fa9-bc2c30202e48
+    type: condition
+    task:
+      id: d399bde9-dd8a-4de5-8fa9-bc2c30202e48
+      version: -1
+      name: Is FireEye HX enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: FireEye HX
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e71526df-a0d8-4667-81a8-f3140088de36
+    type: title
+    task:
+      id: e71526df-a0d8-4667-81a8-f3140088de36
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3c7daaa3-17db-40e9-8891-d9aee3a469a8
+    type: condition
+    task:
+      id: 3c7daaa3-17db-40e9-8891-d9aee3a469a8
+      version: -1
+      name: Is there endpoint id?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Endpoint_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5c3831e9-9a18-491a-8096-67e1d2691cdc
+    type: regular
+    task:
+      id: 5c3831e9-9a18-491a-8096-67e1d2691cdc
+      version: -1
+      name: Get host info
+      description: Get information on a host associated with an agent.
+      script: '|||fireeye-hx-get-host-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      agentId:
+        simple: ${inputs.Endpoint_id}
+      hostName: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 70cfda10-5f4a-495c-883b-3c512bf867d5
+    type: condition
+    task:
+      id: 70cfda10-5f4a-495c-883b-3c512bf867d5
+      version: -1
+      name: Is the device ready for unisolation?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FireEyeHX.Hosts.containment_state
+            iscontext: true
+          right:
+            value:
+              simple: contained
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 19c86962-a559-40e1-8bff-c30233774c53
+    type: regular
+    task:
+      id: 19c86962-a559-40e1-8bff-c30233774c53
+      version: -1
+      name: Unisolate endpoint
+      description: Release a specific host from containment.
+      script: '|||fireeye-hx-cancel-containment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      agentId:
+        simple: ${inputs.Endpoint_id}
+      hostName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_no": 0.73,
+      "3_2_#default#": 0.22,
+      "5_2_#default#": 0.39
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1775,
+        "width": 990,
+        "x": 450,
+        "y": 140
+      }
+    }
+  }
+inputs:
+- key: Endpoint_id
+  value: {}
+  required: false
+  description: The endpoint id/device  id that  you wish to isolate.
+  playbookInputQuery:
+outputs: []
+tests:
+- FireEye HX Test
+fromversion: 5.5.0
