@@ -11,5 +11,15 @@
   ],
   "tags": [],
   "useCases": [],
-  "keywords": []
+  "keywords": [],
+  "dependencies": {
+        "PAN-OS": {
+            "mandatory": true,
+            "display_name": "PAN-OS"
+        },
+        "Cortex Data Lake": {
+            "mandatory": true,
+            "display_name": "Cortex Data Lake"
+        }
+    }
 }
