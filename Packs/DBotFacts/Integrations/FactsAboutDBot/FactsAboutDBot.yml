@@ -12,14 +12,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 18b71ec7-0a6b-40d6-8f8f-885141b46b7d
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Get to know DBot better, with various of facts.
 display: Facts About DBot
 name: Facts About DBot
@@ -46,4 +38,3 @@ script:
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: HelloWorld - Asaf
