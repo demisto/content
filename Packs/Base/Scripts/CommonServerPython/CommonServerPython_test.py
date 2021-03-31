@@ -3482,7 +3482,14 @@ class TestCommonTypes:
                 'sub-domain1.somedomain.com',
                 'sub-domain2.somedomain.com',
                 'sub-domain3.somedomain.com'
-            ]
+            ],
+            tags=['tag1', 'tag2'],
+            malware_family=['malware_family1', 'malware_family2'],
+            feed_related_indicators=Common.FeedRelatedIndicators(
+                value='8.8.8.8',
+                indicator_type="IP",
+                description='test'
+            )
         )
 
         results = CommandResults(
@@ -3534,6 +3541,9 @@ class TestCommonTypes:
                             "PNS31.CLOUDNS.NET",
                             "PNS32.CLOUDNS.NET"
                         ],
+                        "Tags": ["tag1", "tag2"],
+                        "FeedRelatedIndicators": {"value": "8.8.8.8", "type": "IP", "description": "test"},
+                        "MalwareFamily": ["malware_family1", "malware_family2"],
                         "WHOIS": {
                             "Registrar": {
                                 "Name": "Mr Registrar",
