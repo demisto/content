@@ -36,6 +36,8 @@ ignore=IF100
 
 [file:layoutscontainer-Case_layout.json]
 ignore=IF100
+
+[file:layoutscontainer-Case_layout.json]
 ignore=BA101
 
 [file:playbook-Case_Management_-_Generic.yml]
