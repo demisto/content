@@ -686,7 +686,7 @@ def wildfire_get_url_report(url: str):
                 "WildFire.Report(val.URL == obj.URL)": entry_context
             }
         })
-        sys.exit(0)
+        return None, None
 
     report = result.get('report', None)
     if not report:
@@ -701,7 +701,7 @@ def wildfire_get_url_report(url: str):
                 "WildFire.Report(val.URL == obj.URL)": entry_context
             }
         })
-        sys.exit(0)
+        return None, None
 
     j_report = json.loads(report)
     entry_context['Status'] = 'Success'
@@ -741,7 +741,7 @@ def wildfire_get_file_report(file_hash: str):
                 'DBotScore': dbot
             }
         })
-        sys.exit(0)
+        return None, None, None
 
     task_info = json_res["wildfire"].get('task_info', None)
     reports = task_info.get('report', None) if task_info else None
@@ -760,7 +760,7 @@ def wildfire_get_file_report(file_hash: str):
                     entry_context
             }
         })
-        sys.exit(0)
+        return None, None, None
     return file_hash, reports, file_info
 
 
@@ -785,14 +785,16 @@ def wildfire_get_report_command():
     for element in inputs:
         if url_report:
             url, report = wildfire_get_url_report(element)
-            headers = ['sha256', 'type', 'verdict', 'iocs']
-            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report, headers=headers,
-                                             removeNull=True)
-            entry_context = {"WildFire.Report(val.URL == obj.URL)": report}
-            return_outputs(human_readable, entry_context, report)
+            if url is not None:
+                headers = ['sha256', 'type', 'verdict', 'iocs']
+                human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report, headers=headers,
+                                                 removeNull=True)
+                entry_context = {"WildFire.Report(val.URL == obj.URL)": report}
+                return_outputs(human_readable, entry_context, report)
         else:
             ioc, report, file_info = wildfire_get_file_report(element)
-            create_file_report(ioc, report, file_info, format_, verbose)
+            if ioc is not None:
+                create_file_report(ioc, report, file_info, format_, verbose)
 
 
 def wildfire_file_command():
@@ -806,7 +808,8 @@ def wildfire_file_command():
             })
         else:
             file_hash, report, file_info = wildfire_get_file_report(element)
-            create_file_report(file_hash, report, file_info, 'xml', False)
+            if file_hash is not None:
+                create_file_report(file_hash, report, file_info, 'xml', False)
 
 
 def wildfire_get_sample(file_hash):
