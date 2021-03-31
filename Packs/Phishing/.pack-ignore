@@ -129,3 +129,6 @@ ignore=PA116
 
 [file:layoutscontainer-Phishing.json]
 ignore=BA101
+
+[file:FindDuplicateEmailIncidents.yml]
+ignore=SC105
