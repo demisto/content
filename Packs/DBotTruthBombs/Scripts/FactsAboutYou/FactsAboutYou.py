@@ -8,9 +8,10 @@ DBOT_NAME = 'DBot'
 
 
 def dbot_fact(category) -> Dict[str, Any]:
-    res = demisto.executeCommand('dbot-truth-bomb', {
-        'category': category
-    })
+    args = {}
+    if category:
+        args['category'] = category
+    res = demisto.executeCommand('dbot-truth-bomb', args)
 
     if isError(res[0]):
         return_error('Error getting dbot truth bomb - {}'.format(res[0]['Contents']))
