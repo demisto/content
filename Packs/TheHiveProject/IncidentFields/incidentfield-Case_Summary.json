@@ -1,0 +1,29 @@
+{
+  "associatedToAll": false,
+  "associatedTypes": [
+    "TheHive"
+  ],
+  "caseInsensitive": true,
+  "cliName": "thehivecasesummary",
+  "closeForm": false,
+  "content": true,
+  "editForm": true,
+  "group": 0,
+  "hidden": false,
+  "id": "incident_thehivecasesummary",
+  "isReadOnly": false,
+  "locked": false,
+  "name": "TheHive Case Summary",
+  "neverSetAsRequired": false,
+  "ownerOnly": false,
+  "required": false,
+  "sla": 0,
+  "system": false,
+  "threshold": 72,
+  "type": "longText",
+  "unmapped": false,
+  "unsearchable": false,
+  "useAsKpi": false,
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

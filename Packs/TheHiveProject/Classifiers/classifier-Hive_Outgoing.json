@@ -1,0 +1,127 @@
+{
+  "description": "Default outbound mapping for TheHive Project cases.",
+  "feed": false,
+  "id": "TheHive - Outgoing Mapper",
+  "mapping": {
+    "TheHive": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "description": {
+          "complex": null,
+          "simple": "details"
+        },
+        "flag": {
+          "complex": null,
+          "simple": "thehiveflag"
+        },
+        "pap": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "thehivecasepap",
+            "transformers": [
+              {
+                "args": {
+                  "input_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "WHITE,GREEN,AMBER,RED"
+                    }
+                  },
+                  "mapped_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "0,1,2,3"
+                    }
+                  }
+                },
+                "operator": "MapValuesTransformer"
+              }
+            ]
+          },
+          "simple": ""
+        },
+        "resolutionStatus": {
+          "complex": null,
+          "simple": "thehivecaseresolutionstatus"
+        },
+        "severity": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "severity",
+            "transformers": [
+              {
+                "args": {
+                  "input_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "0,0.5,1,2,3,4"
+                    }
+                  },
+                  "mapped_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "1,1,1,2,3,3"
+                    }
+                  }
+                },
+                "operator": "MapValuesTransformer"
+              }
+            ]
+          },
+          "simple": ""
+        },
+        "status": {
+          "complex": null,
+          "simple": "thehivecasestatus"
+        },
+        "summary": {
+          "complex": null,
+          "simple": "thehivecasesummary"
+        },
+        "title": {
+          "complex": null,
+          "simple": "name"
+        },
+        "tlp": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "thehivecasetlp",
+            "transformers": [
+              {
+                "args": {
+                  "input_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "WHITE,GREEN,AMBER,RED"
+                    }
+                  },
+                  "mapped_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "0,1,2,3"
+                    }
+                  }
+                },
+                "operator": "MapValuesTransformer"
+              }
+            ]
+          },
+          "simple": ""
+        }
+      }
+    }
+  },
+  "name": "TheHive - Outgoing Mapper",
+  "type": "mapping-outgoing",
+  "version": -1,
+  "fromVersion": "6.0.0"
+}
