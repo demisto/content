@@ -287,8 +287,12 @@ class Client(BaseClient):
             'UserDomain': self.domain,
             'Password': self.password
         }
-
-        res = self._http_request('POST', '/api/core/security/login', json_data=body)
+        try:
+            res = self._http_request('POST', '/api/core/security/login', json_data=body)
+        except DemistoException as e:
+            if '<html>' in str(e):
+                raise DemistoException(f"Check the given URL, can be a redirect issue. Failed with error: {str(e)}")
+            raise e
         is_successful_response = res.get('IsSuccessful')
         if not is_successful_response:
             return_error(res.get('ValidationMessages'))
@@ -1304,5 +1308,5 @@ def main():
         return_error(f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}')
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
