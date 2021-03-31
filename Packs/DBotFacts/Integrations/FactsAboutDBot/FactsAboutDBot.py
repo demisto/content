@@ -47,7 +47,7 @@ def test_module(client: Client) -> str:
 
 
 def get_dbot_image_path() -> str:
-    image_index = random.randint(1, 17)
+    image_index = random.randint(1, 18)
 
     return 'https://raw.githubusercontent.com/demisto/content/217f91f3d5bc558875bf8f915e0b63141f450fc9/' \
            f'Packs/DBotFacts/doc_imgs/dbot{image_index}.png'
@@ -75,27 +75,29 @@ def dbot_fact(client: Client, args: Dict[str, Any]) -> Any:
 
 
 def main() -> None:
-    demisto.debug(f'Command being called is {demisto.command()}')
+    params = demisto.params()
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     try:
-        verify_certificate = not demisto.params().get('insecure', False)
+        verify_certificate = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
 
-        proxy = demisto.params().get('proxy', False)
         client = Client(
             base_url=BASE_URL,
             verify=verify_certificate,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'dbot-fact':
+        elif command == 'dbot-fact':
             return_results(dbot_fact(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
