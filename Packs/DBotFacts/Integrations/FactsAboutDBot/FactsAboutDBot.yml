@@ -12,14 +12,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Get to know DBot better, with various of facts.
+description: You thought you know DBot... guess again! Here are some super secrete facts about DBot we bet you didn't know.
 display: Facts About DBot
 name: Facts About DBot
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: Filter fact by specific category.
+      description: Filter DBot facts by category.
       name: category
       predefined:
       - Dev
@@ -31,7 +31,7 @@ script:
       - Science
       - Sport
       - Travel
-    description: Returns a random fact about DBot.
+    description: Returns a previously undisclosed fact about DBot.
     name: dbot-fact
   dockerimage: demisto/python3:3.9.2.17957
   runonce: false
