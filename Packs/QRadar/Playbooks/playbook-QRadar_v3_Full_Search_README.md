@@ -1,22 +1,21 @@
-This playbook runs a QRadar query and return its results to the context.
+This playbook runs a QRadar query and returns its results to the context.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+GenericPolling
 
 ### Integrations
-* outputs
-* QRadar v3
+**QRadar v3**
 
 ### Scripts
-* PrintErrorEntry
+**PrintErrorEntry**
 
 ### Commands
-* qradar-search-results-get
-* qradar-search-create
-* qradar-search-status-get
+* ***qradar-search-results-get***
+* ***qradar-search-create***
+* ***qradar-search-status-get***
 
 ## Playbook Inputs
 ---
@@ -24,11 +23,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | query_expression | The AQL query to execute. Mutually exclusive with saved_search_id. |  | Optional |
-| saved_search_id | Saved search ID to execute. Mutually exclusive with query_expression. Saved search ID is 'id' field returned by command 'qradar-saved-searches-list'. |  | Optional |
+| saved_search_id | Saved search ID to execute. Mutually exclusive with query_expression. Saved search ID is the 'id' field returned by the ***qradar-saved-searches-list*** command . |  | Optional |
 | range | Range of events to return. \(e.g.: 0-20, 3-5, 3-3\). |  | Optional |
-| output_path | Replaces the default context output path for the query result \(QRadar.Search.Result\). e.g. for output_path=QRadar.Correlations the result will be under the key 'QRadar.Correlations' in the context data. |  | Optional |
-| interval | Frequency that the polling command will run \(in minutes\). | 1 | Optional |
-| timeout | Number of times that the polling command will run until declaring a timeout and resuming the playbook. | 10 | Optional |
+| output_path | Replaces the default context output path for the query result \(QRadar.Search.Result\). E.g. for output_path=QRadar.Correlations, the result will be under the 'QRadar.Correlations' key in the context data. |  | Optional |
+| interval | Frequency in which the polling command will run \(in minutes\). | 1 | Optional |
+| timeout | Number of times the polling command will run until declaring a timeout and resuming the playbook. | 10 | Optional |
 
 ## Playbook Outputs
 ---
