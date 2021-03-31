@@ -184,6 +184,13 @@ def test_ip_command(mocker):
         'IP(val.Address && val.Address == obj.Address)': {
             'Organization': {'Name': u'LEVEL3, US'},
             'FeedRelatedIndicators': {'type': 'IP', 'description': None, 'value': u'4.4.0.0/16'},
-            'Geo': {'Country': u'US'}, 'ASN': u'3356', 'Address': '4.4.4.4'},
-        'DBotScore': {'Reliability': 'B - Usually reliable', 'Vendor': 'Whois', 'Indicator': '4.4.4.4', 'Score': 0,
-                      'Type': 'ip'}}
+            'Geo': {'Country': u'US'},
+            'ASN': u'3356',
+            'Address': '4.4.4.4'},
+        'DBotScore('
+        'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)':
+            {'Reliability': 'B - Usually reliable',
+             'Vendor': 'Whois',
+             'Indicator': '4.4.4.4',
+             'Score': 0,
+             'Type': 'ip'}}
