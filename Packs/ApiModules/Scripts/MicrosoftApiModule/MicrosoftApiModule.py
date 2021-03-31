@@ -546,7 +546,7 @@ class MicrosoftClient(BaseClient):
         set_integration_context({'device_code': response_json.get('device_code')})
         return response_json
 
-    def start_auth(self, complete_command) -> str:
+    def start_auth(self, complete_command: str) -> str:
         response = self.device_auth_request()
         message = response.get('message', '')
         re_search = re.search(REGEX_SEARCH_URL, message)
