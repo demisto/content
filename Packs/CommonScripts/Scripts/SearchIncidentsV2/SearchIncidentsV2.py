@@ -32,7 +32,8 @@ def is_valid_args(args: Dict):
                 try:
                     _ = str(value)
                 except Exception as e:
-                    error_msg.append(f'Error while parsing the argument: "{_key}" \nError:\n- "{str(e)}"')
+                    error_msg.append(f'Error while parsing the argument: {_key} with the value: {value} '
+                                     f'from type {type(value)}. Error - {str(e)}.')
 
     if len(error_msg) != 0:
         raise DemistoException('\n'.join(error_msg))
