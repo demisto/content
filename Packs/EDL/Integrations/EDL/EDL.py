@@ -370,18 +370,18 @@ def get_edl_ioc_values(on_demand: bool,
     Args:
         on_demand: Whether on demand configuration is set to True or not
         request_args: the request arguments
-        edl_cache: The integration context
+        edl_cache: The integration context OR EDL_LOCAL_CACHE
         cache_refresh_rate: The cache_refresh_rate configuration value
 
     Returns:
         string representation of the iocs
     """
-    if not edl_cache:
-        global EDL_LOCAL_CACHE
-        edl_cache = EDL_LOCAL_CACHE or {}
     if on_demand:
         # on_demand saves the EDL to integration_context
         edl_cache = get_integration_context() or {}
+    elif not edl_cache:
+        global EDL_LOCAL_CACHE
+        edl_cache = EDL_LOCAL_CACHE or {}
     last_run = edl_cache.get('last_run')
     last_query = edl_cache.get('last_query')
     current_iocs = edl_cache.get('current_iocs')
