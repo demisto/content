@@ -1,0 +1,14 @@
+{
+    "name": "TheHive Project",
+    "description": "Provides an integration, incident type and layout for use with TheHive Project.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "aburt-demisto",
+    "url": "",
+    "email": "",
+    "created": "2020-08-26T09:03:28Z",
+    "categories": [],
+    "tags": ["Threat Intelligence"],
+    "useCases": ["Case Management"],
+    "keywords": []
+}
