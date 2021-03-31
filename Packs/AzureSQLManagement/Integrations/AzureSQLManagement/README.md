@@ -14,7 +14,7 @@ In order to connect to the Azure SQL Management using either Cortex XSOAR Azure 
     | Application ID |  | True |
     | Subscription ID |  | True |
     | Resource Group Name |  | True |
-    | Azure AD endpoint | Azure AD endpoint associated with national cloud. | False |
+    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
    

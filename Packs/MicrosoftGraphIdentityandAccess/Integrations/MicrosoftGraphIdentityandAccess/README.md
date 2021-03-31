@@ -8,9 +8,9 @@ Use the Microsoft Graph Identity and Access integration to manage roles and memb
     | **Parameter** | **Required** |
     | --- | --- |
     | Application ID | True |
+    | Azure AD endpoint | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
-    | Azure AD endpoint | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

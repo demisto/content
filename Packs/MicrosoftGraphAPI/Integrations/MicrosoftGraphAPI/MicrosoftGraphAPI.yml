@@ -27,7 +27,7 @@ configuration:
   - https://login.chinacloudapi.cn
   required: false
   type: 15
-  additionalinfo: Azure AD endpoint associated with national cloud.
+  additionalinfo: Azure AD endpoint associated with a national cloud.
 - additionalinfo: A space-separated list of scopes that you want to consent to.
   defaultvalue: User.Read
   display: Scope (Required for using Cortex XSOAR Azure app)
@@ -137,4 +137,4 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- No tests
+- Microsoft Graph API - Test
