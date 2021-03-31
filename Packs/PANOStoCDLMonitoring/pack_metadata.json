@@ -1,0 +1,15 @@
+{
+  "name": "PAN-OS to Cortex Data Lake Monitoring",
+  "description": "his content update provides you with monitoring of the PANOS FW log upload to the Cortex Data Lake. Every 12 hours, a job will verify for all the declared firewalls, that traffic logs have been uploaded to the Cortex Data Lake. If it's not the case for at least one firewall, an incident will be created and an email will be sent. \\n\\nThe list of firewalls to monitor could be directly retrieved from a Panorama integration and could be manually provided as a list of FW serial numbers.\\n\\nThe key pre-requisite is the configuration of the Cortex Data Lake integration.",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": []
+}
