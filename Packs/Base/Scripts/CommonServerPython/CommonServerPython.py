@@ -4646,9 +4646,9 @@ def return_error(message, error='', outputs=None):
     """
     is_command = hasattr(demisto, 'command')
     is_server_handled = is_command and demisto.command() in ('fetch-incidents',
-                                                                              'fetch-credentials',
-                                                                              'long-running-execution',
-                                                                              'fetch-indicators')
+                                                             'fetch-credentials',
+                                                             'long-running-execution',
+                                                             'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
         message = "{}\n\n{}".format(message, traceback.format_exc())
 
