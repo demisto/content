@@ -52,11 +52,9 @@ tasks:
       fw_serials:
         complex:
           root: inputs.fw_serials
-      pan_os_integration_name:
+      pan_os_integration_instance_name:
         complex:
           root: inputs.panos_integration_instance_name
-      panosintegrationinstancename:
-        simple: ${inputs.panosintegrationinstancename}
     separatecontext: false
     view: |-
       {
@@ -434,7 +432,7 @@ view: |-
     }
   }
 inputs:
-- key: fwserials
+- key: fw_serials
   value:
     simple: ${incident.fwserials}
   required: false
