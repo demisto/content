@@ -14,6 +14,7 @@ tasks:
       id: 5e7f3017-45e7-4c74-866a-6d5f2e58a4be
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -108,7 +109,8 @@ tasks:
     task:
       id: e703aed4-e058-4578-8fdc-d8cdfe164601
       version: -1
-      name: Nothing left to do, end of the playbook.
+      name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -128,8 +130,8 @@ tasks:
     task:
       id: c6ea36de-0211-47a7-81c9-6a85f6a7eb30
       version: -1
-      name: |
-        FW to CDL problem detected
+      name: PAN-OS to Cortex Data Lake log forwarding problem detected
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -250,7 +252,8 @@ tasks:
     task:
       id: 531b782a-be09-4ec9-8ab8-4f93ba8aace5
       version: -1
-      name: No Firewall log sending issues detected
+      name: No PAN-OS to Cortex Data Lake log forwarding issues detected
+      description: ""
       type: title
       iscommand: false
       brand: ""
