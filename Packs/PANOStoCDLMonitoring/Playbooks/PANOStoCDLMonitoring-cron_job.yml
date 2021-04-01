@@ -193,9 +193,8 @@ tasks:
       id: 835dead9-5141-427b-8928-752e6382696b
       version: -1
       name: Set Incident Severity to High
-      description: Optionally increases the incident severity to the new value if
-        it is greater than the existing severity.
-      scriptName: IncreaseIncidentSeverity
+      description: Increases the incident severity.
+      scriptName: setIncident
       type: regular
       iscommand: false
       brand: ""
@@ -204,7 +203,7 @@ tasks:
       - "6"
     scriptarguments:
       severity:
-        simple: High
+        simple: 3
     separatecontext: false
     view: |-
       {
@@ -405,7 +404,7 @@ tasks:
         simple: "At least one of our firewalls did not send successfully logs to the
           Cortex Data Lake for the last 12 hours:\n${CDL.monitoring.FirewallsWithoutLogsSent}\n\nAn email
           has been sent to ${inputs.email_notification} for notification. \n\nCould
-          you please investigate this connectivity issue?\n\nThanks,\nDBot.\n"
+          you please i nvestigate this connectivity issue?\n\nThanks,\nDBot.\n"
       name:
         simple: Cortex Data Lake FW logging problem
       severity:
