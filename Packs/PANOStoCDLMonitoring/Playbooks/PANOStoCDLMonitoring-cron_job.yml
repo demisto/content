@@ -403,7 +403,7 @@ tasks:
     scriptarguments:
       details:
         simple: "At least one of our firewalls did not send successfully logs to the
-          Cortex Data Lake for the last 12 hours:\n${CDL.monitoring.FW KO}\n\nAn email
+          Cortex Data Lake for the last 12 hours:\n${CDL.monitoring.FirewallsWithoutLogsSent}\n\nAn email
           has been sent to ${inputs.email_notification} for notification. \n\nCould
           you please investigate this connectivity issue?\n\nThanks,\nDBot.\n"
       name:
