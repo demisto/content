@@ -1,4 +1,4 @@
-import demistomock as demisto
+# import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -78,7 +78,7 @@ class NetscoutClient(BaseClient):
 
     MAX_ALERTS_FOR_FIRST_FETCH = 10000
 
-    def __init__(self, base_url, verify, headers, proxy, first_fetch, max_fetch=None, alert_class=None, alert_type=None,
+    def __init__(self, base_url, verify, proxy, first_fetch, headers=None, max_fetch=None, alert_class=None, alert_type=None,
                  classification=None, importance=None, importance_operator=None, ongoing=None):
         self.first_fetch = first_fetch
         self.max_fetch = max_fetch
@@ -280,7 +280,7 @@ class NetscoutClient(BaseClient):
                                                                      classification=self.classification,
                                                                      importance_operator=self.importance_operator,
                                                                      ongoing=self.ongoing)
-            demisto.info(
+            demisto.debug(
                 f'NetscoutArborSightline fetch params are: page_size={amount_of_incidents}, '
                 f'search_filter={data_attribute_filter}')
 
@@ -365,6 +365,24 @@ class NetscoutClient(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def clean_links(target_obj: Union[dict, list]):
+    """
+    Recursively look for a all keys named 'links' and remove them from the object.
+    Args:
+        target_obj (dict/list): An object to remove the links key from.
+    """
+
+    if isinstance(target_obj, dict):
+        if target_obj.get('links'):
+            del target_obj['links']
+        for val in target_obj.values():
+            clean_links(val)
+
+    if isinstance(target_obj, list):
+        for i in target_obj:
+            clean_links(i)
+
+
 def validate_json_arg(json_str: str, arg_name: str) -> dict:
     """
     Parse the json data. If the format is invalid an appropriate exception will be raised
@@ -418,7 +436,7 @@ def fetch_incidents_command(client: NetscoutClient):
     demisto.setLastRun({'LastFetchTime': last_start_time})
 
 
-def list_alerts_commands(client: NetscoutClient, args: dict):
+def list_alerts_command(client: NetscoutClient, args: dict):
     limit = arg_to_number(args.get('limit'))
     page = arg_to_number(args.get('page'))
     alert_id = args.get('alert_id')
@@ -451,10 +469,12 @@ def list_alerts_commands(client: NetscoutClient, args: dict):
 
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
+    clean_data = deepcopy(data)
+    clean_links(clean_data)
     hr = [build_human_readable(alert) for alert in data]
     return CommandResults(outputs_prefix='NASightline.Alert',
                           outputs_key_field='id',
-                          outputs=data,
+                          outputs=clean_data,
                           readable_output=tableToMarkdown(f'Alerts', hr),
                           raw_response=raw_result)
 
@@ -463,8 +483,10 @@ def alert_annotation_list_command(client: NetscoutClient, args: dict):
     alert_id = args.get('alert_id')
     raw_result = client.get_annotations(alert_id)
     data = raw_result.get('data')
+    clean_data = deepcopy(data)
+    clean_links(clean_data)
     hr = [build_human_readable(mitigation) for mitigation in data]
-    context = {'AlertID': alert_id, 'Annotations': data}
+    context = {'AlertID': alert_id, 'Annotations': clean_data}
     return CommandResults(outputs_prefix='NASightline.AlertAnnotation',
                           outputs_key_field='AlertID',
                           outputs=context,
@@ -479,10 +501,12 @@ def mitigation_list_command(client: NetscoutClient, args: dict):
     raw_result = client.list_mitigations(mitigation_id, page=page, page_size=limit)
     data = raw_result.get('data')
     data = data[:limit] if isinstance(data, list) else [data]
+    clean_data = deepcopy(data)
+    clean_links(clean_data)
     hr = [build_human_readable(mitigation) for mitigation in data]
     return CommandResults(outputs_prefix='NASightline.Mitigation',
                           outputs_key_field='id',
-                          outputs=data,
+                          outputs=clean_data,
                           readable_output=tableToMarkdown(f'Mitigation list', hr),
                           raw_response=raw_result)
 
@@ -511,10 +535,12 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
     data = {'relationships': relationships, 'attributes': attributes}
     raw_result = client.create_mitigation(data={'data': data})
     data = raw_result.get('data')
+    clean_data = deepcopy(data)
+    clean_links(clean_data)
     hr = build_human_readable(data)
     return CommandResults(outputs_prefix='NASightline.Mitigation',
                           outputs_key_field='id',
-                          outputs=data,
+                          outputs=clean_data,
                           readable_output=tableToMarkdown(f'Mitigation was created', hr),
                           raw_response=raw_result)
 
@@ -523,10 +549,12 @@ def mitigation_template_list_command(client: NetscoutClient, args: dict):
     raw_result = client.mitigation_template_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
+    clean_data = deepcopy(data)
+    clean_links(clean_data)
     hr = [build_human_readable(mitigation_template) for mitigation_template in data]
     return CommandResults(outputs_prefix='NASightline.MitigationTemplate',
                           outputs_key_field='id',
-                          outputs=data,
+                          outputs=clean_data,
                           readable_output=tableToMarkdown(f'Mitigation template list', hr, removeNull=True),
                           raw_response=raw_result)
 
@@ -535,10 +563,12 @@ def router_list_command(client: NetscoutClient, args: dict):
     raw_result = client.router_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
+    clean_data = deepcopy(data)
+    clean_links(clean_data)
     hr = [build_human_readable(router) for router in data]
     return CommandResults(outputs_prefix='NASightline.Router',
                           outputs_key_field='id',
-                          outputs=data,
+                          outputs=clean_data,
                           readable_output=tableToMarkdown(f'Router list', hr, headers=ROUTERS_HR_HEADERS,
                                                           removeNull=True),
                           raw_response=raw_result)
@@ -550,10 +580,12 @@ def managed_object_list_command(client: NetscoutClient, args: dict):
     raw_result = client.managed_object_list(page=page, page_size=limit)
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
+    clean_data = deepcopy(data)
+    clean_links(clean_data)
     hr = [build_human_readable(managed_object) for managed_object in data]
     return CommandResults(outputs_prefix='NASightline.ManagedObject',
                           outputs_key_field='id',
-                          outputs=data,
+                          outputs=clean_data,
                           readable_output=tableToMarkdown(f'Managed object list', hr,
                                                           headers=MANAGED_OBJECTS_HR_HEADERS, removeNull=True),
                           raw_response=raw_result)
@@ -563,10 +595,12 @@ def tms_group_list(client: NetscoutClient):
     raw_result = client.tms_group_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
+    clean_data = deepcopy(data)
+    clean_links(clean_data)
     hr = [build_human_readable(tms_group) for tms_group in data]
     return CommandResults(outputs_prefix='NASightline.TMSGroup',
                           outputs_key_field='id',
-                          outputs=data,
+                          outputs=clean_data,
                           readable_output=tableToMarkdown(f'TMS group list', hr, removeNull=True),
                           raw_response=raw_result)
 
@@ -579,7 +613,8 @@ def main() -> None:
         command = demisto.command()
         params = demisto.params()
 
-        api_token = params.get('api_token', {}).get('password')
+        if not (api_token := params.get('api_token', {}).get('password')):
+            return_error('Missing API Key. Fill in a valid key in the integration configuration.')
         base_url = urljoin(params['url'], f'api/sp/{API_VERSION}')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
@@ -620,7 +655,7 @@ def main() -> None:
         elif command == 'fetch-incidents':
             fetch_incidents_command(client)
         elif command == 'na-sightline-alert-list':
-            result = list_alerts_commands(client, args)
+            result = list_alerts_command(client, args)
         elif command == 'na-sightline-alert-annotation-list':
             result = alert_annotation_list_command(client, args)
         elif command == 'na-sightline-mitigation-list':

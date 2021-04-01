@@ -1,42 +1,82 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
 import io
+import pytest
+from Packs.NetscoutArborPeakflow.Integrations.NetscoutArborSightline.NetscoutArborSightline import NetscoutClient, \
+    fetch_incidents_command, list_alerts_command, alert_annotation_list_command, mitigation_list_command
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
+
+# from Packs
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
-#
-#
-# # TODO: REMOVE the following dummy unit test function
-# def test_baseintegration_dummy():
-#     """Tests helloworld-say-hello command function.
-#
-#     Checks the output of the command function with the expected output.
-#
-#     No mock is needed here because the say_hello_command does not call
-#     any external API.
-#     """
-#     from BaseIntegration import Client, baseintegration_dummy_command
-#
-#     client = Client(base_url='some_mock_url', verify=False)
-#     args = {
-#         'dummy': 'this is a dummy response'
-#     }
-#     response = baseintegration_dummy_command(client, args)
-#
-#     mock_response = util_load_json('test_data/baseintegration-dummy.json')
-#
-#     assert response.outputs == mock_response
-# # TODO: ADD HERE unit tests for every command
+
+
+client = NetscoutClient(base_url='dummy_url', verify=False, proxy=False, first_fetch='3 days', max_fetch=10)
+http_responses = util_load_json(
+    'Packs/NetscoutArborPeakflow/Integrations/NetscoutArborSightline/test_data/http_responses.json')
+command_results = util_load_json(
+    'Packs/NetscoutArborPeakflow/Integrations/NetscoutArborSightline/test_data/command_results.json')
+
+
+@pytest.fixture(autouse=True)
+def setup(mocker):
+    mocker.patch.object(demisto, 'debug')
+
+
+def test_fetch_incidents_command(mocker):
+    """
+    Given:
+    - NetscoutClient client.
+
+    When:
+     - Fetching incidents.
+
+    Then:
+     - Ensure that the incidents returned are as expected.
+    """
+    alerts_http_response = http_responses['incidents']
+    alerts_command_results = command_results['fetched_incidents']
+
+    mocker.patch.object(client, "list_alerts", return_value=alerts_http_response)
+    mocker.patch.object(client, "calculate_amount_of_incidents", return_value=40)
+    mocker.patch.object(demisto, 'incidents')
+
+    fetch_incidents_command(client)
+    demisto.incidents.assert_called_with(alerts_command_results)
+
+
+@pytest.mark.parametrize('function_to_mock,http_response_key,expected_command_results_key,args', [
+    ('list_alerts', 'incidents', 'get_incidents', {}),
+    ('get_alert', 'incident', 'get_incident', {'alert_id': 1})
+])
+def test_list_alerts_commands(mocker, function_to_mock, http_response_key, expected_command_results_key, args):
+    alerts_http_response = http_responses[http_response_key]
+    alerts_command_results = command_results[expected_command_results_key]
+
+    mocker.patch.object(client, function_to_mock, return_value=alerts_http_response)
+
+    command_result: CommandResults = list_alerts_command(client, args)
+    assert command_result.outputs == alerts_command_results
+
+
+def test_alert_annotation_list_command(mocker):
+    alerts_http_response = http_responses['annotations']
+    alerts_command_results = command_results['list_annotations']
+
+    mocker.patch.object(client, 'get_annotations', return_value=alerts_http_response)
+
+    command_result = alert_annotation_list_command(client, {'alert_id': '2009'})
+    assert command_result.outputs == alerts_command_results
+
+
+def test_mitigation_list_command(mocker):
+    alerts_http_response = http_responses['mitigations']
+    alerts_command_results = command_results['list_mitigations']
+
+    mocker.patch.object(client, 'list_mitigations', return_value=alerts_http_response)
+
+    command_result = mitigation_list_command(client, {})
+    assert command_result.outputs == alerts_command_results

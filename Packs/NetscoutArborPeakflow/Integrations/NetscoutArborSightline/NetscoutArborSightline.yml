@@ -11,7 +11,7 @@ configuration:
   - additionalinfo: API Key (leave empty. Fill in the API Key in the password field.)
     displaypassword: API Key
     name: api_token
-    required: true
+    required: false
     hiddenusername: true
     type: 9
   - display: Fetch incidents

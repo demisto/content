@@ -1,0 +1,4298 @@
+{
+    "fetched_incidents": [
+        {
+            "name": "dos_host_detection: 2390",
+            "type": "Netscout Arbor Sightline Alert",
+            "occurred": "2021-03-27T16:00:01+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"dos\", \"alert_type\": \"dos_host_detection\", \"classification\": \"Possible Attack\", \"importance\": 2, \"ongoing\": false, \"start_time\": \"2021-03-27T16:00:01+00:00\", \"stop_time\": \"2021-03-27T16:10:29+00:00\", \"subobject\": {\"direction\": \"Incoming\", \"fast_detected\": true, \"host_address\": \"192.168.123.123\", \"impact_boundary\": \"managed object\", \"impact_bps\": 1072, \"impact_pps\": 3, \"ip_version\": 4, \"misuse_types\": [\"Total Traffic\"], \"severity_percent\": 10720.0, \"severity_threshold\": 10, \"severity_unit\": \"bps\", \"summary_url\": \"/page?id=customer_summary&gid=122\"}}, \"id\": \"2390\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2390?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"annotations\": {\"data\": [{\"id\": \"877\", \"type\": \"alert_annotation\"}], \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2390/annotations/\"}}, \"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"managed_object\": {\"data\": {\"id\": \"122\", \"type\": \"managed_object\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/managed_objects/122\"}}, \"packet_size_distribution\": {\"data\": {\"id\": \"packet-size-distribution-2390\", \"type\": \"alert_packet_size_distribution\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2390/packet_size_distribution\"}}, \"patterns\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2390/patterns/\"}}, \"router_traffic\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2390/router_traffic/\"}}, \"source_ip_addresses\": {\"data\": {\"id\": \"source-ip-addresses-2390\", \"type\": \"alert_source_ip_addresses\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2390/source_ip_addresses\"}}, \"thresholds\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2390/misuse_types_thresholds/\"}}, \"traffic\": {\"data\": {\"id\": \"alert-traffic-2390\", \"type\": \"alert_traffic\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2390/traffic\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "flow_down: 2391",
+            "type": "Netscout Arbor Sightline Alert",
+            "occurred": "2021-03-27T16:07:16+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"data\", \"alert_type\": \"flow_down\", \"importance\": 1, \"ongoing\": false, \"start_time\": \"2021-03-27T16:07:16+00:00\", \"stop_time\": \"2021-03-27T22:00:35+00:00\", \"subobject\": {}}, \"id\": \"2391\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2391?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"router\": {\"data\": {\"id\": \"121\", \"type\": \"router\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/routers/121\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "dos_host_detection: 2392",
+            "type": "Netscout Arbor Sightline Alert",
+            "occurred": "2021-03-27T22:00:02+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"dos\", \"alert_type\": \"dos_host_detection\", \"classification\": \"Possible Attack\", \"importance\": 2, \"ongoing\": false, \"start_time\": \"2021-03-27T22:00:02+00:00\", \"stop_time\": \"2021-03-27T22:10:29+00:00\", \"subobject\": {\"direction\": \"Incoming\", \"fast_detected\": true, \"host_address\": \"192.168.123.123\", \"impact_boundary\": \"managed object\", \"impact_bps\": 1072, \"impact_pps\": 3, \"ip_version\": 4, \"misuse_types\": [\"Total Traffic\"], \"severity_percent\": 10721.0, \"severity_threshold\": 10, \"severity_unit\": \"bps\", \"summary_url\": \"/page?id=customer_summary&gid=122\"}}, \"id\": \"2392\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2392?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"annotations\": {\"data\": [{\"id\": \"878\", \"type\": \"alert_annotation\"}], \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2392/annotations/\"}}, \"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"managed_object\": {\"data\": {\"id\": \"122\", \"type\": \"managed_object\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/managed_objects/122\"}}, \"packet_size_distribution\": {\"data\": {\"id\": \"packet-size-distribution-2392\", \"type\": \"alert_packet_size_distribution\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2392/packet_size_distribution\"}}, \"patterns\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2392/patterns/\"}}, \"router_traffic\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2392/router_traffic/\"}}, \"source_ip_addresses\": {\"data\": {\"id\": \"source-ip-addresses-2392\", \"type\": \"alert_source_ip_addresses\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2392/source_ip_addresses\"}}, \"thresholds\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2392/misuse_types_thresholds/\"}}, \"traffic\": {\"data\": {\"id\": \"alert-traffic-2392\", \"type\": \"alert_traffic\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2392/traffic\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "flow_down: 2393",
+            "type": "Netscout Arbor Sightline Alert",
+            "occurred": "2021-03-27T22:07:35+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"data\", \"alert_type\": \"flow_down\", \"importance\": 1, \"ongoing\": false, \"start_time\": \"2021-03-27T22:07:35+00:00\", \"stop_time\": \"2021-03-28T04:00:14+00:00\", \"subobject\": {}}, \"id\": \"2393\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2393?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"router\": {\"data\": {\"id\": \"121\", \"type\": \"router\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/routers/121\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "device_system_error: 2394",
+            "type": "Netscout Arbor Sightline Alert",
+            "occurred": "2021-03-28T00:55:55+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"system\", \"alert_type\": \"device_system_error\", \"importance\": 1, \"ongoing\": false, \"start_time\": \"2021-03-28T00:55:55+00:00\", \"stop_time\": \"2021-03-28T13:38:35+00:00\", \"subobject\": {\"threshold\": 70, \"type\": \"memory_usage\", \"value\": 71}}, \"id\": \"2394\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2394?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "dos_host_detection: 2395",
+            "type": "Netscout Arbor Sightline Alert",
+            "occurred": "2021-03-28T04:00:01+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"dos\", \"alert_type\": \"dos_host_detection\", \"classification\": \"Possible Attack\", \"importance\": 2, \"ongoing\": false, \"start_time\": \"2021-03-28T04:00:01+00:00\", \"stop_time\": \"2021-03-28T04:10:29+00:00\", \"subobject\": {\"direction\": \"Incoming\", \"fast_detected\": true, \"host_address\": \"192.168.123.123\", \"impact_boundary\": \"managed object\", \"impact_bps\": 1072, \"impact_pps\": 3, \"ip_version\": 4, \"misuse_types\": [\"Total Traffic\"], \"severity_percent\": 10720.0, \"severity_threshold\": 10, \"severity_unit\": \"bps\", \"summary_url\": \"/page?id=customer_summary&gid=122\"}}, \"id\": \"2395\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2395?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"annotations\": {\"data\": [{\"id\": \"879\", \"type\": \"alert_annotation\"}], \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2395/annotations/\"}}, \"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"managed_object\": {\"data\": {\"id\": \"122\", \"type\": \"managed_object\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/managed_objects/122\"}}, \"packet_size_distribution\": {\"data\": {\"id\": \"packet-size-distribution-2395\", \"type\": \"alert_packet_size_distribution\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2395/packet_size_distribution\"}}, \"patterns\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2395/patterns/\"}}, \"router_traffic\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2395/router_traffic/\"}}, \"source_ip_addresses\": {\"data\": {\"id\": \"source-ip-addresses-2395\", \"type\": \"alert_source_ip_addresses\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2395/source_ip_addresses\"}}, \"thresholds\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2395/misuse_types_thresholds/\"}}, \"traffic\": {\"data\": {\"id\": \"alert-traffic-2395\", \"type\": \"alert_traffic\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2395/traffic\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "flow_down: 2396",
+            "type": "Netscout Arbor Sightline Alert",
+            "occurred": "2021-03-28T04:07:15+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"data\", \"alert_type\": \"flow_down\", \"importance\": 1, \"ongoing\": false, \"start_time\": \"2021-03-28T04:07:15+00:00\", \"stop_time\": \"2021-03-28T10:00:34+00:00\", \"subobject\": {}}, \"id\": \"2396\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2396?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"router\": {\"data\": {\"id\": \"121\", \"type\": \"router\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/routers/121\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "dos_host_detection: 2397",
+            "type": "Netscout Arbor Sightline Alert",
+            "occurred": "2021-03-28T10:00:02+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"dos\", \"alert_type\": \"dos_host_detection\", \"classification\": \"Possible Attack\", \"importance\": 2, \"ongoing\": false, \"start_time\": \"2021-03-28T10:00:02+00:00\", \"stop_time\": \"2021-03-28T10:10:30+00:00\", \"subobject\": {\"direction\": \"Incoming\", \"fast_detected\": true, \"host_address\": \"192.168.123.123\", \"impact_boundary\": \"managed object\", \"impact_bps\": 1072, \"impact_pps\": 3, \"ip_version\": 4, \"misuse_types\": [\"Total Traffic\"], \"severity_percent\": 10720.0, \"severity_threshold\": 10, \"severity_unit\": \"bps\", \"summary_url\": \"/page?id=customer_summary&gid=122\"}}, \"id\": \"2397\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2397?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"annotations\": {\"data\": [{\"id\": \"880\", \"type\": \"alert_annotation\"}], \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2397/annotations/\"}}, \"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"managed_object\": {\"data\": {\"id\": \"122\", \"type\": \"managed_object\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/managed_objects/122\"}}, \"packet_size_distribution\": {\"data\": {\"id\": \"packet-size-distribution-2397\", \"type\": \"alert_packet_size_distribution\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2397/packet_size_distribution\"}}, \"patterns\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2397/patterns/\"}}, \"router_traffic\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2397/router_traffic/\"}}, \"source_ip_addresses\": {\"data\": {\"id\": \"source-ip-addresses-2397\", \"type\": \"alert_source_ip_addresses\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2397/source_ip_addresses\"}}, \"thresholds\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2397/misuse_types_thresholds/\"}}, \"traffic\": {\"data\": {\"id\": \"alert-traffic-2397\", \"type\": \"alert_traffic\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2397/traffic\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "flow_down: 2398",
+            "type": "Netscout Arbor Sightline Alert",
+            "occurred": "2021-03-28T10:07:34+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"data\", \"alert_type\": \"flow_down\", \"importance\": 1, \"ongoing\": false, \"start_time\": \"2021-03-28T10:07:34+00:00\", \"stop_time\": \"2021-03-28T16:00:16+00:00\", \"subobject\": {}}, \"id\": \"2398\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2398?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"router\": {\"data\": {\"id\": \"121\", \"type\": \"router\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/routers/121\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "device_system_error: 2399",
+            "type": "Netscout Arbor Sightline Alert",
+            "occurred": "2021-03-28T14:08:36+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"system\", \"alert_type\": \"device_system_error\", \"importance\": 1, \"ongoing\": false, \"start_time\": \"2021-03-28T14:08:36+00:00\", \"stop_time\": \"2021-03-28T14:37:34+00:00\", \"subobject\": {\"threshold\": 70, \"type\": \"memory_usage\", \"value\": 71}}, \"id\": \"2399\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2399?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}}, \"type\": \"alert\"}"
+        }
+    ],
+    "get_incidents": [
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": true,
+                "start_time": "2021-03-30T10:07:16+00:00",
+                "subobject": {}
+            },
+            "id": "2429",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-30T10:00:02+00:00",
+                "stop_time": "2021-03-30T10:10:29+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10720.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2428",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "889",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2428",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2428",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2428",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-30T04:07:34+00:00",
+                "stop_time": "2021-03-30T10:00:16+00:00",
+                "subobject": {}
+            },
+            "id": "2427",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-30T04:00:02+00:00",
+                "stop_time": "2021-03-30T04:10:30+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10721.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2426",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "888",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2426",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2426",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2426",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-29T22:07:14+00:00",
+                "stop_time": "2021-03-30T04:00:34+00:00",
+                "subobject": {}
+            },
+            "id": "2425",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-29T22:00:02+00:00",
+                "stop_time": "2021-03-29T22:10:29+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10720.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2424",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "887",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2424",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2424",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2424",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-29T16:07:15+00:00",
+                "stop_time": "2021-03-29T22:00:14+00:00",
+                "subobject": {}
+            },
+            "id": "2423",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-29T16:00:02+00:00",
+                "stop_time": "2021-03-29T16:10:29+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10720.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2422",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "885",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2422",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2422",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2422",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": true,
+                "start_time": "2021-03-29T10:50:54+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2421",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-29T10:08:15+00:00",
+                "stop_time": "2021-03-29T10:20:55+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2420",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-29T10:07:15+00:00",
+                "stop_time": "2021-03-29T16:00:14+00:00",
+                "subobject": {}
+            },
+            "id": "2419",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-29T10:00:01+00:00",
+                "stop_time": "2021-03-29T10:10:30+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10720.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2418",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "884",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2418",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2418",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2418",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-29T05:04:34+00:00",
+                "stop_time": "2021-03-29T09:38:19+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2417",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-29T04:07:13+00:00",
+                "stop_time": "2021-03-29T10:00:15+00:00",
+                "subobject": {}
+            },
+            "id": "2416",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-29T04:00:02+00:00",
+                "stop_time": "2021-03-29T04:10:30+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10721.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2415",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "883",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2415",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2415",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2415",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-29T03:51:35+00:00",
+                "stop_time": "2021-03-29T04:34:14+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2414",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-29T00:18:54+00:00",
+                "stop_time": "2021-03-29T03:21:34+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2413",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T22:41:34+00:00",
+                "stop_time": "2021-03-28T23:48:54+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2412",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T22:07:36+00:00",
+                "stop_time": "2021-03-29T04:00:15+00:00",
+                "subobject": {}
+            },
+            "id": "2411",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T22:02:56+00:00",
+                "stop_time": "2021-03-28T22:11:36+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2410",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-28T22:00:02+00:00",
+                "stop_time": "2021-03-28T22:10:30+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10721.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2409",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "882",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2409",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2409",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2409",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T20:45:34+00:00",
+                "stop_time": "2021-03-28T21:32:55+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2408",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T19:49:35+00:00",
+                "stop_time": "2021-03-28T20:15:35+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2407",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T18:58:13+00:00",
+                "stop_time": "2021-03-28T19:19:54+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2406",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T17:49:54+00:00",
+                "stop_time": "2021-03-28T18:27:55+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2405",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T17:00:15+00:00",
+                "stop_time": "2021-03-28T17:19:53+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2404",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T16:07:14+00:00",
+                "stop_time": "2021-03-28T22:00:36+00:00",
+                "subobject": {}
+            },
+            "id": "2403",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-28T16:00:02+00:00",
+                "stop_time": "2021-03-28T16:10:30+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10720.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2402",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "881",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2402",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2402",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2402",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T15:51:56+00:00",
+                "stop_time": "2021-03-28T16:30:34+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2401",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T15:07:55+00:00",
+                "stop_time": "2021-03-28T15:21:55+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2400",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T14:08:36+00:00",
+                "stop_time": "2021-03-28T14:37:34+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2399",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T10:07:34+00:00",
+                "stop_time": "2021-03-28T16:00:16+00:00",
+                "subobject": {}
+            },
+            "id": "2398",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-28T10:00:02+00:00",
+                "stop_time": "2021-03-28T10:10:30+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10720.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2397",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "880",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2397",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2397",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2397",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T04:07:15+00:00",
+                "stop_time": "2021-03-28T10:00:34+00:00",
+                "subobject": {}
+            },
+            "id": "2396",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-28T04:00:01+00:00",
+                "stop_time": "2021-03-28T04:10:29+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10720.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2395",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "879",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2395",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2395",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2395",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "system",
+                "alert_type": "device_system_error",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-28T00:55:55+00:00",
+                "stop_time": "2021-03-28T13:38:35+00:00",
+                "subobject": {
+                    "threshold": 70,
+                    "type": "memory_usage",
+                    "value": 71
+                }
+            },
+            "id": "2394",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-27T22:07:35+00:00",
+                "stop_time": "2021-03-28T04:00:14+00:00",
+                "subobject": {}
+            },
+            "id": "2393",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-27T22:00:02+00:00",
+                "stop_time": "2021-03-27T22:10:29+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10721.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2392",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "878",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2392",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2392",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2392",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "data",
+                "alert_type": "flow_down",
+                "importance": 1,
+                "ongoing": false,
+                "start_time": "2021-03-27T16:07:16+00:00",
+                "stop_time": "2021-03-27T22:00:35+00:00",
+                "subobject": {}
+            },
+            "id": "2391",
+            "relationships": {
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "router": {
+                    "data": {
+                        "id": "121",
+                        "type": "router"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-27T16:00:01+00:00",
+                "stop_time": "2021-03-27T16:10:29+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1072,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10720.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2390",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "877",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2390",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2390",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2390",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        }
+    ],
+    "get_incident": [
+        {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-07T11:00:02+00:00",
+                "stop_time": "2021-03-07T11:10:30+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "192.168.123.123",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1077,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10774.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2009",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "886",
+                            "type": "alert_annotation"
+                        },
+                        {
+                            "id": "797",
+                            "type": "alert_annotation"
+                        },
+                        {
+                            "id": "795",
+                            "type": "alert_annotation"
+                        }
+                    ]
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "mitigation": {
+                    "data": [
+                        {
+                            "id": "flowspec-5",
+                            "type": "mitigation"
+                        },
+                        {
+                            "id": "flowspec-6",
+                            "type": "mitigation"
+                        }
+                    ]
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2009",
+                        "type": "alert_packet_size_distribution"
+                    }
+                },
+                "patterns": {},
+                "router_traffic": {},
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2009",
+                        "type": "alert_source_ip_addresses"
+                    }
+                },
+                "thresholds": {},
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2009",
+                        "type": "alert_traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        }
+    ],
+    "list_annotations": {
+        "AlertID": "2009",
+        "Annotations": [
+            {
+                "attributes": {
+                    "added": "2021-03-29T18:18:13+00:00",
+                    "author": "auto-annotation",
+                    "text": "Flowspec mitigation 'testMit2' started"
+                },
+                "id": "886",
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "id": "2009",
+                            "type": "alert"
+                        }
+                    }
+                },
+                "type": "alert_annotation"
+            },
+            {
+                "attributes": {
+                    "added": "2021-03-07T19:09:05+00:00",
+                    "author": "auto-annotation",
+                    "text": "Flowspec mitigation 'testMit' started"
+                },
+                "id": "797",
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "id": "2009",
+                            "type": "alert"
+                        }
+                    }
+                },
+                "type": "alert_annotation"
+            },
+            {
+                "attributes": {
+                    "added": "2021-03-07T11:00:02+00:00",
+                    "author": "auto-annotation",
+                    "text": "This alert was generated due to fast flood detection. The 'Total Traffic' host alert signature has been triggered at router 'Traffic-PCAP-CentOS'. (expected rate: 5 bps/50.00 Kpps, observed rate: 11 bps/0 pps)"
+                },
+                "id": "795",
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "id": "2009",
+                            "type": "alert"
+                        }
+                    }
+                },
+                "type": "alert_annotation"
+            }
+        ]
+    },
+    "list_mitigations": [
+        {
+            "attributes": {
+                "description": "just desc",
+                "ip_version": 6,
+                "is_automitigation": false,
+                "name": "testMit2",
+                "ongoing": true,
+                "start": "2021-03-29T18:18:08.699990+00:00",
+                "subobject": {
+                    "action": {
+                        "type": "accept"
+                    },
+                    "bgp_communities": [],
+                    "l3vpn_route_distinguisher": "",
+                    "l3vpn_route_targets": []
+                },
+                "subtype": "flowspec",
+                "user": "demisto"
+            },
+            "id": "flowspec-6",
+            "relationships": {
+                "alert": {
+                    "data": {
+                        "id": "2009",
+                        "type": "alert"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "routers": {
+                    "data": []
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "just desc",
+                "ip_version": 6,
+                "is_automitigation": false,
+                "name": "testMit",
+                "ongoing": true,
+                "start": "2021-03-07T19:09:03.895220+00:00",
+                "subobject": {
+                    "action": {
+                        "type": "accept"
+                    },
+                    "bgp_communities": [],
+                    "l3vpn_route_distinguisher": "",
+                    "l3vpn_route_targets": []
+                },
+                "subtype": "flowspec",
+                "user": "demisto"
+            },
+            "id": "flowspec-5",
+            "relationships": {
+                "alert": {
+                    "data": {
+                        "id": "2009",
+                        "type": "alert"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "routers": {
+                    "data": []
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "TMS mitigation for alert 101",
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 109",
+                "ongoing": true,
+                "start": "2021-02-03T17:25:44.530990+00:00",
+                "subobject": {
+                    "action": {
+                        "type": "accept"
+                    },
+                    "bgp_communities": [],
+                    "l3vpn_route_distinguisher": "",
+                    "l3vpn_route_targets": []
+                },
+                "subtype": "flowspec",
+                "user": "demisto"
+            },
+            "id": "flowspec-4",
+            "relationships": {
+                "routers": {
+                    "data": []
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "TMS mitigation for alert 101",
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 108",
+                "ongoing": true,
+                "start": "2021-02-03T17:25:31.152900+00:00",
+                "subobject": {
+                    "action": {
+                        "type": "accept"
+                    },
+                    "bgp_communities": [],
+                    "l3vpn_route_distinguisher": "",
+                    "l3vpn_route_targets": []
+                },
+                "subtype": "flowspec",
+                "user": "demisto"
+            },
+            "id": "flowspec-3",
+            "relationships": {
+                "routers": {
+                    "data": []
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "TMS mitigation for alert 101",
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 107",
+                "ongoing": true,
+                "start": "2021-02-03T17:18:12.538460+00:00",
+                "subobject": {
+                    "action": {
+                        "type": "accept"
+                    },
+                    "bgp_communities": [],
+                    "l3vpn_route_distinguisher": "",
+                    "l3vpn_route_targets": []
+                },
+                "subtype": "flowspec",
+                "user": "demisto"
+            },
+            "id": "flowspec-2",
+            "relationships": {
+                "routers": {
+                    "data": []
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "TMS mitigation for alert 101",
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 106",
+                "ongoing": true,
+                "start": "2021-02-03T17:17:43.173940+00:00",
+                "subobject": {
+                    "action": {
+                        "type": "accept"
+                    },
+                    "bgp_communities": [],
+                    "l3vpn_route_distinguisher": "",
+                    "l3vpn_route_targets": []
+                },
+                "subtype": "flowspec",
+                "user": "demisto"
+            },
+            "id": "flowspec-1",
+            "relationships": {
+                "routers": {
+                    "data": []
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "TMS mitigation for alert 101",
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 106",
+                "ongoing": true,
+                "start": "2021-02-03T17:00:22.236460+00:00",
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false,
+                        "aif_http_level": "low"
+                    },
+                    "bgp_announce": false,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "dns_auth": {
+                        "active": true,
+                        "enabled": true,
+                        "mode": "passive",
+                        "timeout": 5
+                    },
+                    "dns_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": false,
+                        "level": "low"
+                    },
+                    "http_object": {
+                        "active": false
+                    },
+                    "http_request": {
+                        "active": false
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "sip_request_limiting": {
+                        "active": false
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": false
+                    },
+                    "tcp_syn_auth": {
+                        "active": false,
+                        "auto": false,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_cipher_suites": 100,
+                        "max_early_close": 25,
+                        "max_extensions": 25,
+                        "max_pend_secs": 30,
+                        "min_pend_secs": 15
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false,
+                        "blacklist_enabled": true,
+                        "dns": {
+                            "match_fcap": "bytes 2049..65535"
+                        }
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": true,
+                        "all_hosts": {
+                            "thresholds": {
+                                "bps": 500000,
+                                "pps": 10
+                            }
+                        },
+                        "blacklisting": true,
+                        "enabled": true
+                    }
+                },
+                "subtype": "tms",
+                "user": "demisto"
+            },
+            "id": "tms-11",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "10",
+                            "type": "mitigation_annotation"
+                        },
+                        {
+                            "id": "7",
+                            "type": "mitigation_annotation"
+                        }
+                    ]
+                },
+                "mitigation_template": {
+                    "data": {
+                        "id": "4",
+                        "type": "mitigation_template"
+                    }
+                },
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {},
+                "tms_group": {
+                    "data": {
+                        "id": "3",
+                        "type": "tms_group"
+                    }
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "TMS mitigation for alert 101",
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 104",
+                "ongoing": true,
+                "start": "2021-02-03T16:36:04.086580+00:00",
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false,
+                        "aif_http_level": "low"
+                    },
+                    "bgp_announce": false,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "dns_auth": {
+                        "active": true,
+                        "enabled": true,
+                        "mode": "passive",
+                        "timeout": 5
+                    },
+                    "dns_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": false,
+                        "level": "low"
+                    },
+                    "http_object": {
+                        "active": false
+                    },
+                    "http_request": {
+                        "active": false
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "sip_request_limiting": {
+                        "active": false
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": false
+                    },
+                    "tcp_syn_auth": {
+                        "active": false,
+                        "auto": false,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_cipher_suites": 100,
+                        "max_early_close": 25,
+                        "max_extensions": 25,
+                        "max_pend_secs": 30,
+                        "min_pend_secs": 15
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false,
+                        "blacklist_enabled": true,
+                        "dns": {
+                            "match_fcap": "bytes 2049..65535"
+                        }
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": true,
+                        "all_hosts": {
+                            "thresholds": {
+                                "bps": 500000,
+                                "pps": 10
+                            }
+                        },
+                        "blacklisting": true,
+                        "enabled": true
+                    }
+                },
+                "subtype": "tms",
+                "user": "demisto"
+            },
+            "id": "tms-9",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "8",
+                            "type": "mitigation_annotation"
+                        },
+                        {
+                            "id": "6",
+                            "type": "mitigation_annotation"
+                        }
+                    ]
+                },
+                "mitigation_template": {
+                    "data": {
+                        "id": "4",
+                        "type": "mitigation_template"
+                    }
+                },
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {},
+                "tms_group": {
+                    "data": {
+                        "id": "3",
+                        "type": "tms_group"
+                    }
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "TMS mitigation for alert 101",
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 102",
+                "ongoing": true,
+                "start": "2021-02-03T13:53:02.776000+00:00",
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false,
+                        "aif_http_level": "low"
+                    },
+                    "bgp_announce": false,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "dns_auth": {
+                        "active": true,
+                        "enabled": true,
+                        "mode": "passive",
+                        "timeout": 5
+                    },
+                    "dns_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": false,
+                        "level": "low"
+                    },
+                    "http_object": {
+                        "active": false
+                    },
+                    "http_request": {
+                        "active": false
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "sip_request_limiting": {
+                        "active": false
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": false
+                    },
+                    "tcp_syn_auth": {
+                        "active": false,
+                        "auto": false,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_cipher_suites": 100,
+                        "max_early_close": 25,
+                        "max_extensions": 25,
+                        "max_pend_secs": 30,
+                        "min_pend_secs": 15
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false,
+                        "blacklist_enabled": true,
+                        "dns": {
+                            "match_fcap": "bytes 2049..65535"
+                        }
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": true,
+                        "all_hosts": {
+                            "thresholds": {
+                                "bps": 500000,
+                                "pps": 10
+                            }
+                        },
+                        "blacklisting": true,
+                        "enabled": true
+                    }
+                },
+                "subtype": "tms",
+                "user": "demisto"
+            },
+            "id": "tms-7",
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "9",
+                            "type": "mitigation_annotation"
+                        },
+                        {
+                            "id": "5",
+                            "type": "mitigation_annotation"
+                        }
+                    ]
+                },
+                "mitigation_template": {
+                    "data": {
+                        "id": "4",
+                        "type": "mitigation_template"
+                    }
+                },
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {},
+                "tms_group": {
+                    "data": {
+                        "id": "3",
+                        "type": "tms_group"
+                    }
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "TMS mitigation for alert 101",
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 101",
+                "ongoing": true,
+                "start": "2021-02-03T09:54:42.307120+00:00",
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false,
+                        "aif_http_level": "low"
+                    },
+                    "bgp_announce": false,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "dns_auth": {
+                        "active": true,
+                        "enabled": true,
+                        "mode": "passive",
+                        "timeout": 5
+                    },
+                    "dns_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": false,
+                        "level": "low"
+                    },
+                    "http_object": {
+                        "active": false
+                    },
+                    "http_request": {
+                        "active": false
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "sip_request_limiting": {
+                        "active": false
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": false
+                    },
+                    "tcp_syn_auth": {
+                        "active": false,
+                        "auto": false,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_cipher_suites": 100,
+                        "max_early_close": 25,
+                        "max_extensions": 25,
+                        "max_pend_secs": 30,
+                        "min_pend_secs": 15
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false,
+                        "blacklist_enabled": true,
+                        "dns": {
+                            "match_fcap": "bytes 2049..65535"
+                        }
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": true,
+                        "all_hosts": {
+                            "thresholds": {
+                                "bps": 500000,
+                                "pps": 10
+                            }
+                        },
+                        "blacklisting": true,
+                        "enabled": true
+                    }
+                },
+                "subtype": "tms",
+                "user": "demisto"
+            },
+            "id": "tms-6",
+            "relationships": {
+                "mitigation_template": {
+                    "data": {
+                        "id": "4",
+                        "type": "mitigation_template"
+                    }
+                },
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {},
+                "tms_group": {
+                    "data": {
+                        "id": "3",
+                        "type": "tms_group"
+                    }
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 860",
+                "ongoing": true,
+                "start": "2020-12-28T12:42:38.398450+00:00",
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false,
+                        "aif_http_level": "low",
+                        "blacklist_on_blocked": true
+                    },
+                    "bgp_announce": true,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        "192.168.123.123/32"
+                    ],
+                    "dns_auth": {
+                        "active": true,
+                        "enabled": true,
+                        "mode": "passive",
+                        "timeout": 60
+                    },
+                    "dns_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": true,
+                        "enabled": true,
+                        "level": "low"
+                    },
+                    "http_object": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 10
+                    },
+                    "http_request": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 100
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        "192.168.123.123/32"
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "sip_request_limiting": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 100
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": true,
+                        "enabled": true,
+                        "slow_application_bitrate_interval": 60,
+                        "slow_application_header_time": 60,
+                        "slow_application_request_bitrate": 200,
+                        "timeout": 90,
+                        "track_long_lived": true
+                    },
+                    "tcp_syn_auth": {
+                        "active": true,
+                        "auto": false,
+                        "enabled": true,
+                        "idle_timeout": 60,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_cipher_suites": 100,
+                        "max_early_close": 25,
+                        "max_extensions": 25,
+                        "max_pend_secs": 30,
+                        "min_pend_secs": 15
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false,
+                        "blacklist_enabled": true,
+                        "dns": {
+                            "match_fcap": "bytes 2049..65535"
+                        }
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": true,
+                        "all_hosts": {
+                            "thresholds": {
+                                "bps": 2000000,
+                                "pps": 500
+                            }
+                        },
+                        "blacklisting": true,
+                        "enabled": true
+                    }
+                },
+                "subtype": "tms",
+                "user": "demisto"
+            },
+            "id": "tms-5",
+            "relationships": {
+                "alert": {
+                    "data": {
+                        "id": "860",
+                        "type": "alert"
+                    }
+                },
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "11",
+                            "type": "mitigation_annotation"
+                        },
+                        {
+                            "id": "4",
+                            "type": "mitigation_annotation"
+                        },
+                        {
+                            "id": "3",
+                            "type": "mitigation_annotation"
+                        },
+                        {
+                            "id": "2",
+                            "type": "mitigation_annotation"
+                        }
+                    ]
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "mitigation_template": {
+                    "data": {
+                        "id": "1",
+                        "type": "mitigation_template"
+                    }
+                },
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {},
+                "tms_group": {
+                    "data": {
+                        "id": "3",
+                        "type": "tms_group"
+                    }
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 824-1",
+                "ongoing": true,
+                "start": "2020-12-27T16:08:01.652030+00:00",
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false,
+                        "aif_http_level": "low"
+                    },
+                    "bgp_announce": true,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        "192.168.123.123/32"
+                    ],
+                    "dns_auth": {
+                        "active": true,
+                        "enabled": true,
+                        "mode": "passive",
+                        "timeout": 60
+                    },
+                    "dns_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": true,
+                        "enabled": true,
+                        "level": "low"
+                    },
+                    "http_object": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 10
+                    },
+                    "http_request": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 100
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        "192.168.123.123/32"
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "sip_request_limiting": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 100
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": true,
+                        "enabled": true,
+                        "timeout": 90
+                    },
+                    "tcp_syn_auth": {
+                        "active": true,
+                        "auto": false,
+                        "enabled": true,
+                        "idle_timeout": 60,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_cipher_suites": 100,
+                        "max_early_close": 25,
+                        "max_extensions": 25,
+                        "max_pend_secs": 30,
+                        "min_pend_secs": 15
+                    },
+                    "udp_reflection_amp": {
+                        "active": true,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false,
+                        "blacklist_enabled": true,
+                        "chargen": {
+                            "enabled": true
+                        },
+                        "cldap": {
+                            "enabled": true
+                        },
+                        "dns": {
+                            "match_fcap": "bytes 2049..65535"
+                        },
+                        "enabled": true,
+                        "l2tp": {
+                            "enabled": true
+                        },
+                        "mdns": {
+                            "enabled": true
+                        },
+                        "memcached": {
+                            "enabled": true
+                        },
+                        "mssqlrs": {
+                            "enabled": true
+                        },
+                        "netbios": {
+                            "enabled": true
+                        },
+                        "ntp": {
+                            "enabled": true
+                        },
+                        "ripv1": {
+                            "enabled": true
+                        },
+                        "rpcbind": {
+                            "enabled": true
+                        },
+                        "snmp": {
+                            "enabled": true
+                        },
+                        "ssdp": {
+                            "enabled": true
+                        }
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": true,
+                        "all_hosts": {
+                            "thresholds": {
+                                "bps": 2000000,
+                                "pps": 500
+                            }
+                        },
+                        "blacklisting": true,
+                        "enabled": true
+                    }
+                },
+                "subtype": "tms",
+                "user": "demisto"
+            },
+            "id": "tms-3",
+            "relationships": {
+                "alert": {
+                    "data": {
+                        "id": "824",
+                        "type": "alert"
+                    }
+                },
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "1",
+                            "type": "mitigation_annotation"
+                        }
+                    ]
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "mitigation_template": {
+                    "data": {
+                        "id": "2",
+                        "type": "mitigation_template"
+                    }
+                },
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {},
+                "tms_group": {
+                    "data": {
+                        "id": "3",
+                        "type": "tms_group"
+                    }
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "testing2",
+                "ongoing": false,
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false,
+                        "aif_http_level": "low",
+                        "blacklist_on_blocked": true
+                    },
+                    "bgp_announce": true,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        ""
+                    ],
+                    "dns_auth": {
+                        "active": true,
+                        "enabled": true,
+                        "mode": "passive",
+                        "timeout": 60
+                    },
+                    "dns_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": true,
+                        "enabled": true,
+                        "level": "low"
+                    },
+                    "http_object": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 10
+                    },
+                    "http_request": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 100
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        ""
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "sip_request_limiting": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 100
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": true,
+                        "enabled": true,
+                        "slow_application_bitrate_interval": 60,
+                        "slow_application_header_time": 60,
+                        "slow_application_request_bitrate": 200,
+                        "timeout": 90,
+                        "track_long_lived": true
+                    },
+                    "tcp_syn_auth": {
+                        "active": true,
+                        "auto": false,
+                        "enabled": true,
+                        "idle_timeout": 60,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_cipher_suites": 100,
+                        "max_early_close": 25,
+                        "max_extensions": 25,
+                        "max_pend_secs": 30,
+                        "min_pend_secs": 15
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false,
+                        "blacklist_enabled": true,
+                        "dns": {
+                            "match_fcap": "bytes 2049..65535"
+                        }
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": true,
+                        "all_hosts": {
+                            "thresholds": {
+                                "bps": 2000000,
+                                "pps": 500
+                            }
+                        },
+                        "blacklisting": true,
+                        "enabled": true
+                    }
+                },
+                "subtype": "tms"
+            },
+            "id": "tms-13",
+            "relationships": {
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "mitigation_template": {
+                    "data": {
+                        "id": "1",
+                        "type": "mitigation_template"
+                    }
+                },
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {},
+                "tms_group": {
+                    "data": {
+                        "id": "3",
+                        "type": "tms_group"
+                    }
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "testing",
+                "ongoing": false,
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false
+                    },
+                    "bgp_announce": true,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        ""
+                    ],
+                    "dns_auth": {
+                        "active": false,
+                        "mode": "passive"
+                    },
+                    "dns_malformed": {
+                        "active": false
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": false
+                    },
+                    "http_object": {
+                        "active": false
+                    },
+                    "http_request": {
+                        "active": false
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false,
+                        "blacklist_hosts": true
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        ""
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": false
+                    },
+                    "sip_request_limiting": {
+                        "active": false
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": false
+                    },
+                    "tcp_syn_auth": {
+                        "active": false,
+                        "auto": false,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_extensions": 25
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": false,
+                        "blacklisting": true
+                    }
+                },
+                "subtype": "tms"
+            },
+            "id": "tms-12",
+            "relationships": {
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {}
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 824",
+                "ongoing": false,
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false,
+                        "aif_http_level": "low",
+                        "blacklist_on_blocked": true
+                    },
+                    "bgp_announce": true,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        "192.168.123.123/32"
+                    ],
+                    "dns_auth": {
+                        "active": true,
+                        "enabled": true,
+                        "mode": "passive",
+                        "timeout": 60
+                    },
+                    "dns_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": true,
+                        "enabled": true,
+                        "level": "low"
+                    },
+                    "http_object": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 10
+                    },
+                    "http_request": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 100
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        "192.168.123.123/32"
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "sip_request_limiting": {
+                        "active": true,
+                        "enabled": true,
+                        "limit": 100
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": true,
+                        "enabled": true,
+                        "slow_application_bitrate_interval": 60,
+                        "slow_application_header_time": 60,
+                        "slow_application_request_bitrate": 200,
+                        "timeout": 90,
+                        "track_long_lived": true
+                    },
+                    "tcp_syn_auth": {
+                        "active": true,
+                        "auto": false,
+                        "enabled": true,
+                        "idle_timeout": 60,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_cipher_suites": 100,
+                        "max_early_close": 25,
+                        "max_extensions": 25,
+                        "max_pend_secs": 30,
+                        "min_pend_secs": 15
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false,
+                        "blacklist_enabled": true,
+                        "dns": {
+                            "match_fcap": "bytes 2049..65535"
+                        }
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": true,
+                        "all_hosts": {
+                            "thresholds": {
+                                "bps": 2000000,
+                                "pps": 500
+                            }
+                        },
+                        "blacklisting": true,
+                        "enabled": true
+                    }
+                },
+                "subtype": "tms"
+            },
+            "id": "tms-1",
+            "relationships": {
+                "alert": {
+                    "data": {
+                        "id": "824",
+                        "type": "alert"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "mitigation_template": {
+                    "data": {
+                        "id": "1",
+                        "type": "mitigation_template"
+                    }
+                },
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {},
+                "tms_group": {
+                    "data": {
+                        "id": "3",
+                        "type": "tms_group"
+                    }
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 810",
+                "ongoing": false,
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false,
+                        "aif_http_level": "low"
+                    },
+                    "bgp_announce": true,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        "192.168.123.123/32"
+                    ],
+                    "dns_auth": {
+                        "active": true,
+                        "enabled": true,
+                        "mode": "passive",
+                        "timeout": 5
+                    },
+                    "dns_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": false,
+                        "level": "low"
+                    },
+                    "http_object": {
+                        "active": false
+                    },
+                    "http_request": {
+                        "active": false
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        "192.168.123.123/32"
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": true,
+                        "enabled": true
+                    },
+                    "sip_request_limiting": {
+                        "active": false
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": false
+                    },
+                    "tcp_syn_auth": {
+                        "active": false,
+                        "auto": false,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_cipher_suites": 100,
+                        "max_early_close": 25,
+                        "max_extensions": 25,
+                        "max_pend_secs": 30,
+                        "min_pend_secs": 15
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false,
+                        "blacklist_enabled": true,
+                        "dns": {
+                            "match_fcap": "bytes 2049..65535"
+                        }
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": true,
+                        "all_hosts": {
+                            "thresholds": {
+                                "bps": 500000,
+                                "pps": 10
+                            }
+                        },
+                        "blacklisting": true,
+                        "enabled": true
+                    }
+                },
+                "subtype": "tms"
+            },
+            "id": "tms-2",
+            "relationships": {
+                "alert": {
+                    "data": {
+                        "id": "810",
+                        "type": "alert"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    }
+                },
+                "mitigation_template": {
+                    "data": {
+                        "id": "4",
+                        "type": "mitigation_template"
+                    }
+                },
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {},
+                "tms_group": {
+                    "data": {
+                        "id": "3",
+                        "type": "tms_group"
+                    }
+                }
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "TMS mitigation for alert 101",
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 105",
+                "ongoing": false,
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false
+                    },
+                    "bgp_announce": false,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "dns_auth": {
+                        "active": false,
+                        "mode": "passive"
+                    },
+                    "dns_malformed": {
+                        "active": false
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": false
+                    },
+                    "http_object": {
+                        "active": false
+                    },
+                    "http_request": {
+                        "active": false
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false,
+                        "blacklist_hosts": true
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": false
+                    },
+                    "sip_request_limiting": {
+                        "active": false
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": false
+                    },
+                    "tcp_syn_auth": {
+                        "active": false,
+                        "auto": false,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_extensions": 25
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": false,
+                        "blacklisting": true
+                    }
+                },
+                "subtype": "tms"
+            },
+            "id": "tms-10",
+            "relationships": {
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {}
+            },
+            "type": "mitigation"
+        },
+        {
+            "attributes": {
+                "description": "TMS mitigation for alert 101",
+                "ip_version": 4,
+                "is_automitigation": false,
+                "name": "DoS Alert 103",
+                "ongoing": false,
+                "subobject": {
+                    "aif_http_url_regexp": {
+                        "active": false
+                    },
+                    "bgp_announce": false,
+                    "black_white_lists": {
+                        "active": false
+                    },
+                    "diversion_prefix_mode": "disabled",
+                    "diversion_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "dns_auth": {
+                        "active": false,
+                        "mode": "passive"
+                    },
+                    "dns_malformed": {
+                        "active": false
+                    },
+                    "dns_nx_ratelimiting": {
+                        "active": false
+                    },
+                    "dns_object_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_ratelimiting": {
+                        "active": false,
+                        "limit": 100
+                    },
+                    "dns_regex": {
+                        "active": false,
+                        "match_direction": "query"
+                    },
+                    "dns_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "http_malformed": {
+                        "active": false
+                    },
+                    "http_object": {
+                        "active": false
+                    },
+                    "http_request": {
+                        "active": false
+                    },
+                    "http_scoping": {
+                        "active": false,
+                        "apply_on_match": true
+                    },
+                    "ip_address_filterlist": {
+                        "active": false,
+                        "blacklist_sources": true
+                    },
+                    "ip_location_filterlist": {
+                        "active": false,
+                        "drop_matched_or_unmatched": "matched"
+                    },
+                    "ip_location_policing": {
+                        "active": false
+                    },
+                    "mode": "active",
+                    "packet_header_filtering": {
+                        "active": false
+                    },
+                    "payload": {
+                        "active": false,
+                        "blacklist_hosts": true
+                    },
+                    "per_connection_flood_protection": {
+                        "active": true,
+                        "enabled": false,
+                        "enforcement": "block",
+                        "maximum_bps": 0,
+                        "maximum_pps": 0
+                    },
+                    "protection_prefixes": [
+                        "192.0.2.0/24"
+                    ],
+                    "protocol_baselines": {
+                        "active": false
+                    },
+                    "proxy_list_threshold_exceptions": {
+                        "scaling_factor": 1.0
+                    },
+                    "shaping": {
+                        "active": false
+                    },
+                    "sip_malformed": {
+                        "active": false
+                    },
+                    "sip_request_limiting": {
+                        "active": false
+                    },
+                    "tcp_connection_limiting": {
+                        "active": false,
+                        "blacklist": true,
+                        "idle_timeout": 60,
+                        "ignore_idle": true,
+                        "max_connections": 25
+                    },
+                    "tcp_connection_reset": {
+                        "active": false
+                    },
+                    "tcp_syn_auth": {
+                        "active": false,
+                        "auto": false,
+                        "spoofed_flood_protection_automation": false
+                    },
+                    "tls_negotiation": {
+                        "active": false,
+                        "clients_can_alert": true,
+                        "max_extensions": 25
+                    },
+                    "udp_reflection_amp": {
+                        "active": false,
+                        "auto_transfer_misuse": false,
+                        "auto_transfer_misuse_dns": false
+                    },
+                    "udp_session_auth": {
+                        "active": false,
+                        "idle_session_timer": 60,
+                        "in_progress_period": 60,
+                        "retransmission_timer": 5
+                    },
+                    "zombie_detection": {
+                        "active": false,
+                        "blacklisting": true
+                    }
+                },
+                "subtype": "tms"
+            },
+            "id": "tms-8",
+            "relationships": {
+                "rates": {},
+                "rates_all_devices": {},
+                "statistics_by_country": {},
+                "statistics_by_device": {},
+                "statistics_total": {}
+            },
+            "type": "mitigation"
+        }
+    ]
+}
