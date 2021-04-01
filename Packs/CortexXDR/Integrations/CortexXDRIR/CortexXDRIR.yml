@@ -1041,17 +1041,8 @@ script:
     - contextPath: Account.Domain
       description: The domain of the account.
       type: String
-    - contextPath: Endpoint.Hostname
-      description: The endpoint's hostname.
-      type: String
-    - contextPath: Endpoint.OS
-      description: The endpoint's operation system.
-      type: String
     - contextPath: Endpoint.IP
       description: The endpoint's IP address.
-      type: String
-    - contextPath: Endpoint.ID
-      description: The endpoint's ID.
       type: String
     - contextPath: Endpoint.Status
       description: The endpoint's status.

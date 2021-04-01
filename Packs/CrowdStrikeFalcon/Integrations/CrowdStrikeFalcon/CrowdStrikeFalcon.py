@@ -100,7 +100,7 @@ SEARCH_DEVICE_KEY_MAP = {
 
 ENDPOINT_KEY_MAP = {
     'device_id': 'ID',
-    'external_ip': 'IP',
+    'local_ip': 'IP',
     'os_version': 'OS',
     'hostname': 'Hostname',
     'status': 'Status',
