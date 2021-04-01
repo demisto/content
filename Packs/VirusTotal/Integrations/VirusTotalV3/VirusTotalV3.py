@@ -1492,8 +1492,8 @@ def get_md5_by_entry_id(entry_id: str) -> str:
     try:
         return demisto.executeCommand('getEntry', {'id': entry_id})[0]['FileMetadata']['md5']
     except (IndexError, KeyError) as exc:
-        err = f'Could not find MD5 for {entry_id=}'
-        demisto.debug(f'{err}, {exc}')
+        err = f'Could not find MD5 for {entry_id=}.\n{exc}'
+        demisto.debug(err)
         raise DemistoException(err) from exc
 
 
@@ -1569,8 +1569,8 @@ def file_scan(client: Client, args: dict) -> List[CommandResults]:
                 raw_response=raw_response
             ))
         except Exception as exc:
-            err = f'Could not process {entry_id=}.'
-            demisto.debug(f'{err}\n{str(exc)}')
+            err = f'Could not process {entry_id=}.\n{str(exc)}'
+            demisto.debug(err)
             results.append(CommandResults(readable_output=err))
     return results
 
