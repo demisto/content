@@ -24,7 +24,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, url: str, api_key: str, password: str, use_ssl: bool, use_proxy: bool,
-                 reliability='C - Fairly reliable'):
+                 reliability=DBotScoreReliability.C):
         self.reliability = reliability
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'},
                          auth=(api_key, password))
@@ -476,11 +476,20 @@ def main():
     params = demisto.params()
     credentials = params.get('credentials')
 
+    reliability = demisto.params().get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.B
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
     client = Client(params.get('url'),
                     credentials.get('identifier'), credentials.get('password'),
                     use_ssl=not params.get('insecure', False),
                     use_proxy=params.get('proxy', False),
-                    reliability=params.get('integrationReliability'))
+                    reliability=reliability)
+
     commands = {
         'ip': ip_command,
         'url': url_command,
