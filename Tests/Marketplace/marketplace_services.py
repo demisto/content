@@ -4,6 +4,7 @@ import stat
 import subprocess
 import fnmatch
 import re
+import glob
 import git
 import sys
 import shutil
@@ -185,6 +186,8 @@ class Pack(object):
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
+    PACK_IGNORE = ".pack-ignore"
+    SECRETS_IGNORE = ".secrets-ignore"
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -583,7 +586,7 @@ class Pack(object):
             return ""
 
     @staticmethod
-    def _get_search_rank(tags, certification, content_items):
+    def _get_search_rank(name, tags, certification, content_items):
         """ Returns pack search rank.
 
         The initial value is 0
@@ -594,6 +597,7 @@ class Pack(object):
         the pack's search rank will decrease by 50
 
         Args:
+            name (str): the pack's name.
             tags (str): the pack's tags.
             certification (str): certification value from pack_metadata, if exists.
             content_items (dict): all the pack's content items, including integrations info
@@ -610,6 +614,9 @@ class Pack(object):
             search_rank += 10
         if certification == Metadata.CERTIFIED:
             search_rank += 10
+
+        if name == 'DBot Truth Bombs':
+            search_rank += 50
 
         if content_items:
             integrations = content_items.get("integration")
@@ -714,7 +721,8 @@ class Pack(object):
                 pack_metadata['tags'].remove('New')
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
-        pack_metadata['searchRank'] = Pack._get_search_rank(tags=pack_metadata['tags'],
+        pack_metadata['searchRank'] = Pack._get_search_rank(name=pack_metadata['name'],
+                                                            tags=pack_metadata['tags'],
                                                             certification=pack_metadata['certification'],
                                                             content_items=pack_content_items)
 
@@ -1039,9 +1047,12 @@ class Pack(object):
                     modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
 
                     if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
-                        logging.info(f"Detected modified files in {self._pack_name} pack")
-                        task_status, pack_was_modified = True, True
-                        return
+                        if not is_ignored_pack_file(modified_file_path_parts):
+                            logging.info(f"Detected modified files in {self._pack_name} pack")
+                            task_status, pack_was_modified = True, True
+                            return
+                        else:
+                            logging.debug(f'{modified_file.a_path} is an ignored file')
 
             task_status = True
         except Exception:
@@ -2218,6 +2229,24 @@ class Pack(object):
         ])
 
 
+class PackIgnored(object):
+    """ A class that represents all pack files/directories to be ignored if a change is detected in any of them
+
+    ROOT_FILES: The files in the pack root directory
+    NESTED_FILES: The files to be ignored inside the pack entities directories. Empty list = all files.
+    NESTED_DIRS: The 2nd level directories under the pack entities directories to ignore all of their files.
+
+    """
+    ROOT_FILES = [Pack.SECRETS_IGNORE, Pack.PACK_IGNORE]
+    NESTED_FILES = {
+        PackFolders.INTEGRATIONS.value: ["README.md", "Pipfile", "Pipfile.lock", "_test.py", "commands.txt"],
+        PackFolders.SCRIPTS.value: ["README.md", "Pipfile", "Pipfile.lock", "_test.py"],
+        PackFolders.TEST_PLAYBOOKS.value: [],
+        PackFolders.PLAYBOOKS.value: ["_README.md"],
+    }
+    NESTED_DIRS = [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value]
+
+
 # HELPER FUNCTIONS
 
 
@@ -2588,3 +2617,39 @@ def get_last_upload_commit_hash(content_repo, index_folder_path):
         logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
                          f'repo. Additional info:\n {e}')
         sys.exit(1)
+
+
+def is_ignored_pack_file(modified_file_path_parts):
+    """ Indicates whether a pack file needs to be ignored or not.
+
+    Args:
+        modified_file_path_parts: The modified file parts, e.g. if file path is "a/b/c" then the
+         parts list is ["a", "b", "c"]
+
+    Returns:
+        (bool): True if the file should be ignored, False otherwise
+
+    """
+    for file_suffix in PackIgnored.ROOT_FILES:
+        if file_suffix in modified_file_path_parts:
+            return True
+
+    for pack_folder, file_suffixes in PackIgnored.NESTED_FILES.items():
+        if pack_folder in modified_file_path_parts:
+            if not file_suffixes:  # Ignore all pack folder files
+                return True
+
+            for file_suffix in file_suffixes:
+                if file_suffix in modified_file_path_parts[-1]:
+                    return True
+
+    for pack_folder in PackIgnored.NESTED_DIRS:
+        if pack_folder in modified_file_path_parts:
+            pack_folder_path = os.sep.join(modified_file_path_parts[:modified_file_path_parts.index(pack_folder) + 1])
+            file_path = os.sep.join(modified_file_path_parts)
+            for folder_path in [f for f in glob.glob(os.path.join(pack_folder_path, '*/*')) if os.path.isdir(f)]:
+                # Checking for all 2nd level directories. e.g. test_data directory
+                if file_path.startswith(folder_path):
+                    return True
+
+    return False
