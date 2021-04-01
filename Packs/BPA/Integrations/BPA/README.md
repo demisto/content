@@ -272,7 +272,7 @@ Gets the documentation of all BPA checks.
 
 ### pan-os-bpa-submit-job
 ***
-Submits a job to the BPA job queue.
+Submits a job to the BPA job queue. PAN-OS devices with large configuration files may take a few minutes for the job to be submitted.
 
 
 #### Base Command
