@@ -586,7 +586,7 @@ class Pack(object):
             return ""
 
     @staticmethod
-    def _get_search_rank(tags, certification, content_items):
+    def _get_search_rank(name, tags, certification, content_items):
         """ Returns pack search rank.
 
         The initial value is 0
@@ -597,6 +597,7 @@ class Pack(object):
         the pack's search rank will decrease by 50
 
         Args:
+            name (str): the pack's name.
             tags (str): the pack's tags.
             certification (str): certification value from pack_metadata, if exists.
             content_items (dict): all the pack's content items, including integrations info
@@ -613,6 +614,9 @@ class Pack(object):
             search_rank += 10
         if certification == Metadata.CERTIFIED:
             search_rank += 10
+
+        if name == 'DBot Truth Bombs':
+            search_rank += 50
 
         if content_items:
             integrations = content_items.get("integration")
@@ -717,7 +721,8 @@ class Pack(object):
                 pack_metadata['tags'].remove('New')
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
-        pack_metadata['searchRank'] = Pack._get_search_rank(tags=pack_metadata['tags'],
+        pack_metadata['searchRank'] = Pack._get_search_rank(name=pack_metadata['name'],
+                                                            tags=pack_metadata['tags'],
                                                             certification=pack_metadata['certification'],
                                                             content_items=pack_content_items)
 
