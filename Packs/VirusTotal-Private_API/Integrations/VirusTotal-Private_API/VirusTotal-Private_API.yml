@@ -378,6 +378,18 @@ script:
       name: retry_time
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: When set to "true" will automatically submit the URL for analysis
+        if no report is found for it in VirusTotal's database.
+      isArray: false
+      name: scan
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves a concluded url scan report for a given url.
     execution: false

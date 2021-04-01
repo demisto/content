@@ -571,7 +571,7 @@ def get_file_report_command():
     return output
 
 
-def get_url_report(url, all_info):
+def get_url_report(url, all_info, scan=1):
     """
     Returns a report about an url.
     """
@@ -579,7 +579,7 @@ def get_url_report(url, all_info):
     params = {
         'resource': url,
         'allinfo': all_info,
-        'scan': 1
+        'scan': scan
     }
 
     api_endpoint = 'url/report'
@@ -598,12 +598,13 @@ def get_url_report_command():
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
     threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10)
     scan_finish_time_in_seconds = int(args.get('retry_time', 6))
+    scan = 1 if args.get('scan', 'true') == 'true' else 0
     if full_response:
         max_len = 1000
     else:
         max_len = 50
 
-    responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds)
+    responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds, scan)
     entries = []
 
     for url, res in responses_dict.iteritems():
@@ -622,7 +623,10 @@ def get_url_report_command():
         entries.append(entry)
 
     if len(entries) == 0:
-        md = "No scans were completed in the elapsed time. Please run the command again in a few seconds."
+        if scan == 0:
+            md = "Resource does not exist in the Virus Total dataset."
+        else:
+            md = "No scans were completed in the elapsed time. Please run the command again in a few seconds."
         entries.append({
             'Type': entryTypes['note'],
             'Contents': None,
@@ -634,14 +638,14 @@ def get_url_report_command():
     return entries
 
 
-def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_in_seconds):
+def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_in_seconds, scan):
     """
     Returns dict of responses, where its keys are the URL related to the response.
     """
     requests_responses_dict = {}
 
     for url in urls:
-        response = get_url_report(url, all_info)
+        response = get_url_report(url, all_info, scan)
         if response.get('response_code', None) == -1:
             return_error("Invalid url provided: {}.".format(url))
 
@@ -656,7 +660,7 @@ def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_
         time.sleep(scan_finish_time_in_seconds)  # pylint: disable=sleep-exists
         for url in urls:
             if url not in requests_responses_dict:
-                response = get_url_report(url, all_info)
+                response = get_url_report(url, all_info, scan)
                 if is_url_response_complete(response):
                     requests_responses_dict[url] = response
                     urls_scanned_count = len(requests_responses_dict)
