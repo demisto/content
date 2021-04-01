@@ -30,7 +30,7 @@ SEC_IN_DAY: int = 86400
 class Client:
 
     def __init__(self, base_url: str, user_name: str, password: str, use_ssl: bool,
-                 reliability: str = 'B - Usually reliable'):
+                 reliability: str = DBotScoreReliability.B):
         self.base_url = base_url
         self.user_name = user_name
         self.password = password
@@ -693,12 +693,20 @@ def main():
                    if (params.get('url') and params.get('url').endswith('/'))
                    else params.get('url'))
 
+    reliability = demisto.params().get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.B
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
     client = Client(
         base_url=f'{str(server)}/api/v1/',
         user_name=params.get('credentials', {}).get('identifier'),
         password=params.get('credentials', {}).get('password'),
         use_ssl=not params.get('insecure', False),
-        reliability=params.get('integrationReliability', DBotScoreReliability.B)
+        reliability=reliability
     )
 
     args = {
