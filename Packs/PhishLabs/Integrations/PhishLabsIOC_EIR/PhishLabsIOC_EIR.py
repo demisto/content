@@ -28,11 +28,11 @@ INTEGRATION_CONTEXT_NAME = 'PhishLabsIOC'
 
 class Client(BaseClient):
 
-    def __init__(self, base_url, verify=True, proxy=False, auth=None, reliability='B - Usually reliable'):
-
-        self.reliability = reliability
+    def __init__(self, base_url, verify=True, proxy=False, auth=None, reliability=DBotScoreReliability.B):
 
         BaseClient.__init__(self, base_url=base_url, verify=verify, proxy=proxy, auth=auth)
+
+        self.reliability = reliability
 
     def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
