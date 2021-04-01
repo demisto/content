@@ -294,6 +294,8 @@ def deserialize_protection_groups(list_of_protection_groups: list) -> None:
             item['protectionLevel'] = 'medium'
         elif protection_level == 3:
             item['protectionLevel'] = 'high'
+        if not protection_level:
+            item['protectionLevel'] = 'global protection level'
 
 
 def serialize_protection_groups(list_of_protection_groups: list) -> None:
@@ -313,14 +315,16 @@ def serialize_protection_groups(list_of_protection_groups: list) -> None:
         active = item.get('active')
         if active:
             item['active'] = 1 if active == 'true' else 0
-        protection_level = item.get('protectionLevel')
-        if protection_level:
-            if protection_level == 'low':
-                item['protectionLevel'] = 1
-            elif protection_level == 'medium':
-                item['protectionLevel'] = 2
-            elif protection_level == 'high':
-                item['protectionLevel'] = 3
+        protection_level = item.get('protectionLevel', '')
+        if protection_level == 'low':
+            item['protectionLevel'] = 1
+        elif protection_level == 'medium':
+            item['protectionLevel'] = 2
+        elif protection_level == 'high':
+            item['protectionLevel'] = 3
+        elif protection_level == 'None':
+            item['protectionLevel'] = 'None'
+
         profiling = item.get('profiling')
         if profiling:
             item['profiling'] = 1 if profiling == 'true' else 0
@@ -417,7 +421,7 @@ def handle_country_list_commands(client: Client, demisto_args: dict,
         raw_result = client.inbound_blacklisted_country_list_command(demisto_args)
 
     name = list(raw_result.keys())[0]
-    countries_list = copy.deepcopy(list(raw_result.get(name, [])))
+    countries_list = copy.deepcopy(raw_result.get(name, []))
     objects_time_to_readable_time(countries_list, 'updateTime')
 
     readable_output = tableToMarkdown(name, countries_list, headers=['country', 'update_time', 'annotation'],
@@ -464,14 +468,12 @@ def handle_country_addition_commands(client: Client, demisto_args: dict,
     demisto_args['country'] = ','.join(argToList(countries_to_add))
 
     if direction == "outbound":
-        raw_result: Union[dict, list] = client.outbound_blacklisted_country_add_command(demisto_args)
-        countries_list = list(copy.deepcopy(raw_result))
+        raw_result = client.outbound_blacklisted_country_add_command(demisto_args)
+        countries_list = copy.deepcopy(raw_result)
 
     else:  # inbound
         raw_result = client.inbound_blacklisted_country_add_command(demisto_args)
-        countries_list = copy.deepcopy(raw_result.get('countries', []))
-        if not countries_list:
-            countries_list = [copy.deepcopy(raw_result)]
+        countries_list = copy.deepcopy(raw_result.get('countries', [raw_result]))
 
     objects_time_to_readable_time(countries_list, 'updateTime')
 
@@ -633,9 +635,7 @@ def handle_host_addition_and_updates_commands(client: Client, demisto_args: dict
         else:
             raw_result = client.inbound_whitelisted_host_add_update_command(demisto_args, op)
 
-    hosts_list = copy.deepcopy(raw_result.get('hosts'))
-    if not hosts_list:
-        hosts_list = [copy.deepcopy(raw_result)]
+    hosts_list = copy.deepcopy(raw_result.get('hosts', [raw_result]))
 
     msg = f"Hosts were successfully added/updated in the {direction} {list_color} list"
 
@@ -851,9 +851,8 @@ def handle_domain_addition_commands(client: Client, demisto_args: dict) -> Comma
     demisto_args['domain'] = ','.join(argToList(domain))
 
     raw_result = client.inbound_blacklisted_domain_add_command(demisto_args)
-    domains_list = copy.deepcopy(raw_result.get('domains'))
-    if not domains_list:
-        domains_list = [copy.deepcopy(raw_result)]
+    domains_list = copy.deepcopy(raw_result.get('domains', [raw_result]))
+
     msg = "Domains were successfully added to the inbound blacklisted list"
 
     objects_time_to_readable_time(domains_list, 'updateTime')
@@ -964,9 +963,7 @@ def handle_url_addition_commands(client: Client, demisto_args: dict) -> CommandR
     demisto_args['url'] = ','.join(argToList(url))
 
     raw_result = client.inbound_blacklisted_url_add_command(demisto_args)
-    urls_list = raw_result.get('urls')
-    if not urls_list:
-        urls_list = [copy.deepcopy(raw_result)]
+    urls_list = copy.deepcopy(raw_result.get('urls', [raw_result]))
     msg = "Urls were successfully added to the inbound blacklisted list"
 
     objects_time_to_readable_time(urls_list, 'updateTime')

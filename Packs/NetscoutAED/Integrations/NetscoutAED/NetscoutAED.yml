@@ -504,6 +504,7 @@ script:
       isArray: false
       name: protection_level
       predefined:
+      - None
       - low
       - medium
       - high
