@@ -61,12 +61,12 @@ def query_cdl(fw_monitor_list: list) -> CommandResults:
             else:
                 firewalls_without_logs.append(current_fw)
 
-    all_results = [{'Firewalls with logs sent': firewalls_with_logs,
-                    'Firewalls without logs sent': firewalls_without_logs}]
+    all_results = [{'FirewallsWithLogsSent': firewalls_with_logs,
+                    'FirewallsWithoutLogsSent': firewalls_without_logs}]
 
     return CommandResults(
         outputs_prefix='CDL.monitoring',
-        outputs_key_field=['Firewalls with logs sent', 'Firewalls without logs sent'],
+        outputs_key_field=['FirewallsWithLogsSent', 'FirewallsWithoutLogsSent'],
         ignore_auto_extract=True,
         outputs=all_results
     )

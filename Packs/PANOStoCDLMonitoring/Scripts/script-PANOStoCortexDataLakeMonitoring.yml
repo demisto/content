@@ -18,9 +18,12 @@ dockerimage: demisto/python3:3.9.2.17957
 enabled: true
 name: PANOStoCortexDataLakeMonitoring
 outputs:
-- contextPath: CDL.monitoring
-  description: Monitoring results sorted per Firewall serial.
-  type: unknown
+- contextPath: CDL.monitoring.FirewallsWithLogsSent
+  description: Firewall serials that sent logs to Crotex Data Lake.
+  type: String
+- contextPath: CDL.monitoring.FirewallsWithoutLogsSent
+  description: Firewall serials that sent logs to Crotex Data Lake.
+  type: String
 runas: DBotWeakRole
 runonce: false
 script: ''

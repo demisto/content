@@ -14,7 +14,7 @@
     "id": "incident_fwserials",
     "isReadOnly": false,
     "locked": false,
-    "name": "fw_serials",
+    "name": "fwserials",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
