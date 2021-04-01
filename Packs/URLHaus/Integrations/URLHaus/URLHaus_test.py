@@ -1,6 +1,3 @@
-import time
-from threading import Thread
-import pytest
 import requests
 import demistomock as demisto
 import json
@@ -26,4 +23,3 @@ def test_reliability_in_dbot(mocker):
     URLHaus.url_command(**params)
 
     assert demisto.results.call_args_list[0][0][0]['EntryContext']['DBotScore']['Reliability'] == DBotScoreReliability.C
-
