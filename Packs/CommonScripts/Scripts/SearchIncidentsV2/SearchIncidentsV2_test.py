@@ -41,3 +41,30 @@ def test_is_valid_args(_input, expected_output):
         output = False
 
     assert output == expected_output, f'is_valid_args({_input}) returns: {output}. expected: {expected_output}'
+
+
+data_test_is_id_valid = [
+    (123, True),
+    ('123', True),
+    (123.3, False),
+]
+
+
+@pytest.mark.parametrize('id_value, expected_output', data_test_is_id_valid)
+def test_is_incident_id_valid(id_value, expected_output):
+    """
+    Given:
+        - an incident id
+
+    When:
+        - running the script as a playbook task
+
+    Then:
+        - validating that the incident is is a valid input from type int or str
+
+    """
+    try:
+        is_valid_id = is_valid_args({'id': id_value})
+    except DemistoException:
+        is_valid_id = False
+    assert is_valid_id == expected_output
