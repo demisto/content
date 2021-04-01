@@ -108,7 +108,7 @@ class Client(BaseClient):
             'generate_zip_bundle': generate_zip_bundle
         }
 
-        response = self._http_request('POST', 'create/', data=data, proxies=self.proxies)
+        response = self._http_request('POST', 'create/', data=data, proxies=self.proxies, timeout=120)
         return response
 
     def get_results_request(self, task_id: str):
