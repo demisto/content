@@ -36,7 +36,7 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
         # we only consider 'Contribution' prs when computing who to assign
         pr_labels = [label.name.casefold() for label in pull.labels]
         if label_to_consider not in pr_labels:
-          continue
+            continue
         assignees = set([assignee.login for assignee in pull.assignees])
         requested_reviewers, _ = pull.get_review_requests()
         requested_reviewers = set([requested_reviewer.login for requested_reviewer in requested_reviewers])
