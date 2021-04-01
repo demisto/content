@@ -1,6 +1,5 @@
-import json
 import traceback
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -16,7 +15,7 @@ def xsoar_store_list_command(args: Dict[str, Any]) -> CommandResults:
 
     if not data:
         if namespace == 'default':
-            return_error(f"Namespace: <default> empty!")
+            return_error("Namespace: <default> empty!")
         else:
             return_error(f"Namespace: <{namespace}> not found!")
 
