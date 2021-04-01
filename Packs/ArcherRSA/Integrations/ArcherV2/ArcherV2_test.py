@@ -259,7 +259,7 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '')
         with pytest.raises(DemistoException) as e:
             client.update_session()
-        assert "Check the given URL, can be a redirect issue" in str(e.value)
+        assert "Check the given URL, it can be a redirect issue" in str(e.value)
 
     def test_generate_field_contents(self):
         client = Client(BASE_URL, '', '', '', '')
