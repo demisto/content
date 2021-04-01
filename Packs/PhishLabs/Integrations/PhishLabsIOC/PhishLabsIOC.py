@@ -339,7 +339,7 @@ def create_indicator_content(indicator: dict) -> dict:
 ''' COMMANDS'''
 
 
-def test_module(client: Client, **kwargs):
+def test_module(client: Client):
     """
     Performs basic get request to get item samples
     """
