@@ -98,6 +98,14 @@ SEARCH_DEVICE_KEY_MAP = {
     'status': 'Status',
 }
 
+ENDPOINT_KEY_MAP = {
+    'device_id': 'ID',
+    'external_ip': 'IP',
+    'os_version': 'OS',
+    'hostname': 'Hostname',
+    'status': 'Status',
+}
+
 ''' SPLIT KEY DICTIONARY '''
 
 """
@@ -1547,7 +1555,24 @@ def search_device_command():
     entries = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
     headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
     hr = tableToMarkdown('Devices', entries, headers=headers, headerTransform=pascalToSpace)
-    ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries}
+    endpoint_context = [get_trasnformed_dict(device, ENDPOINT_KEY_MAP) for device in devices]
+    ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries, 'Endpoint(val.ID === obj.ID)': endpoint_context}
+    return create_entry_object(contents=raw_res, ec=ec, hr=hr)
+
+
+def get_endpint_command():
+    args = demisto.args()
+    if 'id' in args.keys():
+        args['device_id'] = args.get('id', '')
+        args.pop('id')
+    raw_res = search_device()
+    if not raw_res:
+        return create_entry_object(hr='Could not find any devices.')
+    devices = raw_res.get('resources')
+    endpoint_context = [get_trasnformed_dict(device, ENDPOINT_KEY_MAP) for device in devices]
+    headers = ['ID', 'IP', 'OS', 'Hostname', 'Status']
+    hr = tableToMarkdown('Endpoints', endpoint_context, headers=headers, headerTransform=pascalToSpace)
+    ec = {'Endpoint(val.ID === obj.ID)': endpoint_context}
     return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
 
@@ -2449,6 +2474,8 @@ def main():
                     device_id=args.get('device_id')
                 )
             )
+        elif command == 'Endpoint':
+            return_results(get_endpint_command())
         # Log exceptions
     except Exception as e:
         return_error(str(e))

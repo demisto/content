@@ -61,6 +61,14 @@ MIRROR_DIRECTION = {
     'Both': 'Both'
 }
 
+ENDPOINT_KEY_MAP = {
+    'endpoint_id': 'ID',
+    'ip': 'IP',
+    'os_type': 'OS',
+    'endpoint_name': 'Hostname',
+    'endpoint_status': 'Status',
+}
+
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -1694,6 +1702,42 @@ def get_endpoints_command(client, args):
     )
 
 
+def get_trasnformed_dict(old_dict, transformation_dict):
+    """
+        Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
+
+        :type old_dict: ``dict``
+        :param old_dict: Old dictionary to pull values from
+
+        :type transformation_dict: ``dict``
+        :param transformation_dict: Transformation dictionary that contains oldkeys:newkeys
+
+        :return Transformed dictionart (according to transformation_dict values)
+        :rtype ``dict``
+    """
+    new_dict = {}
+    for k in list(old_dict.keys()):
+        if k in transformation_dict:
+            new_dict[transformation_dict[k]] = old_dict[k]
+    return new_dict
+
+
+def endpoint_command(client, args):
+    endpoint_id_list = argToList(args.get('id'))
+
+    endpoints = client.get_endpoints(
+        endpoint_id_list=endpoint_id_list,
+        page_number=0,
+        limit=30,
+    )
+
+    endpoint_context = [get_trasnformed_dict(endpoint, ENDPOINT_KEY_MAP) for endpoint in endpoints]
+    for endpoint in endpoint_context:
+        endpoint['IP'] = endpoint.get('IP')[0]
+    ec = {'Endpoint(val.ID === obj.ID)': endpoint_context}
+    return tableToMarkdown('Endpoints', endpoint_context), ec, endpoints
+
+
 def return_endpoint_standard_context(endpoints):
     endpoints_context_list = []
     for endpoint in endpoints:
@@ -3203,6 +3247,9 @@ def main():
 
         elif demisto.command() == 'xdr-run-script-kill-process':
             return_results(run_script_kill_process_command(client, args))
+
+        elif demisto.command() == 'Endpoint':
+            return_outputs(*endpoint_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
