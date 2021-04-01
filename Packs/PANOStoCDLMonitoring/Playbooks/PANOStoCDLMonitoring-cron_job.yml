@@ -54,9 +54,9 @@ tasks:
           root: inputs.fw_serials
       pan_os_integration_name:
         complex:
-          root: inputs.panos_integration_name
-      panosintegrationname:
-        simple: ${inputs.panosintegrationname}
+          root: inputs.panos_integration_instance_name
+      panosintegrationinstancename:
+        simple: ${inputs.panosintegrationinstancename}
     separatecontext: false
     view: |-
       {
@@ -441,9 +441,9 @@ inputs:
   playbookInputQuery: null
 - key: pan_os_integration_name
   value:
-    simple: ${incident.panosintegrationname}
+    simple: ${incident.panosintegrationinstancename}
   required: false
-  description: Name of the Panorama integration to gather the list of monitored FWs.
+  description: Name of the Panorama integration instance to gather the list of monitored FWs.
     If none specified, the list of serials must be provided manually as "fw_serials".
   playbookInputQuery: null
 - key: email_notification

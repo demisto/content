@@ -1,20 +1,20 @@
 {
     "associatedToAll": false,
     "caseInsensitive": true,
-    "cliName": "panosintegrationname",
+    "cliName": "panosintegrationinstancename",
     "closeForm": false,
     "content": true,
-    "description": "The name of the PAN-OS integration instance",
+    "description": "The name of the PAN-OS integration instance.",
     "editForm": true,
     "group": 0,
     "hidden": false,
     "associatedTypes": [
         "Cortex Data Lake Monitoring"
     ],
-    "id": "incident_panosintegrationname",
+    "id": "incident_panosintegrationinstancename",
     "isReadOnly": false,
     "locked": false,
-    "name": "panosintegrationname",
+    "name": "panosintegrationinstancename",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
