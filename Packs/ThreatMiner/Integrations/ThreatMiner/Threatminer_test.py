@@ -1,24 +1,12 @@
-import json
-import pytest
 import demistomock as demisto
-from ThreatMiner import file_command
+from ThreatMiner import get_dbot_score_report
+from CommonServerPython import DBotScoreReliability
 
-def load_test_data(json_path):
-    with open(json_path) as f:
-        return json.load(f)
 
-def test_file(mocker):
-    mocker.patch.object(demisto, 'params', return_value={'threat_miner_url': 'https://api.threatminer.org/v2/',
-                                                            'verify_certificates': True,
-                                                            'reliability': 'C - Fairly reliable',
-                                                            'max_array_size': 30,
-                                                            'proxy': False
-                                                         })
-    args = {
-        'threat_miner_url': 'https://api.threatminer.org/v2/',
-        'verify_certificates': True,
-        'reliability': 'C - Fairly reliable',
-        'max_array_size': 30
-    }
-    res = file_command(**args)
-    print(res)
+def test_reliability_in_dbot(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'threshold': '10'})
+
+    dbot = get_dbot_score_report(0, 'CA978112CA1BBDCAFAC231B39A23DC4DA786EFF8147C4E72B9807785AFEE48BB', {},
+                                    DBotScoreReliability.C)
+
+    assert dbot['Reliability'] == DBotScoreReliability.C

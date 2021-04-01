@@ -692,6 +692,7 @@ def main():
         }
 
         reliability = params.get('integrationReliability')
+        reliability = reliability if reliability else DBotScoreReliability.C
 
         if DBotScoreReliability.is_valid_type(reliability):
             args['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
@@ -728,6 +729,7 @@ def main():
             'ContentsFormat': formats['text'],
             'Contents': 'error has occured: %s' % (e.message, ),
         })
+
 
 if __name__ == "__main__":
     main()
