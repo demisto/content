@@ -15,7 +15,7 @@ Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and
 4. Click **Test** to validate the URLs, token, and connection.
 
 
-##Uploading a file to the sandbox
+## Uploading a file to the sandbox
 There are 2 ways to upload a file to the sandbox.
 1. Using the ***cs-fx-upload-file*** command with **submit_file=yes**.
 2. Using the ***cs-fx-upload-file*** command and afterwards the ***cs-fx-submit-uploaded-file command***, 
