@@ -698,7 +698,7 @@ def main():
         user_name=params.get('credentials', {}).get('identifier'),
         password=params.get('credentials', {}).get('password'),
         use_ssl=not params.get('insecure', False),
-        reliability=params.get('integrationReliability')
+        reliability=params.get('integrationReliability', DBotScoreReliability.B)
     )
 
     args = {
