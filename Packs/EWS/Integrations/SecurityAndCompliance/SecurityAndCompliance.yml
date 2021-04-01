@@ -593,7 +593,6 @@ script:
       required: false
       secret: false
       auto: PREDEFINED
-      defaultValue: "SoftDelete"
       predefined:
         - SoftDelete
         - HardDelete
