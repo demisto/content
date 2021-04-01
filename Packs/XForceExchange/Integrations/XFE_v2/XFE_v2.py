@@ -477,7 +477,8 @@ def main():
     credentials = params.get('credentials')
 
     reliability = demisto.params().get('integrationReliability')
-    reliability = reliability if reliability else DBotScoreReliability.B
+    reliability = reliability if reliability else DBotScoreReliability.C
+
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
