@@ -57,7 +57,8 @@ tasks:
         complex:
           root: inputs.fw_serials
       pan_os_integration_instance_name:
-        simple: pan_os_pano_8.1_ 56111
+        complex:
+          root: inputs.pan_os_integration_instance_name
     separatecontext: false
     view: |-
       {
