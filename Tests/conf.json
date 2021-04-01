@@ -1487,6 +1487,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
+            "memory_threshold": 100,
             "instance_names": "use_default_handler"
         },
         {
