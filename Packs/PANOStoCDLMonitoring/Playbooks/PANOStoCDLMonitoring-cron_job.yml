@@ -313,6 +313,8 @@ tasks:
     scriptarguments:
       name:
         simple: CDL Monitoring
+      type:
+        simple: Cortex Data Lake Monitoring
     separatecontext: false
     view: |-
       {
