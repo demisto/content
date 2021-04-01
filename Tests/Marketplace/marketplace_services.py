@@ -1267,8 +1267,8 @@ class Pack(object):
                 # The case where the version is not a key in the changelog file or it is a key of aggregated content
                 else:
                     logging.info("The version is not a key in the changelog file or it is a key of aggregated content")
-                    same_block_versions_dict, higher_nearest_version = self.get_same_block_versions(release_notes_dir,
-                                                                                                     version, changelog)
+                    same_block_versions_dict, higher_nearest_version = self.get_same_block_versions(
+                        release_notes_dir, version, changelog)
                     modified_versions_dict[higher_nearest_version] = aggregate_release_notes_for_marketplace(
                         same_block_versions_dict)
 
@@ -1462,6 +1462,7 @@ class Pack(object):
                                     build_number=build_number,
                                     pack_was_modified=True,
                                     new_version=False)
+                                changelog[version] = changelog_entry
 
                 else:  # will enter only on initial version and release notes folder still was not created
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
