@@ -1106,7 +1106,7 @@ def test_return_error_get_modified_remote_data(mocker):
     err_msg = 'Test Error'
     with raises(SystemExit):
         return_error(err_msg)
-    assert demisto.results.call_args[0][0]['Contents'] == err_msg + 'skip update'
+    assert demisto.results.call_args[0][0]['Contents'] == err_msg + ' skip update'
 
 
 def test_get_demisto_version(mocker, clear_version_cache):

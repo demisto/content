@@ -4661,7 +4661,7 @@ def return_error(message, error='', outputs=None):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
     if is_command and demisto.command() == 'get-modified-remote-data' and not isinstance(error, NotImplementedError):
-        message += 'skip update'
+        message += ' skip update'
 
     if is_server_handled:
         raise Exception(message)
