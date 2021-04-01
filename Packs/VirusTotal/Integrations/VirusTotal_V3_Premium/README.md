@@ -37,11 +37,11 @@ Your API key carries all your privileges, so keep it secure and don't share it w
 Fetch incidents will fetch livehunt notifications of the given ruleset or identifier. 
 As an example, you can fetch incidents that created by CyberGate ruleset by using the "cybergate" tag.
 
-## Changes from VirusTotal - Private API
-The *VirusTotal Premium (API v3)* integration does not match the *VirusTotal - Private API* integration.
+## VirusTotal - Private API compatibility
 2 commands matches the commands in *VirusTotal - Private API* and therefore, it is recommended to use the new commands in *VirusTotal Premium - (API v3)*.
 - **vt-private-search-file**
 - **vt-private-download-file**
+For all other commands you should use the *VirusTotal - Private API* integration.
 
 ## Report commands alternatives / Enrichment
 To enrich indicators, you can use the *VirusTotal (API v3)* integration reputation commands.
