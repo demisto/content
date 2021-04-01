@@ -309,7 +309,7 @@ tasks:
       - "1"
     scriptarguments:
       name:
-        simple: CDL Monitoring
+        simple: Cotex Data Lake Monitoring
       type:
         simple: Cortex Data Lake Monitoring
     separatecontext: false
