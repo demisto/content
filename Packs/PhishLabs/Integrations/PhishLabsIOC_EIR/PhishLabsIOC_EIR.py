@@ -456,7 +456,7 @@ def main():
     params = demisto.params()
     base_url = urljoin(params.get('url'), 'idapi/v1')
     verify_ssl = not params.get('insecure', False)
-    reliability = params.get('integrationReliability')
+    reliability = params.get('integrationReliability', DBotScoreReliability.B)
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
