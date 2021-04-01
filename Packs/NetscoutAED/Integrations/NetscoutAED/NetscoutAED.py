@@ -468,8 +468,8 @@ def handle_country_addition_commands(client: Client, demisto_args: dict,
     demisto_args['country'] = ','.join(argToList(countries_to_add))
 
     if direction == "outbound":
-        raw_result = client.outbound_blacklisted_country_add_command(demisto_args)
-        countries_list = copy.deepcopy(raw_result)
+        raw_result: Union[dict, list] = client.outbound_blacklisted_country_add_command(demisto_args)
+        countries_list = list(copy.deepcopy(raw_result))
 
     else:  # inbound
         raw_result = client.inbound_blacklisted_country_add_command(demisto_args)
