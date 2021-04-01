@@ -102,7 +102,7 @@
                     },
                     "simple": ""
                 },
-                "QSS Case Flase Positive": {
+                "QSS Case False Positive": {
                     "complex": {
                         "accessor": "",
                         "filters": [

@@ -12,8 +12,7 @@ def test_fetch_incidents(requests_mock):
     from QSS import Client, fetch_incidents
 
     mock_response = util_load_json('test_data/soc_monitoring_cases.json')
-    requests_mock.get(
-        'https://test.com/api/v1/get_alerts?apikey=5Xcaadf7b17e4c5e679d2a851a91a2&duration=48', json=mock_response['alerts'])
+    requests_mock.get('https://test.com/api/v1/get_alerts?apikey=5Xa2&duration=48', json=mock_response['alerts'])
 
     client = Client(
         base_url='https://test.com/api/v1',
