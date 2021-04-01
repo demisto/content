@@ -13,6 +13,7 @@
 <li><strong>Good Dispositions (CheckPhish labels for non-phishing URLs. Default is "clean")</strong></li>
 <li><strong>Suspicious dispositions (CheckPhish labels for suspicious phishing URLs). Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious"</strong></li>
 <li><strong>Bad dispositions (CheckPhish labels for phishing URLs). Defaults are "cryptojacking", "phish", "likely_phish", "scam".</strong></li>
+<li><strong>Source Reliability. Reliability of the source providing the intelligence data. (The default value is: B - Usually reliable)</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
