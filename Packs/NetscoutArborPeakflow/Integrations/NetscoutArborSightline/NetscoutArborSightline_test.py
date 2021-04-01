@@ -2,7 +2,8 @@ import json
 import io
 import pytest
 from Packs.NetscoutArborPeakflow.Integrations.NetscoutArborSightline.NetscoutArborSightline import NetscoutClient, \
-    fetch_incidents_command, list_alerts_command, alert_annotation_list_command, mitigation_list_command
+    fetch_incidents_command, list_alerts_command, alert_annotation_list_command, mitigation_list_command, \
+    mitigation_template_list_command
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
@@ -79,4 +80,14 @@ def test_mitigation_list_command(mocker):
     mocker.patch.object(client, 'list_mitigations', return_value=alerts_http_response)
 
     command_result = mitigation_list_command(client, {})
+    assert command_result.outputs == alerts_command_results
+
+
+def test_mitigation_template_list_command(mocker):
+    alerts_http_response = http_responses['mitigation_templates']
+    alerts_command_results = command_results['list_mitigation_templates']
+
+    mocker.patch.object(client, 'mitigation_template_list', return_value=alerts_http_response)
+
+    command_result = mitigation_template_list_command(client, {})
     assert command_result.outputs == alerts_command_results

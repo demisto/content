@@ -176,2016 +176,6 @@
                     }
                 },
                 "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-30T04:00:02+00:00",
-                    "stop_time": "2021-03-30T04:10:30+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10721.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2426",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2426?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "888",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2426/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2426",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2426/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2426/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2426/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2426",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2426/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2426/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2426",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2426/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "data",
-                    "alert_type": "flow_down",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T22:07:14+00:00",
-                    "stop_time": "2021-03-30T04:00:34+00:00",
-                    "subobject": {}
-                },
-                "id": "2425",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2425?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "router": {
-                        "data": {
-                            "id": "121",
-                            "type": "router"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T22:00:02+00:00",
-                    "stop_time": "2021-03-29T22:10:29+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10720.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2424",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2424?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "887",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2424/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2424",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2424/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2424/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2424/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2424",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2424/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2424/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2424",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2424/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "data",
-                    "alert_type": "flow_down",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T16:07:15+00:00",
-                    "stop_time": "2021-03-29T22:00:14+00:00",
-                    "subobject": {}
-                },
-                "id": "2423",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2423?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "router": {
-                        "data": {
-                            "id": "121",
-                            "type": "router"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T16:00:02+00:00",
-                    "stop_time": "2021-03-29T16:10:29+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10720.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2422",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2422?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "885",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2422/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2422",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2422/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2422/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2422/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2422",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2422/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2422/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2422",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2422/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": true,
-                    "start_time": "2021-03-29T10:50:54+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2421",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2421?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T10:08:15+00:00",
-                    "stop_time": "2021-03-29T10:20:55+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2420",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2420?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "data",
-                    "alert_type": "flow_down",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T10:07:15+00:00",
-                    "stop_time": "2021-03-29T16:00:14+00:00",
-                    "subobject": {}
-                },
-                "id": "2419",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2419?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "router": {
-                        "data": {
-                            "id": "121",
-                            "type": "router"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T10:00:01+00:00",
-                    "stop_time": "2021-03-29T10:10:30+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10720.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2418",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2418?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "884",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2418/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2418",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2418/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2418/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2418/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2418",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2418/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2418/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2418",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2418/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T05:04:34+00:00",
-                    "stop_time": "2021-03-29T09:38:19+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2417",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2417?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "data",
-                    "alert_type": "flow_down",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T04:07:13+00:00",
-                    "stop_time": "2021-03-29T10:00:15+00:00",
-                    "subobject": {}
-                },
-                "id": "2416",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2416?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "router": {
-                        "data": {
-                            "id": "121",
-                            "type": "router"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T04:00:02+00:00",
-                    "stop_time": "2021-03-29T04:10:30+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10721.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2415",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2415?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "883",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2415/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2415",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2415/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2415/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2415/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2415",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2415/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2415/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2415",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2415/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T03:51:35+00:00",
-                    "stop_time": "2021-03-29T04:34:14+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2414",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2414?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-29T00:18:54+00:00",
-                    "stop_time": "2021-03-29T03:21:34+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2413",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2413?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T22:41:34+00:00",
-                    "stop_time": "2021-03-28T23:48:54+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2412",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2412?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "data",
-                    "alert_type": "flow_down",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T22:07:36+00:00",
-                    "stop_time": "2021-03-29T04:00:15+00:00",
-                    "subobject": {}
-                },
-                "id": "2411",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2411?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "router": {
-                        "data": {
-                            "id": "121",
-                            "type": "router"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T22:02:56+00:00",
-                    "stop_time": "2021-03-28T22:11:36+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2410",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2410?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T22:00:02+00:00",
-                    "stop_time": "2021-03-28T22:10:30+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10721.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2409",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2409?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "882",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2409/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2409",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2409/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2409/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2409/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2409",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2409/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2409/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2409",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2409/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T20:45:34+00:00",
-                    "stop_time": "2021-03-28T21:32:55+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2408",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2408?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T19:49:35+00:00",
-                    "stop_time": "2021-03-28T20:15:35+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2407",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2407?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T18:58:13+00:00",
-                    "stop_time": "2021-03-28T19:19:54+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2406",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2406?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T17:49:54+00:00",
-                    "stop_time": "2021-03-28T18:27:55+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2405",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2405?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T17:00:15+00:00",
-                    "stop_time": "2021-03-28T17:19:53+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2404",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2404?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "data",
-                    "alert_type": "flow_down",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T16:07:14+00:00",
-                    "stop_time": "2021-03-28T22:00:36+00:00",
-                    "subobject": {}
-                },
-                "id": "2403",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2403?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "router": {
-                        "data": {
-                            "id": "121",
-                            "type": "router"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T16:00:02+00:00",
-                    "stop_time": "2021-03-28T16:10:30+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10720.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2402",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2402?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "881",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2402/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2402",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2402/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2402/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2402/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2402",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2402/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2402/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2402",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2402/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T15:51:56+00:00",
-                    "stop_time": "2021-03-28T16:30:34+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2401",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2401?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T15:07:55+00:00",
-                    "stop_time": "2021-03-28T15:21:55+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2400",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2400?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T14:08:36+00:00",
-                    "stop_time": "2021-03-28T14:37:34+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2399",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2399?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "data",
-                    "alert_type": "flow_down",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T10:07:34+00:00",
-                    "stop_time": "2021-03-28T16:00:16+00:00",
-                    "subobject": {}
-                },
-                "id": "2398",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2398?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "router": {
-                        "data": {
-                            "id": "121",
-                            "type": "router"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T10:00:02+00:00",
-                    "stop_time": "2021-03-28T10:10:30+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10720.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2397",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2397?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "880",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2397/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2397",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2397/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2397/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2397/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2397",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2397/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2397/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2397",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2397/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "data",
-                    "alert_type": "flow_down",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T04:07:15+00:00",
-                    "stop_time": "2021-03-28T10:00:34+00:00",
-                    "subobject": {}
-                },
-                "id": "2396",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2396?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "router": {
-                        "data": {
-                            "id": "121",
-                            "type": "router"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T04:00:01+00:00",
-                    "stop_time": "2021-03-28T04:10:29+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10720.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2395",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2395?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "879",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2395/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2395",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2395/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2395/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2395/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2395",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2395/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2395/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2395",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2395/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "system",
-                    "alert_type": "device_system_error",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-28T00:55:55+00:00",
-                    "stop_time": "2021-03-28T13:38:35+00:00",
-                    "subobject": {
-                        "threshold": 70,
-                        "type": "memory_usage",
-                        "value": 71
-                    }
-                },
-                "id": "2394",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2394?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "data",
-                    "alert_type": "flow_down",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-27T22:07:35+00:00",
-                    "stop_time": "2021-03-28T04:00:14+00:00",
-                    "subobject": {}
-                },
-                "id": "2393",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2393?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "router": {
-                        "data": {
-                            "id": "121",
-                            "type": "router"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-27T22:00:02+00:00",
-                    "stop_time": "2021-03-27T22:10:29+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10721.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2392",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2392?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "878",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2392/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2392",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2392/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2392/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2392/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2392",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2392/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2392/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2392",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2392/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "data",
-                    "alert_type": "flow_down",
-                    "importance": 1,
-                    "ongoing": false,
-                    "start_time": "2021-03-27T16:07:16+00:00",
-                    "stop_time": "2021-03-27T22:00:35+00:00",
-                    "subobject": {}
-                },
-                "id": "2391",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2391?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "router": {
-                        "data": {
-                            "id": "121",
-                            "type": "router"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
-                        }
-                    }
-                },
-                "type": "alert"
-            },
-            {
-                "attributes": {
-                    "alert_class": "dos",
-                    "alert_type": "dos_host_detection",
-                    "classification": "Possible Attack",
-                    "importance": 2,
-                    "ongoing": false,
-                    "start_time": "2021-03-27T16:00:01+00:00",
-                    "stop_time": "2021-03-27T16:10:29+00:00",
-                    "subobject": {
-                        "direction": "Incoming",
-                        "fast_detected": true,
-                        "host_address": "192.168.123.123",
-                        "impact_boundary": "managed object",
-                        "impact_bps": 1072,
-                        "impact_pps": 3,
-                        "ip_version": 4,
-                        "misuse_types": [
-                            "Total Traffic"
-                        ],
-                        "severity_percent": 10720.0,
-                        "severity_threshold": 10,
-                        "severity_unit": "bps",
-                        "summary_url": "/page?id=customer_summary&gid=122"
-                    }
-                },
-                "id": "2390",
-                "links": {
-                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2390?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
-                },
-                "relationships": {
-                    "annotations": {
-                        "data": [
-                            {
-                                "id": "877",
-                                "type": "alert_annotation"
-                            }
-                        ],
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2390/annotations/"
-                        }
-                    },
-                    "device": {
-                        "data": {
-                            "id": "115",
-                            "type": "device"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
-                        }
-                    },
-                    "managed_object": {
-                        "data": {
-                            "id": "122",
-                            "type": "managed_object"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
-                        }
-                    },
-                    "packet_size_distribution": {
-                        "data": {
-                            "id": "packet-size-distribution-2390",
-                            "type": "alert_packet_size_distribution"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2390/packet_size_distribution"
-                        }
-                    },
-                    "patterns": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2390/patterns/"
-                        }
-                    },
-                    "router_traffic": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2390/router_traffic/"
-                        }
-                    },
-                    "source_ip_addresses": {
-                        "data": {
-                            "id": "source-ip-addresses-2390",
-                            "type": "alert_source_ip_addresses"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2390/source_ip_addresses"
-                        }
-                    },
-                    "thresholds": {
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2390/misuse_types_thresholds/"
-                        }
-                    },
-                    "traffic": {
-                        "data": {
-                            "id": "alert-traffic-2390",
-                            "type": "alert_traffic"
-                        },
-                        "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2390/traffic"
-                        }
-                    }
-                },
-                "type": "alert"
             }
         ],
         "links": {
@@ -2417,13 +407,29 @@
         "data": [
             {
                 "attributes": {
-                    "added": "2021-03-29T18:18:13+00:00",
-                    "author": "auto-annotation",
-                    "text": "Flowspec mitigation 'testMit2' started"
+                    "description": "just desc",
+                    "ip_version": 6,
+                    "is_automitigation": false,
+                    "name": "testMit2",
+                    "ongoing": true,
+                    "start": "2021-03-29T18:18:08.699990+00:00",
+                    "subobject": {
+                        "action": {
+                            "type": "accept"
+                        },
+                        "bgp_communities": [],
+                        "l3vpn_route_distinguisher": "",
+                        "l3vpn_route_targets": []
+                    },
+                    "subtype": "flowspec",
+                    "user": "demisto"
                 },
-                "id": "886",
+                "id": "flowspec-6",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-6"
+                },
                 "relationships": {
-                    "parent": {
+                    "alert": {
                         "data": {
                             "id": "2009",
                             "type": "alert"
@@ -2431,19 +437,50 @@
                         "links": {
                             "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009"
                         }
+                    },
+                    "managed_object": {
+                        "data": {
+                            "id": "122",
+                            "type": "managed_object"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
+                        }
+                    },
+                    "routers": {
+                        "data": [],
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/"
+                        }
                     }
                 },
-                "type": "alert_annotation"
+                "type": "mitigation"
             },
             {
                 "attributes": {
-                    "added": "2021-03-07T19:09:05+00:00",
-                    "author": "auto-annotation",
-                    "text": "Flowspec mitigation 'testMit' started"
+                    "description": "just desc",
+                    "ip_version": 6,
+                    "is_automitigation": false,
+                    "name": "testMit",
+                    "ongoing": true,
+                    "start": "2021-03-07T19:09:03.895220+00:00",
+                    "subobject": {
+                        "action": {
+                            "type": "accept"
+                        },
+                        "bgp_communities": [],
+                        "l3vpn_route_distinguisher": "",
+                        "l3vpn_route_targets": []
+                    },
+                    "subtype": "flowspec",
+                    "user": "demisto"
                 },
-                "id": "797",
+                "id": "flowspec-5",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-5"
+                },
                 "relationships": {
-                    "parent": {
+                    "alert": {
                         "data": {
                             "id": "2009",
                             "type": "alert"
@@ -2451,33 +488,567 @@
                         "links": {
                             "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009"
                         }
-                    }
-                },
-                "type": "alert_annotation"
-            },
-            {
-                "attributes": {
-                    "added": "2021-03-07T11:00:02+00:00",
-                    "author": "auto-annotation",
-                    "text": "This alert was generated due to fast flood detection. The 'Total Traffic' host alert signature has been triggered at router 'Traffic-PCAP-CentOS'. (expected rate: 5 bps/50.00 Kpps, observed rate: 11 bps/0 pps)"
-                },
-                "id": "795",
-                "relationships": {
-                    "parent": {
+                    },
+                    "managed_object": {
                         "data": {
-                            "id": "2009",
-                            "type": "alert"
+                            "id": "122",
+                            "type": "managed_object"
                         },
                         "links": {
-                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009"
+                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
+                        }
+                    },
+                    "routers": {
+                        "data": [],
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/"
                         }
                     }
                 },
-                "type": "alert_annotation"
+                "type": "mitigation"
             }
         ],
         "links": {
-            "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2009/annotations/"
+            "first": "https://content.demisto.works:57585/api/sp/v7/mitigations/?perPage=50&page=1",
+            "last": "https://content.demisto.works:57585/api/sp/v7/mitigations/?perPage=50&page=1",
+            "self": "https://content.demisto.works:57585/api/sp/v7/mitigations/?perPage=50&page=1"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "mitigation_templates": {
+        "data": [
+            {
+                "attributes": {
+                    "description": "Default mitigation values inherited by all new IPv4 mitigations (unless otherwise scoped)",
+                    "ip_version": 4,
+                    "name": "Default IPv4",
+                    "subobject": {
+                        "aif_http_url_regexp": {
+                            "aif_http_level": "low",
+                            "blacklist_on_blocked": true
+                        },
+                        "bgp_announce": true,
+                        "black_white_lists": {
+                            "blacklist_sources": false,
+                            "blacklist_sources_locked": true
+                        },
+                        "diversion_prefix_locked": true,
+                        "diversion_prefix_mode": "disabled",
+                        "diversion_prefixes": [
+                            ""
+                        ],
+                        "dns_auth": {
+                            "enabled": true,
+                            "locked": true,
+                            "timeout": 60
+                        },
+                        "dns_malformed": {
+                            "enabled": true,
+                            "locked": true
+                        },
+                        "dns_object_ratelimiting": {
+                            "blacklist_enabled": false,
+                            "enabled": false,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "dns_regex": {
+                            "match_direction": "query",
+                            "match_direction_locked": true
+                        },
+                        "dns_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "http_malformed": {
+                            "enabled": true,
+                            "level": "low",
+                            "locked": true
+                        },
+                        "http_object": {
+                            "enabled": true,
+                            "limit": 10,
+                            "locked": true
+                        },
+                        "http_request": {
+                            "enabled": true,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "http_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "ip_address_filterlist": {
+                            "blacklist_sources": true,
+                            "blacklist_sources_locked": true
+                        },
+                        "ip_location_filterlist": {
+                            "drop_matched_or_unmatched": "matched"
+                        },
+                        "packet_header_filtering": {
+                            "locked": true
+                        },
+                        "payload": {
+                            "blacklist_hosts": false,
+                            "match_src_port": false,
+                            "match_src_port_locked": false
+                        },
+                        "per_connection_flood_protection": {
+                            "enabled": false,
+                            "enforcement": "block",
+                            "locked": true,
+                            "maximum_bps": 0,
+                            "maximum_pps": 0
+                        },
+                        "protection_prefixes": [
+                            ""
+                        ],
+                        "protocol_baselines": {
+                            "locked": true
+                        },
+                        "sip_malformed": {
+                            "enabled": true,
+                            "locked": true
+                        },
+                        "sip_request_limiting": {
+                            "enabled": true,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "tcp_connection_limiting": {
+                            "blacklist": true,
+                            "enabled": false,
+                            "ignore_idle": true,
+                            "locked": true
+                        },
+                        "tcp_connection_reset": {
+                            "enabled": true,
+                            "locked": true,
+                            "slow_application_bitrate_interval": 60,
+                            "slow_application_header_time": 60,
+                            "slow_application_request_bitrate": 200,
+                            "timeout": 90,
+                            "track_long_lived": true
+                        },
+                        "tcp_syn_auth": {
+                            "enabled": true,
+                            "idle_timeout": 60,
+                            "locked": true
+                        },
+                        "tls_negotiation": {
+                            "clients_can_alert": true,
+                            "max_cipher_suites": 100,
+                            "max_early_close": 25,
+                            "max_extensions": 25,
+                            "max_pend_secs": 30,
+                            "min_pend_secs": 15
+                        },
+                        "udp_reflection_amp": {
+                            "auto_transfer_misuse": false,
+                            "auto_transfer_misuse_dns": false,
+                            "blacklist_enabled": true,
+                            "dns": {
+                                "match_fcap": "bytes 2049..65535"
+                            },
+                            "enabled": false,
+                            "locked": true
+                        },
+                        "udp_session_auth": {
+                            "enabled": false,
+                            "idle_session_timer": 60,
+                            "in_progress_period": 60,
+                            "locked": false,
+                            "retransmission_timer": 5
+                        },
+                        "zombie_detection": {
+                            "all_hosts": {
+                                "thresholds": {
+                                    "bps": 2000000,
+                                    "pps": 500
+                                }
+                            },
+                            "enabled": true,
+                            "locked": true
+                        }
+                    },
+                    "subtype": "tms",
+                    "system": true
+                },
+                "id": "1",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/1"
+                },
+                "relationships": {
+                    "tms_group": {
+                        "data": {
+                            "id": "3",
+                            "type": "tms_group"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/tms_groups/3"
+                        }
+                    }
+                },
+                "type": "mitigation_template"
+            },
+            {
+                "attributes": {
+                    "description": "Auto-Mitigation template use by default for all IPv4 auto-mitigations. Auto-mitigation must be enabled for the managed object.",
+                    "ip_version": 4,
+                    "name": "Auto-Mitigation IPv4",
+                    "subobject": {
+                        "aif_http_url_regexp": {
+                            "aif_http_level": "low"
+                        },
+                        "bgp_announce": true,
+                        "black_white_lists": {
+                            "blacklist_sources": false,
+                            "blacklist_sources_locked": true
+                        },
+                        "diversion_prefix_locked": true,
+                        "diversion_prefix_mode": "disabled",
+                        "diversion_prefixes": [
+                            ""
+                        ],
+                        "dns_auth": {
+                            "enabled": true,
+                            "locked": true,
+                            "timeout": 60
+                        },
+                        "dns_malformed": {
+                            "enabled": true,
+                            "locked": true
+                        },
+                        "dns_object_ratelimiting": {
+                            "blacklist_enabled": false,
+                            "enabled": false,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "dns_regex": {
+                            "match_direction": "query",
+                            "match_direction_locked": true
+                        },
+                        "dns_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "http_malformed": {
+                            "enabled": true,
+                            "level": "low",
+                            "locked": true
+                        },
+                        "http_object": {
+                            "enabled": true,
+                            "limit": 10,
+                            "locked": true
+                        },
+                        "http_request": {
+                            "enabled": true,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "http_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "ip_address_filterlist": {
+                            "blacklist_sources": true,
+                            "blacklist_sources_locked": true
+                        },
+                        "ip_location_filterlist": {
+                            "drop_matched_or_unmatched": "matched"
+                        },
+                        "packet_header_filtering": {
+                            "locked": true
+                        },
+                        "payload": {
+                            "blacklist_hosts": false,
+                            "match_src_port": false,
+                            "match_src_port_locked": false
+                        },
+                        "per_connection_flood_protection": {
+                            "enabled": false,
+                            "enforcement": "block",
+                            "locked": true,
+                            "maximum_bps": 0,
+                            "maximum_pps": 0
+                        },
+                        "protection_prefixes": [
+                            ""
+                        ],
+                        "protocol_baselines": {
+                            "locked": true
+                        },
+                        "shaping": {
+                            "enabled": false,
+                            "locked": true
+                        },
+                        "sip_malformed": {
+                            "enabled": true,
+                            "locked": true
+                        },
+                        "sip_request_limiting": {
+                            "enabled": true,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "tcp_connection_limiting": {
+                            "blacklist": true,
+                            "enabled": false,
+                            "ignore_idle": true,
+                            "locked": true
+                        },
+                        "tcp_connection_reset": {
+                            "enabled": true,
+                            "locked": true,
+                            "timeout": 90
+                        },
+                        "tcp_syn_auth": {
+                            "enabled": true,
+                            "idle_timeout": 60,
+                            "locked": true
+                        },
+                        "tls_negotiation": {
+                            "clients_can_alert": true,
+                            "max_cipher_suites": 100,
+                            "max_early_close": 25,
+                            "max_extensions": 25,
+                            "max_pend_secs": 30,
+                            "min_pend_secs": 15
+                        },
+                        "udp_reflection_amp": {
+                            "auto_transfer_misuse": false,
+                            "auto_transfer_misuse_dns": false,
+                            "blacklist_enabled": true,
+                            "chargen": {
+                                "enabled": true
+                            },
+                            "cldap": {
+                                "enabled": true
+                            },
+                            "dns": {
+                                "match_fcap": "bytes 2049..65535"
+                            },
+                            "enabled": true,
+                            "l2tp": {
+                                "enabled": true
+                            },
+                            "locked": true,
+                            "mdns": {
+                                "enabled": true
+                            },
+                            "memcached": {
+                                "enabled": true
+                            },
+                            "mssqlrs": {
+                                "enabled": true
+                            },
+                            "netbios": {
+                                "enabled": true
+                            },
+                            "ntp": {
+                                "enabled": true
+                            },
+                            "ripv1": {
+                                "enabled": true
+                            },
+                            "rpcbind": {
+                                "enabled": true
+                            },
+                            "snmp": {
+                                "enabled": true
+                            },
+                            "ssdp": {
+                                "enabled": true
+                            }
+                        },
+                        "udp_session_auth": {
+                            "enabled": false,
+                            "idle_session_timer": 60,
+                            "in_progress_period": 60,
+                            "locked": false,
+                            "retransmission_timer": 5
+                        },
+                        "zombie_detection": {
+                            "all_hosts": {
+                                "thresholds": {
+                                    "bps": 2000000,
+                                    "pps": 500
+                                }
+                            },
+                            "enabled": true,
+                            "locked": true
+                        }
+                    },
+                    "subtype": "tms",
+                    "system": true
+                },
+                "id": "2",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/2"
+                },
+                "relationships": {
+                    "tms_group": {
+                        "data": {
+                            "id": "3",
+                            "type": "tms_group"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/tms_groups/3"
+                        }
+                    }
+                },
+                "type": "mitigation_template"
+            },
+            {
+                "attributes": {
+                    "description": "Template contains countermeasures that support TMS deployments focused on VoIP Gateway Flood Protection",
+                    "ip_version": 4,
+                    "name": "VoIP Gateway Protection",
+                    "subobject": {
+                        "aif_http_url_regexp": {
+                            "aif_http_level": "low",
+                            "regexp_locked": false
+                        },
+                        "bgp_announce": true,
+                        "black_white_lists": {
+                            "blacklist_sources": false,
+                            "blacklist_sources_locked": true,
+                            "inline_filters": [
+                                "drop (proto icmp or proto tcp)"
+                            ]
+                        },
+                        "diversion_prefix_locked": true,
+                        "diversion_prefix_mode": "disabled",
+                        "diversion_prefixes": [
+                            ""
+                        ],
+                        "dns_object_ratelimiting": {
+                            "blacklist_enabled": false,
+                            "enabled": false,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "dns_regex": {
+                            "match_direction": "query",
+                            "match_direction_locked": true
+                        },
+                        "dns_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "http_malformed": {
+                            "level": "low",
+                            "locked": false
+                        },
+                        "http_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "ip_address_filterlist": {
+                            "blacklist_sources": true,
+                            "blacklist_sources_locked": true
+                        },
+                        "ip_location_filterlist": {
+                            "drop_matched_or_unmatched": "matched"
+                        },
+                        "packet_header_filtering": {
+                            "locked": true
+                        },
+                        "payload": {
+                            "blacklist_hosts": false,
+                            "match_src_port": false,
+                            "match_src_port_locked": false,
+                            "other_ip_protocols_locked": false,
+                            "regexp_uri_locked": false,
+                            "tcp_ports_locked": false,
+                            "udp_ports_locked": false
+                        },
+                        "per_connection_flood_protection": {
+                            "enabled": false,
+                            "enforcement": "block",
+                            "locked": true,
+                            "maximum_bps": 0,
+                            "maximum_pps": 0
+                        },
+                        "protection_prefixes": [
+                            ""
+                        ],
+                        "sip_malformed": {
+                            "enabled": true,
+                            "locked": true
+                        },
+                        "tcp_connection_limiting": {
+                            "blacklist": true,
+                            "enabled": false,
+                            "ignore_idle": true,
+                            "locked": true
+                        },
+                        "tls_negotiation": {
+                            "clients_can_alert": true,
+                            "max_cipher_suites": 100,
+                            "max_early_close": 25,
+                            "max_extensions": 25,
+                            "max_pend_secs": 30,
+                            "min_pend_secs": 15
+                        },
+                        "udp_reflection_amp": {
+                            "auto_transfer_misuse": false,
+                            "auto_transfer_misuse_dns": false,
+                            "blacklist_enabled": true,
+                            "dns": {
+                                "match_fcap": "bytes 2049..65535"
+                            },
+                            "enabled": false,
+                            "locked": true
+                        },
+                        "udp_session_auth": {
+                            "enabled": false,
+                            "idle_session_timer": 60,
+                            "in_progress_period": 60,
+                            "locked": false,
+                            "retransmission_timer": 5
+                        },
+                        "zombie_detection": {
+                            "all_hosts": {
+                                "thresholds": {
+                                    "bps": 500000,
+                                    "pps": 20
+                                }
+                            },
+                            "enabled": true
+                        }
+                    },
+                    "subtype": "tms",
+                    "system": true
+                },
+                "id": "3",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/3"
+                },
+                "relationships": {
+                    "tms_group": {
+                        "data": {
+                            "id": "3",
+                            "type": "tms_group"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/tms_groups/3"
+                        }
+                    }
+                },
+                "type": "mitigation_template"
+            }
+        ],
+        "links": {
+            "self": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/"
         },
         "meta": {
             "api": "SP",
