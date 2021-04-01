@@ -27,7 +27,7 @@ BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
 
 
 class Client:
-    def __init__(self, api_key='', threshold=None, use_ssl=False, reliability='C - Fairly reliable'):
+    def __init__(self, api_key='', threshold=None, use_ssl=False, reliability=DBotScoreReliability.C):
         self.base_url = 'https://urlscan.io/api/v1/'
         self.api_key = api_key
         self.threshold = threshold
@@ -569,7 +569,7 @@ def main():
     api_key = params.get('apikey')
     threshold = int(params.get('url_threshold', '1'))
     use_ssl = not params.get('insecure', False)
-    reliability = params.get('integrationReliability')
+    reliability = params.get('integrationReliability', DBotScoreReliability.C)
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
