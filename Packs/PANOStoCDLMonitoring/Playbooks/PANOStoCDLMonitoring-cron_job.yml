@@ -8,15 +8,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5e7f3017-45e7-4c74-866a-6d5f2e58a4be
+    taskid: 27a34995-c8e7-41a5-86a8-cf438c85a1ae
     type: start
     task:
-      id: 5e7f3017-45e7-4c74-866a-6d5f2e58a4be
+      id: 27a34995-c8e7-41a5-86a8-cf438c85a1ae
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -29,18 +29,22 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 5123d8ce-cc96-4c47-83be-afce2f6cb0c6
+    taskid: 2a3c9991-bbd2-49bf-8aa8-2c84f2122844
     type: regular
     task:
-      id: 5123d8ce-cc96-4c47-83be-afce2f6cb0c6
+      id: 2a3c9991-bbd2-49bf-8aa8-2c84f2122844
       version: -1
       name: PANOStoCortexDataLakeMonitoring
-      description: "Used to verify that all firewalls successfully pushed logs to
-        the Cortex Data Lake for the last 12 hours. It's an easy way to do monitoring
-        of the FW connection to CDL.\nYou can use either a list of FW serials or PAN-OS
-        integration to define the list of FW to be monitored. "
+      description: "Used to verify that all firewalls successfully pushed logs to\
+        \ the Cortex Data Lake for the last 12 hours. It's an easy way to do monitoring\
+        \ of the FW connection to CDL.\nYou can use either a list of FW serials or\
+        \ PAN-OS integration to define the list of FW to be monitored. "
       scriptName: PANOStoCortexDataLakeMonitoring
       type: regular
       iscommand: false
@@ -53,8 +57,7 @@ tasks:
         complex:
           root: inputs.fw_serials
       pan_os_integration_instance_name:
-        complex:
-          root: inputs.panos_integration_instance_name
+        simple: pan_os_pano_8.1_ 56111
     separatecontext: false
     view: |-
       {
@@ -64,12 +67,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: acf01449-06d2-40fe-837d-ed62ebec7043
+    taskid: 06112ffe-942b-45c0-875e-c4dffbb1947a
     type: condition
     task:
-      id: acf01449-06d2-40fe-837d-ed62ebec7043
+      id: 06112ffe-942b-45c0-875e-c4dffbb1947a
       version: -1
       name: Any Log connection issue?
       description: Any Log connection issue?
@@ -100,18 +107,22 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: e703aed4-e058-4578-8fdc-d8cdfe164601
+    taskid: 1c3358a5-dc13-4365-828c-77ec95026bef
     type: title
     task:
-      id: e703aed4-e058-4578-8fdc-d8cdfe164601
+      id: 1c3358a5-dc13-4365-828c-77ec95026bef
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -121,21 +132,25 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: c6ea36de-0211-47a7-81c9-6a85f6a7eb30
+    taskid: 35905371-50e8-4779-8909-7c1da70ce5fc
     type: title
     task:
-      id: c6ea36de-0211-47a7-81c9-6a85f6a7eb30
+      id: 35905371-50e8-4779-8909-7c1da70ce5fc
       version: -1
       name: PAN-OS to Cortex Data Lake log forwarding problem detected
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - "15"
     separatecontext: false
     view: |-
       {
@@ -145,19 +160,23 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 64b3503b-3926-430a-8dad-2be952199995
+    taskid: 68a5fcab-92fb-4116-8e14-30cb589d2456
     type: regular
     task:
-      id: 64b3503b-3926-430a-8dad-2be952199995
+      id: 68a5fcab-92fb-4116-8e14-30cb589d2456
       version: -1
       name: Send notification to the registered email address
-      description: Send an email
-      script: Mail Sender (New)|||send-mail
+      description: Sends an email using EWS.
+      script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: Mail Sender (New)
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
@@ -175,7 +194,8 @@ tasks:
         simple: CORTEX XDR / Problem / some FWs are not logging anymore to Cortex
           Data Lake
       to:
-        simple: ${inputs.email_notification}
+        complex:
+          root: inputs.email_notification
     separatecontext: false
     view: |-
       {
@@ -185,40 +205,16 @@ tasks:
         }
       }
     note: false
-  "7":
-    id: "7"
-    taskid: 835dead9-5141-427b-8928-752e6382696b
-    type: regular
-    task:
-      id: 835dead9-5141-427b-8928-752e6382696b
-      version: -1
-      name: Set Incident Severity to High
-      description: Increases the incident severity.
-      scriptName: Builtin|||setIncident
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      severity:
-        simple: 3
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 865
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: b87c4401-5b3f-4860-8124-e997d7caaa9f
+    taskid: a037fd37-04b8-4b64-805b-226f4e806ddc
     type: regular
     task:
-      id: b87c4401-5b3f-4860-8124-e997d7caaa9f
+      id: a037fd37-04b8-4b64-805b-226f4e806ddc
       version: -1
       name: Set Incident Severity to Informational
       description: Optionally increases the incident severity to the new value if
@@ -242,18 +238,22 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 531b782a-be09-4ec9-8ab8-4f93ba8aace5
+    taskid: 94b857a6-fbc7-4d35-8952-51f755c3b9b6
     type: title
     task:
-      id: 531b782a-be09-4ec9-8ab8-4f93ba8aace5
+      id: 94b857a6-fbc7-4d35-8952-51f755c3b9b6
       version: -1
       name: No PAN-OS to Cortex Data Lake log forwarding issues detected
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -266,12 +266,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 340f8c35-5de6-4727-8536-36e13ef382e5
+    taskid: 8f49a5d9-f902-41c1-8f5c-140a2cc2496e
     type: regular
     task:
-      id: 340f8c35-5de6-4727-8536-36e13ef382e5
+      id: 8f49a5d9-f902-41c1-8f5c-140a2cc2496e
       version: -1
       name: Close Investigation
       description: Close the current incident
@@ -291,12 +295,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: ba22e7bf-18ca-43c6-8790-9e0e85c95418
+    taskid: a0a037f8-f3ec-40c6-8776-48d95e1d7c6b
     type: regular
     task:
-      id: ba22e7bf-18ca-43c6-8790-9e0e85c95418
+      id: a0a037f8-f3ec-40c6-8776-48d95e1d7c6b
       version: -1
       name: Set incident name
       description: Change the properties of an incident
@@ -309,7 +317,7 @@ tasks:
       - "1"
     scriptarguments:
       name:
-        simple: Cotex Data Lake Monitoring
+        simple: CDL Monitoring
       type:
         simple: Cortex Data Lake Monitoring
     separatecontext: false
@@ -321,12 +329,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 0a3da10e-d8d8-4a10-850a-9094cf4ceec0
+    taskid: eea37dc3-d365-450f-8e9b-c026c1b6e169
     type: regular
     task:
-      id: 0a3da10e-d8d8-4a10-850a-9094cf4ceec0
+      id: eea37dc3-d365-450f-8e9b-c026c1b6e169
       version: -1
       name: Update closing reason without any action required
       description: Change the properties of an incident
@@ -351,12 +363,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: a7c97a1a-5266-47e4-8d43-421979a97ecb
+    taskid: a19cfcbd-7302-4850-884b-f73f29d128d0
     type: regular
     task:
-      id: a7c97a1a-5266-47e4-8d43-421979a97ecb
+      id: a19cfcbd-7302-4850-884b-f73f29d128d0
       version: -1
       name: Update closing reason with the action required
       description: Change the properties of an incident
@@ -383,12 +399,16 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: e0ae32e1-ac7b-4cee-8b02-2fa43ed386fa
+    taskid: 3eec757c-1a55-466e-8983-023900c12d75
     type: regular
     task:
-      id: e0ae32e1-ac7b-4cee-8b02-2fa43ed386fa
+      id: 3eec757c-1a55-466e-8983-023900c12d75
       version: -1
       name: Create an incident for tracking purposes
       description: Create a new incident
@@ -401,10 +421,11 @@ tasks:
       - "13"
     scriptarguments:
       details:
-        simple: "At least one of our firewalls did not send successfully logs to the
-          Cortex Data Lake for the last 12 hours:\n${CDL.monitoring.FirewallsWithoutLogsSent}\n\nAn email
-          has been sent to ${inputs.email_notification} for notification. \n\nCould
-          you please i nvestigate this connectivity issue?\n\nThanks,\nDBot.\n"
+        simple: "At least one of our firewalls did not send successfully logs to the\
+          \ Cortex Data Lake for the last 12 hours:\n${CDL.monitoring.FirewallsWithoutLogsSent}\n\
+          \nAn email has been sent to ${inputs.email_notification} for notification.\
+          \ \n\nCould you please i nvestigate this connectivity issue?\n\nThanks,\n\
+          DBot.\n"
       name:
         simple: Cortex Data Lake FW logging problem
       severity:
@@ -418,6 +439,46 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 482dec00-2a00-4922-861d-3f8205d76295
+    type: regular
+    task:
+      id: 482dec00-2a00-4922-861d-3f8205d76295
+      version: -1
+      name: Set incident Severity
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      name:
+        simple: CDL Monitoring
+      severity:
+        simple: "3"
+      type:
+        simple: Cortex Data Lake Monitoring
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -437,20 +498,20 @@ inputs:
   required: false
   description: A comma-separated list of FW serials to monitor. Only applicable if
     no PAN-OS integration name was specified.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: pan_os_integration_instance_name
   value:
-    simple: ${incident.panosintegrationinstancename}
+    simple: pan_os_pano_8.1_ 56111
   required: false
-  description: Name of the Panorama integration instance to gather the list of monitored FWs.
-    If none specified, the list of serials must be provided manually as "fw_serials".
-  playbookInputQuery: null
+  description: Name of the Panorama integration instance to gather the list of monitored
+    FWs. If none specified, the list of serials must be provided manually as "fw_serials".
+  playbookInputQuery:
 - key: email_notification
   value:
     simple: ${incident.email}
   required: false
   description: Email address to send a notification to in case detected problem.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
