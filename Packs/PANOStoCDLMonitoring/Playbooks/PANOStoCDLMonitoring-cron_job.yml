@@ -441,7 +441,7 @@ inputs:
   description: A comma-separated list of FW serials to monitor. Only applicable if
     no PAN-OS integration name was specified.
   playbookInputQuery: null
-- key: pan_os_integration_name
+- key: pan_os_integration_instance_name
   value:
     simple: ${incident.panosintegrationinstancename}
   required: false
