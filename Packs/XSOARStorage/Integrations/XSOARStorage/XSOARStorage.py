@@ -69,7 +69,7 @@ def xsoar_store_get_command(args: Dict[str, Any]) -> CommandResults:
     data = data.get(key)
 
     return CommandResults(
-        readable_output=data,
+        readable_output=f"retrieved: <{data}> from key: <{key}> for namespace: <{namespace}>",
         outputs_prefix=f"XSOAR.Store.{namespace}.{key}",
         outputs=data
     )
