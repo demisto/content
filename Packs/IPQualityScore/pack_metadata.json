@@ -1,0 +1,17 @@
+{
+  "name": "IPQualityScore",
+  "description": "Proactively Prevent Fraud",
+  "support": "partner",
+  "currentVersion": "1.0.0",
+  "author": "IPQualityScore",
+  "url": "https://www.ipqualityscore.com",
+  "email": "support@ipqualityscore.com",
+  "created": "2021-03-31T00:00:00Z",
+  "categories": [
+    "enrichment",
+    "reputation"
+  ],
+  "tags": [],
+  "useCases": [],
+  "keywords": []
+}
