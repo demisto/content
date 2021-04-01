@@ -694,7 +694,7 @@ def main():
                    else params.get('url'))
 
     client = Client(
-        base_url=str(server) + '/api/v1/',
+        base_url=f'{str(server)}/api/v1/',
         user_name=params.get('credentials', {}).get('identifier'),
         password=params.get('credentials', {}).get('password'),
         use_ssl=not params.get('insecure', False),
