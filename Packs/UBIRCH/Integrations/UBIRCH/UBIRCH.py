@@ -10,82 +10,124 @@ import json
 ''' CONSTANTS '''
 
 QOS_AT_LEAST_ONCE = 1
+
+# SEVERITY
 CRITICAL_SEVERITY = 4
 HIGH_SEVERITY = 3
 MEDIUM_SEVERITY = 2
 LOW_SEVERITY = 1
 UNKNOWN_SEVERITY = 0
 
+# Types
+AUTHENTICATION_TYPE = 'Authentication'
+AUTHENTICITY_TYPE = 'Authenticity'
+INTEGRITY_TYPE = 'Integrity'
+PRIVACY_TYPE = 'Privacy'
+SEQUENCE_TYPE = 'Sequence'
+
+# Fields
+SEVERITY_FIELD = "severity"
+TYPE_FIELD = "type"
+MEANING_FIELD = "meaning"
+
 INCIDENT_SEVERITY_MAP = {
     "niomon-auth": {
         "1000": {
-            "meaning": "Authentication Error: Missing header/param",
-            "severity": LOW_SEVERITY
+            MEANING_FIELD: "Authentication error: request malformed. Possible missing header and parameters.",
+            SEVERITY_FIELD: LOW_SEVERITY,
+            TYPE_FIELD: AUTHENTICATION_TYPE
         },
         "2000": {
-            "meaning": "Authentication Error: Missing header/param",
-            "severity": MEDIUM_SEVERITY
+            MEANING_FIELD: "Authentication error: processing authentication response/Failed Request",
+            SEVERITY_FIELD: LOW_SEVERITY,
+            TYPE_FIELD: AUTHENTICATION_TYPE
         },
         "3000": {
-            "meaning": "Authentication Error (Cumulocity): Error processing authentication request",
-            "severity": MEDIUM_SEVERITY
+            MEANING_FIELD: "Authentication error (3rd party): error processing authentication request",
+            SEVERITY_FIELD: LOW_SEVERITY,
+            TYPE_FIELD: AUTHENTICATION_TYPE
         },
         "4000": {
-            "meaning": "Athentication Error: Failed Request",
-            "severity": MEDIUM_SEVERITY
+            MEANING_FIELD: "Authentication error: Failed Request",
+            SEVERITY_FIELD: LOW_SEVERITY,
+            TYPE_FIELD: AUTHENTICATION_TYPE
         }
     },
     "niomon-decoder": {
         "1100": {
-            "meaning": "Authentication Error: Missing header/param",
-            "severity": MEDIUM_SEVERITY
+            MEANING_FIELD: "Invalid verification: request malformed. Possible missing headers or parameters.",
+            SEVERITY_FIELD: MEDIUM_SEVERITY,
+            TYPE_FIELD: AUTHENTICITY_TYPE
         },
         "1200": {
-            "meaning": "Invalid Verification: Invalid Parts",
-            "severity": LOW_SEVERITY
+            MEANING_FIELD: "Invalid verification: invalid parts",
+            SEVERITY_FIELD: HIGH_SEVERITY,
+            TYPE_FIELD: AUTHENTICITY_TYPE
         },
         "1300": {
-            "meaning": "Invalid Verification",
-            "severity": HIGH_SEVERITY
+            MEANING_FIELD: "Invalid verification: signature verification failed. No public key or integrity is "
+                           "compromised.",
+            SEVERITY_FIELD: HIGH_SEVERITY,
+            TYPE_FIELD: AUTHENTICITY_TYPE
         },
         "2100": {
-            "meaning": "Decoding Error: Missing header/param",
-            "severity": LOW_SEVERITY
+            MEANING_FIELD: "Decoding error: request malformed. Possible missing headers or parameters.",
+            SEVERITY_FIELD: LOW_SEVERITY,
+            TYPE_FIELD: INTEGRITY_TYPE
         },
         "2200": {
-            "meaning": "Decoding Error: Invalid Match",
-            "severity": MEDIUM_SEVERITY
+            MEANING_FIELD: "Decoding Error: Invalid Match",
+            SEVERITY_FIELD: MEDIUM_SEVERITY,
+            TYPE_FIELD: INTEGRITY_TYPE
         },
         "2300": {
-            "meaning": "Decoding Error: Decoding Error/Null Payload",
-            "severity": LOW_SEVERITY
+            MEANING_FIELD: "Decoding Error: Decoding Error/Null Payload",
+            SEVERITY_FIELD: LOW_SEVERITY,
+            TYPE_FIELD: INTEGRITY_TYPE
         }
     },
     "niomon-enricher": {
         "1000": {
-            "meaning": "Enriching Error: Missing header/param/body",
-            "severity": LOW_SEVERITY
+            MEANING_FIELD: "Tenant error: the owner of the device cannot be determined. Possible missing headers or "
+                           "parameters or body.",
+            SEVERITY_FIELD: LOW_SEVERITY,
+            TYPE_FIELD: AUTHENTICITY_TYPE
         },
         "2000": {
-            "meaning": "Enriching Error: Error processing enrichment request",
-            "severity": HIGH_SEVERITY
+            MEANING_FIELD: "Tenant error: the owner of the device does not exist or cannot be acquired.",
+            SEVERITY_FIELD: HIGH_SEVERITY,
+            TYPE_FIELD: AUTHENTICITY_TYPE
         },
         "0000": {
-            "meaning": "Enriching Error: Not found (Cumulocity)",
-            "severity": HIGH_SEVERITY
+            MEANING_FIELD: "Tenant error: the owner of the device does not exist or cannot be acquired (3rd Party).",
+            SEVERITY_FIELD: HIGH_SEVERITY,
+            TYPE_FIELD: AUTHENTICITY_TYPE
         }
     },
     "filter-service": {
-        "": {
-            "meaning": "Integrity Error: Duplicate Hash",
-            "severity": HIGH_SEVERITY
+        "0000": {
+            MEANING_FIELD: "Integrity violation: duplicate hash detected. Possible injection, reply attack, "
+                           "or hash collision. ",
+            SEVERITY_FIELD: HIGH_SEVERITY,
+            TYPE_FIELD: SEQUENCE_TYPE
+        },
+        "0010": {
+            MEANING_FIELD: "Privacy violation: hash is already disabled or non-existent",
+            SEVERITY_FIELD: LOW_SEVERITY,
+            TYPE_FIELD: PRIVACY_TYPE
+        },
+        "0020": {
+            MEANING_FIELD: "Privacy violation: hash is not disabled or non-existent",
+            SEVERITY_FIELD: LOW_SEVERITY,
+            TYPE_FIELD: PRIVACY_TYPE
+        },
+        "0030": {
+            MEANING_FIELD: "Privacy violation: hash does not exist. Possible DDOS attack",
+            SEVERITY_FIELD: HIGH_SEVERITY,
+            TYPE_FIELD: PRIVACY_TYPE
         }
     }
 }
-
-AUTHENTICATION_TYPE = 'Authentication'
-SEVERITY_FIELD = "severity"
-MEANING_FIELD = "meaning"
 
 ''' CLIENT CLASS '''
 
@@ -134,36 +176,22 @@ class Client:
 ''' HELPER FUNCTIONS '''
 
 
-def get_incident_type(incident: Dict) -> str:
-    """Return the incident type from the incident
-
-    Args:
-        incident(Dict): an incident
-
-    Return:
-        str: incident type
-    """
-    error = incident.get("error", "")
-    if AUTHENTICATION_TYPE in error:
-        return AUTHENTICATION_TYPE
-    else:
-        return ""
-
-
 def get_error_definition(incident: Dict) -> Dict:
-    """Return severity from the incident
+    """Return the error definition from the incident
+
+    Ex. { "meaning": "xxx", "severity": 1, "type": "AUTHENTICATION" }
 
     Args:
         incident(Dict): an incident
 
     Return:
-        int: severity level
+        Dict: error definition
     """
     microservice: str = incident.get("microservice", "")
     error_code: str = incident.get("errorCode", "")
     # ex. { "1000": { ... }, "1100": { ... } }
     error_codes: Dict = INCIDENT_SEVERITY_MAP.get(microservice, {})
-    # ex. { "meaning": "xxx", "severity": 1 }
+    # ex. { "meaning": "xxx", "severity": 1, "type": "AUTHENTICATION" }
     return error_codes.get(error_code, {})
 
 
@@ -180,7 +208,7 @@ def create_incidents(error_message: str) -> list:
     error_definition = get_error_definition(incident_dict)
     return [{
         'name': error_definition.get(MEANING_FIELD, incident_dict.get("error")),
-        'type': get_incident_type(incident_dict),
+        'type': error_definition.get(TYPE_FIELD, ""),
         'labels': [{'type': "requestId", 'value': incident_dict.get("requestId")},
                    {'type': "hwDeviceId", 'value': incident_dict.get("hwDeviceId")}],
         'rawJSON': json.dumps(incident_dict),
@@ -223,7 +251,7 @@ def long_running_execution(client: Client) -> None:
         Create incidents, when the client subscribes to an error from the mqtt server.
         """
         demisto.info(f"on message. {message.topic} {message.qos} {message.payload}")
-        incidents = create_incidents(message.payload.decode("utf-8"))  # the message payload is binary.
+        incidents = create_incidents(message.payload.decode("utf-8", "ignore"))  # the message payload is binary.
         demisto.info(f"catch an incident. {incidents}")
         demisto.createIncidents(incidents)
 
@@ -282,6 +310,7 @@ def create_sample_incidents() -> None:
         try:
             incidents = [{'name': "sample_event", 'rawJSON': json.dumps(event)} for event in json.loads(sample_events)]
             demisto.createIncidents(incidents)
+            demisto.info("it was succeeded to create the sample incident.")
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'Failed deserializing sample events - {e}')
     else:
@@ -289,18 +318,22 @@ def create_sample_incidents() -> None:
             'name': 'sample incident.',
         }]
         demisto.createIncidents(incidents)
+        demisto.info("it was succeeded to create the sample incident.")
+
+
+demisto.info("connection was succeeded for test")
 
 
 def main() -> None:
     """ main function, parses params and runs command functions """
 
     params = demisto.params()
-    username = params.get('credentials', {}).get('identifier')
-    password = params.get('credentials', {}).get('password')
-    tenant_id = params.get('tenant_id')
-    mqtt_host = params.get('url')
-    mqtt_port = params.get('port')
-    stage = params.get('stage', 'prod')
+    username = params['credentials'].get('identifier')
+    password = params['credentials'].get('password')
+    tenant_id = params['tenant_id']
+    mqtt_host = params['url']
+    mqtt_port = params['port']
+    stage = params['stage']
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')

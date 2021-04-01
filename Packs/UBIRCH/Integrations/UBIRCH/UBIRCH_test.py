@@ -1,5 +1,6 @@
 import io
-from UBIRCH import get_incident_type, get_error_definition, create_incidents, AUTHENTICATION_TYPE, LOW_SEVERITY, HIGH_SEVERITY
+from UBIRCH import AUTHENTICITY_TYPE, get_error_definition, create_incidents, AUTHENTICATION_TYPE, LOW_SEVERITY, \
+    HIGH_SEVERITY, SEQUENCE_TYPE
 
 
 def util_load_json(path: str) -> str:
@@ -7,25 +8,7 @@ def util_load_json(path: str) -> str:
         return f.read()
 
 
-def test_get_incident_type() -> None:
-    """Test get_incident_type function.
-
-    Checks the incident type is the expected one.
-
-    No mock is needed here.
-    """
-    authentication_incident = {
-        "error": "Authentication Error: Missing header/param"
-    }
-    unclassified_incident = {
-        "error": "Unknown"
-    }
-
-    assert get_incident_type(authentication_incident) == AUTHENTICATION_TYPE
-    assert get_incident_type(unclassified_incident) == ''
-
-
-def test_get_severity() -> None:
+def test_get_error_definition() -> None:
     """Test get_severity function.
 
     Checks the severity is the expected one.
@@ -37,31 +20,38 @@ def test_get_severity() -> None:
         "microservice": "niomon-auth"
     }
     error_definition_auth_1000 = {
-        "meaning": "Authentication Error: Missing header/param",
+        "meaning": "Authentication error: request malformed. Possible missing header and parameters.",
         "severity": LOW_SEVERITY,
+        "type": AUTHENTICATION_TYPE
     }
     incident_decoder_1300 = {
         "errorCode": "1300",
         "microservice": "niomon-decoder"
     }
     error_definition_decoder_1300 = {
-        "meaning": "Invalid Verification",
-        "severity": HIGH_SEVERITY
+        "meaning": "Invalid verification: signature verification failed. No public key or integrity is "
+                   "compromised.",
+        "severity": HIGH_SEVERITY,
+        "type": AUTHENTICITY_TYPE
     }
     incident_enricher_0000 = {
         "errorCode": "0000",
         "microservice": "niomon-enricher"
     }
     error_definition_enricher_0000 = {
-        "meaning": "Enriching Error: Not found (Cumulocity)",
-        "severity": HIGH_SEVERITY
+        "meaning": "Tenant error: the owner of the device does not exist or cannot be acquired (3rd Party).",
+        "severity": HIGH_SEVERITY,
+        "type": AUTHENTICITY_TYPE
     }
     incident_filter_0000 = {
+        "errorCode": "0000",
         "microservice": "filter-service"
     }
     error_definition_filter_0000 = {
-        "meaning": "Integrity Error: Duplicate Hash",
-        "severity": HIGH_SEVERITY
+        "meaning": "Integrity violation: duplicate hash detected. Possible injection, reply attack, "
+                   "or hash collision. ",
+        "severity": HIGH_SEVERITY,
+        "type": SEQUENCE_TYPE
     }
     error_definition_unknown = {}
     incident_unknown1 = {}
@@ -96,8 +86,9 @@ def test_create_incidents() -> None:
 
 
 INCIDENT_RESPONSE = [{
-    'name': "Invalid Verification",
-    'type': "",
+    'name': "Invalid verification: signature verification failed. No public key or integrity is "
+            "compromised.",
+    'type': "Authenticity",
     'labels': [
         {'type': "requestId", 'value': "ec15d266-5822-4fa5-ba82-64f1653d46a4"},
         {'type': "hwDeviceId", 'value': "ba70ad8b-a564-4e58-9a3b-224ac0f0153f"}
