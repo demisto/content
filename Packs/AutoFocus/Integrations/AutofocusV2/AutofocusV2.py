@@ -258,6 +258,7 @@ if PARAMS.get('mark_as_malicious'):
     for verdict in verdicts:
         VERDICTS_TO_DBOTSCORE[verdict] = 3
 
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1313,7 +1314,7 @@ def top_tags_results_command():
     })
 
 
-def search_ip_command(ip):
+def search_ip_command(ip, reliability):
     indicator_type = 'IP'
     ip_list = argToList(ip)
 
@@ -1332,7 +1333,8 @@ def search_ip_command(ip):
             indicator=ip_address,
             indicator_type=DBotScoreType.IP,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
 
         ip = Common.IP(
@@ -1365,9 +1367,9 @@ def search_ip_command(ip):
     return command_results
 
 
-def search_domain_command(args):
+def search_domain_command(domain, reliability):
     indicator_type = 'Domain'
-    domain_name_list = argToList(args.get('domain'))
+    domain_name_list = argToList(domain)
 
     command_results = []
 
@@ -1382,7 +1384,8 @@ def search_domain_command(args):
                 indicator=domain_name,
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name=VENDOR_NAME,
-                score=score
+                score=score,
+                reliability=reliability
             )
             domain = Common.Domain(
                 domain=domain_name,
@@ -1411,7 +1414,8 @@ def search_domain_command(args):
                 indicator=domain_name,
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name=VENDOR_NAME,
-                score=0
+                score=0,
+                reliability=reliability
             )
             domain = Common.Domain(
                 domain=domain_name,
@@ -1431,7 +1435,7 @@ def search_domain_command(args):
     return command_results
 
 
-def search_url_command(url):
+def search_url_command(url, reliability):
     indicator_type = 'URL'
     url_list = argToList(url)
 
@@ -1452,7 +1456,8 @@ def search_url_command(url):
             indicator=url_name,
             indicator_type=DBotScoreType.URL,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
 
         url = Common.URL(
@@ -1485,7 +1490,7 @@ def search_url_command(url):
     return command_results
 
 
-def search_file_command(file):
+def search_file_command(file, reliability):
     indicator_type = 'File'
     file_list = argToList(file)
 
@@ -1504,7 +1509,8 @@ def search_file_command(file):
             indicator=sha256,
             indicator_type=DBotScoreType.FILE,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
 
         autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1639,13 +1645,19 @@ def get_export_list_command(args):
 
 def main():
     demisto.debug('Command being called is %s' % (demisto.command()))
+    reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
         active_command = demisto.command()
-
         args = {k: v for (k, v) in demisto.args().items() if v}
+        args['reliability'] = reliability
         if active_command == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
@@ -1673,7 +1685,7 @@ def main():
         elif active_command == 'ip':
             return_results(search_ip_command(**args))
         elif active_command == 'domain':
-            return_results(search_domain_command(args))
+            return_results(search_domain_command(**args))
         elif active_command == 'url':
             return_results(search_url_command(**args))
         elif active_command == 'file':
