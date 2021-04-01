@@ -12,7 +12,7 @@ def check_instance(all_instances: list, integration_name: str, err_msg: str):
     """
     instance_found_active: bool = False
     for instance in all_instances:
-        if all_instances[instance] == integration_name and all_instances[instance]['state'] == 'active':
+        if all_instances[instance]['brand'] == integration_name and all_instances[instance]['state'] == 'active':
             instance_found_active = True
             break
     if not instance_found_active:
