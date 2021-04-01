@@ -197,7 +197,7 @@ tasks:
       scriptName: Builtin|||setIncident
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "6"
