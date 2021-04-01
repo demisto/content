@@ -253,9 +253,11 @@ class TestArcherV2:
         Then:
             - Raise exception with message to check the provided url
         """
-        mocker.patch.object(Client, '_http_request', side_effect=
-                            DemistoException("Failed to parse json object from response: b\"<html><head><script>"
-                                             "window.top.location='/Default.aspx';</script></head><body></body></html>"))
+        mocker.patch.object(Client, '_http_request', side_effect=DemistoException("Failed to parse json object from "
+                                                                                  "response: b\"<html><head><script>"
+                                                                                  "window.top.location='/Default.aspx';"
+                                                                                  "</script></head><body>"
+                                                                                  "</body></html>"))
         client = Client(BASE_URL, '', '', '', '')
         with pytest.raises(DemistoException) as e:
             client.update_session()
