@@ -12,7 +12,7 @@ def check_instance(all_instances: list, integration_name: str, err_msg: str):
     """
     instance_found_active: bool = False
     for instance in all_instances:
-        if all_instances[instance]['brand'] == integration_name and all_instances[instance]['state'] == 'active':
+        if all_instances[instance] == integration_name and all_instances[instance]['state'] == 'active':
             instance_found_active = True
             break
     if not instance_found_active:
@@ -84,14 +84,14 @@ def main():
         # The Firewall list must be a comma-separated list of FW serials
         fw_monitor_list = argToList(args.get('fw_serials'))
         if not fw_monitor_list:  # List of FW to monitor is empty, get it from Panorama
-            pan_os_instance_name = args.get('pan_os_instance_name')
-            if not pan_os_instance_name:
-                raise Exception("A Firewall serial list or a PAN-OS integration instance name is needed.")
+            pan_os_integration_name = args.get('pan_os_integration_name', 'Panorama')
+            if not pan_os_integration_name:
+                raise Exception("A Firewall serial list or a PAN-OS integration name is needed(default is Panorama).")
             # Look for active PAN-OS instance
-            check_instance(all_instances, pan_os_instance_name,
-                           f'Integration instance {pan_os_instance_name} is not active or is not a PAN-OS integration.')
+            check_instance(all_instances, pan_os_integration_name,
+                           f'Integration instance {pan_os_integration_name} is not active or is not a PAN-OS integration.')
             # Get FW serials
-            fw_monitor_list = get_firewall_serials(fw_monitor_list, pan_os_instance_name)
+            fw_monitor_list = get_firewall_serials(fw_monitor_list, pan_os_integration_name)
 
         # Log the list of firewalls to be monitored
         demisto.debug(f'List of FW serials: {fw_monitor_list}')

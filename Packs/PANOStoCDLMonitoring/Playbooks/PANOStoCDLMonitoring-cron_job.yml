@@ -40,7 +40,7 @@ tasks:
       description: "Used to verify that all firewalls successfully pushed logs to
         the Cortex Data Lake for the last 12 hours. It's an easy way to do monitoring
         of the FW connection to CDL.\nYou can use either a list of FW serials or PAN-OS
-        integration instance to define the list of FW to be monitored. "
+        integration to define the list of FW to be monitored. "
       scriptName: PANOStoCortexDataLakeMonitoring
       type: regular
       iscommand: false
@@ -52,11 +52,11 @@ tasks:
       fw_serials:
         complex:
           root: inputs.fw_serials
-      pan_os_instance_name:
+      pan_os_integration_name:
         complex:
-          root: inputs.panos_integration_instance_name
-      panosintegrationinstancename:
-        simple: ${inputs.panosintegrationinstancename}
+          root: inputs.panos_integration_name
+      panosintegrationname:
+        simple: ${inputs.panosintegrationname}
     separatecontext: false
     view: |-
       {
@@ -437,11 +437,11 @@ inputs:
     simple: ${incident.fwserials}
   required: false
   description: A comma-separated list of FW serials to monitor. Only applicable if
-    no PAN-OS integration instance name was specified.
+    no PAN-OS integration name was specified.
   playbookInputQuery: null
-- key: panos_integration_instance_name
+- key: pan_os_integration_name
   value:
-    simple: ${incident.panosintegrationinstancename}
+    simple: ${incident.panosintegrationname}
   required: false
   description: Name of the Panorama integration to gather the list of monitored FWs.
     If none specified, the list of serials must be provided manually as "fw_serials".

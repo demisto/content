@@ -1,8 +1,8 @@
 args:
 - description: Comma separated list of FW serial numbers to monitor.
   name: fw_serials
-- description: PAN-OS integration instance name to retrieve Firewalls serials list.
-  name: pan_os_instance_name
+- description: PAN-OS integration name to retrieve Firewalls serials list.
+  name: pan_os_integration_name
 comment: "Verify that all firewalls successfully pushed logs to the Cortex Data Lake\
   \ for the last 12 hours. It's an easy way to do monitoring of the FW connection\
   \ to CDL.\nYou can use either a manual list of FW serials or a Panorama integration\
