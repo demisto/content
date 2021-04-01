@@ -631,7 +631,7 @@ def get_sec_time_delta(last_fetch_time):
     return str(fetch_delta_in_sec) + "s"
 
 
-def fetch_incidents(client: Client, **kwargs):
+def fetch_incidents(client: Client, fetch_time, fetch_limit):
     """
     Fetches incidents from the PhishLabs user feed.
     :return: Demisto incidents
@@ -643,9 +643,9 @@ def fetch_incidents(client: Client, **kwargs):
 
     incidents: list = []
     count: int = 1
-    limit = int(kwargs.get('fetch_limit', '10'))
+    limit = int(fetch_limit)
     if not last_fetch:
-        feed: dict = get_feed_request(client, since=kwargs.get('fetch_time'))
+        feed: dict = get_feed_request(client, since=fetch_time)
 
     else:
         feed = get_feed_request(client, since=get_sec_time_delta(last_fetch_time))
@@ -709,11 +709,6 @@ def main():
         reliability=reliability
     )
 
-    args = {
-        'fetch_time': params.get('fetch_time', '').strip(),
-        'fetch_limit': params.get('fetch_limit', '10')
-    }
-
     global RAISE_EXCEPTION_ON_ERROR
     LOG('Command being called is {}'.format(demisto.command()))
     handle_proxy()
@@ -727,7 +722,7 @@ def main():
         command_func: Callable = command_dict[demisto.command()]  # type:ignore[assignment]
         if demisto.command() == 'fetch-incidents':
             RAISE_EXCEPTION_ON_ERROR = True
-            command_func(client, **args)
+            command_func(client, params.get('fetch_time', '').strip(), params.get('fetch_limit', '10'))
         else:
             command_func(client)
 
