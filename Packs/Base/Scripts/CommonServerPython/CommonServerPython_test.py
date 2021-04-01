@@ -1106,7 +1106,20 @@ def test_return_error_get_modified_remote_data(mocker):
     err_msg = 'Test Error'
     with raises(SystemExit):
         return_error(err_msg)
-    assert demisto.results.call_args[0][0]['Contents'] == err_msg + ' skip update'
+    assert demisto.results.call_args[0][0]['Contents'] == 'skip update. error: ' + err_msg
+
+
+def test_return_error_get_modified_remote_data_not_implemented(mocker):
+    from CommonServerPython import return_error
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'results')
+    err_msg = 'Test Error'
+    with raises(SystemExit):
+        try:
+            raise NotImplementedError('Command not implemented')
+        except:
+            return_error(err_msg)
+    assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
 def test_get_demisto_version(mocker, clear_version_cache):
