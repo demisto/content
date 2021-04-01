@@ -10,18 +10,64 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | --- | --- | --- |
     | Server URL | \(e.g., https://192.168.0.1\) | True |
     | Username |  | True |
-    | QRadar API Version | API version of QRadar \(e.g. '12.0'\). Minimum API version is 10.1. | True |
+    | QRadar API Version | API version of QRadar \(e.g., '12.0'\). Minimum API version is 10.1. | True |
     | Incident Type |  | False |
-    | Number of offenses to pull per API call (max 50).  | For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html' | False |
     | Fetch mode |  | True |
-    | Query to fetch offenses | Define a query to determine which offenses to fetch. e.g. status=OPEN. | False |
+    | Number of offenses to pull per API call (max 50) |  | False |
+    | Query to fetch offenses | Define a query to determine which offenses to fetch. E.g., "severity &amp;gt;= 4 AND id &amp;gt; 5 AND status=OPEN". | False |
     | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
-    | Event fields to return from the events query (CAUTION this parameter is correlated to the incoming mapper, and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
-    | Advanced Parameters | Comma-separated configuration for advanced parameters values. e.g. EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5 | False |
+    | Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
+    | Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done. | False |
+    | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. | False |
+    | The number of incoming incidents to mirror each time | Maximum number of incoming incidents to mirror each time. | False |
+    | Advanced Parameters | Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5 | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+## Migration from QRadar v2 to QRadar v3
+Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adjustments are required.
+## Additions and changes between QRadar v3 and QRadar v2
+### New commands
+- ***qradar-rule-groups-list***
+- ***qradar-searches-list***
+- ***qradar-geolocations-for-ip***
+- ***qradar-log-sources-list***
+### Command name changes
+| QRadar v2 command | QRadar V3 command | Notes
+| --- | --- | --- |
+| qradar-offenses | qradar-offenses-list | |
+| qradar-offense-by-id | qradar-offenses-list | Specify the *offense_id* argument in the command.  |
+| qradar-update-offense | qradar-offense-update | |
+| qradar-get-closing-reasons | qradar-closing-reasons | |
+| qradar-get-note | qradar-offense-notes-list | |
+| qradar-create-note | qradar-offense-note-create | |
+| qradar-get-assets | qradar-assets-list | |
+| qradar-get-asset-by-id | qradar-assets-list | Specify the *asset_id* argument in the command. | |
+| qradar-searches | qradar-search-create | |
+| qradar-get-search | qradar-search-status-get | | 
+| qradar-get-search-results | qradar-search-results-get | | 
+| qradar-get-reference-by-name | qradar-reference-sets-list |  Specify the *ref_name* argument in the command. | |
+| qradar-create-reference-set | qradar-reference-set-create | | 
+| qradar-delete-reference-set | qradar-reference-set-delete | |
+| qradar-create-reference-set-value | qradar-reference-set-value-upsert | |
+| qradar-update-reference-set-value | qradar-reference-set-value-upsert |  | 
+| qradar-delete-reference-set-value |  qradar-reference-set-value-delete | | 
+| qradar-get-domains | qradar-domains-list |  | 
+| qradar-domains-list | qradar-get-domain-by-id | Specify the *domain_id* argument in the command. |  |
+## Mirroring
+This integration supports in mirroring from QRadar offenses to XSOAR.
+* When a field of an offense is updated in QRadar services, it is mirrored in XSOAR.
+* Mirroring events from QRadar to XSOAR is not supported.
+## Choose your API version
+1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
+2. Choose one of the API versions listed under **Supported REST API versions** column in the line corresponding to your QRadar version.
+
+Note: If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version.
+## View your QRadar version
+1. Enter QRadar service.
+2. Click the **Menu** toolbar. A scrolling toolbar will appear.
+3. Click **About**. A new window will appear with the details of your QRadar version.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -37,11 +83,11 @@ Gets offenses from QRadar.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| offense_id | The offense ID to retrieve its details. Specify offense_id if you want to get details about certain offense. | Optional | 
+| offense_id | The offense ID to retrieve its details. Specify offense_id to get details about a specific offense. | Optional | 
 | enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. Possible values are: IPs, IPs And Assets, None. Default is None. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter offenses. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-GET.html. | Optional | 
+| filter | Query to filter offenses, e.g., "severity &gt;= 4 AND id &gt; 5 AND status=OPEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-GET.html. | Optional | 
 
 
 #### Context Output
@@ -55,14 +101,14 @@ Gets offenses from QRadar.
 | QRadar.Offense.EventCount | Number | Number of events that are associated with the offense. | 
 | QRadar.Offense.FlowCount | Number | Number of flows that are associated with the offense. | 
 | QRadar.Offense.AssignedTo | String | The user to whom the offense is assigned. | 
-| QRadar.Offense.Followup | Boolean | Whether the offense is marked for followup. | 
+| QRadar.Offense.Followup | Boolean | Whether the offense is marked for follow-up. | 
 | QRadar.Offense.SourceAddress | Number | Source addresses \(IPs if IPs enrich have been requested, else IDs of the IPs\) that are associated with the offense. | 
 | QRadar.Offense.Protected | Boolean | Whether the offense is protected. | 
-| QRadar.Offense.ClosingUser | String | The user whom closed the offense. | 
+| QRadar.Offense.ClosingUser | String | The user who closed the offense. | 
 | QRadar.Offense.DestinationHostname | String | Destination networks that are associated with the offense. | 
-| QRadar.Offense.CloseTime | String | Time when the offense was closed. | 
+| QRadar.Offense.CloseTime | Date | Time when the offense was closed. | 
 | QRadar.Offense.RemoteDestinationCount | Number | Number of remote destinations that are associated with the offense. | 
-| QRadar.Offense.StartTime | String | Date of the earliest item that contributed to the offense. | 
+| QRadar.Offense.StartTime | Date | Date of the earliest item that contributed to the offense. | 
 | QRadar.Offense.Magnitude | Number | Magnitude of the offense. | 
 | QRadar.Offense.LastUpdatedTime | String | Date of the most recent item that contributed to the offense. | 
 | QRadar.Offense.Credibility | Number | Credibility of the offense. | 
@@ -72,10 +118,12 @@ Gets offenses from QRadar.
 | QRadar.Offense.ClosingReason | String | Reason the offense was closed. | 
 | QRadar.Offense.OffenseType | String | Type of the offense. | 
 | QRadar.Offense.Relevance | Number | Relevance of the offense. | 
-| QRadar.Offense.OffenseSource | String | Source of offense. | 
-| QRadar.Offense.DestinationAddress | Number | Destination addresses \(IPs of IPs enrichment have been requested, else IDs of the IPs\) that are associated with the offense. | 
-| QRadar.Offense.Status | String | Status of the offense. One of 'OPEN', 'HIDDEN', 'CLOSED'. | 
+| QRadar.Offense.OffenseSource | String | Source of the offense. | 
+| QRadar.Offense.DestinationAddress | Number | Destination addresses \(IPs if IPs enrichment have been requested, else IDs of the IPs\) that are associated with the offense. | 
+| QRadar.Offense.Status | String | Status of the offense. Possible values: "OPEN", "HIDDEN", "CLOSED". | 
 | QRadar.Offense.LinkToOffense | String | Link to the URL containing information about the offense. | 
+| QRadar.Offense.Assets | String | Assets correlated to the offense, if enrichment was requested. | 
+
 
 
 #### Command Example
@@ -234,11 +282,11 @@ Update an offense.
 | offense_id | The ID of the offense to update. | Required | 
 | enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. Possible values are: IPs, IPs And Assets, None. Default is None. | Optional | 
 | protected | Whether the offense should be protected. Possible values are: true, false. | Optional | 
-| follow_up | Whether the offense should be marked for follow up. Possible values are: true, false. | Optional | 
+| follow_up | Whether the offense should be marked for follow-up. Possible values are: true, false. | Optional | 
 | status | The new status for the offense. When the status of an offense is set to CLOSED, a valid closing_reason_id must be provided. To hide an offense, use the HIDDEN status. To show a previously hidden offense, use the OPEN status. Possible values are: OPEN, HIDDEN, CLOSED. | Optional | 
-| closing_reason_id | The ID of a closing reason. You must provide a valid closing_reason_id when you close an offense. For full list of closing reason IDs, use 'qradar-closing-reasons' command. | Optional | 
+| closing_reason_id | The ID of a closing reason. You must provide a valid closing_reason_id when you close an offense. For a full list of closing reason IDs, use the 'qradar-closing-reasons' command. | Optional | 
 | assigned_to | User to assign the offense to. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-POST.html. | Optional | 
 
 
 #### Context Output
@@ -252,14 +300,14 @@ Update an offense.
 | QRadar.Offense.EventCount | Number | Number of events that are associated with the offense. | 
 | QRadar.Offense.FlowCount | Number | Number of flows that are associated with the offense. | 
 | QRadar.Offense.AssignedTo | String | The user to whom the offense is assigned. | 
-| QRadar.Offense.Followup | Boolean | Whether the offense is marked for followup. | 
+| QRadar.Offense.Followup | Boolean | Whether the offense is marked for follow-up. | 
 | QRadar.Offense.SourceAddress | Number | Source addresses \(IPs if IPs enrich have been requested, else IDs of the IPs\) that are associated with the offense. | 
 | QRadar.Offense.Protected | Boolean | Whether the offense is protected. | 
-| QRadar.Offense.ClosingUser | String | The user whom closed the offense. | 
+| QRadar.Offense.ClosingUser | String | The user who closed the offense. | 
 | QRadar.Offense.DestinationHostname | String | Destination networks that are associated with the offense. | 
-| QRadar.Offense.CloseTime | String | Time when the offense was closed. | 
+| QRadar.Offense.CloseTime | Date | Time when the offense was closed. | 
 | QRadar.Offense.RemoteDestinationCount | Number | Number of remote destinations that are associated with the offense. | 
-| QRadar.Offense.StartTime | String | Date of the earliest item that contributed to the offense. | 
+| QRadar.Offense.StartTime | Date | Date of the earliest item that contributed to the offense. | 
 | QRadar.Offense.Magnitude | Number | Magnitude of the offense. | 
 | QRadar.Offense.LastUpdatedTime | String | Date of the most recent item that contributed to the offense. | 
 | QRadar.Offense.Credibility | Number | Credibility of the offense. | 
@@ -269,10 +317,12 @@ Update an offense.
 | QRadar.Offense.ClosingReason | String | Reason the offense was closed. | 
 | QRadar.Offense.OffenseType | String | Type of the offense. | 
 | QRadar.Offense.Relevance | Number | Relevance of the offense. | 
-| QRadar.Offense.OffenseSource | String | Source of offense. | 
-| QRadar.Offense.DestinationAddress | Number | Destination addresses \(IPs of IPs enrichment have been requested, else IDs of the IPs\) that are associated with the offense. | 
-| QRadar.Offense.Status | String | Status of the offense. One of 'OPEN', 'HIDDEN', 'CLOSED'. | 
+| QRadar.Offense.OffenseSource | String | Source of the offense. | 
+| QRadar.Offense.DestinationAddress | Number | Destination addresses \(IPs if IPs enrichment have been requested, else IDs of the IPs\) that are associated with the offense. | 
+| QRadar.Offense.Status | String | Status of the offense. Possible values: "OPEN", "HIDDEN", "CLOSED". | 
 | QRadar.Offense.LinkToOffense | String | Link to the URL containing information about the offense. | 
+| QRadar.Offense.Assets | String | Assets correlated to the offense, if enrichment was requested. | 
+
 
 
 #### Command Example
@@ -336,7 +386,7 @@ Update an offense.
 
 ### qradar-closing-reasons
 ***
-Retrieve a list of offense closing reasons.
+Retrieves a list of offense closing reasons.
 
 
 #### Base Command
@@ -346,22 +396,22 @@ Retrieve a list of offense closing reasons.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| closing_reason_id | The closing reason ID to retrieve its details. Specify closing_reason_id if you want to get details about certain closing reason. | Optional | 
+| closing_reason_id | The closing reason ID for which to retrieve its details. Specify closing_reason_id to get details about a specific closing reason. | Optional | 
 | include_reserved | If true, reserved closing reasons are included in the response. Possible values are: true, false. Default is false. | Optional | 
 | include_deleted | If true, deleted closing reasons are included in the response. Possible values are: true, false. Default is false. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter closing reasons. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offense_closing_reasons-GET.html. | Optional | 
+| filter | Query to filter closing reasons, e.g. "id &gt; 5". For reference see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offense_closing_reasons-GET.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.ClosingReason.IsDeleted | Boolean | Whether the closing reason is deleted. Deleted closing reasons cannot be used to close an offense. | 
-| QRadar.ClosingReason.IsReserved | Boolean | Whether the closing reason is reserved. Reserved closing reasons cannot be used to close an offense. | 
-| QRadar.ClosingReason.Name | String | Name of the closing reason. | 
-| QRadar.ClosingReason.ID | Number | ID of the closing reason. | 
+| QRadar.Offense.ClosingReasons.IsDeleted | Boolean | Whether the closing reason is deleted. Deleted closing reasons cannot be used to close an offense. | 
+| QRadar.Offense.ClosingReasons.IsReserved | Boolean | Whether the closing reason is reserved. Reserved closing reasons cannot be used to close an offense. | 
+| QRadar.Offense.ClosingReasons.Name | String | Name of the closing reason. | 
+| QRadar.Offense.ClosingReasons.ID | Number | ID of the closing reason. | 
 
 
 #### Command Example
@@ -414,7 +464,7 @@ Retrieve a list of offense closing reasons.
 
 ### qradar-offense-notes-list
 ***
-Create a note on an offense.
+Creates a note on an offense.
 
 
 #### Base Command
@@ -425,20 +475,20 @@ Create a note on an offense.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | offense_id | The offense ID to retrieve the notes for. | Required | 
-| note_id | The note ID to retrieve its details. Specify note_id if you want to get details about certain note. | Optional | 
+| note_id | The note ID for which to retrieve its details. Specify note_id to get details about a specific note. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter offense notes. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-GET.html. | Optional | 
+| filter | Query to filter offense notes, e.g., "username=admin". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-GET.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.Note.Text | String | The note text. | 
-| QRadar.Note.CreateTime | String | Creation date of the note. | 
+| QRadar.Note.Text | String | The text of the note. | 
+| QRadar.Note.CreateTime | Date | Creation date of the note. | 
 | QRadar.Note.ID | Number | ID of the note. | 
-| QRadar.Note.CreatedBy | String | The user whom created the note. | 
+| QRadar.Note.CreatedBy | String | The user who created the note. | 
 
 
 #### Command Example
@@ -477,7 +527,7 @@ Create a note on an offense.
 
 ### qradar-offense-note-create
 ***
-Retrieve a list of notes for an offense.
+Retrieves a list of notes for an offense.
 
 
 #### Base Command
@@ -488,18 +538,18 @@ Retrieve a list of notes for an offense.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | offense_id | The offense ID to add the note to. | Required | 
-| note_text | The note text. | Required | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-POST.html. | Optional | 
+| note_text | The text of the note. | Required | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-POST.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.Note.Text | String | The note text. | 
-| QRadar.Note.CreateTime | String | Creation date of the note. | 
+| QRadar.Note.Text | String | The text of the note. | 
+| QRadar.Note.CreateTime | Date | Creation date of the note. | 
 | QRadar.Note.ID | Number | ID of the note. | 
-| QRadar.Note.CreatedBy | String | The user whom created the note. | 
+| QRadar.Note.CreatedBy | String | The user who created the note. | 
 
 
 #### Command Example
@@ -539,11 +589,11 @@ Retrieves a list of rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | The rule ID to retrieve its details. Specify rule_id if you want to get details about certain rule. | Optional | 
-| rule_type | Retrieve rules corresponding to the given rule type. Possible values are: EVENT, FLOW, COMMON, USER. | Optional | 
+| rule_id | The rule ID for which to retrieve its details. Specify rule_id to get details about a specific rule. | Optional | 
+| rule_type | Retrieves rules corresponding to the specified rule type. Possible values are: EVENT, FLOW, COMMON, USER. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter rules. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi150.doc/15.0--analytics-rules-GET.html. | Optional | 
+| filter | Query by which to filter rules, e.g., "type=EVENT". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,identifier,origin". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi150.doc/15.0--analytics-rules-GET.html. | Optional | 
 
 
 #### Context Output
@@ -552,12 +602,12 @@ Retrieves a list of rules.
 | --- | --- | --- |
 | QRadar.Rule.Owner | String | Owner of the rule. | 
 | QRadar.Rule.BaseHostID | Number | ID of the host from which the rule's base capacity was determined. | 
-| QRadar.Rule.CapacityTimestamp | Number | Date when rule's capacity values were last updated. | 
-| QRadar.Rule.Origin | String | Origin of the rule. One of 'SYSTEM', 'OVERRIDE', 'USER'. | 
-| QRadar.Rule.CreationDate | String | Date when rule was created. | 
-| QRadar.Rule.Type | String | Type of the rule. One of 'EVENT', 'FLOW', 'COMMON', 'USER'. | 
+| QRadar.Rule.CapacityTimestamp | Number | Date when the rule's capacity values were last updated. | 
+| QRadar.Rule.Origin | String | Origin of the rule. Possible values: "SYSTEM", "OVERRIDE", "USER". | 
+| QRadar.Rule.CreationDate | Date | Date when rule was created. | 
+| QRadar.Rule.Type | String | Type of the rule. Possible values: "EVENT", "FLOW", "COMMON", "USER". | 
 | QRadar.Rule.Enabled | Boolean | Whether rule is enabled. | 
-| QRadar.Rule.ModificationDate | String | Date when rule was last modified. | 
+| QRadar.Rule.ModificationDate | Date | Date when the rule was last modified. | 
 | QRadar.Rule.Name | String | Name of the rule. | 
 | QRadar.Rule.AverageCapacity | Number | Moving average capacity in EPS of the rule across all hosts. | 
 | QRadar.Rule.ID | Number | ID of the rule. | 
@@ -640,10 +690,10 @@ Retrieves a list of the rule groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_group_id | The rule group ID to retrieve its details. Specify rule_group_id if you want to get details about certain rule group. | Optional | 
+| rule_group_id | The rule group ID for which to retrieve its details. Specify rule_group_id to get details about a specific rule group. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter rules. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--analytics-rule_groups-GET.html. | Optional | 
+| filter | Query by which to filter rules, e.g., "id &gt;= 125". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,parent_id". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--analytics-rule_groups-GET.html. | Optional | 
 
 
 #### Context Output
@@ -651,7 +701,7 @@ Retrieves a list of the rule groups.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.RuleGroup.Owner | String | Owner of the group. | 
-| QRadar.RuleGroup.ModifiedTime | String | Date since the group was last modified. | 
+| QRadar.RuleGroup.ModifiedTime | Date | Date since the group was last modified. | 
 | QRadar.RuleGroup.Level | Number | Depth of the group in the group hierarchy. | 
 | QRadar.RuleGroup.Name | String | Name of the group. | 
 | QRadar.RuleGroup.Description | String | Description of the group. | 
@@ -779,61 +829,61 @@ Retrieves assets list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | The asset ID to retrieve its details. Specify asset_id if you want to get details about certain asset. | Optional | 
+| asset_id | The asset ID for which to retrieve its details. Specify asset_id to get details about a specific asset. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter assets. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--asset_model-assets-GET.html. | Optional | 
+| filter | Query by which to filter assets, e.g., "domain_id=0". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,interfaces,users,properties". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--asset_model-assets-GET.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Endpoint.Domain | String | DNS name. | 
+| Endpoint.OS | String | Asset operating system. | 
+| Endpoint.MACAddress | String | Asset MAC address. | 
+| Endpoint.IPAddress | Unknown | IP addresses of the endpoint. | 
 | QRadar.Asset.Interfaces.id | Number | ID of the interface. | 
-| QRadar.Asset.Interfaces.mac_address | String | Mac address of the interface. Null if unknown. | 
+| QRadar.Asset.Interfaces.mac_address | String | MAC address of the interface. Null if unknown. | 
 | QRadar.Asset.Interfaces.ip_addresses.id | Number | ID of the interface. | 
-| QRadar.Asset.Interfaces.ip_addresses.network_id | Number | Network ID of the network this IP belongs to. | 
+| QRadar.Asset.Interfaces.ip_addresses.network_id | Number | Network ID of the network the IP belongs to. | 
 | QRadar.Asset.Interfaces.ip_addresses.value | String | The IP address. | 
-| QRadar.Asset.Interfaces.ip_addresses.type | String | Type of IP address. One of 'IPV4', 'IPV6'. | 
-| QRadar.Asset.Interfaces.ip_addresses.created | Date | Date when IP address was created. | 
-| QRadar.Asset.Interfaces.ip_addresses.first_seen_scanner | Date | Date when IP address was first seen during a vulnerability scan. | 
-| QRadar.Asset.Interfaces.ip_addresses.first_seen_profiler | Date | Date when IP address was first seen in event or flow traffic. | 
-| QRadar.Asset.Interfaces.ip_addresses.last_seen_scanner | Date | Date when IP address was most recently seen seen during a vulnerability scan. | 
-| QRadar.Asset.Interfaces.ip_addresses.last_seen_profiler | Date | Date when IP address was most recently seen in event or flow traffic. | 
+| QRadar.Asset.Interfaces.ip_addresses.type | String | Type of IP address. Possible values: "IPV4", "IPV6". | 
+| QRadar.Asset.Interfaces.ip_addresses.created | Date | Date when the IP address was created. | 
+| QRadar.Asset.Interfaces.ip_addresses.first_seen_scanner | Date | Date when the IP address was first seen during a vulnerability scan. | 
+| QRadar.Asset.Interfaces.ip_addresses.first_seen_profiler | Date | Date when the IP address was first seen in event or flow traffic. | 
+| QRadar.Asset.Interfaces.ip_addresses.last_seen_scanner | Date | Date when the IP address was most recently seen during a vulnerability scan. | 
+| QRadar.Asset.Interfaces.ip_addresses.last_seen_profiler | Date | Date when the IP address was most recently seen in event or flow traffic. | 
 | QRadar.Asset.Products.id | Number | The ID of this software product instance in QRadar's asset model. | 
 | QRadar.Asset.Products.product_variant_id | Number | The ID of this software product variant in QRadar's catalog of products. | 
-| QRadar.Asset.Products.first_seen_scanner | Date | Date when product was first seen during a vulnerability scan. | 
-| QRadar.Asset.Products.first_seen_profiler | Date | Date when product was first seen in event or flow traffic. | 
-| QRadar.Asset.Products.last_seen_scanner | Date | Date when product was most recently seen seen during a vulnerability scan. | 
-| QRadar.Asset.Products.last_seen_profiler | Date | Date when product was most recently seen in event or flow traffic. | 
+| QRadar.Asset.Products.first_seen_scanner | Date | Date when the product was first seen during a vulnerability scan. | 
+| QRadar.Asset.Products.first_seen_profiler | Date | Date when the product was first seen in event or flow traffic. | 
+| QRadar.Asset.Products.last_seen_scanner | Date | Date when the product was most recently seen seen during a vulnerability scan. | 
+| QRadar.Asset.Products.last_seen_profiler | Date | Date when the product was most recently seen in event or flow traffic. | 
 | QRadar.Asset.VulnerabilityCount | Number | The total number of vulnerabilities associated with this asset. | 
 | QRadar.Asset.RiskScoreSum | Number | The sum of the CVSS scores of the vulnerabilities on this asset. | 
-| QRadar.Asset.Hostnames.last_seen_profiler | Date | Date when host was most recently seen in event or flow traffic. | 
-| QRadar.Asset.Hostnames.created | String | Date when host was created. | 
-| QRadar.Asset.Hostnames.last_seen_scanner | Date | Date when host was most recently seen during a vulnerability scan. | 
+| QRadar.Asset.Hostnames.last_seen_profiler | Date | Date when the host was most recently seen in event or flow traffic. | 
+| QRadar.Asset.Hostnames.created | Date | Date when the host was created. | 
+| QRadar.Asset.Hostnames.last_seen_scanner | Date | Date when the host was most recently seen during a vulnerability scan. | 
 | QRadar.Asset.Hostnames.name | String | Name of the host. | 
-| QRadar.Asset.Hostnames.first_seen_scanner | String | Date when host was first seen during a vulnerability scan. | 
+| QRadar.Asset.Hostnames.first_seen_scanner | Date | Date when the host was first seen during a vulnerability scan. | 
 | QRadar.Asset.Hostnames.id | Number | ID of the host. | 
-| QRadar.Asset.Hostnames.type | String | Type of the host. One of 'DNS', 'NETBIOS', 'NETBIOSGROUP'. | 
-| QRadar.Asset.Hostnames.first_seen_profiler | String | Date when host was first seen in event or flow traffic. | 
+| QRadar.Asset.Hostnames.type | String | Type of the host. Possible values: "DNS", "NETBIOS", "NETBIOSGROUP". | 
+| QRadar.Asset.Hostnames.first_seen_profiler | Date | Date when the host was first seen in event or flow traffic. | 
 | QRadar.Asset.ID | Number | ID of the asset. | 
-| QRadar.Asset.Users.last_seen_profiler | Date | Date when user was most recently seen in event or flow traffic. | 
-| QRadar.Asset.Users.last_seen_scanner | Date | Date when user was most recently seen during a vulnerability scan. | 
-| QRadar.Asset.Users.first_seen_scanner | Date | Date when user was first seen during a vulnerability scan. | 
+| QRadar.Asset.Users.last_seen_profiler | Date | Date when the user was most recently seen in event or flow traffic. | 
+| QRadar.Asset.Users.last_seen_scanner | Date | Date when the user was most recently seen during a vulnerability scan. | 
+| QRadar.Asset.Users.first_seen_scanner | Date | Date when the user was first seen during a vulnerability scan. | 
 | QRadar.Asset.Users.id | Number | ID of the user. | 
-| QRadar.Asset.Users.first_seen_profiler | Date | Date when user was first seen in event or flow traffic. | 
+| QRadar.Asset.Users.first_seen_profiler | Date | Date when the user was first seen in event or flow traffic. | 
 | QRadar.Asset.Users.username | String | Name of the user. | 
 | QRadar.Asset.DomainID | Number | ID of the domain this asset belongs to. | 
-| QRadar.Asset.Properties.last_reported | String | Date when property was last updated. | 
-| QRadar.Asset.Properties.name | String | Name of property. | 
+| QRadar.Asset.Properties.last_reported | Date | Date when the property was last updated. | 
+| QRadar.Asset.Properties.name | String | Name of the property. | 
 | QRadar.Asset.Properties.type_id | Number | Type ID of the property. | 
 | QRadar.Asset.Properties.id | Number | ID of the property. | 
 | QRadar.Asset.Properties.last_reported_by | String | The source of the most recent update to this property. | 
 | QRadar.Asset.Properties.value | String | Property value. | 
-| Endpoint.OS | Number | Asset OS. | 
-| Endpoint.Domain | String | DNS name. | 
-| Endpoint.MACAddress | String | Asset MAC address. | 
-| Endpoint.IPAddress | Unknown | IP addresses of the endpoint. | 
 
 
 #### Command Example
@@ -973,11 +1023,11 @@ Retrieves a list of Ariel saved searches.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| saved_search_id | The saved search ID to retrieve its details. Specify saved_search_id if you want to get details about certain saved search. | Optional |
-| timeout | Number of seconds until timeout for command is given. Default is 35 | Optional |
+| saved_search_id | The saved search ID for which to retrieve its details. Specify saved_search_id to get details about a specific saved search. | Optional | 
+| timeout | Number of seconds until timeout for the specified command. Default is 35. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter saved searches. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--ariel-saved_searches-GET.html. | Optional | 
+| filter | Query by which to filter saved searches, e.g., "database=EVENTS and is_dashboard=true". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,owner,description". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--ariel-saved_searches-GET.html. | Optional | 
 
 
 #### Context Output
@@ -986,15 +1036,15 @@ Retrieves a list of Ariel saved searches.
 | --- | --- | --- |
 | QRadar.SavedSearch.Owner | String | Owner of the saved search. | 
 | QRadar.SavedSearch.Description | String | Description of the saved search. | 
-| QRadar.SavedSearch.CreationDate | String | Date when saved search was created. | 
+| QRadar.SavedSearch.CreationDate | Date | Date when saved search was created. | 
 | QRadar.SavedSearch.UID | String | UID of the saved search. | 
-| QRadar.SavedSearch.Database | String | The database of the Ariel saved search, events or flows. | 
-| QRadar.SavedSearch.QuickSearch | Boolean | Whether saved search is quick search. | 
+| QRadar.SavedSearch.Database | String | The database of the Ariel saved search, events, or flows. | 
+| QRadar.SavedSearch.QuickSearch | Boolean | Whether the saved search is a quick search. | 
 | QRadar.SavedSearch.Name | String | Name of the saved search. | 
-| QRadar.SavedSearch.ModifiedDate | String | Date when saved search was most recently modified. | 
+| QRadar.SavedSearch.ModifiedDate | Date | Date when the saved search was most recently modified. | 
 | QRadar.SavedSearch.ID | Number | ID of the saved search. | 
 | QRadar.SavedSearch.AQL | String | The AQL query. | 
-| QRadar.SavedSearch.IsShared | Boolean | Whether saved search is shared with other users. | 
+| QRadar.SavedSearch.IsShared | Boolean | Whether the saved search is shared with other users. | 
 
 
 #### Command Example
@@ -1047,7 +1097,7 @@ Retrieves a list of Ariel saved searches.
 
 ### qradar-searches-list
 ***
-Retrieves the list of Ariel searches IDs. Search status and results can be polled by sending search ID to 'qradar-search-status-get' and 'qradar-search-results-get' commands.
+Retrieves the list of Ariel searches IDs. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands.
 
 
 #### Base Command
@@ -1058,7 +1108,6 @@ Retrieves the list of Ariel searches IDs. Search status and results can be polle
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter saved searches. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
 
 
 #### Context Output
@@ -1290,7 +1339,7 @@ Retrieves the list of Ariel searches IDs. Search status and results can be polle
 
 ### qradar-search-create
 ***
-Create a new asynchronous Ariel search. Returns search ID. Search status and results can be polled by sending search ID to 'qradar-search-status-get' and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
+Creates a new asynchronous Ariel search. Returns the search ID. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
 
 
 #### Base Command
@@ -1301,7 +1350,7 @@ Create a new asynchronous Ariel search. Returns search ID. Search status and res
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query_expression | The AQL query to execute. Mutually exclusive with saved_search_id. | Optional | 
-| saved_search_id | Saved search ID to execute. Mutually exclusive with query_expression. Saved search ID is 'id' field returned by command 'qradar-saved-searches-list'. | Optional | 
+| saved_search_id | Saved search ID to execute. Mutually exclusive with query_expression. Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list' command. | Optional | 
 
 
 #### Context Output
@@ -1337,7 +1386,7 @@ Create a new asynchronous Ariel search. Returns search ID. Search status and res
 
 ### qradar-search-status-get
 ***
-Retrieve status information for a search, based on the search ID parameter.
+Retrieves status information for a search, based on the search ID.
 
 
 #### Base Command
@@ -1394,7 +1443,7 @@ Retrieves search results.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_id | The identifier for an Ariel search. | Required | 
-| output_path | Replaces the default context output path for the query result (QRadar.Search.Result). e.g. for output_path=QRadar.Correlations the result will be under the key 'QRadar.Correlations' in the context data. | Optional | 
+| output_path | Replaces the default context output path for the query result (QRadar.Search.Result). E.g., for output_path=QRadar.Correlations, the result will be under the 'QRadar.Correlations' key in the context data. | Optional | 
 | range | Range of events to return. (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 
 
@@ -1483,7 +1532,7 @@ Retrieves search results.
 
 ### qradar-reference-sets-list
 ***
-Retrieve a list of reference sets.
+Retrieves a list of reference sets.
 
 
 #### Base Command
@@ -1493,24 +1542,25 @@ Retrieve a list of reference sets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ref_name | The reference name of the reference set to retrieve its details. Specify ref_name if you want to get details about certain reference set. | Optional | 
+| ref_name | The reference name of the reference set for which to retrieve its details. Specify ref_name to get details about a specific reference set. | Optional | 
+| date_value | If set to true will try to convert the data values to ISO-8601 string. Possible values are: True, False. Default is False. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter reference sets. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-GET.html. | Optional | 
+| filter | Query by which to filter reference sets, e.g., "timeout_type=FIRST_SEEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-GET.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.Reference.TimeoutType | String | Timeout type of the reference set. One of 'UNKNOWN', 'FIRST_SEEN', 'LAST_SEEN'. | 
+| QRadar.Reference.TimeoutType | String | Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN". | 
 | QRadar.Reference.NumberOfElements | Number | Number of elements in the reference set. | 
-| QRadar.Reference.TimeToLive | String | Time left to live for reference. | 
-| QRadar.Reference.Data.LastSeen | String | Date when this data was last seen. | 
-| QRadar.Reference.Data.FirstSeen | String | Date when this data was first seen. | 
+| QRadar.Reference.TimeToLive | String | Time left to live for the reference. | 
+| QRadar.Reference.Data.LastSeen | Date | Date when this data was last seen. | 
+| QRadar.Reference.Data.FirstSeen | Date | Date when this data was first seen. | 
 | QRadar.Reference.Data.Source | String | Source of this data. | 
 | QRadar.Reference.Data.Value | String | Data value. | 
-| QRadar.Reference.CreationTime | String | Date when reference set was created. | 
+| QRadar.Reference.CreationTime | Date | Date when the reference set was created. | 
 | QRadar.Reference.Name | String | Name of the reference set. | 
 | QRadar.Reference.ElementType | String | Type of the elements in the reference set. | 
 
@@ -1560,7 +1610,7 @@ Retrieve a list of reference sets.
 
 ### qradar-reference-set-create
 ***
-Create a new reference set.
+Creates a new reference set.
 
 
 #### Base Command
@@ -1574,21 +1624,21 @@ Create a new reference set.
 | element_type | The element type for the values allowed in the reference set. Possible values are: ALN, ALNIC, NUM, IP, PORT, DATE. | Required | 
 | timeout_type | Indicates if the time_to_live interval is based on when the data was first seen or last seen. Possible values are: FIRST_SEEN, LAST_SEEN, UNKNOWN. Default is UNKNOWN. | Optional | 
 | time_to_live | The time to live interval, time range. for example: '1 month' or '5 minutes'. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.Reference.TimeoutType | String | Timeout type of the reference set. One of 'UNKNOWN', 'FIRST_SEEN', 'LAST_SEEN'. | 
+| QRadar.Reference.TimeoutType | String | Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN". | 
 | QRadar.Reference.NumberOfElements | Number | Number of elements in the reference set. | 
-| QRadar.Reference.TimeToLive | String | Time left to live for reference. | 
-| QRadar.Reference.Data.LastSeen | String | Date when this data was last seen. | 
-| QRadar.Reference.Data.FirstSeen | String | Date when this data was first seen. | 
+| QRadar.Reference.TimeToLive | String | Time left to live for the reference. | 
+| QRadar.Reference.Data.LastSeen | Date | Date when this data was last seen. | 
+| QRadar.Reference.Data.FirstSeen | Date | Date when this data was first seen. | 
 | QRadar.Reference.Data.Source | String | Source of this data. | 
 | QRadar.Reference.Data.Value | String | Data value. | 
-| QRadar.Reference.CreationTime | String | Date when reference set was created. | 
+| QRadar.Reference.CreationTime | Date | Date when the reference set was created. | 
 | QRadar.Reference.Name | String | Name of the reference set. | 
 | QRadar.Reference.ElementType | String | Type of the elements in the reference set. | 
 
@@ -1649,7 +1699,7 @@ There is no context output for this command.
 
 ### qradar-reference-set-value-upsert
 ***
-Add or update an element in a reference set.
+Adds or updates an element in a reference set.
 
 
 #### Base Command
@@ -1659,25 +1709,25 @@ Add or update an element in a reference set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ref_name | The name of the reference set to add or update an element in. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command. | Required | 
-| value | Comma separated list. The values to add or update in the reference set. If values chosen are date, supported date formats are: epoch, ISO, and time range (&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days.). | Required | 
+| ref_name | The name of the reference set to add or update an element in. Reference names can be found by the 'Name' field in the 'qradar-reference-sets-list' command. | Required | 
+| value | Comma-separated list of the values to add or update in the reference set. If the values are dates, the supported date formats are: epoch, ISO, and time range (&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days.). | Required | 
 | source | An indication of where the data originated. Default is reference data api. | Optional | 
-| date_value | True if the value given type was date. Possible values are: True, False. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-POST.html. | Optional | 
+| date_value | True if the specified value  type was date. Possible values are: true, false. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-POST.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.Reference.TimeoutType | String | Timeout type of the reference set. One of 'UNKNOWN', 'FIRST_SEEN', 'LAST_SEEN'. | 
+| QRadar.Reference.TimeoutType | String | Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN". | 
 | QRadar.Reference.NumberOfElements | Number | Number of elements in the reference set. | 
-| QRadar.Reference.TimeToLive | String | Time left to live for reference. | 
-| QRadar.Reference.Data.LastSeen | String | Date when this data was last seen. | 
-| QRadar.Reference.Data.FirstSeen | String | Date when this data was first seen. | 
+| QRadar.Reference.TimeToLive | String | Time left to live for the reference. | 
+| QRadar.Reference.Data.LastSeen | Date | Date when this data was last seen. | 
+| QRadar.Reference.Data.FirstSeen | Date | Date when this data was first seen. | 
 | QRadar.Reference.Data.Source | String | Source of this data. | 
 | QRadar.Reference.Data.Value | String | Data value. | 
-| QRadar.Reference.CreationTime | String | Date when reference set was created. | 
+| QRadar.Reference.CreationTime | Date | Date when the reference set was created. | 
 | QRadar.Reference.Name | String | Name of the reference set. | 
 | QRadar.Reference.ElementType | String | Type of the elements in the reference set. | 
 
@@ -1711,7 +1761,7 @@ Add or update an element in a reference set.
 
 ### qradar-reference-set-value-delete
 ***
-Remove a value from a reference set.
+Removes a value from a reference set.
 
 
 #### Base Command
@@ -1721,9 +1771,9 @@ Remove a value from a reference set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ref_name | The name of the reference set to remove a value from. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command. | Required | 
-| value | The value to remove from the reference set. If value chosen is date, supported date formats are: epoch, ISO, and time range (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days.). | Required | 
-| date_value | True if the value given type was date. Possible values are: True, False. | Optional | 
+| ref_name | The name of the reference set from which to remove a value. Reference names can be found by the 'Name' field in the 'qradar-reference-sets-list' command. | Required | 
+| value | The value to remove from the reference set. If the specified value is date, the supported date formats are: epoch, ISO, and time range (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days.). | Required | 
+| date_value | True if the specified value type was date. Possible values are: True, False. | Optional | 
 
 
 #### Context Output
@@ -1739,7 +1789,7 @@ There is no context output for this command.
 
 ### qradar-domains-list
 ***
-Gets the list of domains. You must have the System Administrator or Security Administrator permissions to call this endpoint if you are trying to retrieve the details of all domains. You can retrieve details of domains that are assigned to your Security Profile without having the System Administrator or Security Administrator permissions. If you do not have the System Administrator or Security Administrator permissions, then for each domain assigned to your security profile you can only view the values for the id and name fields. All other values return null.
+Gets the list of domains. You must have System Administrator or Security Administrator permissions to call this endpoint if you are trying to retrieve the details of all domains. You can retrieve details of domains that are assigned to your Security Profile without having the System Administrator or Security Administrator permissions. If you do not have the System Administrator or Security Administrator permissions, then for each domain assigned to your security profile you can only view the values for the ID and name fields. All other values return null.
 
 
 #### Base Command
@@ -1749,19 +1799,19 @@ Gets the list of domains. You must have the System Administrator or Security Adm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain_id | The domain ID to retrieve its details. Specify domain_id if you want to get details about certain domain. | Optional | 
+| domain_id | The domain ID from which to retrieve its details. Specify domain_id to get details about a specific domain. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter domains. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-domain_management-domains-GET.html. | Optional | 
+| filter | Query by which to filter domains, e.g., "id &gt; 3". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-domain_management-domains-GET.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.Domains.AssetScannerIDs | Number | Asset scanner IDs that are associated to the domain. | 
+| QRadar.Domains.AssetScannerIDs | Number | Asset scanner IDs that are associated with the domain. | 
 | QRadar.Domains.CustomProperties | Unknown | Custom properties of the domain. | 
-| QRadar.Domains.Deleted | Boolean | Whether domain has been deleted. | 
+| QRadar.Domains.Deleted | Boolean | Whether the domain has been deleted. | 
 | QRadar.Domains.Description | String | Description of the domain. | 
 | QRadar.Domains.EventCollectorIDs | Number | Event collector IDs that are assigned to this domain. | 
 | QRadar.Domains.FlowCollectorIDs | Number | Flow collector IDs that are assigned to this domain. | 
@@ -1802,7 +1852,7 @@ Gets the list of domains. You must have the System Administrator or Security Adm
 
 ### qradar-indicators-upload
 ***
-Uploads indicators from Demisto to QRadar.
+Uploads indicators to QRadar.
 
 
 #### Base Command
@@ -1812,25 +1862,25 @@ Uploads indicators from Demisto to QRadar.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ref_name | The name of set to add or update data in. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command. | Required | 
-| query | The query for getting indicators from Demisto. | Optional | 
-| limit | The maximum number of indicators to fetch from Demisto. Default is 50. | Optional | 
+| ref_name | The name of set to add or update data in. Reference names can be found by the 'Name' field in the 'qradar-reference-sets-list' command. | Required | 
+| query | The query for getting indicators from Cortex XSOAR. | Optional | 
+| limit | The maximum number of indicators to fetch from Cortex XSOAR. Default is 50. | Optional | 
 | page | The page from which to get the indicators. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-maps-bulk_load-name-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-maps-bulk_load-name-POST.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.Reference.TimeoutType | String | Timeout type of the reference set. One of 'UNKNOWN', 'FIRST_SEEN', 'LAST_SEEN'. | 
+| QRadar.Reference.TimeoutType | String | Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN". | 
 | QRadar.Reference.NumberOfElements | Number | Number of elements in the reference set. | 
-| QRadar.Reference.TimeToLive | String | Time left to live for reference. | 
-| QRadar.Reference.Data.LastSeen | String | Date when this data was last seen. | 
-| QRadar.Reference.Data.FirstSeen | String | Date when this data was first seen. | 
+| QRadar.Reference.TimeToLive | String | Time left to live for the reference. | 
+| QRadar.Reference.Data.LastSeen | Date | Date when this data was last seen. | 
+| QRadar.Reference.Data.FirstSeen | Date | Date when this data was first seen. | 
 | QRadar.Reference.Data.Source | String | Source of this data. | 
 | QRadar.Reference.Data.Value | String | Data value. | 
-| QRadar.Reference.CreationTime | String | Date when reference set was created. | 
+| QRadar.Reference.CreationTime | Date | Date when the reference set was created. | 
 | QRadar.Reference.Name | String | Name of the reference set. | 
 | QRadar.Reference.ElementType | String | Type of the elements in the reference set. | 
 
@@ -1869,7 +1919,7 @@ Uploads indicators from Demisto to QRadar.
 
 ### qradar-geolocations-for-ip
 ***
-Retrieves the MaxMind geoip data for the given IP address.
+Retrieves the MaxMind GeoIP data for the specified IP address.
 
 
 #### Base Command
@@ -1879,16 +1929,16 @@ Retrieves the MaxMind geoip data for the given IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | Comma separated list of IPs to retrieve their geolocation. | Required | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--services-geolocations-GET.html. | Optional | 
+| ip | Comma-separated list of IPs from which to retrieve their geolocation. | Required | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "continent,ip_address". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--services-geolocations-GET.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.GeoForIP.CityName | String | Name of the city that is associated with IP address. | 
-| QRadar.GeoForIP.ContinentName | String | Name of the continent that is associated with IP address. | 
+| QRadar.GeoForIP.CityName | String | Name of the city that is associated with the IP address. | 
+| QRadar.GeoForIP.ContinentName | String | Name of the continent that is associated with the IP address. | 
 | QRadar.GeoForIP.LocationAccuracyRadius | Number | The approximate accuracy radius in kilometers around the latitude and longitude for the IP address. | 
 | QRadar.GeoForIP.LocationAverageIncome | Number | The average income associated with the IP address. | 
 | QRadar.GeoForIP.LocationLatitude | Number | The approximate latitude of the location associated with the IP address. | 
@@ -1898,19 +1948,19 @@ Retrieves the MaxMind geoip data for the given IP address.
 | QRadar.GeoForIP.LocationPopulationDensity | Number | The estimated number of people per square kilometer. | 
 | QRadar.GeoForIP.PhysicalCountryIsoCode | String | ISO code of country where MaxMind believes the end user is located. | 
 | QRadar.GeoForIP.PhysicalCountryName | String | Name of country where MaxMind believes the end user is located. | 
-| QRadar.GeoForIP.RegisteredCountryIsoCode | String | ISO code of the country that ISP has registered the IP address. | 
-| QRadar.GeoForIP.RegisteredCountryName | String | Name of the country that ISP have registered the IP address. | 
+| QRadar.GeoForIP.RegisteredCountryIsoCode | String | ISO code of the country that the ISP has registered the IP address. | 
+| QRadar.GeoForIP.RegisteredCountryName | String | Name of the country that the ISP has registered the IP address. | 
 | QRadar.GeoForIP.RepresentedCountryIsoCode | String | ISO code of the country that is represented by users of the IP address. | 
 | QRadar.GeoForIP.RepresentedCountryName | String | Name of the country that is represented by users of the IP address. | 
 | QRadar.GeoForIP.RepresentedCountryConfidence | Number | Value between 0-100 that represents MaxMind's confidence that the represented country is correct. | 
-| QRadar.GeoForIP.IPAddress | String | IP address to lookup. | 
+| QRadar.GeoForIP.IPAddress | String | IP address to look up. | 
 | QRadar.GeoForIP.Traits.autonomous_system_number | Number | The autonomous system number associated with the IP address. | 
 | QRadar.GeoForIP.Traits.autonomous_system_organization | String | The organization associated with the registered autonomous system number for the IP address. | 
 | QRadar.GeoForIP.Traits.domain | String | The second level domain associated with the IP address. | 
-| QRadar.GeoForIP.Traits.internet_service_provider | String | The name of the Internet Service Provider associated with the IP address. | 
+| QRadar.GeoForIP.Traits.internet_service_provider | String | The name of the internet service provider associated with the IP address. | 
 | QRadar.GeoForIP.Traits.organization | String | The name of the organization associated with the IP address. | 
 | QRadar.GeoForIP.Traits.user_type | String | The user type associated with the IP address. | 
-| QRadar.GeoForIP.Coordinates | Number | Latitude and Longitude by MaxMind. | 
+| QRadar.GeoForIP.Coordinates | Number | Latitude and longitude by MaxMind. | 
 | QRadar.GeoForIP.PostalCode | String | The postal code associated with the IP address. | 
 | QRadar.GeoForIP.PostalCodeConfidence | Number | Value between 0-100 that represents MaxMind's confidence that the postal code is correct. | 
 
@@ -1987,18 +2037,17 @@ Retrieves a list of log sources.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| qrd_encryption_algorithm | The algorithm to use for encrypting the sensitive data of this endpoint. Possible values are: AES128, AES256. | Required | 
-| qrd_encryption_password | The password to use for encrypting the sensitive data of this endpoint. Default value is the user's password. | Optional | 
+| qrd_encryption_password | The password to use for encrypting the sensitive data of this endpoint. If password was not given, random password will be generated. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter domains. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-log_source_management-log_sources-GET.html. | Optional | 
+| filter | Query by which to filter log sources, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-log_source_management-log_sources-GET.html. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.LogSource.SendingIP | String | IP of the system which the log source is associated to, or fed by. | 
+| QRadar.LogSource.SendingIP | String | IP of the system which the log source is associated with, or fed by. | 
 | QRadar.LogSource.Internal | Boolean | Whether log source is internal. | 
 | QRadar.LogSource.ProtocolParameters | Unknown | Protocol parameters. | 
 | QRadar.LogSource.Description | String | Description of the log source. | 
@@ -2012,8 +2061,8 @@ Retrieves a list of log sources.
 | QRadar.LogSource.AutoDiscovered | Boolean | Whether log source was auto discovered. | 
 | QRadar.LogSource.ModifiedDate | Date | Date when log source was last modified. | 
 | QRadar.LogSource.TypeID | Number | The log source type. | 
-| QRadar.LogSource.LastEventTime | Date | Date when last event was received by the log source. | 
-| QRadar.LogSource.Gateway | Boolean | Whether log source is configured as gateway. | 
+| QRadar.LogSource.LastEventTime | Date | Date when the last event was received by the log source. | 
+| QRadar.LogSource.Gateway | Boolean | Whether log source is configured as a gateway. | 
 | QRadar.LogSource.Status | Unknown | Status of the log source. | 
 
 
@@ -2165,10 +2214,10 @@ Retrieves a list of event regex properties.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field_name | A comma-separated list of names of an exact properties to search for. | Optional | 
+| field_name | A comma-separated list of names of the exact properties to search for. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
-| filter | Query to filter regex properties. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-custom_properties-regex_properties-GET.html. | Optional | 
+| filter | Query by which to filter regex properties, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,gateway". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-custom_properties-regex_properties-GET.html. | Optional | 
 
 
 #### Context Output
@@ -2176,15 +2225,15 @@ Retrieves a list of event regex properties.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.Properties.identifier | String | ID of the event regex property. | 
-| QRadar.Properties.modification_date | String | Date when event regex property was last updated. | 
+| QRadar.Properties.modification_date | Date | Date when the event regex property was last updated. | 
 | QRadar.Properties.datetime_format | String | Date/time pattern that the event regex property matches. | 
-| QRadar.Properties.property_type | String | Property type. One of 'STRING', 'NUMERIC', 'IP', 'PORT', 'TIME'. | 
+| QRadar.Properties.property_type | String | Property type. Possible values: "STRING", "NUMERIC", "IP", "PORT", "TIME". | 
 | QRadar.Properties.name | String | Name of the event regex property. | 
-| QRadar.Properties.auto_discovered | Boolean | Whether event regex property was auto discovered. | 
+| QRadar.Properties.auto_discovered | Boolean | Whether the event regex property was auto discovered. | 
 | QRadar.Properties.description | String | Description of the event regex property. | 
 | QRadar.Properties.id | Number | ID of the event regex property. | 
 | QRadar.Properties.use_for_rule_engine | Boolean | Whether the event regex property is parsed when the event is received. | 
-| QRadar.Properties.creation_date | String | Date when event regex property was created. | 
+| QRadar.Properties.creation_date | Date | Date when the event regex property was created. | 
 | QRadar.Properties.locale | String | Language tag of what locale the property matches. | 
 | QRadar.Properties.username | String | The owner of the event regex property. | 
 
@@ -2263,7 +2312,7 @@ Retrieves a list of event regex properties.
 
 ### qradar-reset-last-run
 ***
-Reset fetch incidents last run value, which resets the fetch to its initial fetch state (will try to fetch first available offense).
+Resets the fetch incidents last run value, which resets the fetch to its initial fetch state. (Will try to fetch the first available offense).
 
 
 #### Base Command

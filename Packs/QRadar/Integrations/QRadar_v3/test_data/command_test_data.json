@@ -958,11 +958,10 @@
    }
   ],
   "expected": {
-   "outputs_prefix": "QRadar",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Asset": {
+   "outputs_prefix": null,
+   "outputs_key_field": null,
+   "outputs": {
+     "QRadar.Assets(val.ID === \"1007\")": {
       "VulnerabilityCount": 0,
       "RiskScoreSum": 0.0,
       "Hostnames": [
@@ -996,12 +995,7 @@
        }
       ]
      },
-     "Endpoint": {
-      "IPAddress": []
-     }
-    },
-    {
-     "Asset": {
+         "QRadar.Assets(val.ID === \"1008\")": {
       "VulnerabilityCount": 0,
       "RiskScoreSum": 0.0,
       "Hostnames": [
@@ -1034,13 +1028,9 @@
         "value": "-"
        }
       ]
-     },
-     "Endpoint": {
-      "IPAddress": []
      }
     }
-   ]
-  }
+    }
  },
  "saved_searches_list": {
   "response": [

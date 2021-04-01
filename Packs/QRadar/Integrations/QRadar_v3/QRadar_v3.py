@@ -1,5 +1,5 @@
 import concurrent.futures
-from copy import deepcopy
+import secrets
 from enum import Enum
 from threading import Lock
 from typing import Tuple
@@ -106,7 +106,8 @@ OFFENSE_OLD_NEW_NAMES_MAP = {
     'protected': 'Protected',
     'LinkToOffense': 'LinkToOffense',
     'rules': 'Rules',
-    'domain_name': 'DomainName'
+    'domain_name': 'DomainName',
+    'assets': 'Assets'
 }
 
 CLOSING_REASONS_OLD_NEW_MAP = {
@@ -355,6 +356,9 @@ class Client(BaseClient):
                           ' x-y'
             elif 'unauthorized to access' in err_msg or 'No SEC header present in request' in err_msg:
                 message = 'Authorization Error: make sure credentials are correct.'
+            elif 'The specified encryption strength is not available' in err_msg:
+                err_msg = ''
+                message = 'The specified encryption is not available, try using a weaker encrpytion (AES128).'
             err_msg += f'\n{message}'
             raise DemistoException(err_msg, res=res)
         except ValueError:
@@ -499,8 +503,8 @@ class Client(BaseClient):
             additional_headers={'Range': range_} if range_ else None
         )
 
-    def reference_sets_list(self, range_: str, ref_name: Optional[str] = None, filter_: Optional[str] = None,
-                            fields: Optional[str] = None):
+    def reference_sets_list(self, range_: Optional[str] = None, ref_name: Optional[str] = None,
+                            filter_: Optional[str] = None, fields: Optional[str] = None):
         name_suffix = f'/{ref_name}' if ref_name else ''
         params = assign_params(fields=fields) if ref_name else assign_params(filter=filter_, fields=fields)
         additional_headers = {'Range': range_} if not ref_name else None
@@ -752,9 +756,8 @@ def get_offense_closing_reasons(client: Client, offenses: List[Dict]) -> Dict:
                           if offense.get('closing_reason_id') is not None}
     if not closing_reason_ids:
         return dict()
-    closing_reasons = client.closing_reasons_list(None, None, None, None,
-                                                  f'''id in ({','.join(map(str, closing_reason_ids))})''',
-                                                  'id,text')
+    closing_reasons = client.closing_reasons_list(filter_=f'''id in ({','.join(map(str, closing_reason_ids))})''',
+                                                  fields='id,text')
     return {closing_reason.get('id'): closing_reason.get('text') for closing_reason in closing_reasons}
 
 
@@ -862,7 +865,7 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
 
     def get_assets_for_ips_batch(b: List):
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
-        return client.assets_list(None, filter_query, None)
+        return client.assets_list(filter_=filter_query)
 
     # Submit addresses in batches to avoid overloading QRadar service
     assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
@@ -1205,8 +1208,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
         client (Client): Client to perform the API calls.
         fetch_mode (str): Which enrichment mode was requested.
                           Can be 'Fetch With All Events', 'Fetch Correlation Events Only'
-        offense_id (Dict): Offense ID to enrich with events.
-        offense_start_time (Dict): Offense starting time.
+        offense (Dict): Offense ID to enrich with events.
         event_columns (str): Columns of the events to be extracted from query.
         events_limit (int): Maximum number of events to enrich the offense.
         max_retries (int): Number of retries.
@@ -1329,94 +1331,6 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     return offense
 
 
-def get_remote_data_with_events(client: Client, fetch_mode: str, current_mirrored_id: str, events_columns: str,
-                                events_limit: int, ip_enrich: bool, asset_enrich: bool) -> Optional[Dict]:
-    """
-    Performs mirroring offense with events.
-    Search created by QRadar is asynchronous, so this function uses integration context current ongoing searches,
-    and polls the current offenses waiting for search results.
-    Function logic is:
-    1) Add current offense to be mirrored to the offenses to be mirrored queue.
-    2) Perform until 'MAX_NUMBER_OF_OFFENSES_TO_CHECK_SEARCH':
-        2.1) Get the next offense ID and search ID (if exists) in the queue.
-        2.2) Check if search ID exists (there is ongoing search for this offense).
-            - If not: create a search for this offense.
-        2.3) Perform API quest to poll search status.
-            - If search is not finished, append current offense to the end of the, and continue to next offense.
-              queue.
-        (Reaching 2.4 means search status is finished).
-        2.4) Get the results of the search.
-        2.5) Check if enough events were returned by the search.
-            - If not, append offense to end of queue and delete current its search, and continue to next offense.
-        (Reaching 2.6 means enough events were returned).
-        2.6) Add enrichment to the offense, such as IP/assets.
-        2.7) Sanitize offense.
-        2.8) Add entries of needed.
-        2.9) Break from the loop.
-    3) Return the mirrored offense returned by loop, or return None if no offense was returned.
-    Args:
-        client (Client): Client to perform the API calls.
-        current_mirrored_id (str): Current offense mirrored ID.
-        fetch_mode (str): Fetch mode of the offenses.
-                          Can be 'Fetch Without Events', 'Fetch With All Events', 'Fetch Correlation Events Only'
-        events_columns (str): Events columns to extract by search query for each offense. Only used when fetch mode
-                              is not 'Fetch Without Events'.
-        events_limit (int): Number of events to be fetched for each offense. Only used when fetch mode is not
-                            'Fetch Without Events'.
-        ip_enrich (bool): Whether to enrich offense by changing IP IDs of each offense to its IP value.
-        asset_enrich (bool): Whether to enrich offense with assets
-    Returns:
-        (Optional[Dict]): Mirrored offense with events and enrichment, or None, according to the logic described above.
-    """
-    ctx = get_integration_context()
-    modified_records = deepcopy(ctx.get('modified_records_ids', []))
-    updated_offense = None
-    for i in range(min(MAX_NUMBER_OF_OFFENSES_TO_CHECK_SEARCH, len(modified_records))):
-        # Getting first in queue modified ID
-        modified_id, search_id = modified_records.pop()
-        next_offense = client.offenses_list(offense_id=modified_id)
-        # Check if search was created for the next offense to be mirrored.
-        if not search_id:
-            search_response = create_search_with_retry(client, fetch_mode, next_offense, events_columns, events_limit,
-                                                       max_retries=1)
-            search_id = search_response.get('search_id') if search_response else None
-            # Append the search created to the end of the list to poll the search later.
-            modified_records.append([modified_id, search_id])
-            continue
-        try:
-            # Search ID exists, poll to see if search was completed.
-            search_status_response = client.search_status_get(search_id)
-            query_status = search_status_response.get('status')
-            if query_status in TERMINATING_SEARCH_STATUSES:
-                search_results_response = client.search_results_get(search_id)
-                events = search_results_response.get('events', [])
-                sanitized_events = sanitize_outputs(events)
-                if len(sanitized_events) >= min(next_offense.get('event_count', 0), events_limit):
-                    enriched_offense = enrich_offenses_result(client, next_offense, ip_enrich, asset_enrich)
-                    updated_offense = sanitize_outputs(enriched_offense)[0]
-                    demisto.error(f'Updating offense with events! {updated_offense}')
-                    break
-                # Search was not valid, remove search and retry to create a search later.
-                else:
-                    modified_records.append([modified_id, None])
-            else:
-                # Search results are still not ready.
-                modified_records.append([modified_id, search_id])
-                continue
-        except Exception:
-            # Get search status or results failed for some reason. Skip getting results for offense this time.
-            modified_records.append([modified_id, search_id])
-            continue
-
-    # Update context with the most updated modified IDs list.
-    set_to_integration_context_with_retries({
-        'samples': ctx.get('samples', []),
-        LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY),
-        'modified_records_ids': modified_records
-    })
-    return updated_offense
-
-
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
                                          events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
                                          last_highest_id: int, incident_type: Optional[str],
@@ -1470,8 +1384,8 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     if is_reset_triggered(handle_reset=True):
         return None, None
     offenses_with_mirror = [
-        dict(offense, mirror_direction=mirror_direction, mirror_instance=demisto.integrationInstance()) for offense in
-        offenses] if mirror_direction else offenses
+        dict(offense, mirror_direction=mirror_direction, mirror_instance=demisto.integrationInstance())
+        for offense in offenses] if mirror_direction else offenses
     enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich)
     final_offenses = sanitize_outputs(enriched_offenses)
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
@@ -1541,7 +1455,9 @@ def long_running_execution_command(client: Client, params: Dict):
                 continue
 
             incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
-            set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample})
+            set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
+                                     'last_mirror_update': ctx.get('last_mirror_update')})
+
             demisto.createIncidents(incidents)
 
         except Exception as e:
@@ -1615,14 +1531,25 @@ def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
     offense_id: int = int(args['offense_id'])
     protected = args.get('protected')
     follow_up = args.get('follow_up')
+    closing_reason_name = args.get('closing_reason_name')
 
     status = args.get('status')
     closing_reason_id = args.get('closing_reason_id')
-    if status == 'CLOSED' and not closing_reason_id:
+    if status == 'CLOSED' and (not closing_reason_id and not closing_reason_name):
         raise DemistoException(
             '''Closing reason ID must be provided when closing an offense. Available closing reasons can be achieved
              by 'qradar-closing-reasons' command.'''
         )
+
+    if closing_reason_name:
+        closing_reasons_list = client.closing_reasons_list(include_deleted=True, include_reserved=True)
+        for closing_reason in closing_reasons_list:
+            if closing_reason.get('text') == closing_reason_name:
+                closing_reason_id = closing_reason.get('id')
+        if not closing_reason_id:
+            raise DemistoException(f'Could not find closing reason name {closing_reason_name}. Please provide a valid'
+                                   ' closing reason name. Closing reasons can be retrieved by running the '
+                                   'qradar-closing-reasons command.')
 
     assigned_to = args.get('assigned_to')
     fields = args.get('fields')
@@ -1870,24 +1797,29 @@ def qradar_assets_list_command(client: Client, args: Dict) -> CommandResults:
 
     response = client.assets_list(range_, filter_, fields)
     enriched_outputs = enrich_assets_results(client, response, full_enrichment)
-    assets = []
+    assets_results = dict()
+    assets_hr = []
     endpoints = []
     for output in enriched_outputs:
         output['Asset']['hostnames'] = add_iso_entries_to_dict(output.get('Asset', dict()).get('hostnames', []))
         output['Asset']['users'] = add_iso_entries_to_dict(output.get('Asset', dict()).get('users', []))
         output['Asset']['products'] = add_iso_entries_to_dict(output.get('Asset', dict()).get('products', []))
         output['Asset'] = sanitize_outputs(output.get('Asset'), ASSET_OLD_NEW_MAP)[0]
-        assets.append(output.get('Asset'))
-        endpoints.append(output.get('Endpoint'))
+        assets_hr.append(output['Asset'])
+        assets_results[f'''QRadar.Assets(val.ID === "{output['Asset']['ID']}")'''] = output['Asset']
+        sanitized_endpoint = remove_empty_elements(output.get('Endpoint', dict()))
+        if sanitized_endpoint:
+            endpoints.append(sanitized_endpoint)
 
-    asset_human_readable = tableToMarkdown('Assets List', assets, removeNull=True)
+    asset_human_readable = tableToMarkdown('Assets List', assets_hr, removeNull=True)
     endpoints_human_readable = tableToMarkdown('Endpoints', endpoints, removeNull=True)
+
+    if endpoints:
+        assets_results['Endpoint'] = endpoints
 
     return CommandResults(
         readable_output=asset_human_readable + endpoints_human_readable,
-        outputs_prefix='QRadar',
-        outputs_key_field='ID',
-        outputs=enriched_outputs,
+        outputs=assets_results,
         raw_response=response
     )
 
@@ -2030,7 +1962,8 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
     """
     search_id: str = args.get('search_id', '')
     output_path = args.get('output_path')
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    # Using or instead of default value for QRadarFullSearch backward compatibility
+    range_ = f'''items={args.get('range') or DEFAULT_RANGE_VALUE}'''
 
     response = client.search_results_get(search_id, range_)
     if not response:
@@ -2068,6 +2001,7 @@ def qradar_reference_sets_list_command(client: Client, args: Dict) -> CommandRes
         CommandResults.
     """
     ref_name = args.get('ref_name')
+    convert_date_value = argToBoolean(args.get('date_value', False))
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
@@ -2075,6 +2009,9 @@ def qradar_reference_sets_list_command(client: Client, args: Dict) -> CommandRes
     response = client.reference_sets_list(range_, ref_name, filter_, fields)
     if ref_name:
         outputs = dict(response)
+        if convert_date_value and outputs.get('element_type') == 'DATE':
+            for data_entry in outputs.get('data', []):
+                data_entry['value'] = get_time_parameter(data_entry.get('value'), iso_format=True)
         outputs['data'] = sanitize_outputs(outputs.get('data', []), REFERENCE_SET_DATA_OLD_NEW_MAP)
     else:
         outputs = response
@@ -2266,7 +2203,8 @@ def qradar_domains_list_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    domain_id = args.get('domain_id')
+    # backward compatibility for domain_id argument named is 'id' in QRadar v2.
+    domain_id = args.get('domain_id') or args.get('id')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
@@ -2306,6 +2244,19 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
     page = arg_to_number(args.get('page', 0))
     fields = args.get('fields')
+
+    # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
+    element_type = args.get('element_type', '')
+    timeout_type = args.get('timeout_type')
+    time_to_live = args.get('time_to_live')
+    try:
+        client.reference_sets_list(ref_name=ref_name)
+    except DemistoException as e:
+        # Create reference set if does not exist
+        if e.message and f'{ref_name} does not exist' in e.message:
+            client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
+        else:
+            raise e
 
     indicators = demisto.searchIndicators(query=query, page=page, size=limit).get('iocs', [])
     indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
@@ -2411,10 +2362,10 @@ def qradar_log_sources_list_command(client: Client, args: Dict) -> CommandResult
     """
     Retrieves a list of log sources from QRadar service.
     possible arguments:
-    - qrd_encryption_algorithm (Required): The algorithm to use for encrypting the sensitive data of this
-        endpoint.
+    - qrd_encryption_algorithm: The algorithm to use for encrypting the sensitive data of this
+        endpoint. Using AES 128
     - qrd_encryption_password: The password to use for encrypting the sensitive data of this endpoint.
-        Default value is the user's password. Default is user's password.
+        If argument was not given, will be randomly generated.
     - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
     - filter: Query filter to filter results returned by QRadar service. see
               https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
@@ -2429,8 +2380,8 @@ def qradar_log_sources_list_command(client: Client, args: Dict) -> CommandResult
     Returns:
         CommandResults.
     """
-    qrd_encryption_algorithm: str = args.get('qrd_encryption_algorithm', '')
-    qrd_encryption_password: str = args.get('qrd_encryption_password', client.password)
+    qrd_encryption_algorithm: str = args.get('qrd_encryption_algorithm', 'AES128')
+    qrd_encryption_password: str = args.get('qrd_encryption_password', secrets.token_urlsafe(20))
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
@@ -2467,12 +2418,21 @@ def qradar_get_custom_properties_command(client: Client, args: Dict) -> CommandR
     Returns:
         CommandResults.
     """
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
+    if limit:
+        range_ = f'items=0-{limit - 1}'
+    else:
+        range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+
+    like_names = argToList(args.get('like_name'))
     field_names = argToList(args.get('field_name'))
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
-    filter_ = args.get('filter')
+    filter_ = args.get('filter', '')
     fields = args.get('fields')
-    if not filter_ and field_names:
-        filter_ = f'''name IN ({','.join(map(lambda name: f'"{str(name)}"', field_names))})'''
+    if not filter_:
+        if field_names:
+            filter_ += f'''name IN ({','.join(map(lambda name: f'"{str(name)}"', field_names))})'''
+        if like_names:
+            filter_ += ' or '.join(map(lambda like: f' name ILIKE "%{like}%"', like_names))
 
     response = client.custom_properties(range_, filter_, fields)
     outputs = sanitize_outputs(response)
@@ -2695,17 +2655,25 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     Returns:
         (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
     """
+    ctx = get_integration_context()
     remote_args = GetModifiedRemoteDataArgs(args)
-    highest_fetched_id = get_integration_context().get(LAST_FETCH_KEY, 0)
+    highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     range_ = f'items=0-{limit - 1}'
-    last_update = get_time_parameter(remote_args.last_update, epoch_format=True)
+    last_update_time = ctx.get('last_mirror_update')
+    if not last_update_time:
+        last_update_time = remote_args.last_update
+    last_update = get_time_parameter(last_update_time, epoch_format=True)
 
     offenses = client.offenses_list(range_=range_,
                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
                                     sort='+last_persisted_time',
-                                    fields='id')
+                                    fields='id,last_persisted_time')
     new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
+
+    current_last_update = ctx.get('last_mirror_update') if not offenses else offenses[-1].get('last_persisted_time')
+    set_integration_context({'samples': ctx.get('samples', []), 'last_mirror_update': current_last_update,
+                             LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, 0)})
 
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
@@ -2757,7 +2725,7 @@ def main() -> None:
             proxy=proxy,
             api_version=api_version,
             credentials=credentials)
-
+        # All command names with or are for supporting QRadar v2 command names for backward compatibility
         if command == 'test-module':
             return_results(test_module_command(client, params))
 
@@ -2767,19 +2735,19 @@ def main() -> None:
         elif command == 'long-running-execution':
             long_running_execution_command(client, params)
 
-        elif command == 'qradar-offenses-list':
+        elif command == 'qradar-offenses-list' or command == 'qradar-offenses' or command == 'qradar-offense-by-id':
             return_results(qradar_offenses_list_command(client, args))
 
-        elif command == 'qradar-offense-update':
+        elif command == 'qradar-offense-update' or command == 'qradar-update-offense':
             return_results(qradar_offense_update_command(client, args))
 
-        elif command == 'qradar-closing-reasons':
+        elif command == 'qradar-closing-reasons' or command == 'qradar-get-closing-reasons':
             return_results(qradar_closing_reasons_list_command(client, args))
 
-        elif command == 'qradar-offense-notes-list':
+        elif command == 'qradar-offense-notes-list' or command == 'qradar-get-note':
             return_results(qradar_offense_notes_list_command(client, args))
 
-        elif command == 'qradar-offense-note-create':
+        elif command == 'qradar-offense-note-create' or command == 'qradar-create-note':
             return_results(qradar_offense_notes_create_command(client, args))
 
         elif command == 'qradar-rules-list':
@@ -2788,7 +2756,7 @@ def main() -> None:
         elif command == 'qradar-rule-groups-list':
             return_results(qradar_rule_groups_list_command(client, args))
 
-        elif command == 'qradar-assets-list':
+        elif command == 'qradar-assets-list' or command == 'qradar-get-assets' or command == 'qradar-get-asset-by-id':
             return_results(qradar_assets_list_command(client, args))
 
         elif command == 'qradar-saved-searches-list':
@@ -2797,34 +2765,36 @@ def main() -> None:
         elif command == 'qradar-searches-list':
             return_results(qradar_searches_list_command(client, args))
 
-        elif command == 'qradar-search-create':
+        elif command == 'qradar-search-create' or command == 'qradar-searches':
             return_results(qradar_search_create_command(client, args))
 
-        elif command == 'qradar-search-status-get':
+        elif command == 'qradar-search-status-get' or command == 'qradar-get-search':
             return_results(qradar_search_status_get_command(client, args))
 
-        elif command == 'qradar-search-results-get':
+        elif command == 'qradar-search-results-get' or command == 'qradar-get-search-results':
             return_results(qradar_search_results_get_command(client, args))
 
-        elif command == 'qradar-reference-sets-list':
+        elif command == 'qradar-reference-sets-list' or command == 'qradar-get-reference-by-name':
             return_results(qradar_reference_sets_list_command(client, args))
 
-        elif command == 'qradar-reference-set-create':
+        elif command == 'qradar-reference-set-create' or command == 'qradar-create-reference-set':
             return_results(qradar_reference_set_create_command(client, args))
 
-        elif command == 'qradar-reference-set-delete':
+        elif command == 'qradar-reference-set-delete' or command == 'qradar-delete-reference-set':
             return_results(qradar_reference_set_delete_command(client, args))
 
-        elif command == 'qradar-reference-set-value-upsert':
+        elif command == 'qradar-reference-set-value-upsert' or command == 'qradar-create-reference-set-value' or \
+                command == 'qradar-update-reference-set-value':
             return_results(qradar_reference_set_value_upsert_command(client, args))
 
-        elif command == 'qradar-reference-set-value-delete':
+        elif command == 'qradar-reference-set-value-delete' or command == 'qradar-delete-reference-set-value':
             return_results(qradar_reference_set_value_delete_command(client, args))
 
-        elif command == 'qradar-domains-list':
+        elif command == 'qradar-domains-list' or command == 'qradar-get-domains' or \
+                command == 'qradar-get-domain-by-id':
             return_results(qradar_domains_list_command(client, args))
 
-        elif command == 'qradar-indicators-upload':
+        elif command == 'qradar-indicators-upload' or command == 'qradar-upload-indicators':
             return_results(qradar_indicators_upload_command(client, args))
 
         elif command == 'qradar-geolocations-for-ip':
