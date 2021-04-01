@@ -569,7 +569,8 @@ def main():
     api_key = params.get('apikey')
     threshold = int(params.get('url_threshold', '1'))
     use_ssl = not params.get('insecure', False)
-    reliability = params.get('integrationReliability', DBotScoreReliability.C)
+    reliability = params.get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.C
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
