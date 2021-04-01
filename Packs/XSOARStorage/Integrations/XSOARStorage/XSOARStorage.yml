@@ -21,6 +21,7 @@ script:
     outputs:
     - contextPath: XSOAR.Store
       description: The namespace and keys.
+      type: string
   - arguments:
     - description: The key to store data under.
       name: key
@@ -42,6 +43,8 @@ script:
     name: xsoar-store-get
     outputs:
     - contextPath: XSOAR.Store
+      description: The data retrieved from the key.
+      type: string
   dockerimage: demisto/python3:3.9.2.17246
   runonce: false
   script: ''
