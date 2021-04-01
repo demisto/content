@@ -1,15 +1,14 @@
+import copy
 import json
 import os
 import zipfile
 
-import pytest
-import copy
 import demistomock as demisto
+import pytest
 from CommonServerPython import Common
 from freezegun import freeze_time
 
 XDR_URL = 'https://api.xdrurl.com'
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -914,13 +913,14 @@ def test_endpoint_scan_command(requests_mock):
 def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
     """
     Given:
-    -  no filters.
+    -  the filter all as true.
     When
         - A user desires to scan all endpoints.
     Then
         - returns markdown, context data and raw response.
     """
     from CortexXDRIR import endpoint_scan_command, Client
+    test_data = load_test_data('test_data/scan_all_endpoints.json')
     scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
@@ -928,9 +928,32 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = endpoint_scan_command(client, {})
+    markdown, context, raw = endpoint_scan_command(client, test_data['command_args'])
 
     assert scan_expected_tesult == context
+
+
+def test_endpoint_scan_command_scan_all_endpoints_no_filters_error(requests_mock):
+    """
+    Given:
+    -  No filters.
+    When
+        - A user desires to scan all endpoints but without the correct argumetns.
+    Then
+        - raise a descriptive error.
+    """
+    from CortexXDRIR import endpoint_scan_command, Client
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    client._headers = {}
+    err_msg = 'To scan all the endpoints run this command with the \'all\' argument as True ' \
+              'and without any other filters. This may cause performance issues.\n' \
+              'To scan some of the endpoints, please use the filter arguments.'
+    with pytest.raises(Exception, match=err_msg):
+        endpoint_scan_command(client, {})
 
 
 def test_sort_all_list_incident_fields():
