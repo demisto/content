@@ -16,17 +16,14 @@ def test_reliability_in_dbot(mocker):
         'reliability': DBotScoreReliability.C
     }
 
-    a = {'Type': 1, 'ContentsFormat': 'json', 'Contents': {'query_status': 'no_results'},
-         'HumanReadable': '## URLhaus reputation for http://test.com\nNo results!', 'HumanReadableFormat': 'markdown',
-         'EntryContext': {'URL': {'Data': 'http://test.com'},
-                          'DBotScore': {'Type': 'url', 'Vendor': 'URLhaus', 'Indicator': 'http://test.com',
-                                        'Reliability': DBotScoreReliability.C, 'Score': 0}}}
-    mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'args', return_value={'url': 'http://test.com'})
+
     response = requests.models.Response()
     response._content = json.dumps({'query_status': 'no_results'}).encode('utf-8')
     mocker.patch.object(URLHaus, 'query_url_information', return_value=response)
 
+    mocker.patch.object(demisto, 'results')
     URLHaus.url_command(**params)
-    assert demisto.results.assert_called_with(a)
-    # assert mocked_results.assert_called_with() == 1
+
+    assert demisto.results.call_args_list[0][0][0]['EntryContext']['DBotScore']['Reliability'] == DBotScoreReliability.C
+
