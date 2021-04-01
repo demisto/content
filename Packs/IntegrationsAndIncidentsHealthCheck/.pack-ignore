@@ -4,3 +4,6 @@ ignore=PB105,BA101
 ignore=BA101
 [file:playbook-JOB_-_Integrations_and_Playbooks_Health_Check_-_Lists_handling.yml]
 ignore=BA101
+
+[file:layoutscontainer-Integrations_and_Incidents_Health.json]
+ignore=BA101
