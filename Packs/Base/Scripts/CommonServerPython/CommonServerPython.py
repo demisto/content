@@ -4644,7 +4644,8 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
-    is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
+    is_command = hasattr(demisto, 'command')
+    is_server_handled = is_command and demisto.command() in ('fetch-incidents',
                                                                               'fetch-credentials',
                                                                               'long-running-execution',
                                                                               'fetch-indicators')
@@ -4658,6 +4659,9 @@ def return_error(message, error='', outputs=None):
     LOG.print_log()
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+
+    if is_command and demisto.command() == 'get-modified-remote-data' and not isinstance(error, NotImplementedError):
+        message += 'skip update'
 
     if is_server_handled:
         raise Exception(message)
