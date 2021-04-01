@@ -194,7 +194,7 @@ tasks:
       version: -1
       name: Set Incident Severity to High
       description: Increases the incident severity.
-      scriptName: setIncident
+      scriptName: Builtin|||setIncident
       type: regular
       iscommand: false
       brand: ""
