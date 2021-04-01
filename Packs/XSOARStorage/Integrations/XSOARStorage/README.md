@@ -1,5 +1,4 @@
 Facilitates the storage and retrieval of key/value pairs within XSOAR.
-This integration was integrated and tested with version xx of XSOAR Storage
 ## Configure XSOAR Storage on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
