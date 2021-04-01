@@ -151,7 +151,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
             if incident_created_time <= last_fetch:
                 continue
 
-        incident_name = 'SOC Case ' + alert.get('reference')
+        incident_name = "SOC Case " + str(alert.get('reference'))
 
         demisto.debug("JSON debug alert")
         demisto.debug(json.dumps(alert))
