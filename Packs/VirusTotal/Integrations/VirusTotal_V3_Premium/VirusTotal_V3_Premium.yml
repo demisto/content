@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: VirusTotal - Premium - (API v3)
+  id: VirusTotal - Premium (API v3)
   version: -1
 configuration:
 - display: ""
@@ -44,8 +44,8 @@ configuration:
   required: false
   type: 8
 description: Analyse retro hunts, read live hunt notifications and download files from VirusTotal.
-display: VirusTotal - Premium - (API v3)
-name: VirusTotal - Premium - (API v3)
+display: VirusTotal - Premium (API v3)
+name: VirusTotal - Premium (API v3)
 script:
   commands:
   - arguments:

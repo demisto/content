@@ -1,7 +1,7 @@
 Use the premium API capabilities of VirusTotal. Analyse retro hunts, read live hunt notifications and download files from VirusTotal.
 The differences between VirusTotal's Public API and Premium API can be found [in VirusTotal v3 API documentation](https://developers.virustotal.com/v3.0/reference#public-vs-premium-api).
 
-This integration was integrated and tested with version API v3 of VirusTotal - Premium - (API v3)
+This integration was integrated and tested with version API v3 of VirusTotal - Premium (API v3)
 
 ## Use Cases
 - Fetch live hunt notifications as incidents
@@ -10,9 +10,9 @@ This integration was integrated and tested with version API v3 of VirusTotal - P
 - Group several files from VirusTotal into a password-protected ZIP file.
 - Get a PCAP file generated from VirusTotal's sandbox for further analysis. 
 
-## Configure VirusTotal - Premium - (API v3) on Cortex XSOAR  
+## Configure VirusTotal - Premium (API v3) on Cortex XSOAR  
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for VirusTotal - Premium - (API v3).
+2. Search for VirusTotal - Premium (API v3).
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
