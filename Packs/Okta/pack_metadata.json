@@ -1,5 +1,5 @@
 {
-    "name": "okta",
+    "name": "Okta",
     "description": "Integration with Okta's cloud-based identity management service",
     "support": "xsoar",
     "currentVersion": "2.1.7",

@@ -8,6 +8,7 @@
  "hours": 0,
  "hoursR": 0,
  "id": "Qradar Generic",
+ "playbookId": "QRadar Generic",
  "layout": "Qradar Generic",
  "locked": false,
  "name": "Qradar Generic",
