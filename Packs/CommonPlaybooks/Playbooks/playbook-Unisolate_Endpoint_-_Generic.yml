@@ -39,10 +39,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: fce5d8d1-840a-4878-82fc-807950fd1e48
+    taskid: 9d1f172a-43e5-4280-8512-2f6321eb961a
     type: playbook
     task:
-      id: fce5d8d1-840a-4878-82fc-807950fd1e48
+      id: 9d1f172a-43e5-4280-8512-2f6321eb961a
       version: -1
       name: Carbon Black Response - Unisolate Endpoint
       description: This playbook will unisolate sensors in Carbon Black Response.
@@ -76,10 +76,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 2bc544fa-97d1-4391-8e24-790da41231c1
+    taskid: 5e5a85db-5761-4c8f-8c70-6833a2200a04
     type: playbook
     task:
-      id: 2bc544fa-97d1-4391-8e24-790da41231c1
+      id: 5e5a85db-5761-4c8f-8c70-6833a2200a04
       version: -1
       name: Cortex XDR - Unisolate Endpoint
       description: This playbook will assist you to Unisolate endpoint with Cortex
@@ -177,10 +177,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: af9905f1-9375-444b-8540-addd1b6aee7b
+    taskid: 80b6c790-1aef-4d56-8d48-8b0446ac6e31
     type: playbook
     task:
-      id: af9905f1-9375-444b-8540-addd1b6aee7b
+      id: 80b6c790-1aef-4d56-8d48-8b0446ac6e31
       version: -1
       name: FireEye HX - Unisolate Endpoint
       description: This playbook will auto Isolate endpoints by the endpoint id that
@@ -195,6 +195,8 @@ tasks:
     scriptarguments:
       Endpoint_id:
         simple: ${inputs.Endpoint_ID}
+      Hostname:
+        simple: ${inputs.Hostname}
     separatecontext: true
     loop:
       iscommand: false
@@ -204,7 +206,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1330,
           "y": 195
         }
       }
@@ -215,10 +217,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: c62f9282-d3f7-44c5-8623-5c87c7295586
+    taskid: d075f33e-0924-4fd0-89c8-6dd42358041d
     type: playbook
     task:
-      id: c62f9282-d3f7-44c5-8623-5c87c7295586
+      id: d075f33e-0924-4fd0-89c8-6dd42358041d
       version: -1
       name: Unisolate Endpoint - Cybereason
       description: 'This playbook will assist you to unisolate endpoints using Cybereason
@@ -272,7 +274,7 @@ inputs:
 - key: Hostname
   value: {}
   required: false
-  description: The hostname of the endpoint to unisolate using Cybereason.
+  description: The hostname of the endpoint to unisolate (using Cybereason or FireEyeHX).
   playbookInputQuery:
 outputs: []
 tests:

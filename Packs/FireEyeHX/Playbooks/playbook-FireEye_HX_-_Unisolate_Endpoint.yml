@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: d399bde9-dd8a-4de5-8fa9-bc2c30202e48
+    taskid: ab68d1ee-311c-4764-8310-8f99ec553bbb
     type: condition
     task:
-      id: d399bde9-dd8a-4de5-8fa9-bc2c30202e48
+      id: ab68d1ee-311c-4764-8310-8f99ec553bbb
       version: -1
       name: Is FireEye HX enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -96,16 +96,16 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 3c7daaa3-17db-40e9-8891-d9aee3a469a8
+    taskid: 4e4554cf-b587-4ea1-8ac4-ee6643181534
     type: condition
     task:
-      id: 3c7daaa3-17db-40e9-8891-d9aee3a469a8
+      id: 4e4554cf-b587-4ea1-8ac4-ee6643181534
       version: -1
       name: Is there endpoint id?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -134,10 +134,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 5c3831e9-9a18-491a-8096-67e1d2691cdc
+    taskid: 2b845f80-6c59-4b53-8303-3880b8cb0fd1
     type: regular
     task:
-      id: 5c3831e9-9a18-491a-8096-67e1d2691cdc
+      id: 2b845f80-6c59-4b53-8303-3880b8cb0fd1
       version: -1
       name: Get host info
       description: Get information on a host associated with an agent.
@@ -151,7 +151,8 @@ tasks:
     scriptarguments:
       agentId:
         simple: ${inputs.Endpoint_id}
-      hostName: {}
+      hostName:
+        simple: ${inputs.Hostname}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -168,16 +169,16 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 70cfda10-5f4a-495c-883b-3c512bf867d5
+    taskid: 667d15ac-52d9-4736-89bd-7f4dee7a9f82
     type: condition
     task:
-      id: 70cfda10-5f4a-495c-883b-3c512bf867d5
+      id: 667d15ac-52d9-4736-89bd-7f4dee7a9f82
       version: -1
       name: Is the device ready for unisolation?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -209,10 +210,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 19c86962-a559-40e1-8bff-c30233774c53
+    taskid: a97aa654-3e95-4d67-8547-d5a339d586c2
     type: regular
     task:
-      id: 19c86962-a559-40e1-8bff-c30233774c53
+      id: a97aa654-3e95-4d67-8547-d5a339d586c2
       version: -1
       name: Unisolate endpoint
       description: Release a specific host from containment.
@@ -226,7 +227,8 @@ tasks:
     scriptarguments:
       agentId:
         simple: ${inputs.Endpoint_id}
-      hostName: {}
+      hostName:
+        simple: ${inputs.Hostname}
     separatecontext: false
     view: |-
       {
@@ -260,7 +262,13 @@ inputs:
 - key: Endpoint_id
   value: {}
   required: false
-  description: The endpoint id/device  id that  you wish to isolate.
+  description: The endpoint id/device  id that  you wish to unisolate.
+  playbookInputQuery:
+- key: Hostname
+  value:
+    simple:
+  required: false
+  description: The hostname that you wish to unisolate.
   playbookInputQuery:
 outputs: []
 tests:

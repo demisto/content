@@ -21,7 +21,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Endpoint_id | The endpoint id/device  id that  you wish to isolate. |  | Optional |
+| Endpoint_id | The endpoint id/device  id that  you wish to unisolate. |  | Optional |
+| Hostname | The hostname that you wish to unisolate. | None | Optional |
 
 ## Playbook Outputs
 ---
