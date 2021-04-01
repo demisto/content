@@ -7,10 +7,9 @@ from nltk import word_tokenize
 from CommonServerPython import *
 
 
-DEFAULT_MODEL_TYPE = 'default_type'
+FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
 TORCH_TYPE = 'torch'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
-
 
 def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
@@ -45,7 +44,7 @@ def handle_error(message, is_return_error):
 
 
 def preprocess_text(text, model_type, is_return_error):
-    if model_type == DEFAULT_MODEL_TYPE:
+    if model_type == FASTTEXT_MODEL_TYPE:
         language = demisto.args().get('language', 'English')
         tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
         res = demisto.executeCommand('WordTokenizerNLP', {'value': text,
@@ -73,7 +72,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
                            word_threshold, top_word_limit, is_return_error, set_incidents_fields=False):
     model_data, model_type = get_model_data(model_name, model_store_type, is_return_error)
     if model_type.strip() == '':
-        model_type = DEFAULT_MODEL_TYPE
+        model_type = FASTTEXT_MODEL_TYPE
     phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
     text = "%s \n%s" % (email_subject, email_body)
     input_text, words_to_token_maps = preprocess_text(text, model_type, is_return_error)
