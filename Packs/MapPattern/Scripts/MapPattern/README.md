@@ -68,6 +68,6 @@ There are no outputs for this script.
                   "algorithm": algorithm,               # (Optional) The algorithm to pattern matching.
                   "output": output-any,                 # (Optional) The data to replace to the value by the pattern.
                   "exclude": pattern | List[pattern],   # (Optional) The patterns to exclude in the pattern matching.
-                  "next": mappings                      # (Optional) The following condition to do the pattern matching with the value taken from the output.
+                  "next": mappings                      # (Optional) The subsequent condition to do the pattern matching with the value taken from the output.
               }
 
