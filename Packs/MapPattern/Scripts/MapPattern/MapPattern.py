@@ -1,7 +1,7 @@
 import fnmatch
 import json
 import re
-from typing import Callable, Dict, List, Match, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
