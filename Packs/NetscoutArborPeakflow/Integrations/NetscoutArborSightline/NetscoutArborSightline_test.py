@@ -91,3 +91,13 @@ def test_mitigation_template_list_command(mocker):
 
     command_result = mitigation_template_list_command(client, {})
     assert command_result.outputs == alerts_command_results
+
+
+def test_mitigation_template_list_command(mocker):
+    alerts_http_response = http_responses['mitigation_templates']
+    alerts_command_results = command_results['list_mitigation_templates']
+
+    mocker.patch.object(client, 'mitigation_template_list', return_value=alerts_http_response)
+
+    command_result = mitigation_template_list_command(client, {})
+    assert command_result.outputs == alerts_command_results
