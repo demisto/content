@@ -4,7 +4,7 @@
     "cliName": "fwserials",
     "closeForm": false,
     "content": true,
-    "description": "comma-separated list of PANOS FW serial numbers",
+    "description": "Comma separated list of PAN-OS Firewall serial numbers.",
     "editForm": true,
     "group": 0,
     "hidden": false,
