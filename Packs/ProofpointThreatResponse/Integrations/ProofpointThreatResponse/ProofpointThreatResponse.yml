@@ -32,6 +32,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: '6'
+  display: Number of hours between the last incident fetched and the next incident in a single fetch.
+  name: fetch_delta
+  required: false
+  type: 0
 - display: Fetch incidents with specific event sources. Can be a list of comma separated values.
   name: event_sources
   required: false

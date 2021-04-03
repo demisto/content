@@ -459,7 +459,8 @@ def get_incidents_batch_by_time_request(params):
         list. The incidents returned from the API call
     """
     incidents_list = []  # type:list
-    time_delta = timedelta(hours=6)  # batch by days
+    fetch_delta = int(params.get('fetch_delta', '6'))
+    time_delta = timedelta(hours=fetch_delta)  # batch by days
 
     current_time = datetime.now()
     created_after = datetime.strptime(params.get('created_after'), TIME_FORMAT)
@@ -494,6 +495,7 @@ def fetch_incidents_command():
     """
     integration_params = demisto.params()
     last_fetch = demisto.getLastRun().get('last_fetch', {})
+    fetch_delta = integration_params.get('fetch_delta', '6')
     incidents_states = integration_params.get('states')
     for state in incidents_states:
         if not last_fetch.get(state):
@@ -504,6 +506,7 @@ def fetch_incidents_command():
     for state in incidents_states:
         request_params = {
             'created_after': last_fetch[state],
+            'fetch_delta': fetch_delta,
             'state': state
         }
 
