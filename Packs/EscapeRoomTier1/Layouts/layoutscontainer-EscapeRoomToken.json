@@ -8,11 +8,10 @@
                 "name": "Info",
                 "sections": [
                     {
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "default-main-bab7e352-c354-45d8-8133-b0f1bd1c6061-default-main-relatedIncidents",
-                        "maxH": null,
-                        "maxW": 2,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 2,
                         "moved": false,
@@ -27,8 +26,7 @@
                         "h": 1,
                         "hideName": true,
                         "i": "default-main-bab7e352-c354-45d8-8133-b0f1bd1c6061-default-main-reputationStatus",
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -43,8 +41,7 @@
                         "h": 1,
                         "hideName": true,
                         "i": "default-main-bab7e352-c354-45d8-8133-b0f1bd1c6061-default-main-expirationStatus",
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -57,13 +54,13 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "default-main-bab7e352-c354-45d8-8133-b0f1bd1c6061-default-main-38be2c50-2c82-11eb-8304-a75e45391705",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "assigneduser",
+                                "fieldId": "logininfo",
                                 "height": 22,
                                 "id": "91851240-2c82-11eb-8304-a75e45391705",
                                 "index": 0,
@@ -72,25 +69,24 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "userpswd",
+                                "fieldId": "username",
                                 "height": 22,
                                 "id": "1e69e020-2c90-11eb-8304-a75e45391705",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "userpswdhintv2",
+                                "fieldId": "usercredentials",
                                 "height": 22,
                                 "id": "a43451e0-2da8-11eb-a01e-9de7f25b7f8b",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -104,8 +100,7 @@
                         "h": 3,
                         "hideName": true,
                         "i": "default-main-17fac710-2dba-11eb-81b8-51dd99a0c0cc",
-                        "items": [
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -117,7 +112,7 @@
                         "type": "dynamicIndicator",
                         "w": 1,
                         "x": 2,
-                        "y": 2
+                        "y": 3
                     },
                     {
                         "displayType": "ROW",
@@ -129,7 +124,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "userpswdhint",
-                                "height": 22,
+                                "height": 106,
                                 "id": "dfc0c000-2dd4-11eb-81b8-51dd99a0c0cc",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -153,8 +148,7 @@
                         "i": "default-main-1ed10560-2f0c-11eb-aae0-f5e14db9c95d",
                         "items": [
                             {
-                                "args": {
-                                },
+                                "args": {},
                                 "buttonClass": "success",
                                 "endCol": 2,
                                 "fieldId": "",
@@ -167,8 +161,7 @@
                                 "startCol": 0
                             },
                             {
-                                "args": {
-                                },
+                                "args": {},
                                 "buttonClass": "secondary",
                                 "endCol": 2,
                                 "fieldId": "",

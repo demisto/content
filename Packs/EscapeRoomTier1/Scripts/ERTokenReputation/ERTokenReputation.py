@@ -12,16 +12,32 @@ def validate_token(token):
         raise ValueError('Unsupported indicator. Try another one...')
 
 
+def set_user_credentials(indicator_id):
+    res = demisto.executeCommand('setIndicator', {
+        'id': indicator_id,
+        'customFields': {
+            'logininfo': '',
+            'username': 'Isaac',
+            'usercredentials': 'TBD![]()',
+        },
+    })
+
+    if is_error(res):
+        demisto.error(f'oh no!\n{res}\n\n')
+        raise RuntimeError('failed to update hint, check logs for more info.')
+
+
 def reputation_command(args: Dict[str, Any]) -> CommandResults:
     token = args.get('token', '')
+    indicator_id = args.get('indicator_id', '')
 
-    markdown = f'## {token}\n\nArgs:{args}'
-    demisto.info(markdown)
+    demisto.info(f'token: {token}\t indicator ID: {indicator_id}')
 
     validate_token(token)
+    set_user_credentials(indicator_id)
 
     return CommandResults(
-        readable_output=markdown,
+        readable_output=' ',
     )
 
 

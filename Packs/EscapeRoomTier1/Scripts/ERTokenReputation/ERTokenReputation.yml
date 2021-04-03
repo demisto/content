@@ -10,7 +10,11 @@ args:
   description: ER Token.
   name: token
   required: true
-# pswd: JDJhJDEwJDJ4Sk5mMExIM0tMbTlLN0c1dDNwM3VvTmdPMkNwSXRlbmdHRmdSY3ZMRmxvYUkvMGljWDRp
+- default: false
+  description: Indicator ID.
+  name: indicator_id
+  required: true
+#pswd: JDJhJDEwJDJ4Sk5mMExIM0tMbTlLN0c1dDNwM3VvTmdPMkNwSXRlbmdHRmdSY3ZMRmxvYUkvMGljWDRp
 system: false
 tags:
 - Enrichment

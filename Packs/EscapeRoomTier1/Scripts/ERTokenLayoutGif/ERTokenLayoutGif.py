@@ -13,7 +13,7 @@ def set_indicator_hint(indicator_id):
     })
 
     if is_error(res):
-        demisto.error(f'oylo!\n{res}\n\n')
+        demisto.error(f'oh no!\n{res}\n\n')
 
 
 # MAIN FUNCTION #
@@ -25,7 +25,8 @@ def main():
         indicator_id = dict_safe_get(args, ['indicator', 'id'])
         set_indicator_hint(indicator_id)
         return_results(
-            CommandResults(readable_output='![](https://media.giphy.com/media/5vR6pNsjhoKwo/giphy.gif)')
+            CommandResults(readable_output='![](https://raw.githubusercontent.com/demisto/content/'
+                                           'EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_Jafar.gif)')
         )
     except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback

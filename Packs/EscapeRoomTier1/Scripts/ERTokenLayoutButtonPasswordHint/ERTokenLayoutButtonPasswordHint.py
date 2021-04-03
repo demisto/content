@@ -16,7 +16,17 @@ from CommonServerPython import *
 # ║    ╚═════════════════════════════╝    ║
 # ║                                       ║
 # ╚═══════════════════════════════════════╝
-
+VALUE = '''
+ ╔═══════════════════════════════════╗
+ ║  ╔═════════════════════════════╗  ║
+ ║  ║ ╔═════════════════════════╗ ║  ║
+ ║  ║ ║  Demisto has 7 letters  ║ ║  ║
+ ║  ║ ║  XSOAR has 5 letters    ║ ║  ║
+ ║  ║ ║  What is the password   ║ ║  ║
+ ║  ║ ╚═════════════════════════╝ ║  ║
+ ║  ╚═════════════════════════════╝  ║
+ ╚═══════════════════════════════════╝
+'''
 
 # COMMAND FUNCTION #
 
@@ -31,7 +41,8 @@ def set_indicator_hint(indicator_id):
     })
 
     if is_error(res):
-        demisto.error(f'oylo!\n{res}\n\n')
+        demisto.error(f'oh no!\n{res}\n\n')
+        raise RuntimeError('failed to update hint, check logs for more info.')
 
 
 def hint_command(args: Dict[str, Any]) -> CommandResults:
