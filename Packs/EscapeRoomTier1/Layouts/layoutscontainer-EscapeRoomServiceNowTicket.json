@@ -276,15 +276,21 @@
                 "type": "custom"
             },
             {
-                "hidden": true,
                 "id": "warRoom",
                 "name": "War Room",
+                "readOnly": true,
+                "roles": [
+                    "Administrator"
+                ],
                 "type": "warRoom"
             },
             {
-                "hidden": true,
                 "id": "workPlan",
                 "name": "Work Plan",
+                "readOnly": true,
+                "roles": [
+                    "Administrator"
+                ],
                 "type": "workPlan"
             },
             {
