@@ -1,6 +1,8 @@
 id: Escape Room - Phase 1
 version: -1
 name: Escape Room - Phase 1
+description: Main Escape Room playbook for Tier1 tenant
+quiet: true
 starttaskid: "0"
 tasks:
   "0":
@@ -49,8 +51,8 @@ tasks:
     scriptarguments:
       value:
         simple: |-
-          ![](https://media.giphy.com/media/2S3Aj8OeKtf0c/giphy.gif)
-          No time to waste, we are on a tight schedule!
+          ![](https://media.giphy.com/media/l2QE0nYRtkBcm7qb6/giphy.gif)
+          No time to waste, it is time for the special reports!
     separatecontext: false
     view: |-
       {
@@ -134,7 +136,7 @@ tasks:
     task:
       id: ecc86750-ac8b-401f-83e5-dd38a337a74f
       version: -1
-      name: yay
+      name: Yay! Finished the Questionnaire successfully
       type: title
       iscommand: false
       brand: ""
@@ -207,14 +209,11 @@ tasks:
       id: 5d7a0f79-c2dd-49d6-8de2-c6990e7a98c8
       version: -1
       name: Print
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
+      description: Print the Frozen hint.
+      scriptName: PrintFrozen
       type: regular
       iscommand: false
       brand: ""
-    scriptarguments:
-      value:
-        simple: '"You are a prince!"'
     separatecontext: false
     view: |-
       {
@@ -327,4 +326,3 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: ''
