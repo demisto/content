@@ -151,7 +151,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "tags",
+                                "fieldId": "bitsighttags",
                                 "height": 22,
                                 "id": "2da3f6d0-769f-11eb-b547-b75a1233ac03",
                                 "index": 14,
@@ -820,7 +820,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_tags",
+                        "fieldId": "incident_bitsighttags",
                         "isVisible": true
                     },
                     {
@@ -1188,7 +1188,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_tags",
+                        "fieldId": "incident_bitsighttags",
                         "isVisible": true
                     },
                     {
