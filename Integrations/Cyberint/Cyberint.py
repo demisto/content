@@ -382,9 +382,9 @@ def create_fetch_incident_attachment(client: Client, attachment: object, alert_i
     in fetch-incidents attachments list.
 
     Args:
-        client (Client): Cyberint API client
+        client (Client): Cyberint API client.
         attachment (object): Alert attachment object.
-        alert_id: Alert id
+        alert_id: Alert id.
 
     Returns:
         dict: Attachment details dictionary.Contains the following keys: "path" , "name" ,"showMediaFile"
