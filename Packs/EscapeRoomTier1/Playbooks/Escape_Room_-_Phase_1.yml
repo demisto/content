@@ -16,12 +16,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "10"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -78,7 +78,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ""
+      description: Prints welcome message
     nexttasks:
       '#none#':
       - "5"
@@ -87,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -97,10 +97,10 @@ tasks:
     quietmode: 2
   "5":
     id: "5"
-    taskid: 4fde1b39-6f37-48e4-80b1-0a4ced10a74d
+    taskid: 6d539af7-fc8c-4355-895d-89fada9abbc8
     type: regular
     task:
-      id: 4fde1b39-6f37-48e4-80b1-0a4ced10a74d
+      id: 6d539af7-fc8c-4355-895d-89fada9abbc8
       version: -1
       name: Wait for it - *change
       description: Sleep for X seconds
@@ -119,7 +119,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -129,16 +129,16 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: aca75999-30f9-48e5-85dd-8935a5d59890
+    taskid: ecc86750-ac8b-401f-83e5-dd38a337a74f
     type: title
     task:
-      id: aca75999-30f9-48e5-85dd-8935a5d59890
+      id: ecc86750-ac8b-401f-83e5-dd38a337a74f
       version: -1
       name: yay
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: Finished the Questionnaire successfully
     nexttasks:
       '#none#':
       - "9"
@@ -147,7 +147,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 910
+          "y": 1070
         }
       }
     note: false
@@ -157,10 +157,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 7da59123-e6b6-493e-8b7d-385443d415c3
+    taskid: 04effe7c-4351-42fd-8990-aa020b8de5c1
     type: playbook
     task:
-      id: 7da59123-e6b6-493e-8b7d-385443d415c3
+      id: 04effe7c-4351-42fd-8990-aa020b8de5c1
       version: -1
       name: Questionnaire - 1
       playbookName: Questionnaire - 1
@@ -191,7 +191,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 730
+          "y": 895
         }
       }
     note: false
@@ -201,10 +201,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: c80001d7-ed6e-4f2b-8e57-432e6d404465
+    taskid: 5d7a0f79-c2dd-49d6-8de2-c6990e7a98c8
     type: regular
     task:
-      id: c80001d7-ed6e-4f2b-8e57-432e6d404465
+      id: 5d7a0f79-c2dd-49d6-8de2-c6990e7a98c8
       version: -1
       name: Print
       description: Prints text to war room (Markdown supported)
@@ -220,7 +220,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1215
         }
       }
     note: false
@@ -228,13 +228,97 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "10":
+    id: "10"
+    taskid: f13f75fa-9422-4e39-8f4e-dd696e39f9c9
+    type: condition
+    task:
+      id: f13f75fa-9422-4e39-8f4e-dd696e39f9c9
+      version: -1
+      name: Check if its the main escape room incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.name
+            iscontext: true
+          right:
+            value:
+              simple: one
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.severityStr
+            iscontext: true
+          right:
+            value:
+              simple: High
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 16f411ba-928e-4763-8d57-3b851a58f451
+    type: regular
+    task:
+      id: 16f411ba-928e-4763-8d57-3b851a58f451
+      version: -1
+      name: Keep searching
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        complex:
+          root: incident
+          accessor: escaperoomdetails
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+locked: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 380,
+        "height": 1260,
+        "width": 810,
         "x": 50,
         "y": 50
       }
