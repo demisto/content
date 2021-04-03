@@ -1,40 +1,16 @@
 {
     "id": "Content Daily News",
-    "version": 15,
+    "version": -1,
     "modified": "2020-11-22T09:35:39.048001+02:00",
-    "sortValues": null,
-    "packID": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "startDate": "2020-11-22T07:00:23+02:00",
-    "endingType": "never",
     "times": 0,
     "recurrent": true,
     "endingDate": "2020-11-21T21:16:35.271+02:00",
-    "humanCron": {
-        "days": [
-            "SUN",
-            "MON",
-            "TUE",
-            "WED",
-            "THU"
-        ],
-        "timePeriodType": "hours",
-        "timePeriod": 24
-    },
     "timezoneOffset": -120,
     "cronView": false,
-    "timezone": "Asia/Jerusalem",
     "scheduled": true,
     "name": "Content Daily News",
-    "prevName": "Content Daily News",
     "type": "pdf",
-    "prevType": "pdf",
     "description": "Daily summary of all content events.",
     "system": false,
     "locked": false,
@@ -106,7 +82,9 @@
                 "rowPos": 1,
                 "sign": "",
                 "signAlignment": "left",
-                "style": {},
+                "style": {
+
+                },
                 "w": 4
             },
             "query": {
@@ -555,15 +533,15 @@
             "titleStyle": null
         }
     ],
-    "recipients": [],
+    "recipients": [
+
+    ],
     "orientation": "portrait",
     "paperSize": "A4",
     "runOnce": false,
-    "latestReportName": "",
     "latestReportTime": "0001-01-01T00:00:00Z",
     "latestScheduledReportTime": "2020-11-21T21:18:07.891975+02:00",
     "nextScheduledTime": "2020-11-23T07:00:23+02:00",
-    "latestReportUsername": "",
     "decoder": {
         "evidences.fetched": {
             "type": "date",
@@ -742,29 +720,16 @@
             "value": "Playground"
         }
     },
-    "reportType": "",
     "sensitive": false,
     "runningUser": "yaakovi",
-    "userAPIKeyID": "",
-    "userAPIKey": "",
     "disableHeader": false,
     "dashboard": {
         "id": "",
         "version": 0,
         "modified": "0001-01-01T00:00:00Z",
-        "sortValues": null,
-        "packID": "",
-        "itemVersion": "",
-        "fromServerVersion": "",
-        "toServerVersion": "",
-        "vcShouldIgnore": false,
-        "vcShouldKeepItemLegacyProdMachine": false,
-        "commitMessage": "",
-        "shouldCommit": false,
         "fromDate": "0001-01-01T00:00:00Z",
         "toDate": "0001-01-01T00:00:00Z",
         "period": {
-            "by": "",
             "byTo": "",
             "byFrom": "days",
             "toValue": null,
@@ -772,16 +737,7 @@
             "field": ""
         },
         "fromDateLicense": "0001-01-01T00:00:00Z",
-        "roles": null,
-        "allRead": false,
-        "allReadWrite": false,
-        "previousRoles": null,
-        "previousAllRead": false,
-        "previousAllReadWrite": false,
-        "hasRole": false,
-        "dbotCreatedBy": "",
         "name": "Content Daily News",
-        "prevName": "",
         "layout": [
             {
                 "id": "8b079f00-2a43-11eb-8f5e-07b540513faf",
@@ -795,30 +751,15 @@
                     "id": "5d7c850e-0221-47d2-87ff-85242b269817",
                     "version": 1,
                     "modified": "2020-11-19T10:44:56.155716+02:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Who broke my master?",
-                    "prevName": "Who broke my master?",
                     "dataType": "scripts",
                     "widgetType": "column",
                     "query": "WidgetWhoBrokeMasterStats",
-                    "sort": null,
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -828,10 +769,11 @@
                         "fromDateLicense": "0001-01-01T00:00:00Z"
                     },
                     "params": {
-                        "tableColumns": []
+                        "tableColumns": [
+
+                        ]
                     },
-                    "size": 0,
-                    "category": ""
+                    "size": 0
                 }
             },
             {
@@ -846,30 +788,15 @@
                     "id": "dd4edb45-c64f-492b-8a84-b801c9e44eb3",
                     "version": 1,
                     "modified": "2020-11-19T18:32:48.441135+02:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Number of People in the office",
-                    "prevName": "Number of People in the office",
                     "dataType": "scripts",
                     "widgetType": "trend",
                     "query": "WidgetPeopleInTheOffice",
-                    "sort": null,
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -881,13 +808,16 @@
                     "params": {
                         "colors": {
                             "isEnabled": false,
-                            "items": {},
+                            "items": {
+
+                            },
                             "type": "above"
                         },
-                        "tableColumns": []
+                        "tableColumns": [
+
+                        ]
                     },
-                    "size": 0,
-                    "category": ""
+                    "size": 0
                 }
             },
             {
@@ -902,30 +832,15 @@
                     "id": "fb6ac72e-f81b-48f8-8304-a9559a2e3d05",
                     "version": 2,
                     "modified": "2020-11-14T15:47:37.148205+02:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Duplicate Names",
-                    "prevName": "Number of people in the office",
                     "dataType": "scripts",
                     "widgetType": "column",
                     "query": "WidgetCommonNames",
-                    "sort": null,
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -935,10 +850,11 @@
                         "fromDateLicense": "0001-01-01T00:00:00Z"
                     },
                     "params": {
-                        "tableColumns": []
+                        "tableColumns": [
+
+                        ]
                     },
-                    "size": 0,
-                    "category": ""
+                    "size": 0
                 }
             },
             {
@@ -953,30 +869,15 @@
                     "id": "",
                     "version": 0,
                     "modified": "2020-05-13T00:19:48.035499+03:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Content Daily News",
-                    "prevName": "Text Widget",
                     "dataType": "incidents",
                     "widgetType": "text",
                     "query": "",
-                    "sort": null,
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -1050,8 +951,7 @@
                         ],
                         "text": "# Content Daily News\n{date}\n\n\n--- \n\n"
                     },
-                    "size": 0,
-                    "category": "utility"
+                    "size": 0
                 }
             },
             {
@@ -1066,31 +966,15 @@
                     "id": "page-break-widget",
                     "version": 18,
                     "modified": "2020-05-13T00:19:44.296334+03:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Page Break Widget",
-                    "prevName": "Page Break Widget",
                     "dataType": "incidents",
                     "widgetType": "text",
                     "query": "",
-                    "sort": null,
                     "isPredefined": true,
-                    "description": "Use the page break widget in a report to force a page break before the widgets that follow.",
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -1102,8 +986,7 @@
                     "params": {
                         "text": "\\pagebreak"
                     },
-                    "size": 0,
-                    "category": "utility"
+                    "size": 0
                 }
             },
             {
@@ -1118,30 +1001,15 @@
                     "id": "0b72cc58-d455-4ffe-8de3-1addcfe214bc",
                     "version": 1,
                     "modified": "2020-11-19T19:33:45.461337+02:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Yearly Time Spent (In Months)",
-                    "prevName": "Yearly Time Spent (In Months)",
                     "dataType": "scripts",
                     "widgetType": "pie",
                     "query": "WidgetContentDevTimeCycle",
-                    "sort": null,
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -1151,10 +1019,11 @@
                         "fromDateLicense": "0001-01-01T00:00:00Z"
                     },
                     "params": {
-                        "tableColumns": []
+                        "tableColumns": [
+
+                        ]
                     },
-                    "size": 0,
-                    "category": ""
+                    "size": 0
                 }
             },
             {
@@ -1169,30 +1038,15 @@
                     "id": "",
                     "version": 0,
                     "modified": "2020-05-13T00:19:48.035499+03:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Text Widget",
-                    "prevName": "Text Widget",
                     "dataType": "incidents",
                     "widgetType": "text",
                     "query": "",
-                    "sort": null,
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -1266,8 +1120,7 @@
                         ],
                         "text": "### Messages:\nOffice coffee breaks will be served on floors 13, 16, 18, and 33.\nJoin us at exactly 9:00 AM for a delicious continental breakfast (coffee \u0026 sweets).\n"
                     },
-                    "size": 0,
-                    "category": "utility"
+                    "size": 0
                 }
             },
             {
@@ -1282,30 +1135,15 @@
                     "id": "09d18b0c-574d-4759-821b-b6aad9c90304",
                     "version": 1,
                     "modified": "2020-11-19T23:33:41.534651+02:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Who fixed my master?",
-                    "prevName": "Who fixed my master?",
                     "dataType": "scripts",
                     "widgetType": "column",
                     "query": "WidgetWhoFixedMasterStats",
-                    "sort": null,
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -1315,10 +1153,11 @@
                         "fromDateLicense": "0001-01-01T00:00:00Z"
                     },
                     "params": {
-                        "tableColumns": []
+                        "tableColumns": [
+
+                        ]
                     },
-                    "size": 0,
-                    "category": ""
+                    "size": 0
                 }
             },
             {
@@ -1333,30 +1172,15 @@
                     "id": "",
                     "version": 0,
                     "modified": "2020-05-13T00:19:48.035499+03:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Text Widget",
-                    "prevName": "Text Widget",
                     "dataType": "incidents",
                     "widgetType": "text",
                     "query": "",
-                    "sort": null,
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -1430,8 +1254,7 @@
                         ],
                         "text": "# Content Statistics\n{date}\n\n\n--- \n\n"
                     },
-                    "size": 0,
-                    "category": "utility"
+                    "size": 0
                 }
             },
             {
@@ -1446,30 +1269,15 @@
                     "id": "16e76ed2-ee60-4507-8c6d-497d87b5c44c",
                     "version": 1,
                     "modified": "2020-11-20T23:35:56.836002+02:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Aviad's Favorite (New Server Bugs)",
-                    "prevName": "Aviad's Favorite (New Server Bugs)",
                     "dataType": "scripts",
                     "widgetType": "column",
                     "query": "WidgetAviadsFavoriteStats",
-                    "sort": null,
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -1481,8 +1289,7 @@
                     "params": {
                         "tableColumns": []
                     },
-                    "size": 0,
-                    "category": ""
+                    "size": 0
                 }
             },
             {
@@ -1497,30 +1304,15 @@
                     "id": "a54a4991-8ce3-4f65-89f0-098fd5912d05",
                     "version": 1,
                     "modified": "2020-11-20T23:36:56.847296+02:00",
-                    "sortValues": null,
-                    "packID": "",
-                    "itemVersion": "",
-                    "fromServerVersion": "",
-                    "toServerVersion": "",
-                    "propagationLabels": [
-                        "all"
-                    ],
-                    "vcShouldIgnore": false,
-                    "vcShouldKeepItemLegacyProdMachine": false,
-                    "commitMessage": "",
-                    "shouldCommit": false,
                     "name": "Shame Wizard (New Content Bugs)",
-                    "prevName": "Shame Wizard (New Content Bugs)",
                     "dataType": "scripts",
                     "widgetType": "column",
                     "query": "WidgetShameWizardStats",
-                    "sort": null,
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
                         "toDate": "0001-01-01T00:00:00Z",
                         "period": {
-                            "by": "",
                             "byTo": "",
                             "byFrom": "days",
                             "toValue": null,
@@ -1530,16 +1322,13 @@
                         "fromDateLicense": "0001-01-01T00:00:00Z"
                     },
                     "params": {
-                        "tableColumns": []
+                        "tableColumns": [
+                        ]
                     },
-                    "size": 0,
-                    "category": ""
+                    "size": 0
                 }
             }
-        ],
-        "system": false,
-        "isCommon": false,
-        "owner": "",
-        "locked": false
-    }
+        ]
+    },
+    "fromVersion": "5.0.0"
 }

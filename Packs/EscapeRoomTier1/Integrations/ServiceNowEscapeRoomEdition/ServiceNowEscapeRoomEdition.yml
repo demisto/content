@@ -68,7 +68,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-  defaultValue: Escape Room - ServiceNow
 - display: Get incident attachments
   name: get_attachments
   required: false
@@ -2367,7 +2366,7 @@ script:
     description: Test the instance configuration when using OAuth2 authentication.
     execution: false
     name: servicenow-oauth-test
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.2.17957
   feed: false
   isfetch: true
   longRunning: false
@@ -2380,5 +2379,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - No test - not a real integration
+- No test - not a real integration
 fromversion: 5.0.0

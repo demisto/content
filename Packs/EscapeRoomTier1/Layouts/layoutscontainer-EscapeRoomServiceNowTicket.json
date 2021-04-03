@@ -1,10 +1,5 @@
 {
-    "close": null,
-    "description": "",
-    "detached": false,
-    "details": null,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -579,21 +574,11 @@
             }
         ]
     },
-    "fromServerVersion": "",
     "group": "incident",
     "id": "ServiceNow New Layout",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "itemVersion": "",
-    "locked": false,
-    "mobile": null,
     "name": "ServiceNow New Layout",
-    "packID": "",
-    "propagationLabels": [
-        "all"
-    ],
-    "quickView": null,
     "system": false,
-    "toServerVersion": "",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "Layout for the ServiceNow incident type of the Escape Room challenge."
 }

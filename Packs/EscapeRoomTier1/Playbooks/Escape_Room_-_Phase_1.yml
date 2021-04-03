@@ -275,8 +275,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 16f411ba-928e-4763-8d57-3b851a58f451
@@ -308,9 +306,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-locked: true
 view: |-
   {
     "linkLabelsPosition": {},

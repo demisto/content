@@ -7,7 +7,7 @@ comment: ''
 commonfields:
   id: EscapeRoomScript1
   version: -1
-dockerimage: demisto/btfl-soup:1.0.1.12768
+dockerimage: demisto/btfl-soup:1.0.1.17063
 enabled: true
 name: EscapeRoomScript1
 runas: DBotWeakRole
