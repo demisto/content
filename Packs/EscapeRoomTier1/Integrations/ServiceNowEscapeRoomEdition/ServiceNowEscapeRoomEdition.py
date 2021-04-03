@@ -18,7 +18,7 @@ WRONG_CREDS = {
 
 AUTO_EXTRACT_DETAILS = '''The Auto Extract feature extracts indicators and enriches their reputations using commands and scripts defined for the indicator type.
 Cortex XSOAR recommends that you turn off Auto Extract using the server configurations for the different Auto Extract options and only turn it on for those specific scenarios where it is necessary.
-![autoextract](https://user-images.githubusercontent.com/30797606/113480066-20703b80-949b-11eb-91d4-712bb5469130.png)
+![autoextract](https://raw.githubusercontent.com/demisto/content/a23895448f47d58f7a7ac296db5d3f853eb4fc80/Packs/EscapeRoomTier1/images/autoextract.png)
 '''
 
 

@@ -51,7 +51,7 @@ tasks:
     scriptarguments:
       value:
         simple: |-
-          ![](https://media.giphy.com/media/l2QE0nYRtkBcm7qb6/giphy.gif)
+            ![](https://github.com/demisto/content/raw/a23895448f47d58f7a7ac296db5d3f853eb4fc80/Packs/EscapeRoomTier1/images/reports.gif)
           No time to waste, it is time for the special reports!
     separatecontext: false
     view: |-
