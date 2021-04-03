@@ -963,7 +963,8 @@ There are no input arguments for this command.
 
 ### o365-sc-get-search-action
 ***
-Gets compliance search action from the Security & Compliance Center.
+Gets compliance search action from the Security & Compliance Center.  An additional result will be 
+shown only for "Preview" action type.
 
 
 #### Base Command

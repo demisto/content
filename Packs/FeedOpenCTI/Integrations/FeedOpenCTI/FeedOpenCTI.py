@@ -156,7 +156,7 @@ def main():
         max_fetch = 500
 
     try:
-        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'))
+        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error')
         command = demisto.command()
         demisto.info("Command being called is {}".format(command))
 
