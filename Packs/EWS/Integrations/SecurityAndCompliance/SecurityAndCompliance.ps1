@@ -1053,7 +1053,7 @@ class SecurityAndComplianceClient {
             }
             $response = New-ComplianceSearchAction @cmd_params
             if (-not $response){
-                throw "The search action didn't return any results. Please check the search_name and consider running the command o365-sc-start-search before."
+                throw "The search action didn't return any results. Please check the search_name and consider running the o365-sc-start-search command before."
             }
 
             return $response
