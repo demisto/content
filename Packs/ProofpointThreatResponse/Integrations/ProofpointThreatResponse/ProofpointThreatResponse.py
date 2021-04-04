@@ -461,7 +461,7 @@ def get_incidents_batch_by_time_request(params):
         list. The incidents returned from the API call
     """
     incidents_list = []  # type:list
-    new_fetched_incidents = []
+    new_fetched_incidents_ids = []
 
     fetch_delta = int(params.get('fetch_delta', '6'))
     fetch_limit = int(params.get('fetch_limit', '50'))
@@ -507,8 +507,8 @@ def get_incidents_batch_by_time_request(params):
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
     demisto.debug(f"End of fetch iteration. Number of incident gathered is {str(len(incidents_list))}."
-                  f"Last fetch is {last_fetch}. Ids of new incidents are {str(new_fetched_incidents)}")
-    return incidents_list, last_fetch, new_fetched_incidents
+                  f"Last fetch is {last_fetch}. Ids of new incidents are {str(new_fetched_incidents_ids)}")
+    return incidents_list, last_fetch, new_fetched_incidents_ids
 
 
 def fetch_incidents_command():
