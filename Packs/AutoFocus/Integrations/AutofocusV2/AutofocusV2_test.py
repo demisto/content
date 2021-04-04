@@ -6,7 +6,6 @@ import sys
 import io
 import demistomock as demisto
 
-
 IP_ADDRESS = '127.0.0.1'
 
 FILE_RES_JSON = {
@@ -60,7 +59,10 @@ IP_RES_JSON = {
             "tagGroups": [
                 {
                     "tag_group_name": "Downloader",
-                    "description": "This type of malware secretly downloads malicious files from a remote server, then installs and executes the files."  # noqa: E501
+                    "description":
+                        "This type of malware secretly downloads malicious files from a remote server, "
+                        "then installs and executes the files."
+                    # noqa: E501
                 }
             ],
             "aliases": [
@@ -175,7 +177,6 @@ def test_calculate_dbot_score_file():
 
 
 def test_connection_error(mocker):
-
     import AutofocusV2
 
     RETURN_ERROR_TARGET = 'AutofocusV2.return_error'
@@ -188,7 +189,7 @@ def test_connection_error(mocker):
 
         with pytest.raises(SystemExit):
             AutofocusV2.search_indicator('ip', '8.8.8.8')
-        assert 'Error connecting to server. Check your URL/Proxy/Certificate settings'\
+        assert 'Error connecting to server. Check your URL/Proxy/Certificate settings' \
                in return_error_mock.call_args[0][0]
 
 
@@ -225,3 +226,19 @@ def test_get_tags_for_generic_context():
      """
     import AutofocusV2
     assert AutofocusV2.get_tags_for_generic_context(TAGS_FROM_FILE_RES) == TAGS_FOR_GENERIC_CONTEXT_OUTPUT
+
+
+def test_reliability(mocker):
+    import AutofocusV2
+    import CommonServerPython
+    from CommonServerPython import DBotScoreReliability
+    mock_data = {'indicator': {'indicatorValue': '1.1.1.1', 'indicatorType': 'IPV4_ADDRESS',
+                               'summaryGenerationTs': 1616340557369, 'firstSeenTsGlobal': None,
+                               'lastSeenTsGlobal': None, 'latestPanVerdicts': {'Test': 'test'},
+                               'seenByDataSourceIds': [], 'wildfireRelatedSampleVerdictCounts': {}}, 'tags': [],
+                 }
+    mocker.patch.object(AutofocusV2, 'search_indicator', return_value=mock_data)
+    mocked_dbot = mocker.patch.object(CommonServerPython.Common, 'DBotScore')
+    mocker.patch.object(CommonServerPython.Common, 'IP')
+    AutofocusV2.search_ip_command('1.1.1.1', DBotScoreReliability.B)
+    assert mocked_dbot.call_args[1].get('reliability') == 'B - Usually reliable'

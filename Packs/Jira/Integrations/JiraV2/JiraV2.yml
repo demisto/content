@@ -14,7 +14,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Username (Basich Authentication)
+- display: Username (Basic Authentication)
   name: username
   defaultvalue: ""
   type: 0
