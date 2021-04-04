@@ -431,8 +431,9 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
 def create_json_out_format(iocs: list):
     formatted_indicators = []  # type:List
     for indicator_data in iocs:
-        json_format_indicator = json_format_single_indicator(indicator_data)
-        formatted_indicators.append(json_format_indicator)
+        if indicator_data.get("value"):
+            json_format_indicator = json_format_single_indicator(indicator_data)
+            formatted_indicators.append(json_format_indicator)
 
     return {CTX_VALUES_KEY: json.dumps(formatted_indicators)}
 
