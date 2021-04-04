@@ -9,8 +9,19 @@ from CommonServerPython import *  # noqa: F401
 DEFAULT_ALGORITHM = 'literal'
 DEFAULT_PRIORITY = 'first_match'
 
-
 def make_regex(pattern: str, algorithm: str) -> str:
+    """ Transform a pattern to a regex pattern.
+
+      Supported algorithms;
+        - literal
+        - wildcard
+        - regex
+        - regmatch
+
+      :param pattern: The pattern to be transformed.
+      :param algorithm: The algorithm for `pattern`.
+      :return: An regex pattern created.
+    """
     if algorithm == 'literal':
         return re.escape(pattern)
     elif algorithm == 'wildcard':
@@ -103,7 +114,7 @@ def iterate_mapping(mappings: Union[List[Dict[str, Any]], Dict[str, Any]]):
                 'next': d.get('next')
             }
     else:
-        raise ValueError('Invalid mappings')
+        raise ValueError(f'mappings must be an array or an object: {mappings}')
 
 
 def translate(source: Any,
@@ -180,12 +191,12 @@ def main():
             try:
                 mappings = json.loads(mappings)
             except ValueError:
-                raise ValueError(f'Invalid mappings: {mappings}')
+                raise ValueError(f'Unable to decode mappings in JSON: {mappings}')
 
         if isinstance(mappings, (dict, list)):
             _, value = translate(value, mappings, caseless, priority, algorithm, context)
         else:
-            raise ValueError(f'Unsupported type of mappings {type(mappings)}')
+            raise ValueError(f'mappings must be an array or an object in JSON: type={type(mappings)}')
 
     demisto.results(value)
 
