@@ -17,6 +17,26 @@ from datetime import datetime, timedelta
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+''' GLOBALS/PARAMS '''
+
+API_TOKEN = demisto.params()['APIToken']
+BASE_URL = demisto.params()['baseURL']
+USE_SSL = not demisto.params().get('insecure', False)
+DEFAULT_HEADERS = {
+    'Authorization': 'Bearer {}'.format(API_TOKEN),
+    'Accept': 'application/json'
+}
+MALICIOUS_THRESHOLD = int(demisto.params().get('dboscore_threshold', -100))
+
+reliability = demisto.params().get('integrationReliability')
+reliability = reliability if reliability else DBotScoreReliability.B
+
+if DBotScoreReliability.is_valid_type(reliability):
+    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+else:
+    Exception("Please provide a valid value for the Source Reliability parameter.")
+
+
 ''' MAPS '''
 
 # This object describe the result of the http request of getDomainSecurity function
@@ -94,15 +114,15 @@ def http_request(api_endpoint, params_dict=None, method='GET', data_list=None):
         data_list = json.dumps(data_list)
     if params_dict:
         req_params.update(params_dict)
-    url = base_url + api_endpoint
+    url = BASE_URL + api_endpoint
     LOG('running %s request with url=%s\tparams=%s\tdata=%s' % (method, url, json.dumps(req_params), data_list))
     try:
         res = requests.request(
             method,
             url,
-            verify=use_ssl,
+            verify=USE_SSL,
             params=req_params,
-            headers=default_headers,
+            headers=DEFAULT_HEADERS,
             data=data_list
         )
 
@@ -163,9 +183,9 @@ def securerank_to_dbotscore(sr):
     DBotScore = 0
     if sr > 0 and sr <= 100:
         DBotScore = 1
-    elif sr < 0 and sr > malicious_threshold:
+    elif sr < 0 and sr > MALICIOUS_THRESHOLD:
         DBotScore = 2
-    elif sr <= malicious_threshold:
+    elif sr <= MALICIOUS_THRESHOLD:
         DBotScore = 3
     return DBotScore
 
@@ -442,7 +462,7 @@ def get_domain_related(domain):
     return related_list
 
 
-def get_domain_security_command(reliability):
+def get_domain_security_command():
     # Initialize
     contents = []
     context = {}
@@ -450,7 +470,7 @@ def get_domain_security_command(reliability):
     results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
-    threshold = int(demisto.args().get('threshold', malicious_threshold))
+    threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
     # Fetch data
     res = get_domain_security(domain)
     if res:
@@ -664,7 +684,7 @@ def get_ip_dns_history(ip):
     return {'features': features, 'response': response}
 
 
-def get_ip_malicious_domains_command(reliability):
+def get_ip_malicious_domains_command():
     # Initialize
     contents = []
     context = {}
@@ -720,7 +740,7 @@ def get_ip_malicious_domains(ip):
     return res
 
 
-def get_domain_command(reliability):
+def get_domain_command():
     # Initialize
     contents = []
     context = {}
@@ -797,7 +817,7 @@ def get_domain_command(reliability):
     }
 
     # Add malicious if needed
-    if risk_score == -1 or secure_rank < malicious_threshold:
+    if risk_score == -1 or secure_rank < MALICIOUS_THRESHOLD:
         context[outputPaths['domain']]['Malicious'] = {
             'Vendor': 'Cisco Umbrella Investigate',
             'Description': 'Malicious domain found with risk score -1'
@@ -1048,7 +1068,7 @@ def get_domain_query_volume(domain, start_date_string, stop_date_string, match):
     return {'dates': dates, 'queries': queries}
 
 
-def get_domain_details_command(reliability):
+def get_domain_details_command():
     # Initialize
     contents = []
     context = {}
@@ -1056,7 +1076,7 @@ def get_domain_details_command(reliability):
     results = []
     # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
-    threshold = int(demisto.args().get('threshold', malicious_threshold))
+    threshold = int(demisto.args().get('threshold', MALICIOUS_THRESHOLD))
     # Fetch data
     res = get_domain_details(domain)
     if res:
@@ -1460,7 +1480,7 @@ def get_whois_for_domain(domain):
     return res
 
 
-def get_malicious_domains_for_ip_command(reliability):
+def get_malicious_domains_for_ip_command():
     # Initialize
     contents = []
     context = {}
@@ -1794,23 +1814,6 @@ def get_url_timeline(url):
 LOG('command is %s' % (demisto.command(),))
 try:
 
-    params = demisto.params()
-
-    api_token = params['APIToken']
-    base_url = params['baseURL']
-    use_ssl = not params.get('insecure', False)
-    malicious_threshold = int(params.get('dboscore_threshold', -100))
-    source_reliability = params.get('integrationReliability', 'B - Usually reliable')
-    default_headers = {
-        'Authorization': 'Bearer {}'.format(api_token),
-        'Accept': 'application/json'
-    }
-
-    if DBotScoreReliability.is_valid_type(source_reliability):
-        source_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(source_reliability)
-    else:
-        Exception("Please provide a valid value for the Source Reliability parameter.")
-
     handle_proxy()
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
@@ -1828,7 +1831,7 @@ try:
     elif demisto.command() == 'investigate-umbrella-domain-related' or demisto.command() == 'umbrella-domain-related':
         demisto.results(get_domain_related_command())
     elif demisto.command() == 'investigate-umbrella-domain-security' or demisto.command() == 'umbrella-domain-security':
-        demisto.results(get_domain_security_command(source_reliability))
+        demisto.results(get_domain_security_command())
     elif demisto.command() == 'investigate-umbrella-domain-dns-history' or demisto.command() == \
             'umbrella-domain-dns-history':
         demisto.results(get_domain_dns_history_command())
@@ -1836,10 +1839,10 @@ try:
         demisto.results(get_ip_dns_history_command())
     elif demisto.command() == 'investigate-umbrella-ip-malicious-domains' or demisto.command() == \
             'umbrella-ip-malicious-domains':
-        demisto.results(get_ip_malicious_domains_command(source_reliability))
+        demisto.results(get_ip_malicious_domains_command())
     # new-commands:
     elif demisto.command() == 'domain':
-        demisto.results(get_domain_command(source_reliability))
+        demisto.results(get_domain_command())
     elif demisto.command() == 'umbrella-get-related-domains':
         demisto.results(get_related_domains_command())
     elif demisto.command() == 'umbrella-get-domain-classifiers':
@@ -1847,7 +1850,7 @@ try:
     elif demisto.command() == 'umbrella-get-domain-queryvolume':
         demisto.results(get_domain_query_volume_command())
     elif demisto.command() == 'umbrella-get-domain-details':
-        demisto.results(get_domain_details_command(source_reliability))
+        demisto.results(get_domain_details_command())
     elif demisto.command() == 'umbrella-get-domains-for-email-registrar':
         demisto.results(get_domains_for_email_registrar_command())
     elif demisto.command() == 'umbrella-get-domains-for-nameserver':
@@ -1855,7 +1858,7 @@ try:
     elif demisto.command() == 'umbrella-get-whois-for-domain':
         demisto.results(get_whois_for_domain_command())
     elif demisto.command() == 'umbrella-get-malicious-domains-for-ip':
-        demisto.results(get_malicious_domains_for_ip_command(source_reliability))
+        demisto.results(get_malicious_domains_for_ip_command())
     elif demisto.command() == 'umbrella-get-domains-using-regex':
         demisto.results(get_domain_using_regex_command())
     elif demisto.command() == 'umbrella-get-domain-timeline':
