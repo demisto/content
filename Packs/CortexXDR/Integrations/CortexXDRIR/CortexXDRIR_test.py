@@ -956,6 +956,53 @@ def test_endpoint_scan_command_scan_all_endpoints_no_filters_error(requests_mock
         endpoint_scan_command(client, {})
 
 
+def test_endpoint_scan_abort_command(requests_mock):
+    """
+    Given:
+    -   endpoint_id_list, dist_name, gte_first_seen, gte_last_seen, lte_first_seen, lte_last_seen, ip_list,
+    group_name, platform, alias, isolate, hostname
+    When
+        - A user desires to abort scan endpoint.
+    Then
+        - returns markdown, context data and raw response.
+    """
+    from CortexXDRIR import endpoint_scan_abort_command, Client
+    test_data = load_test_data('test_data/scan_endpoints.json')
+    scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/abort_scan/', json={"reply": {"action_id": 123}})
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    client._headers = {}
+    markdown, context, raw = endpoint_scan_abort_command(client, test_data['command_args'])
+
+    assert scan_expected_tesult == context
+
+
+def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
+    """
+    Given:
+    -  the filter all as true.
+    When
+        - A user desires to abort scan for all endpoints.
+    Then
+        - returns markdown, context data and raw response.
+    """
+    from CortexXDRIR import endpoint_scan_abort_command, Client
+    test_data = load_test_data('test_data/scan_all_endpoints.json')
+    scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/abort_scan/', json={"reply": {"action_id": 123}})
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    client._headers = {}
+    markdown, context, raw = endpoint_scan_abort_command(client, test_data['command_args'])
+
+    assert scan_expected_tesult == context
+
+
 def test_sort_all_list_incident_fields():
     """
     Given:
