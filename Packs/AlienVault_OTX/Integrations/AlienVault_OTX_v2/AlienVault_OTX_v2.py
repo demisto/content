@@ -30,6 +30,12 @@ TOKEN = demisto.params().get('api_token')
 
 
 class Client(BaseClient):
+    def __init__(self, base_url, headers, verify, proxy, reliability):
+
+        BaseClient.__init__(self, base_url=base_url, headers=headers, verify=verify, proxy=proxy,)
+
+        self.reliability = reliability
+
     def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
@@ -201,7 +207,8 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info', {})),
                 'Type': 'ip',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             })
     if not raws:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
@@ -249,7 +256,8 @@ def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Union[Dict, 
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info')),
                 'Type': 'domain',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             })
     if not raws:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
@@ -307,7 +315,8 @@ def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list
                 'Indicator': raw_response_general.get('indicator'),
                 'Score': calculate_dbot_score(raw_response_general.get('pulse_info', {})),
                 'Type': 'file',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             })
     if not raws:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
@@ -357,7 +366,8 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info')),
                 'Type': 'url',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             })
     if not raws:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
@@ -400,7 +410,8 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info')),
                 'Type': 'hostname',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             }
         }
         human_readable = tableToMarkdown(name=title,
@@ -440,7 +451,8 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info')),
                 'Type': 'cve',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             }
         }
         human_readable = tableToMarkdown(t=context_entry.get(outputPaths.get("cve")),
@@ -619,15 +631,26 @@ def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> Tuple
 
 def main():
     params = demisto.params()
+
     base_url = urljoin(params.get('url'), '/api/v1/')
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
+    reliability = params.get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.C
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("Please provide a valid value for the Source Reliability parameter.")
+
     client = Client(
         base_url=base_url,
         headers={'X-OTX-API-KEY': TOKEN},
         verify=verify_ssl,
-        proxy=proxy
+        proxy=proxy,
+        reliability=reliability
     )
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
