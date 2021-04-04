@@ -58,6 +58,11 @@ Searches for devices that match the query.
 | CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
 | CrowdStrike.Device.PolicyType | String | The policy type of the device. | 
 | CrowdStrike.Device.Status | String | The device status. | 
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
  
 
 #### Command Example
@@ -89,6 +94,22 @@ Searches for devices that match the query.
                 "ID": "459146dbe524472e73751a43c63324f3", 
                 "FirstSeen": "2017-12-10T11:01:20Z",
                 "Status": "contained"
+            }
+        ],
+      "Endpoint(val.ID === obj.ID)": [
+            {
+              "Hostname": "154.132.82-test-co.in-addr.arpa",
+              "ID": "336474ea6a524e7c68575f6508d84781",
+              "IPAddress": "192.168.1.76", 
+              "OS": "Mojave (10.14)",
+              "Status": "normal"
+            },
+            {
+              "Hostname": "154.132.82-test-co.in-addr.arpa", 
+              "ID": "459146dbe524472e73751a43c63324f3",
+              "IPAddress": "172.22.14.237", 
+              "OS": "Mojave (10.14)", 
+              "Status": "normal"
             }
         ]
     }
@@ -1986,3 +2007,53 @@ Lists incident summaries.
 
 #### Command Example
 ```!cs-falcon-list-incident-summaries```
+
+
+### 34. Endpoint
+***
+Lists incident summaries.
+
+#### Base Command
+
+`Endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Endpoint ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Endpoint.Hostname | unknown | Endpoint Hostname | 
+| Endpoint.OS | unknown | Endpoint OS | 
+| Endpoint.IPAddress | unknown | Endpoint IP Addresses | 
+| Endpoint.ID | unknown | Endpoint ID | 
+| Endpoint.Status | unknown | Endpoint Status | 
+
+
+#### Command Example
+```!Endpoint id=15dbb9d5fe9f61eb46e829d986```
+
+#### Context Example
+```json
+{
+  "Endpoint":
+    {
+      "Hostname": "Hostname",
+      "ID": "15dbb9d5fe9f61eb46e829d986",
+      "IPAddress": "1.1.1.1",
+      "OS": "Windows Server 2019",
+      "Status": "normal"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Endpoints
+>|ID|IPAddress|OS|Hostname|Status|
+>|---|---|---|---|---|
+>| 15dbb9d8f06b45fe9f61eb46e829d986 | 10.128.0.7 | Windows Server 2019 | Hostname | normal |\n"
+

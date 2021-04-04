@@ -100,7 +100,7 @@ SEARCH_DEVICE_KEY_MAP = {
 
 ENDPOINT_KEY_MAP = {
     'device_id': 'ID',
-    'local_ip': 'IP',
+    'local_ip': 'IPAddress',
     'os_version': 'OS',
     'hostname': 'Hostname',
     'status': 'Status',
@@ -1556,7 +1556,8 @@ def search_device_command():
     headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
     hr = tableToMarkdown('Devices', entries, headers=headers, headerTransform=pascalToSpace)
     endpoint_context = [get_trasnformed_dict(device, ENDPOINT_KEY_MAP) for device in devices]
-    ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries, 'Endpoint(val.ID === obj.ID)': endpoint_context}
+    ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries,
+          'Endpoint(val.ID === obj.ID)': endpoint_context}
     return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
 
@@ -1570,7 +1571,7 @@ def get_endpint_command():
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
     endpoint_context = [get_trasnformed_dict(device, ENDPOINT_KEY_MAP) for device in devices]
-    headers = ['ID', 'IP', 'OS', 'Hostname', 'Status']
+    headers = ['ID', 'IPAddress', 'OS', 'Hostname', 'Status']
     hr = tableToMarkdown('Endpoints', endpoint_context, headers=headers, headerTransform=pascalToSpace)
     ec = {'Endpoint(val.ID === obj.ID)': endpoint_context}
     return create_entry_object(contents=raw_res, ec=ec, hr=hr)

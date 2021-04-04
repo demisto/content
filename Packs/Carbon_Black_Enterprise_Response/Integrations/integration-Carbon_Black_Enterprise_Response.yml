@@ -903,6 +903,8 @@ script:
             {to: 'OS', from: 'os_environment_display_string'},
             {to: 'IPAddresses', from: ipAddressDQ},
             {to: 'CbSensorID', from: 'id'},
+            {to: 'ID', from: 'id'},
+            {to: 'Status', from: 'status'},
         ];
         headers = dataMap.map(cn => cn.to);
         translatedData = mapObjFunction(dataMap)(result);
@@ -923,6 +925,36 @@ script:
         return entries;
     }
 
+    function endpoint() {
+        let ipAddressDQ = '.=(val.network_adapters.split("|").slice(0, val.network_adapters.split("|").length-1))';
+        let result = getSensorsRequest(args.id, null, null, null);
+        let entries = [];
+        let title = 'Endpoint';
+        let endpointDataMap = [
+            {to: 'ID', from: 'id'},
+            {to: 'Hostname', from: 'computer_name'},
+            {to: 'Status', from: 'status'},
+            {to: 'IPAddress', from: 'network_adapters'},
+            {to: 'OS', from: 'os_environment_display_string'}
+        ];
+        let headers = endpointDataMap.map(cn => cn.to);
+        let endpointData = mapObjFunction(endpointDataMap)(result);
+        let humanReadable = tableToMarkdown(title, endpointData, headers, undefined, dotToSpace);
+        let context = {
+            'Endpoint(val.ID==obj.ID)': createContext(endpointData),
+        };
+
+        entries.push({
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsType: formats.json,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: humanReadable,
+            EntryContext: context,
+        });
+
+        return entries;
+    }
 
     function getHashBlacklistRequest(filter) {
         let queryParams = {};
@@ -1280,6 +1312,8 @@ script:
                 return deleteWatch(); // Tested
             case 'cb-binary-download':
                 return getBinaryZip();
+            case 'Endpoint':
+                return endpoint();
             default:
                 throw `Unknown Command: ${command}`;
         }
@@ -2050,7 +2084,24 @@ script:
       description: The file version.
     - contextPath: File.Signature.Description
       description: The description of the signature.
-    description: Retrieve a binary from CarbonBlack based on hash. Returns a .zip file containing the requested file and it's metadata.
+  - name: Endpoint
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The endpoint ID.
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The endpoint's hostname.
+    - contextPath: Endpoint.OS
+      description: The endpoint's operation system.
+    - contextPath: Endpoint.IPAddresses
+      description: The endpoint's IP address.
+    - contextPath: Endpoint.ID
+      description: The endpoint's ID.
+    - contextPath: Endpoint.Status
+      description: The endpoint's status.
+    description: Returns information about an endpoint.
   isfetch: true
   runonce: false
   dockerimage: demisto/python:2.7.18.8715

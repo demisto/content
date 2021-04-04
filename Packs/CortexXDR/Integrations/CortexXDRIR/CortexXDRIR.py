@@ -61,14 +61,6 @@ MIRROR_DIRECTION = {
     'Both': 'Both'
 }
 
-ENDPOINT_KEY_MAP = {
-    'endpoint_id': 'ID',
-    'ip': 'IP',
-    'os_type': 'OS',
-    'endpoint_name': 'Hostname',
-    'endpoint_status': 'Status',
-}
-
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -1730,13 +1722,14 @@ def endpoint_command(client, args):
         page_number=0,
         limit=30,
     )
-
-    endpoint_context = [get_trasnformed_dict(endpoint, ENDPOINT_KEY_MAP) for endpoint in endpoints]
-    for endpoint in endpoint_context:
-        endpoint['IP'] = endpoint.get('IP')[0]
-    ec = {'Endpoint(val.ID === obj.ID)': endpoint_context}
-    return tableToMarkdown('Endpoints', endpoint_context), ec, endpoints
-
+    endpoint_context = {
+        Common.Endpoint.CONTEXT_PATH: return_endpoint_standard_context(endpoints)
+    }
+    return (
+        tableToMarkdown('Endpoints', endpoints),
+        endpoint_context,
+        endpoints
+    )
 
 def return_endpoint_standard_context(endpoints):
     endpoints_context_list = []
@@ -1747,6 +1740,7 @@ def return_endpoint_standard_context(endpoints):
             "IPAddress": endpoint.get('ip'),
             "Domain": endpoint.get('domain'),
             "OS": endpoint.get('os_type'),
+            "Status": endpoint.get('endpoint_status'),
         }))
     return endpoints_context_list
 

@@ -1041,9 +1041,6 @@ script:
     - contextPath: Account.Domain
       description: The domain of the account.
       type: String
-    - contextPath: Endpoint.IP
-      description: The endpoint's IP address.
-      type: String
     - contextPath: Endpoint.Status
       description: The endpoint's status.
       type: String
@@ -2620,12 +2617,36 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
-  dockerimage: demisto/python3:3.9.2.17246
+  - arguments:
+    - default: false
+      description: The endpoint ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns information about an endpoint.
+    execution: false
+    name: Endpoint
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The endpoint's hostname.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint's operation system.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint's ID.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint's status.
+      type: String
+  dockerimage: demisto/python3:3.9.2.17957
   feed: false
   isfetch: true
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false

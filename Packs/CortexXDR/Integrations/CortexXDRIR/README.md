@@ -2508,3 +2508,52 @@ Initiates a new endpoint script execution kill process.
 >|action_id|endpoints_count|
 >|---|---|
 >| 3658 | 1 |
+
+
+
+#### Base Command
+
+`Endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Endpoint ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Endpoint.Hostname | unknown | Endpoint Hostname | 
+| Endpoint.OS | unknown | Endpoint OS | 
+| Endpoint.IPAddress| unknown | Endpoint IP Addresses | 
+| Endpoint.ID | unknown | Endpoint ID | 
+| Endpoint.Status | unknown | Endpoint Status | 
+
+
+#### Command Example
+```!Endpoint id=15dbb9d5fe9f61eb46e829d986```
+
+#### Context Example
+```json
+{
+  "Endpoint":
+    {
+      "Hostname": "Hostname",
+      "ID": "15dbb9d5fe9f61eb46e829d986",
+      "IPAddress": [
+                "172.31.11.11"
+                ],
+      "OS": "Windows Server 2019",
+      "Status": "normal"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Endpoints
+>|ID|IP|OS|Hostname|Status|
+>|---|---|---|---|---|
+>| 15dbb9d8f06b45fe9f61eb46e829d986 | 10.128.0.7 | Windows Server 2019 | Hostname | normal |\n"
+
