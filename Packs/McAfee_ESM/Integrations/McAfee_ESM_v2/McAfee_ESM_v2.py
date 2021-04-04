@@ -312,9 +312,8 @@ class McAfeeESMClient(BaseClient):
             'orgId': self.__org_and_id(org_name=self.args.get('organization')).get('id'),
             'statusId': {'value': self.__status_and_id(status_name=self.args.get('status')).get('id')}
         }
-        raw_response = self.__request(path, data={'caseDetail': case_details})
-        result = raw_response
-        human_readable, context_entry, result = self.get_case_detail(result.get('value'))
+        result = self.__request(path, data={'caseDetail': case_details})
+        human_readable, context_entry, raw_response = self.get_case_detail(result.get('value'))
         return human_readable, context_entry, raw_response
 
     def edit_case(self) -> Tuple[str, Dict, Dict]:
@@ -375,9 +374,9 @@ class McAfeeESMClient(BaseClient):
     def delete_case_status(self) -> Tuple[str, Dict, Dict]:
         path = 'caseDeleteCaseStatus'
         status_id = self.__status_and_id(status_name=self.args.get('name')).get('id')
-        raw_response = self.__request(path, data={'statusId': {'value': status_id}})
+        self.__request(path, data={'statusId': {'value': status_id}})
         self.__cache['status'] = {}
-        return f'Deleted case status with ID: {status_id}', {}, raw_response
+        return f'Deleted case status with ID: {status_id}', {}, {}
 
     def fetch_fields(self) -> Tuple[str, Dict, Dict[str, list]]:
         path = 'qryGetFilterFields'
@@ -438,7 +437,8 @@ class McAfeeESMClient(BaseClient):
             table_headers = ['id', 'acknowledgedDate', 'acknowledgedUsername', 'alarmName', 'assignee', 'conditionType',
                              'severity', 'summary', 'triggeredDate']
             human_readable = tableToMarkdown(name='Alarms', t=result, headers=table_headers)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Alarm(val.ID && val.ID == obj.ID)': context_entry}, raw_response
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Alarm(val.ID && val.ID == obj.ID)': context_entry},\
+            raw_response
 
     def acknowledge_alarms(self) -> Tuple[str, Dict, Dict]:
         try:
@@ -741,9 +741,9 @@ class McAfeeESMClient(BaseClient):
             'watchlist': watchlist_id if watchlist_id else self.__get_watchlist_id(self.args.get('watchlist_name', '')),
             'values': argToList(self.args.get('values', ''))
         }
-        raw_response = self.__request(command, data=data)
+        self.__request(command, data=data)
         human_readable = 'Watchlist successfully updated.'
-        return human_readable, {}, raw_response
+        return human_readable, {}, {}
 
     def __get_watchlist_file_id(self, watchlist_id):
         command = 'sysGetWatchlistDetails'
