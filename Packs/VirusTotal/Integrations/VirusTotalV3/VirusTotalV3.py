@@ -568,8 +568,9 @@ class ScoreCalculator:
                 self.logs.append('Indicator is good by popularity ranks.')
                 return True
             else:
-                self.logs.append('Indicator might not be good by it\'s popularity ranks')
+                self.logs.append('Indicator might not be good by it\'s popularity ranks.')
                 return False
+        self.logs.append('Could not determine rank by popularity, No popularity ranks data.')
         return None
 
     def is_suspicious_by_rules(self, file_response: dict) -> bool:
@@ -597,51 +598,53 @@ class ScoreCalculator:
                     f'{total_yara_rules=} >= {self.crowdsourced_yara_rules_threshold=}'
                 )
                 return True
+            if sigma_rules := data.get('sigma_analysis_stats'):
+                self.logs.append(
+                    'Found sigma rules, analyzing. '
+                )
+                sigma_high, sigma_critical = sigma_rules.get('high', 0), sigma_rules.get('critical', 0)
+                if (sigma_high + sigma_critical) >= self.sigma_ids_threshold:
+                    self.logs.append(
+                        f'Found malicious, {(sigma_high + sigma_critical)=} >= {self.sigma_ids_threshold=}. '
+                    )
+                    return True
+                else:
+                    self.logs.append(
+                        'Not found malicious by sigma. '
+                    )
+            else:
+                self.logs.append(
+                    'Not found sigma analysis. Skipping. '
+                )
+            if crowdsourced_ids_stats := data.get('crowdsourced_ids_stats'):
+                self.logs.append(
+                    'Found crowdsourced IDS analysis, analyzing. '
+                )
+                ids_high, ids_critical = crowdsourced_ids_stats.get('high'), crowdsourced_ids_stats.get('critical')
+                if (ids_high + ids_critical) >= self.sigma_ids_threshold:
+                    self.logs.append(
+                        f'Found malicious, {((ids_high + ids_critical) >= self.sigma_ids_threshold)=}. '
+                    )
+                    return True
+                else:
+                    self.logs.append(
+                        'Not found malicious by sigma. '
+                    )
+            else:
+                self.logs.append(
+                    'Not found crowdsourced IDS analysis. Skipping. '
+                )
         else:
             self.logs.append(
                 'Crowdsourced Yara Rules analyzing is not enabled. Skipping. '
-            )
-        if sigma_rules := data.get('sigma_analysis_stats'):
-            self.logs.append(
-                'Found sigma rules, analyzing. '
-            )
-            sigma_high, sigma_critical = sigma_rules.get('high', 0), sigma_rules.get('critical', 0)
-            if (sigma_high + sigma_critical) >= self.sigma_ids_threshold:
-                self.logs.append(
-                    f'Found malicious, {(sigma_high + sigma_critical)=} >= {self.sigma_ids_threshold=}. '
-                )
-                return True
-            else:
-                self.logs.append(
-                    'Not found malicious by sigma. '
-                )
-        else:
-            self.logs.append(
-                'Not found sigma analysis. Skipping. '
-            )
-        if crowdsourced_ids_stats := data.get('crowdsourced_ids_stats'):
-            self.logs.append(
-                'Found crowdsourced IDS analysis, analyzing. '
-            )
-            ids_high, ids_critical = crowdsourced_ids_stats.get('high'), crowdsourced_ids_stats.get('critical')
-            if (ids_high + ids_critical) >= self.sigma_ids_threshold:
-                self.logs.append(
-                    f'Found malicious, {((ids_high + ids_critical) >= self.sigma_ids_threshold)=}. '
-                )
-                return True
-            else:
-                self.logs.append(
-                    'Not found malicious by sigma. '
-                )
-        else:
-            self.logs.append(
-                'Not found crowdsourced IDS analysis. Skipping. '
             )
         return False
 
     def is_preferred_vendors_pass_malicious(self, analysis_results: dict) -> bool:
         """Is the indicator counts as malicious by predefined malicious vendors.
         trusted_vendors.malicious >= trusted_vendors_threshold -> Malicious
+        The function takes only the latest 20 results.
+
         Args:
             analysis_results: The results of the analysis.
 
@@ -825,19 +828,20 @@ class ScoreCalculator:
         return self.score_by_results_and_stats(indicator, raw_response, self.domain_threshold)
 
     # region Premium analysis
-    def is_malicious_or_suspicious_by_relationship_files(self, relationship_files_response: dict) -> int:
+    def is_malicious_or_suspicious_by_relationship_files(self, relationship_files_response: dict, lookback=20) -> int:
         """Checks maliciousness of indicator on relationship files. Look on the recent 20 results returned.
             if (number of relationship files that are malicious > threshold) -> Bad
             if (number of relationship files that are malicious > threshold / 2) -> suspicious
             else good
         Args:
             relationship_files_response: The raw_response of the relationship call
+            lookback: analysing only the latest results. Defualt is 20
 
         Returns:
             DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
             Common.DBotScore.GOOD
         """
-        files = relationship_files_response.get('data', [])[:20]  # lookback on recent 20 results. By design
+        files = relationship_files_response.get('data', [])[:lookback]  # lookback on recent 20 results. By design
         total_malicious = 0
         for file in files:
             if file_hash := file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep')))):

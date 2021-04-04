@@ -1,4 +1,5 @@
 import json
+from typing import Dict
 
 import pytest
 from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
@@ -32,10 +33,90 @@ class TestScoreCalculator:
             }
         )
 
-    def test_file(self, capfd):
-        with capfd.disabled():
-            self.score_calculator.file_score('given hash', json.load(open('./TestData/file.json')))
-            print('\n'.join(self.score_calculator.logs))
+    def test_there_are_logs(self):
+        self.score_calculator.file_score('given hash', json.load(open('./TestData/file.json')))
+        assert self.score_calculator.logs
+        self.score_calculator.logs = []
+
+    @pytest.mark.parametrize('malicious, suspicious, threshold, result', [
+        (0, 5, 5, True),
+        (10, 0, 5, True),
+        (0, 0, 2, False)
+    ])
+    def test_is_suspicious_by_threshold(self, malicious: int, suspicious: int, threshold: int, result: bool):
+        analysis_results = {
+            'malicious': malicious,
+            'suspicious': suspicious
+        }
+        assert self.score_calculator.is_suspicious_by_threshold(analysis_results, threshold) is result
+
+    @pytest.mark.parametrize('malicious, threshold, result', [
+        (5, 5, True),
+        (10, 5, True),
+        (0, 2, False)
+    ])
+    def test_is_malicious_by_threshold(self, malicious: int, threshold: int, result: bool):
+        analysis_results = {
+            'malicious': malicious
+        }
+        assert self.score_calculator.is_malicious_by_threshold(analysis_results, threshold) is result
+
+    @pytest.mark.parametrize('ranks, result', [
+        ({'vendor1': {'rank': 10000}}, True),
+        ({'vendor1': {'rank': 3000}, 'vendor2': {'rank': 7000}}, True),
+        ({'vendor1': {'rank': 0}}, False),
+        ({'vendor1': {'rank': 300}, 'vendor2': {'rank': 300}}, False),
+        ({}, None)
+    ])
+    def test_is_good_by_popularity_ranks(self, ranks: Dict[str, dict], result: bool):
+        self.score_calculator.domain_popularity_ranking = 5000
+        assert self.score_calculator.is_good_by_popularity_ranks(ranks) is result
+
+    @pytest.mark.parametrize('yara_rules_found, result', [
+        (1, False),
+        (3, True),
+        (2, True)
+    ])
+    def test_is_suspicious_by_rules_yara(self, yara_rules_found: int, result: bool):
+        # enable indicators process and set to 2
+        self.score_calculator.crowdsourced_yara_rules_enabled = True
+        self.score_calculator.crowdsourced_yara_rules_threshold = 2
+        # process
+        response = {'data': {
+            'crowdsourced_yara_results': [1] * yara_rules_found
+        }}
+        assert self.score_calculator.is_suspicious_by_rules(response) is result
+
+    @pytest.mark.parametrize('high, critical, result', [
+        (2, 0, True),
+        (0, 2, True),
+        (1, 1, True),
+        (0, 0, False),
+    ])
+    def test_is_suspicious_by_rules_sigma(self, high: int, critical: int, result: bool):
+        # enable indicators process and set to 2
+        self.score_calculator.crowdsourced_yara_rules_enabled = True
+        self.score_calculator.sigma_ids_threshold = 2
+        response = {'data': {'sigma_analysis_stats': {'high': high, 'critical': critical}}}
+        # process
+        assert self.score_calculator.is_suspicious_by_rules(response) is result
+
+    @pytest.mark.parametrize('threshold', (1, 2))
+    def test_is_preferred_vendors_pass_malicious(self, threshold: int):
+        # setup
+        self.score_calculator.trusted_vendors_threshold = threshold
+        self.score_calculator.trusted_vendors = ['v1', 'v2']
+        # process
+        analysis_results = {'v1': {'category': 'malicious'}, 'v2': {'category': 'malicious'}}
+        assert self.score_calculator.is_preferred_vendors_pass_malicious(analysis_results)
+
+    def test_is_preferred_vendors_pass_malicious_below_threshold(self):
+        # setup
+        self.score_calculator.trusted_vendors_threshold = 3
+        self.score_calculator.trusted_vendors = ['v1', 'v2']
+        # process
+        analysis_results = {'v1': {'category': 'malicious'}, 'v2': {'category': 'malicious'}}
+        assert not self.score_calculator.is_preferred_vendors_pass_malicious(analysis_results)
 
 
 class TestHelpers:
