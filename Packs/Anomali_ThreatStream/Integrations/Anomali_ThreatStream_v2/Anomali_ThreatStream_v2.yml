@@ -277,9 +277,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: If the severity is greater than or equal to the threshold, the
-        hash of file is considered as malicious. This argument will override the
-        default threshold defined as a parameter. Can be "low", "medium", "high",
-        or "very-high".
+        hash of file is considered as malicious. This argument will override the default
+        threshold defined as a parameter. Can be "low", "medium", "high", or "very-high".
       isArray: false
       name: threshold
       predefined:
@@ -1627,7 +1626,7 @@ script:
     - contextPath: ThreatStream.URL.Severity
       description: The indicator severity ("very-high", "high", "medium", or "low").
       type: String
-  dockerimage: demisto/emoji:1.0.0.12410
+  dockerimage: demisto/emoji:1.0.0.18288
   feed: false
   isfetch: false
   longRunning: false
