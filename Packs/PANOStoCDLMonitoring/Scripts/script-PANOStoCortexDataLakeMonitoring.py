@@ -69,7 +69,8 @@ def query_cdl(fw_monitor_list: list) -> CommandResults:
         outputs_prefix='CDL.monitoring',
         outputs_key_field=['FirewallsWithLogsSent', 'FirewallsWithoutLogsSent'],
         ignore_auto_extract=True,
-        outputs=all_results
+        outputs=all_results,
+        raw_response=query_result
     )
 
 
