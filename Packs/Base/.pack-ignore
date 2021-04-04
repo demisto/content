@@ -7,7 +7,7 @@ ignore=BA101
 [file:DBotBuildPhishingClassifier.yml]
 ignore=SC105
 
-[file:DBotFindSimilarIncidentsByIndicators.yml ]
+[file:DBotFindSimilarIncidentsByIndicators.yml]
 ignore=SC105
 
 [file:DBotFindSimilarIncidents.yml]
