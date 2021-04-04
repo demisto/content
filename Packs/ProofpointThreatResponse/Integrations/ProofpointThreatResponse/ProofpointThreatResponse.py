@@ -490,7 +490,7 @@ def get_incidents_batch_by_time_request(params):
             # only if incident was not fetched already add it to the incidents list
             if incident.get('id') not in already_fetched:
                 incidents_list.append(incident)
-                new_fetched_incidents.append(incident.get('id'))
+                new_fetched_incidents_ids.append(incident.get('id'))
 
         # save the last fetch for the next fetch before advancing it
         # We would like to run again on the last batch to add the incident that might not been added due to the limit
