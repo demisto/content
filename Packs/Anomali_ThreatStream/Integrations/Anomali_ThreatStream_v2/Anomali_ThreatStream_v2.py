@@ -835,7 +835,7 @@ def get_submission_status(client: Client, report_id, output=True):
     return status, verdict
 
 
-def file_name_to_valid_string(client: Client, file_name):
+def file_name_to_valid_string(file_name):
     try:
         # In case the user uses Demisto version < 5.0 and the new docker image will not be automatically changed
         import emoji

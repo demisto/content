@@ -2,7 +2,8 @@ import os
 import json
 import demistomock as demisto
 from tempfile import mkdtemp
-from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation
+from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation, Client
+from CommonServerPython import DBotScoreReliability
 import emoji
 import pytest
 
@@ -71,7 +72,7 @@ expected_import_json = {'objects': [{'srcip': '8.8.8.8', 'itype': 'mal_ip', 'con
 
 
 def test_ioc_approval_500_error(mocker):
-    mocker.patch('Anomali_ThreatStream_v2.http_request', side_effect=http_request_with_approval_mock)
+    mocker.patch.object(Client, 'http_request', side_effect=http_request_with_approval_mock)
     mocker.patch.object(demisto, 'args', return_value=package_500_error)
     mocker.patch.object(demisto, 'command', return_value='threatstream-import-indicator-with-approval')
     mocker.patch.object(demisto, 'results')
