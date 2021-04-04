@@ -49,8 +49,7 @@ class Client:
         return match.group(1)
 
     def logout(self):
-        self.session.post(url=f'{self.session_metadata["b"
-        "ase_url"]}/php/logout.php?', verify=False)
+        self.session.post(url=f'{self.session_metadata["base_url"]}/php/logout.php?', verify=False)
 
     def token_generator(self) -> str:
         """
