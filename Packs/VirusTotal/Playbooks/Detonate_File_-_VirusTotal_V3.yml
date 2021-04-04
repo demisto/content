@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
     view: |-
       {
@@ -80,7 +80,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -120,7 +120,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -156,7 +156,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -207,7 +207,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -242,7 +242,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -267,7 +267,44 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 199cfb50-cb4a-4c46-8519-e8df79a8a5bd
+    type: regular
+    task:
+      id: 199cfb50-cb4a-4c46-8519-e8df79a8a5bd
+      version: -1
+      name: Set File to File path
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      stringify: {}
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -280,7 +317,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 1260,
         "width": 605,
         "x": 50,
         "y": 50

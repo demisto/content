@@ -1489,12 +1489,10 @@ def file_rescan_command(client: Client, args: dict) -> CommandResults:
 
 def get_md5_by_entry_id(entry_id: str) -> str:
     """Gets an MD5 from context using entry ID"""
-    try:
-        return demisto.executeCommand('getEntry', {'id': entry_id})[0]['FileMetadata']['md5']
-    except (IndexError, KeyError) as exc:
-        err = f'Could not find MD5 for {entry_id=}.\n{exc}'
-        demisto.debug(err)
-        raise DemistoException(err) from exc
+    md5 = demisto.dt(demisto.context(), f'File(val.EntryID === "{entry_id}").MD5')
+    if not md5:
+        raise DemistoException('Could not find MD5')
+    return md5
 
 
 def encode_to_base64(md5: str, id_: Union[str, int]) -> str:
@@ -1527,8 +1525,8 @@ def get_working_id(id_: str, entry_id: str) -> str:
             md5 = get_md5_by_entry_id(entry_id)
         except DemistoException as exc:
             raise DemistoException(
-                f'The id from VirusTotal is {id_}. The id should be base64(md5:id). You can try to '
-                f'create the ID manually'
+                f'Could not find the MD5 of entry ID {entry_id}. The id from VirusTotal is {id_}.\n'
+                f'The id should be base64(md5:id). You can try to create the ID manually with the MD5'
             ) from exc
         return encode_to_base64(md5, id_)
     return id_
