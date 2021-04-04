@@ -17,7 +17,7 @@ HEADERS = {
     'Content-Type': 'application/json'
 }
 
-CREDENTIALS = {}
+CREDENTIALS: dict = {}
 
 DBOT_SCORE = {
     'low': 2,
@@ -776,7 +776,7 @@ def create_model(client: Client, model, name, is_public="false", tlp=None, tags=
     model_id = client.http_request("POST", F"v1/{model}/", data=json.dumps(data), params=CREDENTIALS).get('id', None)
 
     if model_id:
-        get_iocs_by_model(model, model_id, limit="50")
+        get_iocs_by_model(client, model, model_id, limit="50")
     else:
         demisto.results(F"{model.title()} Threat Model was not created. Check the input parameters")
 
@@ -789,7 +789,7 @@ def update_model(client: Client, model, model_id, name=None, is_public="false", 
     """
     data = build_model_data(model, name, is_public, tlp, tags, intelligence, description)
     client.http_request("PATCH", F"v1/{model}/{model_id}/", data=json.dumps(data), params=CREDENTIALS)
-    get_iocs_by_model(model, model_id, limit="50")
+    get_iocs_by_model(client, model, model_id, limit="50")
 
 
 def supported_platforms(client: Client, sandbox_type="default"):
@@ -847,7 +847,8 @@ def file_name_to_valid_string(file_name):
     return file_name
 
 
-def submit_report(client: Client, submission_type, submission_value, submission_classification="private", report_platform="WINDOWS7",
+def submit_report(client: Client, submission_type, submission_value, submission_classification="private",
+                  report_platform="WINDOWS7",
                   premium_sandbox="false", detail=None):
     """
         Detonates URL or file that was uploaded to war room to ThreatStream sandbox.

@@ -3,7 +3,6 @@ import json
 import demistomock as demisto
 from tempfile import mkdtemp
 from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation, Client
-from CommonServerPython import DBotScoreReliability
 import emoji
 import pytest
 
