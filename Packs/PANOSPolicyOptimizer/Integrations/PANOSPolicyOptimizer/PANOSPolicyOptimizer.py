@@ -45,11 +45,12 @@ class Client:
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
         # The "data" field is the MD5 calculation of "cookie" + "TID"
         if not match:
-            raise Exception(f'Failed to login. Please double-check the credentials and the server URL.')
+            raise Exception('Failed to login. Please double-check the credentials and the server URL.')
         return match.group(1)
 
     def logout(self):
-        self.session.post(url=f'{self.session_metadata["base_url"]}/php/logout.php?', verify=False)
+        self.session.post(url=f'{self.session_metadata["b"
+        "ase_url"]}/php/logout.php?', verify=False)
 
     def token_generator(self) -> str:
         """
@@ -127,7 +128,7 @@ class Client:
 
         return json.loads(response.text)
 
-    def policy_optimizer_get_rules(self, timeframe, usage: bool, exclude: bool) -> dict:
+    def policy_optimizer_get_rules(self, timeframe: str, usage: bool, exclude: bool) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -171,7 +172,7 @@ class Client:
     #
     #     return json.loads(response.text)
 
-    def policy_optimizer_app_and_usage(self, rule_uuid) -> dict:
+    def policy_optimizer_app_and_usage(self, rule_uuid: str) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {"action": "PanDirect", "method": "run",
                     "data": [self.token_generator(),
@@ -267,7 +268,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict):
     """
     Gets the unused rules Statistics as seen from the User Interface
     """
-    timeframe = args.get('timeframe')
+    timeframe = str(args.get('timeframe'))
     usage = argToBoolean(args.get('usage'))
     exclude = argToBoolean(args.get('exclude'))
     stats = client.policy_optimizer_get_rules(timeframe, usage, exclude)
@@ -289,7 +290,7 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict):
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
     context_res = {}
-    rule_uuid = args.get('rule_uuid')
+    rule_uuid = str(args.get('rule_uuid'))
     stats = client.policy_optimizer_app_and_usage(rule_uuid)
     result = stats['result']['result']['rules']['entry'][0]['apps-seen']['entry']
     rule_name = stats['result']['result']['rules']['entry'][0]['@name']
