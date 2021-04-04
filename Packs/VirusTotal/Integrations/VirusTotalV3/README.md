@@ -2804,20 +2804,13 @@ Retrieves a behavioral relationship of the given file hash.
                         {
                             "hostname": "checkip.dyndns.org",
                             "resolved_ips": [
-                                "131.186.113.70",
-                                "216.146.43.70",
-                                "162.88.193.70",
-                                "216.146.43.71"
+                                "**ip**"
                             ]
                         },
                         {
                             "hostname": "checkip.dyndns.org",
                             "resolved_ips": [
-                                "131.186.113.70",
-                                "131.186.161.70",
-                                "216.146.43.70",
-                                "162.88.193.70",
-                                "216.146.43.71"
+                                "**ip**"
                             ]
                         }
                     ],

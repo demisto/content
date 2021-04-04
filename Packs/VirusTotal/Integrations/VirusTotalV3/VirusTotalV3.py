@@ -1557,6 +1557,7 @@ def file_scan(client: Client, args: dict) -> List[CommandResults]:
             )
             id_ = data.get('id')
             id_ = get_working_id(id_, entry_id)
+            data['id'] = id_
             context = {
                 f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data,
                 'vtScanID': id_  # BC preservation
