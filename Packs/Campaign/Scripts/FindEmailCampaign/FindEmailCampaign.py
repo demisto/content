@@ -1,3 +1,4 @@
+import itertools
 from collections import Counter
 
 import dateutil
@@ -11,6 +12,9 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from numpy import dot
 from numpy.linalg import norm
+from email.utils import parseaddr
+import tldextract
+no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
@@ -23,7 +27,7 @@ MERGED_TEXT_FIELD = 'mereged_text'
 EMAIL_TO_FIELD = 'emailto'
 EMAIL_CC_FIELD = 'emailcc'
 EMAIL_BCC_FIELD = 'emailbcc'
-
+RECIPIENTS_COLUMNS = [EMAIL_TO_FIELD, EMAIL_CC_FIELD, EMAIL_BCC_FIELD]
 MIN_CAMPAIGN_SIZE = int(demisto.args().get("minIncidentsForCampaign", 3))
 MIN_UNIQUE_RECIPIENTS = int(demisto.args().get("minUniqueRecipients", 2))
 DUPLICATE_SENTENCE_THRESHOLD = 0.95
@@ -85,6 +89,31 @@ def add_context_key(entry_context):
     return new_context
 
 
+def get_recipients(row):
+    global RECIPIENTS_COLUMNS
+    return list(itertools.chain(*[row[col] for col in RECIPIENTS_COLUMNS]))
+
+
+def extract_domain(address):
+    global no_fetch_extract
+    if address == '':
+        return ''
+    email_address = parseaddr(address)[1]
+    ext = no_fetch_extract(email_address)
+    return '{}.{}'.format(ext.domain, ext.suffix)
+
+
+def extract_domain_from_recipients(row):
+    domains_list = []
+    for address in row['recipients']:
+        try:
+            domain = extract_domain(address)
+        except Exception:
+            domain = ''
+        domains_list.append(domain)
+    return domains_list
+
+
 def create_context_for_campaign_details(campaign_found=False, incidents_df=None):
     if not campaign_found:
         return {
@@ -92,8 +121,10 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None)
         }
     else:
         incident_id = demisto.incident()['id']
-        incident_df = incidents_df[
-            ['id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD]]  # lgtm [py/hash-unhashable-value]
+        incidents_df['recipients'] = incidents_df.apply(lambda row: get_recipients(row), axis=1)
+        incidents_df['recipientsdomain'] = incidents_df.apply(lambda row: extract_domain_from_recipients(row), axis=1)
+        context_keys = ['id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain']
+        incident_df = incidents_df[context_keys]  # lgtm [py/hash-unhashable-value]
         incident_df = incident_df[incident_df['id'] != incident_id]
         incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
@@ -162,7 +193,18 @@ def get_str_representation_top_n_values(values_list, counter_tuples_list, top_n)
     return ', '.join('{} ({})'.format(domain, count) for domain, count in domains_counter_top)
 
 
+def standardize_recipients_column(df, column):
+    if column not in df.columns:
+        df[column] = [[] for _ in range(len(df))]
+        return df
+    df[column] = df[column].apply(argToList)
+    df[column] = df[column].apply(lambda x: [value.strip() for value in x if isinstance(value, str)])
+    df[column] = df[column].apply(lambda x: [value for value in x if '@' in value])
+    return df
+
+
 def calculate_campaign_details_table(incidents_df, fields_to_display):
+    global RECIPIENTS_COLUMNS
     n_incidents = len(incidents_df)
     similarities = incidents_df['similarity'].dropna().to_list()
     max_similarity = max(similarities)
@@ -190,12 +232,12 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
     senders_counter = Counter(senders).most_common()  # type: ignore
     senders_domain = incidents_df[FROM_DOMAIN_FIELD].replace('', np.nan).dropna().tolist()
     domains_counter = Counter(senders_domain).most_common()  # type: ignore
-    if EMAIL_TO_FIELD in incidents_df.columns:
-        recipients = incidents_df[EMAIL_TO_FIELD].replace('', np.nan).dropna().tolist()
-    if EMAIL_CC_FIELD in incidents_df.columns:
-        recipients += incidents_df[EMAIL_CC_FIELD].replace('', np.nan).dropna().tolist()
-    if EMAIL_BCC_FIELD in incidents_df.columns:
-        recipients += incidents_df[EMAIL_BCC_FIELD].replace('', np.nan).dropna().tolist()
+    for column in RECIPIENTS_COLUMNS:
+        incidents_df = standardize_recipients_column(incidents_df, column)
+    recipients = []
+    for column in RECIPIENTS_COLUMNS:
+        for incidents_recipient in incidents_df[column]:
+            recipients += incidents_recipient
     recipients_counter = Counter(recipients).most_common()  # type: ignore
     if len(senders_counter) == 1:
         domain_header = "Sender domain"
