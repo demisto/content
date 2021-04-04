@@ -521,5 +521,5 @@ def main():
         raise
 
 
-if __name__ == '__main__':
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
