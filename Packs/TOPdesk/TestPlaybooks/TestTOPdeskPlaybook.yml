@@ -1,5 +1,5 @@
-id: c966fd39-999e-4023-828e-e3de74f32d7a
-version: 2
+id: TestTOPdeskPlaybook
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: TestTOPdeskPlaybook
 starttaskid: "0"
