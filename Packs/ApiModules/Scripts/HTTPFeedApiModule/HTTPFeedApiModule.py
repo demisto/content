@@ -287,7 +287,7 @@ def datestring_to_server_format(date_string: str) -> str:
     :return: ISO-8601 date string
     """
     parsed_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
-    return parsed_date.strftime(DATE_FORMAT)
+    return parsed_date.strftime(DATE_FORMAT)    # type: ignore
 
 
 def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], client: Client):
@@ -472,4 +472,3 @@ def feed_main(feed_name, params=None, prefix=''):
     except Exception as e:
         err_msg = f'Error in {feed_name} integration [{e}]'
         return_error(err_msg, error=e)
-
