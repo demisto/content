@@ -17,3 +17,4 @@
 !vt-private-zip-create file=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f password=apassword
 !vt-private-zip-get zip_id=5548746369433600
 !vt-private-zip-download zip_id=5548746369433600
+!vt-private-search-file query="type:peexe size:90kb+ positives:5+ behaviour:'taskkill'"
