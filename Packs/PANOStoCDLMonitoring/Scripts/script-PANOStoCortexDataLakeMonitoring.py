@@ -28,7 +28,12 @@ def get_firewall_serials(pan_os_integration_instance_name: str) -> list:
     fw_monitor_list: list = []
     fw_query = {'type': 'op', 'cmd': '<show><devices><all></all></devices></show>', 'raw-response': 'true',
                 'using': pan_os_integration_instance_name}
+
     fw_query_result = demisto.executeCommand("panorama", fw_query)
+    if is_error(fw_query_result):
+        raise Exception(f'Querying the instance: {pan_os_integration_instance_name} in Cortex Data Lake failed.'
+                        f' {fw_query_result[0]["Contents"]}')
+
     if fw_query_result and isinstance(fw_query_result, list):
         for fw in fw_query_result[0]['Contents']['response']['result']['devices']['entry']:
             fw_monitor_list.append(fw['serial'])
@@ -54,10 +59,11 @@ def query_cdl(fw_monitor_list: list) -> CommandResults:
         if len(current_fw) not in (12, 15):  # VM serial are 15 digits and FW serial are 12 digits
             raise Exception(f'{current_fw} - incorrect Firewall serial format.')
         query['query'] = f'log_source_id = \'{current_fw}\''
-        query_result = demisto.executeCommand("cdl-query-traffic-logs", query)
 
+        query_result = demisto.executeCommand("cdl-query-traffic-logs", query)
         if is_error(query_result):
             raise Exception(f'Querying traffic logs in Cortex Data Lake failed. {query_result[0]["Contents"]}')
+
         if query_result:
             if query_result[0]['HumanReadable'] == no_logs_str:
                 firewalls_with_logs.append(current_fw)
