@@ -3294,7 +3294,6 @@
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
-        "O365-SecurityAndCompliance-Test": "Issue 32364",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
@@ -3609,8 +3608,8 @@
                 "memory_threshold": 140
             },
             "demisto/powershell-ubuntu": {
-                "pid_threshold": 30,
-                "memory_threshold": 155
+                "pid_threshold": 40,
+                "memory_threshold": 200
             }
         }
     }
