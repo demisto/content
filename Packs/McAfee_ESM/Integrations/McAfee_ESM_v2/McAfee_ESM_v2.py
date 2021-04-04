@@ -195,18 +195,17 @@ class McAfeeESMClient(BaseClient):
         """
         path = 'caseGetOrganizationList'
         raw_response = self.__request(path)
-        result = raw_response
-        entry: List = [None] * len(result)
+        entry: List = [None] * len(raw_response)
         context_entry: Dict = {}
         human_readable: str = ''
         if not raw:
-            for i in range(len(result)):
+            for i in range(len(raw_response)):
                 entry[i] = {
-                    'ID': result[i].get('id'),
-                    'Name': result[i].get('name')
+                    'ID': raw_response[i].get('id'),
+                    'Name': raw_response[i].get('name')
                 }
             context_entry = {f'{CONTEXT_INTEGRATION_NAME}Organization(val.ID && val.ID == obj.ID)': entry}
-            human_readable = tableToMarkdown(name='Organizations', t=result)
+            human_readable = tableToMarkdown(name='Organizations', t=raw_response)
 
         return human_readable, context_entry, raw_response
 
