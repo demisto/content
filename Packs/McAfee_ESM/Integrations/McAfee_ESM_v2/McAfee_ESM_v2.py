@@ -44,7 +44,7 @@ class McAfeeESMClient(BaseClient):
     def _is_status_code_valid(self, *_other):  # noqa
         return True
 
-    def __request(self, mcafee_command, data=None, params=None) -> dict:
+    def __request(self, mcafee_command, data=None, params=None):
         if data:
             data = json.dumps(data)
         result = self._http_request('POST', mcafee_command, data=data,
@@ -353,7 +353,6 @@ class McAfeeESMClient(BaseClient):
         if 'should_show_in_case_pane' in self.args:
             status_details['showInCasePane'] = self.args['should_show_in_case_pane']
         raw_response = self.__request(path, data={'status': status_details})
-        result = raw_response
         self.__cache['status'] = {}
         status_id = status_details['name']
         return f'Added case status : {status_id}', {}, raw_response
@@ -444,27 +443,27 @@ class McAfeeESMClient(BaseClient):
 
     def acknowledge_alarms(self) -> Tuple[str, Dict, Dict]:
         try:
-            raw_response = self.__handle_alarms('Acknowledge')
+            self.__handle_alarms('Acknowledge')
         except DemistoException as error:
             # bug in ESM API performs the job but an error is return.
             if not expected_errors(error):
                 raise error
-        return 'Alarms has been Acknowledged.', {}, raw_response
+        return 'Alarms has been Acknowledged.', {}, {}
 
     def unacknowledge_alarms(self) -> Tuple[str, Dict, Dict]:
         try:
-            raw_response = self.__handle_alarms('Unacknowledge')
+            self.__handle_alarms('Unacknowledge')
         except DemistoException as error:
             # bug in ESM API performs the job but an error is return.
             if not expected_errors(error):
                 raise error
-        return 'Alarms has been Unacknowledged.', {}, raw_response
+        return 'Alarms has been Unacknowledged.', {}, {}
 
     def delete_alarm(self) -> Tuple[str, Dict, Dict]:
-        raw_response = self.__handle_alarms('Delete')
-        return 'Alarms has been Deleted.', {}, raw_response
+        self.__handle_alarms('Delete')
+        return 'Alarms has been Deleted.', {}, {}
 
-    def __handle_alarms(self, command: str) -> dict:
+    def __handle_alarms(self, command: str):
         path = f'alarm{command}TriggeredAlarm'
         alarm_ids = argToList(str(self.args.get('alarmIds')))
         alarm_ids = [int(i) for i in alarm_ids]
