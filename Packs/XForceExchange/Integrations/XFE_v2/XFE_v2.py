@@ -23,7 +23,9 @@ class Client(BaseClient):
           use_proxy (bool): specifies if to use Demisto proxy settings.
     """
 
-    def __init__(self, url: str, api_key: str, password: str, use_ssl: bool, use_proxy: bool):
+    def __init__(self, url: str, api_key: str, password: str, use_ssl: bool, use_proxy: bool,
+                 reliability=DBotScoreReliability.C):
+        self.reliability = reliability
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'},
                          auth=(api_key, password))
 
@@ -83,7 +85,7 @@ def calculate_score(score: int, threshold: int) -> int:
     return 1
 
 
-def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dict, dict]:
+def get_cve_results(client: Client, cve_id: str, report: dict, threshold: int) -> Tuple[str, dict, dict]:
     """
     Formats CVE report from X-Force Exchange into Demisto's outputs.
 
@@ -102,7 +104,8 @@ def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dic
                'Published': report.get('reported'),
                'Description': report.get('description')}
     dbot_score = {'Indicator': cve_id, 'Type': 'cve', 'Vendor': 'XFE',
-                  'Score': calculate_score(round(report.get('risk_level', 0)), threshold)}
+                  'Score': calculate_score(round(report.get('risk_level', 0)), threshold),
+                  'Reliability': client.reliability}
     additional_headers = ['xfdbid', 'risk_level', 'reported', 'cvss', 'tagname', 'stdcode',
                           'title', 'description', 'platforms_affected', 'exploitability']
     additional_info = {string_to_context_key(field): report.get(field) for field in additional_headers}
@@ -169,7 +172,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         additional_info = {string_to_context_key(field): report[field] for field in
                            ['reason', 'reasonDescription', 'subnets']}
         dbot_score = {'Indicator': report['ip'], 'Type': 'ip', 'Vendor': 'XFE',
-                      'Score': calculate_score(report['score'], threshold)}
+                      'Score': calculate_score(report['score'], threshold), 'Reliability': client.reliability}
 
         if dbot_score['Score'] == 3:
             outputs['Malicious'] = {'Vendor': 'XFE', 'Description': additional_info['Reasondescription']}
@@ -218,7 +221,8 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
                 'Indicator': report['url'],
                 'Type': 'domain',
                 'Vendor': 'XFE',
-                'Score': calculate_score(report.get('score', 0), threshold)
+                'Score': calculate_score(report.get('score', 0), threshold),
+                'Reliability': client.reliability
             }
 
             if dbot_score['Score'] == 3:
@@ -270,7 +274,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
             continue
         outputs = {'Data': report['url']}
         dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
-                      'Score': calculate_score(report['score'], threshold)}
+                      'Score': calculate_score(report['score'], threshold), 'Reliability': client.reliability}
 
         if dbot_score['Score'] == 3:
             outputs['Malicious'] = {'Vendor': 'XFE'}
@@ -316,7 +320,7 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
 
     for report in reports:
         cve_id = report.get('stdcode', [''])[0]
-        markdown, context, _ = get_cve_results(cve_id, report, threshold)
+        markdown, context, _ = get_cve_results(client, cve_id, report, threshold)
 
         for key, value in context.items():
             total_context[key].append(value)
@@ -350,7 +354,7 @@ def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, An
 
     for cve_id in argToList(args.get('cve_id')):
         report = client.cve_report(cve_id)
-        cve_markdown, cve_context, _ = get_cve_results(args['cve_id'], report[0], threshold)
+        cve_markdown, cve_context, _ = get_cve_results(client, args['cve_id'], report[0], threshold)
 
         markdown += cve_markdown
         context[outputPaths['cve']].append(cve_context[outputPaths['cve']])
@@ -472,10 +476,20 @@ def main():
     params = demisto.params()
     credentials = params.get('credentials')
 
+    reliability = demisto.params().get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.C
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
     client = Client(params.get('url'),
                     credentials.get('identifier'), credentials.get('password'),
                     use_ssl=not params.get('insecure', False),
-                    use_proxy=params.get('proxy', False))
+                    use_proxy=params.get('proxy', False),
+                    reliability=reliability)
+
     commands = {
         'ip': ip_command,
         'url': url_command,
