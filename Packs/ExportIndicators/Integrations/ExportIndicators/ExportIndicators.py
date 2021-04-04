@@ -464,7 +464,7 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
     num_of_returned_indicators = 0
 
     for indicator in iocs:
-        if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
+        if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
             indicator_proxysg_category = indicator.get('proxysgcategory')
             # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
             # than list add the indicator to it's category list
@@ -493,15 +493,16 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
 def create_mwg_out_format(iocs: list, mwg_type: str) -> dict:
     formatted_indicators = []  # type:List
     for indicator in iocs:
-        value = "\"" + indicator.get('value') + "\""
-        sources = indicator.get('sourceBrands')
-        if sources:
-            sources_string = "\"" + ','.join(sources) + "\""
+        if indicator.get('value'):
+            value = "\"" + indicator.get('value') + "\""
+            sources = indicator.get('sourceBrands')
+            if sources:
+                sources_string = "\"" + ','.join(sources) + "\""
 
-        else:
-            sources_string = "\"from CORTEX XSOAR\""
+            else:
+                sources_string = "\"from CORTEX XSOAR\""
 
-        formatted_indicators.append(value + " " + sources_string)
+            formatted_indicators.append(value + " " + sources_string)
 
     string_formatted_indicators = list_to_str(formatted_indicators, '\n')
 
