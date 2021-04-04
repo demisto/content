@@ -1487,6 +1487,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
+            "memory_threshold": 100,
             "instance_names": "use_default_handler"
         },
         {
@@ -3221,6 +3222,11 @@
             "fromversion": "5.5.0",
             "playbookID": "Cisco Stealthwatch Test"
         },
+		{
+			"integrations": "cymulate_v2",
+			"playbookID": "Cymulate V2 Test",
+            "fromversion": "6.0.0"
+		},
         {
             "integrations": "OpenCTI",
             "playbookID": "OpenCTI Test",
@@ -3305,7 +3311,12 @@
         "GSuiteAdmin-Test": "Issue 34784",
         "Slack Test Playbook": "Issue 33448",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
-        "test playbook - QRadarCorrelations For V2": "Issue 30876"
+        "test playbook - QRadarCorrelations For V2": "Issue 30876",
+        "Test-BPA": "Issue 28406",
+        "Test-BPA_Integration": "Issue 28236",
+        "pyEWS_Test": "Issue 27942",
+        "EWS search-mailbox test": "Issue 27943",
+        "EWS Public Folders Test": "Issue 27941"
     },
     "skipped_integrations": {
         
@@ -3409,7 +3420,9 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "Tanium": "Issue 33974",
+        "Tanium Threat Response": "Issue 35302"
     },
     "nightly_integrations": [
         "Lastline v2",
