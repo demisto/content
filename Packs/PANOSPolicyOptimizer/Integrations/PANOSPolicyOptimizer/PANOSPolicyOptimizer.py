@@ -22,7 +22,7 @@ class Client:
         # Use Session() in order to maintain cookies for persisting the login PHP session cookie
         self.session = requests.Session()
 
-    def login(self):
+    def login(self) -> str:
         # This is the data sent to Panorama from the Login screen to complete the login and get a PHPSESSID cookie
         login_data = {'prot': 'https:',
                       'server': self.session_metadata['panorama'],
@@ -35,15 +35,15 @@ class Client:
                       }
         try:
             # Use a POST command to login to Panorama and create an initial session
-            r = self.session.post(url=f'{self.session_metadata["base_url"]}/php/login.php?', data=login_data,
+            self.session.post(url=f'{self.session_metadata["base_url"]}/php/login.php?', data=login_data,
                                   verify=self.verify)
             # Use a GET command to the base URL to get the ServerToken which looks like this:
             #   window.Pan.st.st.st539091 = "8PR8ML4A67PUMD3NU00L3G67M4958B996F61Q97T"
-            r = self.session.post(url=f'{self.session_metadata["base_url"]}/', verify=self.verify)
+            response = self.session.post(url=f'{self.session_metadata["base_url"]}/', verify=self.verify)
         except Exception as err:
             raise Exception(f'Failed to login. Please double-check the credentials and the server URL. {str(err)}')
         # Use RegEx to parse the ServerToken string from the JavaScript variable
-        match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', r.text)
+        match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', response.text)
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
         # The "data" field is the MD5 calculation of "cookie" + "TID"
         return match.group(1)
@@ -51,7 +51,7 @@ class Client:
     def logout(self):
         self.session.post(url=f'{self.session_metadata["base_url"]}/php/logout.php?', verify=False)
 
-    def token_generator(self):
+    def token_generator(self) -> str:
         """
         The PHP Security Token (Data String) is generated with the TID (counter) and a special session "cookie"
         :return: hash token
@@ -63,7 +63,7 @@ class Client:
         data_string = data_hash.hexdigest()
         return data_string
 
-    def get_policy_optimizer_statistics(self):
+    def get_policy_optimizer_statistics(self) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run", "data": [
@@ -80,7 +80,7 @@ class Client:
 
         return json.loads(response.text)
 
-    def policy_optimizer_no_apps(self):
+    def policy_optimizer_no_apps(self) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -104,7 +104,7 @@ class Client:
 
         return json.loads(response.text)
 
-    def policy_optimizer_get_unused_apps(self):
+    def policy_optimizer_get_unused_apps(self) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -127,7 +127,7 @@ class Client:
 
         return json.loads(response.text)
 
-    def policy_optimizer_get_rules_command(self, timeframe, usage, exclude):
+    def policy_optimizer_get_rules_command(self, timeframe, usage, exclude) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -171,7 +171,7 @@ class Client:
     #
     #     return json.loads(response.text)
 
-    def policy_optimizer_app_and_usage(self, rule_uuid):
+    def policy_optimizer_app_and_usage(self, rule_uuid) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {"action": "PanDirect", "method": "run",
                     "data": [self.token_generator(),
@@ -193,7 +193,7 @@ class Client:
 
         return json.loads(response.text)
 
-    def policy_optimizer_get_dag(self, dag):
+    def policy_optimizer_get_dag(self, dag) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {"action": "PanDirect", "method": "execute",
                     "data": [self.token_generator(), "AddressGroup.showDynamicAddressGroup", {
@@ -321,20 +321,21 @@ def policy_optimizer_get_dag_command(client: Client, args: dict):
 
 
 def main():
-    params = demisto.params()
-    command = demisto.command()
-    if not demisto.params().get('port'):
-        raise Exception('Set a port for the instance')
-
-    url = f'{params.get("server").rstrip("/:")}:{params.get("port")}'
-
     try:
+        command = demisto.command()
+        params = demisto.params()
         args = demisto.args()
+
+        if not demisto.params().get('port'):
+            raise Exception('Set a port for the instance')
+        url = f'{params.get("server").rstrip("/:")}:{params.get("port")}'
+
         demisto.debug(f'Command being called is: {command}')
         client = Client(url=url, username=params['credentials']['identifier'],
                         password=params['credentials']['password'], vsys=params.get('vsys', 'vsys1'),
                         verify=not params.get('insecure'), tid=50)
-        client.session_metadata['cookie'] = client.login()  # Login to Panorama and return the GUI cookie value
+        client.session_metadata['cookie'] = client.login()  # Login to PAN-OS and return the GUI cookie value
+
         if command == 'test-module':
             return_results('ok')  # if login was successful, instance configuration is ok.
         elif command == 'pan-os-po-get-stats':
@@ -356,7 +357,7 @@ def main():
         return_error(f'{str(err)}.\n Trace:{traceback.format_exc()}')
 
     finally:
-        client.logout()  # Logout of Panorama
+        client.logout()  # Logout of PAN-OS
 
 
 if __name__ in ("__builtin__", "builtins", '__main__'):
