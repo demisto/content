@@ -186,7 +186,8 @@ class McAfeeESMClient(BaseClient):
                     context_entry[i]['Groups'] = ''.join(str(result[i]['groups']))
 
             human_readable = tableToMarkdown(name='User list', t=context_entry, headers=headers)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry}, raw_response
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry},\
+            raw_response
 
     def get_organization_list(self, raw: bool = False) -> Tuple[str, Dict, List[Dict]]:
         """
