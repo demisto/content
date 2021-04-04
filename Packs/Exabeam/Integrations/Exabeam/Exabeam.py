@@ -612,6 +612,25 @@ class Client(BaseClient):
 
         return filename, content
 
+    def get_notable_assets_request(self, api_unit: str = None, num: str = None, limit: int = None) -> Dict:
+        """
+        Args:
+            api_unit: The time duration unit.
+            num: The num of time duration.
+            limit: Results number.
+
+        Returns:
+            (dict) The notable assets response.
+        """
+        params = {
+            'unit': api_unit,
+            'num': num,
+            'numberOfResults': limit
+        }
+
+        response = self._http_request('GET', url_suffix=f'/api/assets/notable', params=params)
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -726,6 +745,46 @@ def contents_append_notable_user_info(contents, user, user_, user_info) -> List[
         'Title': user_info.get('title')
     })
     return contents
+
+
+def contents_append_notable_assets_info(contents, asset, asset_, highest_risk_sequence,
+                                        latest_asset_comment) -> List[Any]:
+    """Appends a dictionary of data to the base list
+
+    Args:
+        contents: base list
+        asset: asset object
+        asset_: asset object
+        highest_risk_sequence: highest risk sequence object
+        latest_asset_comment: latest asset comment object
+
+    Returns:
+        A contents list with the relevant notable user data
+    """
+    asset_info = {
+        'highestRiskScore': asset.get('highestRiskScore'),
+        'incidentIds': asset.get('incidentIds'),
+        'zone': asset.get('zone'),
+
+        'id': highest_risk_sequence.get('id'),
+        'entityName': highest_risk_sequence.get('entityName'),
+        'entityValue': highest_risk_sequence.get('entityValue'),
+        'day': convert_unix_to_date(highest_risk_sequence.get('day')),
+        'triggeredRuleCountOpt': highest_risk_sequence.get('triggeredRuleCountOpt'),
+        'riskScoreOpt': highest_risk_sequence.get('riskScoreOpt'),
+
+        'commentId': latest_asset_comment.get('commentId'),
+        'commentType': latest_asset_comment.get('commentType'),
+        'commentObjectId': latest_asset_comment.get('commentObjectId'),
+        'text': latest_asset_comment.get('text'),
+        'exaUser': latest_asset_comment.get('exaUser'),
+        'exaUserFullname': latest_asset_comment.get('exaUserFullname'),
+        'createTime': convert_unix_to_date(latest_asset_comment.get('createTime')),
+        'updateTime': convert_unix_to_date(latest_asset_comment.get('updateTime')),
+        'edited': latest_asset_comment.get('edited')
+    }
+    asset_info.update(contents_asset_data(asset_))
+    return contents.append(asset_info)
 
 
 def contents_asset_data(asset_data) -> Dict:
@@ -1523,6 +1582,48 @@ def get_context_table_csv(client: Client, args: Dict[str, str]) -> Tuple[Any, Di
     return f'Successfully downloaded Context Table CSV file {context_table_name}.', {}, None
 
 
+def get_notable_assets(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+    """  Updates records of a context table.
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    limit: int = args.get('limit', 10)
+    time_period: str = args.get('time_period', '')
+    time_ = time_period.split(' ')
+    if not len(time_) == 2:
+        raise Exception('Got invalid time period. Enter the time period number and unit.')
+    num: str = time_[0]
+    unit: str = time_[1]
+    api_unit = unit[0]
+    if api_unit == 'm':
+        api_unit = api_unit.upper()
+
+    if api_unit not in {'d', 'y', 'M', 'h'}:
+        raise Exception('The time unit is incorrect - can be hours, days, months, years.')
+
+    notable_assets_raw_data = client.get_notable_assets_request(api_unit, num, limit)
+    notable_assets = notable_assets_raw_data.get('assets')
+
+    if not notable_assets:
+        return 'No users were found in this period of time.', {}, {}
+
+    contents: list = []
+    for asset in notable_assets:
+        asset_ = asset.get('asset', {})
+        highest_risk_sequence = asset.get('highestRiskSequence', {})
+        latest_asset_comment = asset.get('latestAssetComment', {})
+        contents = contents_append_notable_assets_info(contents, asset, asset_, highest_risk_sequence,
+                                                       latest_asset_comment)
+
+    entry_context = {'Exabeam.NotableAssets(val.ipAddress && val.ipAddress === obj.ipAddress)': contents}
+    human_readable = tableToMarkdown('Exabeam Notable Assets:', contents, removeNull=True)
+
+    return human_readable, entry_context, notable_assets
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1570,7 +1671,11 @@ def main():
         'exabeam-get-context-table-in-csv': get_context_table_csv,
         'exabeam-watchlist-add-items': add_watchlist_items,
         'exabeam-watchlist-asset-search': search_asset_in_watchlist,
-        'exabeam-watchlist-remove-items': remove_watchlist_items
+        'exabeam-watchlist-remove-items': remove_watchlist_items,
+        'exabeam-get-notable-assets': get_notable_assets,
+        'exabeam-get-notable-sequence-details': get_notable_sequence_details,
+        'exabeam-get-notable-session-details': get_notable_session_details,
+        'exabeam-get-sequence-eventtypes': get_notable_sequence_eventtypes
     }
 
     try:

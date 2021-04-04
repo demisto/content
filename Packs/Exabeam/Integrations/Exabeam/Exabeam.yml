@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Exabeam
+  id: Exabeam commands
   version: -1
 configuration:
 - display: Server URL (e.g https://100.24.16.156:8484)
@@ -23,8 +23,8 @@ configuration:
   type: 8
 description: The Exabeam Security Management Platform provides end-to-end detection,
   User Event Behavioral Analytics, and SOAR.
-display: Exabeam
-name: Exabeam
+display: Exabeam commands
+name: Exabeam commands
 script:
   commands:
   - arguments:
@@ -357,13 +357,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Start time of the time range. For example, 2018-08-01T11:50:16 or "30 days ago".
+      description: The Start time of the time range. For example, 2018-08-01T11:50:16
+        or "30 days ago".
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The end time of the time range. For example, 2018-08-01T11:50:16 or "1 week ago".
+      description: The end time of the time range. For example, 2018-08-01T11:50:16
+        or "1 week ago".
       isArray: false
       name: end_time
       required: false
@@ -1592,6 +1594,24 @@ script:
     - contextPath: Exabeam.ContextTableUpdate.record.value
       description: The raw data of the context table update.
       type: Unknown
+  - arguments:
+    - default: false
+      description: The maximum number of returned results.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      description: The time period for which to fetch notable users, such as 3 months,
+        2 days, 4 hours, 1 year, and so on.
+      isArray: true
+      name: time_period
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns notable assets.
+    execution: false
+    name: exabeam-get-notable-assets
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
