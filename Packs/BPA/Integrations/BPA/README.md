@@ -283,7 +283,7 @@ Submits a job to the BPA job queue. PAN-OS devices with large configuration file
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | generate_zip_bundle | Whether to download the Panorama report. Can be "true" or "false". Default is "false". | Optional | 
-
+| timeout | The timeout for the request. Default is 120. | Optional |
 
 #### Context Output
 
