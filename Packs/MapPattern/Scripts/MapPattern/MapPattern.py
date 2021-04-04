@@ -9,6 +9,7 @@ from CommonServerPython import *  # noqa: F401
 DEFAULT_ALGORITHM = 'literal'
 DEFAULT_PRIORITY = 'first_match'
 
+
 def make_regex(pattern: str, algorithm: str) -> str:
     """ Transform a pattern to a regex pattern.
 
