@@ -1,5 +1,5 @@
-!domain domain=down.mykings.pw
-!url url=https://down.mykings.pw
+!domain domain=example.com
+!url url=https://example.com
 !ip ip=1.1.1.1
 !file file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
 !vt-analysis-get id=u-20694f234fbac92b1dcc16f424aa1c85e9dd7af75b360745df6484dcae410853-1613980758
