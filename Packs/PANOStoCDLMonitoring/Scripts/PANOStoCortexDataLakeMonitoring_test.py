@@ -1,4 +1,4 @@
-from script-PANOStoCortexDataLakeMonitoring import check_instance, get_firewall_serials
+from PANOStoCortexDataLakeMonitoring import check_instance, get_firewall_serials
 import pytest
 import demistomock as demisto
 
@@ -34,8 +34,10 @@ def test_check_instance_pan_os_success():
     - Ensure the check_instance function runs successfully without exceptions
     """
     integration_name = 'pan_os_pano_8.1_8443'
-    with pytest.raises(Exception):
+    try:
         check_instance(ALL_INSTANCES, integration_name, '')
+    except Exception:
+        raise
 
 
 def test_check_instance_pan_os_failure():
@@ -68,8 +70,10 @@ def test_check_instance_cdl_success():
     - Ensure the check_instance function runs successfully without exceptions
     """
     integration_name = "Cortex Data Lake"
-    with pytest.raises(Exception):
+    try:
         check_instance(ALL_INSTANCES, integration_name, '')
+    except Exception:
+        raise
 
 
 def test_get_firewall_serials(mocker):
