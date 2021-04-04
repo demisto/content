@@ -1,10 +1,12 @@
 import json
 import io
+from copy import deepcopy
+
 import pytest
 from Packs.NetscoutArborPeakflow.Integrations.NetscoutArborSightline.NetscoutArborSightline import NetscoutClient, \
     fetch_incidents_command, list_alerts_command, alert_annotation_list_command, mitigation_list_command, \
     mitigation_template_list_command, router_list_command, tms_group_list_command, managed_object_list_command, \
-    mitigation_create_command
+    mitigation_create_command, clean_links, validate_json_arg
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
@@ -51,7 +53,7 @@ def test_fetch_incidents_command(mocker):
 
 
 @pytest.mark.parametrize(
-    'function_to_mock,function_to_test,args,http_response_key,expected_command_results_key', [
+    'function_to_mock, function_to_test, args, http_response_key, expected_command_results_key', [
         ('list_alerts', list_alerts_command, {}, 'incidents', 'get_incidents'),
         ('get_alert', list_alerts_command, {'alert_id': 1}, 'incident', 'get_incident'),
         ('get_annotations', alert_annotation_list_command, {'alert_id': '2009'}, 'annotations', 'list_annotations'),
@@ -104,8 +106,113 @@ def test_list_alerts_commands(mocker, function_to_mock, function_to_test, args, 
     mocker.patch.object(client, function_to_mock, return_value=mocked_http_response)
 
     # tms_group_list_command is the only command that does not get args
-    if function_to_test == tms_group_list_command:
+    if function_to_test in (tms_group_list_command, mitigation_template_list_command):
         command_result: CommandResults = function_to_test(client)
     else:
         command_result: CommandResults = function_to_test(client, args)
     assert command_result.outputs == expected_command_results
+
+
+@pytest.mark.parametrize('http_response_key, expected_number_of_pages', [
+    ('amount_of_incidents_vanilla_case', 25),
+    ('amount_of_incidents_one_result', 1),
+    ('amount_of_incidents_no_results', 0)
+])
+def test_calculate_amount_of_incidents(mocker, http_response_key, expected_number_of_pages):
+    """
+    Given:
+     - Case A: A "regular" query that returns response with 25 pages.
+     - Case B: A query that returns response with only one page.
+     - Case C: A query that response with no pages and data.
+
+    When:
+    Calculating the amount of relevant incidents by counting the amount of pages
+
+    Then:
+     - Case A: Assert the the amount of incidents calculated is 25
+     - Case B: Assert the the amount of incidents calculated is 1
+     - Case C: Assert the the amount of incidents calculated is 0
+
+    """
+    mocked_http_response = http_responses[http_response_key]
+
+    mocker.patch.object(client, 'list_alerts', return_value=mocked_http_response)
+    number_of_pages = client.calculate_amount_of_incidents('')
+    assert number_of_pages == expected_number_of_pages
+
+
+def test_calculate_amount_of_incidents_raise_error(mocker):
+    mocked_http_response = http_responses['amount_of_incidents_broken_last_page']
+
+    mocker.patch.object(client, 'list_alerts', return_value=mocked_http_response)
+
+    with pytest.raises(DemistoException,
+                       match='Could not calculate page size, last page number was not found:\nhttps://content.demisto.works:57585/api/sp/v7/alerts/?'):
+        client.calculate_amount_of_incidents('')
+
+
+@pytest.mark.parametrize('object_to_clean', [
+    ({}),
+    ({'some_key': 'some_value'}),
+    ({'some_key': 'some_value', 'links': {'self': 'some_link'}}),
+    ([{'some_key': 'some_value', 'links': {'self': 'some_link'}}]),
+    ({'some_key': {'links': {'self': 'some_link'}}}),
+    ({'some_key': [{'links': {'self': 'some_link'}}]}),
+    ({'some_key': [{'links': {'self': 'some_link'}}, {'links': {'self': 'some_other_link'}}]}),
+    ([{'some_key': [{'links': {'self': 'some_link'}}, {'links': {'self': 'some_other_link'}}]}]),
+])
+def test_clean_links(object_to_clean):
+    """
+    Given:
+     - Case A: An empty dict.
+     - Case B: A dict with no 'links' key in it.
+     - Case C: A dict with a 'links' key in it.
+     - Case D: A list containing a dict with a 'links' key in it.
+     - Case E: A dict containing another dict with a 'links' key in it.
+     - Case F: A dict containing a list containing another dict with a 'links' key in it.
+     - Case F: A dict containing a list containing additional dict with a 'links' key in them.
+     - Case F: A list containing a dict containing another list containing additional dict with a 'links' key in them.
+
+    When:
+    Running the clean_links function
+
+    Then:
+    No links key appear in transformed dict (checking by parsing the dict into a string)
+
+    """
+    copy_of_object = deepcopy(object_to_clean)
+    clean_links(copy_of_object)
+    str_result = json.dumps(copy_of_object)
+    assert str_result.find('link') == -1
+
+
+def test_validate_json_arg():
+    """
+    Given:
+    - A string representing a json object.
+
+    When:
+     - Validating a string has a dict structure
+
+    Then:
+     - Ensure no parsing error was returned.
+    """
+    validate_json_arg('{"some_key": "some_value"}', '')
+
+
+def test_validate_json_arg_raise_error():
+    """
+    Given:
+    - A string that has no json format.
+
+    When:
+     - Validating a string has a json structure.
+
+    Then:
+     - Ensure a parsing error was raised
+    """
+    with pytest.raises(DemistoException, match='The value given in the  argument is not a valid JSON format:\n'
+                                               '{"some_key" "some_value"}'):
+        validate_json_arg('{"some_key" "some_value"}', '')
+
+# def

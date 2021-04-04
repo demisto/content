@@ -92,7 +92,7 @@ class NetscoutClient(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    def _http_request(self, method, url_suffix=None, params=None, json_data=None):
+    def _http_request(self, method, url_suffix=None, params=None, json_data=None) -> requests.Response:
 
         return super()._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
                                      error_handler=self.error_handler)
@@ -122,7 +122,7 @@ class NetscoutClient(BaseClient):
                 if error_list:
                     error = f'{error}: \n' + '\n'.join(error_list)
 
-            if res.status_code in (500, 401):
+            elif res.status_code in (500, 401):
                 message = error_entry.get('errors', [])[0].get('message')
                 if message:
                     error = f'{error}\n{message}'
@@ -130,7 +130,7 @@ class NetscoutClient(BaseClient):
             raise DemistoException(error)
 
         except ValueError:
-            raise DemistoException(f'Could not parse response from Netscout Arbor server:\n{res.content}')
+            raise DemistoException(f'Could not parse error returned from Netscout Arbor Sightline server:\n{res.content}')
 
     def calculate_amount_of_incidents(self, start_time: str) -> int:
         """
@@ -162,7 +162,7 @@ class NetscoutClient(BaseClient):
         else:
             last_page_number = 0
 
-        return last_page_number
+        return int(last_page_number)
 
     def build_relationships(self, **kwargs) -> dict:
         """
@@ -537,7 +537,7 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
-def mitigation_template_list_command(client: NetscoutClient, args: dict):
+def mitigation_template_list_command(client: NetscoutClient):
     raw_result = client.mitigation_template_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]

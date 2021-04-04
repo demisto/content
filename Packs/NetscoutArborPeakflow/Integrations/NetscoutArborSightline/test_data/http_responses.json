@@ -1433,5 +1433,123 @@
             "sp_build_id": "KG4K",
             "sp_version": "9.3"
         }
+    },
+    "amount_of_incidents_vanilla_case": {
+        "data": [
+            {
+                "attributes": {
+                    "alert_class": "system",
+                    "alert_type": "device_system_error",
+                    "importance": 1,
+                    "ongoing": true,
+                    "start_time": "2021-04-04T05:41:15+00:00",
+                    "subobject": {
+                        "threshold": 70,
+                        "type": "memory_usage",
+                        "value": 71
+                    }
+                },
+                "id": "2468",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2468?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153"
+                },
+                "relationships": {
+                    "device": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    }
+                },
+                "type": "alert"
+            }
+        ],
+        "links": {
+            "first": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=1",
+            "last": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=25",
+            "next": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=2",
+            "self": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=1"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "amount_of_incidents_one_result": {
+        "data": [
+            {
+                "attributes": {
+                    "alert_class": "system",
+                    "alert_type": "device_system_error",
+                    "importance": 1,
+                    "ongoing": true,
+                    "start_time": "2021-04-04T05:41:15+00:00",
+                    "subobject": {
+                        "threshold": 70,
+                        "type": "memory_usage",
+                        "value": 71
+                    }
+                },
+                "id": "2468",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2468?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153"
+                },
+                "relationships": {
+                    "device": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    }
+                },
+                "type": "alert"
+            }
+        ],
+        "links": {
+            "first": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=1",
+            "last": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=1",
+            "self": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=1"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "amount_of_incidents_no_results": {
+    "data": [],
+    "links": {
+        "first": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-04T10%3A00%3A02%2B00%3A00&perPage=1&page=1",
+        "self": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-04T10%3A00%3A02%2B00%3A00&perPage=1&page=1"
+    },
+    "meta": {
+        "api": "SP",
+        "api_version": "7",
+        "sp_build_id": "KG4K",
+        "sp_version": "9.3"
     }
+},
+    "amount_of_incidents_broken_last_page": {
+    "data": [],
+    "links": {
+        "first": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-04T10%3A00%3A02%2B00%3A00&perPage=1&page=1",
+        "last": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-04T10%3A00%3A02%2B00%3A00",
+        "self": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-04T10%3A00%3A02%2B00%3A00&perPage=1&page=1"
+    },
+    "meta": {
+        "api": "SP",
+        "api_version": "7",
+        "sp_build_id": "KG4K",
+        "sp_version": "9.3"
+    }
+}
 }
