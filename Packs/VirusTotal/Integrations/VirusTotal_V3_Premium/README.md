@@ -322,7 +322,6 @@ Search for files.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.IntelligenceSearch.Query | String | Original query. Use to identify the search. | 
 | VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.harmless | Number | number of reports saying that is harmless. | 
 | VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.malicious | Number | number of reports saying that is malicious | 
 | VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.suspicious | Number | number of reports saying that is suspicious. | 

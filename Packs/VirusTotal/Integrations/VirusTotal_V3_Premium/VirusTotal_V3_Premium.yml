@@ -300,9 +300,6 @@ script:
       required: false
       secret: false
     outputs:
-    - contextPath: VirusTotal.IntelligenceSearch.Query
-      description: Original query. Use to identify the search.
-      type: String
     - contextPath: VirusTotal.IntelligenceSearch.attributes.last_analysis_stats.harmless
       description: number of reports saying that is harmless.
       type: Number
@@ -1783,4 +1780,4 @@ script:
 defaultmapperin: VirusTotal Intelligence LiveHunt Notification
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- VirusTotal Premium v3 TestPlaybook

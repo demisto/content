@@ -1,14 +1,15 @@
 id: Create Zip from VirusTotal
 version: -1
 name: Create Zip from VirusTotal
+description: Creates a zip from given hashes exists in VirusTotal
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5b898b60-6014-4089-89c6-9aab58a0cd91
+    taskid: b0fd9886-c2ae-404c-822b-6a9fab0493e0
     type: start
     task:
-      id: 5b898b60-6014-4089-89c6-9aab58a0cd91
+      id: b0fd9886-c2ae-404c-822b-6a9fab0493e0
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 377.5,
           "y": 50
         }
       }
@@ -32,30 +33,30 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 9bc668ca-6aff-43a4-804f-55a09a434ad9
+    taskid: ceefd824-6c7f-4980-88ad-f994a2a2609a
     type: regular
     task:
-      id: 9bc668ca-6aff-43a4-804f-55a09a434ad9
+      id: ceefd824-6c7f-4980-88ad-f994a2a2609a
       version: -1
       name: Create zip
       description: Creates a password-protected ZIP file containing files from VirusTotal.
-      script: VirusTotal - Premium - (API v3)|||vt-private-zip-create
+      script: VirusTotal - Premium (API v3)|||vt-private-zip-create
       type: regular
       iscommand: true
-      brand: VirusTotal - Premium - (API v3)
+      brand: VirusTotal - Premium (API v3)
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       file:
         complex:
-          root: inputs.password
+          root: inputs.hashes_to_zip
       password: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 377.5,
           "y": 195
         }
       }
@@ -66,17 +67,24 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 5497dbb5-7a28-4ef9-8202-452794524f93
+    taskid: 5f98844c-e9c0-4c36-889c-f2374438e65d
     type: playbook
     task:
-      id: 5497dbb5-7a28-4ef9-8202-452794524f93
+      id: 5f98844c-e9c0-4c36-889c-f2374438e65d
       version: -1
       name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -90,7 +98,7 @@ tasks:
       Interval:
         simple: "1"
       PollingCommandArgName:
-        simple: ids
+        simple: zip_id
       PollingCommandName:
         simple: vt-private-zip-get
       Timeout:
@@ -106,7 +114,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 377.5,
           "y": 370
         }
       }
@@ -117,17 +125,17 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 6f5ee822-50ed-4cd9-8261-0f401bf6d889
+    taskid: 1b5f5e7b-1f99-465b-8deb-61aa6545692f
     type: regular
     task:
-      id: 6f5ee822-50ed-4cd9-8261-0f401bf6d889
+      id: 1b5f5e7b-1f99-465b-8deb-61aa6545692f
       version: -1
       name: Get zip details
       description: Retrieve information about a ZIP file.
-      script: VirusTotal - Premium - (API v3)|||vt-private-zip-get
+      script: VirusTotal - Premium (API v3)|||vt-private-zip-get
       type: regular
       iscommand: true
-      brand: VirusTotal - Premium - (API v3)
+      brand: VirusTotal - Premium (API v3)
     nexttasks:
       '#none#':
       - "5"
@@ -140,7 +148,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 377.5,
           "y": 545
         }
       }
@@ -151,13 +159,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: f3ab25bb-042e-46d3-8b01-f427b3eab581
+    taskid: e60ec0a8-82d6-46f4-835e-274c6505cb20
     type: condition
     task:
-      id: f3ab25bb-042e-46d3-8b01-f427b3eab581
+      id: e60ec0a8-82d6-46f4-835e-274c6505cb20
       version: -1
       name: Check the zip is finished
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -182,7 +191,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 377.5,
           "y": 720
         }
       }
@@ -193,20 +202,20 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: ded38b91-8590-400e-8ddf-abd3ca74c53a
+    taskid: ab0d6a9c-50e3-41f8-832d-90847e07afc8
     type: condition
     task:
-      id: ded38b91-8590-400e-8ddf-abd3ca74c53a
+      description: ""
+      id: ab0d6a9c-50e3-41f8-832d-90847e07afc8
       version: -1
       name: Should download the file?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "7"
       "yes":
       - "8"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -220,33 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 162.5,
           "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: fd71f4f1-6b6a-4d95-8955-835edd9dab7c
-    type: title
-    task:
-      id: fd71f4f1-6b6a-4d95-8955-835edd9dab7c
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1085
         }
       }
     note: false
@@ -256,30 +240,30 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: de68ad47-373e-4101-8a23-3603dcfd4063
+    taskid: 92c86cb4-211a-47bb-8a74-7cf449885979
     type: regular
     task:
-      id: de68ad47-373e-4101-8a23-3603dcfd4063
+      id: 92c86cb4-211a-47bb-8a74-7cf449885979
       version: -1
       name: Download File
-      description: Creates a password-protected ZIP file containing files from VirusTotal.
-      script: VirusTotal - Premium - (API v3)|||vt-private-zip-create
+      description: Download a ZIP file.
+      script: VirusTotal - Premium (API v3)|||vt-private-zip-download
       type: regular
       iscommand: true
-      brand: VirusTotal - Premium - (API v3)
+      brand: VirusTotal - Premium (API v3)
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
-      file:
+      zip_id:
         complex:
-          root: inputs.hashes_to_zip
-      password: {}
+          root: VirusTotal.Zip
+          accessor: id
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1070
         }
       }
@@ -290,10 +274,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 1173c397-7cd0-41f2-8921-ddb5daa49197
+    taskid: 4c357c3e-8bce-45f9-8045-0958166111f8
     type: title
     task:
-      id: 1173c397-7cd0-41f2-8921-ddb5daa49197
+      id: 4c357c3e-8bce-45f9-8045-0958166111f8
       version: -1
       name: Done
       type: title
@@ -304,7 +288,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 162.5,
           "y": 1245
         }
       }
@@ -315,10 +299,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: e8f569c1-26ec-4793-8207-79b6958d17df
+    taskid: 19201f2f-eb68-4720-8791-103df36d5eab
     type: regular
     task:
-      id: e8f569c1-26ec-4793-8207-79b6958d17df
+      id: 19201f2f-eb68-4720-8791-103df36d5eab
       version: -1
       name: Raise error
       description: Prints an error entry with a given message
@@ -333,7 +317,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 592.5,
           "y": 895
         }
       }
@@ -348,7 +332,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1260,
-        "width": 1025,
+        "width": 922.5,
         "x": 50,
         "y": 50
       }
@@ -369,8 +353,39 @@ inputs:
   required: false
   description: Should I download the zip after creation?
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: VirusTotal.Zip.id
+  description: ID of the zip
+- contextPath: VirusTotal.Zip.attributes.files_ok
+  description: The number of files resulted in success zipped.
+- contextPath: VirusTotal.Zip.attributes.progress
+  description: Progress of the zipping command in percentage.
+- contextPath: VirusTotal.Zip.attributes.status
+  description: The status of the zip process. "finished" is the state when finished.
+- contextPath: VirusTotal.Zip.attributes.files_error
+  description: The number of files resulted in error
+- contextPath: File.Name
+  description: The full file name (including the file extension).
+- contextPath: File.EntryID
+  description: The ID for locating the file in the War Room.
+- contextPath: File.Size
+  description: The size of the file in bytes.
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+- contextPath: File.Extension
+  description: 'The file extension. For example: "xls".'
+- contextPath: File.Type
+  description: The file type, as determined by libmagic (same as displayed in file
+    entries).
+fromversion: "5.5.0"
 tests:
 - VirusTotal Premium v3 TestPlaybook
-fromversion: 5.5.0
-description: Creates a zip from given hashes exists in VirusTotal
+- virusTotal-test-playbook
+- virusTotaI-test-preferred-vendors
+- vt-detonate test

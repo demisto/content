@@ -641,7 +641,6 @@ def search_intelligence(client: Client, args: dict) -> CommandResults:
     if not arg_to_boolean_can_be_none(args.get('extended_data')):
         raw_response['data'] = decrease_data_size(raw_response.get('data', []))
     data = raw_response['data']
-
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.IntelligenceSearch',
         'id',

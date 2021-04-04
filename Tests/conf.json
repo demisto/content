@@ -3233,7 +3233,9 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "VirusTotal Premium v3 TestPlaybook"
+            "integrations": "VirusTotal - Premium (API v3)",
+            "playbookID": "VirusTotal Premium v3 TestPlaybook",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {

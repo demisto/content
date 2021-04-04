@@ -1,995 +1,1170 @@
 id: VirusTotal Premium v3 TestPlaybook
-name: VirusTotal Premium v3 TestPlaybook
 version: -1
-fromversion: 4.5.0
-starttaskid: '0'
+name: VirusTotal Premium v3 TestPlaybook
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
+  "0":
+    id: "0"
+    taskid: 09649848-ccb7-4d5b-8c5a-505b14a15cd7
     type: start
     task:
-      id: '0'
+      id: 09649848-ccb7-4d5b-8c5a-505b14a15cd7
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
+      - "44"
+      - "10"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 50}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 17022741-d1db-4de1-8d25-77676241b251
     type: regular
     task:
-      id: '1'
+      id: 17022741-d1db-4de1-8d25-77676241b251
       version: -1
       name: DeleteContext
-      description: ''
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
+    quietmode: 0
+    isoversize: false
+  "2":
+    id: "2"
+    taskid: b2410c01-532f-4942-8238-0c6920858805
     type: regular
     task:
-      id: '2'
+      id: b2410c01-532f-4942-8238-0c6920858805
       version: -1
       name: vt-private-download-file
-      description: ''
       script: '|||vt-private-download-file'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
-    scriptarguments: {}
+      - "46"
+    scriptarguments:
+      hash:
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
-    type: condition
-    task:
-      id: '3'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '4'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '4':
-    id: 4
-    taskid: '4'
+    quietmode: 0
+    isoversize: false
+  "10":
+    id: "10"
+    taskid: 2dcb5e05-3431-45ca-825f-4681315e6ebe
     type: regular
     task:
-      id: '4'
-      version: -1
-      name: vt-private-zip-create
-      description: ''
-      script: '|||vt-private-zip-create'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '5'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '5':
-    id: '5'
-    taskid: '5'
-    type: condition
-    task:
-      id: '5'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '6'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 1000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '6':
-    id: 6
-    taskid: '6'
-    type: regular
-    task:
-      id: '6'
-      version: -1
-      name: vt-private-zip-get
-      description: ''
-      script: '|||vt-private-zip-get'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '7'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 1200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '7':
-    id: '7'
-    taskid: '7'
-    type: condition
-    task:
-      id: '7'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '8'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 1400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '8':
-    id: 8
-    taskid: '8'
-    type: regular
-    task:
-      id: '8'
-      version: -1
-      name: vt-private-zip-download
-      description: ''
-      script: '|||vt-private-zip-download'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '9'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 1600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '9':
-    id: '9'
-    taskid: '9'
-    type: condition
-    task:
-      id: '9'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '10'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 1800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '10':
-    id: 10
-    taskid: '10'
-    type: regular
-    task:
-      id: '10'
+      id: 2dcb5e05-3431-45ca-825f-4681315e6ebe
       version: -1
       name: vt-private-file-sandbox-pcap
-      description: ''
       script: '|||vt-private-file-sandbox-pcap'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
-    scriptarguments: {}
+      - "46"
+    scriptarguments:
+      report_id:
+        simple: 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3_VirusTotal
+          Jujubox
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2000}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '11':
-    id: '11'
-    taskid: '11'
-    type: condition
-    task:
-      id: '11'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '12'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 2200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '12':
-    id: 12
-    taskid: '12'
+    quietmode: 0
+    isoversize: false
+  "12":
+    id: "12"
+    taskid: a3d0f1ac-d7c4-46a3-8f1d-50ae9b34f929
     type: regular
     task:
-      id: '12'
+      id: a3d0f1ac-d7c4-46a3-8f1d-50ae9b34f929
       version: -1
       name: vt-private-intelligence-search
-      description: ''
       script: '|||vt-private-intelligence-search'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '13'
-    scriptarguments: {}
+      - "13"
+    scriptarguments:
+      cursor: {}
+      descriptors_only: {}
+      extended_data: {}
+      limit: {}
+      order: {}
+      query:
+        simple: 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '13':
-    id: '13'
-    taskid: '13'
+    quietmode: 0
+    isoversize: false
+  "13":
+    id: "13"
+    taskid: 1d2208d5-2f0e-4ca8-88cc-8c4f51b89446
     type: condition
     task:
-      id: '13'
+      id: 1d2208d5-2f0e-4ca8-88cc-8c4f51b89446
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '14'
+      "yes":
+      - "50"
     separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 2600}}'
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.IntelligenceSearch.links
+                accessor: self
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '14':
-    id: 14
-    taskid: '14'
+    quietmode: 0
+    isoversize: false
+  "14":
+    id: "14"
+    taskid: 2e4bf569-3f97-4ec6-8fa5-12f89623e769
     type: regular
     task:
-      id: '14'
+      id: 2e4bf569-3f97-4ec6-8fa5-12f89623e769
       version: -1
       name: vt-private-search-file
-      description: ''
       script: '|||vt-private-search-file'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
-    scriptarguments: {}
+      - "51"
+    scriptarguments:
+      fullResponse: {}
+      query:
+        simple: type:peexe size:90kb+ positives:5+ behaviour:'taskkill'
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2800}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1915
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '15':
-    id: '15'
-    taskid: '15'
-    type: condition
-    task:
-      id: '15'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '16'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 3000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '16':
-    id: 16
-    taskid: '16'
+    quietmode: 0
+    isoversize: false
+  "16":
+    id: "16"
+    taskid: a10dc816-b524-4fe7-8369-fae6b19d08b4
     type: regular
     task:
-      id: '16'
+      id: a10dc816-b524-4fe7-8369-fae6b19d08b4
       version: -1
       name: vt-private-livehunt-rules-get-by-id
-      description: ''
       script: '|||vt-private-livehunt-rules-get-by-id'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '17'
-    scriptarguments: {}
+      - "17"
+    scriptarguments:
+      id:
+        complex:
+          root: VirusTotal.LiveHuntRule
+          accessor: id
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 3200}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '17':
-    id: '17'
-    taskid: '17'
+    quietmode: 0
+    isoversize: false
+  "17":
+    id: "17"
+    taskid: 36a53fdb-1fbc-46ed-813d-dd90b400eb5c
     type: condition
     task:
-      id: '17'
+      id: 36a53fdb-1fbc-46ed-813d-dd90b400eb5c
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '18'
+      "yes":
+      - "31"
     separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 3400}}'
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.LiveHuntRule
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1215
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '18':
-    id: 18
-    taskid: '18'
+    quietmode: 0
+    isoversize: false
+  "18":
+    id: "18"
+    taskid: 9922fa59-04f0-4fb1-8020-f1bf2d614c68
     type: regular
     task:
-      id: '18'
+      id: 9922fa59-04f0-4fb1-8020-f1bf2d614c68
       version: -1
       name: vt-private-livehunt-rules-list
-      description: ''
       script: '|||vt-private-livehunt-rules-list'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
-    scriptarguments: {}
+      - "16"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 3600}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 865
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '19':
-    id: '19'
-    taskid: '19'
-    type: condition
-    task:
-      id: '19'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '20'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 3800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '20':
-    id: 20
-    taskid: '20'
+    quietmode: 0
+    isoversize: false
+  "20":
+    id: "20"
+    taskid: 6c10edc5-ba4c-4f0c-864f-d54969d54268
     type: regular
     task:
-      id: '20'
+      id: 6c10edc5-ba4c-4f0c-864f-d54969d54268
       version: -1
       name: vt-private-livehunt-rules-create
-      description: ''
       script: '|||vt-private-livehunt-rules-create'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '21'
-    scriptarguments: {}
+      - "22"
+    scriptarguments:
+      enabled: {}
+      limit: {}
+      name:
+        simple: A name of the YARA rule
+      notification_emails: {}
+      yara_rule:
+        simple: 'rule foobar { strings: $ = "foobar" condition: all of them }'
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 4000}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1740
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '21':
-    id: '21'
-    taskid: '21'
-    type: condition
-    task:
-      id: '21'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '22'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 4200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '22':
-    id: 22
-    taskid: '22'
+    quietmode: 0
+    isoversize: false
+  "22":
+    id: "22"
+    taskid: 3a24cc53-4805-455f-899b-16d3e4da8e5c
     type: regular
     task:
-      id: '22'
+      id: 3a24cc53-4805-455f-899b-16d3e4da8e5c
       version: -1
       name: vt-private-livehunt-rules-update
-      description: ''
       script: '|||vt-private-livehunt-rules-update'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '23'
-    scriptarguments: {}
+      - "24"
+    scriptarguments:
+      enabled: {}
+      id:
+        complex:
+          root: VirusTotal.LiveHuntRule
+          accessor: id
+      limit:
+        simple: "100"
+      notification_emails: {}
+      yara_rule: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 4400}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1915
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '23':
-    id: '23'
-    taskid: '23'
-    type: condition
-    task:
-      id: '23'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '24'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 4600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '24':
-    id: 24
-    taskid: '24'
+    quietmode: 0
+    isoversize: false
+  "24":
+    id: "24"
+    taskid: c47db6fd-402b-4792-832d-6256930508f6
     type: regular
     task:
-      id: '24'
+      id: c47db6fd-402b-4792-832d-6256930508f6
       version: -1
       name: vt-private-livehunt-rules-delete
-      description: ''
       script: '|||vt-private-livehunt-rules-delete'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '25'
-    scriptarguments: {}
+      - "50"
+    scriptarguments:
+      id:
+        complex:
+          root: VirusTotal.LiveHuntRule
+          accessor: id
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 4800}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2090
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '25':
-    id: 25
-    taskid: '25'
+    quietmode: 0
+    isoversize: false
+  "25":
+    id: "25"
+    taskid: 922ff523-cd57-4fbb-8e88-34b4f4decf5e
     type: regular
     task:
-      id: '25'
+      id: 922ff523-cd57-4fbb-8e88-34b4f4decf5e
       version: -1
       name: vt-private-livehunt-notifications-list
-      description: ''
       script: '|||vt-private-livehunt-notifications-list'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '26'
-    scriptarguments: {}
+      - "43"
+    scriptarguments:
+      cursor: {}
+      from_time: {}
+      limit:
+        simple: "1"
+      tag: {}
+      to_time: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 5000}}'
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 3460
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '26':
-    id: '26'
-    taskid: '26'
-    type: condition
-    task:
-      id: '26'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '27'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 5200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '27':
-    id: 27
-    taskid: '27'
+    quietmode: 0
+    isoversize: false
+  "27":
+    id: "27"
+    taskid: 0d66dd2b-648c-4909-818e-e660896fabc8
     type: regular
     task:
-      id: '27'
+      id: 0d66dd2b-648c-4909-818e-e660896fabc8
       version: -1
       name: vt-private-livehunt-notifications-files-list
-      description: ''
       script: '|||vt-private-livehunt-notifications-files-list'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '28'
-    scriptarguments: {}
+      - "29"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 5400}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2935
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '28':
-    id: '28'
-    taskid: '28'
-    type: condition
-    task:
-      id: '28'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '29'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 5600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '29':
-    id: 29
-    taskid: '29'
+    quietmode: 0
+    isoversize: false
+  "29":
+    id: "29"
+    taskid: c881cf7e-effa-4321-8afb-76ecfae52cc2
     type: regular
     task:
-      id: '29'
+      id: c881cf7e-effa-4321-8afb-76ecfae52cc2
       version: -1
       name: vt-private-livehunt-notifications-files-get-by-hash
-      description: ''
       script: '|||vt-private-livehunt-notifications-files-get-by-hash'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '30'
-    scriptarguments: {}
+      - "54"
+    scriptarguments:
+      cursor: {}
+      hash:
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 5800}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3110
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '30':
-    id: '30'
-    taskid: '30'
-    type: condition
-    task:
-      id: '30'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '31'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 6000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '31':
-    id: 31
-    taskid: '31'
+    quietmode: 0
+    isoversize: false
+  "31":
+    id: "31"
+    taskid: 5e906b73-db9c-4ef2-8193-ba6e7a39329a
     type: regular
     task:
-      id: '31'
+      id: 5e906b73-db9c-4ef2-8193-ba6e7a39329a
       version: -1
       name: vt-private-livehunt-rule-list-files
-      description: ''
       script: '|||vt-private-livehunt-rule-list-files'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '32'
-    scriptarguments: {}
+      - "47"
+    scriptarguments:
+      cursor: {}
+      id:
+        complex:
+          root: VirusTotal.LiveHuntRule
+          accessor: id
+      limit: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 6200}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1390
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '32':
-    id: '32'
-    taskid: '32'
-    type: condition
-    task:
-      id: '32'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '33'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 6400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '33':
-    id: 33
-    taskid: '33'
+    quietmode: 0
+    isoversize: false
+  "33":
+    id: "33"
+    taskid: c9948d40-460d-4c4f-8f06-c7d8859dce6a
     type: regular
     task:
-      id: '33'
+      id: c9948d40-460d-4c4f-8f06-c7d8859dce6a
       version: -1
       name: vt-private-retrohunt-jobs-list
-      description: ''
       script: '|||vt-private-retrohunt-jobs-list'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
-    scriptarguments: {}
+      - "35"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 6600}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2585
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '34':
-    id: '34'
-    taskid: '34'
-    type: condition
-    task:
-      id: '34'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '35'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 6800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '35':
-    id: 35
-    taskid: '35'
+    quietmode: 0
+    isoversize: false
+  "35":
+    id: "35"
+    taskid: a541b0c5-e310-40c2-8e52-3309e8f8c29c
     type: regular
     task:
-      id: '35'
+      id: a541b0c5-e310-40c2-8e52-3309e8f8c29c
       version: -1
       name: vt-private-retrohunt-jobs-get-by-id
-      description: ''
       script: '|||vt-private-retrohunt-jobs-get-by-id'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '36'
-    scriptarguments: {}
+      - "37"
+    scriptarguments:
+      id:
+        complex:
+          root: VirusTotal.RetroHuntJob
+          accessor: id
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 7000}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2760
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '36':
-    id: '36'
-    taskid: '36'
-    type: condition
-    task:
-      id: '36'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '37'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 7200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '37':
-    id: 37
-    taskid: '37'
+    quietmode: 0
+    isoversize: false
+  "37":
+    id: "37"
+    taskid: 56802d2b-b939-4ace-8d15-34c3c07f21fc
     type: regular
     task:
-      id: '37'
+      id: 56802d2b-b939-4ace-8d15-34c3c07f21fc
       version: -1
       name: vt-private-retrohunt-jobs-get-matching-files
-      description: ''
       script: '|||vt-private-retrohunt-jobs-get-matching-files'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '38'
-    scriptarguments: {}
+      - "39"
+    scriptarguments:
+      extended_data: {}
+      id:
+        complex:
+          root: VirusTotal.RetroHuntJob
+          accessor: id
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 7400}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2935
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '38':
-    id: '38'
-    taskid: '38'
-    type: condition
-    task:
-      id: '38'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '39'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 7600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '39':
-    id: 39
-    taskid: '39'
+    quietmode: 0
+    isoversize: false
+  "39":
+    id: "39"
+    taskid: a24214e9-9cf8-4d99-80fc-da8a47b4ac04
     type: regular
     task:
-      id: '39'
+      id: a24214e9-9cf8-4d99-80fc-da8a47b4ac04
       version: -1
       name: vt-private-retrohunt-jobs-create
-      description: ''
       script: '|||vt-private-retrohunt-jobs-create'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '40'
-    scriptarguments: {}
+      - "54"
+    scriptarguments:
+      corpus:
+        simple: goodware
+      end_time: {}
+      notification_email: {}
+      rules:
+        simple: 'rule foobar { strings: $ = "foobar" condition: all of them }'
+      start_time:
+        simple: 2 hours
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 7800}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3110
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '40':
-    id: '40'
-    taskid: '40'
-    type: condition
-    task:
-      id: '40'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '41'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 8000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '41':
-    id: 41
-    taskid: '41'
+    quietmode: 0
+    isoversize: false
+  "41":
+    id: "41"
+    taskid: 43f39353-c4f7-4991-8480-82ed7d0ac762
     type: regular
     task:
-      id: '41'
+      id: 43f39353-c4f7-4991-8480-82ed7d0ac762
       version: -1
       name: vt-private-quota-limits-list
-      description: ''
       script: '|||vt-private-quota-limits-list'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
-    scriptarguments: {}
+      - "43"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 8200}}'
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3460
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '42':
-    id: '42'
-    taskid: '42'
-    type: condition
-    task:
-      id: '42'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '43'
-    separatecontext: false
-    conditions: []
-    view: '{"position": {"x": 50, "y": 8400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '43':
-    id: '43'
-    taskid: '43'
+    quietmode: 0
+    isoversize: false
+  "43":
+    id: "43"
+    taskid: 4e42bb34-a1d4-4aab-8df4-00207f0dbd10
     type: title
     task:
-      id: '43'
+      id: 4e42bb34-a1d4-4aab-8df4-00207f0dbd10
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 8600}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3635
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
-  380, "x": 50, "y": 50}}}'
+    quietmode: 0
+    isoversize: false
+  "44":
+    id: "44"
+    taskid: 0a1640f0-54b8-4582-8724-ebe898f613a1
+    type: playbook
+    task:
+      id: 0a1640f0-54b8-4582-8724-ebe898f613a1
+      version: -1
+      name: Create Zip from VirusTotal
+      playbookName: Create Zip from VirusTotal
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      download_zip:
+        simple: "true"
+      hashes_to_zip:
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "45":
+    id: "45"
+    taskid: bc04884e-951b-47b5-81c6-5ef8f795f6bb
+    type: condition
+    task:
+      id: bc04884e-951b-47b5-81c6-5ef8f795f6bb
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.Zip
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "46":
+    id: "46"
+    taskid: f475edb6-587b-49e4-8588-350c74a299df
+    type: regular
+    task:
+      id: f475edb6-587b-49e4-8588-350c74a299df
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+      - "49"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "47":
+    id: "47"
+    taskid: 371c6e52-768a-4329-8fc4-7a62af6f8ca2
+    type: regular
+    task:
+      id: 371c6e52-768a-4329-8fc4-7a62af6f8ca2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: VirusTotal.LiveHuntRule
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "48":
+    id: "48"
+    taskid: d9e9fc24-30e6-46a1-8b8a-209b97bf8bb4
+    type: title
+    task:
+      id: d9e9fc24-30e6-46a1-8b8a-209b97bf8bb4
+      version: -1
+      name: |
+        Search Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "49":
+    id: "49"
+    taskid: 4e048c37-f8f4-4b59-85aa-0f25b8239da8
+    type: title
+    task:
+      id: 4e048c37-f8f4-4b59-85aa-0f25b8239da8
+      version: -1
+      name: YARA rules
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "50":
+    id: "50"
+    taskid: 7af2a897-18e4-4f4d-85d7-e65991a8280b
+    type: regular
+    task:
+      id: 7af2a897-18e4-4f4d-85d7-e65991a8280b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+      - "53"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "51":
+    id: "51"
+    taskid: 6ee3329d-8dfe-4889-8d9f-cbd95a26dcc2
+    type: condition
+    task:
+      id: 6ee3329d-8dfe-4889-8d9f-cbd95a26dcc2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: VirusTotal.SearchFile
+                accessor: SearchResult
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "52":
+    id: "52"
+    taskid: d8f51c2c-afcf-40fe-8368-502c917b2f64
+    type: title
+    task:
+      id: d8f51c2c-afcf-40fe-8368-502c917b2f64
+      version: -1
+      name: Livehunt Notifications
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "53":
+    id: "53"
+    taskid: b8d50d91-5aac-42cd-8ce0-f63c27af1692
+    type: title
+    task:
+      id: b8d50d91-5aac-42cd-8ce0-f63c27af1692
+      version: -1
+      name: Retrojob
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "54":
+    id: "54"
+    taskid: 5ee5ed25-4870-4be2-865b-f9879ac08b74
+    type: regular
+    task:
+      id: 5ee5ed25-4870-4be2-865b-f9879ac08b74
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3650,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
+fromversion: "5.5.0"
