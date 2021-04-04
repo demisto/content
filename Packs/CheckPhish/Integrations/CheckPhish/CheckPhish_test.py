@@ -18,6 +18,7 @@ def test_reliability_in_get_result_checkphish(requests_mock, mocker):
     requests_mock.post('https://developers.checkphish.ai/api/neo/scan/status', json=RESULTS)
 
     mocker.patch.object(demisto, 'results')
+    CheckPhish.unite_dispositions('adult', 'cryptojacking', 'drug_spam')
     CheckPhish.get_result_checkphish('jobid1234', 'apikey', 'https://developers.checkphish.ai/api/neo/scan', False,
                                      DBotScoreReliability.B)
 
