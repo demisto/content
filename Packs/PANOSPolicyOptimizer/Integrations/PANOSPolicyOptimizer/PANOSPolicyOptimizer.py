@@ -127,7 +127,7 @@ class Client:
 
         return json.loads(response.text)
 
-    def policy_optimizer_get_rules_command(self, timeframe, usage, exclude) -> dict:
+    def policy_optimizer_get_rules_command(self, timeframe, usage: bool, exclude: bool) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -193,7 +193,7 @@ class Client:
 
         return json.loads(response.text)
 
-    def policy_optimizer_get_dag(self, dag) -> dict:
+    def policy_optimizer_get_dag(self, dag: str) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {"action": "PanDirect", "method": "execute",
                     "data": [self.token_generator(), "AddressGroup.showDynamicAddressGroup", {
@@ -268,7 +268,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict):
     Gets the unused rules Statistics as seen from the User Interface
     """
     timeframe = args.get('timeframe')
-    usage = args.get('usage')
+    usage = argToBoolean(args.get('usage'))
     exclude = argToBoolean(args.get('exclude'))
     stats = client.policy_optimizer_get_rules(timeframe, usage, exclude)
     demisto.info(json.dumps(stats, indent=2))
