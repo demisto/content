@@ -1722,11 +1722,12 @@ def endpoint_command(client, args):
         page_number=0,
         limit=30,
     )
+    endpoint_context_standart = return_endpoint_standard_context(endpoints)
     endpoint_context = {
-        Common.Endpoint.CONTEXT_PATH: return_endpoint_standard_context(endpoints)
+        Common.Endpoint.CONTEXT_PATH: endpoint_context_standart
     }
     return (
-        tableToMarkdown('Endpoints', endpoints),
+        tableToMarkdown('Endpoints', endpoint_context_standart),
         endpoint_context,
         endpoints
     )
