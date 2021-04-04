@@ -629,10 +629,11 @@ def get_incidents_list(client: Client, modification_date_start: str = None, modi
     return incidents
 
 
-def incidents_to_command_results(incidents: List[Dict[str, Any]]) -> CommandResults:
+def incidents_to_command_results(client: Client, incidents: List[Dict[str, Any]]) -> CommandResults:
     """Receive incidents from api and convert to CommandResults.
 
     Args:
+        client: The client from which to take the base_url for clickable links.
         incidents: The raw incidents list from the API
 
     Return CommandResults of Incidents.
@@ -640,7 +641,8 @@ def incidents_to_command_results(incidents: List[Dict[str, Any]]) -> CommandResu
     if len(incidents) == 0:
         return CommandResults(readable_output='No incidents found')
 
-    headers = ['Id', 'Number', 'Request', 'Line', 'Actions', 'CallerName', 'Status', 'Operator', 'Priority']
+    headers = ['Id', 'Number', 'Request', 'Line', 'Actions', 'CallerName', 'Status', 'Operator', 'Priority',
+               'LinkToTOPdesk']
 
     readable_incidents = []
     for incident in incidents:
@@ -653,9 +655,10 @@ def incidents_to_command_results(incidents: List[Dict[str, Any]]) -> CommandResu
             'Status':
                 incident.get('processingStatus', {}).get('name', None) if incident.get('processingStatus') else None,
             'Operator': incident.get('operator', {}).get('name', None) if incident.get('operator') else None,
-            'Priority': incident.get('priority', None)
+            'Priority': incident.get('priority', None),
+            'LinkToTOPdesk': f"[Open Incident in TOPdesk]({client._base_url.split('/api')[0]}"
+                             f"/public/ssp/content/detail/incident?unid={incident.get('id', None)})"
         }
-
         readable_incidents.append(readable_incident)
 
     readable_output = tableToMarkdown(f'{INTEGRATION_NAME} incidents', readable_incidents,
@@ -671,10 +674,11 @@ def incidents_to_command_results(incidents: List[Dict[str, Any]]) -> CommandResu
     )
 
 
-def incident_func_command(args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
+def incident_func_command(client: Client, args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
     """Abstract class for executing client_func and returning TOPdesk incident as a result.
 
     Args:
+        client: The client from which to take the base_url for clickable links.
         args: the arguments to send to the client_func.
         client_func: The client function to be called to execute the command.
         action: Readable string of the command to indicate the errors better.
@@ -686,7 +690,7 @@ def incident_func_command(args: Dict[str, Any], client_func: Callable, action: s
     if not response.get('id', None):
         raise Exception(f"Recieved Error when {action} incident in TOPdesk:\n{response}")
 
-    return incidents_to_command_results([response])
+    return incidents_to_command_results(client, [response])
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1017,7 +1021,7 @@ def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> Union[Co
     """
 
     try:
-        command_results = incidents_to_command_results(get_incidents_list(client=client, args=args))
+        command_results = incidents_to_command_results(client, get_incidents_list(client=client, args=args))
         return command_results
     except Exception as e:
         if 'Error parsing query' in str(e):
@@ -1026,13 +1030,14 @@ def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> Union[Co
             raise e
 
 
-def incident_touch_command(args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
+def incident_touch_command(client: Client, args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
     """This function implements incident_create and incident_update commands.
 
     Try setting caller as a reqistered caller. If caller is not registered, set the caller argument as caller name.
     A registered caller is one that has a TOPdesk account that can be linked to the call.
 
     Args:
+        client: The client from which to take the base_url for clickable links.
         args: The arguments of the command.
         client_func: The client function to be called.
         action: Readable string for better errors (e.g. 'update')
@@ -1042,13 +1047,15 @@ def incident_touch_command(args: Dict[str, Any], client_func: Callable, action: 
 
     try:
         args['registered_caller'] = True  # Try to link a caller id to the incident.
-        return incident_func_command(args=args,
+        return incident_func_command(client=client,
+                                     args=args,
                                      client_func=client_func,
                                      action=action)
     except Exception as e:
         if "'callerLookup.id' cannot be parsed" in str(e):  # If couldn't find a caller with the provided id.
             args['registered_caller'] = False  # Create incident with an unregistered caller name.
-            return incident_func_command(args=args,
+            return incident_func_command(client=client,
+                                         args=args,
                                          client_func=client_func,
                                          action=action)
         else:
@@ -1066,7 +1073,8 @@ def incident_do_command(client: Client, args: Dict[str, Any], action: str) -> Co
     Return the incident as CommandResult.
     """
 
-    return incidents_to_command_results([client.incident_do(action=action,
+    return incidents_to_command_results(client,
+                                        [client.incident_do(action=action,
                                                             incident_id=args.get("id", None),
                                                             incident_number=args.get("number", None),
                                                             reason_id=args.get(f"{action}_reason_id", None))])
@@ -1252,11 +1260,13 @@ def main() -> None:
             return_results(list_attachments_command(client, demisto.args()))
 
         elif demisto.command() == 'topdesk-incident-create':
-            return_results(incident_touch_command(args=demisto.args(),
+            return_results(incident_touch_command(client=client,
+                                                  args=demisto.args(),
                                                   client_func=client.create_incident,
                                                   action="creating"))
         elif demisto.command() == 'topdesk-incident-update':
-            return_results(incident_touch_command(args=demisto.args(),
+            return_results(incident_touch_command(client=client,
+                                                  args=demisto.args(),
                                                   client_func=client.update_incident,
                                                   action="updating"))
 

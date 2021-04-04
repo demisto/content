@@ -533,7 +533,8 @@ def test_caller_lookup_incident_touch_commands(client,
 
     request_command(command_api_url, json=response_incident)
 
-    command_results = incident_touch_command(args=command_args,
+    command_results = incident_touch_command(client=client,
+                                             args=command_args,
                                              client_func=client_func,
                                              action=action)
     assert requests_mock.call_count == 2
@@ -597,7 +598,8 @@ def test_non_registered_caller_incident_touch_commands(client,
 
     request_command(command_api_url, json=callback_func)
 
-    command_results = incident_touch_command(args=command_args,
+    command_results = incident_touch_command(client=client,
+                                             args=command_args,
                                              client_func=client_func,
                                              action=action)
     assert requests_mock.call_count == 3
