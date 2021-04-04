@@ -493,16 +493,17 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
 def create_mwg_out_format(iocs: list, mwg_type: str) -> dict:
     formatted_indicators = []  # type:List
     for indicator in iocs:
-        if indicator.get('value'):
-            value = "\"" + indicator.get('value') + "\""
-            sources = indicator.get('sourceBrands')
-            if sources:
-                sources_string = "\"" + ','.join(sources) + "\""
+        if not indicator.get('value'):
+            continue
+        value = "\"" + indicator.get('value') + "\""
+        sources = indicator.get('sourceBrands')
+        if sources:
+            sources_string = "\"" + ','.join(sources) + "\""
 
-            else:
-                sources_string = "\"from CORTEX XSOAR\""
+        else:
+            sources_string = "\"from CORTEX XSOAR\""
 
-            formatted_indicators.append(value + " " + sources_string)
+        formatted_indicators.append(value + " " + sources_string)
 
     string_formatted_indicators = list_to_str(formatted_indicators, '\n')
 
