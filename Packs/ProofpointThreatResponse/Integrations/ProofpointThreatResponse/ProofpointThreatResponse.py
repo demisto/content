@@ -452,6 +452,8 @@ def get_incidents_request(params):
 def get_incidents_batch_by_time_request(params):
     """Perform an API request to get incidents from ProofPoint in batches to prevent a timeout.
 
+    As the api does not return the results in an specific order, we query the api on specific time frames using
+    created_before and created_after using the fetch delta parameter.
     Args:
         params(dict): The params of the request
 
@@ -459,20 +461,40 @@ def get_incidents_batch_by_time_request(params):
         list. The incidents returned from the API call
     """
     incidents_list = []  # type:list
+    new_fetched_incidents = []
+
     fetch_delta = int(params.get('fetch_delta', '6'))
-    time_delta = timedelta(hours=fetch_delta)  # batch by days
+    fetch_limit = int(params.get('fetch_limit', '50'))
+    already_fetched = params.get('already_fetched', [])
+    last_fetch = params.get('created_after')
 
     current_time = datetime.now()
+    time_delta = timedelta(hours=fetch_delta)  # batch by days
     created_after = datetime.strptime(params.get('created_after'), TIME_FORMAT)
     created_before = created_after + time_delta
+
     request_params = {
         'state': params.get('state'),
         'created_after': created_after.isoformat().split('.')[0] + 'Z',
         'created_before': created_before.isoformat().split('.')[0] + 'Z'
     }
 
-    while created_before < current_time:
-        incidents_list.extend(get_incidents_request(request_params))
+    while created_before < current_time and len(incidents_list) < fetch_limit:
+        incidents = get_incidents_request(request_params)
+        filtered_incidents_list = filter_incidents(incidents)
+
+        for incident in filtered_incidents_list:
+            # if reached to fetch limit, no need to continue to go through the incidents
+            if len(incidents_list) >= fetch_limit:
+                break
+            # only if incident was not fetched already add it to the incidents list
+            if incident.get('id') not in already_fetched:
+                incidents_list.append(incident)
+                new_fetched_incidents.append(incident.get('id'))
+
+        # save the last fetch for the next fetch before advancing it
+        # We would like to run again on the last batch to add the incident that might not been added due to the limit
+        last_fetch = created_after.isoformat().split('.')[0] + 'Z'
 
         # advancing fetch time one day forward
         created_after = created_before
@@ -482,11 +504,7 @@ def get_incidents_batch_by_time_request(params):
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
 
-    # fetching the last batch
-    request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
-    incidents_list.extend(get_incidents_request(request_params))
-
-    return incidents_list
+    return incidents_list, last_fetch, new_fetched_incidents
 
 
 def fetch_incidents_command():
@@ -495,25 +513,30 @@ def fetch_incidents_command():
     """
     integration_params = demisto.params()
     last_fetch = demisto.getLastRun().get('last_fetch', {})
+    already_fetched = demisto.getLastRun().get('already_fetched', [])
+
     fetch_delta = integration_params.get('fetch_delta', '6')
+    fetch_limit = integration_params.get('fetch_limit', '50')
+
     incidents_states = integration_params.get('states')
     for state in incidents_states:
         if not last_fetch.get(state):
             last_fetch[state] = FETCH_TIME
 
     incidents = []
-
+    new_fetched_ids = []
     for state in incidents_states:
         request_params = {
             'created_after': last_fetch[state],
             'fetch_delta': fetch_delta,
-            'state': state
+            'state': state,
+            'already_fetched': already_fetched,
+            'fetch_limit': fetch_limit
         }
 
         state_parsed_fetch = datetime.strptime(last_fetch[state], TIME_FORMAT)
-        incidents_list = get_incidents_batch_by_time_request(request_params)
-        filtered_incidents_list = filter_incidents(incidents_list)
-        for incident in filtered_incidents_list:
+        incidents_list, last_fetch, new_fetched_ids = get_incidents_batch_by_time_request(request_params)
+        for incident in incidents_list:
             incident_creation_time = datetime.strptime(incident['created_at'], TIME_FORMAT)
             if incident_creation_time > state_parsed_fetch:
                 id = incident.get('id')
@@ -525,10 +548,11 @@ def fetch_incidents_command():
                 incidents.append(inc)
 
         if incidents:
-            last_fetch_time = incidents[-1]['occurred']
+            last_fetch_time = last_fetch
             last_fetch[state] = last_fetch_time
 
     demisto.setLastRun({'last_fetch': last_fetch})
+    demisto.setLastRun({'already_fetched': already_fetched.extend(new_fetched_ids)})
     demisto.info('extracted {} incidents'.format(len(incidents)))
 
     demisto.incidents(incidents)

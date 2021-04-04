@@ -1,7 +1,9 @@
 import pytest
 from CommonServerPython import *
 from ProofpointThreatResponse import create_incident_field_context, get_emails_context, pass_sources_list_filter, \
-    pass_abuse_disposition_filter, filter_incidents, prepare_ingest_alert_request_body
+    pass_abuse_disposition_filter, filter_incidents, prepare_ingest_alert_request_body,\
+    get_incidents_batch_by_time_request
+from test_data.raw_response import FETCH_RESPONSE
 
 MOCK_INCIDENT = {
     "id": 1,
@@ -220,3 +222,117 @@ EXPECTED_RESULT = {
 def test_prepare_ingest_alert_request_body():
     prepared_body = prepare_ingest_alert_request_body(INGEST_ALERT_ARGS)
     assert prepared_body == EXPECTED_RESULT
+
+
+def test_fetch_incidents_limit_exeed(mocker):
+    """
+     Given
+     - a dict of params given to the function which is gathered originally from demisto.params()
+        The dict includes the relevant params for the fetch e.g. fetch_delta, fetch_limit, created_after, state.
+     - response of the api
+     When
+     - a single iteration of the fetch is activated with a fetch limit set to 5
+     Then
+     - validate that the number or incidents that is returned is equal to the limit when the api returned more.
+     """
+    params = {
+        'fetch_delta': '6',
+        'fetch_limit': ' 5',
+        'created_after': '2021-03-30T11:44:24Z',
+        'state': 'closed'
+    }
+    mocker.patch('ProofpointThreatResponse.get_incidents_request', return_value=FETCH_RESPONSE)
+    incidents_list, _, _ = get_incidents_batch_by_time_request(params)
+    assert len(incidents_list) == 5
+
+
+def test_fetch_incidents_duplicated(mocker):
+    """
+     Given
+     - a dict of params given to the function which is gathered originally from demisto.params()
+        The dict includes the relevant params for the fetch e.g. fetch_delta, fetch_limit, created_after, state.
+     - response of the api
+     When
+     - a single iteration of the fetch is activated with a fetch limit set to 5 and a already_fetched list is set.
+     Then
+     - validate that the ids that where already fetched weren't fetched again.
+     """
+    already_fetched = [3064, 3063, 9224]
+    params = {
+        'fetch_delta': '6',
+        'fetch_limit': ' 5',
+        'created_after': '2021-03-30T11:44:24Z',
+        'already_fetched': already_fetched,
+        'state': 'closed'
+    }
+
+    mocker.patch('ProofpointThreatResponse.get_incidents_request', return_value=FETCH_RESPONSE)
+    incidents_list, _, _ = get_incidents_batch_by_time_request(params)
+    for already_fetch in already_fetched:
+        for incident in incidents_list:
+            assert already_fetch == incident.get('id')
+
+
+def test_fetch_incidents_already_fetch_empty(mocker):
+    """
+     Given
+     - a dict of params given to the function which is gathered originally from demisto.params()
+        The dict includes the relevant params for the fetch e.g. fetch_delta, fetch_limit, created_after, state.
+     - response of the api
+     When
+     - a single iteration of the fetch is activated with a fetch limit set to 5 and already fetched list is empty
+     Then
+     - validate that all the expected ids are being returned.
+     """
+    expected_ids_to_fetch = [3064, 3063, 3062, 3056, 3060]
+    already_fetched = []
+    params = {
+        'fetch_delta': '6',
+        'fetch_limit': ' 5',
+        'created_after': '2021-03-30T11:44:24Z',
+        'already_fetched': already_fetched,
+        'state': 'closed'
+    }
+
+    mocker.patch('ProofpointThreatResponse.get_incidents_request', return_value=FETCH_RESPONSE)
+    _, _, new_fetched = get_incidents_batch_by_time_request(params)
+    assert new_fetched == expected_ids_to_fetch
+
+
+def test_fetch_incidents_two_iterations(mocker):
+    """
+     Given
+     - a dict of params given to the function which is gathered originally from demisto.params()
+        The dict includes the relevant params for the fetch e.g. fetch_delta, fetch_limit, created_after, state.
+     - response of the api
+     When
+     - fetch funtion is called twice with a fetch limit set to 2 and already fetched is set.
+     Then
+     - validate the correct ids are fetched and the ids that where already fetched do not appear twice.
+     """
+    expected_ids_to_fetch_first = [3062, 3056]
+    expected_ids_to_fetch_second = [3060, 3057]
+
+    already_fetched = [3064, 3063]
+    params = {
+        'fetch_delta': '2',
+        'fetch_limit': ' 2',
+        'created_after': '2021-03-30T11:44:24Z',
+        'already_fetched': already_fetched,
+        'state': 'closed'
+    }
+
+    mocker.patch('ProofpointThreatResponse.get_incidents_request', return_value=FETCH_RESPONSE)
+    _, _, new_fetched_first = get_incidents_batch_by_time_request(params)
+    assert new_fetched_first == expected_ids_to_fetch_first
+
+    already_fetched = [3064, 3063, 3062, 3056]
+    params = {
+        'fetch_delta': '2',
+        'fetch_limit': ' 2',
+        'created_after': '2021-03-30T11:44:24Z',
+        'already_fetched': already_fetched,
+        'state': 'closed'
+    }
+    _, _, new_fetched_second = get_incidents_batch_by_time_request(params)
+    assert new_fetched_second == expected_ids_to_fetch_second
