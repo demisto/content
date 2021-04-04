@@ -1,0 +1,7 @@
+
+#### Integrations
+##### Cisco Firepower
+- Added 2 commands:
+  - ***ciscofp-get-url-groups-object***
+  - ***ciscofp-update-url-groups-objects***
+- Added the *container_uuid* argument to the ***ciscofp-get-deployable-devices** command.
