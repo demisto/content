@@ -87,7 +87,7 @@
             "playbookID": "O365-SecurityAndCompliance-Test",
             "fromversion": "5.5.0",
             "timeout": 700,
-            "memory_threshold": 80
+            "memory_threshold": 700
         },
         {
             "integrations": "SecurityAndCompliance",
