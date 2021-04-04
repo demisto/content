@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 5cb230a3-e04f-42d6-884d-af92579701e5
+    taskid: 2ae518e9-5ce5-4579-8497-0bc6fa4b0d62
     type: condition
     task:
-      id: 5cb230a3-e04f-42d6-884d-af92579701e5
+      id: 2ae518e9-5ce5-4579-8497-0bc6fa4b0d62
       version: -1
       name: Is Crowdstrike Falcon enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -96,10 +96,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: b362cd4c-9726-4661-8023-0961c366c854
+    taskid: bbc0e932-25e7-48ae-8cdd-eac85b847407
     type: condition
     task:
-      id: b362cd4c-9726-4661-8023-0961c366c854
+      id: bbc0e932-25e7-48ae-8cdd-eac85b847407
       version: -1
       name: Is there device id?
       type: condition
@@ -118,13 +118,13 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: inputs.Device_id
+              simple: inputs.Endpoint_id
             iscontext: true
     view: |-
       {
         "position": {
           "x": 750,
-          "y": 460
+          "y": 450
         }
       }
     note: false
@@ -134,10 +134,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 84f4a4a8-bea4-4cc7-861d-09ae4cbc575a
+    taskid: d87e720f-21d2-4975-8179-49a048df4aa6
     type: regular
     task:
-      id: 84f4a4a8-bea4-4cc7-861d-09ae4cbc575a
+      id: d87e720f-21d2-4975-8179-49a048df4aa6
       version: -1
       name: Get device info
       description: Searches for a device that matches the query.
@@ -152,7 +152,7 @@ tasks:
       filter: {}
       hostname: {}
       ids:
-        simple: ${inputs.Device_id}
+        simple: ${inputs.Endpoint_id}
       platform_name: {}
       site_name: {}
       status: {}
@@ -171,10 +171,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 9d8b8ea0-4423-414f-81cf-1477e00d7ab8
+    taskid: cc0b6958-1094-4533-8705-5e04dc490607
     type: condition
     task:
-      id: 9d8b8ea0-4423-414f-81cf-1477e00d7ab8
+      id: cc0b6958-1094-4533-8705-5e04dc490607
       version: -1
       name: 'Is device contained? '
       type: condition
@@ -212,10 +212,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 57eff90f-06d5-49d8-8a50-2837adb7357e
+    taskid: feb83b76-0bb2-4a6b-8470-a33026c399c0
     type: regular
     task:
-      id: 57eff90f-06d5-49d8-8a50-2837adb7357e
+      id: feb83b76-0bb2-4a6b-8470-a33026c399c0
       version: -1
       name: Unisolate device
       description: Lifts containment on the host, which returns its network communications
@@ -229,7 +229,7 @@ tasks:
       - "2"
     scriptarguments:
       ids:
-        simple: ${inputs.Device_id}
+        simple: ${inputs.Endpoint_id}
     separatecontext: false
     view: |-
       {
@@ -243,6 +243,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -262,7 +263,7 @@ inputs:
 - key: Endpoint_id
   value: {}
   required: false
-  description: 'The endpoint id/device id that you wish to unisolate. '
+  description: 'The endpoint id/device id that you wish to unisolate.'
   playbookInputQuery:
 outputs: []
 tests:
