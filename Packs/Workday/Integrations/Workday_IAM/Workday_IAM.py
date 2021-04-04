@@ -152,10 +152,12 @@ def is_termination_event(workday_user, demisto_user, deactivation_date_field, fi
     prehire_flag = workday_user.get(PREHIRE_FLAG_FIELD, '').lower() == 'true'
     employment_status = workday_user.get(EMPLOYMENT_STATUS_FIELD, '').lower()
 
-    deactivation_date = dateparser.parse(workday_user.get(deactivation_date_field))
+    if (deactivation_date := workday_user.get(deactivation_date_field)):
+        deactivation_date = dateparser.parse(workday_user.get(deactivation_date_field))
     today = datetime.today()
 
-    if (employment_status == 'terminated' and prehire_flag is False) or deactivation_date <= today:
+    if (employment_status == 'terminated' and prehire_flag is False) \
+            or (deactivation_date and deactivation_date <= today):
         demisto.debug(f'A termination event was detected for user '
                       f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
         return True
@@ -175,10 +177,11 @@ def is_new_hire_event(demisto_user, workday_user, deactivation_date_field):
                       f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
         return True
 
-    deactivation_date = dateparser.parse(workday_user.get(deactivation_date_field))
+    if (deactivation_date := workday_user.get(deactivation_date_field)):
+        deactivation_date = dateparser.parse(workday_user.get(deactivation_date_field))
     today = datetime.today()
 
-    if employment_status.lower() != 'terminated' and today <= deactivation_date:
+    if employment_status.lower() != 'terminated' and (not deactivation_date or today <= deactivation_date):
         demisto.debug(f'A non-terminated user with an email address {workday_user.get(EMAIL_ADDRESS_FIELD)} '
                       f'was not found in XSOAR, even though a pre-hire was not detected. Syncing anyway.')
         return True
