@@ -1,5 +1,5 @@
 Use the Imperva WAF integration to manage IP groups and Web security policies in Imperva WAF.
-This integration was integrated and tested with version 14.2 of Imperva WAF
+This integration was integrated and tested with version 14.2 of Imperva WAF and based on Imperva On-Premises WAF (SecureSphere) REST API.
 ## Configure Imperva WAF on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
