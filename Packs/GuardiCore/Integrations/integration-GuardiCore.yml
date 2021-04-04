@@ -777,8 +777,12 @@ script:
             if (token) {
                 requestLogout(methodDictionary.logout, urlDictionary.logout, token);
             }
+            msg = '';
+            if (url == 'incidents'){
+                msg = '\nPlease consider adding \'to_time\' and \'from_time\ arguments to command execution';
+            }
 
-            throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+            throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.' + msg;
         }
 
         if (isRawOutput) {
@@ -822,8 +826,6 @@ script:
                     args["from_time"] = String(new Date(parseInt(splittedDateFrom[2], 10), parseInt(splittedDateFrom[1], 10) - 1 , parseInt(splittedDateFrom[0]), 10).getTime());
 
                 } else { throw 'Argument \'to_time\' or \'from_time\' is not with the right format. Format should be: DD-MM-YYYY'}
-            } else{
-                throw 'Please consider adding \'from_time\' or \'to_time\' arguments'
             }
             commandUrlKey = command;
             break
