@@ -1658,8 +1658,8 @@ def revoke_security_group_egress_command(args):
         'GroupId': args.get('groupId')
     }
 
-    IpPermissions_dict = {}
-    UserIdGroupPairs_dict = {}
+    IpPermissions_dict = {}  # type: Dict[str, Any]
+    UserIdGroupPairs_dict = {}  # type: Dict[str, Any]
 
     if args.get('IpPermissionsfromPort') is not None:
         IpPermissions_dict['FromPort'] = int(args.get('IpPermissionsfromPort'))
