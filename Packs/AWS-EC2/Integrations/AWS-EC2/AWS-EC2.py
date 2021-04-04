@@ -1653,80 +1653,69 @@ def revoke_security_group_egress_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {'GroupId': args.get('groupId')}
-    IpPermissions = []
+
+    kwargs = {
+        'GroupId': args.get('groupId')
+    }
+
     IpPermissions_dict = {}
-    UserIdGroupPairs = []
     UserIdGroupPairs_dict = {}
 
     if args.get('IpPermissionsfromPort') is not None:
-        IpPermissions_dict.update({'FromPort': int(args.get('IpPermissionsfromPort'))})
+        IpPermissions_dict['FromPort'] = int(args.get('IpPermissionsfromPort'))
     if args.get('IpPermissionsIpProtocol') is not None:
-        IpPermissions_dict.update({'IpProtocol': str(args.get('IpPermissionsIpProtocol'))})  # type: ignore
+        IpPermissions_dict['IpProtocol'] = str(args.get('IpPermissionsIpProtocol'))
     if args.get('IpPermissionsToPort') is not None:
-        IpPermissions_dict.update({'ToPort': int(args.get('IpPermissionsToPort'))})
+        IpPermissions_dict['ToPort'] = int(args.get('IpPermissionsToPort'))
 
     if args.get('IpRangesCidrIp') is not None:
         IpRanges = [{
-            'CidrIp': args.get('IpRangesCidrIp')  # ,
-            # 'Description': args.get('IpRangesDesc', None)
+            'CidrIp': args['IpRangesCidrIp'],
+            'Description': args.get('IpRangesDescription', '')
         }]
-        IpPermissions_dict.update({'IpRanges': IpRanges})  # type: ignore
+        IpPermissions_dict['IpRanges'] = IpRanges
+
     if args.get('Ipv6RangesCidrIp') is not None:
         Ipv6Ranges = [{
-            'CidrIp': args.get('Ipv6RangesCidrIp'),
-            'Description': args.get('Ipv6RangesDesc', None)
+            'CidrIp': args['Ipv6RangesCidrIp'],
+            'Description': args.get('Ipv6RangesDescription', '')
         }]
-        IpPermissions_dict.update({'Ipv6Ranges': Ipv6Ranges})  # type: ignore
+        IpPermissions_dict['Ipv6Ranges'] = Ipv6Ranges
+
     if args.get('PrefixListId') is not None:
         PrefixListIds = [{
-            'PrefixListId': args.get('PrefixListId'),
-            'Description': args.get('PrefixListIdDesc', None)
+            'PrefixListId': args['PrefixListId'],
+            'Description': args.get('PrefixListIdDescription', '')
         }]
-        IpPermissions_dict.update({'PrefixListIds': PrefixListIds})  # type: ignore
+        IpPermissions_dict['PrefixListIds'] = PrefixListIds
 
     if args.get('UserIdGroupPairsDescription') is not None:
-        UserIdGroupPairs_dict.update({'Description': args.get('UserIdGroupPairsDescription')})
+        UserIdGroupPairs_dict['Description'] = args['UserIdGroupPairsDescription']
     if args.get('UserIdGroupPairsGroupId') is not None:
-        UserIdGroupPairs_dict.update({'GroupId': args.get('UserIdGroupPairsGroupId')})
+        UserIdGroupPairs_dict['GroupId'] = args['UserIdGroupPairsGroupId']
     if args.get('UserIdGroupPairsGroupName') is not None:
-        UserIdGroupPairs_dict.update({'GroupName': args.get('UserIdGroupPairsGroupName')})
+        UserIdGroupPairs_dict['GroupName'] = args['UserIdGroupPairsGroupName']
     if args.get('UserIdGroupPairsPeeringStatus') is not None:
-        UserIdGroupPairs_dict.update({'PeeringStatus': args.get('UserIdGroupPairsPeeringStatus')})
+        UserIdGroupPairs_dict['PeeringStatus'] = args['UserIdGroupPairsPeeringStatus']
     if args.get('UserIdGroupPairsUserId') is not None:
-        UserIdGroupPairs_dict.update({'UserId': args.get('UserIdGroupPairsUserId')})
+        UserIdGroupPairs_dict['UserId'] = args['UserIdGroupPairsUserId']
     if args.get('UserIdGroupPairsVpcId') is not None:
-        UserIdGroupPairs_dict.update({'VpcId': args.get('UserIdGroupPairsVpcId')})
+        UserIdGroupPairs_dict['VpcId'] = args['UserIdGroupPairsVpcId']
     if args.get('UserIdGroupPairsVpcPeeringConnectionId') is not None:
-        UserIdGroupPairs_dict.update({'VpcPeeringConnectionId': args.get('UserIdGroupPairsVpcPeeringConnectionId')})
-
-    if args.get('fromPort') is not None:
-        kwargs.update({'FromPort': int(args.get('fromPort'))})
-    if args.get('cidrIp') is not None:
-        kwargs.update({'CidrIp': args.get('cidrIp')})
-    if args.get('toPort') is not None:
-        kwargs.update({'ToPort': int(args.get('toPort'))})
-    if args.get('ipProtocol') is not None:
-        kwargs.update({'IpProtocol': args.get('ipProtocol')})
-    if args.get('sourceSecurityGroupName') is not None:
-        kwargs.update({'SourceSecurityGroupName': args.get('sourceSecurityGroupName')})
-    if args.get('SourceSecurityGroupOwnerId') is not None:
-        kwargs.update({'SourceSecurityGroupOwnerId': args.get('SourceSecurityGroupOwnerId')})
+        UserIdGroupPairs_dict['VpcPeeringConnectionId'] = args['UserIdGroupPairsVpcPeeringConnectionId']
 
     if UserIdGroupPairs_dict is not None:
-        UserIdGroupPairs.append(UserIdGroupPairs_dict)
-        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
+        IpPermissions_dict['UserIdGroupPairs'] = [UserIdGroupPairs_dict]
 
     if IpPermissions_dict is not None:
-        IpPermissions.append(IpPermissions_dict)
-        kwargs.update({'IpPermissions': IpPermissions})
+        kwargs['IpPermissions'] = [IpPermissions_dict]
 
     response = client.revoke_security_group_egress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Security Group egress rule was revoked")
+        return_results("The Security Group egress rule was revoked")
     else:
+        demisto.debug(response.message)
         return_error("An error has occurred: {error}".format(error=response))
-        LOG(response.message)
 
 
 def copy_image_command(args):
