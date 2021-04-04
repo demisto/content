@@ -3222,6 +3222,11 @@
             "fromversion": "5.5.0",
             "playbookID": "Cisco Stealthwatch Test"
         },
+		{
+			"integrations": "cymulate_v2",
+			"playbookID": "Cymulate V2 Test",
+            "fromversion": "6.0.0"
+		},
         {
             "integrations": "OpenCTI",
             "playbookID": "OpenCTI Test",
