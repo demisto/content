@@ -84,6 +84,44 @@ Describe 'Check-UtilityFunctions' {
         $r.Contents | Should -Be $msg
         $r.EntryContext | Should -BeNullOrEmpty
     }
+
+    Context "FileResult checks" {
+        
+        BeforeAll {    
+            # move into a temp directory which we later on delete from the files created in the  tests         
+            $temp_parent = [System.IO.Path]::GetTempPath()
+            [string] $temp_dir = [System.Guid]::NewGuid()
+            $temp_path = Join-Path $temp_parent $temp_dir
+            New-Item -ItemType Directory -Path $temp_path
+            Set-Location $temp_path -PassThru
+        }
+
+        It "FileResult default" {
+            $data = "this is a test"
+            $r = FileResult "test.txt" $data
+            $r.Type | Should -Be 3
+            $r.File | Should -Be "test.txt"
+            $inv_id = $demisto.Investigation().id
+            Get-Content -Path "${inv_id}_$($r.FileID)" | Should -Be $data
+        }
+
+        It "FileResult info" {
+            $data = "this is a test"
+            # pass $true to indicate that this is a file info entry
+            $r = FileResult "test.txt" $data $true
+            $r.Type | Should -Be 9
+            $r.File | Should -Be "test.txt"
+            $inv_id = $demisto.Investigation().id
+            Get-Content -Path "${inv_id}_$($r.FileID)" | Should -Be $data
+        }
+
+        AfterAll {
+            Set-Location -Path - -PassThru
+            Remove-Item $temp_path -Recurse
+        }
+    }
+    
+
     Context "Check log function" {
         BeforeAll {
             Mock DemistoServerLog {}

@@ -56,7 +56,6 @@ class TestPrivatePacks:
                                   'vendorId': 'vendorId',
                                   'partnerId': 'partnerId',
                                   'partnerName': 'partnerName',
-                                  'vendorName': 'vendorName',
                                   'contentCommitHash': "",
                                   }]
 

@@ -12,6 +12,20 @@ configuration:
   name: apikey
   required: true
   type: 4
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - defaultvalue: '80'
   display: Minimum score threshold
   name: threshold
@@ -249,6 +263,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The Minimum confidence required for the retrieved IPs.
+      isArray: false
+      name: confidence
       required: false
       secret: false
     deprecated: false

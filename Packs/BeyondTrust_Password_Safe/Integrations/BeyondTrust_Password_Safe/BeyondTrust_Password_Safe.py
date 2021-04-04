@@ -86,7 +86,7 @@ def http_request(method: str, suffix_url: str, data=None):
             txt = ERR_DICT[txt]
         elif res.status_code == 401:
             txt = 'Wrong credentials.'
-        return_error(f'Error in API call to BeyondSafe Integration [{res.status_code}] - {txt})')
+        return_error(f'Error in API call to BeyondTrust Integration [{res.status_code}] - {txt})')
     try:
         return res.json()
     except ValueError:

@@ -510,8 +510,8 @@ There are no input arguments for this command.
 ##### Human Readable Output
 ID Offset: 10161
 
-### jira-get-id-by-attribute
-***
+### 11. Gets the Account ID for a given user's attribute.
+---
 Gets the Account ID for a given user's attribute.
 
 
