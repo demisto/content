@@ -1,5 +1,4 @@
-from script-PANOStoCortexDataLakeMonitoring
-import check_instance, get_firewall_serials
+from script-PANOStoCortexDataLakeMonitoring import check_instance, get_firewall_serials
 import pytest
 import demistomock as demisto
 
