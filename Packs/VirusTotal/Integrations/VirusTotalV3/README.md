@@ -869,22 +869,21 @@ Checks the reputation of an IP address.
                         "signature_algorithm": "1.2.840.10045.4.3.3"
                     },
                     "extensions": {
-                        "1.3.6.1.4.1.11129.2.4.2": "0481f200f00076002979bef09e393921f056739f63a577e5be577d9c600af8f9",
+                        "**exten**": "0481f200f00076002979bef09e393921f056739f63a577e5be577d9c600af8f9",
                         "CA": true,
                         "authority_key_identifier": {
                             "keyid": "0abc0829178ca5396d7a0ece33c72eb3edfbc37a"
                         },
                         "ca_information_access": {
-                            "CA Issuers": "http://cacerts.digicert.com/DigiCertTLSHybridECCSHA3842020CA1.crt",
-                            "OCSP": "http://ocsp.digicert.com"
+                            "CA Issuers": "http://cacerts.example.com/exampleTLSHybridECCSHA3842020CA1.crt",
+                            "OCSP": "http://ocsp.example.com"
                         },
                         "certificate_policies": [
-                            "2.16.840.1.114412.1.1",
-                            "2.23.140.1.2.2"
+                            "**policy**"
                         ],
                         "crl_distribution_points": [
-                            "http://crl3.digicert.com/DigiCertTLSHybridECCSHA3842020CA1.crl",
-                            "http://crl4.digicert.com/DigiCertTLSHybridECCSHA3842020CA1.crl"
+                            "http://crl3.example.com/exampleTLSHybridECCSHA3842020CA1.crl",
+                            "http://crl4.example.com/exampleTLSHybridECCSHA3842020CA1.crl"
                         ],
                         "extended_key_usage": [
                             "serverAuth",
@@ -911,8 +910,8 @@ Checks the reputation of an IP address.
                     },
                     "issuer": {
                         "C": "US",
-                        "CN": "DigiCert TLS Hybrid ECC SHA384 2020 CA1",
-                        "O": "DigiCert Inc"
+                        "CN": "example TLS Hybrid ECC SHA384 2020 CA1",
+                        "O": "example Inc"
                     },
                     "public_key": {
                         "algorithm": "EC",
@@ -1033,13 +1032,13 @@ Checks the reputation of a URL.
 
 
 #### Command Example
-```!url url=https://down.mykings.pw```
+```!url url=https://example.com```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "https://down.mykings.pw",
+        "Indicator": "https://example.com",
         "Reliability": "A - Completely reliable",
         "Score": 2,
         "Type": "url",
@@ -1052,7 +1051,7 @@ Checks the reputation of a URL.
             "alphaMountain.ai": "Malicious",
             "sophos": "malware callhome, command and control"
         },
-        "Data": "https://down.mykings.pw",
+        "Data": "https://example.com",
         "DetectionEngines": 86,
         "PositiveDetections": 8
     },
@@ -1076,7 +1075,7 @@ Checks the reputation of a URL.
                     "timeout": 0,
                     "undetected": 7
                 },
-                "last_final_url": "https://down.mykings.pw/dashboard/",
+                "last_final_url": "https://example.com/dashboard/",
                 "last_http_response_code": 200,
                 "last_http_response_content_length": 1671,
                 "last_http_response_content_sha256": "f2ddbc5b5468c2cd9c28ae820420d32c4f53d088e4a1cc31f661230e4893104a",
@@ -1089,8 +1088,8 @@ Checks the reputation of a URL.
                 "last_modification_date": 1615900620,
                 "last_submission_date": 1615900309,
                 "outgoing_links": [
-                    "http://www.kaspersky.com",
-                    "http://www.securelist.com"
+                    "http://www.example.com",
+                    "http://www.example.com"
                 ],
                 "reputation": 0,
                 "tags": [],
@@ -1105,7 +1104,7 @@ Checks the reputation of a URL.
                     "malicious": 0
                 },
                 "trackers": {},
-                "url": "https://down.mykings.pw/"
+                "url": "https://example.com/"
             },
             "id": "84eb1485254266e093683024b3bd172abde615fc6a37498707ca912964a108a9",
             "links": {
@@ -1119,10 +1118,10 @@ Checks the reputation of a URL.
 
 #### Human Readable Output
 
->### URL data of "https://down.mykings.pw"
+>### URL data of "https://example.com"
 >|Url|Title|LastModified|HasContent|LastHttpResponseContentSha256|Positives|Reputation|
 >|---|---|---|---|---|---|---|
->| https://down.mykings.pw | Welcome page | 2021-03-16 13:17:00Z | false | f2ddbc5b5468c2cd9c28ae820420d32c4f53d088e4a1cc31f661230e4893104a | 8/86 | 0 |
+>| https://example.com | Welcome page | 2021-03-16 13:17:00Z | false | f2ddbc5b5468c2cd9c28ae820420d32c4f53d088e4a1cc31f661230e4893104a | 8/86 | 0 |
 
 
 ### domain
@@ -1179,13 +1178,13 @@ Checks the reputation of a domain.
 
 
 #### Command Example
-```!domain domain=down.mykings.pw```
+```!domain domain=example.com```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "down.mykings.pw",
+        "Indicator": "example.com",
         "Reliability": "A - Completely reliable",
         "Score": 2,
         "Type": "domain",
@@ -1203,7 +1202,7 @@ Checks the reputation of a domain.
             " 2017-01-21T16:26:19.00Z"
         ],
         "ExpirationDate": " 2018-01-21T23:59:59.0Z",
-        "Name": "down.mykings.pw",
+        "Name": "example.com",
         "NameServers": [
             " PDNS1.REGISTRAR-SERVERS.COM",
             " PDNS2.REGISTRAR-SERVERS.COM",
@@ -1292,7 +1291,7 @@ Checks the reputation of a domain.
                     {
                         "ttl": 3599,
                         "type": "A",
-                        "value": "134.209.227.14"
+                        "value": "value"
                     }
                 ],
                 "last_dns_records_date": 1615900633,
@@ -1308,9 +1307,9 @@ Checks the reputation of a domain.
                 },
                 "whois": "Domain Name: MYKINGS.PW\nRegistry Domain ID: D42904076-CNIC\nRegistrar WHOIS Server: whois.namecheap.com\nUpdated Date: 2017-03-06T21:52:39.0Z\nCreation Date: 2017-01-21T16:26:19.0Z\nRegistry Expiry Date: 2018-01-21T23:59:59.0Z\nRegistrar: Namecheap\nRegistrar IANA ID: 1068\nDomain Status: serverHold https://icann.org/epp#serverHold\nDomain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited\nRegistry Registrant ID: C113380656-CNIC\nRegistrant Country: PA\nRegistrant Email: [REDACTED]@whoisguard.com\nRegistry Admin ID: C113380651-CNIC\nAdmin Organization: WhoisGuard, Inc.\nAdmin City: Panama\nAdmin State/Province: Panama\nAdmin Country: PA\nAdmin Email: [REDACTED]@whoisguard.com\nRegistry Tech ID: C113380657-CNIC\nTech Organization: WhoisGuard, Inc.\nTech City: Panama\nTech State/Province: Panama\nTech Country: PA\nTech Email: [REDACTED]@whoisguard.com\nName Server: PDNS1.REGISTRAR-SERVERS.COM\nName Server: PDNS2.REGISTRAR-SERVERS.COM\nDNSSEC: unsigned\nRegistry Billing ID: C113380652-CNIC\nBilling Organization: WhoisGuard, Inc.\nBilling City: Panama\nBilling State/Province: Panama\nBilling Country: PA\nBilling Email: [REDACTED]@whoisguard.com\nRegistrar Abuse Contact Email: abuse@namecheap.com\nRegistrar Abuse Contact Phone: +1.6613102107\nDomain name: mykings.pw\nRegistrar URL: http://www.namecheap.com\nUpdated Date: 2017-01-21T16:26:23.00Z\nCreation Date: 2017-01-21T16:26:19.00Z\nRegistrar Registration Expiration Date: 2018-01-21T23:59:59.00Z\nRegistrar: NAMECHEAP INC\nDomain Status: serverTransferProhibited https://icann.org/epp#serverTransferProhibited\nDomain Status: addPeriod https://icann.org/epp#addPeriod\nRegistry Registrant ID: h0vgttny0epf16dd\nRegistry Admin ID: 7wb6xoq1zsnorcv3\nRegistry Tech ID: bn39juqyqwo74klf\nName Server: pdns1.registrar-servers.com\nName Server: pdns2.registrar-servers.com"
             },
-            "id": "down.mykings.pw",
+            "id": "example.com",
             "links": {
-                "self": "https://www.virustotal.com/api/v3/domains/down.mykings.pw"
+                "self": "https://www.virustotal.com/api/v3/domains/example.com"
             },
             "type": "domain"
         }
@@ -1320,10 +1319,10 @@ Checks the reputation of a domain.
 
 #### Human Readable Output
 
->### Domain data of down.mykings.pw
+>### Domain data of example.com
 >|Id|Registrant Country|LastModified|LastAnalysisStats|
 >|---|---|---|---|
->| down.mykings.pw |  PA | 2021-03-16 13:17:13Z | harmless: 66<br/>malicious: 8<br/>suspicious: 0<br/>undetected: 8<br/>timeout: 0 |
+>| example.com |  PA | 2021-03-16 13:17:13Z | harmless: 66<br/>malicious: 8<br/>suspicious: 0<br/>undetected: 8<br/>timeout: 0 |
 
 
 ### file
@@ -2292,7 +2291,7 @@ Search for an indicator in Virus Total.
                     {
                         "ttl": 23,
                         "type": "A",
-                        "value": "34.107.151.202"
+                        "value": "**ip**"
                     },
                     {
                         "ttl": 14399,
@@ -2584,21 +2583,21 @@ Search for an indicator in Virus Total.
                         "signature_algorithm": "sha256RSA"
                     },
                     "extensions": {
-                        "1.3.6.1.4.1.11129.2.4.2": "0482016a0168007600a4b90990b418581487bb13a2cc67700a3c359804f91bdf",
+                        "**exten**": "0482016a0168007600a4b90990b418581487bb13a2cc67700a3c359804f91bdf",
                         "CA": true,
                         "authority_key_identifier": {
                             "keyid": "40c2bd278ecc348330a233d7fb6cb3f0b42c80ce"
                         },
                         "ca_information_access": {
-                            "CA Issuers": "http://certificates.godaddy.com/repository/gdig2.crt",
-                            "OCSP": "http://ocsp.godaddy.com/"
+                            "CA Issuers": "http://certificates.example.com/repository/gdig2.crt",
+                            "OCSP": "http://ocsp.example.com/"
                         },
                         "certificate_policies": [
-                            "2.16.840.1.114413.1.7.23.1",
-                            "2.23.140.1.2.1"
+                            "**policy**",
+                            "**policy**"
                         ],
                         "crl_distribution_points": [
-                            "http://crl.godaddy.com/gdig2s1-1677.crl"
+                            "http://example.com/gdig2s1-1677.crl"
                         ],
                         "extended_key_usage": [
                             "serverAuth",
@@ -2625,8 +2624,8 @@ Search for an indicator in Virus Total.
                         "C": "US",
                         "CN": "Go Daddy Secure Certificate Authority - G2",
                         "L": "Scottsdale",
-                        "O": "GoDaddy.com, Inc.",
-                        "OU": "http://certs.godaddy.com/repository/",
+                        "O": "example.com, Inc.",
+                        "OU": "http://certs.example.com/repository/",
                         "ST": "Arizona"
                     },
                     "public_key": {
@@ -2703,7 +2702,7 @@ Search for an indicator in Virus Total.
 >### Search result of query paloaltonetworks.com
 >|Categories|CreationDate|Favicon|Jarm|LastAnalysisStats|LastDnsRecords|LastDnsRecordsDate|LastHttpsCertificate|LastHttpsCertificateDate|LastModificationDate|LastUpdateDate|PopularityRanks|Registrar|Reputation|TotalVotes|Whois|WhoisDate|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Forcepoint ThreatSeeker: information technology<br/>sophos: information technology<br/>BitDefender: marketing<br/>alphaMountain.ai: Business/Economy, Information Technology | 1108953730 | raw_md5: 920c3c89139c32d356fa4b8b61616f37<br/>dhash: 02e9ecb69ac869a8 | 29d3fd00029d29d00042d43d00041d598ac0c1012db967bb1ad0ff2491b3ae | harmless: 75<br/>malicious: 0<br/>suspicious: 0<br/>undetected: 7<br/>timeout: 0 | {'type': 'TXT', 'value': 'atlassian-domain-verification=WeW32v7AwYQEviMzlNjYyXNMUngcnmIMtNZKJ69TuQUoda5T6DFFV/A6rRvOzwvs', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '35g550m1f2732uuklt7om3fr0k', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'amazonses:wD8q9vBgr/tA/9V4Lh4CPADIMQs4LIW/EpqeYxrS5e8=', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns7.dnsmadeeasy.com', 'ttl': 21599},<br/>{'rname': 'domains.paloaltonetworks.com', 'retry': 600, 'value': 'ns1.p23.dynect.net', 'minimum': 3600, 'refresh': 3600, 'expire': 604800, 'ttl': 14399, 'serial': 1616778508, 'type': 'SOA'},<br/>{'type': 'TXT', 'value': 'e6dj6aj6redkv98nojsphl0bp6', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'mongodb-site-verification=iAfodgMVqXWglWqKv3qb4xzIjtZkfBwk', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'wcfF7BYKYfRSc96jwmhQfabmMPUMLVmBu1Pauas9oU0=', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'docusign=7979590c-2e52-4018-b599-54a429f449d1', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'b1kisgsns70occu4j4jpl552a9', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'status-page-domain-verification=gxhgqp5msy2m', 'ttl': 14399},<br/>{'type': 'A', 'value': '34.107.151.202', 'ttl': 23},<br/>{'type': 'TXT', 'value': '74H6MX8NRYBAQ3D8H2MJC3Y8P5AGSNB8', 'ttl': 14399},<br/>{'priority': 10, 'type': 'MX', 'value': 'mxa-00169c01.gslb.pphosted.com', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'CGJAZFH9QTYUPE2A6XJE8VEBUSSB47B5', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '3fln6bvgju1p5c0aa455mjl61n', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'lrlteq11f2vuhlvmkerhqnpua7', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'c2e1bv49egsn6v6ohlra47namp', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns6.dnsmadeeasy.com', 'ttl': 21599},<br/>{'type': 'TXT', 'value': 'logmein-verification-code=ccb897d5-1bed-410a-9c45-a6dd6be9b1c', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'p5cIVMfOtO93Vdzz9extJY700HwcOXxbhBcB+dyK028=', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'omi6ve5p04je278gjtiegkblh1', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'atlassian-domain-verification=OLe058dAXDG6kcCutEa7uSYy2iKLT7CvYNxGz2iROYa4NJ8FazXAkt/Elc8OzblS', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'okansnmkk1j60die0or78624gh', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '9j6u125ve5mvsd634h0gkovq27', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'amazonses:Do93Z/wjV5nZDDaT6n/geaLn2dcmC4LKxWJr6kW09J4=', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'o9c2hro57o4ahin6q2jj64lft8', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '5q1hlpu2u9j6lgrp3rp2ucv48p', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'gbe3h5tqf05k12gdkh1ch15c7r', 'ttl': 14399},<br/>{'priority': 10, 'type': 'MX', 'value': 'mxb-00169c01.gslb.pphosted.com', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'google-site-verification=8zcmNvhRzBOYw-GN3l86mhO5MTfJjEd8ocEyjdsSLak', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'vm77066l7cp2i2hr66uvsforij', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'hi8pl0b5i96m35pf2741v1hqth', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns5.dnsmadeeasy.com', 'ttl': 21599},<br/>{'type': 'TXT', 'value': 'h7vhs2ouk1vftgjoqqlmjcthbj', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'css6v61730u8halh3dec5lgreo', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'eks3p/qXVt97oL7X1IGBQdP05ev8rOuFOK8LAzqJ8iMkRDfXrKKGEFy3zHyGEAG8IkwimKG83eTQtoWgLClb2A==', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '7is4vpdq4k8dcioag2dhd5dtot', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'jkt1bch6hqi27c4jisrstg5mke', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'atlassian-domain-verification=2eHeLgLQ13HybaqKxXx+k/uq1dD51Vcs0GAhz1rsbpWTAP3pagbUpE1SuY3dTIyi', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'rmrophudqgsjmkfu3fur0da1dh', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'lspo05pafcr60k2utns50jephr', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'o1l85onfiau3ujepq88nscnsbp', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '9n1sitvm4qt002dkp0riccqu3b', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns2.p23.dynect.net', 'ttl': 21599},<br/>{'type': 'TXT', 'value': 'nm70udiiaufkln1coolgar432q', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'ca2mn12n6lmqe0l187um71u78f', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'R4WKB79BFYVKQ8DVZPR2JCS5CS2CTXMY', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'uZ5++1a8ndinwH931iYZakLQiALyIpSMchkwXnu+cd4=', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'c552n5ffvckbvajtvlbq87h6e4', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'fu93k0bu02qfg8mhfiedij43fo', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '2342193', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'kel7gtj8ljaveug9l29u3eaeqf', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'hkitftvrblcmp35ccr2rfgmg0p', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '36fvpcfneha0psdkcongoslqhi', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'adobe-sign-verification=3f81eef2cae0ba508fad3d31356494b4', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '14cdviopi83qfqsr00edmeb02u', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'v4s6p80shob7d34obcvgthap5i', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns1.p23.dynect.net', 'ttl': 21599},<br/>{'type': 'TXT', 'value': 'adobe-idp-site-verification=9b01a9ad-47a1-4d79-a207-25b12d1958a7', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'p2avt2pnrn006tf2iht0ktphsp', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'v=spf1 include:spf-a.paloaltonetworks.com include:spf-b.paloaltonetworks.com include:spf-c.paloaltonetworks.com ~all', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'CGTGPGXPT3YNYUMKWS4RXNGXQHN5QEY3', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'logmein-verification-code=1379d49d-5d99-4141-9baa-0b30f7c69214', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns3.p23.dynect.net', 'ttl': 21599},<br/>{'type': 'NS', 'value': 'ns4.p23.dynect.net', 'ttl': 21599},<br/>{'type': 'TXT', 'value': 'EHJSPTQUZK5WEHK7JD5XWWQAUGW3XMJT', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'nncr5kvkcogrqimf5m5vtussp6', 'ttl': 14399} | 1616986415 | size: 1963<br/>public_key: {"rsa": {"key_size": 2048, "modulus": "00badd2ce557c9c83883e418d6710ef2c286a8cd701bf7adbed530b4909fb147d3c879e7863b6c00ae2a79e7a11131a04da94b23b97d9ecb93a3fc39bc24b186b3eeba9c1e1d7315a580c58a7dc94e2e8a6cca45a2c25513f5c28f4582e08b04adc1a0269f636eba4624e8baef3b3bc40c4cb2bf9bedd14092e619b424e5d863e491da1c9c5b88516eab6794ced195cf212ac4c8bd1f3403269b85dbae0b948672b0f526d4c725035fbaa64f5d4e521790ce88810fcda36b94737f7af0b6347e912101d8718814c153c7f3771de172de490cd971a99fa7b41d746839a0a7e6981f9b6074a6260a6ee6009edb62f90161ebd652f1ddf6122412ba946e33706ac0f1", "exponent": "010001"}, "algorithm": "RSA"}<br/>thumbprint_sha256: 17bb7bda507abc602bdf1b160d7f51edaccac39fd34f8dab1e793c3612cfc8c2<br/>tags: <br/>cert_signature: {"signature": "b1f0bbeaa5a3b22b63b7d1601c633eb028fb5a77c73226d578cda06d55406c89eb55cf65f69f55b7ed015456b86063adc87ad288d7ee4d922a315cab02da9c5cd12751010b248ca73de4d1596bab4611d72758f3a2244e0f0ebf2f6a969d83180ed930b901c43bb1756ce6d2a1248da4be9cd47c4e2012e5f8d510c7c5249bbc97839e639733d5dc22697159aec439bf37f5c73ecaff7f72db1de1e652850f7ee29b9b9c17026c411f73020b99f1006e9dbe732e7d8f4a060e380bda9e05f56b3c3bd78b16dd3447a1a96382cc80e86f3627163a41879e58041ceff9697ec11f5c566a091c9c3921e29623194bbecac9e278d9da84816dbd32ab6838cedef881", "signature_algorithm": "sha256RSA"}<br/>validity: {"not_after": "2022-01-27 16:52:24", "not_before": "2020-01-27 16:52:24"}<br/>version: V3<br/>extensions: {"certificate_policies": ["2.16.840.1.114413.1.7.23.1", "2.23.140.1.2.1"], "extended_key_usage": ["serverAuth", "clientAuth"], "authority_key_identifier": {"keyid": "40c2bd278ecc348330a233d7fb6cb3f0b42c80ce"}, "subject_alternative_name": ["www.paloaltonetworks.com", "paloaltonetworks.com", "aws.paloaltonetworks.com", "events.paloaltonetworks.com", "azure.paloaltonetworks.com", "get.info.paloaltonetworks.com", "compete.paloaltonetworks.com", "marketing.paloaltonetworks.com", "googlecloud.paloaltonetworks.com"], "tags": [], "subject_key_identifier": "ed89d4b918aab2968bd1dfde421a179c51445be0", "crl_distribution_points": ["http://crl.godaddy.com/gdig2s1-1677.crl"], "key_usage": ["ff"], "1.3.6.1.4.1.11129.2.4.2": "0482016a0168007600a4b90990b418581487bb13a2cc67700a3c359804f91bdf", "CA": true, "ca_information_access": {"CA Issuers": "http://certificates.godaddy.com/repository/gdig2.crt", "OCSP": "http://ocsp.godaddy.com/"}}<br/>signature_algorithm: sha256RSA<br/>serial_number: f5fa379466d9884a<br/>thumbprint: 0296c20e3a4a607b8d9e2af86155cde04594535e<br/>issuer: {"C": "US", "CN": "Go Daddy Secure Certificate Authority - G2", "L": "Scottsdale", "O": "GoDaddy.com, Inc.", "ST": "Arizona", "OU": "http://certs.godaddy.com/repository/"}<br/>subject: {"OU": "Domain Control Validated", "CN": "www.paloaltonetworks.com"} | 1616986415 | 1617084294 | 1594825871 | Majestic: {"timestamp": 1617032162, "rank": 4886}<br/>Statvoo: {"timestamp": 1617032187, "rank": 32577}<br/>Alexa: {"timestamp": 1617032161, "rank": 32577}<br/>Cisco Umbrella: {"timestamp": 1616686562, "rank": 6605}<br/>Quantcast: {"timestamp": 1585582565, "rank": 20361} | MarkMonitor Inc. | 0 | harmless: 0<br/>malicious: 0 | Creation Date: 2005-02-21T02:42:10Z<br/>DNSSEC: signedDelegation<br/>Domain Name: PALOALTONETWORKS.COM<br/>Domain Status: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited<br/>Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited<br/>Domain Status: clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited<br/>Name Server: NS1.P23.DYNECT.NET<br/>Name Server: NS2.P23.DYNECT.NET<br/>Name Server: NS3.P23.DYNECT.NET<br/>Name Server: NS4.P23.DYNECT.NET<br/>Name Server: NS5.DNSMADEEASY.COM<br/>Name Server: NS6.DNSMADEEASY.COM<br/>Name Server: NS7.DNSMADEEASY.COM<br/>Registrar Abuse Contact Email: abusecomplaints@markmonitor.com<br/>Registrar Abuse Contact Phone: +1.2083895740<br/>Registrar IANA ID: 292<br/>Registrar URL: http://www.markmonitor.com<br/>Registrar WHOIS Server: whois.markmonitor.com<br/>Registrar: MarkMonitor Inc.<br/>Registry Domain ID: 143300555_DOMAIN_COM-VRSN<br/>Registry Expiry Date: 2024-02-21T02:42:10Z<br/>Updated Date: 2020-07-15T15:11:11Z | 1615321176 |
+>| Forcepoint ThreatSeeker: information technology<br/>sophos: information technology<br/>BitDefender: marketing<br/>alphaMountain.ai: Business/Economy, Information Technology | 1108953730 | raw_md5: 920c3c89139c32d356fa4b8b61616f37<br/>dhash: 02e9ecb69ac869a8 | 29d3fd00029d29d00042d43d00041d598ac0c1012db967bb1ad0ff2491b3ae | harmless: 75<br/>malicious: 0<br/>suspicious: 0<br/>undetected: 7<br/>timeout: 0 | {'type': 'TXT', 'value': 'atlassian-domain-verification=WeW32v7AwYQEviMzlNjYyXNMUngcnmIMtNZKJ69TuQUoda5T6DFFV/A6rRvOzwvs', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '35g550m1f2732uuklt7om3fr0k', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'amazonses:wD8q9vBgr/tA/9V4Lh4CPADIMQs4LIW/EpqeYxrS5e8=', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns7.dnsmadeeasy.com', 'ttl': 21599},<br/>{'rname': 'domains.paloaltonetworks.com', 'retry': 600, 'value': 'ns1.p23.dynect.net', 'minimum': 3600, 'refresh': 3600, 'expire': 604800, 'ttl': 14399, 'serial': 1616778508, 'type': 'SOA'},<br/>{'type': 'TXT', 'value': 'e6dj6aj6redkv98nojsphl0bp6', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'mongodb-site-verification=iAfodgMVqXWglWqKv3qb4xzIjtZkfBwk', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'wcfF7BYKYfRSc96jwmhQfabmMPUMLVmBu1Pauas9oU0=', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'docusign=7979590c-2e52-4018-b599-54a429f449d1', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'b1kisgsns70occu4j4jpl552a9', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'status-page-domain-verification=gxhgqp5msy2m', 'ttl': 14399},<br/>{'type': 'A', 'value': '**ip**', 'ttl': 23},<br/>{'type': 'TXT', 'value': '74H6MX8NRYBAQ3D8H2MJC3Y8P5AGSNB8', 'ttl': 14399},<br/>{'priority': 10, 'type': 'MX', 'value': 'mxa-00169c01.gslb.pphosted.com', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'CGJAZFH9QTYUPE2A6XJE8VEBUSSB47B5', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '3fln6bvgju1p5c0aa455mjl61n', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'lrlteq11f2vuhlvmkerhqnpua7', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'c2e1bv49egsn6v6ohlra47namp', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns6.dnsmadeeasy.com', 'ttl': 21599},<br/>{'type': 'TXT', 'value': 'logmein-verification-code=ccb897d5-1bed-410a-9c45-a6dd6be9b1c', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'p5cIVMfOtO93Vdzz9extJY700HwcOXxbhBcB+dyK028=', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'omi6ve5p04je278gjtiegkblh1', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'atlassian-domain-verification=OLe058dAXDG6kcCutEa7uSYy2iKLT7CvYNxGz2iROYa4NJ8FazXAkt/Elc8OzblS', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'okansnmkk1j60die0or78624gh', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '9j6u125ve5mvsd634h0gkovq27', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'amazonses:Do93Z/wjV5nZDDaT6n/geaLn2dcmC4LKxWJr6kW09J4=', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'o9c2hro57o4ahin6q2jj64lft8', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '5q1hlpu2u9j6lgrp3rp2ucv48p', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'gbe3h5tqf05k12gdkh1ch15c7r', 'ttl': 14399},<br/>{'priority': 10, 'type': 'MX', 'value': 'mxb-00169c01.gslb.pphosted.com', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'google-site-verification=8zcmNvhRzBOYw-GN3l86mhO5MTfJjEd8ocEyjdsSLak', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'vm77066l7cp2i2hr66uvsforij', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'hi8pl0b5i96m35pf2741v1hqth', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns5.dnsmadeeasy.com', 'ttl': 21599},<br/>{'type': 'TXT', 'value': 'h7vhs2ouk1vftgjoqqlmjcthbj', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'css6v61730u8halh3dec5lgreo', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'eks3p/qXVt97oL7X1IGBQdP05ev8rOuFOK8LAzqJ8iMkRDfXrKKGEFy3zHyGEAG8IkwimKG83eTQtoWgLClb2A==', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '7is4vpdq4k8dcioag2dhd5dtot', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'jkt1bch6hqi27c4jisrstg5mke', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'atlassian-domain-verification=2eHeLgLQ13HybaqKxXx+k/uq1dD51Vcs0GAhz1rsbpWTAP3pagbUpE1SuY3dTIyi', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'rmrophudqgsjmkfu3fur0da1dh', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'lspo05pafcr60k2utns50jephr', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'o1l85onfiau3ujepq88nscnsbp', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '9n1sitvm4qt002dkp0riccqu3b', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns2.p23.dynect.net', 'ttl': 21599},<br/>{'type': 'TXT', 'value': 'nm70udiiaufkln1coolgar432q', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'ca2mn12n6lmqe0l187um71u78f', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'R4WKB79BFYVKQ8DVZPR2JCS5CS2CTXMY', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'uZ5++1a8ndinwH931iYZakLQiALyIpSMchkwXnu+cd4=', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'c552n5ffvckbvajtvlbq87h6e4', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'fu93k0bu02qfg8mhfiedij43fo', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '2342193', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'kel7gtj8ljaveug9l29u3eaeqf', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'hkitftvrblcmp35ccr2rfgmg0p', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '36fvpcfneha0psdkcongoslqhi', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'adobe-sign-verification=3f81eef2cae0ba508fad3d31356494b4', 'ttl': 14399},<br/>{'type': 'TXT', 'value': '14cdviopi83qfqsr00edmeb02u', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'v4s6p80shob7d34obcvgthap5i', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns1.p23.dynect.net', 'ttl': 21599},<br/>{'type': 'TXT', 'value': 'adobe-idp-site-verification=9b01a9ad-47a1-4d79-a207-25b12d1958a7', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'p2avt2pnrn006tf2iht0ktphsp', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'v=spf1 include:spf-a.paloaltonetworks.com include:spf-b.paloaltonetworks.com include:spf-c.paloaltonetworks.com ~all', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'CGTGPGXPT3YNYUMKWS4RXNGXQHN5QEY3', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'logmein-verification-code=1379d49d-5d99-4141-9baa-0b30f7c69214', 'ttl': 14399},<br/>{'type': 'NS', 'value': 'ns3.p23.dynect.net', 'ttl': 21599},<br/>{'type': 'NS', 'value': 'ns4.p23.dynect.net', 'ttl': 21599},<br/>{'type': 'TXT', 'value': 'EHJSPTQUZK5WEHK7JD5XWWQAUGW3XMJT', 'ttl': 14399},<br/>{'type': 'TXT', 'value': 'nncr5kvkcogrqimf5m5vtussp6', 'ttl': 14399} | 1616986415 | size: 1963<br/>public_key: {"rsa": {"key_size": 2048, "modulus": "00badd2ce557c9c83883e418d6710ef2c286a8cd701bf7adbed530b4909fb147d3c879e7863b6c00ae2a79e7a11131a04da94b23b97d9ecb93a3fc39bc24b186b3eeba9c1e1d7315a580c58a7dc94e2e8a6cca45a2c25513f5c28f4582e08b04adc1a0269f636eba4624e8baef3b3bc40c4cb2bf9bedd14092e619b424e5d863e491da1c9c5b88516eab6794ced195cf212ac4c8bd1f3403269b85dbae0b948672b0f526d4c725035fbaa64f5d4e521790ce88810fcda36b94737f7af0b6347e912101d8718814c153c7f3771de172de490cd971a99fa7b41d746839a0a7e6981f9b6074a6260a6ee6009edb62f90161ebd652f1ddf6122412ba946e33706ac0f1", "exponent": "010001"}, "algorithm": "RSA"}<br/>thumbprint_sha256: 17bb7bda507abc602bdf1b160d7f51edaccac39fd34f8dab1e793c3612cfc8c2<br/>tags: <br/>cert_signature: {"signature": "b1f0bbeaa5a3b22b63b7d1601c633eb028fb5a77c73226d578cda06d55406c89eb55cf65f69f55b7ed015456b86063adc87ad288d7ee4d922a315cab02da9c5cd12751010b248ca73de4d1596bab4611d72758f3a2244e0f0ebf2f6a969d83180ed930b901c43bb1756ce6d2a1248da4be9cd47c4e2012e5f8d510c7c5249bbc97839e639733d5dc22697159aec439bf37f5c73ecaff7f72db1de1e652850f7ee29b9b9c17026c411f73020b99f1006e9dbe732e7d8f4a060e380bda9e05f56b3c3bd78b16dd3447a1a96382cc80e86f3627163a41879e58041ceff9697ec11f5c566a091c9c3921e29623194bbecac9e278d9da84816dbd32ab6838cedef881", "signature_algorithm": "sha256RSA"}<br/>validity: {"not_after": "2022-01-27 16:52:24", "not_before": "2020-01-27 16:52:24"}<br/>version: V3<br/>extensions: {"certificate_policies": ["**policy**", "**policy**"], "extended_key_usage": ["serverAuth", "clientAuth"], "authority_key_identifier": {"keyid": "40c2bd278ecc348330a233d7fb6cb3f0b42c80ce"}, "subject_alternative_name": ["www.paloaltonetworks.com", "paloaltonetworks.com", "aws.paloaltonetworks.com", "events.paloaltonetworks.com", "azure.paloaltonetworks.com", "get.info.paloaltonetworks.com", "compete.paloaltonetworks.com", "marketing.paloaltonetworks.com", "googlecloud.paloaltonetworks.com"], "tags": [], "subject_key_identifier": "ed89d4b918aab2968bd1dfde421a179c51445be0", "crl_distribution_points": ["http://example.com/gdig2s1-1677.crl"], "key_usage": ["ff"], "**exten**": "0482016a0168007600a4b90990b418581487bb13a2cc67700a3c359804f91bdf", "CA": true, "ca_information_access": {"CA Issuers": "http://certificates.example.com/repository/gdig2.crt", "OCSP": "http://ocsp.example.com/"}}<br/>signature_algorithm: sha256RSA<br/>serial_number: f5fa379466d9884a<br/>thumbprint: 0296c20e3a4a607b8d9e2af86155cde04594535e<br/>issuer: {"C": "US", "CN": "Go Daddy Secure Certificate Authority - G2", "L": "Scottsdale", "O": "example.com, Inc.", "ST": "Arizona", "OU": "http://certs.example.com/repository/"}<br/>subject: {"OU": "Domain Control Validated", "CN": "www.paloaltonetworks.com"} | 1616986415 | 1617084294 | 1594825871 | Majestic: {"timestamp": 1617032162, "rank": 4886}<br/>Statvoo: {"timestamp": 1617032187, "rank": 32577}<br/>Alexa: {"timestamp": 1617032161, "rank": 32577}<br/>Cisco Umbrella: {"timestamp": 1616686562, "rank": 6605}<br/>Quantcast: {"timestamp": 1585582565, "rank": 20361} | MarkMonitor Inc. | 0 | harmless: 0<br/>malicious: 0 | Creation Date: 2005-02-21T02:42:10Z<br/>DNSSEC: signedDelegation<br/>Domain Name: PALOALTONETWORKS.COM<br/>Domain Status: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited<br/>Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited<br/>Domain Status: clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited<br/>Name Server: NS1.P23.DYNECT.NET<br/>Name Server: NS2.P23.DYNECT.NET<br/>Name Server: NS3.P23.DYNECT.NET<br/>Name Server: NS4.P23.DYNECT.NET<br/>Name Server: NS5.DNSMADEEASY.COM<br/>Name Server: NS6.DNSMADEEASY.COM<br/>Name Server: NS7.DNSMADEEASY.COM<br/>Registrar Abuse Contact Email: abusecomplaints@markmonitor.com<br/>Registrar Abuse Contact Phone: +1.2083895740<br/>Registrar IANA ID: 292<br/>Registrar URL: http://www.markmonitor.com<br/>Registrar WHOIS Server: whois.markmonitor.com<br/>Registrar: MarkMonitor Inc.<br/>Registry Domain ID: 143300555_DOMAIN_COM-VRSN<br/>Registry Expiry Date: 2024-02-21T02:42:10Z<br/>Updated Date: 2020-07-15T15:11:11Z | 1615321176 |
 
 
 ### vt-file-sandbox-report
@@ -3260,7 +3259,7 @@ Retrieves a behavioral relationship of the given file hash.
                     "has_pcap": false,
                     "ip_traffic": [
                         {
-                            "destination_ip": "13.107.4.50",
+                            "destination_ip": "**ip**",
                             "destination_port": 80,
                             "transport_layer_protocol": "TCP"
                         }
@@ -4721,9 +4720,9 @@ Retrieves resolutions of the given IP.
                             "method": "blacklist",
                             "result": "clean"
                         },
-                        "Kaspersky": {
+                        "example": {
                             "category": "malicious",
-                            "engine_name": "Kaspersky",
+                            "engine_name": "example",
                             "method": "blacklist",
                             "result": "malware"
                         },
