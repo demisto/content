@@ -3,6 +3,7 @@ from CommonServerPython import *
 from ProofpointThreatResponse import create_incident_field_context, get_emails_context, pass_sources_list_filter, \
     pass_abuse_disposition_filter, filter_incidents, prepare_ingest_alert_request_body,\
     get_incidents_batch_by_time_request
+
 from test_data.raw_response import FETCH_RESPONSE
 
 MOCK_INCIDENT = {
@@ -224,7 +225,7 @@ def test_prepare_ingest_alert_request_body():
     assert prepared_body == EXPECTED_RESULT
 
 
-def test_fetch_incidents_limit_exeed(mocker):
+def test_fetch_incidents_limit_exceed(mocker):
     """
      Given
      - a dict of params given to the function which is gathered originally from demisto.params()
@@ -244,33 +245,6 @@ def test_fetch_incidents_limit_exeed(mocker):
     mocker.patch('ProofpointThreatResponse.get_incidents_request', return_value=FETCH_RESPONSE)
     incidents_list, _, _ = get_incidents_batch_by_time_request(params)
     assert len(incidents_list) == 5
-
-
-def test_fetch_incidents_duplicated(mocker):
-    """
-     Given
-     - a dict of params given to the function which is gathered originally from demisto.params()
-        The dict includes the relevant params for the fetch e.g. fetch_delta, fetch_limit, created_after, state.
-     - response of the api
-     When
-     - a single iteration of the fetch is activated with a fetch limit set to 5 and a already_fetched list is set.
-     Then
-     - validate that the ids that where already fetched weren't fetched again.
-     """
-    already_fetched = [3064, 3063, 9224]
-    params = {
-        'fetch_delta': '6',
-        'fetch_limit': ' 5',
-        'created_after': '2021-03-30T11:44:24Z',
-        'already_fetched': already_fetched,
-        'state': 'closed'
-    }
-
-    mocker.patch('ProofpointThreatResponse.get_incidents_request', return_value=FETCH_RESPONSE)
-    incidents_list, _, _ = get_incidents_batch_by_time_request(params)
-    for already_fetch in already_fetched:
-        for incident in incidents_list:
-            assert already_fetch == incident.get('id')
 
 
 def test_fetch_incidents_already_fetch_empty(mocker):
