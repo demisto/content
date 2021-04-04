@@ -86,8 +86,7 @@
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-Test",
             "fromversion": "5.5.0",
-            "timeout": 700,
-            "memory_threshold": 700
+            "timeout": 700
         },
         {
             "integrations": "SecurityAndCompliance",
@@ -3609,8 +3608,8 @@
                 "memory_threshold": 140
             },
             "demisto/powershell-ubuntu": {
-                "pid_threshold": 30,
-                "memory_threshold": 155
+                "pid_threshold": 40,
+                "memory_threshold": 200
             }
         }
     }
