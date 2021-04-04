@@ -11,7 +11,7 @@ from typing import Optional, Pattern, List
 urllib3.disable_warnings()
 
 ''' GLOBALS '''
-TAGS = 'feedTags'
+TAGS = 'tags'
 TLP_COLOR = 'trafficlightprotocol'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -472,3 +472,4 @@ def feed_main(feed_name, params=None, prefix=''):
     except Exception as e:
         err_msg = f'Error in {feed_name} integration [{e}]'
         return_error(err_msg, error=e)
+
