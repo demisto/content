@@ -486,6 +486,9 @@ def get_incidents_batch_by_time_request(params):
         for incident in filtered_incidents_list:
             # if reached to fetch limit, no need to continue to go through the incidents
             if len(incidents_list) >= fetch_limit:
+                demisto.debug(f"Number of incident gathered has reached the fetch limit."
+                              f"Number of incidents gathered is {str(len(incidents_list))} and the fetch limit is "
+                              f"{str(fetch_limit)}")
                 break
             # only if incident was not fetched already add it to the incidents list
             if incident.get('id') not in already_fetched:
@@ -503,7 +506,8 @@ def get_incidents_batch_by_time_request(params):
         # updating params according to the new times
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
-
+    demisto.debug(f"End of fetch iteration. Number of incident gathered is {str(len(incidents_list))}."
+                  f"Last fetch is {last_fetch}. Ids of new incidents are {str(new_fetched_incidents)}")
     return incidents_list, last_fetch, new_fetched_incidents
 
 

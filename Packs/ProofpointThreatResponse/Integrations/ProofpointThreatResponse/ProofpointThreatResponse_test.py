@@ -4,8 +4,6 @@ from ProofpointThreatResponse import create_incident_field_context, get_emails_c
     pass_abuse_disposition_filter, filter_incidents, prepare_ingest_alert_request_body,\
     get_incidents_batch_by_time_request
 
-from test_data.raw_response import FETCH_RESPONSE
-
 MOCK_INCIDENT = {
     "id": 1,
     "type": "Malware",
@@ -104,6 +102,15 @@ INCIDENT_FIELD_CONTEXT = {
 INCIDENT_FIELD_INPUT = [
     (MOCK_INCIDENT, INCIDENT_FIELD_CONTEXT)
 ]
+
+
+def get_fetch_data():
+    with open('./test_data/raw_response.json', 'r') as f:
+        file = json.loads(f.read())
+        return file.get('result')
+
+
+FETCH_RESPONSE = get_fetch_data()
 
 
 @pytest.mark.parametrize('incident, answer', INCIDENT_FIELD_INPUT)
