@@ -3420,7 +3420,9 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "Tanium": "Issue 33974",
+        "Tanium Threat Response": "Issue 35302"
     },
     "nightly_integrations": [
         "Lastline v2",
