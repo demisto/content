@@ -1052,6 +1052,10 @@ class SecurityAndComplianceClient {
                 throw "New action must include valid action - Preview/Purge"
             }
             $response = New-ComplianceSearchAction @cmd_params
+            if (-not $response){
+                throw "The response from ComplianceSearchAction is empty. Please check the search_name and consider
+                running the command start-search"
+            }
 
             return $response
         }
