@@ -534,13 +534,6 @@ def test_camelize():
     assert camelize(non_camalized2, '_', upper_camel=True) == expected_output2_upper_camel
     assert camelize(non_camalized2, '_', upper_camel=False) == expected_output2_lower_camel
 
-    non_camalized = [{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}]
-    expected_output_upper_camel = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
-    expected_output2_lower_camel = [{'chookityBop': 'asdasd'}, {'abC': 'd e', 'nop': 'qr_st', 'fghIjk': 'lm'}]
-    assert camelize(non_camalized, '_',) == expected_output_upper_camel
-    assert camelize(non_camalized, '_', upper_camel=True) == expected_output_upper_camel
-    assert camelize(non_camalized, '_', upper_camel=False) == expected_output2_lower_camel
-
 
 def test_camelize_string():
     from CommonServerPython import camelize_string
