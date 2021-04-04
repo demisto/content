@@ -460,6 +460,7 @@ def get_incidents_batch_by_time_request(params):
     Returns:
         list. The incidents returned from the API call
     """
+    iteration_count = 1
     incidents_list = []  # type:list
     new_fetched_incidents_ids = []
 
@@ -482,6 +483,7 @@ def get_incidents_batch_by_time_request(params):
     while created_before < current_time and len(incidents_list) < fetch_limit:
         incidents = get_incidents_request(request_params)
         filtered_incidents_list = filter_incidents(incidents)
+        demisto.debug(f"Entering while loop,iteration number {str(iteration_count)} with {str(len(incidents))} incidents")
 
         for incident in filtered_incidents_list:
             # if reached to fetch limit, no need to continue to go through the incidents
@@ -506,6 +508,11 @@ def get_incidents_batch_by_time_request(params):
         # updating params according to the new times
         request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
+        demisto.debug(f"End of current while iteration, number of all incidents gathered until now"
+                      f" {str(len(incidents_list))}. The next created_after is {request_params['created_after']} and"
+                      f"The next create_before is {request_params['created_before']}, the last fetch is {last_fetch}")
+        iteration_count = iteration_count + 1
+
     demisto.debug(f"End of fetch iteration. Number of incident gathered is {str(len(incidents_list))}."
                   f"Last fetch is {last_fetch}. Ids of new incidents are {str(new_fetched_incidents_ids)}")
     return incidents_list, last_fetch, new_fetched_incidents_ids
