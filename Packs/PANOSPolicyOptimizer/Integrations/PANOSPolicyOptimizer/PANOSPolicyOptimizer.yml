@@ -57,7 +57,7 @@ script:
   - deprecated: false
     description: Shows all security policies with no apps specified.
     execution: false
-    name: pan-os-po-noapps
+    name: pan-os-po-no-apps
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
       description: Contains informatios about the rules that have no apps specified.
@@ -66,7 +66,7 @@ script:
   - deprecated: false
     description: Gets the unused apps.
     execution: false
-    name: pan-os-po-unusedapps
+    name: pan-os-po-unused-apps
     outputs:
     - contextPath: PanOS.PolicyOptimizer.UnusedApps
       description: Shows all security rules with unused apps.
@@ -125,10 +125,10 @@ script:
     deprecated: false
     description: Gets the App usage statistics for a specific security rule.
     execution: false
-    name: pan-os-po-appandusage
+    name: pan-os-po-app-and-usage
     outputs:
     - contextPath: PanOS.PolicyOptimizer.AppsAndUsage
-      description: Shows detailed app usage statistics for specific securoty rules.
+      description: Shows detailed app usage statistics for specific security rules.
       type: Unknown
   - arguments:
     - default: false
