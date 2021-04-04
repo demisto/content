@@ -14,6 +14,6 @@ dockerimage: demisto/python3:3.9.2.17957
 runas: DBotWeakRole
 fromversion: 5.0.0
 comment: |-
-  This script changes an issue's transition, gets the new Jira status and update the issue's new status in its incident.
+  This script changes the transition field of an issue. It gets the new Jira status and updates the Cortex XSOAR incident status.
 tests:
 - Jira-v2-Test
