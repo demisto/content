@@ -334,7 +334,7 @@ tasks:
       id: ec0d59f0-611c-4e4e-8c7e-301c08000079
       version: -1
       name: Get search action
-      description: Get compliance search action from the Security & Compliance Center.
+      description: Get compliance search action from the Security & Compliance Center. This command must come after executing the command o365-sc-start-search.
       script: '|||o365-sc-get-search-action'
       type: regular
       iscommand: true
