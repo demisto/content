@@ -20,15 +20,15 @@ configuration:
   required: false
   type: 4
 - defaultvalue: OauthKey
-  display: Consumer Key (OAuth 1.0)
+  display: Consumer key (OAuth 1.0)
   name: consumerKey
   required: false
   type: 0
-- display: AccessToken
+- display: Access token
   name: accessToken
   required: false
   type: 0
-- display: PrivateKey (PKCS8 format)
+- display: Private key (PKCS8 format)
   name: privateKey
   required: false
   type: 14
@@ -73,36 +73,36 @@ configuration:
   name: outgoing_mirror
   required: false
   type: 8
-- additionalinfo: Choose the tag to add to an entry to mirror it as a attachment in
+- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment in
     Jira.
   defaultvalue: attachment
-  display: File Entry Tag
+  display: File entry tag
   hidden: false
   name: file_tag
   required: false
   type: 0
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
   defaultvalue: comment
-  display: Comment Entry Tag
+  display: Comment entry tag
   hidden: false
   name: comment_tag
   required: false
   type: 0
-- additionalinfo: Fetch comments for Jira ticket
-  display: Fetch Comments
+- additionalinfo: Fetch comments for Jira ticket.
+  display: Fetch comments
   hidden: false
   name: fetch_comments
   required: false
   type: 8
-- additionalinfo: Fetch attachments for Jira ticket
-  display: Fetch Attachments
+- additionalinfo: Fetch attachments for Jira ticket.
+  display: Fetch attachments
   hidden: false
   name: fetch_attachments
   required: false
   type: 8
-description: Use the Jira integration to manage issues and create Demisto incidents
-  from projects, From version XSOAR 6.0 and above mirror issues to existing issue
-  incidents in demisto.
+description: Use the Jira integration to manage issues and create Cortex XSOAR incidents
+  from the Jira projects. From Cortex XSOAR version 6.0 and above mirror issues to existing issue
+  incidents in Cortex XSOAR.
 display: Atlassian Jira v2
 name: jira-v2
 script:
@@ -121,8 +121,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of users to pull when searching for a matching
-        user (default is 50). The maximum allowed value is dictated by the JIRA property
+      description: The maximum number of users to fetch when searching for a matching
+        user (default is 50). The maximum allowed value is dictated by the Jira property
         'jira.search.views.default.max'. If you specify a value that is higher than
         this number, your search results will be truncated.
       isArray: false
@@ -130,7 +130,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The headers to display in human readable format.
+      description: Display the headers in human readable format.
       isArray: false
       name: headers
       required: false
@@ -160,16 +160,15 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The user's attribute value. Can be Username or Email address. Note
-        - when using OAuth 1.0 only username works.
+      description: The user's attribute value. Can be Username or Email address. When using OAuth 1.0 only Username works.
       isArray: false
       name: attribute
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of users to pull when searching for a matching
-        user (default is 50). The maximum allowed value is dictated by the JIRA property
+      description: The maximum number of users to fetch when searching for a matching
+        user (default is 50). The maximum allowed value is dictated by the Jira property
         'jira.search.views.default.max'. If you specify a value that is higher than
         this number, your search results will be truncated.
       isArray: false
@@ -177,7 +176,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the Account ID for a given user's attribute.
+    description: Gets the account ID for a given user attribute.
     execution: false
     name: jira-get-id-by-attribute
     outputs:
@@ -185,7 +184,7 @@ script:
       description: The user's attribute.
       type: string
     - contextPath: Jira.User.AccountID
-      description: The user's Account ID.
+      description: The user's account ID.
       type: string
   - arguments:
     - default: false
@@ -195,7 +194,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Headers to display in human readable format.
+      description: Display the headers in human readable format.
       isArray: false
       name: headers
       required: false
@@ -203,7 +202,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: If "true", retrives the issue's attachments.
+      description: If "true", retrieves the issue's attachments.
       isArray: false
       name: getAttachments
       predefined:
@@ -246,16 +245,16 @@ script:
       description: The status of the ticket.
       type: Unknown
     - contextPath: File.Size
-      description: The size of the file.
+      description: The size of the file (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
     - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
+      description: The SHA256 hash of the file (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
     - contextPath: File.Name
-      description: The name of the file.
+      description: The name of the file (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
     - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
+      description: The SHA1 hash of the file (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
   - arguments:
     - default: false
@@ -307,7 +306,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The priority name, for example: "High" or "Medium".'
+      description: 'The priority of the issue, for example: High, Medium.'
       isArray: false
       name: priority
       required: false
@@ -327,7 +326,7 @@ script:
       secret: false
     - default: false
       description: The account ID of the assignee. Use the jira-get-id-by-attribute
-        command to get the user's Account ID.
+        command to get the user's account ID.
       isArray: false
       name: assignee_id
       required: false
@@ -339,13 +338,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The parent issue key (if you create a sub-task).
+      description: The parent issue key (if you're creating a sub-task).
       isArray: false
       name: parentIssueKey
       required: false
       secret: false
     - default: false
-      description: The parent issue ID (if you create a sub-task).
+      description: The parent issue ID (if you're creating a sub-task).
       isArray: false
       name: parentIssueId
       required: false
@@ -376,7 +375,7 @@ script:
       secret: false
     - default: false
       description: The attachment name to be displayed in Jira (overrides original
-        file name)
+        file name).
       isArray: false
       name: attachmentName
       required: false
@@ -399,7 +398,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The roles that can view the comment, for example: "Administrators".'
+      description: 'The roles that can view the comment, for example: Administrators.'
       isArray: false
       name: visibility
       required: false
@@ -417,7 +416,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The object relationship to issue, for example: "causes".'
+      description: 'The object relationship to issue, for example: causes.'
       isArray: false
       name: relationship
       required: false
@@ -447,13 +446,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The application type of the linked remote application. E.g "com.atlassian.confluence".
+      description: The application type of the linked remote application. E.g., "com.atlassian.confluence".
       isArray: false
       name: applicationType
       required: false
       secret: false
     - default: false
-      description: The application name of the linked remote application. E.g "My
+      description: The application name of the linked remote application. E.g., "My
         Confluence Instance".
       isArray: false
       name: applicationName
@@ -471,8 +470,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The issue object (in JSON format). e.g, {"fields":{"customfield_10037":
-        "field_value"}}'
+      description: 'The issue object (in JSON format). E.g., {"fields":{"customfield_10037":
+        "field_value"}}.'
       isArray: false
       name: issueJson
       required: false
@@ -496,7 +495,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A priority name, for example "High" or "Medium".
+      description: 'The issue priority, for example: High, Medium.'
       isArray: false
       name: priority
       required: false
@@ -516,25 +515,25 @@ script:
       secret: false
     - default: false
       description: The account ID of the assignee. Use the jira-get-id-by-attribute
-        command to get the user's Account ID.
+        command to get the user's account ID.
       isArray: false
       name: assignee_id
       required: false
       secret: false
     - default: false
-      description: The name of the status.
+      description: The issue status.
       isArray: false
       name: status
       required: false
       secret: false
     - default: false
-      description: The name of the transition.
+      description: The issue transition.
       isArray: false
       name: transition
       required: false
       secret: false
     deprecated: false
-    description: Modifies an issue in JIRA.
+    description: Modifies an issue in Jira.
     execution: false
     name: jira-edit-issue
     outputs:
@@ -598,7 +597,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The remote incident id - Issue id.
+      description: The remote incident ID (issue ID).
       isArray: false
       name: id
       required: true
@@ -612,17 +611,17 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get remote data from a remote incident. Please note that this method
-      will not update the current incident, it's here for debugging purposes.
+    description: Gets remote data from a remote incident. This method is only used for debugging purposes and
+      will not update the current incident.
     execution: false
     name: get-remote-data
   - deprecated: false
-    description: Returns the fields to map.it's here for debugging purposes.
+    description: Returns the fields to map. This method is only used for debugging purposes.
     execution: false
     name: get-mapping-fields
   - deprecated: false
-    description: Get incident changes. Please note that this method will not update
-      the current incident, it's here for debugging purposes.
+    description: Gets incident changes. This method is only used for debugging purposes and will not update
+      the current incident.
     execution: false
     name: update-remote-system
   - arguments:
@@ -633,7 +632,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: List all possible transitions for a given ticket.
+    description: Lists all possible transitions for a given ticket.
     execution: false
     name: jira-list-transitions
     outputs:
@@ -641,11 +640,11 @@ script:
       description: The ID of the issue.
       type: Number
     - contextPath: Ticket.Transitions.transitions
-      description: A list of all possible transitions
+      description: A list of all possible transitions.
       type: Unknown
   - deprecated: false
-    description: available from Cortex XSOAR version 6.1.0. This command queries for
-      incidents that were modified since the last update.it's here for debugging purposes.
+    description: Available from Cortex XSOAR version 6.1.0. This command queries for
+      incidents that were modified since the last update. This method is only used for debugging purposes.
     execution: false
     name: get-modified-remote-data
   dockerimage: demisto/oauthlib:1.0.0.17529
