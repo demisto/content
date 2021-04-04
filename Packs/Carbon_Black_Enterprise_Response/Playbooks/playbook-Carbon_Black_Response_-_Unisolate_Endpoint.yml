@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 2c93fe0d-cd25-4d87-8786-c0234123874a
+    taskid: fc08bfe1-08dd-4d22-8147-85aced6e6a9d
     type: condition
     task:
-      id: 2c93fe0d-cd25-4d87-8786-c0234123874a
+      id: fc08bfe1-08dd-4d22-8147-85aced6e6a9d
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -95,10 +95,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 33711ee3-90f7-42ca-8332-a4087fd2ea22
+    taskid: a331ff25-42fc-4e76-8d62-532d284c752b
     type: condition
     task:
-      id: 33711ee3-90f7-42ca-8332-a4087fd2ea22
+      id: a331ff25-42fc-4e76-8d62-532d284c752b
       version: -1
       name: Is there sensor id?
       type: condition
@@ -117,7 +117,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Agent_ID
+              simple: inputs.Endpoint_ID
             iscontext: true
       - - operator: containsGeneral
           left:
@@ -126,7 +126,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: inputs.Agent_ID
+              simple: inputs.Endpoint_ID
             iscontext: true
     view: |-
       {
@@ -142,10 +142,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 01c53ce7-f1bb-46cf-88de-dd74a523462b
+    taskid: d308391d-bca5-4895-8ca3-7212016b1112
     type: regular
     task:
-      id: 01c53ce7-f1bb-46cf-88de-dd74a523462b
+      id: d308391d-bca5-4895-8ca3-7212016b1112
       version: -1
       name: Get host information from Carbon Black Enterprise Response
       description: Display information about the given sensor
@@ -161,7 +161,7 @@ tasks:
       hostname: {}
       ip: {}
       sensor:
-        simple: ${inputs.Agent_ID}
+        simple: ${inputs.Endpoint_ID}
     separatecontext: false
     view: |-
       {
@@ -177,10 +177,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 93a864fa-6cf3-4afc-8521-4097fffd2808
+    taskid: 0ad47e84-28ee-43d8-8c9b-06cc056927ac
     type: condition
     task:
-      id: 93a864fa-6cf3-4afc-8521-4097fffd2808
+      id: 0ad47e84-28ee-43d8-8c9b-06cc056927ac
       version: -1
       name: Is the sensor isolated?
       type: condition
@@ -218,10 +218,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0482cd66-45a0-4e48-8d50-7f369860dc15
+    taskid: 6e64eb8f-6046-41a9-8f7c-d9210545d742
     type: regular
     task:
-      id: 0482cd66-45a0-4e48-8d50-7f369860dc15
+      id: 6e64eb8f-6046-41a9-8f7c-d9210545d742
       version: -1
       name: Unisolate the sensor
       description: Unquarantine the endpoint
@@ -234,7 +234,7 @@ tasks:
       - "2"
     scriptarguments:
       sensor:
-        simple: ${inputs.Agent_ID}
+        simple: ${inputs.Endpoint_ID}
     separatecontext: false
     view: |-
       {
@@ -250,10 +250,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 6899b60a-259f-4966-8162-afcbb0479fc3
+    taskid: f9b56018-29bb-4a84-8c72-fc5bcaf10745
     type: regular
     task:
-      id: 6899b60a-259f-4966-8162-afcbb0479fc3
+      id: f9b56018-29bb-4a84-8c72-fc5bcaf10745
       version: -1
       name: Get CB sensor list
       description: List the CarbonBlack sensors
@@ -264,6 +264,8 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      limit: {}
     separatecontext: false
     view: |-
       {
@@ -277,6 +279,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
