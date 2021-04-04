@@ -1,0 +1,1 @@
+Jamf device management. Please note, this integration is currently only compatible with the Jamf V1 API.
