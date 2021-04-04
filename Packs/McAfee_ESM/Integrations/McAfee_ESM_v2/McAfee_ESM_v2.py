@@ -553,6 +553,7 @@ class McAfeeESMClient(BaseClient):
         while not result_ready:
             try:
                 temp = self.__request(path, data={'resultID': search_id}, params=params)
+                demisto.debug(f"request with params: {params}, response is: {temp}")
                 if not result['columns']:
                     result['columns'] = temp.get('columns')
                 if len(temp.get('rows', {})) < params['numRows']:
@@ -566,6 +567,7 @@ class McAfeeESMClient(BaseClient):
                     raise
                 else:
                     result_ready = True
+        raw_response = result
         result = table_times_set(result, self.difference)
         entry: List = [{}] * len(result['rows'])
         headers = [str(field.get('name')).replace('.', '') for field in result['columns']]
@@ -575,7 +577,7 @@ class McAfeeESMClient(BaseClient):
         condition = '(val.AlertIPSIDAlertID && val.AlertIPSIDAlertID == obj.AlertIPSIDAlertID)' \
             if 'AlertIPSIDAlertID' in headers else ''
         context_entry = {f'{CONTEXT_INTEGRATION_NAME}results{condition}': entry}
-        return search_readable_outputs(result), context_entry, result
+        return search_readable_outputs(result), context_entry, raw_response
 
     def __alarm_event_context_and_times_set(self, result: Dict) -> Dict:
         context_entry = {
