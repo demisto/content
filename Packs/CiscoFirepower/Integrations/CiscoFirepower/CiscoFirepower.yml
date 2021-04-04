@@ -2126,6 +2126,12 @@ script:
       name: offset
       required: false
       secret: false
+    - default: false
+      description: The container UUID.
+      isArray: false
+      name: container_uuid
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves a list of all devices with configuration changes that are
       ready to deploy.
@@ -2149,6 +2155,24 @@ script:
       type: String
     - contextPath: CiscoFP.DeployableDevices.Version
       description: Device version.
+      type: String
+    - contextPath: CiscoFP.PendingDeployment.ID
+      description: Device ID.
+      type: String
+    - contextPath: CiscoFP.PendingDeployment.Name
+      description: Device name.
+      type: String
+    - contextPath: CiscoFP.PendingDeployment.Type
+      description: Device type.
+      type: String
+    - contextPath: CiscoFP.PendingDeployment.Status
+      description: Device status.
+      type: String
+    - contextPath: CiscoFP.PendingDeployment.StartTime
+      description: Start time of the deployment.
+      type: String
+    - contextPath: CiscoFP.PendingDeployment.EndTime
+      description: End time of the deployment.
       type: String
   - arguments:
     - default: false
@@ -2259,6 +2283,112 @@ script:
     - contextPath: CiscoFP.TaskStatus.Status
       description: task status
       type: String
+  - arguments:
+    - default: false
+      description: TODO
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The maximum number of items to return.
+        The default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        The default is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: TODO
+    execution: false
+    name: ciscofp-get-url-groups-object
+    outputs:
+    - contextPath: CiscoFP.UrlGroups.ID
+      description: TODO
+      type: String
+    - contextPath: CiscoFP.UrlGroups.Name
+      description: TODO
+      type: String
+    - contextPath: CiscoFP.UrlGroups.Overridable
+      description: TODO
+      type: String
+    - contextPath: CiscoFP.UrlGroups.Description
+      description: TODO
+      type: String
+    - contextPath: CiscoFP.UrlGroups.Objects
+      description: TODO
+      type: Unknown
+    - contextPath: CiscoFP.UrlGroups.Addresses
+      description: TODO
+      type: Unknown
+  - arguments:
+    - default: false
+      description: TODO
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: url_objects_id_list
+      required: false
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: url_list
+      required: false
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: TODO
+      isArray: false
+      name: overridable
+      required: false
+      secret: false
+    deprecated: false
+    description: TODO
+    execution: false
+    name: ciscofp-update-url-groups-objects
+    outputs:
+    - contextPath: CiscoFP.UrlGroups.ID
+      description: TODO
+      type: String
+    - contextPath: CiscoFP.UrlGroups.Name
+      description: TODO
+      type: String
+    - contextPath: CiscoFP.UrlGroups.Overridable
+      description: TODO
+      type: String
+    - contextPath: CiscoFP.UrlGroups.Description
+      description: TODO
+      type: String
+    - contextPath: CiscoFP.UrlGroups.Objects
+      description: TODO
+      type: Unknown
+    - contextPath: CiscoFP.UrlGroups.Addresses
+      description: TODO
+      type: Unknown
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
