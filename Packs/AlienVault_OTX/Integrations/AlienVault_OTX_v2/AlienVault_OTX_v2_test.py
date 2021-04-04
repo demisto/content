@@ -70,6 +70,7 @@ client = Client(
     headers={'X-OTX-API-KEY': "TOKEN"},
     verify=False,
     proxy=False,
+    default_threshold='2',
     reliability=DBotScoreReliability.C
 )
 
