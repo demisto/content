@@ -20,8 +20,8 @@ For more information, please refer to the [Identity Lifecycle Management article
 | Sync user profiles on first run | If checked, the first fetch won't trigger incidents but all of the User Profile indicators will be created. | False |
 | Fetch Samples | If checked, five sample events will be created. | False |
 | Dates Format in Workday Report | | False |
-| Deactivation date field | Select the field that implies when to trigger a termination incident for deactivated employees. | False |
-| Number of days before hire date to sync hires | Determines when employees are synced from Workday, i.e., when are the User Profile in XSOAR and the users in the applications created. Set to 0 to sync hires on their hire date. Leave empty to sync the hires immediately. | False |
-| Number of days before hire date to enable Active Directory account | Determines when to enable the Active Directory accounts of employees. Set to 0 to enable the Active Directory accounts on their hire date. Leave empty to enable the accounts immediately. Note that this is effective only when the employees are already synced to XSOAR, so you should set a number lower or equal to the previous parameter (days before hire to sync). | False |
+| Deactivation date field | Select the field that determines when to trigger a termination incident for deactivated employees. | False |
+| Number of days before hire date to sync hires | Determines when employees are synced from Workday, i.e., when are the User Profile in XSOAR, and the users in the applications, created. Set to 0 to sync hires on their hire date. Leave empty to sync the hires immediately. | False |
+| Number of days before hire date to enable Active Directory account | Determines when to enable the Active Directory accounts for employees. Set to 0 to enable the Active Directory accounts on their hire date. Leave empty to enable the accounts immediately. Note that this is effective only when the employees are already synced to XSOAR, so you should set a number lower, or equal to, the value in the *Number of days before hire date to sync hires* parameter. | False |
 
 4. Click **Test** to validate the connection.
