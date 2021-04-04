@@ -823,7 +823,7 @@ script:
 
                 } else { throw 'Argument \'to_time\' or \'from_time\' is not with the right format. Format should be: DD-MM-YYYY'}
             } else{
-                throw 'Missing argument \'from_time\' or \'to_time\' '
+                throw 'Please consider adding \'from_time\' or \'to_time\' arguments'
             }
             commandUrlKey = command;
             break
