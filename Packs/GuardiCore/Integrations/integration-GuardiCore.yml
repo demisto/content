@@ -306,11 +306,24 @@ script:
 
 
     var parseGetIncidents = function(command, response) {
+        var internalCommand = 'guardicore-get-incident';
+        var outputs = [];
         var contexts = [];
-        contexts.push(convertKeysToPascalCase(response));
+        for (var objects = dq(response, 'objects'), i = 0; i < objects.length; i++) {
+            var output = mapObjFunction(outputsDictionary[internalCommand])(objects[i]);
+            output.Description = formatIncidentDescription(objects[i].description);
+            outputs.push(output);
+            contexts.push(convertKeysToPascalCase(output));
+        }
+
+        if (outputs.length === 0) {
+            return 'No matching incidents were found.';
+        }
+
         var entry = buildEmptyEntryContext();
-        entry.HumanReadable = objToMd(response);
+        entry.HumanReadable = tblToMd('GuardiCore Incidents', outputs);
         entry.EntryContext['GuardiCore.Incidents'] = contexts;
+
         return entry;
     }
 
