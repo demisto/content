@@ -1,3 +1,5 @@
+import hashlib
+
 import demistomock as demisto
 
 from CommonServerPython import *
@@ -28,13 +30,14 @@ def login(session, session_metadata, use_ssl):
                   'user': session_metadata['username'],
                   'passwd': session_metadata['password'],
                   'challengePwd': '',
-                  'ok': 'Log In'}
+                  'ok': 'Log In'
+                  }
     # Use a POST command to login to Panorama and create an initial session
-    url_str = session_metadata['base_url'] + '/php/login.php?'
+    url_str = f'{session_metadata["base_url"]}/php/login.php?'
     r = session.post(url=url_str, data=login_data, verify=use_ssl)
     # Use a GET command to the base URL to get the ServerToken which looks like this:
     #   window.Pan.st.st.st539091 = "8PR8ML4A67PUMD3NU00L3G67M4958B996F61Q97T"
-    url_str = session_metadata['base_url'] + '/'
+    url_str = f'{session_metadata["base_url"]}/'
     r = session.post(url=url_str, verify=use_ssl)
     # Use RegEx to parse the ServerToken string from the JavaScript variable
     match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', r.text)
@@ -43,8 +46,9 @@ def login(session, session_metadata, use_ssl):
     return match.group(1)
 
 
-def logout(session, session_metadatadata, use_ssl) -> None:
-    session.post(url=f'{session_metadatadata["base_url"]}/php/logout.php?', verify=use_ssl)
+def logout(session, session_metadata):
+    response = session.post(url=f'{session_metadata["base_url"]}/php/logout.php?', verify=False)
+    return response
 
 
 def getPoStats(session, session_metadata):
@@ -292,7 +296,8 @@ def panos_po_getDag(session, session_metadata, args: dict):
     Gets the DAG
     """
     dag = args.get('dag')
-    result = getDag(session, session_metadata, dag)['result']['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
+    result = getDag(session, session_metadata, dag)['result']['result']['dyn-addr-grp']['entry'][0]['member-list'][
+        'entry']
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -310,9 +315,9 @@ def main():
         raise Exception('Set a port for the instance')
     use_ssl = not params.get('insecure')
 
-    url = f'{params.get("server").rstrip("/:")}:{params.get("port")}',
-    session_metadatadata = {'panorama': url, 'base_url': url, 'username': params['credentials']['identifier'],
-                            'password': params['credentials']['password'], 'tid': 50}
+    url = f'{params.get("server").rstrip("/:")}:{params.get("port")}'
+    session_metadata = {'panorama': url, 'base_url': url, 'username': params['credentials']['identifier'],
+                        'password': params['credentials']['password'], 'tid': 50}
     # The TID is used to track individual commands send to the firewall/Panorama during a PHP session, and
     # is also used to generate the security token (Data String) that is used to validate each command.
     # Setting tid as a global variable with an arbitrary value of 50
@@ -323,34 +328,34 @@ def main():
         # Use Session() in order to maintain cookies for persisting the login PHP session cookie
         session = requests.Session()
         # Login to Panorama and return the GUI cookie value
-        session_metadatadata['cookie'] = login(session, session_metadatadata, use_ssl)
+        session_metadata['cookie'] = login(session, session_metadata, use_ssl)
         args = demisto.args()
         if command == 'test-module':
             try:
-                getPoStats(session, session_metadatadata)
+                getPoStats(session, session_metadata)
                 return_results('ok')
             except:
                 raise Exception("Failed to login. Please double-check the credentials and the server URL")
         elif command == 'pan-os-po-get-stats':
-            panos_po_getPoStats(session, session_metadatadata)
+            panos_po_getPoStats(session, session_metadata)
         elif command == 'pan-os-po-noapps':
-            panos_po_getNoAppSpecified(session, session_metadatadata)
+            panos_po_getNoAppSpecified(session, session_metadata)
         elif command == 'pan-os-po-unusedapps':
-            panos_po_getUnusedApps(session, session_metadatadata)
+            panos_po_getUnusedApps(session, session_metadata)
         elif command == 'pan-os-po-get-rules':
-            panos_po_get_rules(session, session_metadatadata, args)
+            panos_po_get_rules(session, session_metadata, args)
         elif command == 'pan-os-po-appandusage':
-            panos_po_getAppAndUsage(session, session_metadatadata, args)
+            panos_po_getAppAndUsage(session, session_metadata, args)
         elif command == 'pan-os-get-dag':
-            panos_po_getDag(session, session_metadatadata, args)
+            panos_po_getDag(session, session_metadata, args)
         else:
             raise NotImplementedError(f'Command {command} was not implemented.')
 
     except Exception as err:
-        return_error(str(err))
+        return_error(f'{str(err)}.\n Trace:{traceback.format_exc()}')
 
     finally:
-        logout(session, session_metadatadata, use_ssl)  # Logout of Panorama
+        logout(session, session_metadata)  # Logout of Panorama
 
 
 if __name__ in ("__builtin__", "builtins", '__main__'):
