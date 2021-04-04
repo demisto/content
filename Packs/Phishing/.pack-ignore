@@ -126,3 +126,6 @@ ignore=IF107
 
 [file:Phishing]
 ignore=PA116
+
+[file:layoutscontainer-Phishing.json]
+ignore=BA101
