@@ -27,6 +27,13 @@ INTEGRATION_CONTEXT_NAME = 'PhishLabsIOC'
 
 
 class Client(BaseClient):
+
+    def __init__(self, base_url, verify=True, proxy=False, auth=None, reliability=DBotScoreReliability.B):
+
+        BaseClient.__init__(self, base_url=base_url, verify=verify, proxy=proxy, auth=auth)
+
+        self.reliability = reliability
+
     def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
@@ -138,12 +145,13 @@ def indicator_ec(indicator: Dict, type_ec: AnyStr) -> Dict:
 
 
 @logger
-def indicator_dbot_ec(indicator: Dict, type_ec: AnyStr) -> Tuple[Dict, Dict]:
+def indicator_dbot_ec(client: Client, indicator: Dict, type_ec: AnyStr) -> Tuple[Dict, Dict]:
     """Indicator convert to ec and dbotscore ec
     Get an indicator from raw response and concert to demisto entry context format and demisto dbotscore entry context
     format.
 
     Args:
+        client: Client object
         indicator: raw response dictionary
         type_ec: type of entry context
 
@@ -164,7 +172,8 @@ def indicator_dbot_ec(indicator: Dict, type_ec: AnyStr) -> Tuple[Dict, Dict]:
             'Indicator': indicator.get('url'),
             'Type': 'URL',
             'Vendor': INTEGRATION_NAME,
-            'Score': Common.DBotScore.BAD if indicator.get('malicious') == 'true' else Common.DBotScore.GOOD
+            'Score': Common.DBotScore.BAD if indicator.get('malicious') == 'true' else Common.DBotScore.GOOD,
+            'Reliability': client.reliability
         }
     elif type_ec == 'file-ec':
         ec = {
@@ -180,18 +189,20 @@ def indicator_dbot_ec(indicator: Dict, type_ec: AnyStr) -> Tuple[Dict, Dict]:
             'Indicator': indicator.get('fileName'),
             'Type': 'File',
             'Vendor': INTEGRATION_NAME,
-            'Score': Common.DBotScore.BAD if indicator.get('malicious') == 'true' else Common.DBotScore.GOOD
+            'Score': Common.DBotScore.BAD if indicator.get('malicious') == 'true' else Common.DBotScore.GOOD,
+            'Reliability': client.reliability
         }
 
     return dbotscore, ec
 
 
 @logger
-def indicators_to_list_ec(indicators: List, type_ec: AnyStr) -> Union[Tuple[List, List], List]:
+def indicators_to_list_ec(client: Client, indicators: List, type_ec: AnyStr) -> Union[Tuple[List, List], List]:
     """Unpack list of indicators to demisto ec format
     Convert list of indicators from raw response to demisto entry context format lists
 
     Args:
+        client: Client object
         indicators: lit of indicators from raw response
         type_ec: type of indicators
     Returns:
@@ -201,7 +212,7 @@ def indicators_to_list_ec(indicators: List, type_ec: AnyStr) -> Union[Tuple[List
     ecs: List = []
     if type_ec in ['url-ec', 'file-ec']:
         for indicator in indicators:
-            dbotscore, ec = indicator_dbot_ec(indicator, type_ec)
+            dbotscore, ec = indicator_dbot_ec(client, indicator, type_ec)
             ecs.append(ec)
             dbots.append(dbotscore)
         return ecs, dbots
@@ -213,10 +224,11 @@ def indicators_to_list_ec(indicators: List, type_ec: AnyStr) -> Union[Tuple[List
 
 
 @logger
-def raw_response_to_context(incidents: Union[List, Any]) -> Tuple[List, List, List, List, List]:
+def raw_response_to_context(client: Client, incidents: Union[List, Any]) -> Tuple[List, List, List, List, List]:
     """
     Convert incidents list from raw response to demisto entry context list format
     Args:
+        client: Client object
         incidents: Incidents list
 
     Returns:
@@ -249,8 +261,9 @@ def raw_response_to_context(incidents: Union[List, Any]) -> Tuple[List, List, Li
             'Email': {
                 'EmailBody': sc_incident.get('emailBody'),
                 'Sender': sc_incident.get('sender'),
-                'URL': indicators_to_list_ec(sc_incident.get('urls', []), type_ec='url-phishlabs'),
-                'Attachment': indicators_to_list_ec(sc_incident.get('attachments', []), type_ec='attach-phishlabs')
+                'URL': indicators_to_list_ec(client, sc_incident.get('urls', []), type_ec='url-phishlabs'),
+                'Attachment': indicators_to_list_ec(client, sc_incident.get('attachments', []),
+                                                    type_ec='attach-phishlabs')
             }
         }
         phishlabs_ec.append(phishlabs)
@@ -258,11 +271,11 @@ def raw_response_to_context(incidents: Union[List, Any]) -> Tuple[List, List, Li
         email = indicator_ec(sc_incident, type_ec='email-ec')
         email_ec.append(email)
         # Files + dbot entry context
-        files, dbotscores_files = indicators_to_list_ec(sc_incident.get('attachments', []), type_ec='file-ec')
+        files, dbotscores_files = indicators_to_list_ec(client, sc_incident.get('attachments', []), type_ec='file-ec')
         file_ec += files
         dbots_ec += dbotscores_files
         # Urls + dbot entry context
-        urls, dbotscores_urls = indicators_to_list_ec(sc_incident.get('urls', []), type_ec='url-ec')
+        urls, dbotscores_urls = indicators_to_list_ec(client, sc_incident.get('urls', []), type_ec='url-ec')
         url_ec += urls
         dbots_ec += dbotscores_urls
 
@@ -376,7 +389,8 @@ def get_incidents_command(client: Client, **kwargs: Dict) -> Tuple[object, dict,
     raw_response: Dict = client.get_incidents(**kwargs)  # type: ignore
     if raw_response:
         title = f'{INTEGRATION_NAME} - incidents'
-        phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(raw_response.get('incidents'))
+        phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(client,
+                                                                                       raw_response.get('incidents'))
         context_entry: Dict = {
             outputPaths.get('dbotscore'): dbots_ec,
             outputPaths.get('file'): files_ec,
@@ -412,7 +426,8 @@ def get_incident_by_id_command(client: Client, incident_id: str) -> Tuple[object
     raw_response: Dict = client.get_incident_by_id(incident_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - incidents'
-        phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(raw_response.get('incidents'))
+        phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(client,
+                                                                                       raw_response.get('incidents'))
         context_entry: Dict = {
             outputPaths.get('dbotscore'): dbots_ec,
             outputPaths.get('file'): files_ec,
@@ -441,14 +456,24 @@ def main():
     params = demisto.params()
     base_url = urljoin(params.get('url'), 'idapi/v1')
     verify_ssl = not params.get('insecure', False)
+    reliability = demisto.params().get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.B
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        return_error("Please provide a valid value for the Source Reliability parameter.")
+
     proxy = params.get('proxy')
     client = Client(
         base_url=base_url,
         verify=verify_ssl,
         proxy=proxy,
         auth=(params.get('credentials', {}).get('identifier'),
-              params.get('credentials', {}).get('password'))
+              params.get('credentials', {}).get('password')),
+        reliability=reliability
     )
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
