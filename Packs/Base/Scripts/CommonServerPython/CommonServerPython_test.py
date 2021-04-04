@@ -2055,6 +2055,62 @@ class TestBaseClient:
         res = self.client._http_request('get', 'event', resp_type='response')
         assert isinstance(res, requests.Response)
 
+    def test_http_request_proxy_false(self):
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = 'http://testproxy:8899'
+        os.environ['https_proxy'] = 'https://testproxy:8899'
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=False, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert not m.last_request.proxies
+            assert m.called is True
+
+    def test_http_request_proxy_true(self):
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = 'http://testproxy:8899'
+        os.environ['https_proxy'] = 'https://testproxy:8899'
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert m.last_request.proxies == {
+                'http': 'http://testproxy:8899',
+                'https': 'https://testproxy:8899'
+            }
+            assert m.called is True
+
+    def test_http_request_verify_false(self):
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=False)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify is False
+            assert m.called is True
+
     def test_http_request_not_ok(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500)
@@ -3447,7 +3503,14 @@ class TestCommonTypes:
                 'sub-domain1.somedomain.com',
                 'sub-domain2.somedomain.com',
                 'sub-domain3.somedomain.com'
-            ]
+            ],
+            tags=['tag1', 'tag2'],
+            malware_family=['malware_family1', 'malware_family2'],
+            feed_related_indicators=Common.FeedRelatedIndicators(
+                value='8.8.8.8',
+                indicator_type="IP",
+                description='test'
+            )
         )
 
         results = CommandResults(
@@ -3499,6 +3562,9 @@ class TestCommonTypes:
                             "PNS31.CLOUDNS.NET",
                             "PNS32.CLOUDNS.NET"
                         ],
+                        "Tags": ["tag1", "tag2"],
+                        "FeedRelatedIndicators": {"value": "8.8.8.8", "type": "IP", "description": "test"},
+                        "MalwareFamily": ["malware_family1", "malware_family2"],
                         "WHOIS": {
                             "Registrar": {
                                 "Name": "Mr Registrar",
