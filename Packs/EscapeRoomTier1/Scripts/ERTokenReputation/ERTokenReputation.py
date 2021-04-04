@@ -16,9 +16,10 @@ def set_user_credentials(indicator_id):
     res = demisto.executeCommand('setIndicator', {
         'id': indicator_id,
         'customFields': {
-            'logininfo': '',
+            'logininfo': 'Go to Tier2',
             'username': 'Isaac',
-            'usercredentials': 'TBD![]()',
+            'usercredentials': '![Reveal Password](https://raw.githubusercontent.com/demisto/content/'
+                               'EscapeRoomMaterials/Packs/EscapeRoomTier1/images/indicator_QR.png)',
         },
     })
 
