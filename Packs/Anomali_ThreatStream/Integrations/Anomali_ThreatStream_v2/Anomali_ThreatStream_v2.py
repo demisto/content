@@ -115,6 +115,22 @@ class Client:
             return res.text
         return res.json()
 
+    def get_dbot_context(self, indicator, threshold, mapping=None):
+        """
+             Builds and returns dictionary with Indicator, Type, Vendor and Score keys
+             and values from the indicator that will be returned to context.
+        """
+        if not mapping:
+            mapping = DBOT_MAPPING
+        dbot_context = {mapping[k]: v for (k, v) in indicator.items() if k in mapping.keys()}
+        indicator_score = DBOT_SCORE[indicator.get('meta', {}).get('severity', 'low')]
+        # the indicator will be considered as malicious in case it's score is greater or equal to threshold
+        dbot_context['Score'] = 3 if indicator_score >= DBOT_SCORE[threshold] else indicator_score
+        dbot_context['Vendor'] = 'ThreatStream'
+        dbot_context['Reliability'] = self.reliability
+
+        return dbot_context
+
 
 def find_worst_indicator(indicators):
     """
@@ -150,23 +166,6 @@ def build_params(**params):
     """
     params.update(CREDENTIALS)
     return params
-
-
-def get_dbot_context(client: Client, indicator, threshold, mapping=None):
-    """
-         Builds and returns dictionary with Indicator, Type, Vendor and Score keys
-         and values from the indicator that will be returned to context.
-    """
-    if not mapping:
-        mapping = DBOT_MAPPING
-    dbot_context = {mapping[k]: v for (k, v) in indicator.items() if k in mapping.keys()}
-    indicator_score = DBOT_SCORE[indicator.get('meta', {}).get('severity', 'low')]
-    # the indicator will be considered as malicious in case it's score is greater or equal to threshold
-    dbot_context['Score'] = 3 if indicator_score >= DBOT_SCORE[threshold] else indicator_score
-    dbot_context['Vendor'] = 'ThreatStream'
-    dbot_context['Reliability'] = client.reliability
-
-    return dbot_context
 
 
 def mark_as_malicious(indicator, threshold, context):
@@ -434,7 +433,7 @@ def get_ip_reputation(client: Client, ip, threshold=None, status="active,inactiv
         return
 
     threshold = threshold or client.default_threshold
-    dbot_context = get_dbot_context(client, indicator, threshold)
+    dbot_context = client.get_dbot_context(indicator, threshold)
     ip_context = get_ip_context(indicator, threshold)
     threat_ip_context = get_threat_generic_context(indicator)
 
@@ -468,7 +467,7 @@ def get_domain_reputation(client: Client, domain, threshold=None, status="active
         return
 
     threshold = threshold or client.default_threshold
-    dbot_context = get_dbot_context(client, indicator, threshold)
+    dbot_context = client.get_dbot_context(indicator, threshold)
     domain_context = get_domain_context(indicator, threshold)
     threat_domain_context = get_threat_generic_context(indicator)
 
@@ -507,7 +506,7 @@ def get_file_reputation(client: Client, file, threshold=None, status="active,ina
         'subtype': 'Type',
         'source': 'Vendor',
     }
-    dbot_context = get_dbot_context(client, indicator, threshold, file_dbot_mapping)
+    dbot_context = client.get_dbot_context(indicator, threshold, file_dbot_mapping)
     file_type = get_file_type(indicator)
     file_context = get_file_context(indicator, threshold)
     file_indicator_mapping = get_file_mapping()
@@ -548,7 +547,7 @@ def get_url_reputation(client: Client, url, threshold=None, status="active,inact
         return
 
     threshold = threshold or client.default_threshold
-    dbot_context = get_dbot_context(client, indicator, threshold)
+    dbot_context = client.get_dbot_context(indicator, threshold)
     domain_context = get_url_context(indicator, threshold)
     threat_url_context = get_threat_generic_context(indicator)
     del threat_url_context['ASN']
@@ -574,7 +573,7 @@ def get_email_reputation(client: Client, email, threshold=None, status="active,i
         return
 
     threshold = threshold or client.default_threshold
-    dbot_context = get_dbot_context(client, indicator, threshold)
+    dbot_context = client.get_dbot_context(indicator, threshold)
     threat_email_context = get_threat_generic_context(indicator)
     threat_email_context['Email'] = threat_email_context.pop('Address')
     threat_email_context.pop("ASN", None)
@@ -982,14 +981,15 @@ def main():
     else:
         Exception("Please provide a valid value for the Source Reliability parameter.")
 
-    client = Client(
-        base_url=f'{params.get("url", "").strip("/")}/api/',
-        use_ssl=not params.get('insecure', False),
-        default_threshold=params.get('default_threshold', 'high'),
-        reliability=reliability
-    )
-
     try:
+
+        client = Client(
+            base_url=f'{params.get("url", "").strip("/")}/api/',
+            use_ssl=not params.get('insecure', False),
+            default_threshold=params.get('default_threshold', 'high'),
+            reliability=reliability
+        )
+
         handle_proxy()
         args = prepare_args(demisto.args())
         if command == 'test-module':
