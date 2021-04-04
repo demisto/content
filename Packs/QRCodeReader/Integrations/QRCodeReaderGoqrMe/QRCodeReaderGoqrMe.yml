@@ -1,0 +1,37 @@
+category: Utilities
+commonfields:
+  id: QR Code Reader - goqr.me
+  version: -1
+configuration:
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Read QR Code from image file.
+display: QR Code Reader - goqr.me
+name: QR Code Reader - goqr.me
+script:
+  commands:
+  - arguments:
+    - description: Entry ID of image file
+      name: entry_id
+      required: true
+    description: Upload a PNG, GIF or JP(E)G image which is smaller than 1 MiB via
+      the entry_id of the image file.
+    name: goqr-read-qr-code-from-file
+    outputs:
+    - contextPath: GoQRCodeData.data
+      description: QR Code data obtained
+    - contextPath: GoQRCodeData.error
+      description: Errors reading QR code
+    - contextPath: GoQRCodeData.seq
+      description: sequence numbers read from code
+  dockerimage: demisto/python3:3.9.2.17246
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

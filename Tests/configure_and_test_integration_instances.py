@@ -1393,7 +1393,7 @@ def main():
 
     configure_servers_and_restart(build)
     disable_instances(build)
-    installed_content_packs_successfully = install_packs_pre_update(build)
+    install_packs_pre_update(build)
 
     new_integrations, modified_integrations = get_changed_integrations(build)
 
@@ -1401,7 +1401,7 @@ def main():
                                                                                   new_integrations,
                                                                                   modified_integrations)
     modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-    installed_content_packs_successfully = update_content_on_servers(build) and installed_content_packs_successfully
+    installed_content_packs_successfully = update_content_on_servers(build)
 
     successful_tests_post, failed_tests_post = test_integrations_post_update(build,
                                                                              new_module_instances,

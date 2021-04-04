@@ -134,7 +134,7 @@ tags:
 - incidents
 timeout: 300ns
 type: python
-dockerimage: demisto/python:2.7.18.11782
+dockerimage: demisto/python:2.7.18.15765
 runas: DBotRole
 runonce: false
 tests:

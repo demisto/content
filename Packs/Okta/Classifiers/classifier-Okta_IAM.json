@@ -4,7 +4,8 @@
  "id": "Okta IAM - App Sync (classifier)",
  "keyTypeMap": {
   "application.user_membership.add": "IAM - App Add",
-  "application.user_membership.remove": "IAM - App Remove"
+  "application.user_membership.remove": "IAM - App Remove",
+  "user.account.update_profile": "IAM - App Update"
  },
  "name": "Okta IAM - App Sync (classifier)",
  "transformer": {

@@ -1,9 +1,11 @@
+import copy
 from datetime import datetime
 
 import pytest
 from bson.objectid import ObjectId
 
-from MongoDB import convert_id_to_object_id, convert_object_id_to_str, convert_str_to_datetime, Client, search_query, format_sort
+from MongoDB import convert_id_to_object_id, convert_object_id_to_str, convert_str_to_datetime, Client, search_query, \
+    format_sort, pipeline_query_command
 
 id_to_obj_inputs = [
     (
@@ -224,3 +226,36 @@ class TestFormatSort:
             format_sort("Wrong:Type")
         with pytest.raises(ValueError):
             format_sort("WrongType")
+
+
+def test_pipeline_query_command(mocker):
+    """
+        Given:
+            collection - where to search.
+            pipeline - json pipeline query
+
+        When:
+            calling `pipeline_query_command`
+
+        Then:
+            validate the readable output and context
+        """
+    client = Client(['aaaaa'], 'a', 'b', 'd')
+    return_value = [
+        {'title': 'test_title', 'color': 'red', 'year': '2019', '_id': '6034a5a62f605638740dba55'},
+        {'title': 'test_title', 'color': 'yellow', 'year': '2020', '_id': '6034a5c52f605638740dba57'}
+    ]
+    mocker.patch.object(client, 'pipeline_query', return_value=return_value)
+    readable_outputs, outputs, raw_response = pipeline_query_command(
+        client=client,
+        collection='test_collection',
+        pipeline="[{\"$match\": {\"title\": \"test_title\"}}]"
+    )
+
+    expected_context = list()
+    for item in copy.deepcopy(raw_response):
+        item.update({'collection': 'test_collection'})
+        expected_context.append(item)
+
+    assert 'Total of 2 entries were found in MongoDB collection' in readable_outputs
+    assert outputs.get('MongoDB.Entry(val._id === obj._id && obj.collection === val.collection)') == expected_context

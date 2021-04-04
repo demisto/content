@@ -1,0 +1,30 @@
+{
+    "id": "indicator_jarmhosts",
+    "version": -1,
+    "modified": "2021-02-16T17:55:51.774888245Z",
+    "name": "JARM Hosts",
+    "ownerOnly": false,
+    "cliName": "jarmtags",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "JARM"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}
