@@ -520,6 +520,50 @@
             "sp_version": "9.3"
         }
     },
+    "mitigation": {
+        "meta": {
+            "sp_version": "9.3",
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K"
+        },
+        "data": {
+            "relationships": {
+                "routers": {
+                    "data": [],
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/routers/"
+                    }
+                }
+            },
+            "attributes": {
+                "description": "just desc",
+                "subtype": "flowspec",
+                "start": "2021-04-03T16:16:11.397680+00:00",
+                "ongoing": true,
+                "user": "demisto",
+                "ip_version": 4,
+                "subobject": {
+                    "action": {
+                        "type": "accept"
+                    },
+                    "l3vpn_route_distinguisher": "",
+                    "bgp_communities": [],
+                    "l3vpn_route_targets": []
+                },
+                "is_automitigation": false,
+                "name": "test_mit"
+            },
+            "type": "mitigation",
+            "id": "flowspec-8",
+            "links": {
+                "self": "https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-8"
+            }
+        },
+        "links": {
+            "self": "https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-8"
+        }
+    },
     "mitigation_templates": {
         "data": [
             {
@@ -1049,6 +1093,339 @@
         ],
         "links": {
             "self": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "routers": {
+        "data": [
+            {
+                "attributes": {
+                    "advanced_fallback_alg": "internal",
+                    "advanced_use_simpson_flowspec_redirect_ip": false,
+                    "bgp2_capabilities_labeled_unicast": false,
+                    "bgp_capabilities_l3vpn_flowspec_ipv4": false,
+                    "bgp_capabilities_l3vpn_flowspec_ipv6": false,
+                    "bgp_capabilities_labeled_unicast": false,
+                    "description": "Traffic-PCAP-CentOS - 192.168.1.116",
+                    "flow_alerting": true,
+                    "flow_export_ip": "192.168.1.116",
+                    "flow_flow_ignored": "off",
+                    "flow_flow_ignored_ipv6": "off",
+                    "flow_sample_rate": "1",
+                    "is_proxy": false,
+                    "license_type": "core",
+                    "name": "Traffic-PCAP-CentOS",
+                    "snmp_authprotocol": "md5",
+                    "snmp_priv_protocol": "DES",
+                    "snmp_security_level": "noAuthNoPriv",
+                    "snmp_version": 2
+                },
+                "id": "121",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/routers/121"
+                },
+                "relationships": {
+                    "collector_gid": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    }
+                },
+                "type": "router"
+            },
+            {
+                "attributes": {
+                    "advanced_fallback_alg": "internal",
+                    "advanced_local_as": "44",
+                    "advanced_use_simpson_flowspec_redirect_ip": false,
+                    "bgp2_capabilities_labeled_unicast": false,
+                    "bgp_capabilities_flowspec": true,
+                    "bgp_capabilities_flowspec_ipv4": true,
+                    "bgp_capabilities_l3vpn_flowspec_ipv4": false,
+                    "bgp_capabilities_l3vpn_flowspec_ipv6": false,
+                    "bgp_capabilities_labeled_unicast": false,
+                    "bgp_capabilities_monitor_routes_ipv4": "primary",
+                    "bgp_ip_address": "192.168.1.124",
+                    "bgp_remote_as": "4",
+                    "bgp_session_name": "NetscoutProfile",
+                    "description": "To Netscout PANW FW Router",
+                    "flow_alerting": true,
+                    "flow_flow_ignored": "off",
+                    "flow_flow_ignored_ipv6": "off",
+                    "is_proxy": false,
+                    "license_type": "core",
+                    "name": "PANW-FW_Netscout",
+                    "snmp_authprotocol": "md5",
+                    "snmp_priv_protocol": "DES",
+                    "snmp_security_level": "noAuthNoPriv",
+                    "snmp_version": 2
+                },
+                "id": "186",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/routers/186"
+                },
+                "relationships": {
+                    "collector_gid": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    }
+                },
+                "type": "router"
+            }
+        ],
+        "links": {
+            "self": "https://content.demisto.works:57585/api/sp/v7/routers/"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "managed_objects": {
+        "data": [
+            {
+                "attributes": {
+                    "autodetected": false,
+                    "automitigation_precise_protection_prefixes": false,
+                    "automitigation_precise_protection_prefixes_mit_on_query_failure": false,
+                    "custom_shared_host_detection_setting": true,
+                    "detection_network_country_enabled": false,
+                    "detection_network_enabled": false,
+                    "detection_profiled_autorate": false,
+                    "detection_profiled_enabled": false,
+                    "detection_profiled_fast_flood_enabled": false,
+                    "detection_profiled_outgoing_enabled": true,
+                    "detection_profiled_severity_duration": 300,
+                    "detection_profiled_severity_snmp_enabled": false,
+                    "detection_profiled_threshold_bandwidth": 2,
+                    "detection_profiled_threshold_packet_rate": 2,
+                    "detection_profiled_threshold_protocol": 2,
+                    "dynamic_match_enabled": false,
+                    "editable": true,
+                    "family": "customer",
+                    "match": "192.168.123.123/32",
+                    "match_enabled": true,
+                    "match_type": "cidr_blocks",
+                    "mitigation_automitigation": false,
+                    "mitigation_automitigation_stop_event": "after_alert_ends",
+                    "mitigation_automitigation_stop_minutes": 0,
+                    "mitigation_automitigation_tms_enabled": false,
+                    "mitigation_blackhole_auto_enabled": false,
+                    "mitigation_flowspec_auto_enabled": false,
+                    "name": "TestMO1",
+                    "num_children": 0,
+                    "parent_editable": false,
+                    "scrub_insight_mo_match": false,
+                    "tags": [
+                        "customer"
+                    ]
+                },
+                "id": "122",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
+                },
+                "relationships": {
+                    "dynamic_match_values": {
+                        "data": {
+                            "id": "122",
+                            "type": "managed_object_dynamic_match_values"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122/dynamic_match_values"
+                        }
+                    },
+                    "mitigation_templates_auto_ipv4": {
+                        "data": {
+                            "id": "2",
+                            "type": "mitigation_template"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/2"
+                        }
+                    },
+                    "mitigation_templates_auto_ipv6": {
+                        "data": {
+                            "id": "9",
+                            "type": "mitigation_template"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/9"
+                        }
+                    },
+                    "mitigation_templates_manual_ipv4": {
+                        "data": {
+                            "id": "1",
+                            "type": "mitigation_template"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/1"
+                        }
+                    },
+                    "mitigation_templates_manual_ipv6": {
+                        "data": {
+                            "id": "8",
+                            "type": "mitigation_template"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/8"
+                        }
+                    },
+                    "shared_host_detection_settings": {
+                        "data": {
+                            "id": "100",
+                            "type": "shared_host_detection_settings"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/shared_host_detection_settings/100"
+                        }
+                    }
+                },
+                "type": "managed_object"
+            }
+        ],
+        "links": {
+            "first": "https://content.demisto.works:57585/api/sp/v7/managed_objects/?perPage=50&page=1",
+            "last": "https://content.demisto.works:57585/api/sp/v7/managed_objects/?perPage=50&page=1",
+            "self": "https://content.demisto.works:57585/api/sp/v7/managed_objects/?perPage=50&page=1"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "tms_groups": {
+        "data": [
+            {
+                "attributes": {
+                    "bgp_communities": [],
+                    "check_available_bw": true,
+                    "check_bgp_peering": true,
+                    "check_group_allup": true,
+                    "default_bgp_offramp": true,
+                    "description": "Default all mitigation group. Mitigations will use all ports on all configured TMS devices.",
+                    "dns_auth_active_secondary_servers": [],
+                    "fail_open": false,
+                    "flowspec_communities": [],
+                    "flowspec_offramp": "",
+                    "flowspec_redirect_ipv4_destination": "",
+                    "flowspec_redirect_ipv4_type": "",
+                    "flowspec_redirect_ipv6_destination": "",
+                    "flowspec_redirect_ipv6_type": "",
+                    "l3vpn_flowspec_ipv4_route_distinguisher": "",
+                    "l3vpn_flowspec_ipv4_route_targets": [],
+                    "l3vpn_flowspec_ipv6_route_distinguisher": "",
+                    "l3vpn_flowspec_ipv6_route_targets": [],
+                    "member_limits_differ": false,
+                    "mitigation_orchestration": {
+                        "bandwidth_threshold_percent": 85,
+                        "enabled": false
+                    },
+                    "name": "All",
+                    "nexthop": "",
+                    "nexthop_v6": "",
+                    "system": true,
+                    "tms_group_type": ""
+                },
+                "id": "3",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/tms_groups/3"
+                },
+                "relationships": {
+                    "tms_ports": {
+                        "data": [
+                            {
+                                "id": "170",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "171",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "172",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "173",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "174",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "175",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "176",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "177",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "178",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "179",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "180",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "181",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "182",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "183",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "184",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "185",
+                                "type": "tms_port"
+                            }
+                        ],
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/tms_ports/"
+                        }
+                    }
+                },
+                "type": "tms_group"
+            }
+        ],
+        "links": {
+            "self": "https://content.demisto.works:57585/api/sp/v7/tms_groups/"
         },
         "meta": {
             "api": "SP",

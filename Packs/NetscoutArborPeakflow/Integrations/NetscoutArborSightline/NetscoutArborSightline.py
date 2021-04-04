@@ -78,7 +78,8 @@ class NetscoutClient(BaseClient):
 
     MAX_ALERTS_FOR_FIRST_FETCH = 10000
 
-    def __init__(self, base_url, verify, proxy, first_fetch, headers=None, max_fetch=None, alert_class=None, alert_type=None,
+    def __init__(self, base_url, verify, proxy, first_fetch, headers=None, max_fetch=None, alert_class=None,
+                 alert_type=None,
                  classification=None, importance=None, importance_operator=None, ongoing=None):
         self.first_fetch = first_fetch
         self.max_fetch = max_fetch
@@ -105,7 +106,6 @@ class NetscoutClient(BaseClient):
 
         """
         try:
-            demisto.info(json.dumps(demisto.args()))
             # Try to parse json error response
             error_entry = res.json()
             error: str = f'Error in API call [{res.status_code}] - {res.reason}'
@@ -134,7 +134,7 @@ class NetscoutClient(BaseClient):
 
     def calculate_amount_of_incidents(self, start_time: str) -> int:
         """
-        Perform an API call with page size = 1 (perPage=1) to calculate the amount of incidents(#pages will be equal to
+        Perform an API call with page size = 1 (perPage=1) to calculate the amount of incidents (#pages will be equal to
         #incidents).
 
         Arguments:
@@ -206,12 +206,6 @@ class NetscoutClient(BaseClient):
                             'id': val
                         }
                     }
-                # data = [{
-                #     'type': _type,
-                #     'id': element
-                # } for element in val]
-                #
-                # relationships[key] = {'data': data[0]} if len(data) == 1 else {'data': data}
         return relationships
 
     def build_data_attribute_filter(self, **kwargs) -> str:
@@ -417,8 +411,6 @@ def build_human_readable(data: dict) -> dict:
         del hr['relationships']
     if hr.get('subobject'):
         del hr['subobject']
-    if hr.get('links'):
-        del hr['links']
     return hr
 
 
@@ -591,7 +583,7 @@ def managed_object_list_command(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
-def tms_group_list(client: NetscoutClient):
+def tms_group_list_command(client: NetscoutClient):
     raw_result = client.tms_group_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
@@ -669,7 +661,7 @@ def main() -> None:
         elif command == 'na-sightline-managed-object-list':
             result = managed_object_list_command(client, args)
         elif command == 'na-sightline-tms-group-list':
-            result = tms_group_list(client)
+            result = tms_group_list_command(client)
         else:
             result = f'Command: {command} is not implemented'
 
