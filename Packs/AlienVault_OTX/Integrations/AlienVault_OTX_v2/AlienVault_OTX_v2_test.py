@@ -77,7 +77,7 @@ client = Client(
 
 @pytest.mark.parametrize(argnames=arg_names_dbot, argvalues=arg_values_dbot)
 def test_dbot_score(pulse: dict, score: int):
-    assert calculate_dbot_score(pulse) == score, f"Error calculate DBot Score {pulse.get('count')}"
+    assert calculate_dbot_score(client, pulse) == score, f"Error calculate DBot Score {pulse.get('count')}"
 
 
 @pytest.mark.parametrize('raw_response_general,raw_response_analysis,expected', [
