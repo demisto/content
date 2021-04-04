@@ -1,7 +1,5 @@
 import hashlib
 
-import demistomock as demisto
-
 from CommonServerPython import *
 
 
@@ -14,8 +12,8 @@ class Client:
         # The TID is used to track individual commands send to the firewall/Panorama during a PHP session, and
         # is also used to generate the security token (Data String) that is used to validate each command.
         # Setting tid as a global variable with an arbitrary value of 50
-        self.session_metadata = {'panorama': url, 'base_url': url, 'username': username,
-                                 'password': password, 'tid': tid}
+        self.session_metadata: Dict[str, Any] = {'panorama': url, 'base_url': url, 'username': username,
+                                                 'password': password, 'tid': tid}
         self.vsys = vsys
         self.verify = verify
         handle_proxy()
@@ -36,9 +34,9 @@ class Client:
         try:
             # Use a POST command to login to Panorama and create an initial session
             self.session.post(url=f'{self.session_metadata["base_url"]}/php/login.php?', data=login_data,
-                                  verify=self.verify)
+                              verify=self.verify)
             # Use a GET command to the base URL to get the ServerToken which looks like this:
-            #   window.Pan.st.st.st539091 = "8PR8ML4A67PUMD3NU00L3G67M4958B996F61Q97T"
+            #  window.Pan.st.st.st539091 = "8PR8ML4A67PUMD3NU00L3G67M4958B996F61Q97T"
             response = self.session.post(url=f'{self.session_metadata["base_url"]}/', verify=self.verify)
         except Exception as err:
             raise Exception(f'Failed to login. Please double-check the credentials and the server URL. {str(err)}')
@@ -46,6 +44,8 @@ class Client:
         match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', response.text)
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
         # The "data" field is the MD5 calculation of "cookie" + "TID"
+        if not match:
+            raise Exception(f'Failed to login. Please double-check the credentials and the server URL.')
         return match.group(1)
 
     def logout(self):
@@ -111,7 +111,7 @@ class Client:
             "data": [self.token_generator(),
                      "PoliciesDirect.getPoliciesByUsage",
                      [{"type": "security", "position": "main",
-                       "vsysName": self.VSYS, "serialNumber": "",
+                       "vsysName": self.vsys, "serialNumber": "",
                        "isCmsSelected": False, "isMultiVsys": False,
                        "showGrouped": False,
                        "usageAttributes": {"timeframeTag": "30",
@@ -127,7 +127,7 @@ class Client:
 
         return json.loads(response.text)
 
-    def policy_optimizer_get_rules_command(self, timeframe, usage: bool, exclude: bool) -> dict:
+    def policy_optimizer_get_rules(self, timeframe, usage: bool, exclude: bool) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -308,8 +308,9 @@ def policy_optimizer_get_dag_command(client: Client, args: dict):
     """
     Gets the DAG
     """
-    dag = args.get('dag')
-    result = client.policy_optimizer_get_dag(dag)['result']['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
+    dag = str(args.get('dag'))
+    result = client.policy_optimizer_get_dag(dag)['result']['result']['dyn-addr-grp']['entry'][0]['member-list'][
+        'entry']
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
