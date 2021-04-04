@@ -1015,7 +1015,7 @@ Get list of branches.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TOPdesk.Branch.id | String | Branch's id | 
+| TOPdesk.Branch.Id | String | Branch's id | 
 | TOPdesk.Branch.Status | String | Branch's status | 
 | TOPdesk.Branch.Name | String | Branch's name | 
 | TOPdesk.Branch.Specification | String | Branch's specification | 

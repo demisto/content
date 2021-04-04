@@ -1033,7 +1033,7 @@ script:
     description: Get list of branches.
     name: topdesk-branches-list
     outputs:
-    - contextPath: TOPdesk.Branch.id
+    - contextPath: TOPdesk.Branch.Id
       description: Branch's id
       type: String
     - contextPath: TOPdesk.Branch.Status

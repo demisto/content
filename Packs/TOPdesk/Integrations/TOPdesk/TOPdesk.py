@@ -935,7 +935,7 @@ def subcategories_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.Subcategories',
+        outputs_prefix=f'{INTEGRATION_NAME}.Subcategory',
         outputs_key_field='Id',
         outputs=capitalize_for_outputs(subcategories),
         raw_response=subcategories

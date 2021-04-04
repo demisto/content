@@ -72,7 +72,7 @@ def test_capitalize_outputs(outputs, expected_capitalized_output):
      [{"id": "1st-id-sub", "name": "subcategory-1", "category": {"id": "1st-id", "name": "category-1"}},
       {"id": "2st-id-sub", "name": "subcategory-2", "category": {"id": "2st-id", "name": "category-2"}}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.Subcategories',
+         'outputs_prefix': f'{INTEGRATION_NAME}.Subcategory',
          'outputs_key_field': 'Id'
      }),
     (escalation_reasons_command,
@@ -142,7 +142,7 @@ def test_list_command(client, requests_mock, command, command_api_url, mock_resp
      [{"id": "1st-id-sub", "name": "subcategory-1", "category": {"id": "1st-id", "name": "category-1"}},
       {"id": "2st-id-sub", "name": "subcategory-2", "category": {"id": "2st-id", "name": "category-2"}}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.Subcategories',
+         'outputs_prefix': f'{INTEGRATION_NAME}.Subcategory',
          'outputs_key_field': 'Id',
          'outputs': [{"id": "1st-id-sub", "name": "subcategory-1",
                       "category": {"id": "1st-id", "name": "category-1"}}]}),
@@ -170,7 +170,8 @@ def test_list_command(client, requests_mock, command, command_api_url, mock_resp
          'outputs_key_field': 'Id',
          'outputs': [{"id": "1st-id", "name": "archiving-reason-1"}]})
 ])
-def test_list_command_with_limit_arg(client, requests_mock, command, args, command_api_url, mock_response, expected_results):
+def test_list_command_with_limit_arg(client, requests_mock, command, args, command_api_url, mock_response,
+                                     expected_results):
     """Unit test
     Given
         - A command that returns a list
