@@ -1738,9 +1738,20 @@ script:
       name: hostname
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency.
+      isArray: false
+      name: all
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
-      command with no filters.
+      command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan
   - deprecated: false
@@ -2647,6 +2658,9 @@ script:
   dockerimage: demisto/python3:3.9.2.17957
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false

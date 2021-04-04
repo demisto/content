@@ -1731,6 +1731,7 @@ def endpoint_command(client, args):
         endpoints
     )
 
+
 def return_endpoint_standard_context(endpoints):
     endpoints_context_list = []
     for endpoint in endpoints:
