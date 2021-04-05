@@ -1,5 +1,5 @@
 VMware Carbon Black Endpoint Standard (formerly known as Carbon Black Defense) is a next-generation antivirus + EDR in one cloud-delivered platform that stops commodity malware, advanced malware, non-malware attacks, and ransomware.
-This integration was integrated and tested with version xx of Carbon Black Defense v2
+This integration was integrated and tested with version 1.1.2 of Carbon Black Defense v2
 ## Configure Carbon Black Defense v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
