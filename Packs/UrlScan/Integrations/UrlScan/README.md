@@ -337,7 +337,7 @@
 </tr>
 <tr>
 <td style="width: 267px;">URL.FeedRelatedIndicators.value </td>
-<td style="width: 454px;">Indicators that are associated with the URL</td>
+<td style="width: 454px;">Indicators that are associated with the URL.</td>
 </tr>
 <tr>
 <td style="width: 267px;">URL.FeedRelatedIndicators.type </td>
