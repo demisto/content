@@ -1,4 +1,6 @@
 # pylint: disable=unsubscriptable-object
+from requests import Response
+
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -18,7 +20,7 @@ CSV_FIELDS_TO_EXTRACT = ['Username', 'Password']
 
 class Client(BaseClient):
     """
-    API Client to communicate with Cyberint and get alerts.
+    API Client to communicate with Cyberint API endpoints.
     """
 
     def __init__(self, base_url: str, access_token: str, verify_ssl: bool, proxy: bool):
@@ -108,13 +110,13 @@ class Client(BaseClient):
             for line in r.iter_lines(delimiter=delimiter):
                 yield line.decode('utf-8').strip('"')
 
-    def get_alert_attachment(self, alert_ref_id: str, attachment_id: int):
+    def get_alert_attachment(self, alert_ref_id: str, attachment_id: str) -> Response:
         """
-            Retrieve attachment by alert reference id and attachment internal id.
+        Retrieve attachment by alert reference id and attachment id.
 
         Args:
-            alert_ref_id (str): Reference ID for the alert.
-            attachment_id (str): Attachment ID
+            alert_ref_id (str): Reference ID of the alert.
+            attachment_id (str): Attachment ID.
 
         Returns:
             Response: API response from Cyberint.
@@ -126,7 +128,7 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   resp_type='response')
 
-    def get_analysis_report(self, alert_ref_id: str):
+    def get_analysis_report(self, alert_ref_id: str) -> Response:
         """
         Retrieve analysis report by alert reference id.
 
@@ -323,10 +325,10 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
                           outputs=outputs)
 
 
-def cyberint_alerts_get_attachment_command(client: Client, args: dict) -> dict:
+def cyberint_alerts_get_attachment_command(client: Client, args: dict) -> fileResult:
     """
     Retrieve attachment by alert reference id and attachment internal id.
-    Attachments imcludes: CSV files , screenshots and alert attachments file.
+    Attachments includes: CSV files , screenshots and alert attachments file.
 
     Args:
         client (Client): Cyberint API client.
@@ -343,7 +345,7 @@ def cyberint_alerts_get_attachment_command(client: Client, args: dict) -> dict:
                       data=raw_response.content)
 
 
-def cyberint_alerts_get_analysis_report_command(client: Client, args: dict) -> dict:
+def cyberint_alerts_get_analysis_report_command(client: Client, args: dict) -> fileResult:
     """
     Retrieve expert analysis report by alert reference id and report name.
 
@@ -352,16 +354,16 @@ def cyberint_alerts_get_analysis_report_command(client: Client, args: dict) -> d
         args (dict): Command arguments from XSOAR.
 
     Returns:
-        fileResult : return analysis report file , else return ""
+        fileResult : Alert analysis report file.
 
     """
     raw_response = client.get_analysis_report(args.get('alert_ref_id', None))
     return fileResult(filename=args.get('report_name', None), data=raw_response.content)
 
 
-def get_attachment_name(attachment_name) -> str:
+def get_attachment_name(attachment_name: str) -> str:
     """
-    Retrieve attachment name or error string if none is provided
+    Retrieve attachment name or error string if none is provided.
 
     Args:
         attachment_name (str): Attachment name to retrieve
@@ -378,8 +380,8 @@ def get_attachment_name(attachment_name) -> str:
 
 def create_fetch_incident_attachment(client: Client, attachment: object, alert_id: str) -> dict:
     """
-    Get attachment and create the suitable entry for this attachment details
-    in fetch-incidents attachments list.
+    Create suitable attachment information dictionary object.
+    This dictionary object will be used as an entry in fetch-incidents attachments list.
 
     Args:
         client (Client): Cyberint API client.
@@ -387,7 +389,7 @@ def create_fetch_incident_attachment(client: Client, attachment: object, alert_i
         alert_id: Alert id.
 
     Returns:
-        dict: Attachment details dictionary.Contains the following keys: "path" , "name" ,"showMediaFile"
+        dict: Attachment information dictionary.Contains the following keys: "path" , "name" ,"showMediaFile"
 
     """
     attachment_name = get_attachment_name(attachment.get('name', None))
