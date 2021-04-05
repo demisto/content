@@ -53,6 +53,13 @@ def test_commands(command, args, response, expected_result, mocker):
     assert expected_result == result[1]
 
 
+def test_commands_on_premise(command, args, response, expected_result, mocker):
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy')
+    mocker.patch.object(client, 'http_request', return_value=response)
+    result = command(client, args)
+    assert expected_result == result[1]
+
+
 # test commands without context:
 @pytest.mark.parametrize('command, args, response, expected_result', [
     # Given the delete command and the id of the request that should be deleted, validate the human readable output
@@ -96,6 +103,13 @@ def test_commands(command, args, response, expected_result, mocker):
 def test_command_hr(command, args, response, expected_result, mocker):
     mocker.patch('ServiceDeskPlus.Client.get_access_token')
     client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
+    mocker.patch.object(client, 'http_request', return_value=response)
+    result = command(client, args)
+    assert expected_result == result[0]
+
+
+def test_command_hr_on_premise(command, args, response, expected_result, mocker):
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy')
     mocker.patch.object(client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[0]
@@ -280,6 +294,52 @@ def test_fetch_incidents(mocker):
     assert len(incidents) == 0
 
 
+def test_fetch_incidents_on_premise(mocker):
+    """
+    Unit test
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the date_to_timestamp.
+    - mock the create_fetch_list_info.
+    - mock the Client's get_requests command.
+    Then
+    - run the fetch incidents command using the Client.
+    Validate the length of the results and the different fields of the fetched incidents.
+    """
+    mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
+    mocker.patch('ServiceDeskPlus.date_to_timestamp', return_value='1592918317168')
+    mocker.patch('ServiceDeskPlus.create_fetch_list_info', return_value={})
+
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy',
+                    fetch_time='1 hour', fetch_limit=3, fetch_status=['Open'])
+    mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
+    incidents = fetch_incidents(client)
+    assert len(incidents) == 3
+
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy',
+                    fetch_time='1 hour', fetch_limit=2, fetch_status=['Open'])
+    mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
+    incidents = fetch_incidents(client)
+    assert len(incidents) == 2
+
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy',
+                    fetch_time='1 hour', fetch_limit=1, fetch_status=['Open'])
+    mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
+    incidents = fetch_incidents(client)
+    assert len(incidents) == 1
+    assert incidents[0].get('name') == 'Test fetch incidents - 1234'
+
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy',
+                    fetch_time='1 hour', fetch_limit=0, fetch_status=['Open'])
+    mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
+    incidents = fetch_incidents(client)
+    assert len(incidents) == 0
+
+
 def test_test_module(mocker):
     """
     Unit test
@@ -296,6 +356,28 @@ def test_test_module(mocker):
     from ServiceDeskPlus import test_module as module
     mocker.patch('ServiceDeskPlus.Client.get_access_token')
     client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
+
+    mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
+    mocker.patch.object(client, 'http_request', return_value=RESPONSE_FETCH_INCIDENTS)
+    result = module(client)
+    assert result == 'ok'
+
+
+def test_test_module_on_prem(mocker):
+    """
+    Unit test
+    Given
+    - test module command on premise
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the Client's send_request.
+    Then
+    - run the test module command using the Client
+    Validate the content of the HumanReadable.
+    """
+    from ServiceDeskPlus import test_module as module
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy')
 
     mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
     mocker.patch.object(client, 'http_request', return_value=RESPONSE_FETCH_INCIDENTS)
