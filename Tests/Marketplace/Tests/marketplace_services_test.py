@@ -3,6 +3,7 @@ import pytest
 import json
 import os
 import random
+import glob
 from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
@@ -11,8 +12,8 @@ from freezegun import freeze_time
 from datetime import datetime, timedelta
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
-    get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
-    store_successful_and_failed_packs_in_ci_artifacts, PACKS_FOLDER
+    get_updated_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
+    store_successful_and_failed_packs_in_ci_artifacts, PACKS_FOLDER, is_ignored_pack_file, PackFolders
 
 CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
@@ -454,6 +455,26 @@ class TestHelperFunctions:
     """ Class for testing helper functions that are used in marketplace_services and upload_packs modules.
     """
 
+    @pytest.mark.parametrize('modified_file_path_parts, expected_result', [
+        (['Packs', 'A', PackFolders.INTEGRATIONS.value, 'A', 'test_data', 'a.json'], True),
+        (['Packs', 'A', PackFolders.TEST_PLAYBOOKS.value, 'playbook-wow.yml'], True),
+        (['Packs', 'A', '.pack-ignore'], True),
+        (['Packs', 'A', '.secrets-ignore'], True),
+        (['Packs', 'A', PackFolders.PLAYBOOKS.value, 'playbook-wow_README.md'], True),
+        (['Packs', 'A', PackFolders.INTEGRATIONS.value, 'A', 'README.md'], True),
+        (['Packs', 'A', PackFolders.INTEGRATIONS.value, 'A', 'A_test.py'], True),
+        (['Packs', 'A', PackFolders.INTEGRATIONS.value, 'A', 'commands.txt'], True),
+        (['Packs', 'A', PackFolders.SCRIPTS.value, 'A', 'Pipfile'], True),
+        (['Packs', 'A', PackFolders.SCRIPTS.value, 'A', 'Pipfile.lock'], True),
+        (['Packs', 'A', Pack.README], False),
+        (['Packs', 'A', Pack.USER_METADATA], False),
+        (['Packs', 'A', PackFolders.INTEGRATIONS.value, 'A', 'A.py'], False)
+    ])
+    def test_is_ignored_pack_file(self, modified_file_path_parts, expected_result, mocker):
+        mocker.patch.object(glob, 'glob', return_value=['Packs/A/Integrations/A/test_data/a.json'])
+        mocker.patch.object(os.path, 'isdir', return_value=True)
+        assert is_ignored_pack_file(modified_file_path_parts) is expected_result
+
     @pytest.mark.parametrize("input_data,capitalize_input,expected_result",
                              [
                                  (["some data", "some other data"], False, ["some data", "some other data"]),
@@ -501,19 +522,19 @@ class TestHelperFunctions:
 
     @pytest.mark.parametrize("current_string_version,compared_content_item,expected_result",
                              [
-                                 ("1.2.3", {"fromversion": "2.1.0"}, "2.1.0"),
-                                 ("1.2.3", {"fromVersion": "2.1.0"}, "2.1.0"),
-                                 ("5.5.2", {"fromversion": "2.1.0"}, "5.5.2"),
-                                 ("5.5.2", {"fromVersion": "2.1.0"}, "5.5.2"),
+                                 ("1.2.3", {"fromversion": "2.1.0"}, "1.2.3"),
+                                 ("1.2.3", {"fromVersion": "2.1.0"}, "1.2.3"),
+                                 ("5.5.2", {"fromversion": "2.1.0"}, "2.1.0"),
+                                 ("5.5.2", {"fromVersion": "2.1.0"}, "2.1.0"),
                                  ("5.5.0", {}, "5.5.0"),
                                  ("1.0.0", {}, "1.0.0")
                              ])
-    def test_get_higher_server_version(self, current_string_version, compared_content_item, expected_result):
+    def test_get_updated_server_version(self, current_string_version, compared_content_item, expected_result):
         """ Tests the comparison of server versions (that are collected in collect_content_items function.
-            Higher server semantic version should be returned.
+            Lower server semantic version should be returned.
         """
-        result = get_higher_server_version(current_string_version=current_string_version,
-                                           compared_content_item=compared_content_item, pack_name="dummy")
+        result = get_updated_server_version(current_string_version=current_string_version,
+                                            compared_content_item=compared_content_item, pack_name="dummy")
 
         assert result == expected_result
 
@@ -944,6 +965,34 @@ This is visible
         if is_metadata_exist == 'metadata':
             os.remove(os.path.join(os.getcwd(), 'dummy_metadata.json'))
         assert pack_created_date == expected_date
+
+    @freeze_time("2020-11-04T13:34:14.75Z")
+    @pytest.mark.parametrize('metadata_path, is_within_time_delta', [
+        ('metadata', False),
+        ('metadata_not_exist', True)
+    ])
+    def test_pack_created_in_time_delta(self, mocker, dummy_pack, metadata_path, is_within_time_delta):
+        """
+           Given:
+               - existing 1.0.0 changelog, pack created_date
+               - not existing 1.0.0 changelog, datetime.utcnow
+           When:
+               - changelog entry already exists
+               - changelog entry not exists
+
+           Then:
+           - return the released field from the changelog file
+           - return datetime.utcnow
+       """
+        from Tests.Marketplace.marketplace_services import os
+        mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
+        three_months_delta = timedelta(days=90)
+        response = dummy_pack.pack_created_in_time_delta(three_months_delta, metadata_path)
+        assert response == is_within_time_delta
+        try:
+            os.remove(os.path.join(os.getcwd(), 'dummy_metadata.json'))
+        except Exception:
+            pass
 
     @freeze_time("2020-11-04T13:34:14.75Z")
     @pytest.mark.parametrize('is_changelog_exist, expected_date', [
