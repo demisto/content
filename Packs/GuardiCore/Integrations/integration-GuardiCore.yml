@@ -779,7 +779,7 @@ script:
             }
             msg = '';
             if (url == 'incidents'){
-                msg = '\nPlease consider adding \'to_time\' and \'from_time\ arguments to command execution';
+                msg = '\nPlease consider adding the \'to_time\' and \'from_time\ arguments to the command execution';
             }
 
             throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.' + msg;
