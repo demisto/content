@@ -117,7 +117,7 @@ script:
       description: The type of the indicators that are associated with the File.
       type: String
     - contextPath: File.Tags
-      description: Tags that are associated with the File
+      description: Tags that are associated with the File.
       type: String
     - contextPath: File.Behavior.details
       description: File behavior details
