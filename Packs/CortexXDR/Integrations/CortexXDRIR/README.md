@@ -2543,16 +2543,18 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.endpointScan.actionId | Number | The action ID of the scan request. | 
+| PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Check if the scan aborted or not. | 
 
 
 #### Command Example
-```!xdr-endpoint-scan endpoint_id_list=abcc6a2cc92e46fab3b6f621722e9123```
+```!xdr-endpoint-scan endpoint_id_list=12386310665d413a958926fce5b794b3```
 
 #### Context Example
 ```json
 {
     "PaloAltoNetworksXDR": {
         "endpointScan": {
+            "aborted": true,
             "actionId": 4205
         }
     }
@@ -2599,17 +2601,19 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.endpointScan.actionId | Unknown | The action id of the abort scan request. | 
+| PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Check if the scan aborted or not. | 
 
 
 #### Command Example
-```!xdr-endpoint-scan-abort endpoint_id_list=abcc6a2cc92e46fab3b6f621722e9123```
+```!xdr-endpoint-scan-abort endpoint_id_list=12386310665d413a958926fce5b794b3```
 
 #### Context Example
 ```json
 {
     "PaloAltoNetworksXDR": {
         "endpointScan": {
-            "actionId": 4206
+            "aborted": true,
+            "actionId": 4227
         }
     }
 }
@@ -2620,6 +2624,6 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 >### Endpoint abort scan
 >|Action Id|
 >|---|
->| 4206 |
+>| 4227 |
 
 
