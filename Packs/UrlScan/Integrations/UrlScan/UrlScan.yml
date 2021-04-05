@@ -350,7 +350,7 @@ script:
       description: The URL country.
       type: String
     - contextPath: URL.ASOwner
-      description: The URL AS owner
+      description: The URL AS owner.
       type: String
     - contextPath: URL.Tags
       description: Tags that are associated with the URL
