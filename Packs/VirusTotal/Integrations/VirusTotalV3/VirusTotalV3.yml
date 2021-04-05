@@ -7,7 +7,7 @@ fromversion: 5.5.0
 category: Data Enrichment & Threat Intelligence
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
 configuration:
-- display: Write "Username" here.
+- display: API Key (leave empty. Fill in the API key in the password field.)
   displaypassword: API Key
   name: credentials
   type: 9
