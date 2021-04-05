@@ -2542,7 +2542,7 @@ Initiates a new endpoint script execution kill process.
       "Hostname": "Hostname",
       "ID": "15dbb9d5fe9f61eb46e829d986",
       "IPAddress": [
-                "172.31.11.11"
+                "1.1.1.1"
                 ],
       "OS": "Windows Server 2019",
       "Status": "normal"
@@ -2555,5 +2555,5 @@ Initiates a new endpoint script execution kill process.
 >### Endpoints
 >|ID|IP|OS|Hostname|Status|
 >|---|---|---|---|---|
->| 15dbb9d8f06b45fe9f61eb46e829d986 | 10.128.0.7 | Windows Server 2019 | Hostname | normal |\n"
+>| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows Server 2019 | Hostname | normal |\n"
 

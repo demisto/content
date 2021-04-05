@@ -2055,5 +2055,5 @@ Lists incident summaries.
 >### Endpoints
 >|ID|IPAddress|OS|Hostname|Status|
 >|---|---|---|---|---|
->| 15dbb9d8f06b45fe9f61eb46e829d986 | 10.128.0.7 | Windows Server 2019 | Hostname | normal |\n"
+>| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows Server 2019 | Hostname | normal |\n"
 
