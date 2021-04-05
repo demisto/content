@@ -1,5 +1,5 @@
 ## VirusTotal - Premium API - V3
-Analyse retro hunts, read live hunt notifications and download files from VirusTotal.
+Analyze retro hunts, read live hunt notification,s and download files from VirusTotal.
 The premium API is a component of VirusTotal's [advanced services for professionals](https://www.virustotal.com/gui/services-overview).
 
 ## Authorization:
@@ -8,6 +8,6 @@ Your API key can be found in your VirusTotal account user menu:
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ## Fetch Incidents:
-The generated incidents are notifications from vt-premium-notifications-list.
+The generated incidents are notifications from vt-private-livehunt-notifications-list.
 Use "Tag" to filter which notification tag to get. 
 For example, using the "malicious_executables" will fetch only notifications caught by malicious_executables ruleset.
