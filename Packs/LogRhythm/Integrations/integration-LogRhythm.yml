@@ -645,7 +645,7 @@ script:
                     Domain: domain,
                     Body: envelope,
                     Headers: {
-                        'Content-Type': ['text/xml'],
+                        'Content-Type': ['application/json'],
                         Soapaction: [soapAction]
                     }
                 },
@@ -659,7 +659,7 @@ script:
                     Method: 'POST',
                     Body: envelope,
                     Headers: {
-                        'Content-Type': ['text/xml; charset=utf-8'],
+                        'Content-Type': ['application/json; charset=utf-8'],
                         Soapaction: [soapAction]
                     }
                 },
