@@ -1,6 +1,7 @@
-from PANOStoCortexDataLakeMonitoring import check_instance, get_firewall_serials
 import pytest
+
 import demistomock as demisto
+from PANOStoCortexDataLakeMonitoring import check_instance, get_firewall_serials
 
 ERR_MSG_CDL = "No active Cortex Data Lake integration found, please configure one."
 ALL_INSTANCES = {

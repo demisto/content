@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 # Cortex Data Lake PAN-OS log monitoring monitoring
 # PRE_REQUISITE: Enable Cortex Data Lake integration and/or PAN-OS integration (if the automated creation of a FW list is expected)
 
@@ -80,6 +81,7 @@ def query_cdl(fw_monitor_list: list) -> CommandResults:
         outputs=all_results,
         raw_response=query_result
     )
+
 
 def main():
     try:
