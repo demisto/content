@@ -298,7 +298,8 @@ class Client(BaseClient):
             demisto.debug(f'get_asset_details: unsupported asset type {asset_type}')
         return data
 
-    def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str, tag_ids: List[str]) -> Dict[str, Any]:
+    def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str, tag_ids: List[str]) -> Dict[
+        str, Any]:
         endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
 
         data: Dict = {"operations": [{
@@ -533,6 +534,9 @@ class Client(BaseClient):
             changed = True
         return assets, ml_feature_list, changed
 
+    def get_exposures_ips(self):
+        pass
+
 
 """ HELPER FUNCTIONS """
 
@@ -579,7 +583,8 @@ def range_to_cidrs(start: str, end: str) -> Iterator[str]:
         raise ValueError(f'Invalid IP address in range: {str(e)}')
 
 
-def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None, required: bool = False) -> Optional[int]:
+def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None, required: bool = False) -> Optional[
+    int]:
     """Converts a string argument to a Python int
     This function is used to quickly validate an argument provided and convert
     it into an ``int`` type. It will throw a ValueError if the input is invalid
@@ -1260,7 +1265,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
         updated_field = ISSUE_UPDATE_TYPES[update_type]
         previous_value = update.get('previousValue')
         update_user = update['user']['username'] \
-            if ('user' in update and isinstance(update['user'], dict) and 'username' in update['user']) else 'Unknown user'
+            if ('user' in update and isinstance(update['user'], dict) and 'username' in update[
+            'user']) else 'Unknown user'
 
         # handle incoming comment
         if update_type == 'Comment':
@@ -2040,6 +2046,66 @@ def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
+def do_auth():
+    """
+    perform authentication using API_KEY,
+    stores token and stored timestamp in integration context,
+    retrieves new token when expired
+    """
+    auth = demisto.getIntegrationContext()
+    now_epoch = int(datetime.today().strftime('%s'))
+
+    if ("token" in auth or "stored" in auth) and int(auth['stored']) + (60 * 60 * 2) > int(now_epoch):
+        # if integration context contains token and stored and the token is not expired then return token
+        return auth['token']
+    else:
+        # fetch new token
+        r = http_request('GET', 'IdToken', token=API_KEY)
+        if r.get('token') is None:
+            return_error("Authorization failed")
+
+        demisto.setIntegrationContext({
+            'token': r['token'],
+            'stored': now_epoch
+        })
+        return r['token']
+
+
+def exposures_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    searches by ip for exposure data from Expanse
+    """
+    search = args['ip']
+
+    params = {
+        "inet": search,
+        "activityStatus": "active"
+    }
+    token = do_auth()
+    results = client._http_request('GET', 'exposures/ip-ports', params, token=token)
+    try:
+        exposures = results['data']
+        if len(exposures) == 0:
+            demisto.results("No data found")
+            return
+    except Exception:
+        demisto.results("No data found")
+        return
+
+    expanse_exposure_context = get_expanse_exposure_context(exposures)
+
+    ec = {
+        'Expanse.Exposures(val.SearchTerm == obj.SearchTerm)': expanse_exposure_context
+    }
+
+    raw_exposures = expanse_exposure_context['Exposures']
+    del expanse_exposure_context['Exposures']  # Remove exposure objects from human readable response
+    human_readable = tableToMarkdown("Expanse Exposure information for: {search}".format(search=search),
+                                     expanse_exposure_context)
+    expanse_exposure_context['Exposures'] = raw_exposures
+    return_outputs(human_readable, ec, exposures)
+
+
 """ MAIN FUNCTION """
 
 
@@ -2226,6 +2292,12 @@ def main() -> None:
 
         elif command == "expanse-list-risk-rules":
             return_results(list_risk_rules_command(client, demisto.args()))
+
+        elif active_command == 'expanse-get-exposures':
+            return_results(exposures_command(client, demisto.args()))
+
+        elif active_command == 'expanse-get-domains-for-certificate':
+            return_results(domains_for_certificate_command())
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
