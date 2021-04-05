@@ -2,7 +2,9 @@ id: Detonate File - ThreatStream
 version: -1
 name: Detonate File - ThreatStream
 fromversion: 5.0.0
-description: Detonate one or more files using the Anomali ThreatStream v2 integration. This playbook returns relevant reports to the War Room, and file reputations to the context data.
+description: Detonate one or more files using the Anomali ThreatStream v2 integration.
+  This playbook returns relevant reports to the War Room, and file reputations to
+  the context data.
 starttaskid: "0"
 tasks:
   "0":
@@ -38,7 +40,8 @@ tasks:
       id: e58d872c-656f-4687-8279-50ff40cb4009
       version: -1
       name: Is Anomali ThreatStream v2 enabled?
-      description: Checks if there is a valid instance of the Anomali ThreatStream v2 integration enabled.
+      description: Checks if there is a valid instance of the Anomali ThreatStream
+        v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -239,7 +242,8 @@ tasks:
       id: abdd7f0e-18af-4a32-8bd2-be620253a970
       version: -1
       name: Is there a file to detonate?
-      description: Checks if there is a file to detonate. If no file is found, detonation is skipped.
+      description: Checks if there is a file to detonate. If no file is found, detonation
+        is skipped.
       type: condition
       iscommand: false
       brand: ""

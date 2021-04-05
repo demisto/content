@@ -133,7 +133,7 @@ script:
       description: The brand (attack target) countered by the URL.
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: URL to query.
       isArray: false
       name: url
