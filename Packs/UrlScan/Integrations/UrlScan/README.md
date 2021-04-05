@@ -345,7 +345,7 @@
 </tr>
 <tr>
 <td style="width: 267px;">URL.Geo.Country </td>
-<td style="width: 454px;">The URL country</td>
+<td style="width: 454px;">The URL country.</td>
 </tr>
 <tr>
 <td style="width: 267px;">URL.ASOwner </td>
