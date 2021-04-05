@@ -402,9 +402,10 @@ references:
       when: always
       no_output_timeout: 5h
       command: |
-        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
-          echo "Skipping validations when uploading to a test bucket."
-          exit 0
+        if [ -n "$BUCKET_UPLOAD" ]; then
+            echo "Skipping packs linting due to lint bug"
+            # TODO: Revert when bug is fixed
+            exit 0
         fi
 
         echo "demisto-sdk version: $(demisto-sdk --version)"
