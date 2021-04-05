@@ -219,15 +219,15 @@ handle_proxy()
 
 def main():
 
-    params = demisto.params()
+    demisto_params = demisto.params()
 
-    good_disp = argToList(params.get('good_disp'))
-    susp_disp = argToList(params.get('susp_disp'))
-    bad_disp = argToList(params.get('bad_disp'))
+    good_disp = argToList(demisto_params.get('good_disp'))
+    susp_disp = argToList(demisto_params.get('susp_disp'))
+    bad_disp = argToList(demisto_params.get('bad_disp'))
 
     unite_dispositions(good_disp, susp_disp, bad_disp)
 
-    reliability = params.get('integrationReliability')
+    reliability = demisto_params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
 
     if DBotScoreReliability.is_valid_type(reliability):
@@ -235,19 +235,19 @@ def main():
     else:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
-    args = {
-        'base_url': params['url'],
-        'api_key': params.get('token'),
-        'use_ssl': not params.get('insecure', False),
+    params = {
+        'base_url': demisto_params['url'],
+        'api_key': demisto_params.get('token'),
+        'use_ssl': not demisto_params.get('insecure', False),
         'reliability': reliability
     }
 
     try:
         if demisto.command() == 'test-module':
-            demisto.results(test_module(**args))
+            demisto.results(test_module(**params))
 
         elif demisto.command() == 'CheckPhish-check-urls':
-            checkphish_check_urls(**args)
+            checkphish_check_urls(**params)
 
     # Log exceptions
     except Exception as e:
