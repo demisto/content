@@ -8514,7 +8514,8 @@ def main():
     LOG('command is {}'.format(str(demisto.command())))
     command = demisto.command()
 
-    reliability = demisto.params().get('integrationReliability', 'B - Usually reliable')
+    reliability = demisto.params().get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.B
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
