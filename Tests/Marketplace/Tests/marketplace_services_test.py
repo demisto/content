@@ -967,6 +967,34 @@ This is visible
         assert pack_created_date == expected_date
 
     @freeze_time("2020-11-04T13:34:14.75Z")
+    @pytest.mark.parametrize('metadata_path, is_within_time_delta', [
+        ('metadata', False),
+        ('metadata_not_exist', True)
+    ])
+    def test_pack_created_in_time_delta(self, mocker, dummy_pack, metadata_path, is_within_time_delta):
+        """
+           Given:
+               - existing 1.0.0 changelog, pack created_date
+               - not existing 1.0.0 changelog, datetime.utcnow
+           When:
+               - changelog entry already exists
+               - changelog entry not exists
+
+           Then:
+           - return the released field from the changelog file
+           - return datetime.utcnow
+       """
+        from Tests.Marketplace.marketplace_services import os
+        mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
+        three_months_delta = timedelta(days=90)
+        response = dummy_pack.pack_created_in_time_delta(three_months_delta, metadata_path)
+        assert response == is_within_time_delta
+        try:
+            os.remove(os.path.join(os.getcwd(), 'dummy_metadata.json'))
+        except Exception:
+            pass
+
+    @freeze_time("2020-11-04T13:34:14.75Z")
     @pytest.mark.parametrize('is_changelog_exist, expected_date', [
         ('changelog_new_exist', '2021-01-20T12:10:55Z'),
         ('changelog_not_exist', '2020-11-04T13:34:14Z')
