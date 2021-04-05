@@ -48,10 +48,9 @@ commonfields:
   id: If-Then-Else-Ex
   version: -1
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.2.17246
+dockerimage: demisto/python3:3.9.2.17957
 enabled: true
 name: If-Then-Else-Ex
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -61,3 +60,5 @@ tags:
 - transformer
 - general
 type: python
+tests:
+- No tests (auto formatted)
