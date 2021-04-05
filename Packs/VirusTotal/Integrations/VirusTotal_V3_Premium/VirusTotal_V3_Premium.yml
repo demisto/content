@@ -209,7 +209,7 @@ script:
     name: vt-private-zip-download
   - arguments:
     - default: true
-      description: Sandbox report ID. Can be aquired from vt-file-sandbox-report.
+      description: Sandbox report ID. Can be aquired from vt-file-sandbox-report in VirusTotal (API v3) integration.
       isArray: false
       name: report_id
       required: true
@@ -844,7 +844,7 @@ script:
       description: most recent date the file was posted to VirusTotal. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.downloadable
-      description: true if the file can be downloaded, false otherwise. (use vt-private-file-download
+      description: true if the file can be downloaded, false otherwise. (use vt-private-download-file)
         to download the file)
       type: Boolean
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.sha256
@@ -1036,7 +1036,7 @@ script:
       description: most recent date the file was posted to VirusTotal. UTC timestamp.
       type: Number
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.downloadable
-      description: true if the file can be downloaded, false otherwise. (use vt-private-file-download
+      description: true if the file can be downloaded, false otherwise. (use vt-private-download-file)
         to download the file)
       type: Boolean
     - contextPath: VirusTotal.LiveHuntFiles.data.attributes.sha256
