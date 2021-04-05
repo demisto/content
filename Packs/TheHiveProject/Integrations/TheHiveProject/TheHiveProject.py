@@ -1,6 +1,7 @@
-from typing import Dict
+import dateparser
 
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -93,6 +94,15 @@ class Client(BaseClient):
     def __init__(self, base_url=None, verify=False, mirroring=None, headers={}, proxy=None):
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
         self.mirroring = mirroring
+        self.version = self.get_version()
+
+    def get_version(self):
+        res = self._http_request('GET', 'status', ok_codes=[200, 201, 404], resp_type='response')
+        if "versions" in res.json():
+            if "TheHive" in res.json()['versions']:
+                return res.json()['versions']['TheHive']
+            else:
+                return "Unknown"
 
     def get_cases(self, limit: int = None):
         instance = demisto.integrationInstance()
@@ -119,8 +129,13 @@ class Client(BaseClient):
         return case
 
     def search_cases(self, args: dict = None):
-        data = args
-        res = self._http_request('POST', 'case/_search', ok_codes=[200, 201, 404], data=data, resp_type='response')
+        if self.version[0] == "4":
+            res = self._http_request('POST', 'case/_search',
+                                     params={"name": "cases"}, ok_codes=[200, 201, 404], json_data=args,
+                                     resp_type='response')
+        else:
+            res = self._http_request('POST', 'case/_search', ok_codes=[200, 201, 404], json_data=args,
+                                     resp_type='response')
         if res.status_code == 404:
             return None
         else:
@@ -168,46 +183,179 @@ class Client(BaseClient):
             return res.json()
 
     def get_tasks(self, case_id: str = ''):
-        data = {"id": case_id}
-        res = self._http_request('POST', 'case/task/_search', data=data, ok_codes=[200, 201, 204, 404],
-                                 resp_type='response')
-        if res.status_code != 200:
-            return None
-        tasks = [x for x in res.json() if x['_parent'] == case_id]
-        for task in tasks:
-            logs = self.get_task_logs(task['id'])
-            task['logs'] = logs
+        if self.version[0] == "4":
+            query = {
+                "query": [
+                    {
+                        "_name": "getCase",
+                        "idOrName": case_id
+                    },
+                    {
+                        "_name": "tasks"
+                    },
+                    {
+                        "_name": "sort",
+                        "_fields": [
+                            {
+                                "flag": "desc"
+                            },
+                            {
+                                "order": "asc"
+                            },
+                            {
+                                "startDate": "asc"
+                            },
+                            {
+                                "title": "asc"
+                            }
+                        ]
+                    },
+                    {
+                        "_name": "page",
+                        "from": 0,
+                        "to": 15,
+                        "extraData": [
+                            "shareCount"
+                        ]
+                    }
+                ]
+            }
+            res = self._http_request(
+                'POST', 'v1/query',
+                params={"name": "case-tasks"},
+                json_data=query,
+                ok_codes=[200, 201, 204, 404],
+                resp_type='response'
+            )
+            if res.status_code != 200:
+                tasks = []
+            else:
+                tasks = res.json()
+        else:
+            data = {"id": case_id}
+            res = self._http_request(
+                'POST',
+                'case/task/_search',
+                data=data,
+                ok_codes=[200, 201, 204, 404],
+                resp_type='response'
+            )
+            if res.status_code != 200:
+                return None
+            tasks = [x for x in res.json() if x['_parent'] == case_id]
+        if tasks:
+            for task in tasks:
+                if "id" in task:
+                    logs = self.get_task_logs(task['id'])
+                elif "_id" in task:
+                    logs = self.get_task_logs(task['_id'])
+                else:
+                    logs = []
+                task['logs'] = logs
         return tasks
 
     def get_task(self, task_id: str = None):
-        res = self._http_request('GET', f'case/task/{task_id}', ok_codes=[200], resp_type='response')
+        if self.version[0] == "4":
+            query = {
+                "query": [{
+                    "_name": "getTask",
+                    "idOrName": task_id
+                }, {
+                    "_name": "page",
+                    "from": 0,
+                    "to": 1
+                }]
+            }
+            res = self._http_request(
+                'POST',
+                f'v1/query',
+                params={"name": f"get-task-{task_id}"},
+                json_data=query,
+                ok_codes=[200, 404],
+                resp_type='response'
+            )
+        else:
+            res = self._http_request(
+                'GET',
+                f'case/task/{task_id}',
+                ok_codes=[200, 404],
+                resp_type='response'
+            )
         if res.status_code != 200:
             return None
-        task = res.json()
+        task = res.json()[0]
         task['logs'] = self.get_task_logs(task_id)
         return task
 
     def create_task(self, case_id: str = None, data: dict = None):
-        res = self._http_request('POST', f'case/{case_id}/task', data=data, ok_codes=[201], resp_type='response')
+        res = self._http_request(
+            'POST',
+            f'case/{case_id}/task',
+            data=data,
+            ok_codes=[201],
+            resp_type='response'
+        )
         if res.status_code != 201:
             return None
         return res.json()
 
     def get_task_logs(self, task_id: str = None):
-        res = self._http_request('GET', f'case/task/{task_id}/log', ok_codes=[200], resp_type='response')
+        if self.version[0] == "4":
+            query = {
+                "query": [{
+                    "_name": "getTask",
+                    "idOrName": task_id
+                }, {
+                    "_name": "logs"
+                }, {
+                    "_name": "sort",
+                    "_fields": [{
+                        "date": "desc"
+                    }]
+                }, {
+                    "_name": "page",
+                    "from": 0,
+                    "to": 10,
+                    "extraData": ["actionCount"]
+                }]
+            }
+            res = self._http_request(
+                'POST',
+                f'v1/query',
+                params={"name": "case-task-logs"},
+                json_data=query,
+                ok_codes=[200, 404],
+                resp_type='response'
+            )
+        else:
+            res = self._http_request(
+                'GET',
+                f'case/task/{task_id}/log',
+                ok_codes=[200, 404],
+                resp_type='response'
+            )
         if res.status_code != 200:
             return []
-        logs = list()
-        for log in res.json():
-            log['has_attachments'] = True if log.get('attachment', None) else False
-            logs.append(log)
-        return logs
+        else:
+            logs = list()
+            for log in res.json():
+                log['has_attachments'] = True if log.get('attachment', None) else False
+                logs.append(log)
+            return logs
 
     def get_log(self, log_id: str = None):
-        res = self._http_request('GET', f'case/task/log/{log_id}', ok_codes=[200], resp_type='response')
-        if res.status_code != 200:
-            return None
-        return res.json()
+        if self.version[0] == "4":
+            return "Not yet implemented"
+        else:
+            res = self._http_request(
+                'GET',
+                f'case/task/log/{log_id}',
+                ok_codes=[200, 404],
+                resp_type='response'
+            )
+            if res.status_code != 200:
+                return None
+            return res.json()
 
     def get_attachment_data(self, filename=None, fileId=None):
         headers = self._headers.update({
@@ -221,8 +369,13 @@ class Client(BaseClient):
         return data
 
     def update_task(self, task_id: str = None, updates: dict = {}):
-        res = self._http_request('PATCH', f'case/task/{task_id}', ok_codes=[200, 201], data=updates,
-                                 resp_type='response')
+        res = self._http_request(
+            'PATCH',
+            f'case/task/{task_id}',
+            ok_codes=[200, 201],
+            data=updates,
+            resp_type='response'
+        )
         if res.status_code not in [200, 201]:
             return_error(res.text)
         return res.json()
@@ -236,7 +389,10 @@ class Client(BaseClient):
         return res
 
     def create_user(self, user_data: dict):
-        res = self._http_request('POST', 'user', data=user_data, ok_codes=[201])
+        if self.version[0] == "4":
+            res = self._http_request('POST', 'v1/user', data=user_data, ok_codes=[201])
+        else:
+            res = self._http_request('POST', 'user', data=user_data, ok_codes=[201])
         return res
 
     def block_user(self, user_id: str = None):
@@ -247,8 +403,46 @@ class Client(BaseClient):
             return False
 
     def list_observables(self, case_id: str = None):
-        res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200])
-        res[:] = [x for x in res if x['_parent'] == case_id] if case_id else res
+        if self.version[0] == "4":
+            query = {
+                "query": [
+                    {
+                        "_name": "getCase",
+                        "idOrName": case_id
+                    },
+                    {
+                        "_name": "observables"
+                    },
+                    {
+                        "_name": "sort",
+                        "_fields": [
+                            {
+                                "startDate": "desc"
+                            }
+                        ]
+                    },
+                    {
+                        "_name": "page",
+                        "from": 0,
+                        "to": 15,
+                        "extraData": [
+                            "seen",
+                            "permissions",
+                            "shareCount"
+                        ]
+                    }
+                ]
+            }
+            res = self._http_request(
+                'POST',
+                'v1/query',
+                ok_codes=[200],
+                params={"name": "observables"},
+                json_data=query
+            )
+        else:
+            res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200])
+            res[:] = [x for x in res if x['_parent'] == case_id] if case_id else res
         return res
 
     def create_observable(self, case_id: str = None, data: dict = None):
@@ -256,8 +450,14 @@ class Client(BaseClient):
         return res
 
     def update_observable(self, artifact_id: str = None, data: dict = None):
-        res = self._http_request('PATCH', f'case/artifact/{artifact_id}', ok_codes=[200], data=data)
-        return res
+        res = self._http_request(
+            'PATCH',
+            f'case/artifact/{artifact_id}',
+            ok_codes=[200, 204],
+            data=data,
+            resp_type="response")
+        if res.status_code in [200, 204]:
+            return {"data": "", "dataType": "", "message": "Successful"}
 
 
 ''' HELPER FUNCTIONS '''
@@ -307,8 +507,15 @@ def get_case_command(client: Client, args: dict):
 
 
 def search_cases_command(client: Client, args: dict):
-    arguments = {k: True if v == 'true' else v for k, v in args.items() if v is not None}
-    arguments = {k: False if v == 'false' else v for k, v in arguments.items()}
+    if client.version[0] == "4":
+        arguments = args.get('query', None)
+    else:
+        arguments = {k: True if v == 'true' else v for k, v in args.items() if v is not None}
+        arguments = {k: False if v == 'false' else v for k, v in arguments.items()}
+    try:
+        arguments = json.loads(arguments)
+    except:
+        pass
     cases = client.search_cases(arguments)
     output_results(
         title='TheHive Cases search:',
@@ -367,7 +574,8 @@ def remove_case_command(client: Client, args: dict):
     res = client.remove_case(case_id, permanent)
     if type(res) == tuple:
         return_error(f'Error removing case ID {case_id} ({res[0]}) - {res[1]}')
-    message = f'Case ID {case_id} permanently removed successfully' if permanent else f'Case ID {case_id} removed successfully'
+    message = f'Case ID {case_id} permanently removed successfully' if permanent \
+        else f'Case ID {case_id} removed successfully'
     demisto.results(message)
 
 
@@ -425,21 +633,20 @@ def get_task_command(client: Client, args: dict):
 
 
 def get_attachment_command(client: Client, args: dict):
-    log_id = args.get('id')
-    log = client.get_log(log_id)
-    if log and "attachment" in log:
-        attachment = log.get('attachment')
-        data = client.get_attachment_data(filename=attachment.get('name', None), fileId=attachment.get('id', None))
-        demisto.results(fileResult(attachment['name'], data))
+    attachment_id = args.get('id')
+    attachment_name = args.get('name')
+    data = client.get_attachment_data(filename=attachment_name, fileId=attachment_id)
+    if data:
+        demisto.results(fileResult(attachment_name, data))
         output_results(
             title='TheHive Log Attachments:',
-            outputs=attachment,
-            headers=['id', 'name', 'hashes', 'size', 'contentType'],
+            outputs={"name": attachment_name, "id": attachment_id},
+            headers=['id', 'name'],
             outputs_prefix='TheHive.Attachments',
             outputs_key_field='id',
         )
     else:
-        demisto.results('No attachments in log ID {log_id}')
+        demisto.results(f'No attachments with ID "{attachment_id}" and name "{attachment_name}" found')
 
 
 def update_task_command(client: Client, args: dict):
@@ -489,11 +696,17 @@ def create_local_user_command(client: Client, args: dict):
             args.get('roles', '')),
         "password": args.get('password')
     }
+    if client.version[0] == "4":
+        user_data['profile'] = args.get('profile', "read-only")
+        del user_data['roles']
     result = client.create_user(user_data=user_data)
+    if client.version[0] == "4":
+        result['id'] = result['_id']
     output_results(
-        title=f"New User {result.get('id')}:",
+        title=f"New User {result.get('id', result.get('_id', None))}:",
         outputs=result,
-        headers=['id', 'name', 'roles', 'status'],
+        headers=['id', 'name', 'roles', 'status'] if client.version[0] != "4"
+        else ['id', 'name', 'profile', 'status'],
         outputs_prefix='TheHive.Users',
         outputs_key_field='id',
     )
@@ -552,8 +765,9 @@ def update_observable_command(client: Client, args: dict):
     }
     data = {k: v for k, v in data.items() if v}
     res = client.update_observable(artifact_id=artifact_id, data=data)
+    res['data'] = data
     output_results(
-        title='Updated Observable {artifact_id}:',
+        title=f'Updated Observable {artifact_id}:',
         outputs=res,
         headers=['data', 'dataType', 'message'],
         outputs_prefix='TheHive.Observables',
@@ -570,12 +784,33 @@ def get_mapping_fields_command(client: Client, args: dict) -> Dict[str, Any]:
 
 def update_remote_system_command(client: Client, args: dict) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
-
     changes = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data.keys()}
     if parsed_args.remote_incident_id:
         # Apply the updates
         client.update_case(case_id=parsed_args.remote_incident_id, updates=changes)
     return parsed_args.remote_incident_id
+
+
+def get_modified_remote_data_command(client, args):
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    last_timestamp = int(last_update_utc.timestamp() * 1000)
+    last_update_utc = last_update_utc.replace(tzinfo=None)
+    query = {
+        "query": {
+            "_and": [
+                {
+                    "_gt": {
+                        "updatedAt": 1617282547560
+                    }
+                }
+            ]
+        }
+    }
+    cases = client.search_cases(query)
+    incident_ids = [x['id'] for x in cases] if cases else []
+    return GetModifiedRemoteDataResponse(incident_ids)
 
 
 def get_remote_data_command(client: Client, args: dict):
@@ -608,6 +843,11 @@ def get_remote_data_command(client: Client, args: dict):
         })
 
     return GetRemoteDataResponse(case, parsed_entries)  # mypy: ignore
+
+
+def get_version_command(client, args):
+    version = client.get_version()
+    demisto.results(version)
 
 
 def test_module(client: Client):
@@ -643,9 +883,6 @@ def fetch_incidents(client: Client):
     return incidents
 
 
-''' MAIN FUNCTION '''
-
-
 def main() -> None:
     params = demisto.params()
     args = demisto.args()
@@ -678,13 +915,12 @@ def main() -> None:
         'thehive-block-user': block_user_command,
         'thehive-list-observables': list_observables_command,
         'thehive-create-observable': create_observable_command,
-        'thehive-update-observable': update_observable_command
+        'thehive-update-observable': update_observable_command,
+        'thehive-get-version': get_version_command
     }
     demisto.debug(f'Command being called is {command}')
+    headers = {'Authorization': f'Bearer {api_key}'}
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -705,6 +941,10 @@ def main() -> None:
 
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, args))
+
+        elif command == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, args))
+
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
 
@@ -714,13 +954,10 @@ def main() -> None:
         elif command in command_map:
             command_map[command](client, args)  # type: ignore
 
-    # Log exceptions and return errors
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command. \nError: {str(err)}')
 
-
-''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
