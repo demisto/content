@@ -347,7 +347,7 @@ script:
       description: the type of the indicators that are associated with the URL.
       type: String
     - contextPath: URL.Geo.Country
-      description: The URL country
+      description: The URL country.
       type: String
     - contextPath: URL.ASOwner
       description: The URL AS owner
