@@ -1147,7 +1147,8 @@ def get_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     hr_service["classifications"] = [c.get("name") for c in hr_service.get("classifications")]
     hr_service["tlsVersions"] = [f'version: {t.get("tlsVersion")} - cipher_suite: {t.get("cipherSuite")}'
                                  for t in hr_service.get("tlsVersions")]
-    hr_service["certificates"] = [f'subject_name: {c.get("certificate").get("subjectName")}' for c in hr_service.get("certificates")]
+    hr_service["certificates"] = [f'subject_name: {c.get("certificate").get("subjectName")}'
+                                  for c in hr_service.get("certificates")]
 
     readable_output = tableToMarkdown(
         name='Expanse Services',
