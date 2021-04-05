@@ -898,7 +898,8 @@ def test_endpoint_scan_command(requests_mock):
     """
     from CortexXDRIR import endpoint_scan_command, Client
     test_data = load_test_data('test_data/scan_endpoints.json')
-    scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
+    scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
+                                                                                               'aborted': False}}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
     client = Client(
@@ -921,7 +922,8 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
     """
     from CortexXDRIR import endpoint_scan_command, Client
     test_data = load_test_data('test_data/scan_all_endpoints.json')
-    scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
+    scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
+                                                                                               'aborted': False}}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
     client = Client(
@@ -949,9 +951,9 @@ def test_endpoint_scan_command_scan_all_endpoints_no_filters_error(requests_mock
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    err_msg = 'To scan all the endpoints run this command with the \'all\' argument as True ' \
+    err_msg = 'To scan/abort scan all the endpoints run this command with the \'all\' argument as True ' \
               'and without any other filters. This may cause performance issues.\n' \
-              'To scan some of the endpoints, please use the filter arguments.'
+              'To scan/abort scan some of the endpoints, please use the filter arguments.'
     with pytest.raises(Exception, match=err_msg):
         endpoint_scan_command(client, {})
 
@@ -972,9 +974,9 @@ def test_endpoint_scan_abort_command_scan_all_endpoints_no_filters_error(request
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    err_msg = 'To abort scan on all the endpoints run this command with the \'all\' argument as True ' \
+    err_msg = 'To scan/abort scan all the endpoints run this command with the \'all\' argument as True ' \
               'and without any other filters. This may cause performance issues.\n' \
-              'To abort scan for some of the endpoints, please use the filter arguments.'
+              'To scan/abort scan some of the endpoints, please use the filter arguments.'
     with pytest.raises(Exception, match=err_msg):
         endpoint_scan_abort_command(client, {})
 
@@ -991,7 +993,8 @@ def test_endpoint_scan_abort_command(requests_mock):
     """
     from CortexXDRIR import endpoint_scan_abort_command, Client
     test_data = load_test_data('test_data/scan_endpoints.json')
-    scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
+    scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
+                                                                                               'aborted': True}}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/abort_scan/', json={"reply": {"action_id": 123}})
 
     client = Client(
@@ -1014,7 +1017,8 @@ def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
     """
     from CortexXDRIR import endpoint_scan_abort_command, Client
     test_data = load_test_data('test_data/scan_all_endpoints.json')
-    scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
+    scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
+                                                                                               'aborted': True}}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/abort_scan/', json={"reply": {"action_id": 123}})
 
     client = Client(

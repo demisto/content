@@ -1755,6 +1755,9 @@ script:
     - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
       description: The action ID of the scan request.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
+      description: Check if the scan aborted or not.
+      type: Boolean
   - arguments:
     - default: false
       description: List of endpoint IDs.
@@ -1861,6 +1864,9 @@ script:
     - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
       description: The action id of the abort scan request.
       type: Unknown
+    - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
+      description: Check if the scan aborted or not.
+      type: Boolean
   - deprecated: false
     description: Get mapping fields from remote incident. Please note that this method
       will not update the current incident, it's here for debugging purposes.
@@ -2743,6 +2749,9 @@ script:
   runonce: false
   script: '-'
   subtype: python3
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   type: python
 tests:
 - Test XDR Playbook

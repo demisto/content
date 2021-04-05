@@ -2239,21 +2239,8 @@ def endpoint_scan_command(client, args):
     alias = args.get('alias')
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
-    all_ = argToBoolean(args.get('all', 'false'))
 
-    # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
-    err_msg = 'To scan all the endpoints run this command with the \'all\' argument as True ' \
-              'and without any other filters. This may cause performance issues.\n' \
-              'To scan some of the endpoints, please use the filter arguments.'
-    if all_:
-        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
-                or ip_list or group_name or platform or alias or hostname:
-            raise Exception(err_msg)
-    else:
-        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-                and not alias and not hostname:
-            raise Exception(err_msg)
+    validate_args_scan_commands(args)
 
     reply = client.endpoint_scan(
         url_suffix='/endpoints/scan/',
@@ -2273,10 +2260,15 @@ def endpoint_scan_command(client, args):
 
     action_id = reply.get("action_id")
 
+    context = {
+        "actionId": action_id,
+        "aborted": False
+    }
+
     return (
         tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan.actionId(val.actionId == obj.actionId)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context
         },
         reply
     )
@@ -2295,21 +2287,8 @@ def endpoint_scan_abort_command(client, args):
     alias = args.get('alias')
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
-    all_ = argToBoolean(args.get('all', 'false'))
 
-    # to prevent the case where an empty filtered command will trigger by default abort scans on all the endpoints.
-    err_msg = 'To abort scan on all the endpoints run this command with the \'all\' argument as True ' \
-              'and without any other filters. This may cause performance issues.\n' \
-              'To abort scan for some of the endpoints, please use the filter arguments.'
-    if all_:
-        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
-                or ip_list or group_name or platform or alias or hostname:
-            raise Exception(err_msg)
-    else:
-        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-                and not alias and not hostname:
-            raise Exception(err_msg)
+    validate_args_scan_commands(args)
 
     reply = client.endpoint_scan(
         url_suffix='endpoints/abort_scan/',
@@ -2329,13 +2308,47 @@ def endpoint_scan_abort_command(client, args):
 
     action_id = reply.get("action_id")
 
+    context = {
+        "actionId": action_id,
+        "aborted": True
+    }
+
     return (
         tableToMarkdown('Endpoint abort scan', {'Action Id': action_id}, ['Action Id']),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan.actionId(val.actionId == obj.actionId)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context
         },
         reply
     )
+
+
+def validate_args_scan_commands(args):
+    endpoint_id_list = args.get('endpoint_id_list')
+    dist_name = args.get('dist_name')
+    gte_first_seen = args.get('gte_first_seen')
+    gte_last_seen = args.get('gte_last_seen')
+    lte_first_seen = args.get('lte_first_seen')
+    lte_last_seen = args.get('lte_last_seen')
+    ip_list = args.get('ip_list')
+    group_name = args.get('group_name')
+    platform = args.get('platform')
+    alias = args.get('alias')
+    hostname = argToList(args.get('hostname'))
+    all_ = argToBoolean(args.get('all', 'false'))
+
+    # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
+    err_msg = 'To scan/abort scan all the endpoints run this command with the \'all\' argument as True ' \
+              'and without any other filters. This may cause performance issues.\n' \
+              'To scan/abort scan some of the endpoints, please use the filter arguments.'
+    if all_:
+        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
+                or ip_list or group_name or platform or alias or hostname:
+            raise Exception(err_msg)
+    else:
+        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+                and not alias and not hostname:
+            raise Exception(err_msg)
 
 
 def sort_by_key(list_to_sort, main_key, fallback_key):
