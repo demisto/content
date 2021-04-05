@@ -129,8 +129,7 @@ def test_get_firewall_serials(mocker):
                                 }
                             }
                         }
-                }
-                ,
+                },
                 'HumanReadable': 'Command was executed successfully.',
                 'ImportantEntryContext': None,
                 'EntryContext': None,
