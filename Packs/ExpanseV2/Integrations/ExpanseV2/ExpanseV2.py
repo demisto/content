@@ -1144,11 +1144,11 @@ def get_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     # reduce some objects for human readable
     hr_service = copy.deepcopy(service)
-    hr_service["classifications"] = [c.get("name") for c in hr_service.get("classifications")]
+    hr_service["classifications"] = [c.get("name") for c in hr_service.get("classifications") if hr_service is not None]
     hr_service["tlsVersions"] = [f'version: {t.get("tlsVersion")} - cipher_suite: {t.get("cipherSuite")}'
-                                 for t in hr_service.get("tlsVersions")]
+                                 for t in hr_service.get("tlsVersions") if hr_service is not None]
     hr_service["certificates"] = [f'subject_name: {c.get("certificate").get("subjectName")}'
-                                  for c in hr_service.get("certificates")]
+                                  for c in hr_service.get("certificates") if hr_service is not None]
 
     readable_output = tableToMarkdown(
         name='Expanse Services',
