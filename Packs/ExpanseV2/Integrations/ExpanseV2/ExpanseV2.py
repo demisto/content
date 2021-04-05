@@ -534,8 +534,11 @@ class Client(BaseClient):
             changed = True
         return assets, ml_feature_list, changed
 
-    def get_exposures_ips(self):
-        pass
+    def get_exposures_ips(self, params):
+        return self._paginate(
+            method='GET',
+            url_suffix='exposures/ip-ports',
+            params=params)
 
 
 """ HELPER FUNCTIONS """
@@ -2046,64 +2049,85 @@ def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def do_auth():
-    """
-    perform authentication using API_KEY,
-    stores token and stored timestamp in integration context,
-    retrieves new token when expired
-    """
-    auth = demisto.getIntegrationContext()
-    now_epoch = int(datetime.today().strftime('%s'))
-
-    if ("token" in auth or "stored" in auth) and int(auth['stored']) + (60 * 60 * 2) > int(now_epoch):
-        # if integration context contains token and stored and the token is not expired then return token
-        return auth['token']
-    else:
-        # fetch new token
-        r = http_request('GET', 'IdToken', token=API_KEY)
-        if r.get('token') is None:
-            return_error("Authorization failed")
-
-        demisto.setIntegrationContext({
-            'token': r['token'],
-            'stored': now_epoch
-        })
-        return r['token']
-
-
 def exposures_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     searches by ip for exposure data from Expanse
     """
-    search = args['ip']
+    ips = argToList(args.get('ip'))
+    if len(ips) == 0:
+        raise ValueError('ip(s) not specified')
+
+    # trim down the list to the max number of supported results
+    if len(ips) > MAX_RESULTS:
+        ips = ips[:MAX_RESULTS]
 
     params = {
-        "inet": search,
+        "inet": ips,
         "activityStatus": "active"
     }
-    token = do_auth()
-    results = client._http_request('GET', 'exposures/ip-ports', params, token=token)
-    try:
-        exposures = results['data']
-        if len(exposures) == 0:
-            demisto.results("No data found")
-            return
-    except Exception:
-        demisto.results("No data found")
-        return
+    exposures_iterator = client.get_exposures_ips(params)
 
-    expanse_exposure_context = get_expanse_exposure_context(exposures)
+    #expanse_exposure_context_list = [get_expanse_exposure_context(exposure)]
+    for exposure in exposures_iterator:
+        expanse_exposure_context = get_expanse_exposure_context(exposure)
 
-    ec = {
-        'Expanse.Exposures(val.SearchTerm == obj.SearchTerm)': expanse_exposure_context
+        ec = {
+            'Expanse.Exposures(val.SearchTerm == obj.SearchTerm)': expanse_exposure_context
+        }
+
+        raw_exposures = expanse_exposure_context['Exposures']
+        del expanse_exposure_context['Exposures']  # Remove exposure objects from human readable response
+        human_readable = tableToMarkdown("Expanse Exposure information for: {search}".format(search=ips),
+                                         expanse_exposure_context)
+        expanse_exposure_context['Exposures'] = raw_exposures
+        return_outputs(human_readable, ec, exposures)
+
+
+def get_expanse_exposure_context(data):
+    """
+    provides custom context information from the Expanse Exposure API
+    """
+
+    def exposure_to_obj(exposure):
+        return {
+            "ExposureType": exposure['exposureType'],
+            "BusinessUnit": exposure['businessUnit']['name'],
+            "Ip": exposure['ip'],
+            "Port": exposure['port'],
+            "Severity": exposure['severity'],
+            "Certificate": exposure['certificate'],
+            "FirstObservsation": exposure['firstObservation'],
+            "LastObservsation": exposure['lastObservation'],
+            "Status": exposure['statuses'],
+            "Provider": exposure['provider']
+        }
+
+    def exposure_to_summary(exposure):
+        return "{exposureType} exposure on {ip}:{port}".format(**exposure)
+
+    def exposure_stats(exposures):
+        results = {
+            "CRITICAL": 0,
+            "WARNING": 0,
+            "ROUTINE": 0,
+            "UNKNOWN": 0
+        }
+        for exposure in exposures:
+            results[exposure['severity']] += 1
+
+        return results
+
+    counts = exposure_stats(data)
+    return {
+        "SearchTerm": data[0]['ip'],
+        "TotalExposureCount": len(data),
+        "CriticalExposureCount": counts['CRITICAL'],
+        "WarningExposureCount": counts['WARNING'],
+        "RoutineExposureCount": counts['ROUTINE'],
+        "UnknownExposureCount": counts['UNKNOWN'],
+        "ExposureSummaries": '\n'.join([exposure_to_summary(exposure) for exposure in data]),
+        "Exposures": [exposure_to_obj(exposure) for exposure in data]
     }
-
-    raw_exposures = expanse_exposure_context['Exposures']
-    del expanse_exposure_context['Exposures']  # Remove exposure objects from human readable response
-    human_readable = tableToMarkdown("Expanse Exposure information for: {search}".format(search=search),
-                                     expanse_exposure_context)
-    expanse_exposure_context['Exposures'] = raw_exposures
-    return_outputs(human_readable, ec, exposures)
 
 
 """ MAIN FUNCTION """
@@ -2293,10 +2317,10 @@ def main() -> None:
         elif command == "expanse-list-risk-rules":
             return_results(list_risk_rules_command(client, demisto.args()))
 
-        elif active_command == 'expanse-get-exposures':
+        elif command == 'expanse-get-exposures':
             return_results(exposures_command(client, demisto.args()))
 
-        elif active_command == 'expanse-get-domains-for-certificate':
+        elif command == 'expanse-get-domains-for-certificate':
             return_results(domains_for_certificate_command())
 
         else:
