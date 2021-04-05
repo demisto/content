@@ -34,6 +34,11 @@ def main():
             flow_worked = False
             return_results(password_outputs)
 
+        enable_outputs = demisto.executeCommand("ad-enable-account", ad_create_user_arguments)
+        if is_error(enable_outputs):
+            flow_worked = False
+            return_results(enable_outputs)
+
         update_outputs = demisto.executeCommand("ad-update-user", ad_create_user_arguments)
         if is_error(update_outputs):
             flow_worked = False
