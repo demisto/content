@@ -1,0 +1,18 @@
+{
+    "defaultIncidentType": "BitSight Findings",
+    "description": "",
+    "feed": false,
+    "id": "BitSight - Classifier",
+    "keyTypeMap": {},
+    "name": "BitSight - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
