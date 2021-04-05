@@ -333,7 +333,7 @@
 </tr>
 <tr>
 <td style="width: 267px;">URL.ASN </td>
-<td style="width: 454px;">The URL ASN</td>
+<td style="width: 454px;">The URL ASN.</td>
 </tr>
 <tr>
 <td style="width: 267px;">URL.FeedRelatedIndicators.value </td>
