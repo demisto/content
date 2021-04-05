@@ -2309,86 +2309,60 @@ script:
     deprecated: false
     description: TODO
     execution: false
-    name: ciscofp-get-url-groups-object
+name: ciscofp-get-url-groups-object
+    arguments:
+    - name: id
+      required: true
     outputs:
-    - contextPath: CiscoFP.UrlGroups.ID
-      description: TODO
-      type: String
-    - contextPath: CiscoFP.UrlGroups.Name
-      description: TODO
-      type: String
-    - contextPath: CiscoFP.UrlGroups.Overridable
-      description: TODO
-      type: String
-    - contextPath: CiscoFP.UrlGroups.Description
-      description: TODO
-      type: String
-    - contextPath: CiscoFP.UrlGroups.Objects
-      description: TODO
-      type: Unknown
-    - contextPath: CiscoFP.UrlGroups.Addresses
-      description: TODO
-      type: Unknown
-  - arguments:
-    - default: false
-      description: TODO
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - default: false
-      description: TODO
-      isArray: false
-      name: name
-      required: false
-      secret: false
-    - default: false
-      description: TODO
-      isArray: false
-      name: url_objects_id_list
-      required: false
-      secret: false
-    - default: false
-      description: TODO
-      isArray: false
-      name: url_list
-      required: false
-      secret: false
-    - default: false
-      description: TODO
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - default: false
-      description: TODO
-      isArray: false
-      name: overridable
-      required: false
-      secret: false
-    deprecated: false
-    description: TODO
-    execution: false
-    name: ciscofp-update-url-groups-objects
-    outputs:
-    - contextPath: CiscoFP.UrlGroups.ID
-      description: TODO
-      type: String
-    - contextPath: CiscoFP.UrlGroups.Name
-      description: TODO
-      type: String
-    - contextPath: CiscoFP.UrlGroups.Overridable
-      description: TODO
-      type: String
-    - contextPath: CiscoFP.UrlGroups.Description
-      description: TODO
-      type: String
-    - contextPath: CiscoFP.UrlGroups.Objects
-      description: TODO
-      type: Unknown
-    - contextPath: CiscoFP.UrlGroups.Addresses
-      description: TODO
-      type: Unknown
+    - contextPath: CiscoFP.URLGroups.ID
+      description: The group ID.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Name
+      description: The group Name.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Overridable
+      description: Boolean indicating whether objects can be overridden.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Description
+      description: The group description.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Addresses.Value
+      description: The group addresses.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Objects.Name
+      description: The group object name.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Objects.ID
+      description: The object ID.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Objects.Type
+      description: The object type.
+      type: string
+    description: Retrieves the groups of url objects and addresses associated with
+      the specified ID. If not supplied, retrieves a list of all url objects.
+- name: ciscofp-update-url-groups-objects
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the group to update.
+    - name: url_objects_id_list
+      description: A comma-separated list of object IDs to add the url.
+    - name: url_list
+      description: A comma-separated list of url to add the group.
+    - name: description
+      description: The new description for the object.
+    - name: overridable
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Boolean indicating whether object values can be overridden. Can
+        be "true" or "false". The default is "false".
+      defaultValue: "false"
+    - name: name
+      required: true
+      description: The group name.
+    description: UpdateThe ID of the group to update.s a group of url objects.
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
