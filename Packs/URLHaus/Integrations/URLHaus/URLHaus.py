@@ -478,41 +478,37 @@ LOG('Command being called is %s' % (demisto.command()))
 
 def main():
     try:
-        params = demisto.params()
+        demisto_params = demisto.params()
 
-        args = {
-            'api_url': params['url'].rstrip('/'),
-            'use_ssl': not params.get('insecure', False),
-            'threshold': int(params.get('threshold', 1))
+        params = {
+            'api_url': demisto_params['url'].rstrip('/'),
+            'use_ssl': not demisto_params.get('insecure', False),
+            'threshold': int(demisto_params.get('threshold', 1))
         }
 
         reliability = params.get('integrationReliability')
         reliability = reliability if reliability else DBotScoreReliability.C
 
         if DBotScoreReliability.is_valid_type(reliability):
-            args['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+            params['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         else:
             Exception("Please provide a valid value for the Source Reliability parameter.")
 
         # Remove proxy if not set to true in params
-        if not demisto.params().get('proxy'):
-            os.environ.pop('HTTP_PROXY', None)
-            os.environ.pop('HTTPS_PROXY', None)
-            os.environ.pop('http_proxy', None)
-            os.environ.pop('https_proxy', None)
+        handle_proxy()
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            test_module(**args)
+            test_module(**params)
             demisto.results('ok')
         elif demisto.command() == 'url':
-            url_command(**args)
+            url_command(**params)
         elif demisto.command() == 'domain':
-            domain_command(**args)
+            domain_command(**params)
         elif demisto.command() == 'file':
-            file_command(**args)
+            file_command(**params)
         elif demisto.command() == 'urlhaus-download-sample':
-            urlhaus_download_sample_command(**args)
+            urlhaus_download_sample_command(**params)
 
     # Log exceptions
     except Exception as e:

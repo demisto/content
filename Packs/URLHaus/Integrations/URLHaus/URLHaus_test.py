@@ -6,6 +6,15 @@ import URLHaus
 
 
 def test_reliability_in_dbot(mocker):
+    """
+        Given:
+            - The user reliability param
+        When:
+            - Running url_command
+        Then:
+            - Verify reliability as excepted
+    """
+
     params = {
         'api_url': 'http://test.com'.rstrip('/'),
         'use_ssl': False,
