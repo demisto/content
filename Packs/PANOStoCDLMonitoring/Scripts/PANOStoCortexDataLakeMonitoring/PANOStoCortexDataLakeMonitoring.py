@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 # Cortex Data Lake PAN-OS log monitoring monitoring
-# PRE_REQUISITE: Enable Cortex Data Lake integration and/or PAN-OS integration (if the automated creation of a FW list is expected)
+# PRE_REQUISITE: Enable Cortex Data Lake integration and/or PAN-OS integration
+# (if the automated creation of a FW list is expected)
 
 def check_instance(all_instances: dict, integration_name: str, err_msg: str):
     """
