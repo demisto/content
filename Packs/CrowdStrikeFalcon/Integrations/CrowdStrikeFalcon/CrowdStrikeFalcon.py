@@ -1561,7 +1561,7 @@ def search_device_command():
     return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
 
-def get_endpint_command():
+def get_endpoint_command():
     args = demisto.args()
     if 'id' in args.keys():
         args['device_id'] = args.get('id', '')
@@ -2476,7 +2476,7 @@ def main():
                 )
             )
         elif command == 'Endpoint':
-            return_results(get_endpint_command())
+            return_results(get_endpoint_command())
         # Log exceptions
     except Exception as e:
         return_error(str(e))

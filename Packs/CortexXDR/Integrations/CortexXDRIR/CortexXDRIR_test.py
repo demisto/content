@@ -319,6 +319,31 @@ def test_get_all_endpoints_using_limit(requests_mock):
     assert [expected_endpoint] == outputs['PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
+def test_endpoint_command(requests_mock):
+    from CortexXDRIR import endpoint_command, Client
+
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'id': 'identifier'
+    }
+
+    _, outputs, _ = endpoint_command(client, args)
+    get_endpoints_response = {
+        'Hostname': 'ip-3.3.3.3.eu-central-1.compute.internal',
+        'ID': '1111',
+        'IPAddress': '3.3.3.3',
+        'OS': 'AGENT_OS_LINUX',
+        'Status': 'CONNECTED'
+    }
+
+    assert [get_endpoints_response] == outputs['Endpoint(val.ID && val.ID == obj.ID)']
+
+
 def test_insert_parsed_alert(requests_mock):
     from CortexXDRIR import insert_parsed_alert_command, Client
 
