@@ -635,7 +635,7 @@ def main():
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
     default_threshold = int(params.get('default_threshold', 2))
-    token = demisto.params().get('api_token')
+    token = params.get('api_token')
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.C
 
