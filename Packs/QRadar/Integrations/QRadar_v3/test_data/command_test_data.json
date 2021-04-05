@@ -510,7 +510,7 @@
    }
   ],
   "expected": {
-   "outputs_prefix": "QRadar.ClosingReason",
+   "outputs_prefix": "QRadar.Offense.ClosingReasons",
    "outputs_key_field": "ID",
    "outputs": [
     {
@@ -961,7 +961,7 @@
    "outputs_prefix": null,
    "outputs_key_field": null,
    "outputs": {
-     "QRadar.Assets(val.ID === \"1007\")": {
+     "QRadar.Asset(val.ID === \"1007\")": {
       "VulnerabilityCount": 0,
       "RiskScoreSum": 0.0,
       "Hostnames": [
@@ -995,7 +995,7 @@
        }
       ]
      },
-         "QRadar.Assets(val.ID === \"1008\")": {
+    "QRadar.Asset(val.ID === \"1008\")": {
       "VulnerabilityCount": 0,
       "RiskScoreSum": 0.0,
       "Hostnames": [

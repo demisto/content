@@ -1986,31 +1986,31 @@ script:
     hidden: true
     name: qradar-get-assets
     outputs:
-    - contextPath: QRadar.Assets.ID
+    - contextPath: QRadar.Asset.ID
       description: The ID of the asset.
       type: number
     - contextPath: Endpoint.IPAddress
       description: IP address of the asset.
       type: Unknown
-    - contextPath: QRadar.Assets.Name.Value
+    - contextPath: QRadar.Asset.Name.Value
       description: Name of the asset.
       type: string
     - contextPath: Endpoint.OS
       description: Asset OS.
       type: number
-    - contextPath: QRadar.Assets.AggregatedCVSSScore.Value
+    - contextPath: QRadar.Asset.AggregatedCVSSScore.Value
       description: CVSSScore.
       type: number
-    - contextPath: QRadar.Assets.AggregatedCVSSScore.LastUser
+    - contextPath: QRadar.Asset.AggregatedCVSSScore.LastUser
       description: Last user who updated the Aggregated CVSS Score.
       type: string
-    - contextPath: QRadar.Assets.Weight.Value
+    - contextPath: QRadar.Asset.Weight.Value
       description: Asset weight.
       type: number
-    - contextPath: QRadar.Assets.Weight.LastUser
+    - contextPath: QRadar.Asset.Weight.LastUser
       description: Last user who updated the weight.
       type: string
-    - contextPath: QRadar.Assets.Name.LastUser
+    - contextPath: QRadar.Asset.Name.LastUser
       description: Last user who updated the name.
       type: string
   - arguments:
@@ -2027,7 +2027,7 @@ script:
     name: qradar-get-asset-by-id
     # TODO check outputs
     outputs:
-    - contextPath: QRadar.Assets.ID
+    - contextPath: QRadar.Asset.ID
       description: The ID of the asset.
       type: number
     - contextPath: Endpoint.MACAddress
@@ -2036,22 +2036,22 @@ script:
     - contextPath: Endpoint.IPAddress
       description: IP address of the endpoint.
       type: Unknown
-    - contextPath: QRadar.Assets.ComplianceNotes.Value
+    - contextPath: QRadar.Asset.ComplianceNotes.Value
       description: Compliance notes.
       type: string
-    - contextPath: QRadar.Assets.CompliancePlan.Value
+    - contextPath: QRadar.Asset.CompliancePlan.Value
       description: Compliance plan.
       type: string
-    - contextPath: QRadar.Assets.CollateralDamagePotential.Value
+    - contextPath: QRadar.Asset.CollateralDamagePotential.Value
       description: Collateral damage potential.
       type: Unknown
-    - contextPath: QRadar.Assets.AggregatedCVSSScore.Value
+    - contextPath: QRadar.Asset.AggregatedCVSSScore.Value
       description: CVSSScore.
       type: number
-    - contextPath: QRadar.Assets.Name.Value
+    - contextPath: QRadar.Asset.Name.Value
       description: Name of the asset.
       type: string
-    - contextPath: QRadar.Assets.GroupName
+    - contextPath: QRadar.Asset.GroupName
       description: Name of the asset's group.
       type: string
     - contextPath: Endpoint.Domain
@@ -2060,43 +2060,43 @@ script:
     - contextPath: Endpoint.OS
       description: Asset OS.
       type: Unknown
-    - contextPath: QRadar.Assets.Weight.Value
+    - contextPath: QRadar.Asset.Weight.Value
       description: Asset weight.
       type: number
-    - contextPath: QRadar.Assets.Vulnerabilities.Value
+    - contextPath: QRadar.Asset.Vulnerabilities.Value
       description: Vulnerabilities.
       type: Unknown
-    - contextPath: QRadar.Assets.Location
+    - contextPath: QRadar.Asset.Location
       description: Location.
       type: string
-    - contextPath: QRadar.Assets.Description
+    - contextPath: QRadar.Asset.Description
       description: The asset description.
       type: string
-    - contextPath: QRadar.Assets.SwitchID
+    - contextPath: QRadar.Asset.SwitchID
       description: Switch ID.
       type: number
-    - contextPath: QRadar.Assets.SwitchPort
+    - contextPath: QRadar.Asset.SwitchPort
       description: Switch port.
       type: number
-    - contextPath: QRadar.Assets.Name.LastUser
+    - contextPath: QRadar.Asset.Name.LastUser
       description: Last user who updated the name.
       type: string
-    - contextPath: QRadar.Assets.AggregatedCVSSScore.LastUser
+    - contextPath: QRadar.Asset.AggregatedCVSSScore.LastUser
       description: Last user who updated the Aggregated CVSS Score.
       type: string
-    - contextPath: QRadar.Assets.Weight.LastUser
+    - contextPath: QRadar.Asset.Weight.LastUser
       description: Last user who updated the weight.
       type: string
-    - contextPath: QRadar.Assets.ComplianceNotes.LastUser
+    - contextPath: QRadar.Asset.ComplianceNotes.LastUser
       description: Last user who updated the compliance notes.
       type: string
-    - contextPath: QRadar.Assets.CompliancePlan.LastUser
+    - contextPath: QRadar.Asset.CompliancePlan.LastUser
       description: Last user who updated the compliance plan.
       type: string
-    - contextPath: QRadar.Assets.CollateralDamagePotential.LastUser
+    - contextPath: QRadar.Asset.CollateralDamagePotential.LastUser
       description: Last user who updated the collateral damage potential.
       type: string
-    - contextPath: QRadar.Assets.Vulnerabilities.LastUser
+    - contextPath: QRadar.Asset.Vulnerabilities.LastUser
       description: Last user who updated the vulnerabilities.
       type: string
   - arguments:

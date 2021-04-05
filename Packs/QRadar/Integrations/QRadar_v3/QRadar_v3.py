@@ -1605,7 +1605,7 @@ def qradar_closing_reasons_list_command(client: Client, args: Dict) -> CommandRe
 
     return CommandResults(
         readable_output=tableToMarkdown('Closing Reasons', outputs, headers=headers, removeNull=True),
-        outputs_prefix='QRadar.ClosingReason',
+        outputs_prefix='QRadar.Offense.ClosingReasons',
         outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
@@ -1806,7 +1806,7 @@ def qradar_assets_list_command(client: Client, args: Dict) -> CommandResults:
         output['Asset']['products'] = add_iso_entries_to_dict(output.get('Asset', dict()).get('products', []))
         output['Asset'] = sanitize_outputs(output.get('Asset'), ASSET_OLD_NEW_MAP)[0]
         assets_hr.append(output['Asset'])
-        assets_results[f'''QRadar.Assets(val.ID === "{output['Asset']['ID']}")'''] = output['Asset']
+        assets_results[f'''QRadar.Asset(val.ID === "{output['Asset']['ID']}")'''] = output['Asset']
         sanitized_endpoint = remove_empty_elements(output.get('Endpoint', dict()))
         if sanitized_endpoint:
             endpoints.append(sanitized_endpoint)
