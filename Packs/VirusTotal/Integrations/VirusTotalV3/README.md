@@ -1,5 +1,5 @@
-Analyzes suspicious hashes, URLs, domains, and IP addresses.
-This integration was integrated and tested with version v3 API of VirusTotal (API v3)
+This integration analyzes suspicious hashes, URLs, domains, and IP addresses.
+The integration was integrated and tested with version v3 API of VirusTotal (API v3)
 ## Configure VirusTotal (API v3) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,26 +8,26 @@ This integration was integrated and tested with version v3 API of VirusTotal (AP
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | API Key | See *Acquiring your API key* | True |
+    | API Key | See [Acquiring your API key](#acquiring-your-api-key) | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Source Reliability | Reliability of the source providing the intelligence data |  |
-    | Premium Subscription | Whether to use premium subscription (for advanced reputation analyze. See *Premium analysis: Relationship Files Threshold*) | False |
-    | File Threshold. Minimum number of positive results from VT scanners to consider the file malicious. | See *Indicator Thresholds* section. | False |
-    | IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious. | See *Indicator Thresholds* section. | False |
-    | URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious. | See *Indicator Thresholds* section. | False |
-    | Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious. | See *Indicator Thresholds* section. | False |
-    | Preferred Vendors List. CSV list of vendors who are considered more trustworthy. | See *Indicator Thresholds* section.  | False |
-    | Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  | See *Indicator Thresholds* section | False |
-    | Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS | See *Rules threshold* | False |
-    | Crowdsourced Yara Rules Threshold | See *Rules threshold* | False |
-    | Sigma and Intrusion Detection Rules Threshold | See *Rules threshold* | False |
-    | Domain Popularity Ranking Threshold | See *Rules threshold* | False |
-    | Premium Subscription Only: Relationship Files Threshold | See *Premium analysis: Relationship Files Threshold* | False |
+    | Premium Subscription | Whether to use premium subscription. (For advanced reputation analyze. See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold)) | False |
+    | File Threshold. Minimum number of positive results from VT scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | Preferred Vendors List. CSV list of vendors who are considered more trustworthy. | See [Indicator Thresholds](#indicator-thresholds).  | False |
+    | Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS | See [Rules Threshold](#rules-threshold). | False |
+    | Crowdsourced Yara Rules Threshold | See [Rules Threshold](#rules-threshold). | False |
+    | Sigma and Intrusion Detection Rules Threshold |  See [Rules Threshold](#rules-threshold). | False |
+    | Domain Popularity Ranking Threshold | See [Rules Threshold](#rules-threshold). | False |
+    | Premium Subscription Only: Relationship Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-### Acquiring your API key:
+### Acquiring your API key
 Your API key can be found in your VirusTotal account user menu:  
 ![](https://files.readme.io/ddeb298-Screen_Shot_2019-10-17_at_3.17.04_PM.png)  
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
@@ -39,54 +39,75 @@ The following information describes DBot Score which is new for this version.
 ### Indicator Thresholds
 Configure the default threshold for each indicator type in the instance settings.
 You can also specify the threshold as an argument when running relevant commands.
-Indicators with positive results from preferred vendors equal to or higher than threshold will be considered malicious.
-Indicators with positive results equal to or higher than the threshold will be considered malicious.
-Indicators with positive results equal to or higher than half of the threshold value, and lower than the threshold, will be considered suspicious.
+- Indicators with positive results from preferred vendors equal to or higher than the threshold will be considered malicious.
+- Indicators with positive results equal to or higher than the threshold will be considered malicious.
+- Indicators with positive results equal to or higher than half of the threshold value, and lower than the threshold, will be considered suspicious.
 
-### Rules threshold
+### Rules Threshold
 If the YARA rules analysis threshold is enabled:
-Indicators with positive results, the number of found YARA rules results, Sigma analysis, or IDS equal to or higher than the threshold, will be considered suspicious.
-If both the the basic analysis and the rules analysis is suspicious, the indicator will be considered as malicious.
+- Indicators with positive results, the number of found YARA rules results, Sigma analysis, or IDS equal to or higher than the threshold, will be considered suspicious.
+- If both the the basic analysis and the rules analysis is suspicious, the indicator will be considered as malicious.
 If the indicator was found to be suspicious only by the rules thresholds, the indicator will be considered suspicious.
 
 
-### Premium analysis: Relationship Files Threshold
+### Premium analysis - Relationship Files Threshold
 If the organization is using the premium subscription of VirusTotal, you can use the premium API analysis.
 The premium API analysis will check 3 file relationships of each indicator (domain, url, and ip).
-If the relationship is found to be malicious, the indicator will be considered malicious.
-If the relationship is found to be suspicious and the basic score is suspicious, the indicator will be considered malicious.
-If the relationship is found to be suspicious, the indicator will be considered suspicious.
+- If the relationship is found to be malicious, the indicator will be considered malicious.
+- If the relationship is found to be suspicious and the basic score is suspicious, the indicator will be considered malicious.
+- If the relationship is found to be suspicious, the indicator will be considered suspicious.
 
 The premium API analysis can call up to 4 API calls per indicator. If you want to decrease the use of the API quota, you can disable it.
 
 
 ## Changes from VirusTotal integration
-The following lists the changes in this version according to commands from VirusTotal integration.
+The following lists the changes in this version according to the commands from the VirusTotal integration.
 
 ### Reputation commands (ip, url, domain, and file)
-- Removed output paths: Due to changes in VirusTotal API, *IP.VirusTotal*, *Domain.VirusTotal*, *URL.VirusTotal*, *File.VirusTotal* will no longer supported.
-instead, you can use *VirusTotal.Domain* and *VirusTotal.IP* which returns concrete indicator's reputation.
-- Added output paths: For each command, outputs will appear under *VirusTotal.IP*, *VirusTotal.Domain*, *VirusTotal.File* and *VirusTotal.URL*.
-- The *file* and *url* commands will no longer analyse the file/url sent to it, but will get the information stored in VirusTotal.  
-  If you wish to analyze (detonate) the indicator, you can use the *Detonate File - VirusTotal V3* and *Detonate URL - VirusTotal V3* playbooks.
+- Removed output paths: Due to changes in VirusTotal API, the following output paths are no longer supported:
+   - *IP.VirusTotal*
+   - *Domain.VirusTotal*
+   - *URL.VirusTotal*
+   - *File.VirusTotal*
+
+   Instead, you can use the following output paths that return concrete indicator reputations.
+   - *VirusTotal.Domain*
+   - *VirusTotal.IP*
+- Added output paths: For each command, outputs will appear under the following output paths:
+   - *VirusTotal.IP*
+   - *VirusTotal.Domain*
+   - *VirusTotal.File*
+   - *VirusTotal.URL*
+- The following commands will no longer analyze the file/url sent to it, but will get the information stored in VirusTotal.
+   - *VirusTotal.Domain*
+   - *VirusTotal.IP*
+
+  To analyze (detonate) the indicator, you can use the following playbooks:
+     - **Detonate File - VirusTotal V3** 
+     - **Detonate URL - VirusTotal V3** 
 - Each reputation command will use at least 1 API call. For advanced reputation commands, use the *Premium API* flag.
-- To each reputation command there is not a new argument *extended_data*. When set to "true", the results returned by the commands will contain  
-  additional information as *last_analysis_results* which contains the service name and its specific analyzation.
+- For each reputation command there is the new *extended_data* argument . When set to "true", the results returned by the commands will contain  
+  additional information as *last_analysis_results* which contains the service name and its specific analysis.
 
 ### Comments
 In VirusTotal v3 you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.
 If supplied, the command will use the resource type to add a comment. If not, the command will determine if the given input is a hash or a URL.
-This arguments is available in the **vt-comments-get** and **vt-comments-add** commands.
+This arguments is available in the following commands:
+   - ***vt-comments-get***
+   - ***vt-comments-add*** 
 
-### vt-comments-get:
+### vt-comments-get
 - Added the *resource_type* argument. If not supplied, will try to determine if the *resource* argument is a hash or a URL.
-- Added the *limit* argument: Gets the latest comments within the given limit.
+- Added the *limit* argument. Gets the latest comments within the given limit.
 - New output path: *VirusTotal.Comments*.
 
-### Detonation (scan) commands
-The *vtLink* output removed from all commands as it does not longer returns from the API.
-To easily use the scan commands we suggest to use the **Detonate File - VirusTotal V3** and **Detonate URL - VirusTotal V3** playbooks.
-The command to get the report from the scans is **vt-analysis-get**.
+### Detonation (scan) Commands
+Removed the *vtLink* output from all commands as it does no longer return from the API.
+To easily use the scan commands we suggest using the following playbooks:
+  - **Detonate File - VirusTotal V3**
+  - **Detonate URL - VirusTotal V3** 
+
+Use the ***vt-analysis-get*** command to get the report from the scans.
 
 ### file
 ***
