@@ -59,7 +59,7 @@ def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool
             return re.fullmatch(pattern, value, flags) is not None
         return False
     else:
-        exit_error(f"Unknown pattern algorithm: '{patalg}'")
+        raise ValueError(f"Unknown pattern algorithm: '{patalg}'")
     return False
 
 
