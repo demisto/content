@@ -33,7 +33,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ImpervaWaf.IpGroup.Name | String | The name of the IP Group | 
+| ImpervaWAF.IpGroup.Name | String | The name of the IP Group | 
 
 
 #### Command Example
@@ -42,7 +42,7 @@ There are no input arguments for this command.
 #### Context Example
 ```
 {
-    "ImpervaWaf": {
+    "ImpervaWAF": {
         "IpGroup": [
             {
                 "Name": "All Search Engines"
@@ -91,11 +91,11 @@ Get a list of the entries in the requested IP group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ImpervaWaf.IpGroup.Entries.Type | String | Type of address \(Single, range or network\) | 
-| ImpervaWaf.IpGroup.Entries.CidrMask | Number | Network significant bits | 
-| ImpervaWaf.IpGroup.Entries.NetworkAddress | String | Network address | 
-| ImpervaWaf.IpGroup.Entries.IpAddressTo | String | End IP address | 
-| ImpervaWaf.IpGroup.Entries.IpAddressFrom | String | Start IP address | 
+| ImpervaWAF.IpGroup.Entries.Type | String | Type of address \(Single, range or network\) | 
+| ImpervaWAF.IpGroup.Entries.CidrMask | Number | Network significant bits | 
+| ImpervaWAF.IpGroup.Entries.NetworkAddress | String | Network address | 
+| ImpervaWAF.IpGroup.Entries.IpAddressTo | String | End IP address | 
+| ImpervaWAF.IpGroup.Entries.IpAddressFrom | String | Start IP address | 
 
 
 #### Command Example
@@ -104,7 +104,7 @@ Get a list of the entries in the requested IP group.
 #### Context Example
 ```
 {
-    "ImpervaWaf": {
+    "ImpervaWAF": {
         "IpGroup": {
             "Entries": [
                 {
@@ -192,7 +192,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ImpervaWaf.Site.Name | String | The name of the site | 
+| ImpervaWAF.Site.Name | String | The name of the site | 
 
 
 #### Command Example
@@ -201,7 +201,7 @@ There are no input arguments for this command.
 #### Context Example
 ```
 {
-    "ImpervaWaf": {
+    "ImpervaWAF": {
         "Site": {
             "Name": "Default Site"
         }
@@ -236,8 +236,8 @@ Returns a list of all server group names under the site.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ImpervaWaf.ServerGroup.Name | String | The name of the server group | 
-| ImpervaWaf.ServerGroup.SiteName | String | The name of the parent site of the server groups to access | 
+| ImpervaWAF.ServerGroup.Name | String | The name of the server group | 
+| ImpervaWAF.ServerGroup.SiteName | String | The name of the parent site of the server groups to access | 
 
 
 #### Command Example
@@ -246,7 +246,7 @@ Returns a list of all server group names under the site.
 #### Context Example
 ```
 {
-    "ImpervaWaf": {
+    "ImpervaWAF": {
         "ServerGroup": {
             "Name": "Tel Aviv",
             "SiteName": "Default Site"
@@ -283,11 +283,11 @@ Get server groups applied web security policies.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ImpervaWaf.SecurityPolicy.PolicyName | String | Policy Name | 
-| ImpervaWaf.SecurityPolicy.PolicyType | String | Policy type | 
-| ImpervaWaf.SecurityPolicy.ServerGroup | String | Server group name | 
-| ImpervaWaf.SecurityPolicy.SiteName | String | Site name | 
-| ImpervaWaf.SecurityPolicy.System | Boolean | FI policy | 
+| ImpervaWAF.SecurityPolicy.PolicyName | String | Policy Name | 
+| ImpervaWAF.SecurityPolicy.PolicyType | String | Policy type | 
+| ImpervaWAF.SecurityPolicy.ServerGroup | String | Server group name | 
+| ImpervaWAF.SecurityPolicy.SiteName | String | Site name | 
+| ImpervaWAF.SecurityPolicy.System | Boolean | FI policy | 
 
 
 #### Command Example
@@ -296,7 +296,7 @@ Get server groups applied web security policies.
 #### Context Example
 ```
 {
-    "ImpervaWaf": {
+    "ImpervaWAF": {
         "SecurityPolicy": [
             {
                 "PolicyName": "Network Protocol Violations Policy",
@@ -342,7 +342,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ImpervaWaf.CustomWebPolicy.Name | String | The name of the policy  | 
+| ImpervaWAF.CustomWebPolicy.Name | String | The name of the policy  | 
 
 
 #### Command Example
@@ -351,7 +351,7 @@ There are no input arguments for this command.
 #### Context Example
 ```
 {
-    "ImpervaWaf": {
+    "ImpervaWAF": {
         "CustomWebPolicy": [
             {
                 "Name": "HTML Injection"
@@ -413,21 +413,21 @@ Returns a Web Application Custom Policy indicated by policy name.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ImpervaWaf.CustomWebPolicy.Enabled | Boolean | Whether the policy is enabled | 
-| ImpervaWaf.CustomWebPolicy.FollowedAction | String | Name of the Action Set | 
-| ImpervaWaf.CustomWebPolicy.Name | String | The name of the policy | 
-| ImpervaWaf.CustomWebPolicy.OneAlertPerSession | Boolean | Indicates whether to allow only one alert to be created for every web session | 
-| ImpervaWaf.CustomWebPolicy.DisplayResponsePage | Boolean | Indicates whether to show response page in alerts | 
-| ImpervaWaf.CustomWebPolicy.Action | String | Policy Action | 
-| ImpervaWaf.CustomWebPolicy.Severity | String | Alert Severity | 
-| ImpervaWaf.CustomWebPolicy.ApplyTo.serverGroupName | String | Name of the server group to apply | 
-| ImpervaWaf.CustomWebPolicy.ApplyTo.siteName | String | Name of the site to apply | 
-| ImpervaWaf.CustomWebPolicy.ApplyTo.webServiceName | String | Name of the web service to apply | 
-| ImpervaWaf.CustomWebPolicy.MatchCriteria.operation | String | Match operation for values | 
-| ImpervaWaf.CustomWebPolicy.MatchCriteria.type | String | Match Criterion name | 
-| ImpervaWaf.CustomWebPolicy.MatchCriteria.ipGroups.Group name | String | Name of IP Group to search in | 
-| ImpervaWaf.CustomWebPolicy.MatchCriteria.userDefined.IP Address | String | IP address to search in | 
-| ImpervaWaf.CustomWebPolicy.MatchCriteria.values.country | String | Country name to match | 
+| ImpervaWAF.CustomWebPolicy.Enabled | Boolean | Whether the policy is enabled | 
+| ImpervaWAF.CustomWebPolicy.FollowedAction | String | Name of the Action Set | 
+| ImpervaWAF.CustomWebPolicy.Name | String | The name of the policy | 
+| ImpervaWAF.CustomWebPolicy.OneAlertPerSession | Boolean | Indicates whether to allow only one alert to be created for every web session | 
+| ImpervaWAF.CustomWebPolicy.DisplayResponsePage | Boolean | Indicates whether to show response page in alerts | 
+| ImpervaWAF.CustomWebPolicy.Action | String | Policy Action | 
+| ImpervaWAF.CustomWebPolicy.Severity | String | Alert Severity | 
+| ImpervaWAF.CustomWebPolicy.ApplyTo.serverGroupName | String | Name of the server group to apply | 
+| ImpervaWAF.CustomWebPolicy.ApplyTo.siteName | String | Name of the site to apply | 
+| ImpervaWAF.CustomWebPolicy.ApplyTo.webServiceName | String | Name of the web service to apply | 
+| ImpervaWAF.CustomWebPolicy.MatchCriteria.operation | String | Match operation for values | 
+| ImpervaWAF.CustomWebPolicy.MatchCriteria.type | String | Match Criterion name | 
+| ImpervaWAF.CustomWebPolicy.MatchCriteria.ipGroups.Group name | String | Name of IP Group to search in | 
+| ImpervaWAF.CustomWebPolicy.MatchCriteria.userDefined.IP Address | String | IP address to search in | 
+| ImpervaWAF.CustomWebPolicy.MatchCriteria.values.country | String | Country name to match | 
 
 
 #### Command Example
@@ -436,7 +436,7 @@ Returns a Web Application Custom Policy indicated by policy name.
 #### Context Example
 ```
 {
-    "ImpervaWaf": {
+    "ImpervaWAF": {
         "CustomWebPolicy": {
             "Action": "none",
             "ApplyTo": [
@@ -522,7 +522,7 @@ Create an IP Group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ImpervaWaf.IpGroup.Name | String | The name of the IP Group | 
+| ImpervaWAF.IpGroup.Name | String | The name of the IP Group | 
 
 
 #### Command Example
@@ -531,7 +531,7 @@ Create an IP Group.
 #### Context Example
 ```
 {
-    "ImpervaWaf": {
+    "ImpervaWAF": {
         "IpGroup": {
             "Name": "test_policy"
         }
@@ -646,7 +646,21 @@ Create a Web Service Custom Policy.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ImpervaWaf.SecurityPolicy.Name | String | The name of the policy | 
+| ImpervaWAF.CustomWebPolicy.Enabled | Boolean | Indicates whether the policy is enabled. | 
+| ImpervaWAF.CustomWebPolicy.FollowedAction | String | The name of the action set. | 
+| ImpervaWAF.CustomWebPolicy.Name | String | The name of the policy. | 
+| ImpervaWAF.CustomWebPolicy.OneAlertPerSession | Boolean | Indicates whether to allow only one alert to be created for every web session. | 
+| ImpervaWAF.CustomWebPolicy.DisplayResponsePage | Boolean | Indicates whether to show the response page in the alerts. | 
+| ImpervaWAF.CustomWebPolicy.Action | String | The custom web policy action. | 
+| ImpervaWAF.CustomWebPolicy.Severity | String | The custom web policy alert severity. | 
+| ImpervaWAF.CustomWebPolicy.ApplyTo.serverGroupName | String | The name of the server group to apply. | 
+| ImpervaWAF.CustomWebPolicy.ApplyTo.siteName | String | The name of the site to apply. | 
+| ImpervaWAF.CustomWebPolicy.ApplyTo.webServiceName | String | The name of the web service to apply. | 
+| ImpervaWAF.CustomWebPolicy.MatchCriteria.operation | String | The match operation for values. | 
+| ImpervaWAF.CustomWebPolicy.MatchCriteria.type | String | The match criterion name. | 
+| ImpervaWAF.CustomWebPolicy.MatchCriteria.ipGroups.Group name | String | The name of the IP group in which to search. | 
+| ImpervaWAF.CustomWebPolicy.MatchCriteria.userDefined.IP Address | String | The IP address in which to search. | 
+| ImpervaWAF.CustomWebPolicy.MatchCriteria.values.country | String | Country name to match. | 
 
 
 #### Command Example
@@ -654,13 +668,7 @@ Create a Web Service Custom Policy.
 
 #### Context Example
 ```
-{
-    "ImpervaWaf": {
-        "SecurityPolicy": {
-            "Name": "test_policy"
-        }
-    }
-}
+{}
 ```
 
 #### Human Readable Output
