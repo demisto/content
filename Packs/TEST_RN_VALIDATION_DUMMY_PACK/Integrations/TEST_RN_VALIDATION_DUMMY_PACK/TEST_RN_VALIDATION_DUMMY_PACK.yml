@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: Tenable.sc
+  id: TEST_RN_VALIDATION_DUMMY_PACK
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
