@@ -43,11 +43,11 @@ script: >
   if (shouldDeleteAll) {
       var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(function(item) { return item.trim(); }) : [];
       var keysToKeepObj = {};
-      var DBotScore = false;
+      var KeepDBotScoreKey = false;
       index = keysToKeep.indexOf("DBotScore");
       if (index > -1) {
         keysToKeep.splice(index, 1);
-        DBotScore = true
+        KeepDBotScoreKey = true;
       }
       var value;
       for (var i = 0; i < keysToKeep.length; i++) {
@@ -69,7 +69,7 @@ script: >
           if (isSubPlaybookKey) {
               key = 'subplaybook-${currentPlaybookID}.' + key;
           }
-          if (key !== "DBotScore" || !DBotScore) {
+          if (key !== "DBotScore" || !KeepDBotScoreKey) {
               var result = executeCommand('delContext', {key: key});
               if(!result || result.type === entryTypes.error) {
                   errorsStr = errorsStr + "\n" + result.Contents;
