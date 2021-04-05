@@ -341,7 +341,7 @@ script:
       description: The URL ASN
       type: String
     - contextPath: URL.FeedRelatedIndicators.value
-      description: Indicators that are associated with the URL
+      description: Indicators that are associated with the URL.
       type: String
     - contextPath: URL.FeedRelatedIndicators.type
       description: the type of the indicators that are associated with the URL
