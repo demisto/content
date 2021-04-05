@@ -101,7 +101,8 @@ def main():
                 raise Exception("A Firewall serial list or a PAN-OS integration instance name is needed.")
             # Look for active PAN-OS instance
             check_instance(all_instances, pan_os_integration_instance_name,
-                           f'Integration instance {pan_os_integration_instance_name} is not active or is not a PAN-OS integration.')
+                           f'Integration instance {pan_os_integration_instance_name}'
+                           f' is not active or is not a PAN-OS integration.')
             # Get FW serials
             fw_monitor_list = get_firewall_serials(pan_os_integration_instance_name)
 

@@ -96,16 +96,41 @@ def test_get_firewall_serials(mocker):
             {
                 'ModuleName': 'pan_os_pano_8.1_8443', 'Brand': 'Panorama', 'Category': 'Network Security', 'ID': '',
                 'Version': 0, 'Type': 1,
-                'Contents': {'response':
-                                 {'@status': 'success', 'result': {'devices': {'entry': [
-                                     {'@name': '123456789012345', 'certificate-subject-name': '123456789012345',
-                                      'family': 'vm', 'hostname': 'PA-VM', 'model': 'PA-VM', 'multi-vsys': 'no',
-                                      'operational-mode': 'normal', 'serial': '123456789012345', 'sw-version': '8.1.7',
-                                      'vsys': {'entry': {'@name': 'vsys1', 'display-name': 'vsys1'}}},
-                                     {'@name': '123456789012346', 'certificate-subject-name': '123456789012346',
-                                      'family': 'vm', 'hostname': 'PA-VM', 'model': 'PA-VM', 'multi-vsys': 'no',
-                                      'operational-mode': 'normal', 'serial': '123456789012346', 'sw-version': '8.1.7',
-                                      'vsys': {'entry': {'@name': 'vsys1', 'display-name': 'vsys1'}}}]}}}},
+                'Contents': {
+                    'response':
+                        {
+                            '@status': 'success',
+                            'result': {
+                                'devices': {
+                                    'entry': [
+                                        {
+                                            '@name': '123456789012345', 'certificate-subject-name': '123456789012345',
+                                            'family': 'vm', 'hostname': 'PA-VM', 'model': 'PA-VM', 'multi-vsys': 'no',
+                                            'operational-mode': 'normal', 'serial': '123456789012345',
+                                            'sw-version': '8.1.7',
+                                            'vsys': {
+                                                'entry': {
+                                                    '@name': 'vsys1', 'display-name': 'vsys1'
+                                                }
+                                            }
+                                        },
+                                        {
+                                            '@name': '123456789012346', 'certificate-subject-name': '123456789012346',
+                                            'family': 'vm', 'hostname': 'PA-VM', 'model': 'PA-VM', 'multi-vsys': 'no',
+                                            'operational-mode': 'normal', 'serial': '123456789012346',
+                                            'sw-version': '8.1.7',
+                                            'vsys': {
+                                                'entry': {
+                                                    '@name': 'vsys1', 'display-name': 'vsys1'
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                }
+                ,
                 'HumanReadable': 'Command was executed successfully.',
                 'ImportantEntryContext': None,
                 'EntryContext': None,
