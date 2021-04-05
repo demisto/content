@@ -2279,36 +2279,16 @@ script:
       task with the specified ID. Used for deploying.
     execution: false
     name: ciscofp-get-task-status
+    arguments:
+    - name: task_id
+      required: true
+      description: The ID of the task for which to check the status.
     outputs:
     - contextPath: CiscoFP.TaskStatus.Status
       description: task status
       type: String
-  - arguments:
-    - default: false
-      description: TODO
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: |-
-        The maximum number of items to return.
-        The default is 50.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
-        Index of first item to return.
-        The default is 0.
-      isArray: false
-      name: offset
-      required: false
-      secret: false
-    deprecated: false
-    description: TODO
-    execution: false
+    description: Retrieves information about a previously submitted pending job or
+      task with the specified ID. Used for deploying.
 name: ciscofp-get-url-groups-object
     arguments:
     - name: id
