@@ -2511,9 +2511,66 @@ Initiates a new endpoint script execution kill process.
 
 
 
+### xdr-endpoint-scan
+***
+Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+
+
+#### Base Command
+
+`xdr-endpoint-scan`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_id_list | List of endpoint IDs. | Optional | 
+| dist_name | Name of the distribution list. | Optional | 
+| gte_first_seen | Integer in timestamp epoch milliseconds. | Optional | 
+| gte_last_seen | Integer in timestamp epoch milliseconds. | Optional | 
+| lte_first_seen | Integer in timestamp epoch milliseconds. | Optional | 
+| lte_last_seen | Integer in timestamp epoch milliseconds. | Optional | 
+| ip_list | List of IP addresses. | Optional | 
+| group_name | Name of the endpoint group. | Optional | 
+| platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
+| alias | Endpoint alias name. | Optional | 
+| isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
+| hostname | Name of the host. | Optional | 
+| all | Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.endpointScan.actionId | Number | The action ID of the scan request. | 
+
+
+#### Command Example
+```!xdr-endpoint-scan endpoint_id_list=abcc6a2cc92e46fab3b6f621722e9123```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "endpointScan": {
+            "actionId": 4205
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Endpoint scan
+>|Action Id|
+>|---|
+>| 4205 |
+
+
 ### xdr-endpoint-scan-abort
 ***
 Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are in Pending or in Progress status. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+
 
 #### Base Command
 
@@ -2539,17 +2596,20 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.endpointScan.actionId | Unknown | The action id of the abort scan request. | 
+
 
 #### Command Example
-```!xdr-endpoint-scan-abort endpoint_id_list=abcde6a2cc92e46fab3b6f621722e1234```
+```!xdr-endpoint-scan-abort endpoint_id_list=abcc6a2cc92e46fab3b6f621722e9123```
 
 #### Context Example
 ```json
 {
     "PaloAltoNetworksXDR": {
         "endpointScan": {
-            "actionId": 4174
+            "actionId": 4206
         }
     }
 }
@@ -2557,8 +2617,9 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Endpoint scan
+>### Endpoint abort scan
 >|Action Id|
 >|---|
->| 4174 |
+>| 4206 |
+
 

@@ -956,6 +956,29 @@ def test_endpoint_scan_command_scan_all_endpoints_no_filters_error(requests_mock
         endpoint_scan_command(client, {})
 
 
+def test_endpoint_scan_abort_command_scan_all_endpoints_no_filters_error(requests_mock):
+    """
+    Given:
+    -  No filters.
+    When
+        - A user desires to abort scan on all endpoints but without the correct arguments.
+    Then
+        - raise a descriptive error.
+    """
+    from CortexXDRIR import endpoint_scan_abort_command, Client
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/abort_scan/', json={"reply": {"action_id": 123}})
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    client._headers = {}
+    err_msg = 'To abort scan on all the endpoints run this command with the \'all\' argument as True ' \
+              'and without any other filters. This may cause performance issues.\n' \
+              'To abort scan for some of the endpoints, please use the filter arguments.'
+    with pytest.raises(Exception, match=err_msg):
+        endpoint_scan_abort_command(client, {})
+
+
 def test_endpoint_scan_abort_command(requests_mock):
     """
     Given:

@@ -1751,6 +1751,10 @@ script:
       command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
+      description: The action ID of the scan request.
+      type: Number
   - arguments:
     - default: false
       description: List of endpoint IDs.
@@ -1853,6 +1857,10 @@ script:
       the endpoints may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan-abort
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
+      description: The action id of the abort scan request.
+      type: Unknown
   - deprecated: false
     description: Get mapping fields from remote incident. Please note that this method
       will not update the current incident, it's here for debugging purposes.
@@ -2730,9 +2738,6 @@ script:
   dockerimage: demisto/python3:3.9.2.17957
   feed: false
   isfetch: true
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
