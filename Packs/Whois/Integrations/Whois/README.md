@@ -521,13 +521,13 @@ Provides data enrichment for ips.
 | Whois.IP.asn_date | Date | ASN allocation date in ISO 8601 format. | 
 | Whois.IP.asn_description | string | The ASN description | 
 | Whois.IP.asn_registry | string | ASN assigned regional internet registry. | 
-| Whois.IP.entities | string | list of object names referenced by an RIR network. Map these to the objects dict keys. | 
+| Whois.IP.entities | string | list of object names referenced by an RIR network. Map these to the objects dictionary keys. | 
 | Whois.IP.network.cidr | string | Network routing block an IP address belongs to. | 
 | Whois.IP.network.country | string | Country code registered with the RIR in ISO 3166-1 format. | 
 | Whois.IP.network.end_address | string | The last IP address in a network block. | 
 | Whois.IP.network.events.action | string | The reason for an event. | 
 | Whois.IP.network.events.actor | string | The identifier for an event initiator \(if any\). | 
-| Whois.IP.network.events.timestamp | Date | The date an event occured in ISO 8601 format. | 
+| Whois.IP.network.events.timestamp | Date | The date an event occurred in ISO 8601 format. | 
 | Whois.IP.network.handle | string | Unique identifier for a registered object. | 
 | Whois.IP.network.ip_version | string | IP protocol version \(v4 or v6\) of an IP address. | 
 | Whois.IP.network.links | string | HTTP/HTTPS links provided for an RIR object. | 
