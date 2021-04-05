@@ -65,6 +65,10 @@ EXPANSE_SERVICE_READABLE_HEADER_LIST = [
     'classifications', 'firstObserved', 'lastObserved', 'annotations', 'assets', 'discoveryInfo'
 ]
 
+EXPANSE_POC_READABLE_HEADER_LIST = [
+    'id', 'email', 'firstName', 'lastName', 'phone', 'role', 'created', 'modified'
+]
+
 MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
@@ -1108,9 +1112,18 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if len(services) < 1:
         return CommandResults(readable_output='No Services Found')
 
+    # reduce some objects for human readable
+    hr_services = services.copy()
+    for service in hr_services:
+        service["classifications"] = [c.get("name") for c in service.get("classifications")]
+        service["tlsVersions"] = [f'version: {t.get("tlsVersion")} - cipher_suite: {t.get("cipherSuite")}'
+                                     for t in service.get("tlsVersions")]
+        service["certificates"] = [f'subject_name: {c.get("certificate").get("subjectName")}' for c in
+                                      service.get("certificates")]
+
     readable_output = tableToMarkdown(
         name='Expanse Services',
-        t=services,
+        t=hr_services,
         headers=EXPANSE_SERVICE_READABLE_HEADER_LIST,
         headerTransform=pascalToSpace
     )
@@ -1129,9 +1142,16 @@ def get_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     service = client.get_service_by_id(service_id=service_id)
 
+    # reduce some objects for human readable
+    hr_service = service.copy()
+    hr_service["classifications"] = [c.get("name") for c in hr_service.get("classifications")]
+    hr_service["tlsVersions"] = [f'version: {t.get("tlsVersion")} - cipher_suite: {t.get("cipherSuite")}'
+                                 for t in hr_service.get("tlsVersions")]
+    hr_service["certificates"] = [f'subject_name: {c.get("certificate").get("subjectName")}' for c in hr_service.get("certificates")]
+
     readable_output = tableToMarkdown(
         name='Expanse Services',
-        t=service,
+        t=hr_service,
         headers=EXPANSE_SERVICE_READABLE_HEADER_LIST,
         headerTransform=pascalToSpace
     )
@@ -1626,11 +1646,18 @@ def list_pocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     outputs = list(
         islice(client.list_pocs(limit=max_page_size), total_results)
     )
+    readable_output = tableToMarkdown(
+        name='Expanse Points of Contact',
+        t=outputs,
+        headers=EXPANSE_POC_READABLE_HEADER_LIST,
+        headerTransform=pascalToSpace
+    )
+
     return CommandResults(
         outputs_prefix="Expanse.PointOfContact",
         outputs_key_field="id",
         outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Point Of Contacts found" if len(outputs) == 0 else f"{len(outputs)} Point Of Contacts"
+        readable_output="## No Point Of Contacts found" if len(outputs) == 0 else readable_output
     )
 
 
@@ -1761,7 +1788,7 @@ def manage_asset_pocs_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     client.manage_asset_pocs(mapped_asset_type, operation_type, asset_id, pocs)
     return CommandResults(
-        readable_output=f'Operation complete ({operation_type} {pocs} to {asset_id})'
+        readable_output=f'Operation complete ({operation_type} {poc_emails or poc_ids} to {asset_id})'
     )
 
 

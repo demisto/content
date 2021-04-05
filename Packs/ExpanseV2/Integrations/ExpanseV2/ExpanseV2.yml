@@ -119,7 +119,7 @@ name: ExpanseV2
 script:
   commands:
   - name: expanse-get-service
-    description: Retrieve Expanse issue by service ID.
+    description: Retrieve Expanse service by service ID.
     deprecated: false
     execution: false
     arguments:
@@ -483,7 +483,7 @@ script:
       description: 'TLS version observed on the service'
       type: String
   - name: expanse-get-services
-    description: Retrieve services
+    description: Retrieve all Expanse services matching the supplied parameters.
     deprecated: false
     execution: false
     arguments:
