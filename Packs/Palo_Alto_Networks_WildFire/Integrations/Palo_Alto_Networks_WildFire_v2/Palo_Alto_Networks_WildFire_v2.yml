@@ -120,7 +120,7 @@ script:
       description: Tags that are associated with the File.
       type: String
     - contextPath: File.Behavior.details
-      description: File behavior details
+      description: File behavior details.
       type: String
     - contextPath: File.Behavior.action
       description: File behavior action
