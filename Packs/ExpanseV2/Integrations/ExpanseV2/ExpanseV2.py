@@ -1113,7 +1113,7 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
         return CommandResults(readable_output='No Services Found')
 
     # reduce some objects for human readable
-    hr_services = services.copy()
+    hr_services = copy.deepcopy(services)
     for service in hr_services:
         service["classifications"] = [c.get("name") for c in service.get("classifications")]
         service["tlsVersions"] = [f'version: {t.get("tlsVersion")} - cipher_suite: {t.get("cipherSuite")}'
@@ -1143,7 +1143,7 @@ def get_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     service = client.get_service_by_id(service_id=service_id)
 
     # reduce some objects for human readable
-    hr_service = service.copy()
+    hr_service = copy.deepcopy(service)
     hr_service["classifications"] = [c.get("name") for c in hr_service.get("classifications")]
     hr_service["tlsVersions"] = [f'version: {t.get("tlsVersion")} - cipher_suite: {t.get("cipherSuite")}'
                                  for t in hr_service.get("tlsVersions")]
