@@ -11,7 +11,7 @@ This integration was integrated and tested with version 1.0 of Whois
     | Return Errors | | False |
     | Proxy URL | Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command | False |
     | Use system proxy settings | | False |
-    | Source Reliability | | True |
+    | Source Reliability | effect the `ip` command and the other commands if the Proxy URL is not set. | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

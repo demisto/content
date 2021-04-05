@@ -8394,11 +8394,8 @@ def domain_command(reliability):
 
 
 def get_whois_ip(ip):
-    try:
-        from urllib2 import build_opener, ProxyHandler
-        from ipwhois import IPWhois
-    except ImportError as e:
-        return_error("The Docker needs to be updated to use an IP command")
+    from urllib2 import build_opener, ProxyHandler
+    from ipwhois import IPWhois
     proxy_opener = None
     if demisto.params().get('proxy'):
         proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
