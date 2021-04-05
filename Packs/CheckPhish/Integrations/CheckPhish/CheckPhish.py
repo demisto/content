@@ -246,7 +246,7 @@ def main():
         if demisto.command() == 'test-module':
             demisto.results(test_module(**params))
 
-        elif demisto.command() == 'CheckPhish-check-urls':
+        elif demisto.command() in ['CheckPhish-check-urls', 'url']:
             checkphish_check_urls(**params)
 
     # Log exceptions
