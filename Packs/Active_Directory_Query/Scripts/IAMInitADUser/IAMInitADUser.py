@@ -48,7 +48,15 @@ def main():
             send_email(display_name, username, user_email, password, to_email)
             return_results("User was enabled and a password was set.")
         else:
-            return_results("Some commands failed, please check the errors.")
+            return_results("Some commands failed, please check the errors. "
+                           "If you cannot determine the cause of the error, make sure that:\n"
+                           "* You've added a transformer script which determines the OU where the user will be "
+                           "created, in the Active Directory outgoing mapper, in the User Profile incident type "
+                           "and schema type, under the \"ou\" field.\n"
+                           "* You're using LDAPS in the Active Directory (port 636) integration.\n"
+                           "* You've specified a password generation script in the \"IAM - Activate User In "
+                           "Active Directory\" playbook inputs, under the \"PasswordGenerationScriptName\", "
+                           "and that script complies with your domain's password complexity policy.")
 
     except Exception as e:
         return_error(str(e))
