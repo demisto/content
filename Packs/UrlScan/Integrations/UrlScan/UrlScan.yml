@@ -353,7 +353,7 @@ script:
       description: The URL AS owner.
       type: String
     - contextPath: URL.Tags
-      description: Tags that are associated with the URL
+      description: Tags that are associated with the URL.
       type: String
   - arguments:
     - default: false
