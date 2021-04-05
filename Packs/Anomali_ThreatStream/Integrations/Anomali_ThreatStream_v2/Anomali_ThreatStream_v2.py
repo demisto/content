@@ -59,6 +59,7 @@ DEFAULT_INDICATOR_MAPPING = {
     'status': 'Status',
     'org': 'Organization',
     'source': 'Source',
+    'tags': 'Tags',
 }
 
 INDICATOR_EXTENDED_MAPPING = {

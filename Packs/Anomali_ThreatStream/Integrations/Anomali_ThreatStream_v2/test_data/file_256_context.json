@@ -14,6 +14,7 @@
     "Source": "Demisto",
     "Status": "active",
     "Type": "SHA256",
+    "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}],
     "Severity": "medium",
     "SHA256": "178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1"
   }
