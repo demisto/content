@@ -631,6 +631,29 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=f'/api/assets/notable', params=params)
         return response
 
+    def get_notable_session_details_request(self, asset_id: str = None, sort_by: str = None,
+                                             sort_order: int = None, limit: int = None) -> Dict:
+        """
+        Args:
+            asset_id: ID of the asset to fetch info for
+            sort_by: The attribute to sort results by
+            sort_order: ascending (1) or descending (-1).
+            limit: return only anomaly
+
+        Returns:
+            (dict) The notable session details response.
+        """
+        params = {
+            'sortBy': sort_by,
+            'sortOrder': sort_order,
+            'numberOfResults': limit
+        }
+
+        url_suffix = f'/uba/api/asset/{asset_id}/notableSessions'
+
+        response = self._http_request('GET', url_suffix=url_suffix, params=params)
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -784,7 +807,44 @@ def contents_append_notable_assets_info(contents, asset, asset_, highest_risk_se
         'edited': latest_asset_comment.get('edited')
     }
     asset_info.update(contents_asset_data(asset_))
-    return contents.append(asset_info)
+    contents.append(asset_info)
+    return contents
+
+
+def contents_append_notable_session_details(contents, session, user, executive_user_flags) -> List[Any]:
+    """Appends a dictionary of data to the base list
+
+    Args:
+        contents: base list
+        session: session object
+        user: user object
+        executive_user_flags: executive user flags object
+
+    Returns:
+        A contents list with the relevant notable session details
+    """
+    user_info = user.get('info')
+    contents.append({
+        'UserName': user.get('username'),
+        'RiskScore': round(user.get('riskScore')) if 'riskScore' in user else None,
+        'AverageRiskScore': user.get('averageRiskScore'),
+        'FirstSeen': convert_unix_to_date(user.get('firstSeen')) if 'firstSeen' in user else None,
+        'LastSeen': convert_unix_to_date(user.get('lastSeen')) if 'lastSeen' in user else None,
+        'lastActivityType': user.get('lastActivityType'),
+        'Labels': user.get('labels'),
+        'LastSessionID': user.get('lastSessionId'),
+        'EmployeeType': user_info.get('employeeType'),
+        'Department': user_info.get('department'),
+        'Title': user_info.get('title'),
+        'Location': user_info.get('location'),
+        'Email': user_info.get('email'),
+        'SessionID': session.get('sessionId'),
+        'InitialRiskScore': session.get('initialRiskScore'),
+        'LoginHost': session.get('loginHost'),
+        'Accounts': session.get('accounts'),
+        'executiveUserFlags': executive_user_flags
+    })
+    return contents
 
 
 def contents_asset_data(asset_data) -> Dict:
@@ -1618,10 +1678,55 @@ def get_notable_assets(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[
         contents = contents_append_notable_assets_info(contents, asset, asset_, highest_risk_sequence,
                                                        latest_asset_comment)
 
-    entry_context = {'Exabeam.NotableAssets(val.ipAddress && val.ipAddress === obj.ipAddress)': contents}
+    entry_context = {'Exabeam.NotableAsset(val.ipAddress && val.ipAddress === obj.ipAddress)': contents}
     human_readable = tableToMarkdown('Exabeam Notable Assets:', contents, removeNull=True)
 
     return human_readable, entry_context, notable_assets
+
+
+def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+    """  Updates records of a context table.
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    asset_id = args.get('asset_id')
+    sort_by = args.get('sort_by')
+    sort_order = 1 if args.get('sort_order') == 'asc' else -1
+    limit = int(args['limit'])
+
+    session_details_raw_data = client.get_notable_session_details_request(asset_id, sort_by, sort_order, limit)
+
+    contents: list = []
+    for user_ in range(session_details_raw_data.get('totalCount')):
+        session = session_details_raw_data.get('sessions')[user_]
+        user_name = session.get('username')
+        user_info = session_details_raw_data.get('users').get(user_name)
+        executive_user_flags = session_details_raw_data.get('executiveUserFlags').get(user_name)
+        contents = contents_append_notable_session_details(contents, session, user_info, executive_user_flags)
+
+    entry_context = {
+        'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)': {
+            'AssetID': asset_id,
+            'NotableSession': contents
+        }
+    }
+
+    human_readable = tableToMarkdown(f'Notable Session {asset_id} details:', contents, removeNull=True)
+
+    return human_readable, entry_context, session_details_raw_data
+
+
+def get_notable_sequence_details(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+    """  Updates records of a context table.
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
 
 
 def main():
@@ -1674,8 +1779,8 @@ def main():
         'exabeam-watchlist-remove-items': remove_watchlist_items,
         'exabeam-get-notable-assets': get_notable_assets,
         'exabeam-get-notable-sequence-details': get_notable_sequence_details,
-        'exabeam-get-notable-session-details': get_notable_session_details,
-        'exabeam-get-sequence-eventtypes': get_notable_sequence_eventtypes
+        'exabeam-get-notable-session-details': get_notable_session_details
+        # 'exabeam-get-sequence-eventtypes': get_notable_sequence_eventtypes
     }
 
     try:

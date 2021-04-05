@@ -1612,6 +1612,171 @@ script:
     description: Returns notable assets.
     execution: false
     name: exabeam-get-notable-assets
+    outputs:
+    - contextPath: Exabeam.NotableAssets.hostName
+      description: The notable asset host name.
+      type: String
+    - contextPath: Exabeam.NotableAssets.ipAddress
+      description: The notable asset IP address.
+      type: String
+    - contextPath: Exabeam.NotableAssets.assetType
+      description: The notable asset type.
+      type: String
+    - contextPath: Exabeam.NotableAssets.firstSeen
+      description: Time when the asset was first seen.
+      type: Date
+    - contextPath: Exabeam.NotableAssets.lastSeen
+      description: Time when the asset was last seen.
+      type: Date
+    - contextPath: Exabeam.NotableAssets.highestRiskScore
+      description: The highest risk score of the asset.
+      type: Number
+    - contextPath: Exabeam.NotableAssets.id
+      description: The notable asset ID.
+      type: String
+    - contextPath: Exabeam.NotableAssets.entityName
+      description: The entity name of the asset.
+      type: String
+    - contextPath: Exabeam.NotableAssets.entityValue
+      description: The entity value of the asset.
+      type: String
+    - contextPath: Exabeam.NotableAssets.day
+      description: The notable asset date.
+      type: Date
+    - contextPath: Exabeam.NotableAssets.triggeredRuleCountOpt
+      description: The number that asset triggered rule count opt.
+      type: Number
+    - contextPath: Exabeam.NotableAssets.riskScoreOpt
+      description: Risk score opt of the asset.
+      type: Number
+    - contextPath: Exabeam.NotableAssets.incidentIds
+      description: The incident IDs of the notable asset.
+      type: Unknown
+    - contextPath: Exabeam.NotableAssets.commentId
+      description: The comment ID of the notable asset.
+      type: String
+    - contextPath: Exabeam.NotableAssets.commentType
+      description: The comment type of the notable asset.
+      type: String
+    - contextPath: Exabeam.NotableAssets.commentObjectId
+      description: The comment object ID of the notable asset.
+      type: String
+    - contextPath: Exabeam.NotableAssets.text
+      description: The notable asset text.
+      type: String
+    - contextPath: Exabeam.NotableAssets.exaUser
+      description: The notable asset exaUser.
+      type: String
+    - contextPath: Exabeam.NotableAssets.exaUserFullname
+      description: The notable asset exaUser fullname.
+      type: String
+    - contextPath: Exabeam.NotableAssets.createTime
+      description: Time when the asset was created.
+      type: Date
+    - contextPath: Exabeam.NotableAssets.updateTime
+      description: Time when the asset was updated.
+      type: Date
+    - contextPath: Exabeam.NotableAssets.edited
+      description: Whether or not the notable asset is edited.
+      type: Boolean
+    - contextPath: Exabeam.NotableAssets.zone
+      description: The number that asset triggered rule count opt.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the asset to fetch info for
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: date
+      description: The key to sort results by.
+      isArray: false
+      name: sort_by
+      predefined:
+      - date
+      - riskScore
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: desc
+      description: The results order (ascending or descending).
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximal number of results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns notable session details.
+    execution: false
+    name: exabeam-get-notable-session-details
+    outputs:
+    - contextPath: Exabeam.NotableSession.UserName
+      description: The notable session user name.
+      type: String
+    - contextPath: Exabeam.NotableSession.RiskScore
+      description: The notable session risk score.
+      type: number
+    - contextPath: Exabeam.NotableSession.AverageRiskScore
+      description: The average risk score of the notable session.
+      type: number
+    - contextPath: Exabeam.NotableSession.FirstSeen
+      description: Time when the notable session was first seen.
+      type: Date
+    - contextPath: Exabeam.NotableSession.LastSeen
+      description: Time when the notable session was last seen.
+      type: Date
+    - contextPath: Exabeam.NotableSession.lastActivityType
+      description: The last activity type of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.Labels
+      description: The labels of the user.
+      type: Unknown
+    - contextPath: Exabeam.NotableSession.LastSessionID
+      description: The last session ID of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.EmployeeType
+      description: The employee type of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.Department
+      description: The department of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.Title
+      description: The role of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.Location
+      description: The location of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.Email
+      description: The email of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.SessionID
+      description: The Session ID.
+      type: String
+    - contextPath: Exabeam.NotableSession.InitialRiskScore
+      description: Initial risk score of the session.
+      type: Number
+    - contextPath: Exabeam.NotableSession.LoginHost
+      description: The host from which the user was logged in.
+      type: String
+    - contextPath: Exabeam.NotableSession.Accounts
+      description: Accounts in the session.
+      type: String
+    - contextPath: Exabeam.NotableSession.executiveUserFlags
+      description: Whether the user is a executive user.
+      type: Boolean
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
