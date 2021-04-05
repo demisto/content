@@ -647,11 +647,15 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
     :return: A list of Demisto incidents
     """
     # We use parse to get out time in datetime format and not iso, that's what Symantec DLP is expecting to get
+    demisto.debug(f'BUG LOG - Starting fetching of incidents with data {last_run}')
+
     last_id_fetched = last_run.get('last_incident_id')
     if last_run and last_run.get('last_fetched_event_iso'):
         last_update_time = parse(last_run['last_fetched_event_iso'])
     else:
         last_update_time = parse_date_range(fetch_time)[0]
+
+    demisto.debug(f'BUG LOG - last update time chosen is {last_update_time}')
 
     incidents = []
 
@@ -659,6 +663,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
         savedReportId=saved_report_id,
         incidentCreationDateLaterThan=last_update_time
     )).get('incidentId', '')
+
+    demisto.debug(f'BUG LOG - len of incidents is {len(incidents_ids)}')
 
     if incidents_ids:
         last_incident_time: str = ''
@@ -692,9 +698,12 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
                 incident['attachment'] = attachments
 
             incidents.append(incident)
-            if incident_id == incidents_ids[-1]:
-                last_incident_time = incident_creation_time
-                last_incident_id = incident_id
+
+            last_incident_time = incident_creation_time
+            last_incident_id = incident_id
+
+        demisto.debug(f'BUG LOG - Setting the following values: last_fetched_event_iso: "{last_incident_time}"'
+                      f'last_incident_id: "{last_incident_id}", for a total of {len(incidents)} incidents')
 
         demisto.setLastRun(
             {
