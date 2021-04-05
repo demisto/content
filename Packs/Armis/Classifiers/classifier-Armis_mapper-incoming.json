@@ -1,6 +1,6 @@
 {
   "defaultIncidentType": "Armis Alert - Anomaly Detection",
-  "description": "",
+  "description": "Maps incoming Armis alerts.",
   "feed": false,
   "id": "Armis - Incoming Mapper",
   "mapping": {

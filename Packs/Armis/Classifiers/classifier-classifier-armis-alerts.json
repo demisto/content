@@ -1,6 +1,6 @@
 {
   "defaultIncidentType": "Armis Alert",
-  "description": "",
+  "description":  "Classifies Armis alerts.",
   "feed": false,
   "id": "Armis - Classifier",
   "keyTypeMap": {

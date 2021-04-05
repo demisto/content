@@ -5,6 +5,7 @@
   "custom": true,
   "defaultIncidentType": "",
   "id": "ArmisClassifierMapper",
+  "description": "Classifies Armis alerts.",
   "mapping": {
     "Armis Alert": {
       "dontMapEventToLabels": false,
