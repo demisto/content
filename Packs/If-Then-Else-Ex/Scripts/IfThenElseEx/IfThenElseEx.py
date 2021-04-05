@@ -39,10 +39,8 @@ def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool
             if isinstance(value, list):
                 return next(
                     filter(
-                        lambda v: isinstance(v,str) and \
-                                  fnmatch.fnmatchcase(v.lower(),pattern),
-                        value),
-                    None) is not None
+                        lambda v: isinstance(v, str) and fnmatch.fnmatchcase(v.lower(),pattern), value), None
+                    ) is not None
             elif isinstance(value, str):
                 return fnmatch.fnmatchcase(value.lower(), pattern)
         else:
