@@ -724,11 +724,7 @@ def main():
             file_command(**params)
 
     except Exception as e:
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': 'error has occured: %s' % (e.message, ),
-        })
+        return_error('An error has occurred: %s' % (e.message))
 
 
 if __name__ == "__main__":
