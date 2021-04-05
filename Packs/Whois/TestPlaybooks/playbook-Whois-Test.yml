@@ -192,7 +192,7 @@ tasks:
       id: bc978e30-1592-42f4-87e1-19550073a32f
       version: -1
       name: Print
-      description: Prints text to war room (Markdown supprted)
+      description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
       iscommand: false

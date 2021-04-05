@@ -443,7 +443,7 @@ script:
       description: ASN assigned regional internet registry.
       type: string
     - contextPath: Whois.IP.entities
-      description: list of object names referenced by an RIR network. Map these to the objects dict keys.
+      description: list of object names referenced by an RIR network. Map these to the objects dictionary keys.
       type: string
     - contextPath: Whois.IP.network.cidr
       description: Network routing block an IP address belongs to.
@@ -461,7 +461,7 @@ script:
       description: The identifier for an event initiator (if any).
       type: string
     - contextPath: Whois.IP.network.events.timestamp
-      description: The date an event occured in ISO 8601 format.
+      description: The date an event occurred in ISO 8601 format.
       type: Date
     - contextPath: Whois.IP.network.handle
       description: Unique identifier for a registered object.
