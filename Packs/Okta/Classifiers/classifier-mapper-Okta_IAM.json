@@ -559,8 +559,30 @@
 					"simple": "actor.alternateId"
 				},
 				"details": {
-					"complex": null,
-					"simple": "displayMessage"
+					"complex": {
+						"accessor": "changedAttributes",
+						"filters": [],
+						"root": "debugContext.debugData",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Updated the following attribute(s) on Okta: "
+										}
+									},
+									"suffix": {
+										"isContext": false,
+										"value": null
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
 				},
 				"name": {
 					"complex": {
