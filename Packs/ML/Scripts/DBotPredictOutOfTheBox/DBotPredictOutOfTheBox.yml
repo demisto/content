@@ -100,7 +100,7 @@ subtype: python3
 system: false
 timeout: 60µs
 type: python
-dockerimage: demisto/mllocal:1.1
+dockerimage:  demisto/mllocal:1.0
 runonce: true
 tests:
 - DbotPredictOufOfTheBoxTest

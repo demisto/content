@@ -4,6 +4,9 @@ import dill
 from demisto_ml import ProductionTorchPhishingClassifier
 from CommonServerPython import *
 import traceback
+
+TARGET_PRECISION = 0.97
+THRESHOLD = 0.9
 OUT_OF_THE_BOX_MODEL_NAME = 'demisto_out_of_the_box_model_v2'
 OUT_OF_THE_BOX_MODEL_PATH = '/var/encrypted_model.b'
 EVALUATION_PATH = '/var/oob_evaluation.txt'
@@ -23,23 +26,26 @@ def load_oob_model():
         return_error(traceback.format_exc())
     res = demisto.executeCommand('createMLModel', {'modelData': encoded_model.decode('utf8'),
                                                    'modelName': OUT_OF_THE_BOX_MODEL_NAME,
-                                                   'modelLabels': ['legit', 'spam', 'malicious'],
+                                                   'modelLabels': ['Malicious', 'Non-Malicious'],
                                                    'modelOverride': 'true',
-                                                   'modelType': 'torch'
+                                                   'modelType': 'torch',
+                                                   'modelExtraInfo': {'threshold': THRESHOLD}
                                                    })
     if is_error(res):
         return_error(get_error(res))
 
     with open(EVALUATION_PATH, 'r') as json_file:
         data = json.load(json_file)
-    y_test = data['y_true']
-    y_pred = data['y_pred']
-    #TODO: update evaluation file
+    y_test = data['YTrue']
+    y_pred = data['YPred']
+    y_pred_prob = data['YPredProb']
+
+    y_pred_evaluation = [{pred: prob} for pred, prob in zip(y_pred, y_pred_prob)]
     res = demisto.executeCommand('GetMLModelEvaluation', {'yTrue': json.dumps(y_test),
-                                                          'yPred': json.dumps(y_pred),
-                                                          'targetPrecision': str(0),
+                                                          'yPred': json.dumps(y_pred_evaluation),
+                                                          'targetPrecision': str(0.85),
                                                           'targetRecall': str(0),
-                                                          'detailedOutput': 'false'
+                                                          'detailedOutput': 'true'
                                                           })
     if is_error(res):
         return_error(get_error(res))
@@ -49,7 +55,15 @@ def load_oob_model():
                                for k, v in confusion_matrix_no_all.items()}
     res = demisto.executeCommand('evaluateMLModel',
                                  {'modelConfusionMatrix': confusion_matrix_no_all,
-                                  'modelName': OUT_OF_THE_BOX_MODEL_NAME})
+                                  'modelName': OUT_OF_THE_BOX_MODEL_NAME,
+                                  'modelEvaluationVectors': {'Ypred': y_pred,
+                                                             'Ytrue': y_test,
+                                                             'YpredProb': y_pred_prob
+                                                             },
+                                  'modelConfidenceThreshold': THRESHOLD,
+                                  'modelTargetPrecision': TARGET_PRECISION
+                                  })
+
     if is_error(res):
         return_error(get_error(res))
 
