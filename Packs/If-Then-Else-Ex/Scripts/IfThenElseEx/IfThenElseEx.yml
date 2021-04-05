@@ -1,0 +1,63 @@
+args:
+- description: The value to transform
+  name: value
+  required: true
+- description: A value to compare with rhs
+  name: lhs
+- description: A value to compare with lhs
+  name: rhs
+- auto: PREDEFINED
+  defaultValue: ==
+  description: The operator to compare lhs to rhs
+  name: operator
+  predefined:
+  - '==='
+  - '!=='
+  - ==
+  - '!='
+  - '>'
+  - '>='
+  - <
+  - <=
+  - matches
+  - matches caseless
+  - doesn't match
+  - doesn't match caseless
+  - 'wildcard: matches'
+  - 'wildcard: matches caseless'
+  - 'wildcard: doesn''t match'
+  - 'wildcard: doesn''t match caseless'
+  - 'regex: matches'
+  - 'regex: matches caseless'
+  - 'regex: doesn''t match'
+  - 'regex: doesn''t match caseless'
+  - in list
+  - in caseless list
+  - not in list
+  - not in caseless list
+  required: true
+- description: Return this value if the condition is true
+  name: then
+- description: Return this value if the condition is not true
+  name: else
+- defaultValue: transformer_value
+  description: The special name to return the value given to this transformer.
+  name: transformer_value_key
+comment: A transformer for extended if-then-else logic.
+commonfields:
+  id: If-Then-Else-Ex
+  version: -1
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.9.2.17246
+enabled: true
+name: If-Then-Else-Ex
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- general
+type: python
