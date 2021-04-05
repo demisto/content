@@ -565,7 +565,6 @@ class McAfeeESMClient(BaseClient):
         while not result_ready:
             try:
                 temp = self.__request(path, data={'resultID': search_id}, params=params)
-                demisto.debug(f"request with params: {params}, response is: {temp}")
                 if not raw_response['columns']:
                     raw_response['columns'] = temp.get('columns')
                 if len(temp.get('rows', {})) < params['numRows']:
