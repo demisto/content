@@ -349,7 +349,7 @@
 </tr>
 <tr>
 <td style="width: 267px;">URL.ASOwner </td>
-<td style="width: 454px;">The URL AS owner</td>
+<td style="width: 454px;">The URL AS owner.</td>
 </tr>
 <tr>
 <td style="width: 267px;">URL.Tags </td>
