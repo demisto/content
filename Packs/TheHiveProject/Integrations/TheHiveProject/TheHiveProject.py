@@ -268,7 +268,7 @@ class Client(BaseClient):
             }
             res = self._http_request(
                 'POST',
-                f'v1/query',
+                'v1/query',
                 params={"name": f"get-task-{task_id}"},
                 json_data=query,
                 ok_codes=[200, 404],
@@ -321,7 +321,7 @@ class Client(BaseClient):
             }
             res = self._http_request(
                 'POST',
-                f'v1/query',
+                'v1/query',
                 params={"name": "case-task-logs"},
                 json_data=query,
                 ok_codes=[200, 404],
@@ -514,7 +514,7 @@ def search_cases_command(client: Client, args: dict):
         arguments = {k: False if v == 'false' else v for k, v in arguments.items()}
     try:
         arguments = json.loads(arguments)
-    except:
+    except Exception:
         pass
     cases = client.search_cases(arguments)
     output_results(
@@ -794,9 +794,9 @@ def update_remote_system_command(client: Client, args: dict) -> str:
 def get_modified_remote_data_command(client, args):
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
-    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
-    last_timestamp = int(last_update_utc.timestamp() * 1000)
-    last_update_utc = last_update_utc.replace(tzinfo=None)
+    # last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    # last_timestamp = int(last_update_utc.timestamp() * 1000)
+    # last_update_utc = last_update_utc.replace(tzinfo=None)
     query = {
         "query": {
             "_and": [
