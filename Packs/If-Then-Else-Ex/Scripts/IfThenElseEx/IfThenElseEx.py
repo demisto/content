@@ -1,6 +1,6 @@
 import fnmatch
 import re
-from typing import Any, Optional
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -37,7 +37,12 @@ def match_pattern(pattern: str, value: Any, caseless: bool, patalg: int) -> bool
         if caseless:
             pattern = pattern.lower()
             if isinstance(value, list):
-                return next(filter(lambda v: isinstance(v, str) and fnmatch.fnmatchcase(v.lower(), pattern), value), None) is not None
+                return next(
+                    filter(
+                        lambda v: isinstance(v,str) and \
+                                  fnmatch.fnmatchcase(v.lower(),pattern),
+                        value),
+                    None) is not None
             elif isinstance(value, str):
                 return fnmatch.fnmatchcase(value.lower(), pattern)
         else:
@@ -72,11 +77,11 @@ def compare(lhs: Any, rhs: Any, operator: str) -> bool:
     try:
         if operator == "===":
             negative_condition = False
-            return type(lhs) == type(rhs) and lhs == rhs
+            return isinstance(lhs, type(rhs)) and lhs == rhs
 
         elif operator == "!==":
             negative_condition = True
-            return type(lhs) != type(rhs) or lhs != rhs
+            return not isinstance(lhs, type(rhs)) or lhs != rhs
 
         elif operator in ("==", "matches"):
             negative_condition = False
@@ -92,7 +97,7 @@ def compare(lhs: Any, rhs: Any, operator: str) -> bool:
                 if isinstance(lhs, (int, float)) and isinstance(rhs, (int, float)):
                     return lhs > rhs
                 return float(lhs) > float(rhs)
-            except (ValueError, TypeError, AttributeError) as e:
+            except (ValueError, TypeError, AttributeError):
                 pass
             return str(lhs) > str(rhs)
 
@@ -102,7 +107,7 @@ def compare(lhs: Any, rhs: Any, operator: str) -> bool:
                 if isinstance(lhs, (int, float)) and isinstance(rhs, (int, float)):
                     return lhs >= rhs
                 return float(lhs) > float(rhs)
-            except (ValueError, TypeError, AttributeError) as e:
+            except (ValueError, TypeError, AttributeError):
                 pass
             return str(lhs) >= str(rhs)
 
@@ -173,7 +178,7 @@ def compare(lhs: Any, rhs: Any, operator: str) -> bool:
         else:
             raise ValueError(f'Unknown Operator: {operator}')
 
-    except (ValueError, TypeError, AttributeError) as e:
+    except (ValueError, TypeError, AttributeError):
         if negative_condition is None:
             raise
         return negative_condition
@@ -184,7 +189,7 @@ def apply_transformer_value(value: Any, transformer_value_key: Any, transformer_
     if transformer_value_key:
         try:
             value = transformer_value if value == transformer_value_key else value
-        except (ValueError, TypeError, AttributeError) as e:
+        except (ValueError, TypeError, AttributeError):
             pass
     return value
 
@@ -193,7 +198,7 @@ if __name__ in ('__builtin__', 'builtins', '__main__'):
     args = demisto.args()
     transformer_value = args.get('value')
     transformer_value_key = args.get('transformer_value_key')
-    
+
     lhs = apply_transformer_value(args.get('lhs'), transformer_value_key, transformer_value)
     rhs = apply_transformer_value(args.get('rhs'), transformer_value_key, transformer_value)
 
@@ -201,7 +206,7 @@ if __name__ in ('__builtin__', 'builtins', '__main__'):
         value = args.get('then')
     else:
         value = args.get('else')
-    
+
     value = apply_transformer_value(value, transformer_value_key, transformer_value)
-    
+
     demisto.results(value)
