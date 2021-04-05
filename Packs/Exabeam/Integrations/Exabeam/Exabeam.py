@@ -1727,6 +1727,39 @@ def get_notable_sequence_details(client: Client, args: Dict[str, str]) -> Tuple[
         args: Dict
 
     """
+    username = args.get('username')
+    start_time = args.get('start_time', '30 days ago')
+    end_time = args.get('end_time', '0 minutes ago')
+    parse_start_time = convert_date_to_unix(start_time)
+    parse_end_time = convert_date_to_unix(end_time)
+    contents = []
+    headers = ['SessionID', 'RiskScore', 'InitialRiskScore', 'StartTime', 'EndTime', 'LoginHost', 'Label']
+
+    user = client.user_sequence_request(username, parse_start_time, parse_end_time)
+    session = user.get('sessions')
+    if not session:
+        return f'The user {username} has no sessions in this time frame.', {}, {}
+
+    for session_ in session:
+        contents.append({
+            'SessionID': session_.get('sessionId'),
+            'StartTime': convert_unix_to_date(session_.get('startTime')),
+            'EndTime': convert_unix_to_date(session_.get('endTime')),
+            'InitialRiskScore': session_.get('initialRiskScore'),
+            'RiskScore': round(session_.get('riskScore')),
+            'LoginHost': session_.get('loginHost'),
+            'Label': session_.get('label')
+        })
+
+    entry_context = {
+        'Exabeam.User(val.SessionID && val.SessionID === obj.SessionID)': {
+            'Username': username,
+            'Session': contents
+        }
+    }
+    human_readable = tableToMarkdown(f'User {username} sessions information:', contents, headers, removeNull=True)
+
+    return human_readable, entry_context, user
 
 
 def main():
