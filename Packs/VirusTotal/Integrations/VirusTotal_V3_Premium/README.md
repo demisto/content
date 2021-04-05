@@ -1,11 +1,11 @@
-Use the premium API capabilities of VirusTotal. Analyse retro hunts, read live hunt notifications and download files from VirusTotal.
-The differences between VirusTotal's Public API and Premium API can be found [in VirusTotal v3 API documentation](https://developers.virustotal.com/v3.0/reference#public-vs-premium-api).
+Use the premium API capabilities of VirusTotal to analyze retro hunts, read live hunt notifications, and download files from VirusTotal.
+The differences between VirusTotal's Public API and Premium API can be found [in the VirusTotal v3 API documentation](https://developers.virustotal.com/v3.0/reference#public-vs-premium-api).
 
-This integration was integrated and tested with version API v3 of VirusTotal - Premium (API v3)
+This integration was integrated and tested with VirusTotal - Premium (API v3)
 
 ## Use Cases
-- Fetch live hunt notifications as incidents
-- Use retro hunt to analyze files with custom YARA rule
+- Fetch live hunt notifications as incidents.
+- Use retro hunt to analyze files with custom YARA rule.
 - Download suspicious files from VirusTotal for further analysis.
 - Group several files from VirusTotal into a password-protected ZIP file.
 - Get a PCAP file generated from VirusTotal's sandbox for further analysis. 
@@ -35,13 +35,13 @@ Your API key carries all your privileges, so keep it secure and don't share it w
 
 ## Fetch Incidents
 Fetch incidents will fetch livehunt notifications of the given ruleset or identifier. 
-As an example, you can fetch incidents that created by CyberGate ruleset by using the "cybergate" tag.
+As an example, you can fetch incidents that were created by the CyberGate ruleset by using the "cybergate" tag.
 
 ## VirusTotal - Private API compatibility
-2 commands matches the commands in *VirusTotal - Private API* and therefore, it is recommended to use the new commands in *VirusTotal Premium - (API v3)*.
+The following 2 commands appear in both the *VirusTotal - Private API* and *VirusTotal Premium - (API v3)* integrations.
 - **vt-private-search-file**
 - **vt-private-download-file**
-For all other commands you should use the *VirusTotal - Private API* integration.
+ It is recommended to use these commands in the *VirusTotal Premium - (API v3)* integration. For all other commands, you should use the *VirusTotal - Private API* integration.
 
 ## Report commands alternatives / Enrichment
 To enrich indicators, you can use the *VirusTotal (API v3)* integration reputation commands.
