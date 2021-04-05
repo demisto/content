@@ -2541,9 +2541,7 @@ Initiates a new endpoint script execution kill process.
     {
       "Hostname": "Hostname",
       "ID": "15dbb9d5fe9f61eb46e829d986",
-      "IPAddress": [
-                "1.1.1.1"
-                ],
+      "IPAddress": "1.1.1.1",
       "OS": "Windows Server 2019",
       "Status": "normal"
     }

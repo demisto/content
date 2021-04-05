@@ -929,6 +929,7 @@ script:
             {to: 'CbSensorID', from: 'id'},
             {to: 'ID', from: 'id'},
             {to: 'Status', from: 'status'},
+            {to: 'IPAddress', from: 'network_adapters'},
         ];
         headers = dataMap.map(cn => cn.to);
         translatedData = mapObjFunction(dataMap)(result);
@@ -1832,6 +1833,8 @@ script:
       description: Sensor ID
     - contextPath: Endpoint.Status
       description: Sensor Status
+    - contextPath: Endpoint.IPAddress
+      description: Sensor IP Address
     description: List the CarbonBlack sensors
   - name: cb-process-events
     arguments:
@@ -2169,7 +2172,7 @@ script:
       description: The endpoint's hostname.
     - contextPath: Endpoint.OS
       description: The endpoint's operation system.
-    - contextPath: Endpoint.IPAddresses
+    - contextPath: Endpoint.IPAddress
       description: The endpoint's IP address.
     - contextPath: Endpoint.ID
       description: The endpoint's ID.

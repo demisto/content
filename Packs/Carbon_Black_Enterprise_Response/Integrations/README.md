@@ -342,9 +342,10 @@ List the CarbonBlack sensors
 | CbResponse.Sensors.OS | unknown | Sensor OS | 
 | Endpoint.Hostname | unknown | Sensor Hostname | 
 | Endpoint.OS | unknown | Sensor OS | 
-| Endpoint.IPAddress | unknown | Sensor IP Addresses | 
+| Endpoint.IPAddresses | unknown | Sensor IP Addresses | 
 | Endpoint.ID | unknown | Sensor ID | 
 | Endpoint.Status | unknown | Sensor Status | 
+| Endpoint.IPAddress | unknown | Sensor IP Address | 
 
 
 #### Command Example

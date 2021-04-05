@@ -1723,6 +1723,11 @@ def endpoint_command(client, args):
         limit=30,
     )
     endpoint_context_standart = return_endpoint_standard_context(endpoints)
+    # in this command we wish IPAddress will be a string and not a list
+    for endpoint in endpoint_context_standart:
+        endpoint['IPAddress'] = \
+            endpoint.get('IPAddress')[0] if isinstance(endpoint.get('IPAddress'), list) else endpoint.get('IPAddress')
+
     endpoint_context = {
         Common.Endpoint.CONTEXT_PATH: endpoint_context_standart
     }
