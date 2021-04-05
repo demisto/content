@@ -10,7 +10,7 @@ This integration was integrated and tested with version 1.0 of Whois
     | --- | --- | --- |
     | Return Errors | | False |
     | Proxy URL | Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command | False |
-    | Use system proxy settings | | False |
+    | Use system proxy settings | Only effect the `ip` command  | False |
     | Source Reliability | effect the `ip` command and the other commands if the Proxy URL is not set. | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -872,4 +872,3 @@ Provides data enrichment for ips.
 >|query|asn|asn_cidr|asn_country_code|asn_date|asn_description|
 >|---|---|---|---|---|---|
 >| 8.8.8.8 | 15169 | 8.8.8.0/24 | US | 1992-12-01 | GOOGLE, US |
-
