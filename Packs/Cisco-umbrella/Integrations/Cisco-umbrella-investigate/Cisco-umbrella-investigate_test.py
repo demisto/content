@@ -1,6 +1,8 @@
 import demistomock as demisto
-import Cisco_umbrella_investigate
+import importlib
 from CommonServerPython import DBotScoreReliability
+
+Cisco_umbrella_investigate = importlib.import_module('Cisco-umbrella-investigate')
 
 
 def test_reliability_in_get_domain_security_command(mocker):
