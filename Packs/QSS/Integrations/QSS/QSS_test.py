@@ -34,11 +34,12 @@ def test_fetch_incidents(requests_mock):
         first_fetch_time='3 days',
     )
 
-    assert new_incidents == [{
+    assert new_incidents == [
+        {
             'name': 'SOC Case CAS-4-20210328-1',
             'occurred': '2021-03-28T13:42:39Z',
             'event_id': '2160',
             'rawJSON': json.dumps(mock_response['alerts'][0]),
             'severity': 1,  # medium, this is XSOAR severity (already converted)
-        }]
-
+        }
+    ]
