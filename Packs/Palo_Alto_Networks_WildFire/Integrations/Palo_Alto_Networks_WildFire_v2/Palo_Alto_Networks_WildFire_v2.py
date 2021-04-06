@@ -54,7 +54,7 @@ VERDICTS_DICT = {
     '-101': 'error',
     '-102': 'unknown, cannot find sample record in the database',
     '-103': 'invalid hash value',
-    '-104': 'flawed submission, please re-submit the file'
+    '-104': 'flawed submission, please re-submit the file',
 }
 
 VERDICTS_TO_DBOTSCORE = {
