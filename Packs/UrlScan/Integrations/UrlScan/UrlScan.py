@@ -25,6 +25,50 @@ requests.packages.urllib3.disable_warnings()
 BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
                                 'For your own safety we did not perform this scan...'
 
+""" RELATIONSHIP TYPE"""
+RELATIONSHIP_TYPE = {
+    'lists': {
+        'domains': {
+            'indicator_type': 'Domain',
+            'name': 'related to',
+            'reversed_name': 'related to'
+        },
+        'hashes': {
+            'indicator_type': 'File',
+            'name': 'related to',
+            'reversed_name': 'related to'
+        },
+        'ips': {
+            'indicator_type': 'IP',
+            'name': 'related to',
+            'reversed_name': 'related to'
+
+        },
+        'linkDomains': {
+            'indicator_type': 'Domain',
+            'name': 'related to',
+            'reversed_name': 'related to'
+        },
+        'urls': {
+            'indicator_type': 'URL',
+            'name': 'related to',
+            'reversed_name': 'related to'
+        }
+    },
+    'page': {
+        'domain': {
+            'indicator_type': 'Domain',
+            'name': 'hosted on',
+            'reversed_name': 'hosts'
+        },
+        'ip': {
+            'indicator_type': 'IP',
+            'name': 'hosted on',
+            'reversed_name': 'hosts'
+        }
+    }
+}
+
 
 class Client:
     def __init__(self, api_key='', threshold=None, use_ssl=False, reliability=DBotScoreReliability.C):
@@ -172,6 +216,40 @@ def urlscan_submit_url(client):
     r = http_request(client, 'POST', 'scan/', sub_json, wait, retries)
     return r
 
+def create_relationship(scan_type, field, entity_a, object_type_a, entity_b, object_type_b):
+    relations_type = 'indicatorToIndicator'
+    entity_a_family = 'Indicator'
+    entity_b_family = 'Indicator'
+    brand = 'urlscan.io'
+    return EntityRelation(name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('name', ''),
+                          reverse_name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('reversed_name', ''),
+                          relation_type=relations_type,
+                          entity_a=entity_a,
+                          entity_a_family=entity_a_family,
+                          object_type_a=object_type_a,
+                          entity_b=entity_b,
+                          entity_b_family=entity_b_family,
+                          object_type_b=object_type_b,
+                          source_reliability='F - Reliability cannot be judged',
+                          brand=brand)
+
+
+def create_list_relationships(scans_dict, url):
+    relationships_list = []
+    for scan_name, scan_dict in scans_dict.items():
+        fields = RELATIONSHIP_TYPE.get(scan_name).keys()
+        for field in fields:
+            indicators = scan_dict.get(field)
+            if isinstance(indicators, str):
+                indicators = [indicators]
+            relation_dict = RELATIONSHIP_TYPE.get(scan_name, {}).get(field)
+            indicator_type = relation_dict.get('indicator_type')
+            for indicator in indicators:
+                relation = create_relationship(scan_type=scan_name, field=field, entity_a=url, object_type_a='url',
+                                               entity_b=indicator, object_type_b=indicator_type)
+                relationships_list.append(relation)
+    return relationships_list
+
 
 def format_results(client, uuid):
     # Scan Lists sometimes returns empty
@@ -312,10 +390,11 @@ def format_results(client, uuid):
         file_context['Type'] = filetype
         file_context['Hostname'] = demisto.args().get('url')
 
-    ec = {
+    relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query)
+    relations = [relation.to_context() for relation in relationships]
+    cont['Relations'] = relations
+    outputs = {
         'URLScan(val.URL && val.URL == obj.URL)': cont,
-        'DBotScore': dbot_score,
-        'URL': url_cont,
         outputPaths['file']: file_context
     }
 
@@ -325,13 +404,22 @@ def format_results(client, uuid):
         response_img = requests.request("GET", screen_path, verify=client.use_ssl)
         stored_img = fileResult('screenshot.png', response_img.content)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': response,
-        'HumanReadable': tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
-        'EntryContext': ec
-    })
+    dbot_score = Common.DBotScore(indicator=dbot_score.get('Indicator'), indicator_type=dbot_score.get('Type'),
+                                  integration_name=dbot_score.get('Vendor'), score=dbot_score.get('Score'),
+                                  reliability=dbot_score.get('Reliability'))
+    url = Common.URL(url=url_cont.get('Data'), dbot_score=dbot_score, relations=relationships)
+    demisto.info("after creating url and dbot")
+    command_result = CommandResults(
+        readable_output=tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
+        outputs=outputs,
+        indicator=url,
+        raw_response=response,
+        relations=relationships
+    )
+    demisto.info("after creating commandresults")
+
+    demisto.results(command_result.to_context())
+    demisto.info("after demisto.results creating commandresults")
 
     if len(cert_md) > 0:
         demisto.results({

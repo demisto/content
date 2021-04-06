@@ -4040,3 +4040,283 @@ class TestCommonTypes:
             dbot_score=dbot_score
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com', 'Domain': 'example.com'}
+
+
+class TestEntityRelation:
+    """Global vars for all of the tests"""
+    name = 'related to'
+    reverse_name = 'related to'
+    relation_type = 'indicatorToIndicator'
+    entity_a = 'test1'
+    entity_a_family = 'Indicator'
+    object_type_a = 'Domain'
+    entity_b = 'test2'
+    entity_b_family = 'Indicator'
+    object_type_b = 'Domain'
+    source_reliability = 'F - Reliability cannot be judged'
+
+    def test_entity_relations_context(self):
+        """
+        Given
+        - an EntityRelation object.
+
+        When
+        - running to_context function of the object
+
+        Then
+        - Validate that the expected context is created
+        """
+        from CommonServerPython import EntityRelation
+        relation = EntityRelation(name='related to',
+                                  reverse_name='related to',
+                                  relation_type='indicatorToIndicator',
+                                  entity_a='test1',
+                                  entity_a_family='Indicator',
+                                  object_type_a='Domain',
+                                  entity_b='test2',
+                                  entity_b_family='Indicator',
+                                  object_type_b='Domain',
+                                  source_reliability='F - Reliability cannot be judged',
+                                  brand='test')
+
+        expected_context = {
+            "Name": 'test1 related to test2',
+            "EntityA": 'test1',
+            "ObjectTypeA": 'Domain',
+            "EntityB": 'test2',
+            "ObjectTypeB":'Domain',
+            "Type": 'indicatorToIndicator'
+        }
+        assert relation.to_context() == expected_context
+
+    def test_entity_relations_to_entry(self):
+        """
+        Given
+        - an EntityRelation object.
+
+        When
+        - running to_entry function of the object
+
+        Then
+        - Validate that the expected context is created
+        """
+        from CommonServerPython import EntityRelation
+        relation = EntityRelation(name=TestEntityRelation.name,
+                                  reverse_name=TestEntityRelation.reverse_name,
+                                  relation_type=TestEntityRelation.relation_type,
+                                  entity_a=TestEntityRelation.entity_a,
+                                  entity_a_family=TestEntityRelation.entity_a_family,
+                                  object_type_a=TestEntityRelation.object_type_a,
+                                  entity_b=TestEntityRelation.entity_b,
+                                  entity_b_family=TestEntityRelation.entity_b_family,
+                                  object_type_b=TestEntityRelation.object_type_b,
+                                  source_reliability=TestEntityRelation.source_reliability
+                                  )
+
+        expected_entry = {
+            "name": TestEntityRelation.name,
+            "reverseName": TestEntityRelation.reverse_name,
+            "type": TestEntityRelation.relation_type,
+            "entityA": TestEntityRelation.entity_a,
+            "entityAFamily": TestEntityRelation.entity_a_family,
+            "objectTypeA": TestEntityRelation.object_type_a,
+            "entityB": TestEntityRelation.entity_b,
+            "entityBFamily": TestEntityRelation.entity_b_family,
+            "objectTypeB": TestEntityRelation.object_type_b,
+            "fields": {},
+            "reliability": TestEntityRelation.source_reliability
+        }
+        assert relation.to_entry() == expected_entry
+
+    def test_entity_relations_to_indicator(self):
+        """
+        Given
+        - an EntityRelation object.
+
+        When
+        - running to_indicator function of the object
+
+        Then
+        - Validate that the expected context is created
+        """
+        from CommonServerPython import EntityRelation
+        relation = EntityRelation(name=TestEntityRelation.name,
+                                  reverse_name=TestEntityRelation.reverse_name,
+                                  relation_type=TestEntityRelation.relation_type,
+                                  entity_a=TestEntityRelation.entity_a,
+                                  entity_a_family=TestEntityRelation.entity_a_family,
+                                  object_type_a=TestEntityRelation.object_type_a,
+                                  entity_b=TestEntityRelation.entity_b,
+                                  entity_b_family=TestEntityRelation.entity_b_family,
+                                  object_type_b=TestEntityRelation.object_type_b,
+                                  )
+
+        expected_to_indicator = {
+            "name": TestEntityRelation.name,
+            "reverseName": TestEntityRelation.reverse_name,
+            "type": TestEntityRelation.relation_type,
+            "entityA": TestEntityRelation.entity_a,
+            "entityAFamily": TestEntityRelation.entity_a_family,
+            "objectTypeA": TestEntityRelation.object_type_a,
+            "entityB": TestEntityRelation.entity_b,
+            "entityBFamily": TestEntityRelation.entity_b_family,
+            "objectTypeB": TestEntityRelation.object_type_b,
+            "fields": {},
+        }
+        assert relation.to_indicator() == expected_to_indicator
+
+    def test_invalid_name_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid relation name.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name='ilegal',
+                           reverse_name=TestEntityRelation.reverse_name,
+                           relation_type=TestEntityRelation.relation_type,
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family=TestEntityRelation.entity_a_family,
+                           object_type_a=TestEntityRelation.object_type_a,
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family=TestEntityRelation.entity_b_family,
+                           object_type_b=TestEntityRelation.object_type_b
+                            )
+        except ValueError as exception:
+            assert "Invalid relation: ilegal" in str(exception)
+
+    def test_invalid_relation_type_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid relation type.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name=TestEntityRelation.name,
+                           reverse_name=TestEntityRelation.reverse_name,
+                           relation_type='TestRelationType',
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family=TestEntityRelation.entity_a_family,
+                           object_type_a=TestEntityRelation.object_type_a,
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family=TestEntityRelation.entity_b_family,
+                           object_type_b=TestEntityRelation.object_type_b
+                           )
+        except ValueError as exception:
+            assert "Invalid relation type: TestRelationType" in str(exception)
+
+    def test_invalid_a_family_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid family type of the source.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name=TestEntityRelation.name,
+                           reverse_name=TestEntityRelation.reverse_name,
+                           relation_type=TestEntityRelation.relation_type,
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family='IndicatorIlegal',
+                           object_type_a=TestEntityRelation.object_type_a,
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family=TestEntityRelation.entity_b_family,
+                           object_type_b=TestEntityRelation.object_type_b
+                            )
+        except ValueError as exception:
+            assert "Invalid entity A Family type: IndicatorIlegal" in str(exception)
+
+    def test_invalid_a_type_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid type of the source.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name=TestEntityRelation.name,
+                           reverse_name=TestEntityRelation.reverse_name,
+                           relation_type=TestEntityRelation.relation_type,
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family=TestEntityRelation.entity_a_family,
+                           object_type_a='DomainTest',
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family=TestEntityRelation.entity_b_family,
+                           object_type_b=TestEntityRelation.object_type_b
+                            )
+        except ValueError as exception:
+            assert "Invalid entity A type: DomainTest" in str(exception)
+
+    def test_invalid_b_family_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid family type of the destination.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name=TestEntityRelation.name,
+                           reverse_name=TestEntityRelation.reverse_name,
+                           relation_type=TestEntityRelation.relation_type,
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family=TestEntityRelation.entity_a_family,
+                           object_type_a=TestEntityRelation.object_type_a,
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family='IndicatorIlegal',
+                           object_type_b=TestEntityRelation.object_type_b
+                            )
+        except ValueError as exception:
+            assert "Invalid entity B Family type: IndicatorIlegal" in str(exception)
+
+    def test_invalid_b_type_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid type of the destination.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name=TestEntityRelation.name,
+                           reverse_name=TestEntityRelation.reverse_name,
+                           relation_type=TestEntityRelation.relation_type,
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family=TestEntityRelation.entity_a_family,
+                           object_type_a=TestEntityRelation.object_type_a,
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family=TestEntityRelation.entity_b_family,
+                           object_type_b='DomainTest'
+                            )
+        except ValueError as exception:
+            assert "Invalid entity B type: DomainTest" in str(exception)
