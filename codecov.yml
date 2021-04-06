@@ -1,0 +1,10 @@
+codecov:
+  strict_yaml_branch: master
+
+coverage:
+  precision: 3
+  round: down
+  range: "30...100"
+
+github_checks:
+  annotations: true
