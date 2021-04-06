@@ -1,0 +1,47 @@
+{
+  "ip_response": {
+    "response_code": "1",
+    "resolutions": [
+      {
+        "last_resolved": "2014-12-14",
+        "domain": "test.com"
+      },
+      {
+        "last_resolved": "2013-12-20",
+        "domain": "000.in"
+      }
+    ],
+    "hashes": [
+      "009418664c249d76b1bb88fab98fccdd",
+      "00bbeeab92b10c2ab038671da99e9b47",
+      "00bffa26618ee214fac1adc89d39bb6a"
+    ],
+    "references": [],
+    "votes": -1,
+    "permalink": "https://www.threatcrowd.org/ip.php?ip=0.0.0.0"
+  },
+  "domain_response": {
+    "response_code": "1",
+    "resolutions": [
+      {
+        "last_resolved": "2018-07-11",
+        "ip_address": "1.1.1.1"
+      },
+      {
+        "last_resolved": "2020-05-01",
+        "ip_address": "0.0.0.0"
+      }
+    ],
+    "hashes": [],
+    "emails": [
+      "",
+      "test@test.test"
+    ],
+    "subdomains": [
+      "www.test1.com"
+    ],
+    "references": [],
+    "votes": 0,
+    "permalink": "https://www.threatcrowd.org/domain.php?domain=test1.com"
+  }
+}
