@@ -97,7 +97,7 @@ class Client(BaseClient):
 
     def get_access_token_data(self):
         access_token_jwt = self.ms_client.get_access_token()
-        token_data = jwt.decode(access_token_jwt, verify=False)
+        token_data = jwt.decode(access_token_jwt, options={'verify_signature': False})
         return access_token_jwt, token_data
 
     def get_authentication_string(self):
