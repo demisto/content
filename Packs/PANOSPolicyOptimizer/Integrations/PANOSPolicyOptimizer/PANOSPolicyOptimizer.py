@@ -214,7 +214,7 @@ def get_policy_optimizer_statistics_command(client: Client) -> CommandResults:
         res_sta[i['@name']] = i['text']
 
     return CommandResults(
-        outputs_prefix=f'PanOs.PolicyOptimizer.Stats',
+        outputs_prefix='PanOS.PolicyOptimizer.Stats',
         outputs_key_field='@name',
         outputs=res_sta,
         readable_output=tableToMarkdown(name=f'Policy Optimizer Statistics:', t=result['entry'], removeNull=True),
@@ -231,7 +231,7 @@ def policy_optimizer_no_apps_command(client: Client) -> CommandResults:
     result = stats['result']['result']
 
     return CommandResults(
-        outputs_prefix=f'PanOs.PolicyOptimizer.NoApps',
+        outputs_prefix='PanOS.PolicyOptimizer.NoApps',
         outputs_key_field='Stats',
         outputs=result,
         readable_output=tableToMarkdown(name=f'Policy Optimizer No App Specified:', t=result['entry'], removeNull=True),
@@ -248,7 +248,7 @@ def policy_optimizer_get_unused_apps_command(client: Client) -> CommandResults:
     result = stats['result']['result']
 
     return CommandResults(
-        outputs_prefix=f'PanOs.PolicyOptimizer.UnusedApps',
+        outputs_prefix='PanOS.PolicyOptimizer.UnusedApps',
         outputs_key_field='Stats',
         outputs=result,
         readable_output=tableToMarkdown(name=f'Policy Optimizer Unused Apps:', t=result['entry'], removeNull=True),
@@ -263,15 +263,24 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     timeframe = str(args.get('timeframe'))
     usage = args.get('usage')
     exclude = argToBoolean(args.get('exclude'))
-    stats = client.policy_optimizer_get_rules(timeframe, usage, exclude)
-    demisto.info(json.dumps(stats, indent=2))
-    result = stats['result']['result']['entry']
+
+    result = client.policy_optimizer_get_rules(timeframe, usage, exclude)
+    stats = result['result']['result']
+    if '@count' in stats and stats['@count'] == '0':
+        return CommandResults(readable_output=f'No {usage} rules where found.', raw_response=result)
+
+    rules = stats['entry']
+    if not isinstance(rules, list):
+        rules = rules[0]
+
+    headers = ['@name', '@uuid', 'action', 'secription', 'source', 'destination']
 
     return CommandResults(
-        outputs_prefix=f'PanOs.PolicyOptimizer.{usage}Rules',
+        outputs_prefix=f'PanOS.PolicyOptimizer.{usage}Rules',
         outputs_key_field='@uuid',
         outputs=result,
-        readable_output=tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=result, removeNull=True),
+        readable_output=tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=rules, headers=headers,
+                                        removeNull=True),
         raw_response=result
     )
 
@@ -282,16 +291,23 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
     """
     context_res = {}
     rule_uuid = str(args.get('rule_uuid'))
-    stats = client.policy_optimizer_app_and_usage(rule_uuid)
-    result = stats['result']['result']['rules']['entry'][0]['apps-seen']['entry']
-    rule_name = stats['result']['result']['rules']['entry'][0]['@name']
-    context_res[rule_name] = result
+
+    result = client.policy_optimizer_app_and_usage(rule_uuid)
+
+    stats = result['result']['result']
+    if '@count' in stats and stats['@count'] == '0':
+        return CommandResults(readable_output=f'Rule with UUID:{rule_uuid} does not use apps.', raw_response=result)
+
+    rule_stats = stats['rules']['entry'][0]
+    # ['apps-seen']['entry']
+    # rule_name = stats['result']['result']['rules']['entry'][0]['@name']
+    # context_res[rule_name] = result
 
     return CommandResults(
-        outputs_prefix=f'PanOs.PolicyOptimizer.AppsAndUsage',
-        outputs_key_field='Stats',
-        outputs=context_res,
-        readable_output=tableToMarkdown(name=f'Policy Optimizer Apps and Usage:', t=result, removeNull=True),
+        outputs_prefix='PanOS.PolicyOptimizer.AppsAndUsage',
+        outputs_key_field='@uuid',
+        outputs=rule_stats,
+        readable_output=tableToMarkdown(name=f'Policy Optimizer Apps and Usage:', t=rule_stats, removeNull=True),
         raw_response=result
     )
 
@@ -305,7 +321,7 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
     result = result['result']['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
 
     return CommandResults(
-        outputs_prefix=f'PanOs.PolicyOptimizer.DAG',
+        outputs_prefix='PanOS.PolicyOptimizer.DAG',
         outputs_key_field='Stats',
         outputs=result,
         readable_output=tableToMarkdown(name=f'Policy Optimizer Dynamic Address Group:', t=result, removeNull=True),
