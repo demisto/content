@@ -3,7 +3,7 @@ This integration was integrated and tested with version 3.6 of Q-SCMP. Please co
 
 ## Configure QSS on Cortex XSOAR
 
-1. Please contact your Q-SCMP platform administrtor to obtain Cortex API Key and Server URL. 
+1. Please contact your Q-SCMP platform administrtor to obtain Cortex **API Key** and **Server URL**. 
 2. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 3. Search for QSS.
 4. Click **Add instance** to create and configure a new integration instance.
