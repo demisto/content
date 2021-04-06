@@ -451,7 +451,6 @@ def format_results(client, uuid):
 
 
 
-    demisto.info("after creating url and dbot")
     command_result = CommandResults(
         readable_output=tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
         outputs=outputs,
@@ -459,10 +458,8 @@ def format_results(client, uuid):
         raw_response=response,
         relations=relationships
     )
-    demisto.info("after creating commandresults")
 
     demisto.results(command_result.to_context())
-    demisto.info("after demisto.results creating commandresults")
 
     if len(cert_md) > 0:
         demisto.results({
