@@ -10,6 +10,7 @@ IBM X-Force Exchange lets you receive threat intelligence about applications, IP
 | --- | --- | --- |
 | url | Server URL (e.g. https://api.xforce.ibmcloud.com) | True |
 | credentials | API Key | True |
+| Source Reliability | Reliability of the source providing the intelligence data. The default value is C - Fairly reliable. | True |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
 | ip_threshold | IP Threshold. Minimum risk score for the IP to be consodered malicious (ranges from 1 to 10). | False |
