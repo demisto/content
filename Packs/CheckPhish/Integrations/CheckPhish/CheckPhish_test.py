@@ -46,7 +46,7 @@ def test_bad_disp_param(requests_mock, mocker):
             - Verify dbot score is expected according the bad disposition
     """
     mocked_results = RESULTS
-    mocked_results['disposition'] = 'bad'
+    mocked_results['disposition'] = 'bad_disp_which_is_not_default'
     requests_mock.post('https://developers.checkphish.ai/api/neo/scan/status', json=mocked_results)
 
     mocker.patch.object(demisto, 'results')
