@@ -3313,7 +3313,8 @@
         "EWS search-mailbox test": "Issue 27943",
         "EWS Public Folders Test": "Issue 27941",
         "Tanium Test Playbook": "Issue 35302",
-        "Tanium Threat Response Test": "Issue 33974"
+        "Tanium Threat Response Test": "Issue 33974",
+        "Azure NSG - Test": "Issue 33217"
     },
     "skipped_integrations": {
         
