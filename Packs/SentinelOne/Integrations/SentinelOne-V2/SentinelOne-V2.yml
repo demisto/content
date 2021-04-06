@@ -50,7 +50,7 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-description: Use the SentinelOne integratation to send requests to your Management Server and responds with data pulled from Agents or from the management database.
+description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
 display: SentinelOne v2
 name: SentinelOne V2
 script:
@@ -87,13 +87,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Endpoint created at timestamp, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Endpoint creation timestamp, for example: "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: Minimum number of threats for an agent.
+      description: Minimum number of threats per agent.
       isArray: false
       name: min_active_threats
       required: false
@@ -119,7 +119,7 @@ script:
       description: Whether the agent is active.
       type: boolean
     - contextPath: SentinelOne.Agents.LastActiveDate
-      description: The last active date of the agent
+      description: When was the agent last active.
       type: date
     - contextPath: SentinelOne.Agents.RegisteredAt
       description: The registration date of the agent.
@@ -151,7 +151,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Exclusion item type. Can be "file_type", "path", "white_hash", "certificate", or "browser".
+      description: 'Exclusion item type. The options are: file_type, path, white_hash, certificate, or browser.'
       isArray: false
       name: exclusion_type
       predefined:
@@ -175,12 +175,13 @@ script:
       name: os_type
       predefined:
       - windows
-      - windows_legacy.macos
+      - windows_legacy
+      - macos
       - linux
       required: true
       secret: false
     - default: false
-      description: Description for adding the item.
+      description: Description for adding then exclusion item.
       isArray: false
       name: description
       required: false
@@ -205,9 +206,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of group IDs by which to filter. Can be "site_ids" or "group_ids".
+      description: A comma-separated list of group IDs by which to filter.
       isArray: true
       name: group_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of site IDs by which to filter.
+      isArray: true
+      name: site_ids
       required: false
       secret: false
     deprecated: false
@@ -269,34 +276,34 @@ script:
     name: sentinelone-get-white-list
     outputs:
     - contextPath: SentinelOne.Exclusions.ID
-      description: The item ID.
+      description: The exclusion item ID.
       type: string
     - contextPath: SentinelOne.Exclusions.Type
       description: The exclusion item type.
       type: string
     - contextPath: SentinelOne.Exclusions.CreatedAt
-      description: Timestamp when the item was added.
+      description: Timestamp when the exclusion item was added.
       type: date
     - contextPath: SentinelOne.Exclusions.Value
-      description: Value of the added item.
+      description: Value of the exclusion item.
       type: string
     - contextPath: SentinelOne.Exclusions.Source
-      description: Source of the added item.
+      description: Source of the exclusion item.
       type: string
     - contextPath: SentinelOne.Exclusions.UserID
-      description: User ID of the user that added the item.
+      description: User ID of the user that added the exclusion item.
       type: string
     - contextPath: SentinelOne.Exclusions.UpdatedAt
-      description: Timestamp when the item was updated
+      description: Timestamp when the exclusion item was updated.
       type: date
     - contextPath: SentinelOne.Exclusions.OsType
-      description: OS type.
+      description: OS type of the exclusion item.
       type: string
     - contextPath: SentinelOne.Exclusions.UserName
-      description: User name of the user that added the item.
+      description: User name of the user that added the exclusion item.
       type: string
     - contextPath: SentinelOne.Exclusions.Mode
-      description: 'A comma-separated list of modes by which to filter (ath exclusions only), for example: "suppress".'
+      description: 'A comma-separated list of modes by which to filter (path exclusions only), for example: "suppress".'
       type: string
   - arguments:
     - default: false
@@ -306,7 +313,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get file reputation by a SHA1 hash.
+    description: Gets the file reputation by a SHA1 hash.
     execution: false
     name: sentinelone-get-hash
     outputs:
@@ -318,7 +325,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The content hash of the threat. Support a comma-separated list of hashes.
+      description: The content hash of the threat. Supports a comma-separated list of hashes.
       isArray: true
       name: content_hash
       required: false
@@ -338,25 +345,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Searches for threats created before this date, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Searches for threats created before this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_before
       required: false
       secret: false
     - default: false
-      description: 'Searches for threats created after this date, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Searches for threats created after this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_after
       required: false
       secret: false
     - default: false
-      description: 'Searches for threats created on or before this date, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Searches for threats created on or before this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_until
       required: false
       secret: false
     - default: false
-      description: 'Search for threats created on or after this date, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Search for threats created on or after this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_from
       required: false
@@ -373,7 +380,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Threat display name. For API version 2.0 can be a partial display name, not an exact match.
+      description: Threat display name. For API version 2.0 it can be a partial display name, doesn't have to be an exact match.
       isArray: false
       name: display_name
       required: false
@@ -399,7 +406,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: ' CSV list of threat classifications to search, for example: "Malware", "Network", "Benign".'
+      description: 'CSV list of threat classifications to search, for example: "Malware", "Network", "Benign".'
       isArray: false
       name: classifications
       predefined:
@@ -416,7 +423,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns threats according to specified filters.
+    description: Returns threats according to the specified filters.
     execution: false
     name: sentinelone-get-threats
     outputs:
@@ -427,13 +434,13 @@ script:
       description: The agent computer name.
       type: String
     - contextPath: SentinelOne.Threat.CreatedDate
-      description: File created date.
+      description: The threat creation date.
       type: Date
     - contextPath: SentinelOne.Threat.SiteID
       description: The site ID.
       type: String
     - contextPath: SentinelOne.Threat.Classification
-      description: Classification name.
+      description: The threat classification.
       type: string
     - contextPath: SentinelOne.Threat.ClassificationSource
       description: Source of the threat Classification.
@@ -442,16 +449,16 @@ script:
       description: SentinelOne threat confidence level.
       type: string
     - contextPath: SentinelOne.Threat.FileSha256
-      description: SHA256 hash of file content.
+      description: SHA256 hash of the file content.
       type: string
     - contextPath: SentinelOne.Threat.MitigationStatus
-      description: The agent status.
+      description: The agent mitigation status.
       type: String
     - contextPath: SentinelOne.Threat.AgentID
-      description: The agent ID.
+      description: The threat agent ID.
       type: String
     - contextPath: SentinelOne.Threat.Rank
-      description: Number representing cloud reputation (1-10).
+      description: The number representing the cloud reputation (1-10).
       type: Number
     - contextPath: SentinelOne.Threat.MarkedAsBenign
       description: Whether the threat is marked as benign. Relevant for version 2.0 only.
@@ -513,7 +520,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Mark suspicious threats as threats
+    description: Marks suspicious threats as threats.
     execution: false
     name: sentinelone-mark-as-threat
     outputs:
@@ -565,7 +572,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Resolves threat using the threat ID.
+    description: Resolves threats using the threat ID.
     execution: false
     name: sentinelone-resolve-threat
     outputs:
@@ -577,13 +584,13 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: A comma-separated list of Agent IDs.
+      description: A comma-separated list of agent IDs.
       isArray: true
       name: agent_id
       required: true
       secret: false
     deprecated: false
-    description: Returns details of an agent, by agent ID.
+    description: Returns the details of an agent according to the agent ID.
     execution: false
     name: sentinelone-get-agent
     outputs:
@@ -603,7 +610,7 @@ script:
       description: Whether the agent is active.
       type: boolean
     - contextPath: SentinelOne.Agent.LastActiveDate
-      description: The last active date of the agent.
+      description: When was the agent last active.
       type: date
     - contextPath: SentinelOne.Agent.RegisteredAt
       description: The registration date of the agent.
@@ -634,7 +641,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Timestamp of last update, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Timestamp of the last update, for example: "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: updated_at
       required: false
@@ -692,7 +699,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sites to which the user has Admin privileges.
+      description: Sites for which the user has admin privileges.
       isArray: false
       name: admin_only
       predefined:
@@ -713,7 +720,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Timestamp of site creation, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Timestamp of the site creation, for example: "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_at
       required: false
@@ -731,7 +738,7 @@ script:
     name: sentinelone-get-sites
     outputs:
     - contextPath: SentinelOne.Site.Creator
-      description: The creator name.
+      description: The site creator name.
       type: string
     - contextPath: SentinelOne.Site.Name
       description: The site name.
@@ -740,7 +747,7 @@ script:
       description: The site type.
       type: string
     - contextPath: SentinelOne.Site.AccountName
-      description: The account name.
+      description: The site account name.
       type: string
     - contextPath: SentinelOne.Site.State
       description: The site state.
@@ -752,13 +759,13 @@ script:
       description: The suite to which the site belongs.
       type: string
     - contextPath: SentinelOne.Site.ActiveLicenses
-      description: Number of active licenses on the site.
+      description: Number of active licenses for the site.
       type: number
     - contextPath: SentinelOne.Site.ID
       description: ID of the site.
       type: string
     - contextPath: SentinelOne.Site.TotalLicenses
-      description: Number of total licenses on the site.
+      description: Number of total licenses for the site.
       type: number
     - contextPath: SentinelOne.Site.CreatedAt
       description: Timestamp when the site was created.
@@ -777,12 +784,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a site, by site ID.
+    description: Returns information about the site, according to the site ID.
     execution: false
     name: sentinelone-get-site
     outputs:
     - contextPath: SentinelOne.Site.Creator
-      description: The creator name.
+      description: The site creator name.
       type: string
     - contextPath: SentinelOne.Site.Name
       description: The site name.
@@ -791,7 +798,7 @@ script:
       description: The site type.
       type: string
     - contextPath: SentinelOne.Site.AccountName
-      description: The account name.
+      description: The site account name.
       type: string
     - contextPath: SentinelOne.Site.State
       description: The site state.
@@ -803,13 +810,13 @@ script:
       description: The suite to which the site belongs.
       type: string
     - contextPath: SentinelOne.Site.ActiveLicenses
-      description: Number of active licenses on the site.
+      description: Number of active licenses for the site.
       type: number
     - contextPath: SentinelOne.Site.ID
       description: ID of the site.
       type: string
     - contextPath: SentinelOne.Site.TotalLicenses
-      description: Number of total licenses on the site.
+      description: Number of total licenses for the site.
       type: number
     - contextPath: SentinelOne.Site.CreatedAt
       description: Timestamp when the site was created.
@@ -818,17 +825,17 @@ script:
       description: Timestamp when the site will expire.
       type: string
     - contextPath: SentinelOne.Site.UnlimitedLicenses
-      description: Unlimited licenses boolean.
+      description: Whether the site has unlimited licenses.
       type: boolean
     - contextPath: SentinelOne.Site.AccountID
-      description: Account ID.
+      description: Site account ID.
       type: string
     - contextPath: SentinelOne.Site.IsDefault
       description: Whether the site is the default site.
       type: boolean
   - arguments:
     - default: false
-      description: 'Site ID. Example: "225494730938493804".'
+      description: 'Site ID. For example: "225494730938493804".'
       isArray: false
       name: site_id
       required: true
@@ -858,7 +865,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'List of Group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
+      description: 'List of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: group_ids
       required: false
@@ -871,7 +878,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Include internal activities hidden from display, for example: "False".'
+      description: 'Include internal activities hidden from display.'
       isArray: false
       name: include_hidden
       predefined:
@@ -922,7 +929,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Return activities related to specified agents. Example: "225494730938493804,225494730938493915".'
+      description: 'Return activities related to specified agents. For example: "225494730938493804,225494730938493915".'
       isArray: true
       name: agent_ids
       required: false
@@ -1031,7 +1038,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Free-text search on fields name.
+      description: Free-text search.
       isArray: false
       name: query
       required: false
