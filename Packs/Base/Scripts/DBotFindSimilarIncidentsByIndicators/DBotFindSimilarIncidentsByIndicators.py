@@ -268,10 +268,10 @@ def enriched_incidents(df, fields_incident_to_display, from_date: str):
         incidents_dict = {incident['id']: incident for incident in incidents}
         for field in fields_incident_to_display:
             if field == 'created':
-                df[field] = [incidents_dict.get(id_, {}).get(field,'')[:10] if
+                df[field] = [incidents_dict.get(id_, {}).get(field, '')[:10] if
                              len(incidents_dict.get(id_, {}).get(field, '')) > 10 else '' for id_ in ids]
             elif field == 'status':
-                df[field] = [STATUS_DICT.get(incidents_dict.get(id_, {}).get(field,'')) if
+                df[field] = [STATUS_DICT.get(incidents_dict.get(id_, {}).get(field, '')) if
                              incidents_dict.get(id_, {}).get(field, '') in STATUS_DICT else ' ' for id_ in ids]
             else:
                 df[field] = [incidents_dict.get(id_, {}).get(field, '') for id_ in ids]
