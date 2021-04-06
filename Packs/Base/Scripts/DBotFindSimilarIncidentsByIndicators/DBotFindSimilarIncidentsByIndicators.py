@@ -238,6 +238,22 @@ def match_indicators_incident(indicators: List[Dict], incident_ids: List[str]) -
     return d
 
 
+def get_field_from_id(incidents_list: List[Dict], id_: str, field: str):
+    """
+    Get specific field for an specific incident id from list of incident
+    :param incidents_list: list of incident
+    :param id_: id_
+    :param field: field
+    :return: field value
+    """
+    ids_list = [x.get('id') for x in incidents_list]
+    if id_ not in ids_list:
+        return ''
+    else:
+        index = ids_list.index(id_)
+        return incidents_list[index].get(field, '')
+
+
 def enriched_incidents(df, fields_incident_to_display, from_date: str):
     """
     Enriched incidents with data
@@ -267,11 +283,13 @@ def enriched_incidents(df, fields_incident_to_display, from_date: str):
         incidents = json.loads(res[0]['Contents'])
         for field in fields_incident_to_display:
             if field == 'created':
-                df[field] = [x.get(field)[:10] for x in incidents]
+                df[field] = [get_field_from_id(incidents, id_, field)[:10] if
+                             len(get_field_from_id(incidents, id_, field)) > 10 else '' for id_ in ids]
             elif field == 'status':
-                df[field] = [STATUS_DICT.get(x.get(field)) if x.get(field) in STATUS_DICT else ' ' for x in incidents]
+                df[field] = [STATUS_DICT.get(get_field_from_id(incidents, id_, field)) if
+                             get_field_from_id(incidents, id_, field) in STATUS_DICT else ' ' for id_ in ids]
             else:
-                df[field] = [x.get(field) for x in incidents]
+                df[field] = [get_field_from_id(incidents, id_, field) for id_ in ids]
         return df
 
 
