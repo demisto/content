@@ -3306,7 +3306,6 @@
         "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
-        "Azure SecurityCenter - Test": "Issue 27391",
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "Field polling test": "Issue 33951",
         "palo_alto_panorama_test_pb": "Issue 34371",
