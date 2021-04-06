@@ -1655,13 +1655,13 @@ script:
   - arguments:
     - default: false
       description: List of endpoint IDs.
-      isArray: false
+      isArray: true
       name: endpoint_id_list
       required: false
       secret: false
     - default: false
       description: Name of the distribution list.
-      isArray: false
+      isArray: true
       name: dist_name
       required: false
       secret: false
@@ -1691,20 +1691,20 @@ script:
       secret: false
     - default: false
       description: List of IP addresses.
-      isArray: false
+      isArray: true
       name: ip_list
       required: false
       secret: false
     - default: false
       description: Name of the endpoint group.
-      isArray: false
+      isArray: true
       name: group_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Type of operating system.
-      isArray: false
+      isArray: true
       name: platform
       predefined:
       - windows
@@ -1715,7 +1715,7 @@ script:
       secret: false
     - default: false
       description: Endpoint alias name.
-      isArray: false
+      isArray: true
       name: alias
       required: false
       secret: false
@@ -1731,7 +1731,7 @@ script:
       secret: false
     - default: false
       description: Name of the host.
-      isArray: false
+      isArray: true
       name: hostname
       required: false
       secret: false
@@ -1761,13 +1761,13 @@ script:
   - arguments:
     - default: false
       description: List of endpoint IDs.
-      isArray: false
+      isArray: true
       name: endpoint_id_list
       required: false
       secret: false
     - default: false
       description: Name of the distribution list.
-      isArray: false
+      isArray: true
       name: dist_name
       required: false
       secret: false
@@ -1797,20 +1797,20 @@ script:
       secret: false
     - default: false
       description: List of IP addresses.
-      isArray: false
+      isArray: true
       name: ip_list
       required: false
       secret: false
     - default: false
       description: Name of the endpoint group.
-      isArray: false
+      isArray: true
       name: group_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Type of operating system.
-      isArray: false
+      isArray: true
       name: platform
       predefined:
       - windows
@@ -1821,7 +1821,7 @@ script:
       secret: false
     - default: false
       description: Endpoint alias name.
-      isArray: false
+      isArray: true
       name: alias
       required: false
       secret: false
@@ -1837,7 +1837,7 @@ script:
       secret: false
     - default: false
       description: Name of the host.
-      isArray: false
+      isArray: true
       name: hostname
       required: false
       secret: false
