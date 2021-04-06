@@ -33,8 +33,8 @@ configuration:
   required: false
   type: 0
 description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
-display: Tenable.sc
-name: Tenable.sc
+display: TEST_RN_VALIDATION_DUMMY_PACK
+name: TEST_RN_VALIDATION_DUMMY_PACK
 script:
   commands:
   - arguments:
