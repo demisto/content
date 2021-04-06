@@ -121,7 +121,8 @@ def main() -> None:
             tenant_id=params.get('tenant_id'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
-            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
+            azure_ad_endpoint=params.get('azure_ad_endpoint',
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
 
         if command == 'test-module':

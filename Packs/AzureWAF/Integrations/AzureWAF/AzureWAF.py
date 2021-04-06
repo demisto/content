@@ -357,7 +357,8 @@ def main() -> None:
         resource_group_name=params.get('resource_group_name', ''),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
-        azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
+        azure_ad_endpoint=params.get('azure_ad_endpoint',
+                                     'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
     )
 
     demisto.debug(f'Command being called in Azure WAF is {command}')

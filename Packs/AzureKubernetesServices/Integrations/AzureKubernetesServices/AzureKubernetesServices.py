@@ -167,7 +167,8 @@ def main() -> None:
             resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
-            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
+            azure_ad_endpoint=params.get('azure_ad_endpoint',
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
         if command == 'test-module':
             return_results('The test module is not functional, run the azure-ks-auth-start command instead.')

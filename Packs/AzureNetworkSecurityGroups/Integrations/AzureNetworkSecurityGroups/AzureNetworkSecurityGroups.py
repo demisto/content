@@ -354,7 +354,8 @@ def main() -> None:
             resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
-            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
+            azure_ad_endpoint=params.get('azure_ad_endpoint',
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
         commands = {
             'azure-nsg-security-groups-list': list_groups_command,
