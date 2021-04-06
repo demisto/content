@@ -1,0 +1,84 @@
+category: Messaging
+commonfields:
+  id: iLert
+  version: -1
+configuration:
+- display: The API key of the alert source (for triggering events only)
+  name: integrationKey
+  required: false
+  type: 0
+description: Alert and notify users using iLert
+display: iLert
+name: iLert
+script:
+  commands:
+  - arguments:
+    - description: The API key of the alert source.
+      name: integrationKey
+    - description: For ALERT events, the incident key can be used to deduplicate or
+        group events. If an open incident with the key already exists, the event will
+        be appended to the incident's event log. Otherwise a new incident will be
+        created. For ACCEPT and RESOLVE events, the incident key is used to reference
+        the open incident which is to be accepted or resolved by this event.
+      name: incidentKey
+    - defaultValue: ALERT
+      description: Must be either ALERT, ACCEPT, or RESOLVE
+      name: eventType
+    - description: The event summary. Will be used as the incident summary if a new
+        incident is created.
+      name: summary
+    - description: The event details. Will be used as the incident details if a new
+        incident is created.
+      name: details
+    - description: Must be either HIGH or LOW. Will overwrite the evaluated priority
+        of the alert source.
+      name: priority
+    description: Creates a new event/incident in iLert (In order to use this command  you
+      have to enter the Integration Key in the integration settings)
+    name: iLert-submit-event
+    outputs:
+    - contextPath: iLert.Event.incidentKey
+      description: Incident key
+      type: string
+    - contextPath: iLert.Event.incidentUrl
+      description: Incident Url
+    - contextPath: iLert.Event.responseCode
+      description: Response code
+  - arguments:
+    - description: The API key of the alert source.
+      name: IntegrationKey
+    - description: The incident key is used to reference the open incident which is
+        to be accepted or resolved by this event.
+      name: incidentKey
+    description: Acknowledges an existing event in iLert
+    name: iLert-acknowledge-event
+    outputs:
+    - contextPath: iLert.Event.incidentKey
+      description: Incident key
+    - contextPath: iLert.Event.incidentUrl
+      description: Incident Url
+    - contextPath: iLert.Event.responseCode
+      description: Response code
+  - arguments:
+    - description: The API key of the alert source.
+      name: IntegrationKey
+    - description: The incident key is used to reference the open incident which is
+        to be accepted or resolved by this event.
+      name: incidentKey
+    description: Resolves an existing event in iLert
+    name: iLert-resolve-event
+    outputs:
+    - contextPath: iLert.Event.incidentKey
+      description: Incident key
+    - contextPath: iLert.Event.incidentUrl
+      description: Incident Url
+    - contextPath: iLert.Event.responseCode
+      description: Response code
+  dockerimage: demisto/python3:3.9.2.17957
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

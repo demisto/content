@@ -1,0 +1,17 @@
+{
+    "name": "iLert",
+    "description": "Alert and notify users using iLert",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "yacut",
+    "url": "",
+    "email": "",
+    "created": "2021-04-06T17:54:48Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "yacut"
+    ]
+}
