@@ -20,24 +20,34 @@ class Client:
         # Use Session() in order to maintain cookies for persisting the login PHP session cookie
         self.session = requests.Session()
 
+    def session_post(self, url: str, json_cmd: dict) -> dict:
+        response = self.session.post(url=url, json=json_cmd, verify=self.verify)
+        json_response = json.loads(response.text)
+        if 'type' in json_response and json_response['type'] == 'exception':
+            if 'message' in json_response:
+                raise Exception(f'Operation to PAN-OS failed. with: {str(json_response["message"])}')
+            raise Exception(f'Operation to PAN-OS failed. with: {str(json_response)}')
+        return json_response
+
     def login(self) -> str:
         # This is the data sent to Panorama from the Login screen to complete the login and get a PHPSESSID cookie
-        login_data = {'prot': 'https:',
-                      'server': self.session_metadata['panorama'],
-                      'authType': 'init',
-                      'challengeCookie': '',
-                      'user': self.session_metadata['username'],
-                      'passwd': self.session_metadata['password'],
-                      'challengePwd': '',
-                      'ok': 'Log In'
-                      }
+        login_data = {
+            'prot': 'https:',
+            'server': self.session_metadata['panorama'],
+            'authType': 'init',
+            'challengeCookie': '',
+            'user': self.session_metadata['username'],
+            'passwd': self.session_metadata['password'],
+            'challengePwd': '',
+            'ok': 'Log In'
+        }
         try:
             # Use a POST command to login to Panorama and create an initial session
             self.session.post(url=f'{self.session_metadata["base_url"]}/php/login.php?', data=login_data,
                               verify=self.verify)
             # Use a GET command to the base URL to get the ServerToken which looks like this:
             #  window.Pan.st.st.st539091 = "8PR8ML4A67PUMD3NU00L3G67M4958B996F61Q97T"
-            response = self.session.post(url=f'{self.session_metadata["base_url"]}/', verify=self.verify)
+            response = self.session_post(url=f'{self.session_metadata["base_url"]}/')
         except Exception as err:
             raise Exception(f'Failed to login. Please double-check the credentials and the server URL. {str(err)}')
         # Use RegEx to parse the ServerToken string from the JavaScript variable
@@ -49,7 +59,7 @@ class Client:
         return match.group(1)
 
     def logout(self):
-        self.session.post(url=f'{self.session_metadata["base_url"]}/php/logout.php?', verify=False)
+        self.session_post(url=f'{self.session_metadata["base_url"]}/php/logout.php?', verify=False)
 
     def token_generator(self) -> str:
         """
@@ -60,15 +70,6 @@ class Client:
         data_hash = hashlib.md5(data_code.encode())  # Use the hashlib library function to calculate the MD5
         data_string = data_hash.hexdigest()  # Convert the hash to a proper hex string
         return data_string
-
-    def session_post(self, url: str, json_cmd: dict) -> dict:
-        response = self.session.post(url=url, json=json_cmd)
-        json_response = json.loads(response.text)
-        if 'type' in json_response and json_response['type'] == 'exception':
-            if 'message' in json_response:
-                raise Exception(f'Operation to PAN-OS failed. with: {str(json_response["message"])}')
-            raise Exception(f'Operation to PAN-OS failed. with: {str(json_response)}')
-        return json_response
 
     def get_policy_optimizer_statistics(self) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
@@ -93,6 +94,7 @@ class Client:
                      "PoliciesDirect.getPoliciesByUsage", [
                          {"type": "security", "position": "main",
                           "vsysName": self.vsys, "serialNumber": "",
+                          "deviceGroup": "Lab-Devices",
                           "isCmsSelected": False, "isMultiVsys": False,
                           "showGrouped": False,
                           "usageAttributes": {"timeframeTag": "30",
@@ -227,7 +229,11 @@ def policy_optimizer_no_apps_command(client: Client) -> CommandResults:
     """
     result = client.policy_optimizer_no_apps()
 
-    stats = result['result']['result']
+    stats = result['result']
+    if '@status' in stats and stats['@status'] == 'error':
+        raise Exception(f'Operation Failed with: {str(stats)}')
+
+    stats = stats['result']
     if '@count' in stats and stats['@count'] == '0':
         return CommandResults(readable_output='No Rules without apps were found.', raw_response=result)
 
@@ -303,12 +309,9 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
 
     stats = result['result']['result']
     if '@count' in stats and stats['@count'] == '0':
-        return CommandResults(readable_output=f'Rule  with UUID:{rule_uuid} does not use apps.', raw_response=result)
+        return CommandResults(readable_output=f'Rule with UUID:{rule_uuid} does not use apps.', raw_response=result)
 
     rule_stats = stats['rules']['entry'][0]
-    # ['apps-seen']['entry']
-    # rule_name = stats['result']['result']['rules']['entry'][0]['@name']
-    # context_res[rule_name] = result
 
     return CommandResults(
         outputs_prefix='PanOS.PolicyOptimizer.AppsAndUsage',
