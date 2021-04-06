@@ -171,7 +171,22 @@
                     "operator": "uniq",
                     "args": {}
                 }
-            ]        }
+            ]
+        }
+    },
+    "malwarefamily": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "MalwareFamily",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]
+        }
     },
     "asn": {
         "simple": "",

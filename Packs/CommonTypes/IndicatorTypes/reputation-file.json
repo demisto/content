@@ -409,6 +409,20 @@
               ]
           }
       },
+      "malwarefamily": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "MalwareFamily",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
       "communitynotes": {
           "simple": "",
           "complex": {

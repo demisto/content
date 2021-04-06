@@ -392,6 +392,20 @@
                 ]
             }
         },
+        "malwarefamily": {
+          "simple": "",
+          "complex": {
+              "root": "IP",
+              "filters": [],
+              "accessor": "MalwareFamily",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+        },
         "communitynotes": {
             "simple": "",
             "complex": {

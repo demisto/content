@@ -434,6 +434,34 @@
 				]
 			}
 		},
+        "feedrelatedindicators": {
+          "simple": "",
+          "complex": {
+              "root": "Domain",
+              "filters": [],
+              "accessor": "FeedRelatedIndicators",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+        },
+        "malwarefamily": {
+          "simple": "",
+          "complex": {
+              "root": "Domain",
+              "filters": [],
+              "accessor": "MalwareFamily",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+        },
         "threattypes": {
             "simple": "",
             "complex": {
