@@ -621,10 +621,10 @@
     "edit": {
         "sections": [
             {
-                "description": "Please provide either the name of your Panorama integration or a comma-separated list of fw serials to enable FW monitoring.\n\nIt is also recommended to add an email address for notification in case  of FW issue.",
+                "description": "Please provide either the name of your Panorama integration instance name or a comma-separated list of fw serials to enable FW monitoring.\n\nIt is also recommended to add an email address for notification in case  of FW issue.",
                 "fields": [
                     {
-                        "fieldId": "incident_panoramaintegration",
+                        "fieldId": "incident_panosintegrationinstancename",
                         "isVisible": true
                     },
                     {
