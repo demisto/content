@@ -158,7 +158,7 @@ else
         echo "You can install node and npm on your machine."
         echo "and then run: 'npm install'"
     else
-        echo "Running: npm install ..."        
-        npm install        
+        echo "Running: npm install ..."
+        npm install
     fi
 fi
