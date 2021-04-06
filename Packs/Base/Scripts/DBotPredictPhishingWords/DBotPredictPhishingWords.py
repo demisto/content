@@ -44,7 +44,7 @@ def handle_error(message, is_return_error):
 
 
 def preprocess_text(text, model_type, is_return_error):
-    if model_type == FASTTEXT_MODEL_TYPE:
+    if model_type in [FASTTEXT_MODEL_TYPE, UNKNOWN_MODEL_TYPE]:
         language = demisto.args().get('language', 'English')
         tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
         res = demisto.executeCommand('WordTokenizerNLP', {'value': text,
