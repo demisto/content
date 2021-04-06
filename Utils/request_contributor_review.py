@@ -15,6 +15,8 @@ PACK_METADATA = "pack_metadata.json"
 XSOAR_SUPPORT = "xsoar"
 PACK_METADATA_GITHUB_USER_FIELD = "githubUser"
 PR_COMMENT_PREFIX = "pack has been modified on files:\n"
+PACK_METADATA_SUPPORT_EMAIL_FIELD = "email"
+PACK_METADATA_DEV_EMAIL_FIELD = "developerEmail"
 
 
 def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
@@ -132,22 +134,36 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
         with open(pack_metadata_path, 'r') as pack_metadata_file:
             pack_metadata = json.load(pack_metadata_file)
 
-        if pack_metadata.get('support') != XSOAR_SUPPORT and pack_metadata.get(PACK_METADATA_GITHUB_USER_FIELD):
-            pack_reviewers = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
-            pack_reviewers = pack_reviewers if isinstance(pack_reviewers, list) else pack_reviewers.split(",")
-            github_users = [u.lower() for u in pack_reviewers]
+        if pack_metadata.get('support') != XSOAR_SUPPORT:
+            # Notify contributors by tagging them on github:
+            if pack_metadata.get(PACK_METADATA_GITHUB_USER_FIELD):
+                pack_reviewers = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
+                pack_reviewers = pack_reviewers if isinstance(pack_reviewers, list) else pack_reviewers.split(",")
+                github_users = [u.lower() for u in pack_reviewers]
 
-            for github_user in github_users:
-                user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
-                                                   verify_ssl=verify_ssl)
+                for github_user in github_users:
+                    user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
+                                                       verify_ssl=verify_ssl)
 
-                if user_exists and github_user != pr_author and github_user not in tagged_packs_reviewers:
-                    reviewers.add(github_user)
-                    print(f"Found {github_user} default reviewer of pack {pack}")
+                    if user_exists and github_user != pr_author and github_user not in tagged_packs_reviewers:
+                        reviewers.add(github_user)
+                        print(f"Found {github_user} default reviewer of pack {pack}")
 
-            check_reviewers(reviewers=reviewers, pr_author=pr_author, version=pack_metadata.get('currentVersion'),
-                            modified_files=modified_files, pack=pack, pr_number=pr_number, github_token=github_token,
-                            verify_ssl=verify_ssl)
+                check_reviewers(reviewers=reviewers, pr_author=pr_author, version=pack_metadata.get('currentVersion'),
+                                modified_files=modified_files, pack=pack, pr_number=pr_number,
+                                github_token=github_token,
+                                verify_ssl=verify_ssl)
+
+            # Notify contributors by emailing them:
+            if pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD) or pack_metadata.get(PACK_METADATA_SUPPORT_EMAIL_FIELD):
+                dev_emails = pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD, [])
+                dev_emails = dev_emails if isinstance(dev_emails, list) else dev_emails.split(",")
+                support_emails = pack_metadata.get(PACK_METADATA_SUPPORT_EMAIL_FIELD, [])
+                support_emails = support_emails if isinstance(support_emails, list) else support_emails.split(",")
+                # send mail to developers if there are dev-mails, else send mail to pack support
+                reviewers_emails = dev_emails if dev_emails else support_emails
+                if reviewers_emails:
+                    notify_contributors_by_email(reviewers_emails)
 
         elif pack_metadata.get('support') == XSOAR_SUPPORT:
             print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
@@ -185,6 +201,10 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
 
     else:
         print(f'{pack} pack no reviewers were found.')
+
+
+def notify_contributors_by_email(reviewers_emails: list):
+    pass
 
 
 def main():
