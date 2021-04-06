@@ -19,8 +19,8 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-API_TOKEN = demisto.params()['APIToken']
-BASE_URL = demisto.params()['baseURL']
+API_TOKEN = demisto.params().get('APIToken')
+BASE_URL = demisto.params().get('baseURL')
 USE_SSL = not demisto.params().get('insecure', False)
 DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
