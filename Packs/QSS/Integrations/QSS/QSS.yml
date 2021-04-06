@@ -80,6 +80,7 @@ description: QSS integration helps you to fetch Cases from Q-SCMP and add new ca
 display: QSS
 name: QSS
 script:
+  commands: []
   dockerimage: demisto/python3:3.9.2.17957
   isfetch: true
   runonce: false
