@@ -1,16 +1,16 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-from datetime import timezone
+import copy
+import hashlib
 import secrets
 import string
-import hashlib
-from typing import Any, Dict, Tuple
-import dateparser
-import urllib3
 import traceback
+from datetime import timezone
 from operator import itemgetter
-import copy
+from typing import Any, Dict, Tuple
+
+import dateparser
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -981,17 +981,31 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list) -> Dict[str, Any]:
+    def generate_files_dict_with_specific_os(self, windows: list, linux: list, macos: list) -> Dict[str, list]:
+        if not windows and not linux and not macos:
+            raise ValueError('You should enter at least one path.')
+
         files = {}
         if windows:
             files['windows'] = windows
         if linux:
             files['linux'] = linux
         if macos:
-            files['linux'] = macos
+            files['macos'] = macos
 
-        if not windows and not linux and not macos:
-            raise ValueError('You should enter at least one path.')
+        return files
+
+    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list, file_path_list: list) \
+            -> Dict[str, Any]:
+        # there are 2 options, either the paths are given with separation to a specific os or without
+        # it using generic_file_path
+        if file_path_list:
+            files = self.generate_files_dict(
+                endpoint_id_list=endpoint_id_list,
+                file_path_list=file_path_list
+            )
+        else:
+            files = self.generate_files_dict_with_specific_os(windows=windows, linux=linux, macos=macos)
 
         request_data: Dict[str, Any] = {
             'filters': [
@@ -1011,6 +1025,33 @@ class Client(BaseClient):
             timeout=self.timeout
         )
         return reply.get('reply')
+
+    def generate_files_dict(self, endpoint_id_list: list, file_path_list: list) -> Dict[str, Any]:
+        files: dict = {"windows": [], "linux": [], "macos": []}
+
+        if len(endpoint_id_list) != len(file_path_list):
+            raise ValueError("The endpoint_ids list must be in the same length as the generic_file_path")
+
+        for endpoint_id, file_path in zip(endpoint_id_list, file_path_list):
+            endpoints = self.get_endpoints(endpoint_id_list=[endpoint_id])
+
+            if len(endpoints) == 0 or not isinstance(endpoints, list):
+                raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
+
+            endpoint = endpoints[0]
+            endpoint_os_type = endpoint.get('os_type')
+
+            if 'windows' in endpoint_os_type.lower():
+                files['windows'].append(file_path)
+            elif 'linux' in endpoint_os_type.lower():
+                files['linux'].append(file_path)
+            elif 'macos' in endpoint_os_type.lower():
+                files['macos'].append(file_path)
+
+        # remove keys with no value
+        files = {k: v for k, v in files.items() if v}
+
+        return files
 
     def retrieve_file_details(self, action_id: int) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
@@ -2198,6 +2239,21 @@ def endpoint_scan_command(client, args):
     alias = args.get('alias')
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
+    all_ = argToBoolean(args.get('all', 'false'))
+
+    # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
+    err_msg = 'To scan all the endpoints run this command with the \'all\' argument as True ' \
+              'and without any other filters. This may cause performance issues.\n' \
+              'To scan some of the endpoints, please use the filter arguments.'
+    if all_:
+        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
+                or ip_list or group_name or platform or alias or hostname:
+            raise Exception(err_msg)
+    else:
+        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+                and not alias and not hostname:
+            raise Exception(err_msg)
 
     reply = client.endpoint_scan(
         endpoint_id_list=argToList(endpoint_id_list),
@@ -2677,13 +2733,16 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
     windows: list = argToList(args.get('windows_file_paths'))
     linux: list = argToList(args.get('linux_file_paths'))
     macos: list = argToList(args.get('mac_file_paths'))
+    file_path_list: list = argToList(args.get('generic_file_path'))
 
     reply = client.retrieve_file(
         endpoint_id_list=endpoint_id_list,
         windows=windows,
         linux=linux,
-        macos=macos
+        macos=macos,
+        file_path_list=file_path_list
     )
+
     result = {'action_id': reply.get('action_id')}
     return (
         tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),

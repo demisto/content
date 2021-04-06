@@ -287,8 +287,12 @@ class Client(BaseClient):
             'UserDomain': self.domain,
             'Password': self.password
         }
-
-        res = self._http_request('POST', '/api/core/security/login', json_data=body)
+        try:
+            res = self._http_request('POST', '/api/core/security/login', json_data=body)
+        except DemistoException as e:
+            if '<html>' in str(e):
+                raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
+            raise e
         is_successful_response = res.get('IsSuccessful')
         if not is_successful_response:
             return_error(res.get('ValidationMessages'))
@@ -661,8 +665,14 @@ def generate_field_value(client, field_name, field_data, field_val):
     # when field type is Users/Groups List
     # for example: {"Policy Owner":{"users":[20],"groups":[30]}}
     elif field_type == 8:
-        users = field_val.get('users')
-        groups = field_val.get('groups')
+        try:
+            users = field_val.get('users')
+            groups = field_val.get('groups')
+        except AttributeError:
+            raise DemistoException(f"The value of the field: {field_name} must be a dictionary type and include a list"
+                                   f" under \"users\" key or \"groups\" key e.g: {{\"Policy Owner\":{{\"users\":[20],"
+                                   f"\"groups\":[30]}}}}")
+
         field_val = {'UserList': [], 'GroupList': []}
         if users:
             for user in users:
@@ -1298,5 +1308,5 @@ def main():
         return_error(f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}')
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
