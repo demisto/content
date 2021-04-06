@@ -3231,6 +3231,11 @@
             "integrations": "OpenCTI",
             "playbookID": "OpenCTI Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Microsoft Graph API",
+            "playbookID": "Microsoft Graph API - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
