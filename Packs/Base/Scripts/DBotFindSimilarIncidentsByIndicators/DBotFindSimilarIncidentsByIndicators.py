@@ -238,22 +238,6 @@ def match_indicators_incident(indicators: List[Dict], incident_ids: List[str]) -
     return d
 
 
-def get_field_from_id(incidents_list: List[Dict], id_: str, field: str):
-    """
-    Get specific field for an specific incident id from list of incident
-    :param incidents_list: list of incident
-    :param id_: id_
-    :param field: field
-    :return: field value
-    """
-    ids_list = [x.get('id') for x in incidents_list]
-    if id_ not in ids_list:
-        return ''
-    else:
-        index = ids_list.index(id_)
-        return incidents_list[index].get(field, '')
-
-
 def enriched_incidents(df, fields_incident_to_display, from_date: str):
     """
     Enriched incidents with data
@@ -281,15 +265,16 @@ def enriched_incidents(df, fields_incident_to_display, from_date: str):
         return df
     else:
         incidents = json.loads(res[0]['Contents'])
+        incidents_dict = {incident['id']: incident for incident in incidents}
         for field in fields_incident_to_display:
             if field == 'created':
-                df[field] = [get_field_from_id(incidents, id_, field)[:10] if
-                             len(get_field_from_id(incidents, id_, field)) > 10 else '' for id_ in ids]
+                df[field] = [incidents_dict.get(id_, {}).get(field,'')[:10] if
+                             len(incidents_dict.get(id_, {}).get(field, '')) > 10 else '' for id_ in ids]
             elif field == 'status':
-                df[field] = [STATUS_DICT.get(get_field_from_id(incidents, id_, field)) if
-                             get_field_from_id(incidents, id_, field) in STATUS_DICT else ' ' for id_ in ids]
+                df[field] = [STATUS_DICT.get(incidents_dict.get(id_, {}).get(field,'')) if
+                             incidents_dict.get(id_, {}).get(field, '') in STATUS_DICT else ' ' for id_ in ids]
             else:
-                df[field] = [get_field_from_id(incidents, id_, field) for id_ in ids]
+                df[field] = [incidents_dict.get(id_, {}).get(field, '') for id_ in ids]
         return df
 
 
