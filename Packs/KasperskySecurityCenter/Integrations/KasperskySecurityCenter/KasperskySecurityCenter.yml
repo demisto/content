@@ -19,8 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The administration console for controlling all Kaspersky Lab security
-  solutions and system administration tools.
+description: Manages endpoints and groups through the Kaspersky Security Center.
 display: Kaspersky Security Center (Beta)
 name: Kaspersky Security Center
 script:
