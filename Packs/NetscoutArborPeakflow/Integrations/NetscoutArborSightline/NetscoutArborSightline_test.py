@@ -6,7 +6,7 @@ import pytest
 from Packs.NetscoutArborPeakflow.Integrations.NetscoutArborSightline.NetscoutArborSightline import NetscoutClient, \
     fetch_incidents_command, list_alerts_command, alert_annotation_list_command, mitigation_list_command, \
     mitigation_template_list_command, router_list_command, tms_group_list_command, managed_object_list_command, \
-    mitigation_create_command, clean_links, validate_json_arg
+    mitigation_create_command, clean_links, validate_json_arg, build_human_readable
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
@@ -215,4 +215,53 @@ def test_validate_json_arg_raise_error():
                                                '{"some_key" "some_value"}'):
         validate_json_arg('{"some_key" "some_value"}', '')
 
-# def
+
+@pytest.mark.parametrize('object_to_build, expected_result', [
+    ({}, {}),
+    ({'attributes': {'key_1': 'val_1'}, 'key_2': 'val_2'},
+     {'key_1': 'val_1', 'key_2': 'val_2'}),
+    ({'attributes': {'key_1': 'val_1'}, 'key_2': 'val_2', 'relationships': [{'key_3': 'val_3'}],
+      'subobject': {'key_4': 'val_4'}}, {'key_1': 'val_1', 'key_2': 'val_2'})
+])
+def test_build_human_readable(object_to_build, expected_result):
+    """
+       Given:
+       - Case A: A dict with two keys: 'attributes' and 'key_2`.
+       - Case B: A dict with four keys: 'attributes', 'relationships', 'subobject' and 'key_2'.
+
+       When:
+        - Building the human readable from a response dict.
+
+       Then:
+        - Case A:
+            1. Keys under the 'attributes' key are extracted to the root level.
+            2. The second key - 'key_2' still appears in the object.
+        - Case B: Ensure that:
+            1. Keys under the 'attributes' key are extracted to the root level.
+            2. The second key - 'key_2' still appears in the object.
+            3. That the 'relationships' and 'subobject' keys are missing from the object.
+       """
+    result = build_human_readable(object_to_build)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('args_dict, expected_json_str', [
+    ({
+"limit" = ""
+"page" = ""
+"alert_id" = ""
+"alert_class" = ""
+"alert_type" = ""
+"classification" = ""
+"importance" = ""
+"importance_operator" = ""
+"ongoing" = ""
+"start_time" = ""
+"start_time_operator" = ""
+"stop_time" = ""
+"stop_time_operator" = ""
+    })
+])
+def test_build_relationships(args_dict, expected_json_str):
+    result = client.build_data_attribute_filter(args_dict)
+    assert result == expected_json_str
