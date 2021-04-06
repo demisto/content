@@ -4494,7 +4494,8 @@ class Relations(object):
   Enum: Relations names and their reverse
   """
 
-  RELATIONS_NAMES = {'related to': 'related to'}
+  RELATIONS_NAMES = {'related to': 'related to',
+                     'hosted on' : 'hosts'}
 
   def __init__(self):
       # required to create __init__ for create_server_docs.py purpose
@@ -4550,14 +4551,14 @@ class EntityRelation:
 
         # Relation
         if not Relations.is_valid(name):
-            raise ValueError(f"Invalid relation: {name}.")
+            raise ValueError("Invalid relation: " + name)
         self._name = str(name)
 
         # when will have the dict of reverse will add it using the dict.
         self._reverse_name = str(reverse_name)
 
         if not RelationsTypes.is_valid_type(relation_type):
-            raise ValueError(f"Invalid relation type: {relation_type}.")
+            raise ValueError("Invalid relation type: " + relation_type)
         self._relation_type = str(relation_type)
 
         # Entity A - Source
@@ -4565,11 +4566,11 @@ class EntityRelation:
 
         # The type of the entity doesnt have to be a indicator type
         if not FeedIndicatorType.is_valid_type(object_type_a):
-            raise ValueError(f"Invalid entity A type: {object_type_a}.")
+            raise ValueError("Invalid entity A type: " + object_type_a)
         self._object_type_a = str(object_type_a)
 
         if not RelationsFamily.is_valid_type(entity_a_family):
-            raise ValueError(f"Invalid entity A Family type: {entity_a_family}.")
+            raise ValueError("Invalid entity A Family type: " + entity_a_family)
         self._entity_a_family = str(entity_a_family)
 
 
@@ -4579,11 +4580,11 @@ class EntityRelation:
 
         # The type of the entity doesnt have to be a indicator type
         if not FeedIndicatorType.is_valid_type(object_type_b):
-            raise ValueError(f"Invalid entity B type: {object_type_b}.")
+            raise ValueError('Invalid entity B type: '+ object_type_b)
         self._object_type_b = str(object_type_b)
 
         if not RelationsFamily.is_valid_type(entity_b_family):
-            raise ValueError(f"Invalid entity B Family type: {entity_b_family}.")
+            raise ValueError("Invalid entity B Family type: " + entity_b_family)
         self._entity_b_family = str(entity_b_family)
 
         # Custom fields

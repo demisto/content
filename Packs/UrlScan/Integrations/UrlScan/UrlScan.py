@@ -216,6 +216,7 @@ def urlscan_submit_url(client):
     r = http_request(client, 'POST', 'scan/', sub_json, wait, retries)
     return r
 
+
 def create_relationship(scan_type, field, entity_a, object_type_a, entity_b, object_type_b):
     relations_type = 'indicatorToIndicator'
     entity_a_family = 'Indicator'
@@ -235,17 +236,20 @@ def create_relationship(scan_type, field, entity_a, object_type_a, entity_b, obj
 
 
 def create_list_relationships(scans_dict, url):
+    """
+    Creates a list of EntityRelations object from all of the lists in scans_dict according to RELATIONSHIP_TYPE dict.
+    """
     relationships_list = []
     for scan_name, scan_dict in scans_dict.items():
         fields = RELATIONSHIP_TYPE.get(scan_name).keys()
         for field in fields:
             indicators = scan_dict.get(field)
-            if isinstance(indicators, str):
+            if not isinstance(indicators, list):
                 indicators = [indicators]
             relation_dict = RELATIONSHIP_TYPE.get(scan_name, {}).get(field)
             indicator_type = relation_dict.get('indicator_type')
             for indicator in indicators:
-                relation = create_relationship(scan_type=scan_name, field=field, entity_a=url, object_type_a='url',
+                relation = create_relationship(scan_type=scan_name, field=field, entity_a=url, object_type_a='URL',
                                                entity_b=indicator, object_type_b=indicator_type)
                 relationships_list.append(relation)
     return relationships_list
@@ -419,7 +423,11 @@ def format_results(client, uuid):
         file_context['Type'] = filetype
         file_context['Hostname'] = demisto.args().get('url')
     if feed_related_indicators:
-        url_cont['FeedRelatedIndicators'] = feed_related_indicators
+        related_indicators = []
+        for related_indicator in feed_related_indicators:
+            related_indicators.append(Common.FeedRelatedIndicators(value=related_indicator['value'],
+                                                                  indicator_type=related_indicator['type']))
+        url_cont['FeedRelatedIndicators'] = related_indicators
 
     relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query)
     outputs = {
@@ -436,7 +444,13 @@ def format_results(client, uuid):
     dbot_score = Common.DBotScore(indicator=dbot_score.get('Indicator'), indicator_type=dbot_score.get('Type'),
                                   integration_name=dbot_score.get('Vendor'), score=dbot_score.get('Score'),
                                   reliability=dbot_score.get('Reliability'))
-    url = Common.URL(url=url_cont.get('Data'), dbot_score=dbot_score, relations=relationships)
+
+
+    url = Common.URL(url=url_cont.get('Data'), dbot_score=dbot_score, relations=relationships,
+                     feed_related_indicators=url_cont.get('FeedRelatedIndicators'))
+
+
+
     demisto.info("after creating url and dbot")
     command_result = CommandResults(
         readable_output=tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),

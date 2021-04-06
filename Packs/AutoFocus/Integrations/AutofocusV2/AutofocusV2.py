@@ -1457,20 +1457,6 @@ def search_url_command(url, reliability):
 
         score = calculate_dbot_score(indicator, indicator_type)
 
-        url_relations = EntityRelation(
-            name='indicates',
-            reverse_name='communicates with',
-            relation_type='indicatorToIndicator',
-            entity_a='google.com',
-            entity_a_family='Indicator',
-            object_type_a='URL',
-            entity_b='yahoo.com',
-            entity_b_family='Indicator',
-            object_type_b='URL',
-            source_reliability='F - Reliability cannot be judged',
-            brand='AutoFocus V2'
-        )
-
         dbot_score = Common.DBotScore(
             indicator=url_name,
             indicator_type=DBotScoreType.URL,
@@ -1483,8 +1469,7 @@ def search_url_command(url, reliability):
             url=url_name,
             dbot_score=dbot_score,
             malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
-            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-            relations=[url_relations]
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
         )
 
         autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
