@@ -201,7 +201,7 @@ class Client:
             json_cmd=json_cmd)
 
 
-def get_policy_optimizer_statistics_command(client: Client):
+def get_policy_optimizer_statistics_command(client: Client) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
@@ -212,17 +212,17 @@ def get_policy_optimizer_statistics_command(client: Client):
     # we need to spin the keys and values and put them into dict so they'll look better in the context
     for i in result['entry']:
         res_sta[i['@name']] = i['text']
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Policy Optimizer Statistics", result['entry']),
-        'EntryContext': {"PanOS.PolicyOptimizer.Stats(val.Stats == obj.Stats)": res_sta}
-    })
+
+    return CommandResults(
+        outputs_prefix=f'PanOs.PolicyOptimizer.Stats',
+        outputs_key_field='@name',
+        outputs=res_sta,
+        readable_output=tableToMarkdown(name=f'Policy Optimizer Statistics:', t=result['entry'], removeNull=True),
+        raw_response=result
+    )
 
 
-def policy_optimizer_no_apps_command(client: Client):
+def policy_optimizer_no_apps_command(client: Client) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
@@ -230,17 +230,16 @@ def policy_optimizer_no_apps_command(client: Client):
 
     result = stats['result']['result']
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Policy Optimizer No App Specified", result['entry']),
-        'EntryContext': {"PanOS.PolicyOptimizer.NoApps(val.Stats == obj.Stats)": result}
-    })
+    return CommandResults(
+        outputs_prefix=f'PanOs.PolicyOptimizer.NoApps',
+        outputs_key_field='Stats',
+        outputs=result,
+        readable_output=tableToMarkdown(name=f'Policy Optimizer No App Specified:', t=result['entry'], removeNull=True),
+        raw_response=result
+    )
 
 
-def policy_optimizer_get_unused_apps_command(client: Client):
+def policy_optimizer_get_unused_apps_command(client: Client) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
@@ -248,17 +247,16 @@ def policy_optimizer_get_unused_apps_command(client: Client):
 
     result = stats['result']['result']
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Policy Optimizer Unused Apps", result['entry']),
-        'EntryContext': {"PanOS.PolicyOptimizer.UnusedApps(val.Stats == obj.Stats)": result}
-    })
+    return CommandResults(
+        outputs_prefix=f'PanOs.PolicyOptimizer.UnusedApps',
+        outputs_key_field='Stats',
+        outputs=result,
+        readable_output=tableToMarkdown(name=f'Policy Optimizer Unused Apps:', t=result['entry'], removeNull=True),
+        raw_response=result
+    )
 
 
-def policy_optimizer_get_rules_command(client: Client, args: dict):
+def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandResults:
     """
     Gets the unused rules Statistics as seen from the User Interface
     """
@@ -269,17 +267,16 @@ def policy_optimizer_get_rules_command(client: Client, args: dict):
     demisto.info(json.dumps(stats, indent=2))
     result = stats['result']['result']['entry']
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Policy Optimizer " + usage + " Rules", result),
-        'EntryContext': {"PanOS.PolicyOptimizer." + usage + "Rules(val.Stats == obj.Stats)": result}
-    })
+    return CommandResults(
+        outputs_prefix=f'PanOs.PolicyOptimizer.{usage}Rules',
+        outputs_key_field='@uuid',
+        outputs=result,
+        readable_output=tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=result, removeNull=True),
+        raw_response=result
+    )
 
 
-def policy_optimizer_app_and_usage_command(client: Client, args: dict):
+def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
@@ -289,31 +286,31 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict):
     result = stats['result']['result']['rules']['entry'][0]['apps-seen']['entry']
     rule_name = stats['result']['result']['rules']['entry'][0]['@name']
     context_res[rule_name] = result
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Policy Optimizer Apps and Usage", result),
-        'EntryContext': {"PanOS.PolicyOptimizer.AppsAndUsage(val.Stats == obj.Stats)": context_res}
-    })
+
+    return CommandResults(
+        outputs_prefix=f'PanOs.PolicyOptimizer.AppsAndUsage',
+        outputs_key_field='Stats',
+        outputs=context_res,
+        readable_output=tableToMarkdown(name=f'Policy Optimizer Apps and Usage:', t=result, removeNull=True),
+        raw_response=result
+    )
 
 
-def policy_optimizer_get_dag_command(client: Client, args: dict):
+def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResults:
     """
     Gets the DAG
     """
     dag = str(args.get('dag'))
-    result = client.policy_optimizer_get_dag(dag)['result']['result']['dyn-addr-grp']['entry'][0]['member-list'][
-        'entry']
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Dynamic Address Group", result),
-        'EntryContext': {"PanOS.DAG(val.Stats == obj.Stats)": result}
-    })
+    result = client.policy_optimizer_get_dag(dag)
+    result = result['result']['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
+
+    return CommandResults(
+        outputs_prefix=f'PanOs.PolicyOptimizer.DAG',
+        outputs_key_field='Stats',
+        outputs=result,
+        readable_output=tableToMarkdown(name=f'Policy Optimizer Dynamic Address Group:', t=result, removeNull=True),
+        raw_response=result
+    )
 
 
 def main():
@@ -335,17 +332,17 @@ def main():
         if command == 'test-module':
             return_results('ok')  # if login was successful, instance configuration is ok.
         elif command == 'pan-os-po-get-stats':
-            get_policy_optimizer_statistics_command(client)
+            return_results(get_policy_optimizer_statistics_command(client))
         elif command == 'pan-os-po-no-apps':
-            policy_optimizer_no_apps_command(client)
+            return_results(policy_optimizer_no_apps_command(client))
         elif command == 'pan-os-po-unused-apps':
-            policy_optimizer_get_unused_apps_command(client)
+            return_results(policy_optimizer_get_unused_apps_command(client))
         elif command == 'pan-os-po-get-rules':
-            policy_optimizer_get_rules_command(client, args)
+            return_results(policy_optimizer_get_rules_command(client, args))
         elif command == 'pan-os-po-app-and-usage':
-            policy_optimizer_app_and_usage_command(client, args)
+            return_results(policy_optimizer_app_and_usage_command(client, args))
         elif command == 'pan-os-get-dag':
-            policy_optimizer_get_dag_command(client, args)
+            return_results(policy_optimizer_get_dag_command(client, args))
         else:
             raise NotImplementedError(f'Command {command} was not implemented.')
 
