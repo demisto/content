@@ -17,23 +17,18 @@ default:
   before_script:
     - echo "=== Running before script ==="
     - git checkout $CI_COMMIT_BRANCH
-    - git config diff.renameLimit 6000
     - mkdir -p -m 777 $ARTIFACTS_FOLDER/
     - |
       if [[ -f "$BASH_ENV" ]]; then
         source "$BASH_ENV"
       fi
     - source .circleci/content_release_vars.sh
-    - export PATH="${PWD}/node_modules/.bin:${PATH}"
-
     - echo "=== Creating new clean logs folder ==="
     - rm -rf $ARTIFACTS_FOLDER/logs
     - mkdir -p $ARTIFACTS_FOLDER/logs
-
     - echo "=== Granting execute permissions on files ==="
     - chmod +x ./Tests/scripts/*
     - chmod +x ./Tests/Marketplace/*
-
     - echo "=== Installing Virtualenv ==="
     - |
      if [ -f "./venv/bin/activate" ]; then
@@ -42,15 +37,18 @@ default:
       echo "installing venv"
       NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
      fi
-    - venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
-    - venv/bin/pip2 install -r dev-requirements-py2.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
-    - source ./venv/bin/activate
+     venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+     venv/bin/pip2 install -r dev-requirements-py2.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+     source ./venv/bin/activate
+    - git config diff.renameLimit 6000
+    - export PATH="${PWD}/node_modules/.bin:${PATH}"
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-        echo "Installing SDK from master branch" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+        echo "Installing SDK" >> $ARTIFACTS_FOLDER/logs/installations.log
         pip3 install git+https://github.com/demisto/demisto-sdk@master >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
       fi
     - echo "========= Installing SSH keys ========"
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
     - eval $(ssh-agent -s)
     - chmod 400 $OREGON_CI_KEY
     - ssh-add $OREGON_CI_KEY
@@ -82,7 +80,6 @@ variables:
 # See here for more about that https://docs.gitlab.com/ee/ci/pipelines/settings.html#git-shallow-clone  # disable-secrets-detection
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
-  IFRA_ENV_TYPE: "Content-Env"
 
 
 stages:
@@ -94,17 +91,17 @@ stages:
 create-instances:
   stage: create-instances
   script:
-    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/logs/create-id-set.log
+    - demisto-sdk create-id-set -o ./Tests/id_set.json
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
     - cp content-descriptor.json $ARTIFACTS_FOLDER
     - ./Documentation/commonServerDocs.sh
-    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION > $ARTIFACTS_FOLDER/logs/create-content-artifacts.log
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
     - echo $successful_feature_branch_build
     - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
-    - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* > $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure")
+    - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure" && exit 0)
     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - python3 ./Tests/scripts/update_conf_json.py
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
@@ -164,6 +161,108 @@ create-instances:
           fi
           python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
       fi
+
+
+demisto_sdk_nightly:setup:
+  stage: unittests-and-validations
+  variables:
+    DEMISTO_SDK_NIGHTLY: "true"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  script:
+    - echo "=== Secrets Detection ==="
+    - demisto-sdk secrets --post-commit --ignore-entropy
+    - echo "=== Update Conf ==="
+    - |
+      python3 ./Tests/scripts/update_conf_json.py
+      cp ./Tests/conf.json $ARTIFACTS_FOLDER
+    - |
+      demisto-sdk create-id-set -o ./Tests/id_set.json
+      cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+    - |
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+      echo "successfully activated google cloud service account"
+
+      # Download private ID set
+      gsutil cp gs://marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
+      echo "successfully downloaded private ID set"
+      gcloud auth revoke --all &> /dev/null
+
+      # Merge public and private ID sets
+      demisto-sdk merge-id-sets -i1 $ARTIFACTS_FOLDER/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
+      echo "successfully merged public and private ID sets"
+    - echo "=== Build Content Descriptor ==="
+    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+    - cp content-descriptor.json $ARTIFACTS_FOLDER
+    - |
+      # Common Server Documentation
+      ./Documentation/commonServerDocs.sh
+    - |
+      # Collect Test List and Content Packs
+      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+    - |
+      # Calculate Packs Dependencies
+      python3 ./Tests/Marketplace/packs_dependencies.py -i $ARTIFACTS_FOLDER/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+
+
+demisto_sdk_nightly:validate_files:
+  stage: unittests-and-validations
+  variables:
+    DEMISTO_SDK_NIGHTLY: "true"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && "$(echo "$GCS_MARKET_BUCKET" | tr '\[:upper:\]' '\[:lower:\]')" == "marketplace-dist"'
+  needs: ["demisto_sdk_nightly:setup"]
+  script:
+    - |
+      # Run flake8 on all excluding Packs (Integraions and Scripts) - they will be handled in linting
+      ./Tests/scripts/pyflake.sh *.py
+    - find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
+    - ./Tests/scripts/validate.sh
+
+
+demisto_sdk_nightly:lint_and_unittest:
+  stage: unittests-and-validations
+  variables:
+    DEMISTO_SDK_NIGHTLY: "true"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" == "marketplace-dist"'
+  needs: ["demisto_sdk_nightly:setup"]
+  script:
+    - |
+      echo "demisto-sdk version: $(demisto-sdk --version)"
+      echo "mypy version: $(mypy --version)"
+      echo "flake8 py2 version: $(python2 -m flake8 --version)"
+      echo "flake8 py3 version: $(python3 -m flake8 --version)"
+      echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
+      echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
+      echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
+      echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
+    - |
+      SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+      mkdir ./unit-tests
+      if [ -n "$SHOULD_LINT_ALL" ]; then
+        echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
+        demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER
+      else
+        demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER
+      fi
+
+
+demisto_sdk_nightly:infrastructure_testing:
+  stage: unittests-and-validations
+  variables:
+    DEMISTO_SDK_NIGHTLY: "true"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  needs: ["demisto_sdk_nightly:setup"]
+  script:
+    - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
+    - python3 -m pytest ./Tests/Marketplace/Tests/ -v
+    - python3 -m pytest ./Tests/scripts/utils/tests -v
+    - python3 -m pytest ./Tests/tests -v
+    - python3 -m pytest ./Tests/private_build/ -v
+    - python3 -m pytest Utils -v
+    - ./Tests/scripts/sdk_pylint_check.sh
 
 
 .test_content_on_server_instances_base:
