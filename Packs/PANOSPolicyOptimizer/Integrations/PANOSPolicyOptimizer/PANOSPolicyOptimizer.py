@@ -205,19 +205,18 @@ def get_policy_optimizer_statistics_command(client: Client) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
-    res_sta = {}
-    stats = client.get_policy_optimizer_statistics()
+    outputs_stats = {}
+    result = client.get_policy_optimizer_statistics()
 
-    result = stats['result']['result']
+    stats = result['result']['result']
     # we need to spin the keys and values and put them into dict so they'll look better in the context
-    for i in result['entry']:
-        res_sta[i['@name']] = i['text']
+    for i in stats['entry']:
+        outputs_stats[i['@name']] = i['text']
 
     return CommandResults(
         outputs_prefix='PanOS.PolicyOptimizer.Stats',
-        outputs_key_field='@name',
-        outputs=res_sta,
-        readable_output=tableToMarkdown(name=f'Policy Optimizer Statistics:', t=result['entry'], removeNull=True),
+        outputs=outputs_stats,
+        readable_output=tableToMarkdown(name=f'Policy Optimizer Statistics:', t=stats['entry'], removeNull=True),
         raw_response=result
     )
 
