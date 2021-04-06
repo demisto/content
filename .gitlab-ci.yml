@@ -5,6 +5,49 @@ default:
     paths:
       - /builds/xsoar/content/artifacts/*
     when: always
+  before_script:
+    - echo "=== Running before script ==="
+    - git checkout $CI_COMMIT_BRANCH
+    - mkdir -p -m 777 $ARTIFACTS_FOLDER/
+    - |
+      if [[ -f "$BASH_ENV" ]]; then
+        source "$BASH_ENV"
+      fi
+    - source .circleci/content_release_vars.sh
+    - echo "=== Creating new clean logs folder ==="
+    - rm -rf $ARTIFACTS_FOLDER/logs
+    - mkdir -p $ARTIFACTS_FOLDER/logs
+    - echo "=== Granting execute permissions on files ==="
+    - chmod +x ./Tests/scripts/*
+    - chmod +x ./Tests/Marketplace/*
+    - echo "=== Installing Virtualenv ==="
+    - |
+     if [ -f "./venv/bin/activate" ]; then
+       echo "found venv"
+     else
+      echo "installing venv"
+      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+     fi
+     venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+     venv/bin/pip2 install -r dev-requirements-py2.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+     source ./venv/bin/activate
+    - git config diff.renameLimit 6000
+    - export PATH="${PWD}/node_modules/.bin:${PATH}"
+    - |
+      if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
+        echo "Installing SDK" >> $ARTIFACTS_FOLDER/logs/installations.log
+        pip3 install git+https://github.com/demisto/demisto-sdk@master >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+      fi
+    - echo "========= Installing SSH keys ========"
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - chmod 400 $OREGON_CI_KEY
+    - ssh-add $OREGON_CI_KEY
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+
+    - echo "======= Download configuration ========"
+    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
 
 stages:
   - unittests-and-validations
@@ -27,7 +70,6 @@ variables:
 # See here for more about that https://docs.gitlab.com/ee/ci/pipelines/settings.html#git-shallow-clone  # disable-secrets-detection
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
-  IFRA_ENV_TYPE: "Content-Env"
 
 
 include:

@@ -9,7 +9,6 @@ pyminizip===0.2.4
 google-cloud-storage==1.29.0
 google-cloud-bigquery==1.26.1
 prettytable==0.7.2
-circleci==1.2.2
 boto3==1.16.39
 mock-open==1.4.0
 PyGithub==1.54.1
