@@ -391,8 +391,6 @@ def format_results(client, uuid):
         file_context['Hostname'] = demisto.args().get('url')
 
     relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query)
-    relations = [relation.to_context() for relation in relationships]
-    cont['Relations'] = relations
     outputs = {
         'URLScan(val.URL && val.URL == obj.URL)': cont,
         outputPaths['file']: file_context

@@ -4788,15 +4788,9 @@ class CommandResults:
                 formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field)
                                                      for key_field in self._outputs_key_field])
                 outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
-                # If relations exist they will automaticly be added to the output dict of the integration
-                if self.relations:
-                    self.outputs['Relations'] = [relation.to_context() for relation in self.relations]
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
                 outputs_key = '{}'.format(self.outputs_prefix)
-                # If relations exist they will automaticly be added to the output dict of the integration
-                if self.relations:
-                    self.outputs['Relations'] = [relation.to_context() for relation in self.relations]
                 outputs[outputs_key] = self.outputs
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
