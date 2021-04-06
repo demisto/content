@@ -1,30 +1,18 @@
 args:
-- default: false
+- name: pwdGenerationScript
+  description: The password generator script.
   defaultValue: GeneratePassword
-  description: The generate password script.
-  isArray: false
-  name: pwdGenerationScript
-  required: false
-  secret: false
-- default: false
-  description: The user's profile.
-  isArray: false
-  name: userProfile
+- name: sAMAccountName
   required: true
-  secret: false
-- default: false
-  description: The email address that the password will send to it.
-  isArray: false
-  name: email
+  description: The sAMAccountName of the employee.
+- name: email
   required: true
-  secret: false
-- default: false
-  defaultValue: User Profile - Active Directory (Incoming)
-  description: The incoming mapper name.
-  isArray: false
-  name: mapperIn
-  required: false
-  secret: false
+  description: The email of the employee.
+- name: displayname
+  description: The display name of the employee.
+- name: to_email
+  required: true
+  description: The email address that the password will send to.
 comment: |-
   Generates password,
   Set an AD user account with this password.
@@ -45,7 +33,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.2.17957
 runas: DBotWeakRole
 runonce: false
 tests:
