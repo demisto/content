@@ -1052,6 +1052,9 @@ class SecurityAndComplianceClient {
                 throw "New action must include valid action - Preview/Purge"
             }
             $response = New-ComplianceSearchAction @cmd_params
+            if (-not $response){
+                throw "The search action didn't return any results. Please check the search_name and consider running the o365-sc-start-search command before."
+            }
 
             return $response
         }
@@ -1331,7 +1334,7 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     if ($export) {
         $parsed_results_all = ParseSuccessResults -success_results $raw_response.SuccessResults -limit $kwargs.limit -all_results $all_results
         if ($parsed_results_all.Count -ne 0){
-            $file_entry = FileResult "$($kwargs.search_name)_search.json" $($parsed_results_all | ConvertTo-Json)
+            $file_entry = FileResult "$($kwargs.search_name)_search.json" $($parsed_results_all | ConvertTo-Json) $true
         }
     }
 
@@ -1413,7 +1416,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     if ($export) {
         $parsed_results_all = ParseResults -results $raw_response.Results -limit $kwargs.limit
         if ($parsed_results_all.Count -ne 0){
-            $file_entry = FileResult "$($kwargs.search_action_name)_search_action.json" $($parsed_results_all | ConvertTo-Json)
+            $file_entry = FileResult "$($kwargs.search_action_name)_search_action.json" $($parsed_results_all | ConvertTo-Json) $true
         }
     }
 

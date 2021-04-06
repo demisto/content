@@ -109,12 +109,15 @@ class MsGraphClient:
         no_folder = f'/users/{user_id}/messages'
         with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
+        page_size = demisto.args().get('page_size', 20)
+        odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
         if search:
-            odata = f'{odata}&$search="{search}"' if odata else f'$search="{search}"'
+            odata = f'{odata}&$search="{search}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
+        demisto.debug(f"URL suffix is {suffix}")
         response = self.ms_client.http_request('GET', suffix)
         return self.pages_puller(response, assert_pages(pages_to_pull))
 
@@ -1114,14 +1117,26 @@ def list_mails_command(client: MsGraphClient, args):
     odata = args.get('odata')
 
     raw_response = client.list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
+    last_page_response = raw_response[len(raw_response) - 1]
+    metadata = ''
+    next_page = last_page_response.get('@odata.nextLink')
+    if next_page:
+        metadata = '\nPay attention there are more results than shown. For more data please ' \
+                   'increase "pages_to_pull" argument'
+
     mail_context = build_mail_object(raw_response, user_id)
     entry_context = {}
     if mail_context:
         entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
+        if next_page:
+            # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
+            entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}
 
         # human_readable builder
+        human_readable_header = f'{len(mail_context)} mails received {metadata}' if metadata \
+            else f'Total of {len(mail_context)} mails received'
         human_readable = tableToMarkdown(
-            f'Total of {len(mail_context)} mails received',
+            human_readable_header,
             mail_context,
             headers=['Subject', 'From', 'SendTime', 'ID']
         )

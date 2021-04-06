@@ -67,6 +67,7 @@ You need to collect several pieces of information in order to configure the inte
     * __Sync Incident Owners__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
+    * __Incident Statuses to Fetch__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
@@ -158,6 +159,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional | 
+| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_other, resolved_auto | Optional |
 
 
 ##### Context Output
@@ -1527,6 +1529,7 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 | windows_file_paths | A comma-separated list of file paths on the Windows platform.  | Optional | 
 | linux_file_paths | A comma-separated list of file paths on the Linux platform.  | Optional | 
 | mac_file_paths | A comma-separated list of file paths on the Mac platform.  | Optional | 
+| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on, e.g.,"C:\Users\demisto\Desktop\CortexXSOAR.txt".  | Optional | 
 
 
 #### Context Output
@@ -1536,8 +1539,9 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 | PaloAltoNetworksXDR.retrievedFiles.actionId | unknown | ID of the action to retrieve files from selected endpoints. | 
 
 
-#### Command Example
+#### Command Examples
 ```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\Users\demisto\Desktop\demisto.txt"```
+```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 generic_file_path="C:\Users\demisto\Desktop\demisto.txt"```
 
 #### Context Example
 ```
