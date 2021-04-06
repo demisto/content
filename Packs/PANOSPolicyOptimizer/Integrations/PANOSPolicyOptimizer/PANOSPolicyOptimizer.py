@@ -225,15 +225,24 @@ def policy_optimizer_no_apps_command(client: Client) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
-    stats = client.policy_optimizer_no_apps()
+    result = client.policy_optimizer_no_apps()
 
-    result = stats['result']['result']
+    stats = result['result']['result']
+    if '@count' in stats and stats['@count'] == '0':
+        return CommandResults(readable_output=f'No Rules without apps were found.', raw_response=result)
+
+    rules_no_apps = stats['entry']
+    if not isinstance(rules_no_apps, list):
+        rules_no_apps = rules_no_apps[0]
+
+    headers = ['@name', '@uuid', 'action', 'secription', 'source', 'destination']
 
     return CommandResults(
         outputs_prefix='PanOS.PolicyOptimizer.NoApps',
-        outputs_key_field='Stats',
-        outputs=result,
-        readable_output=tableToMarkdown(name=f'Policy Optimizer No App Specified:', t=result['entry'], removeNull=True),
+        outputs_key_field='@uuid',
+        outputs=rules_no_apps,
+        readable_output=tableToMarkdown(name=f'Policy Optimizer No App Specified:', t=rules_no_apps, headers=headers,
+                                        removeNull=True),
         raw_response=result
     )
 
