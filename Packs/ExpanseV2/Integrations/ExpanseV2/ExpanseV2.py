@@ -560,7 +560,7 @@ class Client(BaseClient):
         :return: Certificate details objects
         """
         url = 'v2/assets/certificates/{}'.format(md5_hash)
-        return self._paginate(
+        return self._http_request(
             method='GET',
             url_suffix=url,
             params={})
@@ -2180,9 +2180,8 @@ def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> Com
     certificates = [certificate for certificate in certificates_iterator]
 
     for certificate in certificates:
-        certificate_details_iterator = client.fetch_certificate(
-            md5_hash=certificate.get('certificate', {}).get('md5Hash'))
-        certificate_details = [certificate for certificate in certificate_details_iterator]
+        certificate_details = client.fetch_certificate(md5_hash=certificate.get('certificate', {}).get('md5Hash'))
+
         for ip in certificate_details.get('details', {}).get('recentIps', []):
             params = {
                 'inetSearch': ip.get('ip'),
@@ -2196,15 +2195,10 @@ def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> Com
 
     context = get_expanse_certificate_to_domain_context(common_name=search, data=matching_domains)
 
-    ec = {
-        'Expanse.IPDomains(val.SearchTerm == obj.SearchTerm)': context
-    }
-
     hr_context = context.copy()
     del hr_context['DomainList']  # Remove full objects from human readable response
     human_readable = tableToMarkdown("Expanse Domains matching Certificate Common Name: {search}".format(search=search),
                                      hr_context)
-    # return_outputs(human_readable, ec, matching_domains)
 
     return CommandResults(
         outputs_prefix="Expanse.IPDomains",
