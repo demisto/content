@@ -1490,8 +1490,7 @@ def search_url_command(url, reliability):
             outputs=autofocus_url_output,
             readable_output=md,
             raw_response=raw_res,
-            indicator=url,
-            relations=[url_relations]
+            indicator=url
         ))
 
     return command_results
