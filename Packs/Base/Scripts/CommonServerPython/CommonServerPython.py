@@ -2389,7 +2389,10 @@ class Common(object):
                 ip_context['PositiveDetections'] = self.positive_engines
 
             if self.feed_related_indicators:
-                ip_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                ip_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.tags:
                 ip_context['Tags'] = self.tags
@@ -2622,8 +2625,12 @@ class Common(object):
                 file_context['Actor'] = self.actor
             if self.tags:
                 file_context['Tags'] = self.tags
+
             if self.feed_related_indicators:
-                file_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                file_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.malware_family:
                 file_context['MalwareFamily'] = self.malware_family
@@ -2797,7 +2804,10 @@ class Common(object):
                 url_context['Category'] = self.category
 
             if self.feed_related_indicators:
-                url_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                url_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.tags:
                 url_context['Tags'] = self.tags
@@ -2935,7 +2945,10 @@ class Common(object):
                 domain_context['Tags'] = self.tags
 
             if self.feed_related_indicators:
-                domain_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                domain_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.malware_family:
                 domain_context['MalwareFamily'] = self.malware_family
