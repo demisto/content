@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pytest
 from VirusTotal_V3_Premium import get_last_run_time, get_time_range_object, decrease_data_size, fetch_incidents, Client
