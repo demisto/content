@@ -57,11 +57,18 @@ class Client:
         :return: hash token
         """
         data_code = f'{self.session_metadata["cookie"]}{str(self.session_metadata["tid"])}'
-        # Use the hashlib library function to calculate the MD5
-        data_hash = hashlib.md5(data_code.encode())
-        # Convert the hash to a proper hex string
-        data_string = data_hash.hexdigest()
+        data_hash = hashlib.md5(data_code.encode())  # Use the hashlib library function to calculate the MD5
+        data_string = data_hash.hexdigest()  # Convert the hash to a proper hex string
         return data_string
+
+    def session_post(self, url, json_cmd) -> dict:
+        response = self.session.post(url=url, json=json_cmd)
+        json_response = json.loads(response.text)
+        if 'type' in json_response and json_response['type'] == 'exception':
+            if 'message' in json_response:
+                raise Exception(f'Operation to PAN-OS failed. with: {str(json_response["message"])}')
+            raise Exception(f'Operation to PAN-OS failed. with: {str(json_response)}')
+        return json_response
 
     def get_policy_optimizer_statistics(self) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
@@ -74,11 +81,9 @@ class Client:
             "type": "rpc", "tid": self.session_metadata['tid']
         }
 
-        response = self.session.post(
+        return self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getRuleCountInRuleUsage',
-            json=json_cmd)
-
-        return json.loads(response.text)
+            json_cmd=json_cmd)
 
     def policy_optimizer_no_apps(self) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
@@ -98,11 +103,9 @@ class Client:
                           "direction": "DESC"}]], "type": "rpc",
             "tid": self.session_metadata['tid']}
 
-        response = self.session.post(
+        return self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
-            json=json_cmd)
-
-        return json.loads(response.text)
+            json_cmd=json_cmd)
 
     def policy_optimizer_get_unused_apps(self) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
@@ -121,11 +124,9 @@ class Client:
                        "direction": "DESC"}]], "type": "rpc",
             "tid": self.session_metadata['tid']}
 
-        response = self.session.post(
+        return self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
-            json=json_cmd)
-
-        return json.loads(response.text)
+            json_cmd=json_cmd)
 
     def policy_optimizer_get_rules(self, timeframe: str, usage: bool, exclude: bool) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
@@ -143,11 +144,9 @@ class Client:
                        "pageContext": "rule_usage"}]], "type": "rpc",
             "tid": self.session_metadata['tid']}
 
-        response = self.session.post(
+        return self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
-            json=json_cmd)
-
-        return json.loads(response.text)
+            json_cmd=json_cmd)
 
     # def getUnusedIn30daysRules(self):
     #     self.session_metadata['tid'] += 1  # Increment TID
@@ -187,11 +186,9 @@ class Client:
                                "trafficTimeframe": 30}]],
                     "type": "rpc", "tid": self.session_metadata['tid']}
 
-        response = self.session.post(
+        return self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getAppDetails',
-            json=json_cmd)
-
-        return json.loads(response.text)
+            json_cmd=json_cmd)
 
     def policy_optimizer_get_dag(self, dag: str) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
@@ -199,11 +196,9 @@ class Client:
                     "data": [self.token_generator(), "AddressGroup.showDynamicAddressGroup", {
                         "id": dag, "vsysName": self.vsys}], "type": "rpc", "tid": self.session_metadata['tid']}
 
-        response = self.session.post(
+        return self.session.post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/AddressGroup.showDynamicAddressGroup',
-            json=json_cmd)
-
-        return json.loads(response.text)
+            json_cmd=json_cmd)
 
 
 def get_policy_optimizer_statistics_command(client: Client):
