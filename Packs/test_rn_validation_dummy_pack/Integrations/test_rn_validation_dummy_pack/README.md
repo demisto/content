@@ -1,8 +1,8 @@
 <!-- HTML_DOC -->
-<p>Use the Tenable.sc integration to get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.</p>
-<p>All data in Tenable.sc is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.</p>
+<p>Use the test_rn_validation_dummy_pack integration to get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.</p>
+<p>All data in test_rn_validation_dummy_pack is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.</p>
 <p>It is important to know what data is manageable for the user in order to work with the integration.</p>
-<p>This integration was integrated and tested with Tenable.sc v5.7.0.</p>
+<p>This integration was integrated and tested with test_rn_validation_dummy_pack v5.7.0.</p>
 <h2>Use cases</h2>
 <ul>
 <li>Create and run scans.</li>
@@ -11,14 +11,14 @@
 <li>View policies, repositories, credentials, users and more system information.</li>
 <li>View and real-time receiving of alerts.</li>
 </ul>
-<h2>Tenable.sc Playbook</h2>
-<p>Tenable.sc - Launch scan</p>
+<h2>test_rn_validation_dummy_pack Playbook</h2>
+<p>test_rn_validation_dummy_pack - Launch scan</p>
 <p><br> <a href="https://user-images.githubusercontent.com/35098543/49026814-73d56f00-f1a7-11e8-8a19-4de81e5f6ed4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49026814-73d56f00-f1a7-11e8-8a19-4de81e5f6ed4.png" alt="image" width="751" height="1335"></a></p>
-<h2>Configure tenable.sc on Demisto</h2>
-<p>To use the Tenable.sc integration in Demisto, a user with administrative privileges is recommended.</p>
+<h2>Configure test_rn_validation_dummy_pack on Demisto</h2>
+<p>To use the test_rn_validation_dummy_pack integration in Demisto, a user with administrative privileges is recommended.</p>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Tenable.sc.</li>
+<li>Search for test_rn_validation_dummy_pack.</li>
 <li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
 <ul>
 <li>
@@ -35,7 +35,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Fetched Incidents Data</h2>
-<p>For the first fetch, you can specify the time range to return alerts for. Subsequent fetches return alerts from Tenable.sc according to their last triggered time.</p>
+<p>For the first fetch, you can specify the time range to return alerts for. Subsequent fetches return alerts from test_rn_validation_dummy_pack according to their last triggered time.</p>
 <pre>[
             {
                 "id": "1",
@@ -214,7 +214,7 @@
 </ol>
 <h3 id="h_33160870171543312761635">1. Get a list of scans</h3>
 <hr>
-<p>Returns a list of existing Tenable.sc scans.</p>
+<p>Returns a list of existing test_rn_validation_dummy_pack scans.</p>
 <h5><span class="wysiwyg-underline"><strong>Base Command</strong></span></h5>
 <p><code>tenable-sc-list-scans</code></p>
 <h5>Input</h5>
@@ -365,7 +365,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49027810-b5ffb000-f1a9-11e8-8e89-7d5070668902.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49027810-b5ffb000-f1a9-11e8-8e89-7d5070668902.png" alt="image" width="749" height="430"></a></p>
 <h3 id="h_4066330872101543312766482">2. Initiate a scan</h3>
 <hr>
-<p>Launches an existing scan from Tenable.sc.</p>
+<p>Launches an existing scan from test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-launch-scan</code></p>
 <h5>Input</h5>
@@ -453,7 +453,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49028016-1f7fbe80-f1aa-11e8-87ea-09863853058d.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49028016-1f7fbe80-f1aa-11e8-87ea-09863853058d.png" alt="image" width="749" height="410"></a></p>
 <h3 id="h_9119778454121543312823365">3. Get vulnerability information for a scan</h3>
 <hr>
-<p>Returns details about a vulnerability from a specified Tenable.sc scan.</p>
+<p>Returns details about a vulnerability from a specified test_rn_validation_dummy_pack scan.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-get-vulnerability</code></p>
 <h5>Input</h5>
@@ -702,7 +702,7 @@
 <h5>Human Readable Output</h5>
 <p><img src="https://user-images.githubusercontent.com/38749041/64108856-b0fa0d80-cd86-11e9-9b7d-163f9654c686.png"></p>
 <h3 id="h_8074541816131543312858886">4. Get the status of a scan</h3>
-<p>Returns the status of a specified scan in Tenable.sc.</p>
+<p>Returns the status of a specified scan in test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-get-scan-status</code></p>
 <h5>Input</h5>
@@ -773,7 +773,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49030063-fd3c6f80-f1ae-11e8-8f6c-98f22fad3e2a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49030063-fd3c6f80-f1ae-11e8-8f6c-98f22fad3e2a.png" alt="image" width="751" height="339"></a></p>
 <h3 id="h_3345675088131543312902125">5. Get a report with scan results</h3>
 <hr>
-<p>Returns a single report with a Tenable.sc scan results.</p>
+<p>Returns a single report with a test_rn_validation_dummy_pack scan results.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-get-scan-report</code></p>
 <h5>Input</h5>
@@ -1081,7 +1081,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49028753-cd3f9d00-f1ab-11e8-99ad-186696dfa8be.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49028753-cd3f9d00-f1ab-11e8-99ad-186696dfa8be.png" alt="image" width="751" height="322"></a><br> <a href="https://user-images.githubusercontent.com/35098543/49028775-da5c8c00-f1ab-11e8-9ec5-b1ee233662f9.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49028775-da5c8c00-f1ab-11e8-9ec5-b1ee233662f9.png" alt="image" width="750" height="439"></a></p>
 <h3 id="h_84903194610121543312987425">6. Get a list of credentials</h3>
 <hr>
-<p>Returns a list of Tenable.sc credentials.</p>
+<p>Returns a list of test_rn_validation_dummy_pack credentials.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-list-credentials</code></p>
 <h5>Input</h5>
@@ -1304,7 +1304,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49030220-69b76e80-f1af-11e8-9e2e-460865a99921.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49030220-69b76e80-f1af-11e8-9e2e-460865a99921.png" alt="image" width="751" height="288"></a></p>
 <h3 id="h_45087102513991543313089428">7. Get a list of scan policies</h3>
 <hr>
-<p>Returns a list of Tenable.sc scan policies.</p>
+<p>Returns a list of test_rn_validation_dummy_pack scan policies.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-list-policies</code></p>
 <h5>Input</h5>
@@ -1528,7 +1528,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49030406-e5192000-f1af-11e8-820a-2305edbe1c8f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49030406-e5192000-f1af-11e8-820a-2305edbe1c8f.png" alt="image"></a></p>
 <h3 id="h_73757213415961543313284753">8. Get a list of report definitions</h3>
 <hr>
-<p>Returns a list of Tenable.sc report definitions.</p>
+<p>Returns a list of test_rn_validation_dummy_pack report definitions.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-list-report-definitions</code></p>
 <h5>Input</h5>
@@ -1627,7 +1627,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49030557-52c54c00-f1b0-11e8-97a7-5bc80921e135.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49030557-52c54c00-f1b0-11e8-97a7-5bc80921e135.png" alt="image"></a></p>
 <h3 id="h_15731006419791543313350353">9. Get a list of scan repositories</h3>
 <hr>
-<p>Returns a list of Tenable.sc scan repositories.</p>
+<p>Returns a list of test_rn_validation_dummy_pack scan repositories.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-list-repositories</code></p>
 <h5>Input</h5>
@@ -1686,7 +1686,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49030636-8b652580-f1b0-11e8-828d-3b940b8625d0.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49030636-8b652580-f1b0-11e8-828d-3b940b8625d0.png" alt="image"></a></p>
 <h3 id="h_81875088221731543313376351">10. Get a list of scan zones</h3>
 <hr>
-<p>Returns a list of Tenable.sc scan zones.</p>
+<p>Returns a list of test_rn_validation_dummy_pack scan zones.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-list-zones</code></p>
 <h5>Input</h5>
@@ -1745,7 +1745,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49030764-ed258f80-f1b0-11e8-8277-fb72d010eaa2.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49030764-ed258f80-f1b0-11e8-8277-fb72d010eaa2.png" alt="image"></a></p>
 <h3 id="h_84471925432911543313482493">11. Create a scan</h3>
 <hr>
-<p>Creates a scan on Tenable.sc.</p>
+<p>Creates a scan on test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-create-scan</code></p>
 <h5>Input</h5>
@@ -1911,7 +1911,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49031059-9f5d5700-f1b1-11e8-85d9-8950fccc4e92.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49031059-9f5d5700-f1b1-11e8-85d9-8950fccc4e92.png" alt="image"></a></p>
 <h3 id="h_76467577134841543313487972">12. Delete a scan</h3>
 <hr>
-<p>Deletes a scan in Tenable.sc.</p>
+<p>Deletes a scan in test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-delete-scan</code></p>
 <h5>Input</h5>
@@ -1940,7 +1940,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49033298-6e802080-f1b7-11e8-854a-35df7a15ae1e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49033298-6e802080-f1b7-11e8-854a-35df7a15ae1e.png" alt="image"></a></p>
 <h3 id="h_1815092436741543313492172">13. Get a list of assets</h3>
 <hr>
-<p>Returns a list of Tenable.sc assets.</p>
+<p>Returns a list of test_rn_validation_dummy_pack assets.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-list-assets</code></p>
 <h5>Input</h5>
@@ -2357,7 +2357,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49033449-e8b0a500-f1b7-11e8-8789-555777f21481.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49033449-e8b0a500-f1b7-11e8-8789-555777f21481.png" alt="image"></a></p>
 <h3 id="h_692212738651543313496932">14. Create an asset</h3>
 <hr>
-<p>Creates an asset in Tenable.sc with the specified IP addresses.</p>
+<p>Creates an asset in test_rn_validation_dummy_pack with the specified IP addresses.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-create-asset</code></p>
 <h5>Input</h5>
@@ -2448,7 +2448,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49033673-75f3f980-f1b8-11e8-9b88-58c90b87255a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49033673-75f3f980-f1b8-11e8-9b88-58c90b87255a.png" alt="image"></a></p>
 <h3 id="h_6996025840551543313501384">15. Get asset information</h3>
 <hr>
-<p>Get details for a given asset in Tenable.sc</p>
+<p>Get details for a given asset in test_rn_validation_dummy_pack</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-get-asset</code></p>
 <h5>Input</h5>
@@ -2547,7 +2547,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49034417-97ee7b80-f1ba-11e8-8258-4b67b2099311.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49034417-97ee7b80-f1ba-11e8-8258-4b67b2099311.png" alt="image"></a></p>
 <h3 id="h_99298134042441543313506447">16. Delete an asset</h3>
 <hr>
-<p>Deletes the asset with the specified asset ID from Tenable.sc.</p>
+<p>Deletes the asset with the specified asset ID from test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-delete-asset</code></p>
 <h5>Input</h5>
@@ -2576,7 +2576,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49034467-ba809480-f1ba-11e8-9e17-df4fc0f5ae18.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49034467-ba809480-f1ba-11e8-9e17-df4fc0f5ae18.png" alt="image"></a></p>
 <h3 id="h_57421034944301543313511177">17. Get a list of alerts</h3>
 <hr>
-<p>Returns a list alerts from Tenable.sc.</p>
+<p>Returns a list alerts from test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-list-alerts</code></p>
 <h5>Input</h5>
@@ -2827,7 +2827,7 @@
 <p><img src="https://user-images.githubusercontent.com/35098543/49744048-b0739100-fca4-11e8-9815-ff730aa99284.png" alt="image"></p>
 <h3 id="h_9307079148031543313522519">19. Get device information for a user</h3>
 <hr>
-<p>Returns device information from the current user in Tenable.sc.</p>
+<p>Returns device information from the current user in test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-get-device</code></p>
 <h5>Input</h5>
@@ -2967,7 +2967,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49035282-ffa5c600-f1bc-11e8-80de-5905697983d6.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49035282-ffa5c600-f1bc-11e8-80de-5905697983d6.png" alt="image"></a></p>
 <h3 id="h_85286374749881543313528453">20. Get a list of users</h3>
 <hr>
-<p>List users in Tenable.sc.</p>
+<p>List users in test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-list-users</code></p>
 <h5>Input</h5>
@@ -3082,7 +3082,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49035509-ac804300-f1bd-11e8-92ce-d92592fa4b47.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49035509-ac804300-f1bd-11e8-92ce-d92592fa4b47.png" alt="image"></a></p>
 <h3 id="h_11515143551721543313534950">21. Get licensing information</h3>
 <hr>
-<p>Retrieves licensing information from Tenable.sc.</p>
+<p>Retrieves licensing information from test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-get-system-licensing</code></p>
 <h5>Input</h5>
@@ -3132,7 +3132,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49035672-2284aa00-f1be-11e8-8d20-8ede4ef5cb79.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49035672-2284aa00-f1be-11e8-8d20-8ede4ef5cb79.png" alt="image"></a></p>
 <h3 id="h_90698695955281543313539949">22. Get system information and diagnostics</h3>
 <hr>
-<p>Returns the system information and diagnostics from Tenable.sc.</p>
+<p>Returns the system information and diagnostics from test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-get-system-information</code></p>
 <h5>Input</h5>
@@ -3370,7 +3370,7 @@
 <p><a href="https://user-images.githubusercontent.com/35098543/49429690-d46d3900-f7b1-11e8-84a4-fe6494912e58.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49429690-d46d3900-f7b1-11e8-84a4-fe6494912e58.png" alt="image"></a></p>
 <h3 id="h_4cbe5353-4319-44ef-b7ed-06628baf46a0">24. Get all scan results</h3>
 <hr>
-<p>Returns all scan results in Tenable.sc.</p>
+<p>Returns all scan results in test_rn_validation_dummy_pack.</p>
 <h5>Base Command</h5>
 <p><code>tenable-sc-get-all-scan-results</code></p>
 <h5>Input</h5>
@@ -3490,4 +3490,4 @@
 <p><img src="https://user-images.githubusercontent.com/38749041/64108828-99bb2000-cd86-11e9-9f45-d8984d719241.png"></p>
 <h2>Troubleshooting</h2>
 <hr>
-<p>For errors within Tenable.sc, the cause is generally specified, e.g., <code>The currently logged in used is not an administrator</code>, <code>Unable to retrieve Asset #2412. Asset #2412 does not exist</code> or <code>Invalid login credentials</code>. However there might be connection errors, for example when the server URL provided is incorrect. If you experience issues, contact <a href="mailto:support@demisto.com">Demisto Support</a>.</p>
+<p>For errors within test_rn_validation_dummy_pack, the cause is generally specified, e.g., <code>The currently logged in used is not an administrator</code>, <code>Unable to retrieve Asset #2412. Asset #2412 does not exist</code> or <code>Invalid login credentials</code>. However there might be connection errors, for example when the server URL provided is incorrect. If you experience issues, contact <a href="mailto:support@demisto.com">Demisto Support</a>.</p>
