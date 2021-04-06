@@ -4,7 +4,7 @@
  "modified": "2021-03-10T06:53:32.723591681Z",
  "name": "Event Name",
  "ownerOnly": false,
- "description": "Event Name",
+ "description": "Sixgill_Event Name",
  "cliName": "eventname",
  "type": "shortText",
  "closeForm": false,

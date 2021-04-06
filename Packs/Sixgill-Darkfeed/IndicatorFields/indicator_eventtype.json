@@ -2,7 +2,7 @@
  "id": "indicator_eventtype",
  "version": -1,
  "modified": "2021-03-10T06:54:09.953661182Z",
- "name": "Event Type",
+ "name": "Sixgill_Event Type",
  "ownerOnly": false,
  "description": "Event Type",
  "cliName": "eventtype",
