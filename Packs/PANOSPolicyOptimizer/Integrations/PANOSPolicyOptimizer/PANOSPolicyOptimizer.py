@@ -61,7 +61,7 @@ class Client:
         data_string = data_hash.hexdigest()  # Convert the hash to a proper hex string
         return data_string
 
-    def session_post(self, url, json_cmd) -> dict:
+    def session_post(self, url: str, json_cmd: dict) -> dict:
         response = self.session.post(url=url, json=json_cmd)
         json_response = json.loads(response.text)
         if 'type' in json_response and json_response['type'] == 'exception':
@@ -128,7 +128,7 @@ class Client:
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
             json_cmd=json_cmd)
 
-    def policy_optimizer_get_rules(self, timeframe: str, usage: bool, exclude: bool) -> dict:
+    def policy_optimizer_get_rules(self, timeframe: str, usage: str, exclude: bool) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -196,7 +196,7 @@ class Client:
                     "data": [self.token_generator(), "AddressGroup.showDynamicAddressGroup", {
                         "id": dag, "vsysName": self.vsys}], "type": "rpc", "tid": self.session_metadata['tid']}
 
-        return self.session.post(
+        return self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/AddressGroup.showDynamicAddressGroup',
             json_cmd=json_cmd)
 
@@ -297,14 +297,13 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
-    context_res = {}
     rule_uuid = str(args.get('rule_uuid'))
 
     result = client.policy_optimizer_app_and_usage(rule_uuid)
 
     stats = result['result']['result']
     if '@count' in stats and stats['@count'] == '0':
-        return CommandResults(readable_output=f'Rule with UUID:{rule_uuid} does not use apps.', raw_response=result)
+        return CommandResults(readable_output=f'Rule  with UUID:{rule_uuid} does not use apps.', raw_response=result)
 
     rule_stats = stats['rules']['entry'][0]
     # ['apps-seen']['entry']

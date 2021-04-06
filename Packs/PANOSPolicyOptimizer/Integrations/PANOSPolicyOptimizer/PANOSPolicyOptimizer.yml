@@ -16,7 +16,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- Defaultvalue: 'vsys1'
+- defaultvalue: 'vsys1'
   display: Vsys - Firewall instances only
   name: vsys
   required: false
