@@ -25,12 +25,8 @@ configuration:
   name: client_secret
   required: true
   type: 0
-description: Thycotic DevOps Secrets Vault is a high velocity vault that centralizes
-  secrets management, enforces access, and provides automated logging trails. This
-  cloud-based solution is platform agnostic and designed to replace hard-coded credentials
-  in applications, micro-services, DevOps tools, and robotic process automation. This
-  vault ensures IT, DevOps and Security teams the speed and agility needed to stay
-  competitive without sacrificing security.
+description: Manage credentials for applications, databases, CI/CD tools, and services
+  without causing friction in the development process.
 display: ThycoticDSV
 name: ThycoticDSV
 script:
@@ -50,7 +46,7 @@ script:
     - contextPath: secret
       description: JSON object secret
       type: String
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17957
   feed: false
   isfetch: false
   longRunning: false
