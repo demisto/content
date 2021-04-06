@@ -21,6 +21,11 @@ Cortex XSOAR recommends that you turn off Auto Extract using the server configur
 ![autoextract](https://raw.githubusercontent.com/demisto/content/a23895448f47d58f7a7ac296db5d3f853eb4fc80/Packs/EscapeRoomTier1/images/autoextract.png)
 '''
 
+DUPLICATE_INCIDENT = '''
+This is a duplicate of a previous incident. try fetching the original incident again.
+![Nothing to see](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/snowincident_NothingToSee.png)
+'''
+
 
 def validate_credentials(credentials):
     demisto.debug(f'Using the following credentials:\n {credentials}')
@@ -43,9 +48,9 @@ def fetch_incident(credentials, last_run):
     if last_run:
         incident = {
             'name': f"ServiceNow Incident No. 1337",
-            'details': 'This is a duplicate of a previous incident. try fetching the original incident again.',
+            'details': DUPLICATE_INCIDENT,
             'CustomFields': {
-                'servicenowdetails': AUTO_EXTRACT_DETAILS,
+                'servicenowdetails': DUPLICATE_INCIDENT,
             },
             'severity': 1,
             # 'attachment': file_names,  # TODO: add some attachments

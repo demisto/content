@@ -1,3 +1,6 @@
+import shlex
+import subprocess
+
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
 
@@ -5,7 +8,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 VICTORY_MESSAGE = '''# Congratulations
-![](https://media.giphy.com/media/l2Je19AZkPF7r6gXm/giphy.gif)
+![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier2/images/access_MrBurns.gif')
 Oh, password policy. It's one of these annoying buzzwords. We prefer to call it an unrequested security surplus.
 
 You freed my Smithers from the cold chains of the password policy prison.
@@ -15,9 +18,21 @@ And now Smithers, Release the hounds!
 '''
 
 
+def get_server_url():
+    args = shlex.split('ip route show')
+    p = subprocess.Popen(args, stdout=subprocess.PIPE)
+    stdout, _ = p.communicate()
+
+    if match := re.match('default via (.*) dev', stdout.decode('utf-8')):
+        return f'https://{match.group(1)}/acc_temp'
+
+    else:
+        raise ValueError('could not find server URL')
+
+
 def main(args):
-    server = args.get('server_url')
-    user_name = args.get('user_name')
+    server = get_server_url()
+    user_name = 'smithers'
     password = '1234'
 
     try:

@@ -51,7 +51,7 @@ def is_correct_date_range(time_from: datetime, time_to: datetime):
         time_to.date().strftime('%Y-%m-%d') == '2020-12-25',
     ]
 
-    demisto.debug(f'check_time_frame: {validate}')
+    demisto.info(f'WidgetLicenseErrorText - check_time_frame: {validate}')
     return all(validate)
 
 
@@ -61,7 +61,7 @@ def is_valid_license_temp(time_from: datetime, time_to: datetime):
         time_to.date().strftime('%Y-%m-%d') == '2020-12-25',
     ]
 
-    demisto.debug(f'WidgetLicenseErrorText - is_correct_date_range: {validate}')
+    demisto.info(f'WidgetLicenseErrorText - is_correct_date_range: {validate}')
     return all(validate)
 
 
@@ -80,6 +80,15 @@ def is_valid_license():
         return True
 
     return False
+
+
+def create_starting_incident():
+    demisto.executeCommand('createNewIncident',
+                           args={
+                               'name': 'Springfield Nuclear Power Plant',
+                               'severity': IncidentSeverity.CRITICAL,
+                               # 'type': "D'oh!",
+                           })
 
 
 def v_for_vendetta(time_from: datetime, time_to: datetime):
@@ -115,9 +124,10 @@ def main():
         if not is_correct_date_range(local_time_from, local_time_to):
             text = WRONG_DATE_RANGE_HINT
         # elif not is_valid_license():
-        elif not is_valid_license_temp(local_time_from, local_time_to):
-            text = INVALID_LICENSE_HINT
+        # elif not is_valid_license_temp(local_time_from, local_time_to):
+        #     text = INVALID_LICENSE_HINT
         else:
+            create_starting_incident()
             text = SUCCESS_MESSAGE
 
         return_results(TextWidget(text))

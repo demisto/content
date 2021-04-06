@@ -1,0 +1,31 @@
+category: Utilities
+defaultEnabled: true
+commonfields:
+  id: Hints
+  version: -1
+configuration: []
+description: Use this integration to find out the next clue.
+display: Hints
+name: Hints
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'what did you expect to find here? a hint?'
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    deprecated: false
+    description: run to find hints
+    execution: false
+    name: hint
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.1.15759
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
