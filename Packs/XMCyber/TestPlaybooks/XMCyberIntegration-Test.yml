@@ -296,7 +296,7 @@ tasks:
       version: -1
       name: ip
       description: ''
-      script: '|||ip'
+      script: 'XMCyber|||ip'
       type: regular
       iscommand: true
       brand: ''

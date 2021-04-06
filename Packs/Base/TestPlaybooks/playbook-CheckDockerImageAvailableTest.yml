@@ -81,7 +81,7 @@ tasks:
       extend-context:
         simple: CheckDockerValid=.
       input:
-        simple: demisto/python:2.7.15.155
+        simple: xsoar-registry.pan.dev/demisto/python:2.7.15.155
       trust_any_certificate:
         simple: "yes"
       use_system_proxy:
@@ -122,7 +122,7 @@ tasks:
       extend-context:
         simple: CheckDockerBad=.
       input:
-        simple: demisto/notgoodimage:1.0
+        simple: xsoar-registry.pan.dev/demisto/notgoodimage:1.0
       trust_any_certificate:
         simple: "yes"
       use_system_proxy:

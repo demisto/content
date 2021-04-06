@@ -138,13 +138,16 @@ def test_module(client: Client) -> str:
 
 
 def smart_search(client: Client, args: Dict[str, Any]) -> CommandResults:
-    assert (start_time := parse(args.get('start_time', '24 hours'))), \
+    assert (start_time := parse(args.get('start_time', '24 hours'), settings={'RETURN_AS_TIMEZONE_AWARE': True})), \
         f"Failed parsing start time: {args.get('start_time')}"
-    assert (end_time := parse(args.get('end_time', 'now'))), f"Failed parsing end time: {args.get('end_time')}"
+    if end_time := args.get('end_time'):
+        assert (end_time := parse(end_time, settings={'RETURN_AS_TIMEZONE_AWARE': True})), \
+            f"Failed parsing start time: {end_time}"
+        end_time = end_time.strftime("%Y-%m-%dT%H:%M:%S%z")
     result = client.smart_search_request(
         action=args.get('action'),
-        from_=start_time.isoformat(),
-        to=end_time.isoformat(),
+        from_=start_time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        to=end_time,
         virus=args.get('virus'),
         env_from=args.get('sender'),
         env_rcpt=args.get('recipient'),

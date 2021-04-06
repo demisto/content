@@ -1,0 +1,14 @@
+{
+    "name": "Malware Lateral Movement Assessment and Response",
+    "description": "This playbook identifies and remediates malware's lateral movement impact due to a phishing campaign in an organization.\n\nThis playbook takes the hosts and attachments with the phishing email and then 1. It scans at the endpoint on which the phishing link was clicked and takes action to resolve any C&C activity and 2. It retroactively scans the logging history to identify lateral movement and quartines or resolve the traffic communication from those hosts",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Accenture",
+    "url": "",
+    "email": "",
+    "created": "2020-12-18T18:12:56Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

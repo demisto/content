@@ -223,14 +223,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the Network Interface to link the virtual machine with. A Network Interface has to be created in the Azure Portal. Note that the virtual machine's location property must match that of the Network Interface you choose to link it to. To see a list of available Network Interfaces visit the Azure Web Portal, navigate to the search bar at the top of the page, type "network interfaces", and in the dynamic drop-down menu that appears, click the 'Network interfaces' option that appears under the 'Services' category. If none are present, you will need to create a new Network Interface which you can do by clicking the '+Add' button towards the top left of the page and following the instructions. For more information regarding Network Interfaces, see the [Azure documentation](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface).
+      description: The name of the Network Interface to link the virtual machine with. A Network Interface has to be created in the Azure Portal. Note that the virtual machine's location property must match that of the Network Interface you choose to link it to. To see a list of available Network Interfaces visit the Azure Web Portal, navigate to the search bar at the top of the page, type "network interfaces", and in the dynamic drop-down menu that appears, click the 'Network interfaces' option that appears under the 'Services' category. If none are present, you will need to create a new Network Interface which you can do by clicking the '+Add' button towards the top left of the page and following the instructions. For more information regarding Network Interfaces, see the Azure documentation at https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface.
       isArray: false
       name: nic_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The name of a VirtualMachineSize, which determines the size of the deployed virtual machine. For more information, see the [Azure documentation](https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize).
+      description: The name of a VirtualMachineSize, which determines the size of the deployed virtual machine. For more information, see the Azure documentation at https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize.
       isArray: false
       name: vm_size
       predefined:
@@ -389,7 +389,7 @@ script:
     - contextPath: Azure.Subscription.State
       description: The state of the subscription.
       type: String
-  dockerimage: demisto/crypto:1.0.0.11412
+  dockerimage: demisto/crypto:1.0.0.16548
   isfetch: false
   longRunning: false
   longRunningPort: false

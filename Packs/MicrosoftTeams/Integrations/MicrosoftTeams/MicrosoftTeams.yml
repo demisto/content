@@ -83,7 +83,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The team member to which to send the message.
+      description: Display name or email address of the team member to send the message to.
       isArray: false
       name: team_member
       required: false

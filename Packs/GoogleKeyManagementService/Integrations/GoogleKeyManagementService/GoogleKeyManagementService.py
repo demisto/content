@@ -916,7 +916,7 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
                            label=None)
 
     # encrypt plaintext and return the cipertext without added characters.
-    ciphertext = str(base64.b64encode(public_key.encrypt(plaintext, pad)))[2:-1]
+    ciphertext = str(base64.b64encode(public_key.encrypt(plaintext, pad)))[2:-1]  # type: ignore[union-attr]
 
     asymmetric_encrypt_context = {
         'CryptoKey': crypto_key_id,

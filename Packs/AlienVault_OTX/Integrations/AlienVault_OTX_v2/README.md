@@ -19,6 +19,7 @@
    <li><strong>Server address</strong></li>
    <li><strong>API Token</strong></li>
    <li><strong>Indicator Threshold. The minimum number of pulses to consider the indicator as malicious.</strong></li>
+    <li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is C - Fairly reliable)</li>
    <li><strong>Trust any certificate (not secure)</strong></li>
    <li><strong>Use system proxy settings</strong></li>
     </ul>

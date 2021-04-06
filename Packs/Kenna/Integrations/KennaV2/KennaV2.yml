@@ -514,7 +514,74 @@ script:
     description: Deletes tags from the specified asset.
     execution: false
     name: kenna-delete-tag
-  dockerimage: demisto/python3:3.8.6.14516
+  - arguments:
+    - default: false
+      description: Unique numerical ID of the connector.
+      isArray: false
+      name: connector_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns JSON data on all the runs of a given connector.
+    execution: false
+    name: kenna-get-connector-runs
+    outputs:
+    - contextPath: Kenna.ConnectorRunsList.ID
+      description: Connector Run ID.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.StartTime
+      description: Connector Run Start Time.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.EndTime
+      description: Connector Run End Time.
+      type: string
+    - contextPath: Kenna.ConnectorRunsList.Success
+      description: Boolean value showing connector success.
+      type: boolean
+    - contextPath: Kenna.ConnectorRunsList.TotalPayload
+      description: Total connector payloads.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.ProcessedPayload
+      description: Total payloads processed the connector.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.FailedPayload
+      description: Total failed payloads.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.ProcessedAssets
+      description: Amount of processed assets.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.AssetsWithTagsReset
+      description: Amount of assets with reset tags.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.ProcessedScannerVulnerabilities
+      description: Amount of processed scanners with vulnerabilities.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.UpdatedScannerVulnerabilities
+      description: Amount of updated scanners with vulnerabilities.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.CreatedScannerVulnerabilities
+      description: Amount of created scanners with vulnerabilities.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.ClosedScannerVulnerabilities
+      description: Amount of closed scanners with vulnerabilities.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.AutoclosedScannerVulnerabilities
+      description: Amount of auto-closed scanners with vulnerabilities.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.ReopenedScannerVulnerabilities
+      description: Amount of reopened scanners with vulnerabilities.
+      type: number
+    - contextPath: Kenna.ConnectorRunsList.ClosedVulnerabilities
+      description: Amount of closed vulnerabilities.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.AutoclosedVulnerabilities
+      description: Amount of auto-closed vulnerabilities.
+      type: Number
+    - contextPath: Kenna.ConnectorRunsList.ReopenedVulnerabilities
+      description: Amount of re-opened vulnerabilities.
+      type: Number
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -361,7 +361,7 @@ script:
       secret: false
     - default: false
       description: Comma-separated list of actions groups and actions to audit. For all possible
-        values, see the integration documentation at https://xsoar.pan.dev/reference/integrations/Azure-SQL-Management.
+        values, see the integration documentation at https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions?view=sql-server-ver15.
       isArray: true
       name: audit_actions_groups
       required: false

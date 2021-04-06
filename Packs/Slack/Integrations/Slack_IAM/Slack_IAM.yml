@@ -264,6 +264,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncout: true
 tests:
 - No tests
 fromversion: 6.0.0
