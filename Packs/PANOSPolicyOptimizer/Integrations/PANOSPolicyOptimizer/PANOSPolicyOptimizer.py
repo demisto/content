@@ -268,7 +268,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict):
     Gets the unused rules Statistics as seen from the User Interface
     """
     timeframe = str(args.get('timeframe'))
-    usage = argToBoolean(args.get('usage'))
+    usage = args.get('usage')
     exclude = argToBoolean(args.get('exclude'))
     stats = client.policy_optimizer_get_rules(timeframe, usage, exclude)
     demisto.info(json.dumps(stats, indent=2))

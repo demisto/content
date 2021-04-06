@@ -74,14 +74,14 @@ script:
   - arguments:
     - default: false
       defaultValue: '30'
-      description: The timeframe in days to show the unused rules for.
+      description: The timeframe in days to show the unused rules for. Default is 30.
       isArray: false
       name: timeframe
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: unused
+      defaultValue: Unused
       description: Rule usage type. Which values you want to filter by.
       isArray: false
       name: usage
