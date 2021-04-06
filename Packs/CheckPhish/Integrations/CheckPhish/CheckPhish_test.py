@@ -15,7 +15,7 @@ RESULTS = {
 def test_reliability_in_get_result_checkphish(requests_mock, mocker):
     """
         Given:
-            - The user reliability param and the bad_disp param that exist in the default
+            - The user reliability param and the bad_disp param that exist in the default list
         When:
             - Running get_result_checkphish
         Then:
@@ -38,7 +38,7 @@ def test_reliability_in_get_result_checkphish(requests_mock, mocker):
 def test_bad_disp_param(requests_mock, mocker):
     """
         Given:
-            - The user bad_disp param which does not exist in the default
+            - The user bad_disp param which does not exist in the default list
         When:
             - Running get_result_checkphish
         Then:
