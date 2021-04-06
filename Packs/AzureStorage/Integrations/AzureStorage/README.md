@@ -1,9 +1,8 @@
-Deploy and manage storage accounts and blob services.
+This integration enables you to deploy and manage storage accounts and blob services.
 This integration was integrated and tested with version 2019-06-01 of Azure Storage
 ## Authorization
-In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
-
-In order to connect to the Azure Storage Accounts and the Blob Service using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
+In order to connect to the Azure Storage Accounts and the Blob Service use either the Cortex XSOAR Azure App or the Self-Deployed Azure App.
+In both options, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
 1. Fill in the required parameters.
 2. Run the ***!azure-storage-auth-start*** command.
@@ -18,7 +17,7 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 
 You only need to fill in your subscription ID and resource group name. For more details, follow [Azure Integrations Parameters](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
 
-#### Self-Deployed Azure App
+#### Self-Configured Azure App
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
 
@@ -42,7 +41,7 @@ The application must have *user_impersonation* permission and must allow public 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-storage-auth-test
 ***
@@ -253,7 +252,7 @@ Run this command to get the all or specific account storage details.
 >|---|---|---|---|---|---|---|
 >| acount_name1 | subscription_id1 | resource_group_name1 | Storage | available | available | eastus |
 >| acount_name2 | subscription_id2 | resource_group_name2 | BlobStorage | available | available | eastus |
->| acount_name3 | subscription_id3 | resource_group_name3| Storage | available |  | westeurope |
+>| acount_name3 | subscription_id3 | resource_group_name3 | Storage | available |  | westeurope |
 
 
 ### azure-storage-account-create-update
