@@ -1777,6 +1777,100 @@ script:
     - contextPath: Exabeam.NotableSession.executiveUserFlags
       description: Whether the user is a executive user.
       type: Boolean
+  - arguments:
+    - default: false
+      description: The asset ID for which to fetch data.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: The Start time of the time range. For example, 2018-08-01T11:50:16).
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: The end time of the time range. For example, 2018-08-01T11:50:16.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns sequence details for the given asset ID and time range.
+    execution: false
+    name: exabeam-get-notable-sequence-details
+    outputs:
+    - contextPath: Exabeam.Sequence.sequenceId
+      description: The ID of the sequence.
+      type: String
+    - contextPath: Exabeam.Sequence.isWhitelisted
+      description: Whether or not the sequence is white listed.
+      type: Boolean
+    - contextPath: Exabeam.Sequence.areAllTriggeredRulesWhiteListed
+      description: Whether or not the sequence are all triggered rules white listed.
+      type: Boolean
+    - contextPath: Exabeam.Sequence.hasBeenPartiallyWhiteListed
+      description: Whether or not the sequence has been partially white listed.
+      type: Boolean
+    - contextPath: Exabeam.Sequence.riskScore
+      description: The sequence risk score.
+      type: Number
+    - contextPath: Exabeam.Sequence.startTime
+      description: Start time of the sequence.
+      type: Date
+    - contextPath: Exabeam.Sequence.endTime
+      description: End time of the sequence.
+      type: Date
+    - contextPath: Exabeam.Sequence.numOfReasons
+      description: Number of reasons in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.numOfEvents
+      description: Number of events in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.numOfUsers
+      description: Number of users in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.numOfSecurityEvents
+      description: Number of security events in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.numOfZones
+      description: Number of zones in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.numOfAssets
+      description: Number of assets in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.assetId
+      description: The asset ID of the sequence.
+      type: String
+  - arguments:
+    - default: false
+      description: The asset sequence ID
+      isArray: false
+      name: asset_sequence_id
+      required: true
+      secret: false
+    - default: false
+      description: String to search for inside display name.
+      isArray: false
+      name: search_str
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns sequence event types for the given asset sequence ID and
+      time range.
+    execution: false
+    name: exabeam-get-sequence-eventtypes
+    outputs:
+    - contextPath: Exabeam.SequenceEventTypes.eventType
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.SequenceEventTypes.displayName
+      description: The sequence display name.
+      type: String
+    - contextPath: Exabeam.SequenceEventTypes.count
+      description: The number of the sequences.
+      type: Number
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false

@@ -654,6 +654,42 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
+    def get_notable_sequence_details_request(self, asset_id: str = None, parse_start_time=None,
+                                             parse_end_time=None) -> Dict:
+        """
+        Args:
+            asset_id: ID of the asset to fetch info for
+            parse_start_time: start time
+            parse_end_time: end time
+
+        Returns:
+            notable sequence relevant to the time period
+        """
+        params = {
+            'assetId': asset_id,
+            'startTime': parse_start_time,
+            'endTime': parse_end_time
+        }
+        response = self._http_request('GET', url_suffix=f'/uba/api/asset/{asset_id}/sequences', params=params)
+        return response
+
+    def get_notable_sequence_event_types_request(self, asset_sequence_id: str = None, search_str: str = None) -> Dict:
+        """
+        Args:
+            asset_sequence_id: ID of the asset sequence to fetch info for
+            search_str: string to search for inside display name
+
+        Returns:
+            (dict) The sequence event types response.
+        """
+        params = {
+            'assetSequenceId': asset_sequence_id,
+            'searchStr': search_str
+        }
+        response = self._http_request('GET', url_suffix=f'/uba/api/asset/sequence/{asset_sequence_id}/eventTypes',
+                                      params=params)
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -843,6 +879,54 @@ def contents_append_notable_session_details(contents, session, user, executive_u
         'LoginHost': session.get('loginHost'),
         'Accounts': session.get('accounts'),
         'executiveUserFlags': executive_user_flags
+    })
+    return contents
+
+
+def contents_append_notable_sequence_details(sequence, sequence_info, contents) -> List[Any]:
+    """Appends a dictionary of data to the base list
+
+    Args:
+        contents: base list
+        sequence: sequence object
+        sequence_info: sequence_info object
+
+    Returns:
+        A contents list with the relevant notable sequence details
+    """
+    contents.append({
+        'sequenceId': sequence.get('sequenceId'),
+        'isWhitelisted': sequence.get('isWhitelisted'),
+        'areAllTriggeredRulesWhiteListed': sequence.get('areAllTriggeredRulesWhiteListed'),
+        'hasBeenPartiallyWhiteListed': sequence_info.get('hasBeenPartiallyWhiteListed'),
+        'riskScore': round(sequence_info.get('riskScore')) if 'riskScore' in sequence_info else None,
+        'startTime': convert_unix_to_date(sequence_info.get('startTime')) if 'firstSeen' in sequence_info else None,
+        'endTime': convert_unix_to_date(sequence_info.get('endTime')) if 'lastSeen' in sequence_info else None,
+        'numOfReasons': sequence_info.get('numOfReasons'),
+        'numOfEvents': sequence_info.get('numOfEvents'),
+        'numOfUsers': sequence_info.get('numOfUsers'),
+        'numOfSecurityEvents': sequence_info.get('numOfSecurityEvents'),
+        'numOfZones': sequence_info.get('numOfZones'),
+        'numOfAssets': sequence_info.get('numOfAssets'),
+        'assetId': sequence_info.get('assetId'),
+    })
+    return contents
+
+
+def contents_append_notable_sequence_event_types(sequence, contents) -> List[Any]:
+    """Appends a dictionary of data to the base list
+
+    Args:
+        contents: base list
+        sequence: sequence object
+
+    Returns:
+        A contents list with the relevant notable sequence event types
+    """
+    contents.append({
+        'eventType': sequence.get('eventType'),
+        'displayName': sequence.get('displayName'),
+        'count': sequence.get('count')
     })
     return contents
 
@@ -1714,7 +1798,7 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
         }
     }
 
-    human_readable = tableToMarkdown(f'Notable Session {asset_id} details:', contents, removeNull=True)
+    human_readable = tableToMarkdown(f'Notable Session details:', contents, removeNull=True)
 
     return human_readable, entry_context, session_details_raw_data
 
@@ -1727,39 +1811,60 @@ def get_notable_sequence_details(client: Client, args: Dict[str, str]) -> Tuple[
         args: Dict
 
     """
-    username = args.get('username')
+    asset_id = args.get('asset_id')
     start_time = args.get('start_time', '30 days ago')
     end_time = args.get('end_time', '0 minutes ago')
     parse_start_time = convert_date_to_unix(start_time)
     parse_end_time = convert_date_to_unix(end_time)
-    contents = []
-    headers = ['SessionID', 'RiskScore', 'InitialRiskScore', 'StartTime', 'EndTime', 'LoginHost', 'Label']
 
-    user = client.user_sequence_request(username, parse_start_time, parse_end_time)
-    session = user.get('sessions')
-    if not session:
-        return f'The user {username} has no sessions in this time frame.', {}, {}
+    sequence_details_raw_data = client.get_notable_sequence_details_request(asset_id, parse_start_time, parse_end_time)
+    if not sequence_details_raw_data:
+        return f'The Asset {asset_id} has no sequence details in this time frame.', {}, {}
 
-    for session_ in session:
-        contents.append({
-            'SessionID': session_.get('sessionId'),
-            'StartTime': convert_unix_to_date(session_.get('startTime')),
-            'EndTime': convert_unix_to_date(session_.get('endTime')),
-            'InitialRiskScore': session_.get('initialRiskScore'),
-            'RiskScore': round(session_.get('riskScore')),
-            'LoginHost': session_.get('loginHost'),
-            'Label': session_.get('label')
-        })
+    contents: list = []
+    for sequence in sequence_details_raw_data:
+        sequence_info = sequence.get('sequenceInfo')
+        contents = contents_append_notable_sequence_details(sequence, sequence_info, contents)
 
     entry_context = {
-        'Exabeam.User(val.SessionID && val.SessionID === obj.SessionID)': {
-            'Username': username,
+        'Exabeam.Sequence(val.sequenceId && val.sequenceId === obj.sequenceId)': {
+            'AssetID': asset_id,
             'Session': contents
         }
     }
-    human_readable = tableToMarkdown(f'User {username} sessions information:', contents, headers, removeNull=True)
+    human_readable = tableToMarkdown('Notable sequence details:', contents, removeNull=True)
 
-    return human_readable, entry_context, user
+    return human_readable, entry_context, sequence_details_raw_data
+
+
+def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+    """  Updates records of a context table.
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    asset_sequence_id = args.get('asset_sequence_id')
+    search_str = args.get('search_str')
+    sequence_event_types_raw_data = client.get_notable_sequence_event_types_request(asset_sequence_id, search_str)
+
+    if not sequence_event_types_raw_data:
+        return f'The Asset {asset_sequence_id} has no sequence event types.', {}, {}
+
+    contents: list = []
+    for sequence in sequence_event_types_raw_data:
+        contents = contents_append_notable_sequence_event_types(sequence, contents)
+
+    entry_context = {
+        'Exabeam.SequenceEventTypes(val.eventType && val.eventType === obj.eventType)': {
+            'AssetSequenceID': asset_sequence_id,
+            'Session': contents
+        }
+    }
+    human_readable = tableToMarkdown('Sequence event types:', contents, removeNull=True)
+
+    return human_readable, entry_context, sequence_event_types_raw_data
 
 
 def main():
@@ -1812,8 +1917,8 @@ def main():
         'exabeam-watchlist-remove-items': remove_watchlist_items,
         'exabeam-get-notable-assets': get_notable_assets,
         'exabeam-get-notable-sequence-details': get_notable_sequence_details,
-        'exabeam-get-notable-session-details': get_notable_session_details
-        # 'exabeam-get-sequence-eventtypes': get_notable_sequence_eventtypes
+        'exabeam-get-notable-session-details': get_notable_session_details,
+        'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types
     }
 
     try:
