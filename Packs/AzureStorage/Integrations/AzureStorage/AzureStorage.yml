@@ -879,8 +879,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Run this command to create a blob container
+    description: Run this command to create a blob container
     execution: false
     name: azure-storage-blob-containers-create
     outputs:
@@ -919,8 +918,8 @@ script:
       isArray: false
       name: deny_encryption_scope_override
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -929,9 +928,9 @@ script:
       isArray: false
       name: public_access
       predefined:
-        - Blob
-        - Container
-        - None
+      - Blob
+      - Container
+      - None
       required: false
       secret: false
     deprecated: false
@@ -954,19 +953,19 @@ script:
       description: A name-value pair to associate with the container as metadata.
       type: String
     - contextPath: AzureStorage.BlobContainer.properties.publicAccess
-      description: Specifies whether data in the container may be accessed publicly and
-        the level of access.
+      description: Specifies whether data in the container may be accessed publicly
+        and the level of access.
       type: String
     - contextPath: AzureStorage.BlobContainer.properties.hasImmutabilityPolicy
-      description: The hasImmutabilityPolicy public property is set to true by SRP if
-        ImmutabilityPolicy has been created for this container. The hasImmutabilityPolicy
-        public property is set to false by SRP if ImmutabilityPolicy has not been created
-        for this container.
+      description: The hasImmutabilityPolicy public property is set to true by SRP
+        if ImmutabilityPolicy has been created for this container. The hasImmutabilityPolicy
+        public property is set to false by SRP if ImmutabilityPolicy has not been
+        created for this container.
       type: Boolean
     - contextPath: AzureStorage.BlobContainer.properties.hasLegalHold
-      description: The hasLegalHold public property is set to true by SRP if there are
-        at least one existing tag. The hasLegalHold public property is set to false by
-        SRP if all existing legal hold tags are cleared out.
+      description: The hasLegalHold public property is set to true by SRP if there
+        are at least one existing tag. The hasLegalHold public property is set to
+        false by SRP if all existing legal hold tags are cleared out.
       type: Boolean
   - arguments:
     - default: false
@@ -1014,8 +1013,8 @@ script:
       description: The type of the resource.
       type: String
     - contextPath: AzureStorage.BlobContainer.properties.publicAccess
-      description: Specifies whether data in the container may be accessed publicly and
-        the level of access.
+      description: Specifies whether data in the container may be accessed publicly
+        and the level of access.
       type: String
     - contextPath: AzureStorage.BlobContainer.properties.leaseStatus
       description: The lease status of the container.
@@ -1027,15 +1026,15 @@ script:
       description: Returns the date and time the container was last modified.
       type: Date
     - contextPath: AzureStorage.BlobContainer.properties.hasImmutabilityPolicy
-      description: The hasImmutabilityPolicy public property is set to true by SRP if
-        ImmutabilityPolicy has been created for this container. The hasImmutabilityPolicy
-        public property is set to false by SRP if ImmutabilityPolicy has not been created
-        for this container.
+      description: The hasImmutabilityPolicy public property is set to true by SRP
+        if ImmutabilityPolicy has been created for this container. The hasImmutabilityPolicy
+        public property is set to false by SRP if ImmutabilityPolicy has not been
+        created for this container.
       type: Boolean
     - contextPath: AzureStorage.BlobContainer.properties.hasLegalHold
-      description: The hasLegalHold public property is set to true by SRP if there are
-        at least one existing tag. The hasLegalHold public property is set to false by
-        SRP if all existing legal hold tags are cleared out.
+      description: The hasLegalHold public property is set to true by SRP if there
+        are at least one existing tag. The hasLegalHold public property is set to
+        false by SRP if all existing legal hold tags are cleared out.
       type: Boolean
   - arguments:
     - default: false
@@ -1054,7 +1053,7 @@ script:
     description: Run this command to delete a specific blob container.
     execution: false
     name: azure-storage-blob-container-delete
-  dockerimage: demisto/crypto:1.0.0.17856
+  dockerimage: demisto/crypto:1.0.0.18288
   feed: false
   isfetch: false
   longRunning: false
