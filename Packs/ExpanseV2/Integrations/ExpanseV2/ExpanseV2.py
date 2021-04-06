@@ -540,6 +540,43 @@ class Client(BaseClient):
             url_suffix='v2/exposures/ip-ports',
             params=params)
 
+    def fetch_certificates(self, params):
+        """
+        Fetches all certificates that match the provided params.
+
+        :param params: Search parameters
+        :return: List of certificate objects
+        """
+        return self._paginate(
+            method='GET',
+            url_suffix='v2/assets/certificates',
+            params=params)
+
+    def fetch_certificate(self, md5_hash):
+        """
+        Returns details for a single certificate.
+
+        :param md5_hash: Search term for certificates
+        :return: Certificate details objects
+        """
+        url = 'v2/assets/certificates/{}'.format(md5_hash)
+        return self._paginate(
+            method='GET',
+            url_suffix=url,
+            params={})
+
+    def fetch_ips(self, params):
+        """
+        Returns all ip results matching search params.
+
+        :param params: Search parameters
+        :return: List of ip objects
+        """
+        return self._paginate(
+            method='GET',
+            url_suffix='v2/assets/ips',
+            params=params)
+
 
 """ HELPER FUNCTIONS """
 
@@ -2127,6 +2164,73 @@ def get_expanse_exposure_context(data):
     }
 
 
+def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns all domains that have resolved to IP addresses a certificate has been seen on. There is no direct way to
+    correlate between certificates and domains in Expanse this does so indirectly.
+    """
+    search = args['common_name']
+    params = {
+        "commonNameSearch": search
+    }
+
+    matching_domains = []
+
+    certificates_iterator = client.fetch_certificates(params=params)
+    certificates = [certificate for certificate in certificates_iterator]
+
+    for certificate in certificates:
+        certificate_details_iterator = client.fetch_certificate(
+            md5_hash=certificate.get('certificate', {}).get('md5Hash'))
+        certificate_details = [certificate for certificate in certificate_details_iterator]
+        for ip in certificate_details.get('details', {}).get('recentIps', []):
+            params = {
+                'inetSearch': ip.get('ip'),
+                'assetType': 'DOMAIN'
+            }
+            matching_domains += client.fetch_ips(params=params)
+
+    if len(matching_domains) == 0:
+        demisto.results("No data found")
+        return
+
+    context = get_expanse_certificate_to_domain_context(common_name=search, data=matching_domains)
+
+    ec = {
+        'Expanse.IPDomains(val.SearchTerm == obj.SearchTerm)': context
+    }
+
+    hr_context = context.copy()
+    del hr_context['DomainList']  # Remove full objects from human readable response
+    human_readable = tableToMarkdown("Expanse Domains matching Certificate Common Name: {search}".format(search=search),
+                                     hr_context)
+    # return_outputs(human_readable, ec, matching_domains)
+
+    return CommandResults(
+        outputs_prefix="Expanse.IPDomains",
+        readable_output=human_readable,
+        raw_response=matching_domains,
+        outputs_key_field="SearchTerm",
+        outputs=context,
+    )
+
+
+def get_expanse_certificate_to_domain_context(common_name, data):
+    """
+    Provides custom context information for domains looked up via certificate.
+
+    :param common_name: The original search parameter
+    :param data: The data returned from the API query
+    :return: A dict of aggregated domain details
+    """
+    return {
+        "SearchTerm": common_name,
+        "TotalDomainCount": len(data),
+        "FlatDomainList": [domain.get('domain') for domain in data],
+        "DomainList": data
+    }
+
+
 """ MAIN FUNCTION """
 
 
@@ -2318,7 +2422,7 @@ def main() -> None:
             return_results(exposures_command(client, demisto.args()))
 
         elif command == 'expanse-get-domains-for-certificate':
-            return_results(domains_for_certificate_command())
+            return_results(domains_for_certificate_command(client, demisto.args()))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
