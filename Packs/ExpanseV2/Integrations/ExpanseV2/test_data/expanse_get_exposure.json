@@ -1,0 +1,165 @@
+{
+    "data": [
+        {
+            "id": "1bb22f55-673e-3156-bb73-991dc1a8d197",
+            "exposureType": "LONG_EXPIRATION_CERTIFICATE_ADVERTISEMENT",
+            "businessUnit": {
+                "id": "6b73ef6c-b230-3797-b321-c4a340169eb7",
+                "name": "Acme Latex Supply",
+                "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+            },
+            "ip": "12.4.49.74",
+            "port": "443",
+            "portNumber": 443,
+            "severity": "WARNING",
+            "certificate": {
+            "id": "Vw6RoQXvVxlCtbCBO5EMoA==",
+            "issuerAlternativeNames": "",
+            "issuerCountry": "US",
+            "issuerEmail": "",
+            "issuerLocality": "Sunnyvale",
+            "issuerName": "192.168.168.168",
+            "issuerOrg": "HTTPS Management Certificate for SonicWALL (self-signed)",
+            "issuerOrgUnit": "HTTPS Management Certificate for SonicWALL (self-signed)",
+            "issuerState": "California",
+            "publicKey": "fff",
+            "publicKeyAlgorithm": "RSA",
+            "publicKeyRsaExponent": 65537,
+            "signatureAlgorithm": "SHA1withRSA",
+            "subjectCountry": "US",
+            "subjectEmail": "fff",
+            "subjectLocality": "Sunnyvale",
+            "subjectName": "192.168.168.168",
+            "subjectOrg": "HTTPS Management Certificate for SonicWALL (self-signed)",
+            "subjectOrgUnit": "HTTPS Management Certificate for SonicWALL (self-signed)",
+            "subjectState": "California",
+            "serialNumber": "1533615873",
+            "validNotBefore": "1970-01-01T00:00:01Z",
+            "validNotAfter": "2038-01-19T03:14:07Z",
+            "version": "3",
+            "isSelfSigned": true,
+            "isWildcard": false,
+            "isDomainControlValidated": false,
+            "publicKeyBits": 2048,
+            "numCertificateObservations": 0,
+            "numKeyObservations": 0
+        },
+            "firstObservation": {
+            "id": "05cbdfc6-48fa-3c6d-80ac-4ad39d5ece88",
+            "ip": "12.4.49.74",
+            "scanned": "2019-09-04T14:23:38Z",
+            "portNumber": 443,
+            "geolocation": {
+                "city": "WESTSACRAMENTO",
+                "latitude": 38.5921,
+                "longitude": -121.5456,
+                "regionCode": "CA",
+                "countryCode": "US"
+            },
+            "qrispTaskId": 29825013,
+            "portProtocol": "TCP",
+            "configuration": {
+                "certificate": {
+                    "id": "570e91a1-05ef-3719-82b5-b0813b910ca0",
+                    "md5Hash": "Vw6RoQXvVxlCtbCBO5EMoA==",
+                    "pemSha1": "GkB2d6a9Us_urkxp14wwAkp1VqM=",
+                    "version": "3",
+                    "issuerOrg": "HTTPS Management Certificate for SonicWALL (self-signed)",
+                    "pemSha256": "uuAMf7Q_qEaStP_lU-j-m6CflNqkoZsHysSrHLhwy78=",
+                    "issuerName": "192.168.168.168",
+                    "subjectOrg": "HTTPS Management Certificate for SonicWALL (self-signed)",
+                    "issuerEmail": "",
+                    "issuerState": "California",
+                    "subjectName": "192.168.168.168",
+                    "serialNumber": "1533615873",
+                    "subjectEmail": "",
+                    "subjectState": "California",
+                    "issuerCountry": "US",
+                    "issuerOrgUnit": "HTTPS Management Certificate for SonicWALL (self-signed)",
+                    "publicKeyBits": 2048,
+                    "publicKeySpki": "p",
+                    "validNotAfter": "2038-01-19T03:14:07Z",
+                    "issuerLocality": "Sunnyvale",
+                    "subjectCountry": "US",
+                    "subjectOrgUnit": "HTTPS Management Certificate for SonicWALL (self-signed)",
+                    "validNotBefore": "1970-01-01T00:00:01Z",
+                    "subjectLocality": "Sunnyvale",
+                    "publicKeyAlgorithm": "RSA",
+                    "signatureAlgorithm": "SHA1withRSA",
+                    "publicKeyRsaExponent": 65537,
+                    "issuerAlternativeNames": "",
+                    "subjectAlternativeNames": ""
+                },
+                "validWhenScanned": true
+            }
+        },
+            "lastObservation": {
+            "id": "747e01c9-2ea6-34ac-90d9-0704c4fe32b1",
+            "ip": "12.4.49.74",
+            "scanned": "2020-04-21T03:04:32Z",
+            "portNumber": 443,
+            "geolocation": {
+                "city": "WESTSACRAMENTO",
+                "latitude": 38.5921,
+                "longitude": -121.5456,
+                "regionCode": "CA",
+                "countryCode": "US"
+            },
+            "qrispTaskId": 41034108,
+            "portProtocol": "TCP",
+            "configuration": {
+                "certificate": {
+                    "id": "570e91a1-05ef-3719-82b5-b0813b910ca0",
+                    "issuer": "C",
+                    "version": "3",
+                    "issuerOrg": "HTTPS Management Certificate for SonicWALL (self-signed)",
+                    "pemSha256": "uuAMf7Q_qEaStP_lU-j-m6CflNqkoZsHysSrHLhwy78=",
+                    "publicKey": "M",
+                    "issuerName": "192.168.168.168",
+                    "subjectOrg": "HTTPS Management Certificate for SonicWALL (self-signed)",
+                    "issuerEmail": "",
+                    "issuerState": "California",
+                    "subjectName": "192.168.168.168",
+                    "serialNumber": "1533615873",
+                    "subjectEmail": "",
+                    "subjectState": "California",
+                    "issuerCountry": "US",
+                    "issuerOrgUnit": "HTTPS Management Certificate for SonicWALL (self-signed)",
+                    "publicKeyBits": 2048,
+                    "publicKeySpki": "p",
+                    "validNotAfter": "2038-01-19T03:14:07Z",
+                    "issuerLocality": "Sunnyvale",
+                    "subjectCountry": "US",
+                    "subjectOrgUnit": "HTTPS Management Certificate for SonicWALL (self-signed)",
+                    "validNotBefore": "1970-01-01T00:00:01Z",
+                    "subjectLocality": "Sunnyvale",
+                    "publicKeyModulus": "",
+                    "publicKeyAlgorithm": "RSA",
+                    "signatureAlgorithm": "SHA1withRSA",
+                    "publicKeyRsaExponent": 65537,
+                    "issuerAlternativeNames": "",
+                    "subjectAlternativeNames": ""
+                },
+                "validWhenScanned": true
+            }
+        },
+        "statuses": {
+            "remediation": [
+                {
+                    "id": "7b379428-4d12-4fbd-9b3f-15a04d7e4e11",
+                    "comment": "Reached out to device owner",
+                    "created": "2020-04-08T19:17:31.514017Z",
+                    "modified": "2020-04-08T19:17:31.514536Z",
+                    "stage": 100,
+                    "user": "60709972-10f2-4a22-8a9a-978b264f964d",
+                    "exposureId": "1bb22f55-673e-3156-bb73-991dc1a8d197",
+                    "provider": "s",
+                    "username": "beta+vandelay@expanseinc.com"
+                }
+            ],
+            "snooze": []
+        },
+            "provider": "s"
+        }
+    ]
+}

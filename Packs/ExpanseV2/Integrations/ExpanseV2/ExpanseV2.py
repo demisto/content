@@ -537,7 +537,7 @@ class Client(BaseClient):
     def get_exposures_ips(self, params):
         return self._paginate(
             method='GET',
-            url_suffix='exposures/ip-ports',
+            url_suffix='v2/exposures/ip-ports',
             params=params)
 
 
@@ -2053,34 +2053,31 @@ def exposures_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     searches by ip for exposure data from Expanse
     """
-    ips = argToList(args.get('ip'))
-    if len(ips) == 0:
-        raise ValueError('ip(s) not specified')
-
-    # trim down the list to the max number of supported results
-    if len(ips) > MAX_RESULTS:
-        ips = ips[:MAX_RESULTS]
+    ip = args.get('ip')
 
     params = {
-        "inet": ips,
+        "inet": ip,
         "activityStatus": "active"
     }
+
     exposures_iterator = client.get_exposures_ips(params)
+    exposures_list = [exposure for exposure in exposures_iterator]
 
-    #expanse_exposure_context_list = [get_expanse_exposure_context(exposure)]
-    for exposure in exposures_iterator:
-        expanse_exposure_context = get_expanse_exposure_context(exposure)
+    expanse_exposure_context = get_expanse_exposure_context(exposures_list)
 
-        ec = {
-            'Expanse.Exposures(val.SearchTerm == obj.SearchTerm)': expanse_exposure_context
-        }
+    raw_exposures = expanse_exposure_context['Exposures']
+    del expanse_exposure_context['Exposures']  # Remove exposure objects from human readable response
+    human_readable = tableToMarkdown("Expanse Exposure information for: {search}".format(search=ip),
+                                     expanse_exposure_context)
+    expanse_exposure_context['Exposures'] = raw_exposures
 
-        raw_exposures = expanse_exposure_context['Exposures']
-        del expanse_exposure_context['Exposures']  # Remove exposure objects from human readable response
-        human_readable = tableToMarkdown("Expanse Exposure information for: {search}".format(search=ips),
-                                         expanse_exposure_context)
-        expanse_exposure_context['Exposures'] = raw_exposures
-        return_outputs(human_readable, ec, exposures)
+    return CommandResults(
+        outputs_prefix="Expanse.Exposures",
+        readable_output=human_readable,
+        raw_response=exposures_list,
+        outputs_key_field="SearchTerm",
+        outputs=expanse_exposure_context,
+    )
 
 
 def get_expanse_exposure_context(data):

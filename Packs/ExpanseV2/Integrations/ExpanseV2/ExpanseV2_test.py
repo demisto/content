@@ -1729,3 +1729,20 @@ def test_expanse_list_risk_rules(requests_mock):
     assert result.outputs_prefix == "Expanse.RiskRule"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_risk_rules["data"][:int(MOCK_LIMIT)]
+
+
+def test_exposures(requests_mock):
+    from ExpanseV2 import Client, exposures_command
+
+    ip_to_test = "12.4.49.74"
+
+    mock_get_exposure = util_load_json("test_data/expanse_get_exposure.json")
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+    requests_mock.get("https://example.com/api/v2/exposures/ip-ports", json=mock_get_exposure)
+
+    results = exposures_command(client, {'ip': ip_to_test})
+
+    assert results.outputs_prefix == "Expanse.Exposures"
+    assert results.outputs_key_field == "SearchTerm"
+    assert results.outputs['SearchTerm'] == ip_to_test
+    assert results.outputs['WarningExposureCount'] == 1
