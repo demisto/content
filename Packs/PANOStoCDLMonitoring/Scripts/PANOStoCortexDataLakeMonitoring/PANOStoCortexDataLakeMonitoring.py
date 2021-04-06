@@ -51,20 +51,18 @@ def query_cdl(fw_monitor_list: list) -> CommandResults:
     :param fw_monitor_list: list of FWs serials
     :return: CommandResults object containing the serials which sent logs and that did not.
     """
-    no_logs_str = "### Logs traffic table\n**No entries.**\n"
+    no_logs_str = "### Logs table\n**No entries.**\n"
     firewalls_with_logs = []
     firewalls_without_logs = []
     start_time = datetime.utcnow() - timedelta(hours=12)  # Looking for the last 12 hours of logs
     start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
     query = {'fields': 'all', 'time_range': '1 day', 'limit': str(1), 'start_time': start_time}
     for current_fw in fw_monitor_list:
-        if len(current_fw) not in (12, 15):  # VM serial are 15 digits and FW serial are 12 digits
-            raise Exception(f'{current_fw} - incorrect Firewall serial format.')
         query['query'] = f'log_source_id = \'{current_fw}\''
 
-        query_result = demisto.executeCommand("cdl-query-traffic-logs", query)
+        query_result = demisto.executeCommand("cdl-query-logs", query)
         if is_error(query_result):
-            raise Exception(f'Querying traffic logs in Cortex Data Lake failed. {query_result[0]["Contents"]}')
+            raise Exception(f'Querying logs in Cortex Data Lake failed. {query_result[0]["Contents"]}')
 
         if query_result:
             if query_result[0]['HumanReadable'] == no_logs_str:
@@ -108,6 +106,9 @@ def main():
 
         # Log the list of firewalls to be monitored
         demisto.debug(f'List of FW serials: {fw_monitor_list}')
+        for current_fw in fw_monitor_list:
+            if len(current_fw) not in (12, 15):  # VM serial are 15 digits and FW serial are 12 digits
+                raise Exception(f'{current_fw} - incorrect Firewall serial number.')
         return_results(query_cdl(fw_monitor_list))
 
     except Exception as err:
