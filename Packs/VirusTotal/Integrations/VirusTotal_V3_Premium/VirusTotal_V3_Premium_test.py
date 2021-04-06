@@ -53,16 +53,6 @@ class TestFetchIncidents:
     class ClientMock(Client):
         pass
 
-    def test_fetch_incidents_with_new_incident(self, mocker):
-        mocker.patch.object(
-            self.ClientMock, 'list_notifications',
-            return_value={'data': [{'attributes': {'date': 1613473604}}]}
-        )
-        fetch_time = parse('1613473604')
-        incidents, time = fetch_incidents(self.ClientMock, {}, fetch_time)
-        assert incidents[0]['occurred'] == '2021-02-16T13:06:44Z'
-        assert time == fetch_time + timedelta(seconds=1)
-
     def test_fetch_incidents_with_no_incidents(self, mocker):
         """fetch time should not change"""
         mocker.patch.object(
