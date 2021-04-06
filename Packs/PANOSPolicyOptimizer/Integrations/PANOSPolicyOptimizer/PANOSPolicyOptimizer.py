@@ -47,7 +47,7 @@ class Client:
                               verify=self.verify)
             # Use a GET command to the base URL to get the ServerToken which looks like this:
             #  window.Pan.st.st.st539091 = "8PR8ML4A67PUMD3NU00L3G67M4958B996F61Q97T"
-            response = self.session_post(url=f'{self.session_metadata["base_url"]}/')
+            response = self.session.post(url=f'{self.session_metadata["base_url"]}/', verify=self.verify)
         except Exception as err:
             raise Exception(f'Failed to login. Please double-check the credentials and the server URL. {str(err)}')
         # Use RegEx to parse the ServerToken string from the JavaScript variable
@@ -59,7 +59,7 @@ class Client:
         return match.group(1)
 
     def logout(self):
-        self.session_post(url=f'{self.session_metadata["base_url"]}/php/logout.php?', verify=False)
+        self.session.post(url=f'{self.session_metadata["base_url"]}/php/logout.php?', verify=False)
 
     def token_generator(self) -> str:
         """
