@@ -1,9 +1,8 @@
-import pytest
-from dateparser import parse
-
-from VirusTotal_V3_Premium import get_last_run_time, get_time_range_object, decrease_data_size, fetch_incidents, Client
-import freezegun
 from datetime import datetime, timedelta
+
+import pytest
+from VirusTotal_V3_Premium import get_last_run_time, get_time_range_object, decrease_data_size, fetch_incidents, Client
+from dateparser import parse
 
 
 class TestTimeHelpers:
