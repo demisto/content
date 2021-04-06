@@ -1556,6 +1556,7 @@ def file_scan(client: Client, args: dict) -> List[CommandResults]:
                 get_file_context(entry_id)
             )
             id_ = data.get('id')
+            demisto.debug(f'Result from vt-scan-file {entry_id=} {id_=} {data.get("type")=}')
             id_ = get_working_id(id_, entry_id)
             data['id'] = id_
             context = {
