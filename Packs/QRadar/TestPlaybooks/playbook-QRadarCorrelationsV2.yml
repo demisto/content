@@ -51,7 +51,7 @@ tasks:
       GetOnlyCREEvents:
         simple: All
       ID:
-        simple: '482'
+        simple: '490'
       MaxCorrelationCount:
         simple: '100'
       MaxLogsCount:
