@@ -540,6 +540,8 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
     dns_response = []
     evidence_md5 = []
     evidence_text = []
+    feed_related_indicators = []
+    behavior = []
 
     # When only one report is in response, it's returned as a single json object and not a list.
     if not isinstance(reports, list):
@@ -548,21 +550,31 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
     for report in reports:
         if 'network' in report and report["network"]:
             if 'UDP' in report["network"]:
-                if '-ip' in report["network"]["UDP"]:
-                    udp_ip.append(report["network"]["UDP"]["-ip"])
-                if '-port' in report["network"]["UDP"]:
-                    udp_port.append(report["network"]["UDP"]["-port"])
+                for udp_obj in report["network"]["UDP"]:
+                    if '-ip' in udp_obj:
+                        udp_ip.append(udp_obj["-ip"])
+                        feed_related_indicators.append({'value': udp_obj["-ip"], 'type': 'IP'})
+                    if '-port' in udp_obj:
+                        udp_port.append(udp_obj["-port"])
             if 'TCP' in report["network"]:
-                if '-ip' in report["network"]["TCP"]:
-                    tcp_ip.append(report["network"]["TCP"]["-ip"])
-                if '-port' in report["network"]["TCP"]:
-                    tcp_port.append(report["network"]["TCP"]['-port'])
+                for tcp_obj in report["network"]["TCP"]:
+                    if '-ip' in tcp_obj:
+                        tcp_ip.append(tcp_obj["-ip"])
+                        feed_related_indicators.append({'value': tcp_obj["-ip"], 'type': 'IP'})
+                    if '-port' in tcp_obj:
+                        tcp_port.append(tcp_obj['-port'])
             if 'dns' in report["network"]:
                 for dns_obj in report["network"]["dns"]:
                     if '-query' in dns_obj:
                         dns_query.append(dns_obj['-query'])
                     if '-response' in dns_obj:
                         dns_response.append(dns_obj['-response'])
+            if 'url' in report["network"]:
+                if '@host' in report["network"]["url"]:
+                    url = report["network"]["url"]["@host"]
+                if '@uri' in report["network"]["url"]:
+                    url += report["network"]["url"]["@uri"]
+                feed_related_indicators.append({'value': url, 'type': 'URL'})
 
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
@@ -571,6 +583,25 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                         evidence_md5.append(report["evidence"]["file"]["entry"]["-md5"])
                     if '-text' in report["evidence"]["file"]["entry"]:
                         evidence_text.append(report["evidence"]["file"]["entry"]["-text"])
+
+        if 'elf_info' in report and report["elf_info"]:
+            if 'Domains' in report["elf_info"]:
+                if isinstance(report["elf_info"]["Domains"], dict) and 'entry' in report["elf_info"]["Domains"]:
+                    for domain in report["elf_info"]["Domains"]["entry"]:
+                        feed_related_indicators.append({'value': domain, 'type': 'Domain'})
+            if 'IP_Addresses' in report["elf_info"]:
+                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in report["elf_info"]["IP_Addresses"]:
+                    for ip in report["elf_info"]["IP_Addresses"]["entry"]:
+                        feed_related_indicators.append({'value': ip, 'type': 'IP'})
+            if 'suspicious' in report["elf_info"]:
+                if 'entry' in report["elf_info"]['suspicious']:
+                    for entry_obj in report["elf_info"]['suspicious']['entry']:
+                        if '#text' in entry_obj and '@description' in entry_obj:
+                            behavior.append({'details': entry_obj['#text'], 'action': entry_obj['@description']})
+            if 'URLs' in report["elf_info"]:
+                if 'entry' in report["elf_info"]['URLs']:
+                    for url in report["elf_info"]['URLs']['entry']:
+                        feed_related_indicators.append({'value': url, 'type': 'URL'})
 
     outputs = {
         'Status': 'Success',
@@ -624,7 +655,10 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                 'SHA256': file_info["sha256"],
                 'Size': file_info["size"],
                 'Name': file_info["filename"] if 'filename' in file_info else None,
-                'Malicious': {'Vendor': 'WildFire'}
+                'Malicious': {'Vendor': 'WildFire'},
+                'FeedRelatedIndicators': feed_related_indicators,
+                'Tags': ['malware'],
+                'Behavior': behavior
             }
         else:
             dbot_score_file = 1
@@ -690,7 +724,7 @@ def wildfire_get_url_report(url: str):
                 "WildFire.Report(val.URL == obj.URL)": entry_context
             }
         })
-        sys.exit(0)
+        return None, None
 
     report = result.get('report', None)
     if not report:
@@ -705,7 +739,7 @@ def wildfire_get_url_report(url: str):
                 "WildFire.Report(val.URL == obj.URL)": entry_context
             }
         })
-        sys.exit(0)
+        return None, None
 
     j_report = json.loads(report)
     entry_context['Status'] = 'Success'
@@ -745,7 +779,7 @@ def wildfire_get_file_report(file_hash: str):
                 'DBotScore': dbot
             }
         })
-        sys.exit(0)
+        return None, None, None
 
     task_info = json_res["wildfire"].get('task_info', None)
     reports = task_info.get('report', None) if task_info else None
@@ -764,7 +798,7 @@ def wildfire_get_file_report(file_hash: str):
                     entry_context
             }
         })
-        sys.exit(0)
+        return None, None, None
     return file_hash, reports, file_info
 
 
@@ -789,14 +823,16 @@ def wildfire_get_report_command():
     for element in inputs:
         if url_report:
             url, report = wildfire_get_url_report(element)
-            headers = ['sha256', 'type', 'verdict', 'iocs']
-            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report, headers=headers,
-                                             removeNull=True)
-            entry_context = {"WildFire.Report(val.URL == obj.URL)": report}
-            return_outputs(human_readable, entry_context, report)
+            if url is not None:
+                headers = ['sha256', 'type', 'verdict', 'iocs']
+                human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report, headers=headers,
+                                                 removeNull=True)
+                entry_context = {"WildFire.Report(val.URL == obj.URL)": report}
+                return_outputs(human_readable, entry_context, report)
         else:
             ioc, report, file_info = wildfire_get_file_report(element)
-            create_file_report(ioc, report, file_info, format_, verbose)
+            if ioc is not None:
+                create_file_report(ioc, report, file_info, format_, verbose)
 
 
 def wildfire_file_command():
@@ -810,7 +846,8 @@ def wildfire_file_command():
             })
         else:
             file_hash, report, file_info = wildfire_get_file_report(element)
-            create_file_report(file_hash, report, file_info, 'xml', False)
+            if file_hash is not None:
+                create_file_report(file_hash, report, file_info, 'xml', False)
 
 
 def wildfire_get_sample(file_hash):

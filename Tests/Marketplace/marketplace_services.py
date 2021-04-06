@@ -4,6 +4,8 @@ import stat
 import subprocess
 import fnmatch
 import re
+from pprint import pformat
+import glob
 import git
 import sys
 import shutil
@@ -18,18 +20,19 @@ import logging
 import warnings
 from distutils.util import strtobool
 from distutils.version import LooseVersion
-from datetime import datetime
+from datetime import datetime, timedelta
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from Tests.scripts.utils.content_packs_util import IGNORED_FILES
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
-from typing import Tuple, Any, Union
+from typing import Tuple, Any, Union, List
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 LANDING_PAGE_SECTIONS_PATH = os.path.abspath(os.path.join(__file__, '../landingPage_sections.json'))
+TRENDING_TAG_NAME = 'Trending'
 
 
 class BucketUploadFlow(object):
@@ -74,6 +77,7 @@ class GCPConfig(object):
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     DOWNLOADS_TABLE = "oproxy-dev.shared_views.top_packs"  # packs downloads statistics table
+    TOP_PACKS_14_DAYS_TABLE = 'oproxy-dev.shared_views.top_packs_14_days'
     BIG_QUERY_MAX_RESULTS = 2000  # big query max row results
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
@@ -185,6 +189,8 @@ class Pack(object):
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
+    PACK_IGNORE = ".pack-ignore"
+    SECRETS_IGNORE = ".secrets-ignore"
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -583,7 +589,7 @@ class Pack(object):
             return ""
 
     @staticmethod
-    def _get_search_rank(tags, certification, content_items):
+    def _get_search_rank(name, tags, certification, content_items):
         """ Returns pack search rank.
 
         The initial value is 0
@@ -594,6 +600,7 @@ class Pack(object):
         the pack's search rank will decrease by 50
 
         Args:
+            name (str): the pack's name.
             tags (str): the pack's tags.
             certification (str): certification value from pack_metadata, if exists.
             content_items (dict): all the pack's content items, including integrations info
@@ -610,6 +617,9 @@ class Pack(object):
             search_rank += 10
         if certification == Metadata.CERTIFIED:
             search_rank += 10
+
+        if name == 'DBot Truth Bombs':
+            search_rank += 50
 
         if content_items:
             integrations = content_items.get("integration")
@@ -649,7 +659,7 @@ class Pack(object):
 
     def _parse_pack_metadata(self, user_metadata, pack_content_items, pack_id, integration_images, author_image,
                              dependencies_data, server_min_version, build_number, commit_hash, downloads_count,
-                             is_feed_pack=False, landing_page_sections=None):
+                             is_feed_pack=False, landing_page_sections=None, trending_packs=None):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -712,9 +722,19 @@ class Pack(object):
                 pack_metadata['tags'].append('New')
             if days_since_creation > 30 and 'New' in pack_metadata['tags']:
                 pack_metadata['tags'].remove('New')
+        if trending_packs:
+            if TRENDING_TAG_NAME in pack_metadata['tags']:
+                if self._pack_name not in trending_packs:
+                    logging.debug(f'Removing tag "{TRENDING_TAG_NAME}" from pack "{self._pack_name}"')
+                    pack_metadata['tags'].remove(TRENDING_TAG_NAME)
+            else:
+                if self._pack_name in trending_packs:
+                    logging.debug(f'Appending tag "{TRENDING_TAG_NAME}" into pack "{self._pack_name}"')
+                    pack_metadata['tags'].append(TRENDING_TAG_NAME)
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
-        pack_metadata['searchRank'] = Pack._get_search_rank(tags=pack_metadata['tags'],
+        pack_metadata['searchRank'] = Pack._get_search_rank(name=pack_metadata['name'],
+                                                            tags=pack_metadata['tags'],
                                                             certification=pack_metadata['certification'],
                                                             content_items=pack_content_items)
 
@@ -902,7 +922,7 @@ class Pack(object):
 
             secondary_encryption_key_output_file = zip_pack_path.replace("_not_encrypted.zip", ".enc2.zip")
             full_command_with_secondary_encryption = f'./encryptor ./{pack_name}_not_encrypted.zip ' \
-                f'{secondary_encryption_key_output_file} "{secondary_encryption_key}"'
+                                                     f'{secondary_encryption_key_output_file} "{secondary_encryption_key}"'
             subprocess.call(full_command_with_secondary_encryption, shell=True)
 
             new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
@@ -947,7 +967,7 @@ class Pack(object):
             if stdout:
                 logging.info(str(stdout))
             if stderr:
-                logging.error(f"Error: Premium pack {self. _pack_name} should be encrypted, but isn't.")
+                logging.error(f"Error: Premium pack {self._pack_name} should be encrypted, but isn't.")
                 return False
             return True
 
@@ -1039,9 +1059,12 @@ class Pack(object):
                     modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
 
                     if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
-                        logging.info(f"Detected modified files in {self._pack_name} pack")
-                        task_status, pack_was_modified = True, True
-                        return
+                        if not is_ignored_pack_file(modified_file_path_parts):
+                            logging.info(f"Detected modified files in {self._pack_name} pack")
+                            task_status, pack_was_modified = True, True
+                            return
+                        else:
+                            logging.debug(f'{modified_file.a_path} is an ignored file')
 
             task_status = True
         except Exception:
@@ -1097,15 +1120,18 @@ class Pack(object):
                 else:
                     _pack_artifacts_path = pack_artifacts_path
 
-                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}', f'{self._pack_name}.enc2')
+                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}',
+                                                                                f'{self._pack_name}.enc2')
 
                 blob = storage_bucket.blob(secondary_encryption_key_bucket_path)
                 blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
                 with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
                     blob.upload_from_file(pack_zip)
 
-                print(f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
-                shutil.copy(secondary_encryption_key_artifacts_path, f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
+                print(
+                    f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
+                shutil.copy(secondary_encryption_key_artifacts_path,
+                            f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
@@ -1607,7 +1633,7 @@ class Pack(object):
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
                         packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df, pack_was_modified,
-                        landing_page_sections):
+                        landing_page_sections, trending_packs=None):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1623,6 +1649,7 @@ class Pack(object):
             commit_hash (str): current commit hash.
             packs_statistic_df (pandas.core.frame.DataFrame): packs downloads statistics table.
             landing_page_sections (dict): landingPage sections and the packs in each one of them.
+            trending_packs: A list with 20 pack names that has highest download rate in the last 14 days
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -1659,7 +1686,8 @@ class Pack(object):
                                                            build_number=build_number, commit_hash=commit_hash,
                                                            downloads_count=self.downloads_count,
                                                            is_feed_pack=self._is_feed,
-                                                           landing_page_sections=landing_page_sections)
+                                                           landing_page_sections=landing_page_sections,
+                                                           trending_packs=trending_packs)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
@@ -1670,6 +1698,20 @@ class Pack(object):
             logging.exception(f"Failed in formatting {self._pack_name} pack metadata.")
         finally:
             return task_status
+
+    def pack_created_in_time_delta(self, time_delta: timedelta, index_folder_path: str) -> bool:
+        """
+        Checks if pack created before delta specified in the 'time_delta' argument and return boolean according
+        to the result
+        Args:
+            time_delta: time_delta to check if pack was created before
+            index_folder_path: downloaded index folder directory path.
+
+        Returns:
+            True if pack was created before the time_delta from now, and False otherwise.
+        """
+        pack_creation_time_str = self._get_pack_creation_date(index_folder_path)
+        return datetime.utcnow() - datetime.strptime(pack_creation_time_str, Metadata.DATE_FORMAT) < time_delta
 
     def _get_pack_creation_date(self, index_folder_path):
         """ Gets the pack created date.
@@ -2218,6 +2260,24 @@ class Pack(object):
         ])
 
 
+class PackIgnored(object):
+    """ A class that represents all pack files/directories to be ignored if a change is detected in any of them
+
+    ROOT_FILES: The files in the pack root directory
+    NESTED_FILES: The files to be ignored inside the pack entities directories. Empty list = all files.
+    NESTED_DIRS: The 2nd level directories under the pack entities directories to ignore all of their files.
+
+    """
+    ROOT_FILES = [Pack.SECRETS_IGNORE, Pack.PACK_IGNORE]
+    NESTED_FILES = {
+        PackFolders.INTEGRATIONS.value: ["README.md", "Pipfile", "Pipfile.lock", "_test.py", "commands.txt"],
+        PackFolders.SCRIPTS.value: ["README.md", "Pipfile", "Pipfile.lock", "_test.py"],
+        PackFolders.TEST_PLAYBOOKS.value: [],
+        PackFolders.PLAYBOOKS.value: ["_README.md"],
+    }
+    NESTED_DIRS = [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value]
+
+
 # HELPER FUNCTIONS
 
 
@@ -2411,6 +2471,54 @@ def get_packs_statistics_dataframe(bq_client):
     return packs_statistic_table
 
 
+def filter_packs_from_before_3_months(pack_list_to_filter: list, index_folder_path: str) -> List[str]:
+    """
+    Filtering packs from 'pack_list_to_filter' that were created more than 3 months ago by checking in the index file
+    Args:
+        pack_list_to_filter: The list of packs sorted by download rate to filter by creation date.
+        index_folder_path: The path in which the index.zip file was unzipped into.
+
+    Returns:
+        A list with pack names that were created within the last 3 months.
+    """
+    index_packs = {os.path.basename(pack_path): Pack(os.path.basename(pack_path), pack_path) for pack_path in
+                   glob.glob(f'{index_folder_path}/*') if os.path.isdir(pack_path)}
+    three_months_delta = timedelta(days=90)
+    filtered_packs_list = []
+    for pack_name in pack_list_to_filter:
+        if index_packs.get(pack_name) and index_packs[pack_name].pack_created_in_time_delta(three_months_delta,
+                                                                                            index_folder_path):
+            filtered_packs_list.append(pack_name)
+    logging.debug(f'packs with less than 3 months creation time: {pformat(filtered_packs_list)}')
+    return filtered_packs_list
+
+
+def get_trending_packs(bq_client, index_folder_path: str) -> list:
+    """
+    Updates the landing page sections data with Trending packs.
+    Trending packs: top 20 downloaded packs in the last 14 days.
+    Args:
+        bq_client (google.cloud.bigquery.client.Client): The bigquery client with proper permissions to execute the query.
+        index_folder_path (str): the full path of extracted index folder.
+    Returns:
+        A list with 20 pack names that has the highest download rate.
+    """
+    query = f"SELECT pack_name FROM `{GCPConfig.TOP_PACKS_14_DAYS_TABLE}` ORDER BY num_count DESC"
+    packs_sorted_by_download_count_dataframe = bq_client.query(query).result().to_dataframe()
+    packs_sorted_by_download_count = [pack_array[0] for pack_array in
+                                      packs_sorted_by_download_count_dataframe.to_numpy()]
+    filtered_pack_list = filter_packs_from_before_3_months(packs_sorted_by_download_count, index_folder_path)
+    top_downloaded_packs = filtered_pack_list[:20]
+    current_iteration_index = 0
+    while len(top_downloaded_packs) < 20:
+        current_pack = packs_sorted_by_download_count[current_iteration_index]
+        if current_pack not in top_downloaded_packs:
+            top_downloaded_packs.append(current_pack)
+        current_iteration_index += 1
+    logging.debug(f'Found the following trending packs {pformat(top_downloaded_packs)}')
+    return top_downloaded_packs
+
+
 def input_to_list(input_data, capitalize_input=False):
     """ Helper function for handling input list or str from the user.
 
@@ -2588,3 +2696,39 @@ def get_last_upload_commit_hash(content_repo, index_folder_path):
         logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
                          f'repo. Additional info:\n {e}')
         sys.exit(1)
+
+
+def is_ignored_pack_file(modified_file_path_parts):
+    """ Indicates whether a pack file needs to be ignored or not.
+
+    Args:
+        modified_file_path_parts: The modified file parts, e.g. if file path is "a/b/c" then the
+         parts list is ["a", "b", "c"]
+
+    Returns:
+        (bool): True if the file should be ignored, False otherwise
+
+    """
+    for file_suffix in PackIgnored.ROOT_FILES:
+        if file_suffix in modified_file_path_parts:
+            return True
+
+    for pack_folder, file_suffixes in PackIgnored.NESTED_FILES.items():
+        if pack_folder in modified_file_path_parts:
+            if not file_suffixes:  # Ignore all pack folder files
+                return True
+
+            for file_suffix in file_suffixes:
+                if file_suffix in modified_file_path_parts[-1]:
+                    return True
+
+    for pack_folder in PackIgnored.NESTED_DIRS:
+        if pack_folder in modified_file_path_parts:
+            pack_folder_path = os.sep.join(modified_file_path_parts[:modified_file_path_parts.index(pack_folder) + 1])
+            file_path = os.sep.join(modified_file_path_parts)
+            for folder_path in [f for f in glob.glob(os.path.join(pack_folder_path, '*/*')) if os.path.isdir(f)]:
+                # Checking for all 2nd level directories. e.g. test_data directory
+                if file_path.startswith(folder_path):
+                    return True
+
+    return False

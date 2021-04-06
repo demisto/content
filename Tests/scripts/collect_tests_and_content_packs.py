@@ -14,6 +14,7 @@ from distutils.version import LooseVersion
 from typing import Dict, Tuple, Union, Optional
 
 import demisto_sdk.commands.common.tools as tools
+from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
 from Tests.scripts.utils import collect_helpers
@@ -793,6 +794,27 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
     return None
 
 
+def get_packs_from_landing_page(branch_name: str) -> set:
+    """
+    Parses the changes made by the current branch to the landing page sections file into modified packs.
+    These modified packs will have the metadata files changed.
+    Args:
+        branch_name: The name of the branch to compare changes from origin/master
+
+    Returns:
+        A set of packs that needs to be updated.
+    """
+    with open(LANDING_PAGE_SECTIONS_JSON_PATH, 'r') as file:
+        landing_page_sections_content = json.load(file)
+    landing_page_sections_keys = landing_page_sections_content.keys()
+    change_string = tools.run_command(f'git diff origin/master...{branch_name} {LANDING_PAGE_SECTIONS_JSON_PATH}')
+    changed_packs = set()
+    for changed_group in re.findall(r'[-+][ ]+"(.*)"', change_string):
+        if changed_group not in landing_page_sections_keys:
+            changed_packs.add(changed_group)
+    return changed_packs
+
+
 def get_test_from_conf(branch_name, conf=deepcopy(CONF)):
     tests = set([])
     changed = set([])
@@ -1081,8 +1103,17 @@ def get_test_list_and_content_packs_to_install(files_string,
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
-    (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
-     modified_packs, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
+    modified_files_instance = get_modified_files_for_testing(files_string)
+
+    modified_files_with_relevant_tests = modified_files_instance.modified_files
+    modified_tests_list = modified_files_instance.modified_tests
+    changed_common = modified_files_instance.changed_common_files
+    is_conf_json = modified_files_instance.is_conf_json
+    sample_tests = modified_files_instance.sample_tests
+    modified_packs = modified_files_instance.modified_metadata
+    is_reputations_json = modified_files_instance.is_reputations_json
+    is_indicator_json = modified_files_instance.is_indicator_json
+    is_landing_page_sections_json = modified_files_instance.is_landing_page_sections_json
 
     all_modified_files_paths = set(
         modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
@@ -1121,6 +1152,9 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
+
+    if is_landing_page_sections_json:
+        packs_to_install |= get_packs_from_landing_page(branch_name)
 
     if changed_common:
         tests.add('TestCommonPython')
