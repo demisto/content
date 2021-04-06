@@ -4,88 +4,6 @@ from CommonServerPython import *
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' CONSTANTS '''
-
-SCHEMA: dict = {
-    "_id": "00000000",
-    "_parent": None,
-    "_routing": "00000000",
-    "_type": "case",
-    "_version": 41,
-    "caseId": 30,
-    "createdAt": 1595342673924,
-    "createdBy": "admin",
-    "customFields": {},
-    "description": "description",
-    "endDate": 1595346352635,
-    "flag": False,
-    "id": "00000000",
-    "metrics": {},
-    "observables": [
-        {
-            "_id": "00000000",
-            "_parent": "00000000",
-            "_routing": "00000000",
-            "_type": "case_artifact",
-            "_version": 1,
-            "createdAt": 1595342693106,
-            "createdBy": "admin",
-            "data": "1.1.1.1",
-            "dataType": "ip",
-            "id": "00000000",
-            "ioc": True,
-            "message": "message",
-            "reports": {},
-            "sighted": True,
-            "startDate": 1595342693106,
-            "status": "Ok",
-            "tags": [
-                "asd"
-            ],
-            "tlp": 1,
-            "updatedAt": 1595346351088,
-            "updatedBy": "xsoar"
-        }
-    ],
-    "owner": "admin",
-    "pap": 1,
-    "resolutionStatus": "FalsePositive",
-    "severity": 3,
-    "startDate": 1595342640000,
-    "status": "Resolved",
-    "summary": "This was a False positive.",
-    "tags": [
-        "asd"
-    ],
-    "tasks": [
-        {
-            "_id": "00000000",
-            "_parent": "00000000",
-            "_routing": "00000000",
-            "_type": "case_task",
-            "_version": 41,
-            "createdAt": 1595342675063,
-            "createdBy": "admin",
-            "description": "description",
-            "flag": False,
-            "group": "group name",
-            "id": "00000000",
-            "logs": [],
-            "order": 0,
-            "status": "Cancel",
-            "title": "title",
-            "updatedAt": 1595346353652,
-            "updatedBy": "xsoar"
-        }
-    ],
-    "title": "New test case",
-    "tlp": 1,
-    "updatedAt": 1595346352635,
-    "updatedBy": "xsoar"
-}
-
-''' CLIENT CLASS '''
-
 
 class Client(BaseClient):
 
@@ -775,9 +693,13 @@ def update_observable_command(client: Client, args: dict):
 
 def get_mapping_fields_command(client: Client, args: dict) -> Dict[str, Any]:
     instance_name = demisto.integrationInstance()
-    SCHEMA['dbotMirrorDirection'] = client.mirroring
-    SCHEMA['dbotMirrorInstance'] = instance_name
-    return {"Default Schema": SCHEMA}
+    schema = client.get_cases(limit=1)
+    schema = schema[0] if schema and type(schema) == list else {}
+    schema_id = schema.get('id', None)
+    schema = client.get_case(schema_id) if schema_id else {"Warning": "No cases to pull schema from"}
+    schema['dbotMirrorDirection'] = client.mirroring
+    schema['dbotMirrorInstance'] = instance_name
+    return {f"Default Schema {client.version}": schema}
 
 
 def update_remote_system_command(client: Client, args: dict) -> str:
@@ -954,8 +876,8 @@ def main() -> None:
             command_map[command](client, args)  # type: ignore
 
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command. \nError: {str(err)}')
+       demisto.error(traceback.format_exc())  # print the traceback
+       return_error(f'Failed to execute {command} command. \nError: {str(err)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

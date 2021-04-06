@@ -1445,10 +1445,11 @@ script:
     arguments: []
     description: Displays the version of TheHive Project
   - name: get-modified-remote-data
-    description: Gets the list of incidents that were modified since the last update time.
-      Note that this method is here for debugging purposes. The get-modified-remote-data command
-      is used as part of a Mirroring feature, which is available from version 6.1.
     arguments: []
+    description: Gets the list of incidents that were modified since the last update
+      time. Note that this method is here for debugging purposes. The get-modified-remote-data
+      command is used as part of a Mirroring feature, which is available from version
+      6.1.
   dockerimage: demisto/python3:3.9.2.17957
   isfetch: true
   runonce: false
