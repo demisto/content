@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Tuple, Dict, List, Any, Optional
+from typing import Tuple, Dict, List, Any, Optional, Union
 import requests
 import dateparser
 
@@ -628,7 +628,7 @@ class Client(BaseClient):
             'numberOfResults': limit
         }
 
-        response = self._http_request('GET', url_suffix=f'/api/assets/notable', params=params)
+        response = self._http_request('GET', url_suffix=f'uba/api/assets/notable', params=params)
         return response
 
     def get_notable_session_details_request(self, asset_id: str = None, sort_by: str = None,

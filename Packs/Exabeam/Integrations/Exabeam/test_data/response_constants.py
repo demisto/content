@@ -89,3 +89,35 @@ RESPONSE_MODEL_DATA = {
     "scopeValue": "org",
     "trainIf": "TRUE"
 }
+
+RESPONSE_NOTABLE_ASSET_DATA = {
+    'assets': [{
+        'asset': {
+            'hostName': 'lt-fweber-888',
+            'ipAddress': '10.27.129.64',
+            'assetType': 'Windows',
+            'firstSeen': 1591022160000,
+            'lastSeen': 1593820320000
+        },
+        'highestRiskScore': 150,
+        'highestRiskSequence': {
+            'id': 'asset@lt-fweber-888-20200702',
+            'entityName': 'asset',
+            'entityValue': 'lt-fweber-888',
+            'day': 1593648000000,
+            'triggeredRuleCountOpt': 15,
+            'riskScoreOpt': 150.0
+        },
+        'latestAssetComment': {
+            'commentId': '60195e5b130b3800075b8e27',
+            'commentType': 'asset',
+            'commentObjectId': 'lt-fweber-888',
+            'text': 'test',
+            'exaUser': 'siemplify',
+            'exaUserFullname': '',
+            'createTime': 1612275291188,
+            'updateTime': 1612275291188,
+            'edited': False
+        }
+    }]
+}

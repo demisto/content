@@ -81,3 +81,32 @@ EXPECTED_MODEL_DATA = {
         "trainIf": "TRUE"
     }
 }
+
+EXPECTED_NOTABLE_ASSET_DATA = {
+    'Exabeam.NotableAsset(val.ipAddress && val.ipAddress === obj.ipAddress)': [{
+        'highestRiskScore': 150,
+        'id': 'asset@lt-fweber-888-20200702',
+        'entityName': 'asset',
+        'entityValue': 'lt-fweber-888',
+        'day': '2020-07-02T00:00:00',
+        'triggeredRuleCountOpt': 15,
+        'riskScoreOpt': 150.0,
+        'commentId': '60195e5b130b3800075b8e27',
+        'commentType': 'asset',
+        'commentObjectId': 'lt-fweber-888',
+        'text': 'test',
+        'exaUser': 'siemplify',
+        'createTime': '	2021-02-02T14:14:51.188000',
+        'updateTime': '2021-02-02T14:14:51.188000',
+        'edited': False,
+        'HostName': 'lt-fweber-888',
+        'IPAddress': '10.27.129.64',
+        'AssetType': 'Windows',
+        'FirstSeen': '2020-06-01T14:36:00',
+        'LastSeen': '2020-07-03T23:52:00',
+        'Labels': None,
+        'exaUserFullname': '',
+        'zone': None,
+        'incidentIds': []
+    }]
+}
