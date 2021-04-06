@@ -3195,6 +3195,10 @@
             "playbookID": "Nutanix-test"
         },
         {
+            "integrations": "Azure Storage",
+            "playbookID": "Azure Storage - Test"
+        },
+        {
             "integrations": "MicrosoftGraphApplications",
             "playbookID": "MSGraph Applications Test"
         },
