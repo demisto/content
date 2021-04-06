@@ -269,7 +269,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     Gets the unused rules Statistics as seen from the User Interface
     """
     timeframe = str(args.get('timeframe'))
-    usage = args.get('usage')
+    usage = str(args.get('usage'))
     exclude = argToBoolean(args.get('exclude'))
 
     result = client.policy_optimizer_get_rules(timeframe, usage, exclude)
