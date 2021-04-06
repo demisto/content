@@ -66,7 +66,7 @@ VERDICTS_TO_DBOTSCORE = {
     '-101': 0,
     '-102': 0,
     '-103': 0,
-    '-104': 0
+    '-104': 0,
 }
 
 ''' HELPER FUNCTIONS '''
