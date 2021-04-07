@@ -3315,7 +3315,6 @@
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
-        "Slack Test Playbook": "Issue 33448",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
         "test playbook - QRadarCorrelations For V2": "Issue 30876",
         "Test-BPA": "Issue 28406",
