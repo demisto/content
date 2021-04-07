@@ -102,7 +102,7 @@ def test_commands_cloud(command, args, response, expected_result, mocker):
 # test commands with context:
 @pytest.mark.parametrize('command, args, response, expected_result', COMMANDS_LIST_WITH_CONTEXT)
 def test_commands_on_premise(command, args, response, expected_result, mocker):
-    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy', on_premise=True)
+    client = Client('server_url', 'use_ssl', 'use_proxy', technician_key='technician_key', on_premise=True)
     mocker.patch.object(client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]
@@ -121,7 +121,7 @@ def test_command_hr_cloud(command, args, response, expected_result, mocker):
 # test commands without context:
 @pytest.mark.parametrize('command, args, response, expected_result', COMMANDS_LIST_WITHOUT_CONTEXT)
 def test_command_hr_on_premise(command, args, response, expected_result, mocker):
-    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy', on_premise=True)
+    client = Client('server_url', 'use_ssl', 'use_proxy', technician_key='technician_key', on_premise=True)
     mocker.patch.object(client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[0]
@@ -149,7 +149,7 @@ def test_refresh_token_command_on_premise(mocker):
 
     """
     mocker.patch('ServiceDeskPlus.Client.get_access_token')
-    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy', on_premise=True)
+    client = Client('server_url', 'use_ssl', 'use_proxy', technician_key='technician_key', on_premise=True)
     mocker.patch.object(demisto, 'results')
     with pytest.raises(SystemExit) as err:
         generate_refresh_token(client, 'args')
@@ -361,26 +361,26 @@ def test_fetch_incidents_on_premise(mocker):
     mocker.patch('ServiceDeskPlus.date_to_timestamp', return_value='1592918317168')
     mocker.patch('ServiceDeskPlus.create_fetch_list_info', return_value={})
 
-    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy', on_premise=True,
+    client = Client('server_url', 'use_ssl', 'use_proxy', technician_key='technician_key', on_premise=True,
                     fetch_time='1 hour', fetch_limit=3, fetch_status=['Open'])
     mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
     incidents = fetch_incidents(client)
     assert len(incidents) == 3
 
-    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy', on_premise=True,
+    client = Client('server_url', 'use_ssl', 'use_proxy', technician_key='technician_key', on_premise=True,
                     fetch_time='1 hour', fetch_limit=2, fetch_status=['Open'])
     mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
 
-    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy', on_premise=True,
+    client = Client('server_url', 'use_ssl', 'use_proxy', technician_key='technician_key', on_premise=True,
                     fetch_time='1 hour', fetch_limit=1, fetch_status=['Open'])
     mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
     incidents = fetch_incidents(client)
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'Test fetch incidents - 1234'
 
-    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy', on_premise=True,
+    client = Client('server_url', 'use_ssl', 'use_proxy', technician_key='technician_key', on_premise=True,
                     fetch_time='1 hour', fetch_limit=0, fetch_status=['Open'])
     mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
     incidents = fetch_incidents(client)
@@ -424,7 +424,7 @@ def test_test_module_on_premise(mocker):
     Validate the content of the HumanReadable.
     """
     from ServiceDeskPlus import test_module as module
-    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy', on_premise=True)
+    client = Client('server_url', 'use_ssl', 'use_proxy', technician_key='technician_key', on_premise=True)
 
     mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
     mocker.patch.object(client, 'http_request', return_value=RESPONSE_FETCH_INCIDENTS)

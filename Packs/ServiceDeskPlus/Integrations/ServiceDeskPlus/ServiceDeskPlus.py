@@ -41,7 +41,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, url: str, use_ssl: bool, use_proxy: bool, client_id: str = None, client_secret: str = None,
-                 technician_key: str = None, refresh_token: str = None, fetch_time: str = '7 days',
+                 refresh_token: str = None, technician_key: str = None, fetch_time: str = '7 days',
                  fetch_status: list = None, fetch_limit: int = 50, fetch_filter: str = '', on_premise: bool = False):
         if fetch_status is None:
             fetch_status = []
