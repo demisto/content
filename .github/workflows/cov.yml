@@ -1,0 +1,10 @@
+- name: Codecov
+  # You may pin to the exact commit or the version.
+  # uses: codecov/codecov-action@9b0b9bbe2c64e9ed41413180dd7398450dfeee14
+  uses: codecov/codecov-action@v1.3.2
+  on:
+    # Triggers the workflow on push or pull request events but only for the master branch
+    push:
+      branches: [ master ]
+    pull_request:
+      branches: [ master ]
