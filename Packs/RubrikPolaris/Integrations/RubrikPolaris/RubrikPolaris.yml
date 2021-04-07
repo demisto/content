@@ -41,7 +41,7 @@ defaultclassifier: Rubrik Polaris Radar - Classification
 defaultmapperin: Rubrik Polaris Radar - Mapping
 description: Create a new incident when a Polaris Radar anomaly event is detected
   and determine if any Sonar data classification hits were found on that object.
-display: Rubrik Polaris
+display: Rubrik Radar
 name: RubrikPolaris
 script:
   commands:
