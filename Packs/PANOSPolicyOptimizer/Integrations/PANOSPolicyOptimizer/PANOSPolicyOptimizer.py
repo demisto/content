@@ -8,13 +8,19 @@ class Client:
     Client to use in the APN-OS Policy Optimizer integration.
     """
 
-    def __init__(self, url: str, username: str, password: str, vsys: str, verify: bool, tid: int):
+    def __init__(self, url: str, username: str, password: str, vsys: str, device_group: str, verify: bool, tid: int):
         # The TID is used to track individual commands send to the firewall/Panorama during a PHP session, and
         # is also used to generate the security token (Data String) that is used to validate each command.
         # Setting tid as a global variable with an arbitrary value of 50
         self.session_metadata: Dict[str, Any] = {'panorama': url, 'base_url': url, 'username': username,
                                                  'password': password, 'tid': tid}
-        self.vsys = vsys
+        if device_group and vsys:
+            raise DemistoException(
+                'Cannot configure both vsys and Device group. Set vsys for firewall, set Device group for Panorama.')
+        if not device_group and not vsys:
+            raise DemistoException('Set vsys for firewall or Device group for Panorama.')
+
+        self.machine = vsys if vsys else device_group
         self.verify = verify
         handle_proxy()
         # Use Session() in order to maintain cookies for persisting the login PHP session cookie
@@ -77,7 +83,7 @@ class Client:
             "action": "PanDirect", "method": "run", "data": [
                 self.token_generator(),
                 "PoliciesDirect.getRuleCountInRuleUsage",
-                [{"type": "security", "position": "main", "vsysName": self.vsys}]
+                [{"type": "security", "position": "main", "vsysName": self.machine}]
             ],
             "type": "rpc", "tid": self.session_metadata['tid']
         }
@@ -92,17 +98,26 @@ class Client:
             "action": "PanDirect", "method": "run",
             "data": [self.token_generator(),
                      "PoliciesDirect.getPoliciesByUsage", [
-                         {"type": "security", "position": "main",
-                          "vsysName": self.vsys, "serialNumber": "",
-                          "deviceGroup": "Lab-Devices",
-                          "isCmsSelected": False, "isMultiVsys": False,
-                          "showGrouped": False,
-                          "usageAttributes": {"timeframeTag": "30",
-                                              "application/member": "any",
-                                              "apps-seen-count": "geq \'1\'",
-                                              "action": "allow"},
-                          "pageContext": "app_usage", "field": "$.bytes",
-                          "direction": "DESC"}]], "type": "rpc",
+                         {
+                             "type": "security",
+                             "position": "main",
+                             "vsysName": self.machine,
+                             "isCmsSelected": False,
+                             "isMultiVsys": False,
+                             "showGrouped": False,
+                             "usageAttributes": {
+                                 "timeframeTag": "30",
+                                 "application/member": "any",
+                                 "apps-seen-count": "geq \'1\'",
+                                 "action": "allow"
+                             },
+                             "pageContext": "app_usage",
+                             "field": "$.bytes",
+                             "direction": "DESC"
+                         }
+                     ]
+                     ],
+            "type": "rpc",
             "tid": self.session_metadata['tid']}
 
         return self.session_post(
@@ -115,15 +130,27 @@ class Client:
             "action": "PanDirect", "method": "run",
             "data": [self.token_generator(),
                      "PoliciesDirect.getPoliciesByUsage",
-                     [{"type": "security", "position": "main",
-                       "vsysName": self.vsys, "serialNumber": "",
-                       "isCmsSelected": False, "isMultiVsys": False,
-                       "showGrouped": False,
-                       "usageAttributes": {"timeframeTag": "30",
-                                           "application/member": "unused",
-                                           "action": "allow"},
-                       "pageContext": "app_usage", "field": "$.bytes",
-                       "direction": "DESC"}]], "type": "rpc",
+                     [
+                         {
+                             "type": "security",
+                             "position": "main",
+                             "vsysName": self.machine,
+                             "serialNumber": "",
+                             "isCmsSelected": False,
+                             "isMultiVsys": False,
+                             "showGrouped": False,
+                             "usageAttributes": {
+                                 "timeframeTag": "30",
+                                 "application/member": "unused",
+                                 "action": "allow"
+                             },
+                             "pageContext": "app_usage",
+                             "field": "$.bytes",
+                             "direction": "DESC"
+                         }
+                     ]
+                     ],
+            "type": "rpc",
             "tid": self.session_metadata['tid']}
 
         return self.session_post(
@@ -136,57 +163,50 @@ class Client:
             "action": "PanDirect", "method": "run",
             "data": [self.token_generator(),
                      "PoliciesDirect.getPoliciesByUsage",
-                     [{"type": "security", "position": "main",
-                       "vsysName": self.vsys, "serialNumber": "",
-                       "isCmsSelected": False, "isMultiVsys": False,
-                       "showGrouped": False,
-                       "usageAttributes": {"timeframe": timeframe,
-                                           "usage": usage, "exclude": exclude,
-                                           "exclude-reset-text": "90"},
-                       "pageContext": "rule_usage"}]], "type": "rpc",
+                     [
+                         {
+                             "type": "security",
+                             "position": "main",
+                             "vsysName": self.machine,
+                             "isCmsSelected": False,
+                             "isMultiVsys": False,
+                             "showGrouped": False,
+                             "usageAttributes": {
+                                 "timeframe": timeframe,
+                                 "usage": usage, "exclude": exclude,
+                                 "exclude-reset-text": "90"
+                             },
+                             "pageContext": "rule_usage"
+                         }
+                     ]]
+            , "type": "rpc",
             "tid": self.session_metadata['tid']}
 
         return self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
             json_cmd=json_cmd)
 
-    # def getUnusedIn30daysRules(self):
-    #     self.session_metadata['tid'] += 1  # Increment TID
-    #     json_cmd = {"action": "PanDirect", "method": "run",
-    #                 "data": [self.token_generator(),
-    #                          "PoliciesDirect.getPoliciesByUsage",
-    #                          [{"type": "security", "position": "main",
-    #                            "vsysName": self.vsys, "serialNumber": "",
-    #                            "isCmsSelected": False, "isMultiVsys": False,
-    #                            "showGrouped": False,
-    #                            "usageAttributes": {"timeframe": "30",
-    #                                                "usage": "Unused",
-    #                                                "exclude": False,
-    #                                                "exclude-reset-text": "30"},
-    #                            "pageContext": "rule_usage"}]], "type": "rpc",
-    #                 "tid": self.session_metadata['tid']}
-    #
-    #     response = self.session.post(
-    #         url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
-    #         json=json_cmd)
-    #
-    #     return json.loads(response.text)
-
     def policy_optimizer_app_and_usage(self, rule_uuid: str) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {"action": "PanDirect", "method": "run",
                     "data": [self.token_generator(),
                              "PoliciesDirect.getAppDetails",
-                             [{"type": "security", "vsysName": self.vsys,
-                               "position": "main", "ruleUuidList": [rule_uuid],
-                               "summary": "no",
-                               "resultfields":
-                                   "<member>apps-seen</member>"
-                                   "<member>last-app-seen-since-count"
-                                   "</member><member>days-no-new-app-count</member>",
-                               "appsSeenTimeframe": "any",
-                               "trafficTimeframe": 30}]],
-                    "type": "rpc", "tid": self.session_metadata['tid']}
+                             [
+                                 {
+                                     "type": "security", "vsysName": self.vsys,
+                                     "position": "main",
+                                     "ruleUuidList": [rule_uuid],
+                                     "summary": "no",
+                                     "resultfields":
+                                         "<member>apps-seen</member>"
+                                         "<member>last-app-seen-since-count"
+                                         "</member><member>days-no-new-app-count</member>",
+                                     "appsSeenTimeframe": "any",
+                                     "trafficTimeframe": 30
+                                 }
+                             ]],
+                    "type": "rpc",
+                    "tid": self.session_metadata['tid']}
 
         return self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getAppDetails',
@@ -194,9 +214,18 @@ class Client:
 
     def policy_optimizer_get_dag(self, dag: str) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
-        json_cmd = {"action": "PanDirect", "method": "execute",
-                    "data": [self.token_generator(), "AddressGroup.showDynamicAddressGroup", {
-                        "id": dag, "vsysName": self.vsys}], "type": "rpc", "tid": self.session_metadata['tid']}
+        json_cmd = {
+            "action": "PanDirect",
+            "method": "execute",
+            "data": [
+                self.token_generator(),
+                "AddressGroup.showDynamicAddressGroup", {
+                    "id": dag,
+                    "vsysName": self.machine
+                }
+            ],
+            "type": "rpc",
+            "tid": self.session_metadata['tid']}
 
         return self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/AddressGroup.showDynamicAddressGroup',
@@ -340,19 +369,19 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
 
 
 def main():
+    command = demisto.command()
+    params = demisto.params()
+    args = demisto.args()
+    demisto.debug(f'Command being called is: {command}')
+    client: Client = None
     try:
-        command = demisto.command()
-        params = demisto.params()
-        args = demisto.args()
-
         if not demisto.params().get('port'):
-            raise Exception('Set a port for the instance')
+            raise Exception('Set a port for the instance.')
         url = f'{params.get("server").rstrip("/:")}:{params.get("port")}'
 
-        demisto.debug(f'Command being called is: {command}')
         client = Client(url=url, username=params['credentials']['identifier'],
-                        password=params['credentials']['password'], vsys=params.get('vsys', 'vsys1'),
-                        verify=not params.get('insecure'), tid=50)
+                        password=params['credentials']['password'], vsys=params.get('vsys'),
+                        device_group=params.get('device-group'), verify=not params.get('insecure'), tid=50)
         client.session_metadata['cookie'] = client.login()  # Login to PAN-OS and return the GUI cookie value
 
         if command == 'test-module':
@@ -376,7 +405,10 @@ def main():
         return_error(f'{str(err)}.\n Trace:{traceback.format_exc()}')
 
     finally:
-        client.logout()  # Logout of PAN-OS
+        try:
+            client.logout()  # Logout of PAN-OS
+        except Exception as err:
+            return_error(f'{str(err)}.\n Trace:{traceback.format_exc()}')
 
 
 if __name__ in ("__builtin__", "builtins", '__main__'):
