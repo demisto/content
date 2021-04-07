@@ -2099,6 +2099,8 @@ def exposures_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     exposures_iterator = client.get_exposures_ips(params)
     exposures_list = [exposure for exposure in exposures_iterator]
+    if not exposures_list:
+        return CommandResults(readable_output="No data found")
 
     expanse_exposure_context = get_expanse_exposure_context(exposures_list)
 
