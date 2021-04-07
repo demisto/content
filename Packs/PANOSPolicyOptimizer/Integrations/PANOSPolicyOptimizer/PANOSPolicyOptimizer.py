@@ -96,27 +96,28 @@ class Client:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
-            "data": [self.token_generator(),
-                     "PoliciesDirect.getPoliciesByUsage", [
-                         {
-                             "type": "security",
-                             "position": "main",
-                             "vsysName": self.machine,
-                             "isCmsSelected": False,
-                             "isMultiVsys": False,
-                             "showGrouped": False,
-                             "usageAttributes": {
-                                 "timeframeTag": "30",
-                                 "application/member": "any",
-                                 "apps-seen-count": "geq \'1\'",
-                                 "action": "allow"
-                             },
-                             "pageContext": "app_usage",
-                             "field": "$.bytes",
-                             "direction": "DESC"
-                         }
-                     ]
-                     ],
+            "data": [
+                self.token_generator(),
+                "PoliciesDirect.getPoliciesByUsage", [
+                    {
+                        "type": "security",
+                        "position": "main",
+                        "vsysName": self.machine,
+                        "isCmsSelected": False,
+                        "isMultiVsys": False,
+                        "showGrouped": False,
+                        "usageAttributes": {
+                            "timeframeTag": "30",
+                            "application/member": "any",
+                            "apps-seen-count": "geq \'1\'",
+                            "action": "allow"
+                        },
+                        "pageContext": "app_usage",
+                        "field": "$.bytes",
+                        "direction": "DESC"
+                    }
+                ]
+            ],
             "type": "rpc",
             "tid": self.session_metadata['tid']}
 
@@ -128,28 +129,29 @@ class Client:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
-            "data": [self.token_generator(),
-                     "PoliciesDirect.getPoliciesByUsage",
-                     [
-                         {
-                             "type": "security",
-                             "position": "main",
-                             "vsysName": self.machine,
-                             "serialNumber": "",
-                             "isCmsSelected": False,
-                             "isMultiVsys": False,
-                             "showGrouped": False,
-                             "usageAttributes": {
-                                 "timeframeTag": "30",
-                                 "application/member": "unused",
-                                 "action": "allow"
-                             },
-                             "pageContext": "app_usage",
-                             "field": "$.bytes",
-                             "direction": "DESC"
-                         }
-                     ]
-                     ],
+            "data": [
+                self.token_generator(),
+                "PoliciesDirect.getPoliciesByUsage",
+                [
+                    {
+                        "type": "security",
+                        "position": "main",
+                        "vsysName": self.machine,
+                        "serialNumber": "",
+                        "isCmsSelected": False,
+                        "isMultiVsys": False,
+                        "showGrouped": False,
+                        "usageAttributes": {
+                            "timeframeTag": "30",
+                            "application/member": "unused",
+                            "action": "allow"
+                        },
+                        "pageContext": "app_usage",
+                        "field": "$.bytes",
+                        "direction": "DESC"
+                    }
+                ]
+            ],
             "type": "rpc",
             "tid": self.session_metadata['tid']}
 
@@ -161,25 +163,26 @@ class Client:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
-            "data": [self.token_generator(),
-                     "PoliciesDirect.getPoliciesByUsage",
-                     [
-                         {
-                             "type": "security",
-                             "position": "main",
-                             "vsysName": self.machine,
-                             "isCmsSelected": False,
-                             "isMultiVsys": False,
-                             "showGrouped": False,
-                             "usageAttributes": {
-                                 "timeframe": timeframe,
-                                 "usage": usage, "exclude": exclude,
-                                 "exclude-reset-text": "90"
-                             },
-                             "pageContext": "rule_usage"
-                         }
-                     ]]
-            , "type": "rpc",
+            "data": [
+                self.token_generator(),
+                "PoliciesDirect.getPoliciesByUsage",
+                [
+                    {
+                        "type": "security",
+                        "position": "main",
+                        "vsysName": self.machine,
+                        "isCmsSelected": False,
+                        "isMultiVsys": False,
+                        "showGrouped": False,
+                        "usageAttributes": {
+                            "timeframe": timeframe,
+                            "usage": usage, "exclude": exclude,
+                            "exclude-reset-text": "90"
+                        },
+                        "pageContext": "rule_usage"
+                    }
+                ]
+            ], "type": "rpc",
             "tid": self.session_metadata['tid']}
 
         return self.session_post(
@@ -189,23 +192,25 @@ class Client:
     def policy_optimizer_app_and_usage(self, rule_uuid: str) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {"action": "PanDirect", "method": "run",
-                    "data": [self.token_generator(),
-                             "PoliciesDirect.getAppDetails",
-                             [
-                                 {
-                                     "type": "security",
-                                     "vsysName": self.machine,
-                                     "position": "main",
-                                     "ruleUuidList": [rule_uuid],
-                                     "summary": "no",
-                                     "resultfields":
-                                         "<member>apps-seen</member>"
-                                         "<member>last-app-seen-since-count"
-                                         "</member><member>days-no-new-app-count</member>",
-                                     "appsSeenTimeframe": "any",
-                                     "trafficTimeframe": 30
-                                 }
-                             ]],
+                    "data": [
+                        self.token_generator(),
+                        "PoliciesDirect.getAppDetails",
+                        [
+                            {
+                                "type": "security",
+                                "vsysName": self.machine,
+                                "position": "main",
+                                "ruleUuidList": [rule_uuid],
+                                "summary": "no",
+                                "resultfields":
+                                    "<member>apps-seen</member>"
+                                    "<member>last-app-seen-since-count"
+                                    "</member><member>days-no-new-app-count</member>",
+                                "appsSeenTimeframe": "any",
+                                "trafficTimeframe": 30
+                            }
+                        ]
+                    ],
                     "type": "rpc",
                     "tid": self.session_metadata['tid']}
 
