@@ -1,4 +1,4 @@
-This playbook will assist you to Unisolate endpoint with Cortex XDR.
+This playbook unisolates endpoints according to the endpoint ID that is provided in the playbook input.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,10 +7,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CortexXDRIR
+CortexXDR - IR
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 * xdr-get-endpoints
@@ -21,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Endpoint_ID | The endpoint ID that you wish to unisolate. |  | Optional |
+| Endpoint_ID | The endpoint ID that you want to unisolate. |  | Optional |
 
 ## Playbook Outputs
 ---
