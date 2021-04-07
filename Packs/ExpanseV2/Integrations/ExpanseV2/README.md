@@ -4198,7 +4198,7 @@ Provides data enrichment for CIDR blocks using Expanse IP Range.
 
 ### expanse-get-exposures
 ***
-Returns exposure information about the ip.
+Returns exposure information about the IP.
 
 ##### Required Permissions
 **none**
