@@ -110,6 +110,21 @@ script:
     - contextPath: Domain.Whois.Registrant.Email
       description: Email of the registrant
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     description: Retrieves data from ThreatMiner about a specified domain.
   - name: ip
     arguments:
@@ -156,6 +171,21 @@ script:
     - contextPath: ThreatMiner.IP.SSL
       description: SSL certificates.
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: IP.Address
       description: IP address that was searched.
     - contextPath: IP.Geo.Country
