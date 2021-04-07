@@ -4932,7 +4932,9 @@ script:
       type: Unknown
   - arguments:
     - default: true
-      description: The certificate common name. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host"
+      description: The certificate common name. Fuzzy matching is done on this name,
+        however query times can grow quite large when searching for short strings.
+        Ex. "*.myhost.com" is a better search term than "host"
       isArray: false
       name: common_name
       required: true
@@ -4963,7 +4965,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.2.18414
 defaultclassifier: ExpanseV2
 defaultmapperin: ExpanseV2-mapper
 fromversion: 6.0.0
