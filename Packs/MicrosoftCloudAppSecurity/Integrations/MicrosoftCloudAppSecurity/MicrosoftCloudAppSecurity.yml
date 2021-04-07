@@ -363,6 +363,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
+      description: 'A boolean value indicating that feedback about this alert is provided.
+        Default value: false'
       isArray: false
       name: sendFeedback
       predefined:
@@ -435,6 +437,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: The text of the feedback
       isArray: false
       name: feedbackText
       required: false
