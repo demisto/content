@@ -58,7 +58,7 @@ def _get_dbot_score(json_res: dict):
 ''' COMMAND FUNCTIONS '''
 
 
-def get_ip(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'ip/report/'
     resolution_limit = args.get('resolution_limit')
@@ -90,7 +90,7 @@ def get_ip(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results
 
 
-def get_email(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'email/report/'
     emails = argToList(args.get('email'))
@@ -117,7 +117,7 @@ def get_email(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results
 
 
-def get_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'domain/report/'
     resolution_limit = args.get('resolution_limit')
@@ -149,7 +149,7 @@ def get_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results
 
 
-def get_antivirus(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def antivirus_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'antivirus/report/'
     antivirus_list = argToList(args.get('antivirus'))
@@ -170,7 +170,7 @@ def get_antivirus(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results
 
 
-def get_file(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'file/report/'
     files = argToList(args.get('file'))
@@ -219,11 +219,11 @@ def main() -> None:
     :return:
     :rtype:
     """
-    command_functions = {'email': get_email,
-                         'domain': get_domain,
-                         'ip': get_ip,
-                         'antivirus': get_antivirus,
-                         'file': get_file}
+    command_functions = {'email': email_command,
+                         'domain': domain_command,
+                         'ip': ip_command,
+                         'threat-crowd-antivirus': antivirus_command,
+                         'file': file_command}
 
     params = demisto.params()
     base_url = params.get('server_url')

@@ -18,7 +18,7 @@ def get_key_from_test_data(key):
 
 
 CLIENT = Client(
-    base_url='https://www.threatcrowd.org/searchApi/v2/',
+    base_url='test_url',
     verify=False,
     proxy=False,
     reliability=DBotScoreReliability.C
@@ -37,12 +37,12 @@ def test_ip_command(mocker):
             - validates that indicator objects were created as expected
     """
     # from Packs.Threat_Crowd.Integrations.ThreatCrowdV2.ThreatCrowd_v2 import get_ip
-    from ThreatCrowd_v2 import get_ip
+    from ThreatCrowd_v2 import ip_command
 
     mock_response = get_key_from_test_data('ip_response')
     mocker.patch.object(Client, 'http_request', return_value=mock_response)
 
-    res = get_ip(CLIENT, {'ip': '0.0.0.0, 1.1.1.1'})
+    res = ip_command(CLIENT, {'ip': '0.0.0.0, 1.1.1.1'})
     assert res[0].outputs['value'] == "0.0.0.0"
     assert res[0].indicator.dbot_score.reliability == DBotScoreReliability.C
     assert res[0].indicator.dbot_score.score == 3
@@ -62,12 +62,12 @@ def test_domain_command(mocker):
             - validates that indicator objects were created as expected
     """
     # from Packs.Threat_Crowd.Integrations.ThreatCrowdV2.ThreatCrowd_v2 import get_domain
-    from ThreatCrowd_v2 import get_domain
+    from ThreatCrowd_v2 import domain_command
 
     mock_response = get_key_from_test_data('domain_response')
     mocker.patch.object(Client, 'http_request', return_value=mock_response)
 
-    res = get_domain(CLIENT, {'domain': 'test1.com, test2.com'})
+    res = domain_command(CLIENT, {'domain': 'test1.com, test2.com'})
     assert res[0].outputs['value'] == "test1.com"
     assert res[0].indicator.dbot_score.reliability == DBotScoreReliability.C
     assert res[0].indicator.dbot_score.score == 2
@@ -87,12 +87,12 @@ def test_email_command(mocker):
             - validates that indicator objects were created as expected
     """
     # from Packs.Threat_Crowd.Integrations.ThreatCrowdV2.ThreatCrowd_v2 import get_ip
-    from ThreatCrowd_v2 import get_email
+    from ThreatCrowd_v2 import email_command
 
     mock_response = get_key_from_test_data('email_response')
     mocker.patch.object(Client, 'http_request', return_value=mock_response)
 
-    res = get_email(CLIENT, {'email': 'test@test1.com, test@test2.com'})
+    res = email_command(CLIENT, {'email': 'test@test1.com, test@test2.com'})
     assert res[0].outputs['value'] == "test@test1.com"
     assert res[0].indicator.dbot_score.reliability == DBotScoreReliability.C
     assert res[0].indicator.dbot_score.score == 0
@@ -112,12 +112,12 @@ def test_antivirus_command(mocker):
             - validates that Response object were created as expected
     """
     # from Packs.Threat_Crowd.Integrations.ThreatCrowdV2.ThreatCrowd_v2 import get_ip
-    from ThreatCrowd_v2 import get_antivirus
+    from ThreatCrowd_v2 import antivirus_command
 
     mock_response = get_key_from_test_data('antivirus_response')
     mocker.patch.object(Client, 'http_request', return_value=mock_response)
 
-    res = get_antivirus(CLIENT, {'antivirus': 'test, test2'})
+    res = antivirus_command(CLIENT, {'antivirus': 'test, test2'})
 
     assert res[0].outputs['value'] == "test"
     assert len(res[0].outputs['hashes']) > 0
@@ -136,12 +136,12 @@ def test_file_command(mocker):
             - validates that indicator objects were created as expected
     """
     # from Packs.Threat_Crowd.Integrations.ThreatCrowdV2.ThreatCrowd_v2 import get_domain
-    from ThreatCrowd_v2 import get_file
+    from ThreatCrowd_v2 import file_command
 
     mock_response = get_key_from_test_data('file_response')
     mocker.patch.object(Client, 'http_request', return_value=mock_response)
 
-    res = get_file(CLIENT, {'file': 'test_md5, test2.com'})
+    res = file_command(CLIENT, {'file': 'test_md5, test2.com'})
     assert res[0].outputs['value'] == "test_md5"
     assert res[0].indicator.md5 == 'test_md5'
     assert res[0].indicator.sha1 == 'test_sha1'

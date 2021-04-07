@@ -275,7 +275,7 @@ script:
     deprecated: false
     description: Get a report of an antivirus.
     execution: false
-    name: antivirus
+    name: threat-crowd-antivirus
   - arguments:
     - default: true
       description: Get a report of a hash.
