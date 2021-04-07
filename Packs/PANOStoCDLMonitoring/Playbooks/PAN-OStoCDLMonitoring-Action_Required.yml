@@ -1,7 +1,8 @@
 id: Cortex Data Lake - PAN-OS logging - action required
 inputs: []
 name: Cortex Data Lake - PAN-OS logging - action required
-description: This Playbook initiates the steps needed to investigate the PAN-OS logging to Cortex Data Lake problems.
+description: This Playbook initiates the steps needed to investigate the PAN-OS logging
+  to Cortex Data Lake problems.
 outputs: []
 starttaskid: "0"
 tasks:
@@ -47,7 +48,7 @@ tasks:
       description: |
         Could you please investigate the connection to the Cortex Data Lake for the following equipments:
 
-        ${CDL.monitoring.FW_KO}
+        ${CDL.monitoring.FirewallsWithoutLogsSent}
 
         You could use this documentation https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/key.html as reference.
 
@@ -184,7 +185,7 @@ tasks:
       frequency:
         simple: "1"
       key:
-        simple: CDL.monitoring.FW_KO.[0]
+        simple: CDL.monitoring.FirewallsWithoutLogsSent.[0]
       timeout:
         simple: "10"
       value:
