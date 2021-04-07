@@ -139,7 +139,7 @@ def refresh_edl_context(request_args: RequestArguments, save_integration_context
     while actual_indicator_amount < request_args.limit:
         # from where to start the new poll and how many results should be fetched
         new_offset = len(iocs) + request_args.offset
-        new_limit = request_args.limit - len(iocs)
+        new_limit = request_args.limit - actual_indicator_amount
 
         # poll additional indicators into list from demisto
         new_iocs = find_indicators_to_limit(request_args.query, new_limit, new_offset)
@@ -198,7 +198,7 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) 
 
 
 def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0,
-                                  next_page: int = 0, last_found_len: int = PAGE_SIZE):
+                                  next_page: int = 0, last_found_len: int = None):
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
 
@@ -214,6 +214,8 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         (tuple): The iocs and the last page
     """
     iocs: List[dict] = []
+    if last_found_len is None:
+        last_found_len = PAGE_SIZE
     if not last_found_len:
         last_found_len = total_fetched
     while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
@@ -659,7 +661,7 @@ def main():
     global PAGE_SIZE
     params = demisto.params()
     try:
-        PAGE_SIZE = max(PAGE_SIZE, int(params.get('page_size', PAGE_SIZE)))
+        PAGE_SIZE = max(1, int(params.get('page_size') or PAGE_SIZE))
     except ValueError:
         demisto.debug(f'Non integer "page_size" provided: {params.get("page_size")}. defaulting to {PAGE_SIZE}')
     credentials = params.get('credentials') if params.get('credentials') else {}
