@@ -598,7 +598,7 @@ def get_url_report_command():
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
     threshold = int(args.get('threshold', None) or demisto.params().get('urlThreshold', None) or 10)
     scan_finish_time_in_seconds = int(args.get('retry_time', 6))
-    scan = 1 if args.get('scan', 'true') == 'true' else 0
+    scan = 1 if argToBoolean(args.get('scan', 'true')) else 0
     if full_response:
         max_len = 1000
     else:

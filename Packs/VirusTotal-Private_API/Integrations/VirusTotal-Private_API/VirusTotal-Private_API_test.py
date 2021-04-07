@@ -1,6 +1,7 @@
 import importlib
 import json
 import demistomock as demisto
+import pytest
 
 queued_response = {u'response_code': -2,
                    u'resource': u'YES_THIS_IS_A_UID',
@@ -37,6 +38,43 @@ def test_get_url_multiple_results(mocker, requests_mock):
     assert len(output) == 2
     assert isinstance(output[0]['EntryContext']['DBotScore'], dict)
     assert isinstance(output[1]['EntryContext']['DBotScore'], dict)
+
+
+def test_get_url_report_invalid_url_no_scan(mocker, requests_mock):
+    """
+    Given:
+        - The get-url-report command.
+    When:
+
+    """
+    mocker.patch.object(demisto, 'args', return_value={'resource': 'https://resource-not-found.com', 'scan': 'false'})
+    requests_mock.get('https://www.virustotal.com/vtapi/v2/url/report',
+                      [{'json': load_test_data('./test_data/get_url_report_invalid_url_no_scan.json'),
+                       'status_code': 200}])
+
+    vt = importlib.import_module("VirusTotal-Private_API")
+    output = vt.get_url_report_command()
+    assert 'Resource does not exist in the Virus Total dataset.' in output[0]['HumanReadable']
+
+
+def test_get_url_report_invalid_url_with_scan(mocker, requests_mock):
+    mocker.patch.object(demisto, 'args', return_value={'resource': 'https://invalid-url.com'})
+    requests_mock.get('https://www.virustotal.com/vtapi/v2/url/report',
+                      [{'json': load_test_data('./test_data/get_url_report_invalid_url_with_scan.json'),
+                       'status_code': 200}])
+    mocker.patch.object(demisto, 'results')
+
+    vt = importlib.import_module("VirusTotal-Private_API")
+
+    with pytest.raises(SystemExit) as err:
+        vt.get_url_report_command()
+
+    assert err.type == SystemExit
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert "Invalid url provided:" in results[0]['Contents']
 
 
 def test_create_url_report_output():

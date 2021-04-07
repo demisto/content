@@ -2417,6 +2417,12 @@
 <td style="width: 534px;">The amount of time (in seconds) that the integration will wait before trying to get a URL report for URLS whose scans have not completed.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 135px;">scan</td>
+<td style="width: 534px;">If "true", will automatically submit the URL for analysis
+        if no report is found for it in VirusTotal's database.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 </div>

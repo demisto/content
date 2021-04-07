@@ -1,0 +1,5 @@
+{
+  "response_code": 0,
+  "resource": "https://resource-not-found.com",
+  "verbose_msg": "Resource does not exist in the dataset"
+}
