@@ -206,19 +206,24 @@ class Client(BaseClient):
         See Also:
             https://developers.virustotal.com/v3.0/reference#files-scan
         """
+        response: requests.Response
         with open(file_path, 'rb') as file:
             if upload_url:
-                return self._http_request(
+                response = self._http_request(
                     'POST',
                     full_url=upload_url,
-                    files={'file': file}
+                    files={'file': file},
+                    resp_type='response'
                 )
             else:
-                return self._http_request(
+                response = self._http_request(
                     'POST',
                     url_suffix='/files',
-                    files={'file': file}
+                    files={'file': file},
+                    resp_type='response'
                 )
+        demisto.debug(f'scan_file response:\n{response.status_code}, {response.headers}, {response.content}')
+        return response
 
     def get_upload_url(self) -> dict:
         """
@@ -1524,15 +1529,11 @@ def get_working_id(id_: str, entry_id: str) -> str:
         A working ID that we can use in other commands.
     """
     if isinstance(id_, str) and id_.isnumeric() or (isinstance(id_, int)):
-        demisto.debug(f'Got an integer id from file-scan. {id_=}, {entry_id=}')
-        try:
-            md5 = get_md5_by_entry_id(entry_id)
-        except DemistoException as exc:
-            raise DemistoException(
-                f'Could not find the MD5 of entry ID {entry_id}. The id from VirusTotal is {id_}.\n'
-                f'The id should be base64(md5:id). You can try to create the ID manually with the MD5'
-            ) from exc
-        return encode_to_base64(md5, id_)
+        demisto.debug(f'Got an integer id from file-scan. {id_=}, {entry_id=}\n')
+        raise DemistoException(
+            f'Got an int {id_=} as analysis report. This is a bug in VirusTotal v3 API.\n'
+            f'While VirusTotal team is fixing the problem, try to resend the file.'
+        )
     return id_
 
 
