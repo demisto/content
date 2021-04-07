@@ -353,11 +353,11 @@ def test_module(client: Client, demisto_args: dict) -> str:
     """
     try:
         client.country_code_list_command(demisto_args)
-    except DemistoException as e:
+    except Exception as e:
         if 'UNAUTHORIZED' in str(e) or 'invalidAuthToken' in str(e):
-            raise DemistoException(f'Authorization Error: make sure API Key is correctly set. \n{str(e)}')
+            raise DemistoException(f'Authorization failed, make sure API Key is correctly set. \n{str(e)}')
         else:
-            raise e
+            raise DemistoException(f'Test failed, Please check your parameters. \n{str(e)}')
     return "ok"
 
 
