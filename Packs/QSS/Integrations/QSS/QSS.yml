@@ -17,15 +17,15 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
 - defaultvalue: "10"
   display: Max fetch
   name: max_fetch
   required: false
   type: 0
-- display: API Key
-  name: apikey
-  required: true
-  type: 4
 - display: Fetch cases with status (Open, Closed)
   name: status
   options:
@@ -80,7 +80,7 @@ description: QSS integration helps you to fetch Cases from Q-SCMP and add new ca
 display: QSS
 name: QSS
 script:
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.2.18414
   isfetch: true
   runonce: false
   script: ''
