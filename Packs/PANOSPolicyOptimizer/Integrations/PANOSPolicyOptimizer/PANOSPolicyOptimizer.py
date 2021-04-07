@@ -286,15 +286,17 @@ def policy_optimizer_get_unused_apps_command(client: Client) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
-    stats = client.policy_optimizer_get_unused_apps()
+    result = client.policy_optimizer_get_unused_apps()
 
-    result = stats['result']['result']
+    stats = result['result']['result']
+    if '@count' in stats and stats['@count'] == '0':
+        return CommandResults(readable_output='No Rules with unused apps were found.', raw_response=result)
 
     return CommandResults(
         outputs_prefix='PanOS.PolicyOptimizer.UnusedApps',
         outputs_key_field='Stats',
         outputs=result,
-        readable_output=tableToMarkdown(name='Policy Optimizer Unused Apps:', t=result['entry'], removeNull=True),
+        readable_output=tableToMarkdown(name='Policy Optimizer Unused Apps:', t=stats['entry'], removeNull=True),
         raw_response=result
     )
 
