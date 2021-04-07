@@ -111,9 +111,9 @@ class Client(BaseClient):
             "target": table
         }
         if columns:
-            params['select'] = '(select '+columns+')'
+            params['select'] = '(select ' + columns + ')'
         if query_filter:
-            params['where'] = '(where ('+query_filter+'))'
+            params['where'] = '(where (' + query_filter + '))'
         if order_by:
             params['order'] = order_by
 
@@ -216,7 +216,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
             alerts.append(alert_details)
         for alert in alerts:
             incident_created_time = int(datetime.strptime(alert.get('EventTimeLocal', '0'), '%Y-%m-%dT%H:%M:%S%z').
-                                        timestamp()*1000)
+                                        timestamp() * 1000)
             if last_fetch:
                 if incident_created_time <= last_fetch:
                     continue
@@ -421,7 +421,7 @@ def epo_assign_policy_command(client: Client, args: Dict[str, Any]) -> CommandRe
     else:
         return_error('Please provide either either endpoints or groups to assign a policy to')
     raw_results = json.loads(client.epo_assign_policy(suffix=suffix, policy_id=policy_id, type_id=type_id,
-                                                   product_id=product_id, names=names)[3:])
+                                                      product_id=product_id, names=names)[3:])
     results = []
 
     for result in raw_results:
@@ -470,7 +470,7 @@ def main() -> None:
         arg=demisto.params().get('first_fetch', '3 days'),
         arg_name='First fetch time',
     )
-    first_fetch_milliseconds = int((datetime.now().timestamp() - first_fetch_time.timestamp())*1000)
+    first_fetch_milliseconds = int((datetime.now().timestamp() - first_fetch_time.timestamp()) * 1000)
     alert_types = demisto.params().get('alert_types', 'av.detect').split(',')
     max_results = arg_to_number(
         arg=demisto.params().get('max_fetch'),

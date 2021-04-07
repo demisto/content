@@ -1,0 +1,220 @@
+id: McAfee Enrich Endpoint
+version: -1
+fromversion: 6.0.0
+name: McAfee Enrich Endpoint
+description: A Playbook to Enrich  Endpoint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 744ec43e-5b0e-4527-8a77-db40e07c50d1
+    type: start
+    task:
+      id: 744ec43e-5b0e-4527-8a77-db40e07c50d1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 9e3d9f62-55ea-4c28-8969-d09d1eb9e240
+    type: regular
+    task:
+      id: 9e3d9f62-55ea-4c28-8969-d09d1eb9e240
+      version: -1
+      name: Get Endpoint Details
+      description: Find systems by search keyword
+      script: '|||epo-find-systems'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      keyword:
+        simple: ${inputs.Endpoints}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 0a1ac53c-fc39-48cd-852b-b9896605d1ff
+    type: condition
+    task:
+      id: 0a1ac53c-fc39-48cd-852b-b9896605d1ff
+      version: -1
+      name: McAfee ePO  enabled?
+      type: condition
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: McAfeeEPOv2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 659f1b89-7e1e-4228-80b6-6639413c9a30
+    type: condition
+    task:
+      id: 659f1b89-7e1e-4228-80b6-6639413c9a30
+      version: -1
+      name: Is there an Endpoint to Enrich?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Endpoints
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoints
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6fc399d4-d011-4228-82ed-915f8147b705
+    type: title
+    task:
+      id: 6fc399d4-d011-4228-82ed-915f8147b705
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Endpoints
+  value: {}
+  required: false
+  description: Endpoints to Enrich
+  playbookInputQuery:
+outputs:
+- contextPath: McAfeeEPO.Systems.ComputerName
+  description: System HostName
+- contextPath: McAfeeEPO.Systems.IPAddress
+  description: System IP Address
+- contextPath: McAfeeEPO.Systems.AgentGUID
+  description: Agent GUID
+- contextPath: McAfeeEPO.Systems.DomainName
+  description: Domain Name
+tests:
+- No tests (auto formatted)

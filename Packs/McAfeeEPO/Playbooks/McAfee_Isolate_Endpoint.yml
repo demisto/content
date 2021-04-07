@@ -1,0 +1,249 @@
+id: McAfee Isolate Endpoint
+version: -1
+fromversion: 6.0.0
+name: McAfee Isolate Endpoint
+description: A Playbook to Isolate McAfee Endpoint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 744ec43e-5b0e-4527-8a77-db40e07c50d1
+    type: start
+    task:
+      id: 744ec43e-5b0e-4527-8a77-db40e07c50d1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c4a2f063-f7b8-4389-89c6-86fadb092e6a
+    type: regular
+    task:
+      id: c4a2f063-f7b8-4389-89c6-86fadb092e6a
+      version: -1
+      name: Isolate Endpoints
+      description: Assign Policy to Endpoints or Endpoint Groups
+      script: '|||epo-assign-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      endpoints:
+        complex:
+          root: inputs.Endpoints
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      groups: {}
+      policy_id:
+        simple: ${inputs.Policy_ID}
+      product_id:
+        simple: ${inputs.Product_ID}
+      type_id:
+        simple: ${inputs.Type_ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 98ed41da-aa46-484b-81d3-029538b9116d
+    type: condition
+    task:
+      id: 98ed41da-aa46-484b-81d3-029538b9116d
+      version: -1
+      name: McAfee ePO  enabled?
+      description: Check if ePO Integration is Configured and Enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: McAfeeEPOv2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 19e66f34-5d6b-4e25-8626-df444708d483
+    type: condition
+    task:
+      id: 19e66f34-5d6b-4e25-8626-df444708d483
+      version: -1
+      name: Is there an Endpoint to Isolate?
+      description: Check if any Endpoints to Isolate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Endpoints
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoints
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6fc399d4-d011-4228-82ed-915f8147b705
+    type: title
+    task:
+      id: 6fc399d4-d011-4228-82ed-915f8147b705
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Policy_ID
+  value: {}
+  required: true
+  description: Quarantine Policy ID
+  playbookInputQuery:
+- key: Type_ID
+  value: {}
+  required: true
+  description: Quarantine Policy Type ID
+  playbookInputQuery:
+- key: Product_ID
+  value: {}
+  required: true
+  description: Quarantine Policy Product ID
+  playbookInputQuery:
+- key: Endpoints
+  value: {}
+  required: false
+  description: Endpoints To Quarantine
+  playbookInputQuery:
+outputs:
+- contextPath: McAfeeEPO.PolicyAssignTasks.id
+  description: Task ID
+- contextPath: McAfeeEPO.PolicyAssignTasks.message
+  description: Task Message
+- contextPath: McAfeeEPO.PolicyAssignTasks.name
+  description: Task Computer Name
+- contextPath: McAfeeEPO.PolicyAssignTasks.status
+  description: Task Status
+tests:
+- No tests (auto formatted)

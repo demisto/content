@@ -4,11 +4,11 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://example.com/
-  display: ePO Server URL
+  display: EPO Server URL
   name: url
   required: true
   type: 0
-- display: ePO Username
+- display: EPO Username
   name: credentials
   required: true
   type: 9
@@ -27,9 +27,23 @@ configuration:
   required: false
   type: 0
 - defaultvalue: av.detect
-  display: ePO Event Type
+  display: EPO Event Type
   hidden: false
   name: alert_types
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: '50'
+  display: Maximum Number of Incidents to Fetch
+  hidden: false
+  name: max_fetch
   required: false
   type: 0
 description: An Integration with McAfee ePO for Endpoint Security Use Cases
@@ -41,14 +55,14 @@ script:
     description: Print help information of ePO commands
     execution: false
     name: epo-help
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
   - deprecated: false
     description: Checks the latest DAT file in the McAfee repository.
     execution: false
     name: epo-get-latest-dat
+    outputs:
+    - contextPath: McAfeeEPO.LatestDat.CurrentVersion
+      description: Update DAT Version
+      type: Unknown
   - arguments:
     - default: false
       description: String to search by
@@ -60,6 +74,13 @@ script:
     description: Return System Tree Groups
     execution: false
     name: epo-get-system-tree-group
+    outputs:
+    - contextPath: McAfeeEPO.SystemGroups.groupId
+      description: Group ID
+      type: Unknown
+    - contextPath: McAfeeEPO.SystemGroups.groupPath
+      description: Group Path
+      type: Unknown
   - arguments:
     - default: false
       description: System tree group ID
@@ -71,6 +92,19 @@ script:
     description: Finds computers within a specified group in the ePO tree
     execution: false
     name: epo-get-systems
+    outputs:
+    - contextPath: McAfeeEPO.Systems.ComputerName
+      description: System HostName
+      type: Unknown
+    - contextPath: McAfeeEPO.Systems.IPAddress
+      description: System IP Address
+      type: Unknown
+    - contextPath: McAfeeEPO.Systems.AgentGUID
+      description: Agent GUID
+      type: Unknown
+    - contextPath: McAfeeEPO.Systems.DomainName
+      description: Domain Name
+      type: Unknown
   - arguments:
     - default: false
       description: Table Name
@@ -127,6 +161,25 @@ script:
     description: Finds policies matching a specified keyword
     execution: false
     name: epo-find-policies
+    outputs:
+    - contextPath: McAfeeEPO.Policies.typeName
+      description: Policy Type
+      type: Unknown
+    - contextPath: McAfeeEPO.Policies.productId
+      description: Product ID
+      type: Unknown
+    - contextPath: McAfeeEPO.Policies.objectName
+      description: Policy Name
+      type: Unknown
+    - contextPath: McAfeeEPO.Policies.typeId
+      description: Policy Type ID
+      type: Unknown
+    - contextPath: McAfeeEPO.Policies.productName
+      description: Policy Product Name
+      type: Unknown
+    - contextPath: McAfeeEPO.Policies.objectId
+      description: Policy ID
+      type: Unknown
   - arguments:
     - default: false
       description: ePO Policy ID
@@ -162,6 +215,19 @@ script:
     description: Assign Policy to Endpoints or Endpoint Groups
     execution: false
     name: epo-assign-policy
+    outputs:
+    - contextPath: McAfeeEPO.PolicyAssignTasks.id
+      description: Task ID
+      type: Unknown
+    - contextPath: McAfeeEPO.PolicyAssignTasks.message
+      description: Task Message
+      type: Unknown
+    - contextPath: McAfeeEPO.PolicyAssignTasks.name
+      description: Task Computer Name
+      type: Unknown
+    - contextPath: McAfeeEPO.PolicyAssignTasks.status
+      description: Task Status
+      type: Unknown
   - arguments:
     - default: false
       description: Search keyword
@@ -173,7 +239,20 @@ script:
     description: Find systems by search keyword
     execution: false
     name: epo-find-systems
-  dockerimage: demisto/python3:3.9.1.15759
+    outputs:
+    - contextPath: McAfeeEPO.Systems.ComputerName
+      description: System HostName
+      type: Unknown
+    - contextPath: McAfeeEPO.Systems.IPAddress
+      description: System IP Address
+      type: Unknown
+    - contextPath: McAfeeEPO.Systems.AgentGUID
+      description: Agent GUID
+      type: Unknown
+    - contextPath: McAfeeEPO.Systems.DomainName
+      description: Domain Name
+      type: Unknown
+  dockerimage: demisto/python3:3.9.2.18414
   feed: false
   isfetch: true
   longRunning: false

@@ -1,0 +1,10 @@
+!epo-help
+!epo-find-policies
+!epo-find-systems keyword="W7CLIENT"
+!epo-get-latest-dat
+!epo-get-system-tree-group query="Lab"
+!epo-get-systems groupId="4"
+!epo-query table="EPOEvents" query_filter="eq EPOEvents.ThreatCategory \"av.detect\""
+!epo-assign-policy policy_id="77" type_id="14" product_id="ENDP_FW_META" endpoints="W7CLIENT,WIN-KGR51CJ40N0"
+!epo-fetch-sample-alerts
+!epo-get-tables table="EPOEvents"
