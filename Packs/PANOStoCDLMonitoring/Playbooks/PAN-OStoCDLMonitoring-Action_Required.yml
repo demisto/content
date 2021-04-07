@@ -1,6 +1,7 @@
 id: Cortex Data Lake - PAN-OS logging - action required
 inputs: []
 name: Cortex Data Lake - PAN-OS logging - action required
+description: This Playbook initiates the steps needed to investigate the PAN-OS logging to Cortex Data Lake problems.
 outputs: []
 starttaskid: "0"
 tasks:
@@ -226,4 +227,3 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: ''
