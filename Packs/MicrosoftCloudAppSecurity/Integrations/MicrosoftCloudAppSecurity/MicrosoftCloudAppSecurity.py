@@ -115,7 +115,6 @@ class Client(BaseClient):
         )
         return data
 
-
     def dismiss_bulk_alerts(self, request_data: dict):
         data = self._http_request(
             method='POST',
@@ -123,7 +122,6 @@ class Client(BaseClient):
             json_data=request_data
         )
         return data
-
 
     def resolve_bulk_alerts(self, request_data: dict):
         data = self._http_request(
@@ -665,8 +663,7 @@ def close_benign_command(client: Client, args: dict):
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
-    arguments = assign_params(**args)
-    reason = CLOSE_BENIGN_REASON_OPTIONS.get(args.get('reason'))
+    reason = CLOSE_BENIGN_REASON_OPTIONS.get(str(args.get('reason')))
     sendFeedback = bool(args.get('sendFeedback'))
     feedbackText = args.get('feedbackText')
     allowContact = bool(args.get('allowContact'))
@@ -687,7 +684,7 @@ def close_false_positive_command(client: Client, args: dict):
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
-    reason = CLOSE_FALSE_POSITIVE_REASON_OPTIONS.get(args.get('reason'))
+    reason = CLOSE_FALSE_POSITIVE_REASON_OPTIONS.get(str(args.get('reason')))
     sendFeedback = bool(args.get('sendFeedback'))
     feedbackText = args.get('feedbackText')
     allowContact = bool(args.get('allowContact'))
@@ -714,7 +711,7 @@ def close_true_positive_command(client: Client, args: dict):
     alert_ids = args.get('alert_ids')
     custom_filter = args.get('custom_filter')
     comment = args.get('comment')
-    reason = CLOSE_BENIGN_REASON_OPTIONS.get(args.get('reason'))
+    reason = CLOSE_BENIGN_REASON_OPTIONS.get(str(args.get('reason')))
     sendFeedback = bool(args.get('sendFeedback'))
     feedbackText = args.get('feedbackText')
     allowContact = bool(args.get('allowContact'))
