@@ -1,0 +1,4 @@
+[file:README.md]
+ignore=RM102
+[file:ImpervaWAF.yml]
+ignore=IN136
