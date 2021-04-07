@@ -56,46 +56,38 @@ Get a report of an IP.
 
 
 #### Command Example
-```!ip ip="1.2.3.5" using="TheatCrowdv2_instance_1" resolution_limit=5```
+```!ip ip="x.x.x.x" resolution_limit=5```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "1.2.3.5",
+        "Indicator": "x.x.x.x",
         "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "ip",
         "Vendor": "Threat Crowd"
     },
     "IP": {
-        "Address": "1.2.3.5"
+        "Address": "x.x.x.x"
     },
     "ThreatCrowd": {
         "IP": {
             "hashes": [],
-            "permalink": "https://www.threatcrowd.org/ip.php?ip=1.2.3.5",
+            "permalink": "https://www.threatcrowd.org/ip.php?ip=x.x.x.x",
             "references": [],
             "resolutions": [
                 {
-                    "domain": "cname.githubtest.net",
+                    "domain": "example.example.net",
                     "last_resolved": "2018-08-05"
                 },
                 {
-                    "domain": "www.mein-apcoa.de",
+                    "domain": "www.example.com",
                     "last_resolved": "2020-01-11"
-                },
-                {
-                    "domain": "githubtest.net",
-                    "last_resolved": "2020-04-27"
-                },
-                {
-                    "domain": "dnsoptimus.com",
-                    "last_resolved": "2020-12-04"
                 }
             ],
             "response_code": "1",
-            "value": "1.2.3.5",
+            "value": "x.x.x.x",
             "votes": 0
         }
     }
@@ -104,14 +96,13 @@ Get a report of an IP.
 
 #### Human Readable Output
 
->Threat crowd report for ip 1.2.3.5: 
+>Threat crowd report for ip x.x.x.x: 
 >### Resolutions
 >|domain|last_resolved|
 >|---|---|
->| cname.githubtest.net | 2018-08-05 |
->| www.mein-apcoa.de | 2020-01-11 |
->| githubtest.net | 2020-04-27 |
->| dnsoptimus.com | 2020-12-04 |
+>| example.example.net | 2018-08-05 |
+>| www.example.com | 2020-01-11 |
+
 >Hashes: 
 > [] 
 >### References
@@ -182,13 +173,13 @@ Get a report of a domain.
 
 
 #### Command Example
-```!domain domain="aoldaily.com" resolution_limit=5 using="TheatCrowdv2_instance_1"```
+```!domain domain="example.com" resolution_limit=5```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "aoldaily.com",
+        "Indicator": "example.com",
         "Reliability": "B - Usually reliable",
         "Score": 3,
         "Type": "domain",
@@ -199,57 +190,26 @@ Get a report of a domain.
             "Description": null,
             "Vendor": "Threat Crowd"
         },
-        "Name": "aoldaily.com"
+        "Name": "example.com"
     },
     "ThreatCrowd": {
         "Domain": {
             "emails": [
-                "domains@virustracker.info",
-                "william19770319@yahoo.com"
+                "domains@example.com",
+                "example@example.com"
             ],
             "hashes": [],
-            "permalink": "https://www.threatcrowd.org/domain.php?domain=aoldaily.com",
+            "permalink": "https://www.threatcrowd.org/domain.php?domain=example.com",
             "references": [
-                "httpblog.shadowserver.org201302",
-                "httpsto-strategy.comsAppendix-D-Digital-FQDNs.pdf"
+                "example.example.example"
             ],
             "response_code": "1",
             "subdomains": [
-                "media.aoldaily.com",
-                "e.aoldaily.com",
-                "finance.aoldaily.com",
-                "game.aoldaily.com",
-                "zone.aoldaily.com",
-                "share.aoldaily.com",
-                "update.aoldaily.com",
-                "flash.aoldaily.com",
-                "mail.aoldaily.com",
-                "webmail.aoldaily.com",
-                "email.aoldaily.com",
-                "info.aoldaily.com",
-                "auto.aoldaily.com",
-                "asdf--auto.aoldaily.com",
-                "asdf--\u00c0u0066auto.aoldaily.com",
-                "asdf25u0027auto.aoldaily.com",
-                "asdfu0027auto.aoldaily.com",
-                "asdf--\u00c0auto.aoldaily.com",
-                "asdf--\u00c0aaaaaauto.aoldaily.com",
-                "asdf--\u00c0fauto.aoldaily.com",
-                "asdfauto.aoldaily.com",
-                "asdfauto.aoldaily.com",
-                "pop.aoldaily.com",
-                "ftp.aoldaily.com",
-                "smtp.aoldaily.com",
-                "ks.aoldaily.com",
-                "stratos.aoldaily.com",
-                "documents.aoldaily.com",
-                "sports.aoldaily.com",
-                "news.aoldaily.com",
-                "tw.aoldaily.com",
-                "www.aoldaily.com",
-                "mx.aoldaily.com"
+                "media.example.com",
+                "e.example.com",
+                "finance.example.com"
             ],
-            "value": "aoldaily.com",
+            "value": "example.com",
             "votes": -1
         }
     }
@@ -258,20 +218,20 @@ Get a report of a domain.
 
 #### Human Readable Output
 
->Threat crowd report for domain aoldaily.com 
+>Threat crowd report for domain example.com 
 >### Resolutions
 >|ip_address|last_resolved|
 >|---|---|
 >| - | 2017-11-09 |
->| 0.0.0.0 | 2014-04-01 |
->| 167.88.206.88 | 2020-07-22 |
->| 18.189.205.91 | 2021-03-05 |
->| 18.190.95.243 | 2020-10-18 |
+>| x.x.x.x | 2014-04-01 |
+>| x.x.x.x | 2020-07-22 |
+>| x.x.x.x | 2021-03-05 |
+>| x.x.x.x | 2020-10-18 |
 >### 
 >
 >|emails|hashes|permalink|references|response_code|subdomains|value|votes|
 >|---|---|---|---|---|---|---|---|
->| domains@virustracker.info,<br/>william19770319@yahoo.com |  | https://www.threatcrowd.org/domain.php?domain=aoldaily.com | httpblog.shadowserver.org201302,<br/>httpsto-strategy.comsAppendix-D-Digital-FQDNs.pdf | 1 | media.aoldaily.com,<br/>e.aoldaily.com,<br/>finance.aoldaily.com,<br/>game.aoldaily.com,<br/>zone.aoldaily.com,<br/>share.aoldaily.com,<br/>update.aoldaily.com,<br/>flash.aoldaily.com,<br/>mail.aoldaily.com,<br/>webmail.aoldaily.com,<br/>email.aoldaily.com,<br/>info.aoldaily.com,<br/>auto.aoldaily.com,<br/>asdf--auto.aoldaily.com,<br/>asdf--Àu0066auto.aoldaily.com,<br/>asdf25u0027auto.aoldaily.com,<br/>asdfu0027auto.aoldaily.com,<br/>asdf--Àauto.aoldaily.com,<br/>asdf--Àaaaaaauto.aoldaily.com,<br/>asdf--Àfauto.aoldaily.com,<br/>asdfauto.aoldaily.com,<br/>asdfauto.aoldaily.com,<br/>pop.aoldaily.com,<br/>ftp.aoldaily.com,<br/>smtp.aoldaily.com,<br/>ks.aoldaily.com,<br/>stratos.aoldaily.com,<br/>documents.aoldaily.com,<br/>sports.aoldaily.com,<br/>news.aoldaily.com,<br/>tw.aoldaily.com,<br/>www.aoldaily.com,<br/>mx.aoldaily.com | aoldaily.com | -1 |
+>| domains@example.info,<br/>example@example.com |  | https://www.threatcrowd.org/domain.php?domain=example.com | example.example | 1 | example.example.com,<br/>e.example.com | example.com | -1 |
 
 
 ### email
@@ -297,33 +257,32 @@ Get a report of an email address.
 
 
 #### Command Example
-```!email email=william19770319@yahoo.com using=TheatCrowdv2_instance_1```
+```!email email=example@example.com using=TheatCrowdv2_instance_1```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "william19770319@yahoo.com",
+        "Indicator": "example@example.com",
         "Reliability": "B - Usually reliable",
         "Score": 0,
         "Type": "email",
         "Vendor": "Threat Crowd"
     },
     "EMAIL": {
-        "Address": "william19770319@yahoo.com"
+        "Address": "example@example.com"
     },
     "ThreatCrowd": {
         "Account": {
             "domains": [
-                "aoldaily.com",
-                "aunewsonline.com",
-                "cnndaily.com",
-                "usnewssite.com"
+                "example.com",
+                "example2.com",
+                "example3.com",
             ],
-            "permalink": "https://www.threatcrowd.org/email.php?email=william19770319@yahoo.com",
+            "permalink": "https://www.threatcrowd.org/email.php?email=example@example.com",
             "references": [],
             "response_code": "1",
-            "value": "william19770319@yahoo.com"
+            "value": "example@example.com"
         }
     }
 }
@@ -357,7 +316,7 @@ Get a report of an antivirus.
 There is no context output for this command.
 
 #### Command Example
-```!antivirus antivirus="plugx" using="TheatCrowdv2_instance_1"```
+```!antivirus antivirus="example"```
 
 #### Context Example
 ```json
@@ -365,13 +324,10 @@ There is no context output for this command.
     "ThreatCrowd": {
         "AntiVirus": {
             "hashes": [
-                "31d0e421894004393c48de1769744687",
-                "5cd3f073caac28f915cf501d00030b31",
-                "bbd9acdd758ec2316855306e83dba469",
-                "ef9d8cd06de03bd5f07b01c1cce9761f",
-                "06bd026c77ce6ab8d85b6ae92bb34034"
+                "hash_example",
+                "hash_example_2"
             ],
-            "permalink": "https://www.threatcrowd.org/listMalware.php?antivirus=plugx",
+            "permalink": "https://www.threatcrowd.org/listMalware.php?antivirus=example",
             "references": [],
             "response_code": "1",
             "value": "plugx"
@@ -439,63 +395,41 @@ Get a report of a hash.
 
 
 #### Command Example
-```!file file=ec8c89aa5e521572c74e2dd02a4daf78 using=TheatCrowdv2_instance_1```
+```!file file=hash_example```
 
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "ec8c89aa5e521572c74e2dd02a4daf78",
+        "Indicator": "hash_example",
         "Reliability": "B - Usually reliable",
         "Score": 0,
         "Type": "file",
         "Vendor": "Threat Crowd"
     },
     "File": {
-        "MD5": "ec8c89aa5e521572c74e2dd02a4daf78",
-        "SHA1": "01f5c3905f2098650f16f50a1b26156586238bfe"
+        "MD5": "hash_example",
+        "SHA1": "hash_example_sha1"
     },
     "ThreatCrowd": {
         "File": {
             "domains": [
-                "ks.aoldaily.com"
+                "example.com"
             ],
             "ips": [
-                "0.0.0.0"
+                "x.x.x.x"
             ],
-            "md5": "ec8c89aa5e521572c74e2dd02a4daf78",
-            "permalink": "https://www.threatcrowd.org/malware.php?md5=ec8c89aa5e521572c74e2dd02a4daf78",
+            "md5": "hash_example",
+            "permalink": "https://www.threatcrowd.org/malware.php?md5=hash_example",
             "references": [],
             "response_code": "1",
             "scans": [
                 "",
                 "Trojan/W32.Small.34304.EG",
-                "Trojan.Win32.Cossta!O",
-                "Trojan ( 001922ff1 )",
-                "Trojan ( 001922ff1 )",
-                "Trojan.Win32.Cossta.cqvyn",
-                "APT1.A",
-                "TSPY_COSSTA.DH",
-                "WIN.Trojan.Cossta-4",
-                "Trojan.Win32.Cossta.grt",
-                "Trojan.Cossta!dfgiLGS/u08",
-                "Trojan.Win32.A.Cossta.34304.A",
-                "UnclassifiedMalware",
-                "TR/Offend.4596108",
-                "TSPY_COSSTA.DH",
-                "Mal/Dloadr-BK",
-                "Trojan/Cossta.rg",
-                "Trojan/Win32.Cossta",
-                "Win32.Troj.Cossta.(kcloud)",
-                "Backdoor:Win32/Neunut.A",
-                "Trojan/Win32.Cossta",
-                "Trojan.Cossta",
-                "Trojan.Win32.Cossta.abv",
-                "W32/Cossta.WQS!tr",
-                "Win32/Trojan.734"
+                "Trojan.Win32.Cossta!O"
             ],
-            "sha1": "01f5c3905f2098650f16f50a1b26156586238bfe",
-            "value": "ec8c89aa5e521572c74e2dd02a4daf78"
+            "sha1": "hash_example_sha1",
+            "value": "hash_example"
         }
     }
 }
@@ -503,8 +437,8 @@ Get a report of a hash.
 
 #### Human Readable Output
 
->### Threat crowd report for File ec8c89aa5e521572c74e2dd02a4daf78
+>### Threat crowd report for File hash_example
 >|domains|ips|md5|permalink|references|response_code|scans|sha1|value|
 >|---|---|---|---|---|---|---|---|---|
->| ks.aoldaily.com | 0.0.0.0 | ec8c89aa5e521572c74e2dd02a4daf78 | https://www.threatcrowd.org/malware.php?md5=ec8c89aa5e521572c74e2dd02a4daf78 |  | 1 | ,<br/>Trojan/W32.Small.34304.EG,<br/>Trojan.Win32.Cossta!O,<br/>Trojan ( 001922ff1 ),<br/>Trojan ( 001922ff1 ),<br/>Trojan.Win32.Cossta.cqvyn,<br/>APT1.A,<br/>TSPY_COSSTA.DH,<br/>WIN.Trojan.Cossta-4,<br/>Trojan.Win32.Cossta.grt,<br/>Trojan.Cossta!dfgiLGS/u08,<br/>Trojan.Win32.A.Cossta.34304.A,<br/>UnclassifiedMalware,<br/>TR/Offend.4596108,<br/>TSPY_COSSTA.DH,<br/>Mal/Dloadr-BK,<br/>Trojan/Cossta.rg,<br/>Trojan/Win32.Cossta,<br/>Win32.Troj.Cossta.(kcloud),<br/>Backdoor:Win32/Neunut.A,<br/>Trojan/Win32.Cossta,<br/>Trojan.Cossta,<br/>Trojan.Win32.Cossta.abv,<br/>W32/Cossta.WQS!tr,<br/>Win32/Trojan.734 | 01f5c3905f2098650f16f50a1b26156586238bfe | ec8c89aa5e521572c74e2dd02a4daf78 |
+>| example.com | x.x.x.x | hash_example | https://www.threatcrowd.org/malware.php?md5=hash_example |  | 1 | ,<br/>Trojan/W32.Small.34304.EG,<br/>Trojan.Win32.Cossta!O | hash_example_sha1 | hash_example |
 
