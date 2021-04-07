@@ -2196,10 +2196,10 @@ def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> Com
 
     context = get_expanse_certificate_to_domain_context(common_name=search, data=matching_domains)
 
-    hr_context = context.copy()
-    del hr_context['DomainList']  # Remove full objects from human readable response
+    context_copy = context.copy()
+    del context_copy['DomainList']  # Remove full objects from human readable response
     human_readable = tableToMarkdown("Expanse Domains matching Certificate Common Name: {search}".format(search=search),
-                                     hr_context)
+                                     context_copy)
 
     return CommandResults(
         outputs_prefix="Expanse.IPDomains",
