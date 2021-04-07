@@ -1,8 +1,8 @@
 id: Unisolate Endpoint - Generic
 version: -1
 name: Unisolate Endpoint - Generic
-description: "This playbook will auto Unisolate endpoints by the endpoint id that\
-  \ was provided in the playbook.\nCurrently supports the next integration:\n- Carbon\
+description: "This playbook unisolates endpoints according to the endpoint ID or hostname that\
+  \ is provided in the playbook.\nCurrently supports the following integrations:\n- Carbon\
   \ Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n- FireEye HX \n- Cybereason\n"
 starttaskid: "0"
 tasks:
@@ -45,7 +45,8 @@ tasks:
       id: 9d1f172a-43e5-4280-8512-2f6321eb961a
       version: -1
       name: Carbon Black Response - Unisolate Endpoint
-      description: This playbook will unisolate sensors in Carbon Black Response.
+      description: This playbook unisolates sensors according to the sensor ID
+       that is provided in the playbook input.
       playbookName: Carbon Black Response - Unisolate Endpoint
       type: playbook
       iscommand: false
@@ -82,8 +83,8 @@ tasks:
       id: 5e5a85db-5761-4c8f-8c70-6833a2200a04
       version: -1
       name: Cortex XDR - Unisolate Endpoint
-      description: This playbook will assist you to Unisolate endpoint with Cortex
-        XDR.
+      description: This playbook unisolates endpoints according to the 
+        endpoint ID that is provided in the playbook input.
       playbookName: Cortex XDR - Unisolate Endpoint
       type: playbook
       iscommand: false
@@ -145,7 +146,7 @@ tasks:
       id: a108aa9f-d9b9-4594-8f9f-7176e0ea21eb
       version: -1
       name: Crowdstrike Falcon - Unisolate Endpoint
-      description: This playbook will unisolate endpoints by the device id that was
+      description: This playbook unisolates devices according to the device ID that was
         provided in the playbook input.
       playbookName: Crowdstrike Falcon - Unisolate Endpoint
       type: playbook
@@ -183,8 +184,8 @@ tasks:
       id: 80b6c790-1aef-4d56-8d48-8b0446ac6e31
       version: -1
       name: FireEye HX - Unisolate Endpoint
-      description: This playbook will auto Isolate endpoints by the endpoint id that
-        was provided in the playbook input.
+      description: This playbook unisolates endpoints according to the hostname/endpoint ID
+       that is provided by the playbook input. 
       playbookName: FireEye HX - Unisolate Endpoint
       type: playbook
       iscommand: false
@@ -223,8 +224,8 @@ tasks:
       id: d075f33e-0924-4fd0-89c8-6dd42358041d
       version: -1
       name: Unisolate Endpoint - Cybereason
-      description: 'This playbook will assist you to unisolate endpoints using Cybereason
-        integration. '
+      description: This playbook unisolates endpoints according to the hostname
+       that is provided by the playbook input.
       playbookName: Unisolate Endpoint - Cybereason
       type: playbook
       iscommand: false
@@ -269,7 +270,7 @@ inputs:
 - key: Endpoint_ID
   value: {}
   required: false
-  description: The endpoint id/device id/sensor id/agent id that you wish to unisolate
+  description: The endpoint id/device id/sensor id/agent id that you want to unisolate.
   playbookInputQuery:
 - key: Hostname
   value: {}
