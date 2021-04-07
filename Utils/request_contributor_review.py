@@ -1,4 +1,5 @@
 import argparse
+from typing import Union
 import requests
 import os
 import sys
@@ -174,21 +175,13 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
             # Notify contributors by emailing them if this is not new pack:
             if (pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD) or pack_metadata.get(
                     PACK_METADATA_SUPPORT_EMAIL_FIELD)) and pack_metadata.get('currentVersion') != '1.0.0':
-                dev_emails = pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD, '')
-                dev_emails = ','.join(dev_emails) if isinstance(dev_emails, list) else dev_emails
-                support_emails = pack_metadata.get(PACK_METADATA_SUPPORT_EMAIL_FIELD, '')
-                support_emails = ','.join(support_emails) if isinstance(support_emails, list) else support_emails
-
-                # send mail to developers if there are dev-mails, else send mail to pack support
-                reviewers_emails = dev_emails if dev_emails else support_emails
-                if reviewers_emails:
-                    notify_contributors_by_email(
-                        reviewers_emails=reviewers_emails,
-                        refresh_token=email_refresh_token,
-                        pack_name=pack,
-                        pr_number=pr_number,
-                        modified_files=modified_files
-                    )
+                notify_contributors_by_email(
+                    dev_reviewers_emails=pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD, ''),
+                    support_reviewers_emails=pack_metadata.get(PACK_METADATA_SUPPORT_EMAIL_FIELD, ''),
+                    email_refresh_token=email_refresh_token,
+                    pack=pack,
+                    pr_number=pr_number,
+                )
 
         elif pack_metadata.get('support') == XSOAR_SUPPORT:
             print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
@@ -228,20 +221,54 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
         print(f'{pack} pack no reviewers were found.')
 
 
-def notify_contributors_by_email(reviewers_emails: str, refresh_token: str, pack_name: str,
-                                 pr_number: str, modified_files: list):
+def notify_contributors_by_email(dev_reviewers_emails: Union[str, list], support_reviewers_emails: Union[str, list],
+                                 email_refresh_token: str, pack: str, pr_number: str):
+    """ Checks arguments and finds emails of the reviewers. send mail to developers if there are dev-mails,
+    else send mail to pack support.
+
+    Args:
+        dev_reviewers_emails(Union[str, list]): mails of developers, if there are in pack_metadata
+        support_reviewers_emails(Union[str, list]): mails of support, if there are in pack_metadata
+        email_refresh_token(str): refresh token to send mails using gmail API
+        pack(str): pack that was modified
+        pr_number(str): github pr number
+
+    """
+    dev_emails = ','.join(dev_reviewers_emails) if isinstance(dev_reviewers_emails, list) else dev_reviewers_emails
+    support_emails = ','.join(support_reviewers_emails) if isinstance(support_reviewers_emails, list) \
+        else support_reviewers_emails
+
+    # send mail to developers if there are dev-mails, else send mail to pack support
+    reviewers_emails = dev_emails if dev_emails else support_emails
+    if reviewers_emails:
+        send_email_to_reviewers(
+            reviewers_emails=reviewers_emails,
+            refresh_token=email_refresh_token,
+            pack_name=pack,
+            pr_number=pr_number,
+        )
+
+
+def send_email_to_reviewers(reviewers_emails: str, refresh_token: str, pack_name: str,
+                            pr_number: str):
+    """ Compose mail and send it to the reviewers_emails, to review the changes in their pack
+
+    Args:
+        reviewers_emails(str): reviewers of the pack to send mail to them
+        refresh_token(str): refresh token to send mails using gmail API
+        pack_name(str): pack that was modified
+        pr_number(str): github pr number
+
+    """
     access_token = get_access_token(refresh_token)
     credentials = AccessTokenCredentials(access_token, 'Demisto Github send mails to contributors')
     service = build('gmail', 'v1', credentials=credentials)
 
-    pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
-                  and Path(file).parts[1] == pack_name}
-    pack_files_comment = "\n".join(pack_files)
+    email_content = f"Changes were made to the {pack_name} content pack that you contributed. \n"
+    email_content += f"Please review the changes in the following files in the contribution "
+    email_content += f"[Pull Request](https://github.com/demisto/content/pull/{pr_number}/files)."
 
-    email_content = f"### Your contributed {pack_name} {PR_COMMENT_PREFIX}\n"
-    email_content += f"{pack_files_comment}\n"
-    email_content += f" [Please review the changes here](https://github.com/demisto/content/pull/{pr_number}/files)\n"
-    email_subject = f'Your contributed pack - {pack_name} has been modified'
+    email_subject = f'Changes made to {pack_name} content pack'
 
     message = MIMEText(email_content, 'plain', 'utf-8')
     message['bcc'] = reviewers_emails  # send mails to all contributors in bcc
@@ -258,6 +285,15 @@ def notify_contributors_by_email(reviewers_emails: str, refresh_token: str, pack
 
 
 def get_access_token(refresh_token: str):
+    """ Gets access token from os environment if it was saved there. Else, generates access token from refresh token.
+
+    Args:
+        refresh_token(str): refresh token to obtain access token, to send mails using gmail API
+
+    Returns:
+        access_token(str): access token is used to send mails using gmail API
+
+    """
     access_token = os.getenv('ACCESS_TOKEN')
     valid_until = int(os.getenv('VALID_UNTIL')) if os.getenv('VALID_UNTIL') else None
 
