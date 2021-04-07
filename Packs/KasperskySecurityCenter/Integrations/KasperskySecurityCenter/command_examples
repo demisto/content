@@ -1,0 +1,12 @@
+!ksc-hosts-list filter=`KLHST_WKS_OS_NAME = "Microsoft Windows Server 2016"`
+!ksc-host-get hostname="4328e16f-bf83-47c3-8d0b-0fdf79f9d673"
+!ksc-groups-list filter=`name = "Managed devices"`
+!ksc-group-add name="Assigned Devices" parent_id=1
+!ksc-group-delete group_id=10 flags=1
+!ksc-software-applications-list
+!ksc-software-patches-list
+!ksc-host-get hostname=4328e16f-bf83-47c3-8d0b-0fdf79f9d673
+!ksc-host-software-applications-list hostname=4328e16f-bf83-47c3-8d0b-0fdf79f9d673
+!ksc-host-software-patches-list hostname=4328e16f-bf83-47c3-8d0b-0fdf79f9d673
+!ksc-policies-list group_id=0
+!ksc-policy-get policy_id=1
