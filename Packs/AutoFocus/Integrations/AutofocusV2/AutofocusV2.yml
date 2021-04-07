@@ -426,6 +426,9 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
+    - contextPath: File.MalwareFamily
+      description: The malware family associated with the file.
+      type: String
     - contextPath: File.Tags
       description: Tags of the file.
       type: String
@@ -758,6 +761,12 @@ script:
     - contextPath: IP.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
       type: String
+    - contextPath: IP.MalwareFamily
+      description: The malware family associated with the IP.
+      type: String
+    - contextPath: IP.Tags
+      description: Tags that are associated with the IP.
+      type: String
     - contextPath: AutoFocus.IP.Tags.PublicTagName
       description: The public name of the tag. This is used as an ID of the tag.
       type: String
@@ -828,6 +837,12 @@ script:
       type: Unknown
     - contextPath: URL.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: URL.MalwareFamily
+      description: The malware family associated with the url.
+      type: String
+    - contextPath: URL.Tags
+      description: Tags that are associated with the url.
       type: String
     - contextPath: AutoFocus.URL.Tags.PublicTagName
       description: The public name of the tag. This is used as an ID of the tag.
@@ -968,9 +983,6 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-    - contextPath: Domain.Name
-      description: The domain name.
-      type: String
     - contextPath: AutoFocus.Domain.IndicatorValue
       description: The domain.
       type: String
@@ -981,9 +993,6 @@ script:
       description: Latest verdicts from Palo Alto Networks products. Can be either
         PAN_DB or WF_SAMPLE(WildFire).
       type: Unknown
-    - contextPath: Domain.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision.
-      type: String
     - contextPath: AutoFocus.Domain.Tags.PublicTagName
       description: The public name of the tag. This is used as an ID of the tag.
       type: String
@@ -1042,6 +1051,42 @@ script:
     - contextPath: AutoFocus.Domain.WhoisRegistrant
       description: The name of the registrant.
       type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.MalwareFamily
+      description: The malware family associated with the domain.
+      type: String
+    - contextPath: Domain.Tags
+      description: Tags that are associated with the domain.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: String
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: 'The name of the registrar, for example: "GoDaddy"'
+      type: String
   - arguments:
     - default: false
       description: The label of the exported list.
@@ -1072,7 +1117,7 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.9.2.17246
+  dockerimage: demisto/python3:3.9.2.17957
   isfetch: false
   longRunning: false
   longRunningPort: false
