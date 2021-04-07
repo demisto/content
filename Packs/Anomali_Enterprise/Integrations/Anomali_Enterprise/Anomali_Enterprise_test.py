@@ -223,7 +223,7 @@ def test_get_search_job_result_command_with_matches_and_limit(mocker):
     command_results = get_search_job_result(client, args={'job_id': '111', 'limit': '2'})[0]
     output = command_results.to_context().get('EntryContext', {})
 
-    assert len(output.get('AnomaliEnterprise.ForensicSearch(val.job_id && val.job_id == obj.job_id)', {}).get('streamResults')) == 2
+    assert len(output['AnomaliEnterprise.ForensicSearch(val.job_id && val.job_id == obj.job_id)']['streamResults']) == 2
 
 
 def test_get_search_job_result_command_without_matches(mocker):
