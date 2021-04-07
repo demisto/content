@@ -193,7 +193,8 @@ class Client:
                              "PoliciesDirect.getAppDetails",
                              [
                                  {
-                                     "type": "security", "vsysName": self.vsys,
+                                     "type": "security",
+                                     "vsysName": self.machine,
                                      "position": "main",
                                      "ruleUuidList": [rule_uuid],
                                      "summary": "no",
@@ -375,7 +376,7 @@ def main():
     params = demisto.params()
     args = demisto.args()
     demisto.debug(f'Command being called is: {command}')
-    client: Client = None
+    client: Client = None  # type: ignore
     try:
         if not params.get('port'):
             raise Exception('Set a port for the instance.')
