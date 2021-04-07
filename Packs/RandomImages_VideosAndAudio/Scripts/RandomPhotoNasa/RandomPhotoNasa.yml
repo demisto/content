@@ -1,0 +1,21 @@
+args:
+- description: Search query
+  name: search
+commonfields:
+  id: random-photo-nasa
+  version: -1
+dockerimage: demisto/python3:3.9.2.18414
+enabled: true
+name: random-photo-nasa
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+- widget
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
