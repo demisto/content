@@ -381,7 +381,7 @@ def main():
 
         client = Client(url=url, username=params['credentials']['identifier'],
                         password=params['credentials']['password'], vsys=params.get('vsys'),
-                        device_group=params.get('device-group'), verify=not params.get('insecure'), tid=50)
+                        device_group=params.get('device_group'), verify=not params.get('insecure'), tid=50)
         client.session_metadata['cookie'] = client.login()  # Login to PAN-OS and return the GUI cookie value
 
         if command == 'test-module':
