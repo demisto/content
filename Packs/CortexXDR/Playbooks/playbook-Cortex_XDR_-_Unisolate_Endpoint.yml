@@ -1,7 +1,7 @@
 id: Cortex XDR - Unisolate Endpoint
 version: -1
 name: Cortex XDR - Unisolate Endpoint
-description: This playbook will assist you to Unisolate endpoint with Cortex XDR.
+description: This playbook unisolates endpoints according to the endpoint ID that is provided in the playbook input.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: 'Is cortex XDR available '
       description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -285,7 +285,7 @@ inputs:
 - key: Endpoint_ID
   value: {}
   required: false
-  description: The endpoint ID that you wish to unisolate.
+  description: The endpoint ID that you want to unisolate.
   playbookInputQuery:
 outputs: []
 tests:
