@@ -3,9 +3,9 @@ import pytest
 from Utils.request_contributor_review import check_reviewers
 
 
-@pytest.mark.parametrize('pr_author,version,reviewers,call_count', [('xsoar-bot', '1.0.0', ['reviewer'], 0),
-                                                                    ('xsoar-bot', '1.0.2', ['reviewer'], 1),
-                                                                    ('xsoar-bot', '1.0.0', [], 0)])
+@pytest.mark.parametrize('pr_author,version,reviewers,call_count', [('xsoar-bot', '1.0.0', {'reviewer'}, 0),
+                                                                    ('xsoar-bot', '1.0.2', {'reviewer'}, 1),
+                                                                    ('xsoar-bot', '1.0.0', {}, 0)])
 def test_check_reviewers(mocker, pr_author, version, reviewers, call_count):
     """
        Given
