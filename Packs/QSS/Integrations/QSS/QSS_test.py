@@ -12,7 +12,7 @@ def test_fetch_incidents(requests_mock):
     from QSS import Client, fetch_incidents
 
     mock_response = util_load_json('test_data/soc_monitoring_cases.json')
-    requests_mock.get('https://test.com/api/v1/get_alerts?apikey=5Xa2&duration=48', json=mock_response['alerts'])
+    requests_mock.get('https://test.com/api/v1/rest/noauth/third_party/read_object/xsoar/v1', json=mock_response['alerts'])
 
     client = Client(
         base_url='https://test.com/api/v1',
@@ -36,15 +36,10 @@ def test_fetch_incidents(requests_mock):
 
     assert new_incidents == [
         {
-            'name': 'SOC Case CAS-4-20210125-1',
-            'occurred': '2021-01-27T11:16:11Z',
+            'name': 'SOC Case CAS-4-20210328-1',
+            'occurred': '2021-03-28T13:42:39Z',
+            'event_id': '2160',
             'rawJSON': json.dumps(mock_response['alerts'][0]),
-            'severity': 2,  # medium, this is XSOAR severity (already converted)
-        },
-        {
-            'name': 'SOC Case CAS-4-20210125-2',
-            'occurred': '2021-01-27T11:16:11Z',
-            'rawJSON': json.dumps(mock_response['alerts'][1]),
-            'severity': 3,  # high, this is XSOAR severity (already converted)
+            'severity': 1,  # medium, this is XSOAR severity (already converted)
         }
     ]
