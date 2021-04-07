@@ -298,8 +298,8 @@ class Client(BaseClient):
             demisto.debug(f'get_asset_details: unsupported asset type {asset_type}')
         return data
 
-    def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str, tag_ids: List[str]) -> Dict[
-        str, Any]:
+    def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str,
+                          tag_ids: List[str]) -> Dict[str, Any]:
         endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
 
         data: Dict = {"operations": [{
@@ -623,8 +623,8 @@ def range_to_cidrs(start: str, end: str) -> Iterator[str]:
         raise ValueError(f'Invalid IP address in range: {str(e)}')
 
 
-def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None, required: bool = False) -> Optional[
-    int]:
+def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None,
+              required: bool = False) -> Optional[int]:
     """Converts a string argument to a Python int
     This function is used to quickly validate an argument provided and convert
     it into an ``int`` type. It will throw a ValueError if the input is invalid
@@ -1306,7 +1306,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
         previous_value = update.get('previousValue')
         update_user = update['user']['username'] \
             if ('user' in update and isinstance(update['user'], dict) and 'username' in update[
-            'user']) else 'Unknown user'
+                'user']) else 'Unknown user'
 
         # handle incoming comment
         if update_type == 'Comment':
