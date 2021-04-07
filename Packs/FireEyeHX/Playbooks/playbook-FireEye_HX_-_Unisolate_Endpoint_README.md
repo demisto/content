@@ -1,4 +1,4 @@
-This playbook will auto Isolate endpoints by the endpoint id that was provided in the playbook input.
+This playbook unisolates endpoints according to the hostname/endpoint ID that is provided by the playbook input. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,10 +7,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* FireEyeHX
+FireEyeHX
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 * fireeye-hx-get-host-information
@@ -21,8 +21,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Endpoint_id | The endpoint id/device  id that  you wish to unisolate. |  | Optional |
-| Hostname | The hostname that you wish to unisolate. | None | Optional |
+| Endpoint_id | The endpoint ID/device ID that you want to unisolate. |  | Optional |
+| Hostname | The hostname that you want to unisolate. | None | Optional |
 
 ## Playbook Outputs
 ---
