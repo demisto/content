@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 0
 - display: Device Group - Panorama instances only
-  name: device_gorup
+  name: device_group
   required: false
   type: 0
 - display: Trust any certificate (not secure)

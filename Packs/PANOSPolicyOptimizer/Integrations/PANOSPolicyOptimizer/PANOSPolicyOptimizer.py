@@ -375,7 +375,7 @@ def main():
     demisto.debug(f'Command being called is: {command}')
     client: Client = None
     try:
-        if not demisto.params().get('port'):
+        if not params.get('port'):
             raise Exception('Set a port for the instance.')
         url = f'{params.get("server").rstrip("/:")}:{params.get("port")}'
 
