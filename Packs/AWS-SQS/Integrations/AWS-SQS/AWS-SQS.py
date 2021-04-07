@@ -1,6 +1,3 @@
-import datetime
-import json
-
 import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -158,7 +155,7 @@ def create_queue(args, client):
             attributes.update({'MessageRetentionPeriod': args.get('messageRetentionPeriod')})
         if args.get('receiveMessageWaitTimeSeconds'):
             attributes.update({'ReceiveMessageWaitTimeSeconds': args.get('receiveMessageWaitTimeSeconds')})
-        if args.get('visibilityTimeout') :
+        if args.get('visibilityTimeout'):
             attributes.update({'VisibilityTimeout': int(args.get('visibilityTimeout'))})
         if args.get('kmsDataKeyReusePeriodSeconds') is not None:
             attributes.update({'KmsDataKeyReusePeriodSeconds': args.get('kmsDataKeyReusePeriodSeconds')})
@@ -250,12 +247,8 @@ def test_function():
     except Exception as e:
         return raise_error(e)
 
-def main():
-    # The command demisto.command() holds the command sent from the user.
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        result = test_function()
 
+def main():
     commands = {
         'aws-sqs-get-queue-url': get_queue_url,
         'aws-sqs-list-queues': list_queues,
@@ -268,7 +261,7 @@ def main():
     try:
         command = demisto.command()
         args = demisto.args()
-        demisto.debug(f'Command being called is {command}')
+        # demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
             return_results(test_function())
         elif demisto.command() == 'fetch-incidents':
@@ -279,12 +272,13 @@ def main():
                 region=args.get('region'),
                 roleArn=args.get('roleArn'),
                 roleSessionName=args.get('roleSessionName'),
-                roleSessionDuration=args.get('roleSessionDuration'),
-            )
-
-            return_results(commands[command](args, client)
+                roleSessionDuration=args.get('roleSessionDuration'))
+            return_results(commands[command](args, client))
+        else:
+            raise NotImplementedError(f'{command} is not an existing AWS-SQS command')
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        command = demisto.command()
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e.message)}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
