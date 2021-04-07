@@ -1,8 +1,8 @@
 id: Unisolate Endpoint - Cybereason
 version: -1
 name: Unisolate Endpoint - Cybereason
-description: 'This playbook will assist you to unisolate endpoints using Cybereason
-  integration. '
+description: This playbook unisolates endpoints according to the hostname
+ that is provided by the playbook input.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
       version: -1
       name: Is Cybereason integration enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -140,7 +140,7 @@ tasks:
       id: b7f22dfd-7f2f-4340-8246-767d4570afc8
       version: -1
       name: Unisolate endpoint
-      description: Stops isolation of a machine
+      description: Stops isolation of a machine.
       script: '|||cybereason-unisolate-machine'
       type: regular
       iscommand: true
