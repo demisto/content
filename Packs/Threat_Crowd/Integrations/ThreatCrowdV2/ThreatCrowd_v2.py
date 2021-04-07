@@ -19,8 +19,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class Client(BaseClient):
     """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
+    Client will implement the service API.
     """
 
     def __init__(self, base_url, verify, proxy, reliability):
