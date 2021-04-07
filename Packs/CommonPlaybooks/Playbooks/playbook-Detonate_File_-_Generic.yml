@@ -1186,29 +1186,8 @@ outputs:
 - contextPath: ANYRUN.Task.Process.Version.Version
   description: Version of the program executed.
   type: String
-- contextPath: File.Extension
-  description: Extension of the file submitted for analysis.
-  type: String
-- contextPath: File.Name
-  description: The name of the file submitted for analysis.
-  type: String
-- contextPath: File.MD5
-  description: MD5 hash of the file submitted for analysis.
-  type: String
-- contextPath: File.SHA1
-  description: SHA1 hash of the file submitted for analysis.
-  type: String
-- contextPath: File.SHA256
-  description: SHA256 hash of the file submitted for analysis.
-  type: String
 - contextPath: File.SSDeep
   description: SSDeep hash of the file submitted for analysis.
-  type: String
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision.
-  type: String
-- contextPath: File.Malicious.Description
-  description: For malicious files, the reason that the vendor made the decision.
   type: String
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
