@@ -8,10 +8,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Key
-  name: apikey
-  required: true
-  type: 4
 - display: Fetch Incidents
   name: isFetch
   required: false
@@ -21,6 +17,10 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
 - defaultvalue: "10"
   display: Max fetch
   name: max_fetch
