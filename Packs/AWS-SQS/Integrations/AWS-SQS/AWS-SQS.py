@@ -147,25 +147,25 @@ def create_queue(args, client):
     try:
         attributes = {}
         kwargs = {'QueueName': args.get('queueName')}
-        if args.get('delaySeconds'):
+        if args.get('delaySeconds') is not None:
             attributes.update({'DelaySeconds': args.get('delaySeconds')})
-        if args.get('maximumMessageSize'):
+        if args.get('maximumMessageSize') is not None:
             attributes.update({'MaximumMessageSize': args.get('maximumMessageSize')})
-        if args.get('messageRetentionPeriod'):
+        if args.get('messageRetentionPeriod') is not None:
             attributes.update({'MessageRetentionPeriod': args.get('messageRetentionPeriod')})
-        if args.get('receiveMessageWaitTimeSeconds'):
+        if args.get('receiveMessageWaitTimeSeconds') is not None:
             attributes.update({'ReceiveMessageWaitTimeSeconds': args.get('receiveMessageWaitTimeSeconds')})
-        if args.get('visibilityTimeout'):
+        if args.get('visibilityTimeout') is not None:
             attributes.update({'VisibilityTimeout': int(args.get('visibilityTimeout'))})
         if args.get('kmsDataKeyReusePeriodSeconds') is not None:
             attributes.update({'KmsDataKeyReusePeriodSeconds': args.get('kmsDataKeyReusePeriodSeconds')})
-        if args.get('kmsMasterKeyId'):
+        if args.get('kmsMasterKeyId') is not None:
             attributes.update({'KmsMasterKeyId': args.get('kmsMasterKeyId')})
-        if args.get('policy'):
+        if args.get('policy') is not None:
             attributes.update({'Policy': args.get('policy')})
-        if args.get('fifoQueue'):
+        if args.get('fifoQueue') is not None:
             attributes.update({'FifoQueue': args.get('fifoQueue')})
-        if args.get('contentBasedDeduplication'):
+        if args.get('contentBasedDeduplication') is not None:
             attributes.update({'ContentBasedDeduplication': args.get('contentBasedDeduplication')})
         if attributes:
             kwargs.update({'Attributes': attributes})
