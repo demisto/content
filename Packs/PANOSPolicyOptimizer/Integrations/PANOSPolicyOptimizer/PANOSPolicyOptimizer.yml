@@ -93,7 +93,7 @@ script:
       - Unused
       - Used
       - Any
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: 'false'

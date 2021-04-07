@@ -323,7 +323,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     return CommandResults(
         outputs_prefix=f'PanOS.PolicyOptimizer.{usage}Rules',
         outputs_key_field='@uuid',
-        outputs=result,
+        outputs=rules,
         readable_output=tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=rules, headers=headers,
                                         removeNull=True),
         raw_response=result
