@@ -1339,7 +1339,9 @@ def search_ip_command(ip, reliability):
 
         ip = Common.IP(
             ip=ip_address,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
         )
 
         autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1395,8 +1397,11 @@ def search_domain_command(domain, reliability):
                 updated_date=indicator.get('whoisDomainUpdateDate'),
                 admin_email=indicator.get('whoisAdminEmail'),
                 admin_name=indicator.get('whoisAdminName'),
+                admin_country=indicator.get('whoisAdminCountry'),
                 registrar_name=indicator.get('whoisRegistrar'),
-                registrant_name=indicator.get('whoisRegistrant')
+                registrant_name=indicator.get('whoisRegistrant'),
+                malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+                tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
             )
             autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
             # create human readable markdown for ip
@@ -1462,7 +1467,9 @@ def search_url_command(url, reliability):
 
         url = Common.URL(
             url=url_name,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
         )
 
         autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1481,7 +1488,6 @@ def search_url_command(url, reliability):
             outputs_prefix='AutoFocus.URL',
             outputs_key_field='IndicatorValue',
             outputs=autofocus_url_output,
-
             readable_output=md,
             raw_response=raw_res,
             indicator=url
@@ -1528,7 +1534,8 @@ def search_file_command(file, reliability):
         file = Common.File(
             sha256=sha256,
             dbot_score=dbot_score,
-            tags=get_tags_for_generic_context(tags),
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
         )
 
         command_results.append(CommandResults(
@@ -1555,6 +1562,29 @@ def get_tags_for_generic_context(tags: Optional[list]):
         generic_context_tags['tagGroups'] = {key: item.get(key) for key in sub_keys}
         results.append(remove_empty_elements(generic_context_tags))
     return results
+
+
+def get_tags_for_tags_and_malware_family_fields(tags: Optional[list], is_malware_family=False):
+    """get specific tags for the tgas and malware_family fields
+    Args
+        tags (Optional[list]): tags from the response
+        is_malware_family (bool): indicating whether it is for the malware_family field
+    return:
+        List[str]: list of tags without duplicates and empty elements
+    """
+    if not tags:
+        return None
+    results = []
+    for item in tags:
+        results.append(item.get('tag_name'))
+        results.append(item.get('public_tag_name'))
+        for alias in item.get('aliases', []):
+            results.append(alias)
+        if not is_malware_family:
+            for group in item.get('tagGroups', [{}]):
+                results.append(group.get('tag_group_name'))
+    # Returns a list without duplicates and empty elements
+    return list(set(filter(None, results)))
 
 
 def get_export_list_command(args):
