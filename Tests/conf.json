@@ -3195,6 +3195,10 @@
             "playbookID": "Nutanix-test"
         },
         {
+            "integrations": "Azure Storage",
+            "playbookID": "Azure Storage - Test"
+        },
+        {
             "integrations": "MicrosoftGraphApplications",
             "playbookID": "MSGraph Applications Test"
         },
@@ -3422,9 +3426,7 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774",
-        "Tanium": "Issue 33974",
-        "Tanium Threat Response": "Issue 35302"
+        "AttackIQFireDrill": "License issues #29774"
     },
     "nightly_integrations": [
         "Lastline v2",
