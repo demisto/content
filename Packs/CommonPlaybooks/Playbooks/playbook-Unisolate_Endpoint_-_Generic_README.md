@@ -1,5 +1,5 @@
-This playbook will auto Unisolate endpoints by the endpoint id that was provided in the playbook.
-Currently supports the next integration:
+This playbook unisolates endpoints according to the endpoint ID or hostname that is provided by the playbook input.
+It currently supports the following integrations:
 - Carbon Black Response
 - Cortex XDR
 - Crowdstrike Falcon
@@ -31,7 +31,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Endpoint_ID | The endpoint id/device id/sensor id/agent id that you wish to unisolate |  | Optional |
+| Endpoint_ID | The endpoint id/device id/sensor id/agent id that you want to unisolate. |  | Optional |
 | Hostname | The hostname of the endpoint to unisolate \(using Cybereason or FireEyeHX\). |  | Optional |
 
 ## Playbook Outputs
