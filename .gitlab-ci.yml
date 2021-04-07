@@ -85,3 +85,80 @@ stages:
   - create-instances
   - run-instances
   - upload-to-marketplace
+
+create-instances:
+  stage: create-instances
+  script:
+    - |
+      demisto-sdk create-id-set -o ./Tests/id_set.json
+      cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+    - ./Documentation/commonServerDocs.sh
+    -  demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION
+    - |
+      gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+      echo "successfully activated google cloud service account"
+    - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
+    - echo $successful_feature_branch_build
+    - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
+    - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure" && exit 0)
+    - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
+    - python3 ./Tests/scripts/update_conf_json.py
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - |
+      if [ -n "${INSTANCE_TESTS}" ];
+        then
+          echo "Skipping - not running in INSTANCE_TESTS build"
+        else
+          [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+          python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+      fi
+    - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - |
+      if [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]] ; then
+        echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
+      else
+        ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
+      fi
+    - |
+      if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ $CI_COMMIT_BRANCH != master ]] && [[ $CI_COMMIT_BRANCH != 20\.* ]] && [[ $CI_COMMIT_BRANCH != 21\.* ]]; then
+        echo "Skipping packs download to artifact on non master or release branch"
+      else
+        ZIP_FOLDER=$(mktemp -d)
+        python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
+      fi
+    - |
+      if [ -n "${DEMISTO_SDK_NIGHTLY}" ];
+        then
+          echo "Skipping - not running in INSTANCE_TESTS build"
+        else
+          ./Tests/scripts/upload_artifacts.sh
+      fi
+    - |
+      if [ -n "${DEMISTO_SDK_NIGHTLY}" ];
+        then
+          echo "Skipping - not running in INSTANCE_TESTS build"
+        else
+          [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+          if [ -n "${NIGHTLY}" ] ;
+            then
+              export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+          elif [ -n "${INSTANCE_TESTS}" ] ;
+            then
+              export IFRA_ENV_TYPE="Server 5.5" # disable-secrets-detection
+          elif [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
+            then
+              export IFRA_ENV_TYPE="Server Master" # disable-secrets-detection
+          elif [ -n "${BUCKET_UPLOAD}" ] ;
+            then
+              export IFRA_ENV_TYPE="Bucket-Upload" # disable-secrets-detection
+          else
+            export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
+          fi
+        python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+      fi
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - /builds/xsoar/content/artifacts/*
+    when: always

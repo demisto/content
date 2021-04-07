@@ -305,8 +305,7 @@ def id_set__get_integration_file_path(id_set, integration_id):
     for integration in id_set.get('integrations', []):
         if integration_id in integration.keys():
             return integration[integration_id]['file_path']
-        else:
-            logging.critical(f'Could not find integration "{integration}" in the id_set')
+    logging.critical(f'Could not find integration "{integration_id}" in the id_set')
 
 
 def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set):
@@ -1290,7 +1289,7 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 6.0': False,
         }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
-    with open("./Tests/filter_envs.json", "w") as filter_envs_file:
+    with open("./artifacts/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
 
 
@@ -1348,11 +1347,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
     if not skip_save:
         logging.info("Creating filter_file.txt")
-        with open("./Tests/filter_file.txt", "w") as filter_file:
+        with open("./artifacts/filter_file.txt", "w") as filter_file:
             filter_file.write(tests_string)
         # content_packs_to_install.txt is not used in nightly build
         logging.info("Creating content_packs_to_install.txt")
-        with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
+        with open("./artifacts/content_packs_to_install.txt", "w") as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
     if is_nightly:
