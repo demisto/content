@@ -1,8 +1,8 @@
 commonfields:
-  id: AWS - SQS
+  id: AWS - SQS_test
   version: -1
-name: AWS - SQS
-display: AWS - SQS
+name: AWS - SQS_test
+display: AWS - SQS_test
 category: IT Services
 description: Amazon Web Services Simple Queuing Service (SQS)
 configuration:
