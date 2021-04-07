@@ -2,7 +2,7 @@
     "id": "incident_bitsightseveritycategory",
     "version": -1,
     "modified": "2021-02-24T11:45:34.543819396Z",
-    "name": "BitSight - Severity Category",
+    "name": "BitSight Severity Category",
     "ownerOnly": false,
     "placeholder": "BitSight Severity Category",
     "description": "BitSight Severity Category",

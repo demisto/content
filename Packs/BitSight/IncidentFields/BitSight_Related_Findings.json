@@ -2,7 +2,7 @@
     "id": "incident_bitsightrelatedfindings",
     "version": -1,
     "modified": "2021-02-24T11:43:08.823496265Z",
-    "name": "BitSight - Related Findings",
+    "name": "BitSight Related Findings",
     "ownerOnly": false,
     "placeholder": "BitSight Related Findings",
     "description": "BitSight Related Findings",
