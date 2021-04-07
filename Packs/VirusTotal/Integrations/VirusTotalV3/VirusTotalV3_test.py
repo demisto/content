@@ -152,11 +152,6 @@ class TestHelpers:
     def test_get_working_id(self):
         assert get_working_id('314huoh432ou', '') == '314huoh432ou'
 
-    def test_get_working_id_to_base64(self, mocker):
-        mocker.patch.object(demisto, 'dt', return_value='')
-        mocker.patch('VirusTotalV3.get_md5_by_entry_id', return_value='')
-        assert get_working_id('1461', 'aa') == 'OjE0NjE='
-
     def test_get_working_id_no_entry(self):
         with pytest.raises(DemistoException):
             assert get_working_id('1451', '')
