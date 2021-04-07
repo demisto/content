@@ -1745,7 +1745,7 @@ def test_exposures(requests_mock):
     assert results.outputs_prefix == "Expanse.Exposures"
     assert results.outputs_key_field == "SearchTerm"
     assert results.outputs['SearchTerm'] == ip_to_test
-    assert results.outputs['WarningExposureCount'] == 1
+    assert results.outputs['TotalExposureCount'] == 1
 
 
 def test_domains_by_certificate(requests_mock):
