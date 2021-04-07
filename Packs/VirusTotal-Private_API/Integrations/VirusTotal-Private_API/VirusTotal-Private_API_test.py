@@ -58,7 +58,7 @@ def test_get_url_report_invalid_url_no_scan(mocker, requests_mock):
 
 
 def test_get_url_report_invalid_url_with_scan(mocker, requests_mock):
-    mocker.patch.object(demisto, 'args', return_value={'resource': 'https://invalid-url.com'})
+    mocker.patch.object(demisto, 'args', return_value={'resource': 'hts://invalid-url.noc.tz'})
     requests_mock.get('https://www.virustotal.com/vtapi/v2/url/report',
                       [{'json': load_test_data('./test_data/get_url_report_invalid_url_with_scan.json'),
                        'status_code': 200}])
