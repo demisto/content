@@ -1,8 +1,8 @@
 id: Crowdstrike Falcon - Unisolate Endpoint
 version: -1
 name: Crowdstrike Falcon - Unisolate Endpoint
-description: This playbook will unisolate endpoints by the device id that was provided
-  in the playbook input.
+description: This playbook unisolates devices according to the device ID
+ that is provided in the playbook input.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
       version: -1
       name: Is Crowdstrike Falcon enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -101,7 +101,7 @@ tasks:
     task:
       id: bbc0e932-25e7-48ae-8cdd-eac85b847407
       version: -1
-      name: Is there device id?
+      name: Is there a device ID?
       type: condition
       iscommand: false
       brand: ""
@@ -263,7 +263,7 @@ inputs:
 - key: Endpoint_id
   value: {}
   required: false
-  description: 'The endpoint id/device id that you wish to unisolate.'
+  description: 'The endpoint ID/device ID that you want to unisolate.'
   playbookInputQuery:
 outputs: []
 tests:
