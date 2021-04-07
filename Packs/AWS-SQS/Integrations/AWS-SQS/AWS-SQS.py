@@ -216,8 +216,8 @@ def fetch_incidents():
             WaitTimeSeconds=5,
         )
 
-        receipt_handles = []
-        incidents = []
+        receipt_handles = []  # type: list
+        incidents = []  # type: list
 
         if "Messages" not in messages.keys():
             if demisto.command() == 'fetch-incidents':
@@ -275,10 +275,10 @@ def main():
                 roleSessionDuration=args.get('roleSessionDuration'))
             return_results(commands[command](args, client))
         else:
-            raise NotImplementedError(f'{command} is not an existing AWS-SQS command')
+            raise NotImplementedError('{} is not an existing AWS-SQS command'.format(command))
     except Exception as e:
         command = demisto.command()
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e.message)}")
+        return_error("Failed to execute {} command.\nError:\n{}".format(command, str(e)))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
