@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 fromversion: 5.0.0
+deprecated: true
 commonfields:
   id: Expanse
   version: -1
@@ -50,8 +51,8 @@ configuration:
   - ROUTINE
   - WARNING
   - CRITICAL
-description: The Expanse App for Demisto leverages the Expander API to retrieve network exposures and risky flows to create incidents in Demisto.  This application also allows for IP, Domain, Certificate, Behavior, and Exposure enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
-display: Expanse
+description: Deprecated. Use the Expanse v2 integration instead. The Expanse App for Demisto leverages the Expander API to retrieve network exposures and risky flows to create incidents in Demisto.  This application also allows for IP, Domain, Certificate, Behavior, and Exposure enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
+display: Expanse (Deprecated)
 name: Expanse
 script:
   commands:
