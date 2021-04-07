@@ -2316,7 +2316,7 @@ class Common(object):
         :param malware_family: The malware family associated with the IP.
 
         :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: Indicators that are associated with the IP.
+        :param feed_related_indicators: List of indicators that are associated with the IP.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
@@ -2540,7 +2540,7 @@ class Common(object):
         :param tags: Tags of the file.
 
         :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: Indicators that are associated with the file.
+        :param feed_related_indicators: List of indicators that are associated with the file.
 
         :type malware_family: ``str``
         :param malware_family: The malware family associated with the File.
@@ -2761,7 +2761,7 @@ class Common(object):
         :param category: The category associated with the indicator.
 
         :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: Indicators that are associated with the URL.
+        :param feed_related_indicators: List of indicators that are associated with the URL.
 
         :type malware_family: ``str``
         :param malware_family: The malware family associated with the URL.
