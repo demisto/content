@@ -94,7 +94,7 @@ def get_matter_by_id(service, matter_id):
     return matter
 
 
-def get_matters_by_state(service, state, test=False):
+def get_matters_by_state(service, state, first_page_only=False):
     state = state.upper()
     matter_state = state if state in ('OPEN', 'CLOSED', 'DELETED') else 'STATE_UNSPECIFIED'
 
@@ -102,7 +102,7 @@ def get_matters_by_state(service, state, test=False):
     response = request.execute()
     matter_list_results = response['matters']
 
-    if not test:
+    if not first_page_only:
         while response.get('nextPageToken'):
             request = service.matters().list_next(request, response)
             response = request.execute()
@@ -1470,7 +1470,7 @@ def test_module():
     """
     try:
         service = connect()
-        get_matters_by_state(service, 'STATE_UNSPECIFIED', test=True)
+        get_matters_by_state(service, 'STATE_UNSPECIFIED', first_page_only=True)
         demisto.results('ok')
         sys.exit(0)
     except Exception as ex:
