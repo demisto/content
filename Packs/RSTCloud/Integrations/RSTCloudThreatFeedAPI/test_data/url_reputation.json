@@ -1,0 +1,33 @@
+{
+   "ioc_value":"http://zpmagura.com/wp-content/nux5wem-08",
+   "fseen":1597622400,
+   "lseen":1604966400,
+   "collect":1605052800,
+   "tags":{
+      "str":[
+         "malware"
+      ],
+      "codes":[
+         10
+      ]
+   },
+   "score":{
+      "total":22,
+      "src":77.43,
+      "tags":0.89,
+      "frequency":0.33
+   },
+   "resolved":{
+      "status":200
+   },
+   "fp":{
+      "alarm":"false",
+      "descr":""
+   },
+   "threat":[
+      "emotet"
+   ],
+   "id":"32a93c79-2ff6-390c-9239-fa1cc8ae6da7",
+   "title":"RST Threat feed. IOC: zpmagura.com/wp-content/nux5wem-08",
+   "description":"IOC with tags: malware. Related threats: emotet"
+}

@@ -1,10 +1,10 @@
 {
     "name": "Luminate",
     "description": "Enrich your report and Respond to incidents with Luminate",
-    "support": "partner",
-    "currentVersion": "1.0.0",
+    "support": "community",
+    "currentVersion": "1.0.2",
     "author": "Luminate",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "url": "",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [

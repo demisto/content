@@ -65,8 +65,8 @@ def main():
                             break
                 shifts_table[hour][DAY_NUM_TO_DAY_HEADER[day]] = ', '.join(collected_roles)
 
-        widget = TextWidget(text=tableToMarkdown(
-            name='Roles Per Shift',
+        widget = TextWidget(text='Roles Per Shift\n' + tableToMarkdown(
+            name='',
             t=shifts_table,
             headers=[HOURS_DAYS_HEADER, SUNDAY_HEADER, MONDAY_HEADER, TUESDAY_HEADER,  # disable-secrets-detection
                      WEDNESDAY_HEADER, THURSDAY_HEADER, FRIDAY_HEADER, SATURDAY_HEADER]

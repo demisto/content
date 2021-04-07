@@ -1,0 +1,11 @@
+!ip ip="1.2.3.4"
+!url url="https://google.com"
+!domain domain="foobar.com"
+!file file="9e0c442ee3157d3f3aa2be30a1d24d81"
+!synapse-storm-query query="inet:ipv4=1.2.3.5" limit=1
+!synapse-list-users
+!synapse-list-roles
+!synapse-create-user username="xsoardemo" password="secret"
+!synapse-create-role role="xsoar-role-demo"
+!synapse-grant-user-role user="a2bfead4c16b0354af2a92aa05588fc9" role="bcf176a4cbe240ae1dcf9fbebdffa680"
+!synapse-query-model query="file:bytes"

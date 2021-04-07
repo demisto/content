@@ -1,0 +1,3003 @@
+id: temp - Test
+version: -1
+name: temp - Test
+description: temp testing
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 51e1c33a-b00f-4d48-844e-b3be98d1a9f4
+    type: start
+    task:
+      id: 51e1c33a-b00f-4d48-844e-b3be98d1a9f4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 485c2587-c248-4b92-8acf-de628284ea8c
+    type: title
+    task:
+      id: 485c2587-c248-4b92-8acf-de628284ea8c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6070,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 773e8cb2-dc14-49f7-8537-d26796144912
+    type: regular
+    task:
+      id: 773e8cb2-dc14-49f7-8537-d26796144912
+      version: -1
+      name: aria-record-conversation
+      script: '|||aria-record-conversation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "136"
+    scriptarguments:
+      aio_index:
+        simple: "0"
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      protocol: {}
+      rule_name:
+        simple: record_conversation
+      sia_interface:
+        simple: B
+      src_ip:
+        simple: 172.0.0.2
+      src_port: {}
+      target_ip:
+        simple: 56.1.1.1
+      target_port: {}
+      transport_type:
+        simple: email
+      trigger_type:
+        simple: one-shot
+      trigger_value:
+        simple: "1"
+      tti_index:
+        simple: "0"
+      vlan_id:
+        simple: "123"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: fd02b78a-1f15-4b21-83bc-f3f4abf66b7b
+    type: regular
+    task:
+      id: fd02b78a-1f15-4b21-83bc-f3f4abf66b7b
+      version: -1
+      name: aria-stop-recording-conversation
+      script: '|||aria-stop-recording-conversation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "137"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: record_conversation
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 8397e605-f40d-46a8-838d-dda96c6908b9
+    type: regular
+    task:
+      id: 8397e605-f40d-46a8-838d-dda96c6908b9
+      version: -1
+      name: aria-record-dest-port
+      script: '|||aria-record-dest-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "142"
+    scriptarguments:
+      aio_index:
+        simple: "0"
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      port_range:
+        simple: "3658"
+      rule_name:
+        simple: record_dest_port
+      sia_interface:
+        simple: A
+      transport_type:
+        simple: email
+      trigger_type:
+        simple: re-trigger-count
+      trigger_value:
+        simple: "5"
+      tti_index:
+        simple: "0"
+      vlan_id:
+        simple: "123"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5210,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: bfd37900-4bc4-47df-8635-668668468480
+    type: regular
+    task:
+      id: bfd37900-4bc4-47df-8635-668668468480
+      version: -1
+      name: aria-stop-recording-dest-port
+      script: '|||aria-stop-recording-dest-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "143"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: record_dest_port
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5210,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: a536339d-ac8a-4d8a-83a0-36f419e9cc1a
+    type: regular
+    task:
+      id: a536339d-ac8a-4d8a-83a0-36f419e9cc1a
+      version: -1
+      name: aria-alert-conversation
+      script: '|||aria-alert-conversation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "103"
+    scriptarguments:
+      aio_index:
+        simple: "0"
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      protocol: {}
+      rule_name:
+        simple: alert_conversation
+      src_ip:
+        simple: 255.255.255.255/32
+      src_port: {}
+      target_ip:
+        simple: 9.9.9.9/24
+      target_port:
+        simple: 0-65535
+      transport_type:
+        simple: email
+      trigger_type:
+        simple: one-shot
+      trigger_value:
+        simple: "200"
+      tti_index:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 48bf2aa8-99e8-4615-8e37-4d47c1808da7
+    type: regular
+    task:
+      id: 48bf2aa8-99e8-4615-8e37-4d47c1808da7
+      version: -1
+      name: aria-mute-alert-conversation
+      script: '|||aria-mute-alert-conversation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: alert_conversation
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 040d02a7-e767-4774-828a-fc876542087a
+    type: regular
+    task:
+      id: 040d02a7-e767-4774-828a-fc876542087a
+      version: -1
+      name: aria-alert-src-port
+      script: '|||aria-alert-src-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      aio_index:
+        simple: "0"
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      port_range:
+        simple: 10-100, 1000
+      rule_name:
+        simple: alert_src_port
+      transport_type:
+        simple: syslog
+      trigger_type:
+        simple: re-trigger-count
+      trigger_value:
+        simple: "500"
+      tti_index:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 3c25c009-4039-47d7-80b8-29cf024bc4e7
+    type: regular
+    task:
+      id: 3c25c009-4039-47d7-80b8-29cf024bc4e7
+      version: -1
+      name: aria-mute-alert-src-port
+      script: '|||aria-mute-alert-src-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "119"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: alert_src_port
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 5ab96faa-8775-4842-81fb-24505765871c
+    type: regular
+    task:
+      id: 5ab96faa-8775-4842-81fb-24505765871c
+      version: -1
+      name: aria-alert-dest-port
+      script: '|||aria-alert-dest-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      aio_index:
+        simple: "0"
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      port_range:
+        simple: 0-65535
+      rule_name:
+        simple: alert_dest_port
+      transport_type:
+        simple: syslog
+      trigger_type:
+        simple: re-trigger-count
+      trigger_value:
+        simple: "200"
+      tti_index:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 9742ffee-685e-429a-8faa-1a3a187a56fd
+    type: regular
+    task:
+      id: 9742ffee-685e-429a-8faa-1a3a187a56fd
+      version: -1
+      name: aria-mute-alert-dest-port
+      script: '|||aria-mute-alert-dest-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "110"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: alert_dest_port
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: a148fd5b-042c-4280-8de1-e83a4d79165d
+    type: regular
+    task:
+      id: a148fd5b-042c-4280-8de1-e83a4d79165d
+      version: -1
+      name: aria-block-conversation
+      script: '|||aria-block-conversation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      protocol:
+        simple: UDP
+      rule_name:
+        simple: block_conversation
+      src_ip:
+        simple: 4.4.4.4
+      src_port:
+        simple: "56"
+      target_ip:
+        simple: 8.8.8.8/24
+      target_port:
+        simple: "1234"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 8c87c6ac-0af6-471c-8b9b-4fa35a8782f2
+    type: regular
+    task:
+      id: 8c87c6ac-0af6-471c-8b9b-4fa35a8782f2
+      version: -1
+      name: aria-unblock-conversation
+      script: '|||aria-unblock-conversation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: block_conversation
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: cae49352-2a33-464a-8019-c7a806392585
+    type: regular
+    task:
+      id: cae49352-2a33-464a-8019-c7a806392585
+      version: -1
+      name: aria-block-src-port
+      script: '|||aria-block-src-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      port_range:
+        simple: 1-10000
+      rule_name:
+        simple: block_src_port
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 807550f7-abbc-4317-885a-b9a74ba8c09f
+    type: regular
+    task:
+      id: 807550f7-abbc-4317-885a-b9a74ba8c09f
+      version: -1
+      name: aria-unblock-src-port
+      script: '|||aria-unblock-src-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "125"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: block_src_port
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 3b92784a-aa2a-4337-8f7a-4b4130ed2576
+    type: regular
+    task:
+      id: 3b92784a-aa2a-4337-8f7a-4b4130ed2576
+      version: -1
+      name: aria-block-dest-port
+      script: '|||aria-block-dest-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "127"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      port_range:
+        simple: 0-65535
+      rule_name:
+        simple: block_dest_port
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "50":
+    id: "50"
+    taskid: b0c347e0-5805-4c0a-859b-83b7c08aa115
+    type: regular
+    task:
+      id: b0c347e0-5805-4c0a-859b-83b7c08aa115
+      version: -1
+      name: aria-unblock-dest-port
+      script: '|||aria-unblock-dest-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "128"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: block_dest_port
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: e6a31aff-9753-434e-8d92-075171325daf
+    type: regular
+    task:
+      id: e6a31aff-9753-434e-8d92-075171325daf
+      version: -1
+      name: aria-block-dest-subnet
+      script: '|||aria-block-dest-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: block_dest_subnet
+      target_ip:
+        simple: 22.22.22.22
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 42147fc0-f6ef-4129-81b3-26e8404080b9
+    type: regular
+    task:
+      id: 42147fc0-f6ef-4129-81b3-26e8404080b9
+      version: -1
+      name: aria-unblock-dest-subnet
+      script: '|||aria-unblock-dest-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "131"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: block_dest_subnet
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: 1342f382-b32c-43a0-82f8-14df711021ab
+    type: regular
+    task:
+      id: 1342f382-b32c-43a0-82f8-14df711021ab
+      version: -1
+      name: aria-block-src-subnet
+      script: '|||aria-block-src-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "135"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: block_src_subnet
+      src_ip:
+        simple: 192.168.0.15
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: 7b5f6ff8-67c5-401e-82ad-80f7ee321c09
+    type: regular
+    task:
+      id: 7b5f6ff8-67c5-401e-82ad-80f7ee321c09
+      version: -1
+      name: aria-unblock-src-subnet
+      script: '|||aria-unblock-src-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "133"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: block_src_subnet
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: ff4c2bc8-399d-4c6a-8ae2-0c978c732c58
+    type: regular
+    task:
+      id: ff4c2bc8-399d-4c6a-8ae2-0c978c732c58
+      version: -1
+      name: aria-record-dest-subnet
+      script: '|||aria-record-dest-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "145"
+    scriptarguments:
+      aio_index:
+        simple: "0"
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: record_dest_subnet
+      sia_interface: {}
+      target_ip:
+        simple: 5.6.7.8
+      transport_type:
+        simple: email
+      trigger_type:
+        simple: re-trigger-count
+      trigger_value:
+        simple: "4"
+      tti_index:
+        simple: "0"
+      vlan_id:
+        simple: "234"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "59":
+    id: "59"
+    taskid: 22cbcaba-711f-4d32-8a7c-4defa70e6905
+    type: regular
+    task:
+      id: 22cbcaba-711f-4d32-8a7c-4defa70e6905
+      version: -1
+      name: aria-stop-recording-dest-subnet
+      script: '|||aria-stop-recording-dest-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "146"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: record_dest_subnet
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: 43c2d7ec-be53-4eb1-8633-14cbfded9d3b
+    type: regular
+    task:
+      id: 43c2d7ec-be53-4eb1-8633-14cbfded9d3b
+      version: -1
+      name: aria-record-src-subnet
+      script: '|||aria-record-src-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "148"
+    scriptarguments:
+      aio_index: {}
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: record_src_subnet
+      sia_interface: {}
+      src_ip:
+        simple: 1.2.3.4
+      transport_type: {}
+      trigger_type: {}
+      trigger_value: {}
+      tti_index: {}
+      vlan_id:
+        simple: "234"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6070,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: dbeeff08-f130-4024-8b1f-3967bd0edac9
+    type: regular
+    task:
+      id: dbeeff08-f130-4024-8b1f-3967bd0edac9
+      version: -1
+      name: aria-stop-recording-src-subnet
+      script: '|||aria-stop-recording-src-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "149"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: record_src_subnet
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6070,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 77b72afd-4002-4eff-8092-182b125e2d8a
+    type: regular
+    task:
+      id: 77b72afd-4002-4eff-8092-182b125e2d8a
+      version: -1
+      name: aria-alert-dest-subnet
+      script: '|||aria-alert-dest-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "112"
+    scriptarguments:
+      aio_index:
+        simple: "0"
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: alert_dest_subnet
+      target_ip:
+        simple: 255.255.255.255
+      transport_type:
+        simple: email
+      trigger_type:
+        simple: re-trigger-timed-sec
+      trigger_value:
+        simple: "20"
+      tti_index:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: 63054337-4c1b-4375-8e95-e7d70cbbdb37
+    type: regular
+    task:
+      id: 63054337-4c1b-4375-8e95-e7d70cbbdb37
+      version: -1
+      name: aria-mute-alert-dest-subnet
+      script: '|||aria-mute-alert-dest-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "113"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: alert_dest_subnet
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "65":
+    id: "65"
+    taskid: 98c1b480-b3a1-42cc-83bd-1bbbacd58373
+    type: regular
+    task:
+      id: 98c1b480-b3a1-42cc-83bd-1bbbacd58373
+      version: -1
+      name: aria-alert-src-subnet
+      script: '|||aria-alert-src-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      aio_index:
+        simple: "0"
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: alert_src_subnet
+      src_ip:
+        simple: 1.1.1.1/24
+      transport_type:
+        simple: syslog
+      trigger_type:
+        simple: re-trigger-timed-ms
+      trigger_value:
+        simple: "45"
+      tti_index:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "66":
+    id: "66"
+    taskid: 7e37e143-d64a-463f-8b6d-ee5d8471cbf7
+    type: regular
+    task:
+      id: 7e37e143-d64a-463f-8b6d-ee5d8471cbf7
+      version: -1
+      name: aria-mute-alert-src-subnet
+      script: '|||aria-mute-alert-src-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "117"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: alert_src_subnet
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "85":
+    id: "85"
+    taskid: b1933670-9a6f-4cff-8afc-a01161041dfe
+    type: regular
+    task:
+      id: b1933670-9a6f-4cff-8afc-a01161041dfe
+      version: -1
+      name: aria-record-src-port
+      script: '|||aria-record-src-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "139"
+    scriptarguments:
+      aio_index:
+        simple: "0"
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      port_range:
+        simple: 1,100-1000
+      rule_name:
+        simple: record_src_port
+      sia_interface:
+        simple: A
+      transport_type:
+        simple: email
+      trigger_type:
+        simple: one-shot
+      trigger_value:
+        simple: "100"
+      tti_index:
+        simple: "0"
+      vlan_id:
+        simple: "234"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4780,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "87":
+    id: "87"
+    taskid: 5d0ccec0-331a-41ff-805d-a68dd0dd61b2
+    type: regular
+    task:
+      id: 5d0ccec0-331a-41ff-805d-a68dd0dd61b2
+      version: -1
+      name: aria-stop-recording-src-port
+      script: '|||aria-stop-recording-src-port'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "140"
+    scriptarguments:
+      instance_id: {}
+      label_sia_group:
+        simple: ${inputs.label_sia_group}
+      label_sia_name:
+        simple: ${inputs.label_sia_name}
+      label_sia_region:
+        simple: ${inputs.label_sia_region}
+      rule_name:
+        simple: record_src_port
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4780,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "98":
+    id: "98"
+    taskid: af9319e0-ff64-4e2d-83ef-4b8b2ec9ae06
+    type: regular
+    task:
+      id: af9319e0-ff64-4e2d-83ef-4b8b2ec9ae06
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "99":
+    id: "99"
+    taskid: 71e3ccc0-6a76-46ab-82c6-fdad89d8fb52
+    type: regular
+    task:
+      id: 71e3ccc0-6a76-46ab-82c6-fdad89d8fb52
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "102":
+    id: "102"
+    taskid: 6b29238a-eab0-4bef-8dd8-edef57d18743
+    type: regular
+    task:
+      id: 6b29238a-eab0-4bef-8dd8-edef57d18743
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "103":
+    id: "103"
+    taskid: a93d62f5-299c-4d3f-8294-2ef86a970540
+    type: regular
+    task:
+      id: a93d62f5-299c-4d3f-8294-2ef86a970540
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.AlertConversation.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "104":
+    id: "104"
+    taskid: 8827b1f0-400e-4ac2-8ff8-d2273054a870
+    type: regular
+    task:
+      id: 8827b1f0-400e-4ac2-8ff8-d2273054a870
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.MuteAlertConversation.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "108":
+    id: "108"
+    taskid: 79a87890-96ee-409b-8f62-f7e635e04d0c
+    type: regular
+    task:
+      id: 79a87890-96ee-409b-8f62-f7e635e04d0c
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.AlertDestPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "110":
+    id: "110"
+    taskid: ba673708-1c6c-40ea-87fe-838f579eb3bb
+    type: regular
+    task:
+      id: ba673708-1c6c-40ea-87fe-838f579eb3bb
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.MuteAlertDestPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "111":
+    id: "111"
+    taskid: 985b462e-6843-467a-8876-076631eee8e0
+    type: regular
+    task:
+      id: 985b462e-6843-467a-8876-076631eee8e0
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "112":
+    id: "112"
+    taskid: 6a63ac62-091e-4241-87e6-c18d66087744
+    type: regular
+    task:
+      id: 6a63ac62-091e-4241-87e6-c18d66087744
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.AlertDestSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "113":
+    id: "113"
+    taskid: 531b9160-9b40-43e0-8b3b-af63c345d51b
+    type: regular
+    task:
+      id: 531b9160-9b40-43e0-8b3b-af63c345d51b
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "114"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.MuteAlertDestSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "114":
+    id: "114"
+    taskid: 4cf39d91-93c6-494d-8afc-93e6c21bd31f
+    type: regular
+    task:
+      id: 4cf39d91-93c6-494d-8afc-93e6c21bd31f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "115":
+    id: "115"
+    taskid: b87abe36-6f16-45fe-8e6c-914eedbd0711
+    type: regular
+    task:
+      id: b87abe36-6f16-45fe-8e6c-914eedbd0711
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.AlertSrcSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "117":
+    id: "117"
+    taskid: 8c17da50-03d9-4699-8136-e6fd64b72f31
+    type: regular
+    task:
+      id: 8c17da50-03d9-4699-8136-e6fd64b72f31
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "120"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.MuteAlertSrcSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "118":
+    id: "118"
+    taskid: 91f04940-1fe2-42bc-840e-60d7d50d3cd4
+    type: regular
+    task:
+      id: 91f04940-1fe2-42bc-840e-60d7d50d3cd4
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.AlertSrcPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "119":
+    id: "119"
+    taskid: 7bbe8192-0a69-4098-84e7-fc5eac1e8cd2
+    type: regular
+    task:
+      id: 7bbe8192-0a69-4098-84e7-fc5eac1e8cd2
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.MuteAlertSrcPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "120":
+    id: "120"
+    taskid: 0681125b-8ca2-4c73-80f8-9e9eeda85b11
+    type: regular
+    task:
+      id: 0681125b-8ca2-4c73-80f8-9e9eeda85b11
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "121":
+    id: "121"
+    taskid: 068b9640-2622-449d-8ae4-bd3c04cb6c9f
+    type: regular
+    task:
+      id: 068b9640-2622-449d-8ae4-bd3c04cb6c9f
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.BlockConversation.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "122":
+    id: "122"
+    taskid: 27002215-5e02-4bf3-8d9a-f8d0136f5a79
+    type: regular
+    task:
+      id: 27002215-5e02-4bf3-8d9a-f8d0136f5a79
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.UnblockConversation.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "123":
+    id: "123"
+    taskid: 33d75afc-cccb-43f5-80bc-6d64820bd1ce
+    type: regular
+    task:
+      id: 33d75afc-cccb-43f5-80bc-6d64820bd1ce
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "124":
+    id: "124"
+    taskid: 19300a54-fb09-4f68-82be-07e5b09406bd
+    type: regular
+    task:
+      id: 19300a54-fb09-4f68-82be-07e5b09406bd
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.BlockSrcPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "125":
+    id: "125"
+    taskid: 62705542-1f75-438d-8abc-8dcc0df1d4fe
+    type: regular
+    task:
+      id: 62705542-1f75-438d-8abc-8dcc0df1d4fe
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "126"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.UnblockSrcPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "126":
+    id: "126"
+    taskid: 75b7a42a-41fa-4d34-8494-7327157db7cd
+    type: regular
+    task:
+      id: 75b7a42a-41fa-4d34-8494-7327157db7cd
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "127":
+    id: "127"
+    taskid: da1c1232-453e-46d4-8df6-4d315aea9e3f
+    type: regular
+    task:
+      id: da1c1232-453e-46d4-8df6-4d315aea9e3f
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.BlockDestPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "128":
+    id: "128"
+    taskid: d05b3f99-769e-4cf8-8915-7bedff949060
+    type: regular
+    task:
+      id: d05b3f99-769e-4cf8-8915-7bedff949060
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "129"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.UnblockDestPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "129":
+    id: "129"
+    taskid: 4747c22b-a68c-4e62-82f1-219db33a1eab
+    type: regular
+    task:
+      id: 4747c22b-a68c-4e62-82f1-219db33a1eab
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "130":
+    id: "130"
+    taskid: ff67ae9f-bf06-4191-8cac-2ab17d5a3b41
+    type: regular
+    task:
+      id: ff67ae9f-bf06-4191-8cac-2ab17d5a3b41
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.BlockDestSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "131":
+    id: "131"
+    taskid: 3999e34a-2ebe-4a31-8c68-d4af77aed207
+    type: regular
+    task:
+      id: 3999e34a-2ebe-4a31-8c68-d4af77aed207
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "132"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.UnblockDestSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "132":
+    id: "132"
+    taskid: bad64d32-35f5-4d24-8ed4-ee15cc5569f7
+    type: regular
+    task:
+      id: bad64d32-35f5-4d24-8ed4-ee15cc5569f7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "133":
+    id: "133"
+    taskid: c4e6747f-96f5-476a-80fa-02fcfce79a85
+    type: regular
+    task:
+      id: c4e6747f-96f5-476a-80fa-02fcfce79a85
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.UnblockSrcSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "134":
+    id: "134"
+    taskid: 93b7c8a8-2151-4a1a-8b6f-95bb4020eef0
+    type: regular
+    task:
+      id: 93b7c8a8-2151-4a1a-8b6f-95bb4020eef0
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "135":
+    id: "135"
+    taskid: d30bacab-0cd5-49e7-807d-851ce35a6f9c
+    type: regular
+    task:
+      id: d30bacab-0cd5-49e7-807d-851ce35a6f9c
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.BlockSrcSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "136":
+    id: "136"
+    taskid: 3b7a7b4f-2532-4ad6-882e-951bc14783e0
+    type: regular
+    task:
+      id: 3b7a7b4f-2532-4ad6-882e-951bc14783e0
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.RecordConversation.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "137":
+    id: "137"
+    taskid: 08600956-e244-42de-8e90-bc5a266fd4fa
+    type: regular
+    task:
+      id: 08600956-e244-42de-8e90-bc5a266fd4fa
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "138"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.StopRecordingConversation.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "138":
+    id: "138"
+    taskid: e777fd1c-63e0-4f59-81b5-e3264b06fd74
+    type: regular
+    task:
+      id: e777fd1c-63e0-4f59-81b5-e3264b06fd74
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4780,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "139":
+    id: "139"
+    taskid: 6af1ad8c-6c5a-4a53-8fc0-48b7d5aaf94e
+    type: regular
+    task:
+      id: 6af1ad8c-6c5a-4a53-8fc0-48b7d5aaf94e
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.RecordSrcPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4780,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "140":
+    id: "140"
+    taskid: 78f4dd79-8d06-4484-86a8-e8317b1f6672
+    type: regular
+    task:
+      id: 78f4dd79-8d06-4484-86a8-e8317b1f6672
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "141"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.StopRecordingSrcPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4780,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "141":
+    id: "141"
+    taskid: 9ac7f0d9-b660-42da-8b4e-902650784f87
+    type: regular
+    task:
+      id: 9ac7f0d9-b660-42da-8b4e-902650784f87
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5210,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "142":
+    id: "142"
+    taskid: 9bba74bd-2739-47bb-8717-44a3098e848c
+    type: regular
+    task:
+      id: 9bba74bd-2739-47bb-8717-44a3098e848c
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.RecordDestPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5210,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "143":
+    id: "143"
+    taskid: c45f3fac-453f-4c5c-8d04-b23e560aa2b1
+    type: regular
+    task:
+      id: c45f3fac-453f-4c5c-8d04-b23e560aa2b1
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "144"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.StopRecordingDestPort.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5210,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "144":
+    id: "144"
+    taskid: 7e170b90-4b67-440e-862b-508c4438d22d
+    type: regular
+    task:
+      id: 7e170b90-4b67-440e-862b-508c4438d22d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "145":
+    id: "145"
+    taskid: 4d313342-9637-4d3e-8a2e-c866e6e22811
+    type: regular
+    task:
+      id: 4d313342-9637-4d3e-8a2e-c866e6e22811
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.RecordDestSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "146":
+    id: "146"
+    taskid: 9fd33ba0-75b6-4fd2-8920-5d6d48ac5112
+    type: regular
+    task:
+      id: 9fd33ba0-75b6-4fd2-8920-5d6d48ac5112
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.StopRecordingDestSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "147":
+    id: "147"
+    taskid: cce70e15-11e4-4f41-899b-99b99cf03044
+    type: regular
+    task:
+      id: cce70e15-11e4-4f41-899b-99b99cf03044
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6070,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "148":
+    id: "148"
+    taskid: cd424b17-3d8b-40a7-8d01-9812deb283f4
+    type: regular
+    task:
+      id: cd424b17-3d8b-40a7-8d01-9812deb283f4
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.RecordSrcSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6070,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "149":
+    id: "149"
+    taskid: 1b98f66c-d8d6-4449-81e5-dad6970ad188
+    type: regular
+    task:
+      id: 1b98f66c-d8d6-4449-81e5-dad6970ad188
+      version: -1
+      name: Context Contains
+      description: |-
+        Deprecated, use playbook filters instead.
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      expectedValue:
+        simple: Success
+      fields: {}
+      path:
+        simple: Aria.StopRecordingSrcSubnet.Status.command_state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6070,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1175,
+        "width": 6400,
+        "x": 50,
+        "y": 360
+      }
+    }
+  }
+inputs:
+- key: label_sia_name
+  value: {}
+  required: false
+  description: SIA name label.
+- key: label_sia_region
+  value: {}
+  required: false
+  description: SIA region label.
+- key: label_sia_group
+  value: {}
+  required: false
+  description: SIA group label
+outputs: []
+toversion: 5.5.9
+tests:
+- No test

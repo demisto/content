@@ -11,7 +11,7 @@
 	"columns": null,
 	"content": true,
 	"defaultRows": null,
-	"description": "",
+	"description": "Deprecated from version 6.0.0. Please use XDR Status v2 instead",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"group": 0,

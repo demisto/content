@@ -1,0 +1,129 @@
+{
+  "status": "ok",
+  "result": {
+    "types": {
+      "inet:ipv4": {
+        "info": {
+          "doc": "An IPv4 address.",
+          "ex": "1.2.3.4",
+          "bases": []
+        },
+        "opts": {},
+        "stortype": 4
+      }
+    },
+    "forms": {
+      "inet:dns:a": {
+        "props": {
+          ".seen": {
+            "type": [
+              "ival",
+              {}
+            ],
+            "stortype": 12,
+            "doc": "The time interval for first/last observation of the node."
+          },
+          ".created": {
+            "type": [
+              "time",
+              {}
+            ],
+            "stortype": 11,
+            "ro": true,
+            "doc": "The time the node was created in the cortex."
+          },
+          "fqdn": {
+            "type": [
+              "inet:fqdn",
+              {}
+            ],
+            "stortype": 17,
+            "ro": 1,
+            "doc": "The domain queried for its DNS A record."
+          },
+          "ipv4": {
+            "type": [
+              "inet:ipv4",
+              {}
+            ],
+            "stortype": 4,
+            "ro": 1,
+            "doc": "The IPv4 address returned in the A record."
+          }
+        },
+        "stortype": 13
+      },
+      "inet:ipv4": {
+        "props": {
+          ".seen": {
+            "type": [
+              "ival",
+              {}
+            ],
+            "stortype": 12,
+            "doc": "The time interval for first/last observation of the node."
+          },
+          ".created": {
+            "type": [
+              "time",
+              {}
+            ],
+            "stortype": 11,
+            "ro": true,
+            "doc": "The time the node was created in the cortex."
+          },
+          "asn": {
+            "type": [
+              "inet:asn",
+              {}
+            ],
+            "stortype": 9,
+            "doc": "The ASN to which the IPv4 address is currently assigned."
+          },
+          "latlong": {
+            "type": [
+              "geo:latlong",
+              {}
+            ],
+            "stortype": 14,
+            "doc": "The best known latitude/longitude for the node."
+          },
+          "loc": {
+            "type": [
+              "loc",
+              {}
+            ],
+            "stortype": 15,
+            "doc": "The geo-political location string for the IPv4."
+          },
+          "place": {
+            "type": [
+              "geo:place",
+              {}
+            ],
+            "stortype": 10,
+            "doc": "The geo:place assocated with the latlong property."
+          },
+          "type": {
+            "type": [
+              "str",
+              {}
+            ],
+            "stortype": 1,
+            "doc": "The type of IP address (e.g., private, multicast, etc.)."
+          },
+          "dns:rev": {
+            "type": [
+              "inet:fqdn",
+              {}
+            ],
+            "stortype": 17,
+            "doc": "The most current DNS reverse lookup for the IPv4."
+          }
+        },
+        "stortype": 4
+      },
+      "tagprops": {}
+    }
+  }
+}

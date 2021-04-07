@@ -104,14 +104,6 @@
                                 "startCol": 0,
                                 "fieldId": "path",
                                 "id": "54a83050-b1e0-11e9-b8c7-15ca72216f6a"
-                            },
-                            {
-                                "index": 5,
-                                "endCol": 2,
-                                "height": 24,
-                                "startCol": 0,
-                                "fieldId": "registryvalue",
-                                "id": "56bc1c30-b1e0-11e9-b8c7-15ca72216f6a"
                             }
                         ],
                         "moved": false,

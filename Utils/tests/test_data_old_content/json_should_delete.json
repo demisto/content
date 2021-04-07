@@ -1,0 +1,36 @@
+{
+ "id": "testing",
+ "version": -1,
+ "modified": "2018-08-23T18:31:06.313509514+03:00",
+ "name": "testing",
+ "ownerOnly": false,
+ "placeholder": "",
+ "description": "",
+ "cliName": "testing",
+ "type": "number",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "script": "",
+ "fieldCalcScript": "",
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": null,
+ "validationRegex": "",
+ "useAsKpi": true,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Phishing"
+ ],
+ "systemAssociatedTypes": [
+  "Phishing"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "toVersion": "3.1.0"
+}

@@ -1,0 +1,388 @@
+id: Carbon Black EDR Search Process
+version: -1
+name: Carbon Black EDR Search Process
+starttaskid: "0"
+description: |-
+  Use this playbook to search processes in Carbon Black Enterprise EDR.
+  This playbook implements polling by continuously running the `cb-eedr-process-search-results` command
+  until the operation completes.
+tasks:
+  "0":
+    id: "0"
+    taskid: 7f5de763-1458-40ae-8d8a-08f7b887487e
+    type: start
+    task:
+      id: 7f5de763-1458-40ae-8d8a-08f7b887487e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 720599ae-4737-4079-8e04-366c4afe8877
+    type: regular
+    task:
+      id: 720599ae-4737-4079-8e04-366c4afe8877
+      version: -1
+      name: Process Search Task Creation
+      description: Creates a process search job.
+      script: '|||cb-eedr-process-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      event_id:
+        simple: ${inputs.event_id}
+      limit:
+        simple: ${inputs.limit}
+      process_hash:
+        simple: ${inputs.process_hash}
+      process_name:
+        simple: ${inputs.process_name}
+      query:
+        simple: ${inputs.query}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: fb75040a-68ec-4d9e-8e95-75f52934694a
+    type: playbook
+    task:
+      id: fb75040a-68ec-4d9e-8e95-75f52934694a
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: CarbonBlackEEDR.SearchProcess
+          accessor: job_id
+      Interval:
+        complex:
+          root: inputs.interval
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: cb-eedr-process-search-results
+      Timeout:
+        complex:
+          root: inputs.timeout
+      dt:
+        simple: CarbonBlackEEDR.SearchProcess(val.status != 'Completed').job_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b2f73190-48c3-498f-820c-751c14638fdf
+    type: regular
+    task:
+      id: b2f73190-48c3-498f-820c-751c14638fdf
+      version: -1
+      name: Get Process Search Results
+      description: Retrieves the process search results for a given job ID.
+      script: '|||cb-eedr-process-search-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      job_id:
+        complex:
+          root: CarbonBlackEEDR.SearchProcess
+          accessor: job_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7b37b89d-82de-4c4f-82d0-fb90bada8dd5
+    type: condition
+    task:
+      id: 7b37b89d-82de-4c4f-82d0-fb90bada8dd5
+      version: -1
+      name: Is Carbon Black Enterprise EDR enabled?
+      description: Prints text to war room (Markdown supported)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Carbon Black Enterprise EDR
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: eb06b59c-413c-408a-8796-3d4d3b5ad23f
+    type: title
+    task:
+      id: eb06b59c-413c-408a-8796-3d4d3b5ad23f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: query
+  value: {}
+  required: false
+  description: Query with Carbon Black API syntax
+  playbookInputQuery:
+- key: process_name
+  value: {}
+  required: false
+  description: Tokenized file path of the process’ main module.
+  playbookInputQuery:
+- key: process_hash
+  value: {}
+  required: false
+  description: MD5 and SHA-256 hashes of process’ main module in a multi-valued field.
+  playbookInputQuery:
+- key: event_id
+  value: {}
+  required: false
+  description: CBD Event id (valid only for events coming through Analytics)
+  playbookInputQuery:
+- key: limit
+  value: {}
+  required: false
+  description: number of results to fetch
+  playbookInputQuery:
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: determine how long to wait between fetching data for polling
+  playbookInputQuery:
+- key: timeout
+  value:
+    simple: "10"
+  required: false
+  description: determine timeout for polling
+  playbookInputQuery:
+outputs:
+- contextPath: CarbonBlackEEDR.SearchProcess.job_id
+  description: A request job id.
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.status
+  description: A request job current status.
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.results.device_id
+  description: Device id that is guaranteed to be unique within each PSC environment,
+    which is a set of organizations.
+  type: number
+- contextPath: CarbonBlackEEDR.SearchProcess.results.process_username
+  description: Usernames related to process.
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.results.backend_timestamp
+  description: Date/time field formatted as ISO-8601 string based on UTC timezone.
+    For example, device_timestamp:2018-03-14T21:06:45.183Z
+  type: date
+- contextPath: CarbonBlackEEDR.SearchProcess.results.childproc_count
+  description: Cumulative counts of child process creations since process tracking
+    started.
+  type: number
+- contextPath: CarbonBlackEEDR.SearchProcess.results.crossproc_count
+  description: Cumulative counts of cross-process events since process tracking started.
+  type: number
+- contextPath: CarbonBlackEEDR.SearchProcess.results.device_group_id
+  description: Id of sensor group where the device belongs.
+  type: number
+- contextPath: CarbonBlackEEDR.SearchProcess.results.device_name
+  description: Name of device.
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.results.device_policy_id
+  description: Id of policy applied to the device.
+  type: number
+- contextPath: CarbonBlackEEDR.SearchProcess.results.device_timestamp
+  description: Time seen on sensor, based on sensor’s clock. ISO-8601 formatted time
+    string based on UTC.
+  type: date
+- contextPath: CarbonBlackEEDR.SearchProcess.results.enriched
+  description: True if process document came from the CbD data stream.
+  type: boolean
+- contextPath: CarbonBlackEEDR.SearchProcess.results.enriched_event_type
+  description: CbD enriched event type.
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.results.event_type
+  description: CBD Event type (valid only for events coming through Analytics). One
+    of CREATE_PROCESS, DATA_ACCESS, FILE_CREATE, INJECT_CODE, NETWORK, POLICY_ACTION,
+    REGISTRY_ACCESS, SYSTEM_API_CALL.
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.results.filemod_count
+  description: Cumulative counts of file modifications since process tracking started.
+  type: number
+- contextPath: CarbonBlackEEDR.SearchProcess.results.ingress_time
+  description: Unknown
+  type: date
+- contextPath: CarbonBlackEEDR.SearchProcess.results.legacy
+  description: True if process document came from the legacy data stream (deprecated,
+    use enriched).
+  type: boolean
+- contextPath: CarbonBlackEEDR.SearchProcess.results.modload_count
+  description: Cumulative counts of module loads since process tracking started.
+  type: number
+- contextPath: CarbonBlackEEDR.SearchProcess.results.netconn_count
+  description: Cumulative counts of network connections since process tracking started.
+  type: number
+- contextPath: CarbonBlackEEDR.SearchProcess.results.org_id
+  description: Globally unique organization key (will likely be PSC organization id
+    + PSC environment id or some other unique token used across environments)
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.results.parent_guid
+  description: process_guid of parent process.
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.results.parent_pid
+  description: PID of parent process.
+  type: number
+- contextPath: CarbonBlackEEDR.SearchProcess.results.process_guid
+  description: Unique id of process (same as document_guid above but without the timestamp
+    suffix).
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.results.process_hash
+  description: MD5 and SHA-256 hashes of process’ main module in a multi-valued field.
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.results.process_name
+  description: Tokenized file path of the process’ main module.
+  type: string
+- contextPath: CarbonBlackEEDR.SearchProcess.results.process_pid
+  description: PID of a process. Can be multi-valued in case of exec/fork on Linux/OSX.
+  type: number
+tests:
+- Carbon Black Enterprise EDR Test
+fromversion: 5.0.0

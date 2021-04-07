@@ -1,0 +1,37 @@
+args:
+- auto: PREDEFINED
+  description: Determines the Cyren Threat InDepth feed the indicator is taken from (optional, can be left empty)
+  name: indicator_type
+  predefined:
+  - ip_reputation
+  - malware_files
+  - malware_urls
+  - phishing_urls
+- defaultValue: Hunt
+  description: Specify the incident type you want to have created (optional, default is Hunt)
+  name: incident_type
+- description: Specify the user you want to assign the new incident (optional, default is current user)
+  name: assignee
+comment: |-
+  This script will take a random Cyren Threat InDepth feed indicator and its relationships and create a threat hunting incident for you.
+
+  The main query parameters for the resulting, internal indicator query are:
+
+  1. Seen for the first time by the feed source within the last 7 days.
+  2. No investigation on it yet.
+  3. Must have relationships to other indicators.
+commonfields:
+  id: CyrenThreatInDepthRandomHunt
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: CyrenThreatInDepthRandomHunt
+script: '-'
+subtype: python3
+tags:
+- incidents
+- iocs
+- cyren
+- hunt
+type: python
+fromversion: 6.0.0

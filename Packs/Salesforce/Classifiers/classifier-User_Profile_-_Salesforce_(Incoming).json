@@ -1,0 +1,64 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "User Profile - Salesforce (Incoming)",
+ "mapping": {
+  "User Profile": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "Username": {
+     "complex": null,
+     "simple": "Username"
+    },
+    "City": {
+     "complex": null,
+     "simple": "City"
+    },
+    "Country Name": {
+     "complex": null,
+     "simple": "Country"
+    },
+    "Email": {
+     "complex": null,
+     "simple": "Email"
+    },
+    "Given Name": {
+     "complex": null,
+     "simple": "FirstName"
+    },
+    "Surname": {
+     "complex": null,
+     "simple": "LastName"
+    },
+    "Mobile Phone": {
+     "complex": null,
+     "simple": "MobilePhone"
+    },
+    "State Name": {
+     "complex": null,
+     "simple": "State"
+    },
+    "Street Address": {
+     "complex": null,
+     "simple": "Street"
+    },
+    "Title": {
+     "complex": null,
+     "simple": "Title"
+    },
+    "Work Phone": {
+     "complex": null,
+     "simple": "Phone"
+    },
+    "Zip Code": {
+     "complex": null,
+     "simple": "PostalCode"
+    }
+   }
+  }
+ },
+ "name": "User Profile - Salesforce (Incoming)",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

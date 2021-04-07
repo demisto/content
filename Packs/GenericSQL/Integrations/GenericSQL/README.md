@@ -30,7 +30,7 @@ There are two options to use to bind variables:
 2. Use only bind variable values, for example:
     INSERT into Table(ID, Name) VALUES (%s, %s)" bind_variables_values= "123, Ben”
 
-## Configure Generic SQL on Demisto
+## Configure Generic SQL on Cortex XSOAR
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Generic SQL.
@@ -244,7 +244,14 @@ In cases where you receive an error that is not clear when you **Test** the inte
   ```
 A log file will be generated in the Playground. Examine the log file for further details that explain why the integration is failing.
 
-### SQL Server
+### Microsoft SQL Server
+We provide two options for connecting to Microsoft SQL Server:
+* **Microsoft SQL Server**: Uses the open source FreeTDS driver to communicate with Microsoft SQL Server.
+* **Microsoft SQL Server - MS ODBC Driver**: Official driver from Microsoft for Linux.
+
+If you experience any issues communicating with your Microsoft SQL Sever, try using both options as we've seen cases where one option works while the other doesn't.
+
+
 When configuring *SQL Server*, if you receive an error of the form:
 ```
 ('08S01', '[08S01] [FreeTDS][SQL Server]Unable to connect: Adaptive Server is unavailable or does not exist (20009) (SQLDriverConnect)')
@@ -256,6 +263,16 @@ echo "select @@version" | sudo docker run --rm -i  demisto/genericsql:1.1.0.9726
 ```
 
 **Note:** Kerberos authentication is not supported.
+
+### Oracle
+If you require connecting to Oracle via a **SERVICE_NAME**, leave the `Database Name` parameter empty and add to the `Connection Arguments` the following:
+```
+service_name=<SERVICE_NAME>
+```
+For example:
+```
+service_name=XEXDB
+```
 
 ## Possible Errors:
 * The bind variables lists are not is the same length

@@ -1,0 +1,399 @@
+category: IT Services
+commonfields:
+  id: Kubernetes
+  version: -1
+configuration:
+- additionalinfo: Provide a URL for accessing the API.
+  display: K8s Host URL
+  name: host
+  required: true
+  type: 0
+- additionalinfo: Provide a username for authenticating with the API.
+  display: Username
+  name: username
+  required: false
+  type: 0
+- additionalinfo: Provide a password for authenticating with the API.
+  display: Password
+  name: password
+  required: false
+  type: 4
+- additionalinfo: Token used to authenticate with the API.
+  display: API Key
+  name: api_key
+  required: false
+  type: 4
+- additionalinfo: Allows connection when SSL certificates are not valid. Set to `false`
+    when certificates are not trusted.
+  defaultvalue: "False"
+  display: Validate Certs
+  name: validate_certs
+  required: true
+  type: 4
+description: Manage Kubernetes
+display: Kubernetes
+name: Kubernetes
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: |-
+        Whether to override the default patch merge approach with a specific type. By default, the strategic merge will typically be used.
+        For example, Custom Resource Definitions typically aren't updatable by the usual strategic merge. You may want to use `merge` if you see "strategic merge patch format is not supported"
+        See `https://kubernetes.io/docs/tasks/run-application/update-api-object-kubectl-patch/#use-a-json-merge-patch-to-update-a-deployment`
+        Requires openshift >= 0.6.2
+        If more than one merge_type is given, the merge_types will be tried in order
+        If openshift >= 0.6.2, this defaults to `['strategic-merge', 'merge']`, which is ideal for using the same parameters on resource kinds that combine Custom Resources and built-in resources. For openshift < 0.6.2, the default is simply `strategic-merge`.
+        mutually exclusive with `apply`
+      isArray: true
+      name: merge_type
+      predefined:
+      - json
+      - merge
+      - strategic-merge
+    - default: false
+      defaultValue: "False"
+      description: |-
+        Whether to wait for certain resource kinds to end up in the desired state. By default the module exits once Kubernetes has received the request
+        Implemented for `state=present` for `Deployment`, `DaemonSet` and `Pod`, and for `state=absent` for all resource kinds.
+        For resource kinds without an implementation, `wait` returns immediately unless `wait_condition` is set.
+      name: wait
+    - default: false
+      defaultValue: "5"
+      description: Number of seconds to sleep between checks.
+      name: wait_sleep
+    - default: false
+      defaultValue: "120"
+      description: How long in seconds to wait for the resource to end up in the desired
+        state. Ignored if `wait` is not set.
+      name: wait_timeout
+    - description: Specifies a custom condition on the status to wait for. Ignored
+        if `wait` is not set or is set to False.
+      name: wait_condition
+    - description: how (if at all) to validate the resource definition against the
+        kubernetes schema. Requires the kubernetes-validate python module and openshift
+        >= 0.8.0
+      name: validate
+    - description: |-
+        Whether to append a hash to a resource name for immutability purposes
+        Applies only to ConfigMap and Secret resources
+        The parameter will be silently ignored for other resource kinds
+        The full definition of an object is needed to generate the hash - this means that deleting an object created with append_hash will only work if the same object is passed with state=absent (alternatively, just use state=absent with the name including the generated hash and append_hash=no)
+        Requires openshift >= 0.7.2
+      name: append_hash
+    - description: |-
+        `apply` compares the desired resource definition with the previously supplied resource definition, ignoring properties that are automatically generated
+        `apply` works better with Services than 'force=yes'
+        Requires openshift >= 0.9.2
+        mutually exclusive with `merge_type`
+      name: apply
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Determines if an object should be created, patched, or deleted.
+        When set to `present`, an object will be created, if it does not already exist.
+        If set to `absent`, an existing object will be deleted. If set to `present`,
+        an existing object will be patched, if its attributes differ from those specified
+        using `resource_definition` or `src`.
+      name: state
+      predefined:
+      - absent
+      - present
+    - default: false
+      defaultValue: "False"
+      description: If set to `yes`, and `state` is `present`, an existing object will
+        be replaced.
+      name: force
+    - default: false
+      defaultValue: v1
+      description: Use to specify the API version. Use to create, delete, or discover
+        an object without providing a full resource definition. Use in conjunction
+        with `kind`, `name`, and `namespace` to identify a specific object. If `resource
+        definition` is provided, the `apiVersion` from the `resource_definition` will
+        override this option.
+      name: api_version
+    - description: Use to specify an object model. Use to create, delete, or discover
+        an object without providing a full resource definition. Use in conjunction
+        with `api_version`, `name`, and `namespace` to identify a specific object.
+        If `resource definition` is provided, the `kind` from the `resource_definition`
+        will override this option.
+      name: kind
+    - description: Use to specify an object name. Use to create, delete, or discover
+        an object without providing a full resource definition. Use in conjunction
+        with `api_version`, `kind` and `namespace` to identify a specific object.
+        If `resource definition` is provided, the `metadata.name` value from the `resource_definition`
+        will override this option.
+      name: name
+    - description: Use to specify an object namespace. Useful when creating, deleting,
+        or discovering an object without providing a full resource definition. Use
+        in conjunction with `api_version`, `kind`, and `name` to identify a specfic
+        object. If `resource definition` is provided, the `metadata.namespace` value
+        from the `resource_definition` will override this option.
+      name: namespace
+    - description: 'Provide a valid YAML definition (either as a string, list, or
+        dict) for an object when creating or updating. NOTE: `kind`, `api_version`,
+        `name`, and `namespace` will be overwritten by corresponding values found
+        in the provided `resource_definition`.'
+      name: resource_definition
+    - description: Token used to authenticate with the API. Can also be specified
+        via K8S_AUTH_API_KEY environment variable.
+      name: api_key
+    - description: Path to an existing Kubernetes config file. If not provided, and
+        no other connection options are provided, the openshift client will attempt
+        to load the default configuration file from `~/.kube/config.json`. Can also
+        be specified via K8S_AUTH_KUBECONFIG environment variable.
+      name: kubeconfig
+    - description: The name of a context found in the config file. Can also be specified
+        via K8S_AUTH_CONTEXT environment variable.
+      name: context
+    description: Manage Kubernetes (K8s) objects
+    name: k8s-k8s
+    outputs:
+    - contextPath: Kubernetes.result.api_version
+      description: The versioned schema of this representation of an object.
+      type: string
+    - contextPath: Kubernetes.result.kind
+      description: Represents the REST resource this object represents.
+      type: string
+    - contextPath: Kubernetes.result.metadata
+      description: Standard object metadata. Includes name, namespace, annotations,
+        labels, etc.
+    - contextPath: Kubernetes.result.spec
+      description: Specific attributes of the object. Will vary based on the I(api_version)
+        and I(kind).
+    - contextPath: Kubernetes.result.status
+      description: Current status details for the object.
+    - contextPath: Kubernetes.result.items
+      description: Returned only when multiple yaml documents are passed to src or
+        resource_definition
+    - contextPath: Kubernetes.result.duration
+      description: elapsed time of task in seconds
+      type: number
+  - arguments:
+    - default: false
+      defaultValue: v1
+      description: Use to specify the API version. in conjunction with `kind`, `name`,
+        and `namespace` to identify a specific object.
+      name: api_version
+    - description: Use to specify an object model. Use in conjunction with `api_version`,
+        `name`, and `namespace` to identify a specific object.
+      name: kind
+      required: true
+    - description: Use to specify an object name.  Use in conjunction with `api_version`,
+        `kind` and `namespace` to identify a specific object.
+      name: name
+    - description: Use to specify an object namespace. Use in conjunction with `api_version`,
+        `kind`, and `name` to identify a specific object.
+      name: namespace
+    - description: List of label selectors to use to filter results
+      name: label_selectors
+    - description: List of field selectors to use to filter results
+      name: field_selectors
+    - description: Token used to authenticate with the API. Can also be specified
+        via K8S_AUTH_API_KEY environment variable.
+      name: api_key
+    - description: Path to an existing Kubernetes config file. If not provided, and
+        no other connection options are provided, the openshift client will attempt
+        to load the default configuration file from `~/.kube/config.json`. Can also
+        be specified via K8S_AUTH_KUBECONFIG environment variable.
+      name: kubeconfig
+    - description: The name of a context found in the config file. Can also be specified
+        via K8S_AUTH_CONTEXT environment variable.
+      name: context
+    description: Describe Kubernetes (K8s) objects
+    name: k8s-info
+    outputs:
+    - contextPath: Kubernetes.resources.api_version
+      description: The versioned schema of this representation of an object.
+      type: string
+    - contextPath: Kubernetes.resources.kind
+      description: Represents the REST resource this object represents.
+      type: string
+    - contextPath: Kubernetes.resources.metadata
+      description: Standard object metadata. Includes name, namespace, annotations,
+        labels, etc.
+    - contextPath: Kubernetes.resources.spec
+      description: Specific attributes of the object. Will vary based on the I(api_version)
+        and I(kind).
+    - contextPath: Kubernetes.resources.status
+      description: Current status details for the object.
+  - arguments:
+    - default: false
+      defaultValue: v1
+      description: Use to specify the API version. Use to create, delete, or discover
+        an object without providing a full resource definition. Use in conjunction
+        with `kind`, `name`, and `namespace` to identify a specific object. If `resource
+        definition` is provided, the `apiVersion` from the `resource_definition` will
+        override this option.
+      name: api_version
+    - description: Use to specify an object model. Use to create, delete, or discover
+        an object without providing a full resource definition. Use in conjunction
+        with `api_version`, `name`, and `namespace` to identify a specific object.
+        If `resource definition` is provided, the `kind` from the `resource_definition`
+        will override this option.
+      name: kind
+    - description: Use to specify an object name. Use to create, delete, or discover
+        an object without providing a full resource definition. Use in conjunction
+        with `api_version`, `kind` and `namespace` to identify a specific object.
+        If `resource definition` is provided, the `metadata.name` value from the `resource_definition`
+        will override this option.
+      name: name
+    - description: Use to specify an object namespace. Useful when creating, deleting,
+        or discovering an object without providing a full resource definition. Use
+        in conjunction with `api_version`, `kind`, and `name` to identify a specfic
+        object. If `resource definition` is provided, the `metadata.namespace` value
+        from the `resource_definition` will override this option.
+      name: namespace
+    - description: Token used to authenticate with the API. Can also be specified
+        via K8S_AUTH_API_KEY environment variable.
+      name: api_key
+    - description: Path to an existing Kubernetes config file. If not provided, and
+        no other connection options are provided, the openshift client will attempt
+        to load the default configuration file from `~/.kube/config.json`. Can also
+        be specified via K8S_AUTH_KUBECONFIG environment variable.
+      name: kubeconfig
+    - description: The name of a context found in the config file. Can also be specified
+        via K8S_AUTH_CONTEXT environment variable.
+      name: context
+    - description: 'Provide a valid YAML definition (either as a string, list, or
+        dict) for an object when creating or updating. NOTE: `kind`, `api_version`,
+        `name`, and `namespace` will be overwritten by corresponding values found
+        in the provided `resource_definition`.'
+      name: resource_definition
+    - description: The desired number of replicas.
+      name: replicas
+    - description: For Deployment, ReplicaSet, Replication Controller, only scale,
+        if the number of existing replicas matches. In the case of a Job, update parallelism
+        only if the current parallelism value matches.
+      name: current_replicas
+    - description: Only attempt to scale, if the current object version matches.
+      name: resource_version
+    - default: false
+      defaultValue: "True"
+      description: For Deployment, ReplicaSet, Replication Controller, wait for the
+        status value of `ready_replicas` to change to the number of `replicas`. In
+        the case of a Job, this option is ignored.
+      name: wait
+    - default: false
+      defaultValue: "20"
+      description: When `wait` is `True`, the number of seconds to wait for the `ready_replicas`
+        status to equal  `replicas`. If the status is not reached within the allotted
+        time, an error will result. In the case of a Job, this option is ignored.
+      name: wait_timeout
+    description: Set a new size for a Deployment, ReplicaSet, Replication Controller,
+      or Job.
+    name: k8s-scale
+    outputs:
+    - contextPath: Kubernetes.result.api_version
+      description: The versioned schema of this representation of an object.
+      type: string
+    - contextPath: Kubernetes.result.kind
+      description: Represents the REST resource this object represents.
+      type: string
+    - contextPath: Kubernetes.result.metadata
+      description: Standard object metadata. Includes name, namespace, annotations,
+        labels, etc.
+    - contextPath: Kubernetes.result.spec
+      description: Specific attributes of the object. Will vary based on the I(api_version)
+        and I(kind).
+    - contextPath: Kubernetes.result.status
+      description: Current status details for the object.
+  - arguments:
+    - description: |-
+        A partial YAML definition of the Service object being created/updated. Here you can define Kubernetes Service Resource parameters not covered by this module's parameters.
+        NOTE: `resource_definition` has lower priority than module parameters. If you try to define e.g. `metadata.namespace` here, that value will be ignored and `metadata` used instead.
+      isArray: true
+      name: resource_definition
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Determines if an object should be created, patched, or deleted.
+        When set to `present`, an object will be created, if it does not already exist.
+        If set to `absent`, an existing object will be deleted. If set to `present`,
+        an existing object will be patched, if its attributes differ from those specified
+        using module options and `resource_definition`.
+      name: state
+      predefined:
+      - present
+      - absent
+    - default: false
+      defaultValue: "False"
+      description: If set to `True`, and `state` is `present`, an existing object
+        will be replaced.
+      name: force
+    - auto: PREDEFINED
+      description: |-
+        Whether to override the default patch merge approach with a specific type. By default, the strategic merge will typically be used.
+        For example, Custom Resource Definitions typically aren't updatable by the usual strategic merge. You may want to use `merge` if you see "strategic merge patch format is not supported"
+        See `https://kubernetes.io/docs/tasks/run-application/update-api-object-kubectl-patch/#use-a-json-merge-patch-to-update-a-deployment`
+        Requires openshift >= 0.6.2
+        If more than one merge_type is given, the merge_types will be tried in order
+        If openshift >= 0.6.2, this defaults to `['strategic-merge', 'merge']`, which is ideal for using the same parameters on resource kinds that combine Custom Resources and built-in resources. For openshift < 0.6.2, the default is simply `strategic-merge`.
+      isArray: true
+      name: merge_type
+      predefined:
+      - json
+      - merge
+      - strategic-merge
+    - description: Use to specify a Service object name.
+      name: name
+      required: true
+    - description: Use to specify a Service object namespace.
+      name: namespace
+      required: true
+    - auto: PREDEFINED
+      description: |-
+        Specifies the type of Service to create.
+        See `https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types`
+      name: type
+      predefined:
+      - NodePort
+      - ClusterIP
+      - LoadBalancer
+      - ExternalName
+    - description: |-
+        A list of ports to expose.
+        `https://kubernetes.io/docs/concepts/services-networking/service/#multi-port-services`
+      isArray: true
+      name: ports
+    - description: |-
+        Label selectors identify objects this Service should apply to.
+        `https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/`
+      isArray: true
+      name: selector
+    - description: Token used to authenticate with the API. Can also be specified
+        via K8S_AUTH_API_KEY environment variable.
+      name: api_key
+    - description: Path to an existing Kubernetes config file. If not provided, and
+        no other connection options are provided, the openshift client will attempt
+        to load the default configuration file from `~/.kube/config.json`. Can also
+        be specified via K8S_AUTH_KUBECONFIG environment variable.
+      name: kubeconfig
+    - description: The name of a context found in the config file. Can also be specified
+        via K8S_AUTH_CONTEXT environment variable.
+      name: context
+    description: Manage Services on Kubernetes
+    name: k8s-service
+    outputs:
+    - contextPath: Kubernetes.result.api_version
+      description: The versioned schema of this representation of an object.
+      type: string
+    - contextPath: Kubernetes.result.kind
+      description: Always 'Service'.
+      type: string
+    - contextPath: Kubernetes.result.metadata
+      description: Standard object metadata. Includes name, namespace, annotations,
+        labels, etc.
+    - contextPath: Kubernetes.result.spec
+      description: Specific attributes of the object. Will vary based on the I(api_version)
+        and I(kind).
+    - contextPath: Kubernetes.result.status
+      description: Current status details for the object.
+  dockerimage: demisto/ansible-runner:1.0.0.16542
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

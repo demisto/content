@@ -1,0 +1,15 @@
+{
+  "blockRequests": "policy-default",
+  "description": "",
+  "id": "whitelist-md5",
+  "ignoreAnomalies": "false",
+  "ignoreIpReputation": "false",
+  "ipAddress": "12.12.12.12",
+  "ipMask": "255.255.255.255",
+  "_kind": "tm:asm:policies:whitelist-ips:whitelist-ipstate",
+  "lastUpdateMicros": 1598958087000000,
+  "neverLearnRequests": "false",
+  "neverLogRequests": "false",
+  "selfLink": "https://whitelist-ips/0000?ver=15.1.0",
+  "trustedByPolicyBuilder": "false"
+}

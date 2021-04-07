@@ -1,5 +1,6 @@
 import requests_mock
 from CSVFeedApiModule import *
+import io
 
 
 def test_get_indicators_1():
@@ -230,3 +231,33 @@ class TestTagsParam:
             )
             _, _, indicators = get_indicators_command(client, args)
             assert [] == indicators[0]['fields']['tags']
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def test_create_fields_mapping():
+    """
+    Given:
+    - Raw json of the csv row extracted
+
+    When:
+    - Fetching indicators from csv rows
+
+    Then:
+    - Validate the mapping is done correctly
+    """
+    raw_json = util_load_json("test_data/create_field_mapping_test.json")
+    mapping = {
+        'Value': ('Name', '^([A-Z]{1}[a-z]+)', None),
+        'Country': 'Country Name',
+        'Count': ('Count', lambda count: 'Low' if count < 5 else 'High')
+    }
+    result = create_fields_mapping(raw_json, mapping)
+    assert result == {
+        'Value': 'John',
+        'Country': 'United States',
+        'Count': 'Low'
+    }

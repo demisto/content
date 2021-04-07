@@ -23,7 +23,8 @@ CLUSTER_ID = demisto.params().get('cluster-id')
 
 # Headers to be sent in requests
 HEADERS = {
-    'Authorization': 'Bearer ' + TOKEN
+    'Authorization': 'Bearer ' + TOKEN,
+    'Content-Type': 'application/json',
 }
 
 HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Location", "RiskLevel", "ThreatLevel",
@@ -249,7 +250,7 @@ def http_request(method, url_suffix, data=None, headers=HEADERS):
         return_error(e)
 
     # Handle error responses gracefully
-    if res.headers['Content-Type'] != 'application/json':
+    if res.headers.get('Content-Type') != 'application/json':
         return_error('invalid url or port: ' + BASE_URL)
 
     if res.status_code == 404:

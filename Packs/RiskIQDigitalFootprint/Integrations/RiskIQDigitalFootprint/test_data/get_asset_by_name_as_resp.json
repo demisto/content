@@ -1,0 +1,132 @@
+{
+    "name": "63245",
+    "type": "AS",
+    "firstSeen": 1532708763182,
+    "lastSeen": 1592980768058,
+    "uuid": "9ca2cd53-af69-cbca-f398-e891ecf413d3",
+    "label": "63245",
+    "description": "AS63245",
+    "asset": {
+        "asNames": [
+            {
+                "value": "DUMMY-01",
+                "firstSeen": 1532708763182,
+                "lastSeen": 1587456222572,
+                "recent": true,
+                "current": true
+            }
+        ],
+        "orgNames": [
+            {
+                "value": "dummy.com",
+                "firstSeen": 1532708763182,
+                "lastSeen": 1586212561931,
+                "recent": true,
+                "current": true
+            }
+        ],
+        "orgIds": [
+            {
+                "value": "DUMMY-ORG",
+                "firstSeen": 1532708763182,
+                "lastSeen": 1586212561931,
+                "recent": true,
+                "current": true
+            }
+        ],
+        "countries": [
+            {
+                "value": "united states",
+                "firstSeen": 1586212561934,
+                "lastSeen": 1587456222572,
+                "recent": true,
+                "current": true
+            },
+            {
+                "value": "us",
+                "firstSeen": 1532708763182,
+                "lastSeen": 1586212561931
+            },
+            {
+                "value": "US",
+                "firstSeen": 1532708763182,
+                "lastSeen": 1532708763182
+            }
+        ],
+        "registries": [
+            {
+                "value": "DUMMYREG",
+                "firstSeen": 1532708763182,
+                "lastSeen": 1587456222572,
+                "recent": true,
+                "current": true
+            }
+        ],
+        "firstSeen": 1532708763182,
+        "lastSeen": 1592809972649,
+        "count": 3747,
+        "asnNumber": 63245,
+        "asn": {
+            "asnID": 63245,
+            "description": "DUMMY-01, united states",
+            "registry": "DUMMYREG",
+            "countryCode": "united states",
+            "name": "AS63245",
+            "id": 63245,
+            "fullName": "AS63245 - united states - DUMMY-01, united states"
+        }
+    },
+    "history": [],
+    "data": {
+        "hostPairs": {
+            "content": [],
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 10,
+            "number": 0
+        },
+        "attributes": {
+            "content": [],
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 10,
+            "number": 0
+        },
+        "webComponents": {
+            "content": [],
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 10,
+            "number": 0
+        },
+        "sslCerts": {
+            "content": [],
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 10,
+            "number": 0
+        },
+        "cookies": {
+            "content": [],
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 10,
+            "number": 0
+        }
+    }
+}

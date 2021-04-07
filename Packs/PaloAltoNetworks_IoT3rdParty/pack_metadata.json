@@ -1,0 +1,39 @@
+{
+    "name": "Palo Alto Networks IoT 3rd Party Integrations",
+    "description": "Palo Alto Networks IoT 3rd Party Integrations",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/network-security/iot-security",
+    "email": "",
+    "created": "2020-11-16T03:10:41Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "cisco-ise": {
+            "mandatory": true,
+            "display_name": "Cisco ISE"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "ServiceNow": {
+            "mandatory": true,
+            "display_name": "ServiceNow"
+        },
+        "Syslog": {
+            "mandatory": true,
+            "display_name": "Syslog Sender"
+        }
+    }
+}

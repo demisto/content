@@ -1,0 +1,169 @@
+id: ServiceNow_OAuth_Test
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: ServiceNow_OAuth_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ef1bf632-35f8-4328-84f2-e406335e7f3d
+    type: start
+    task:
+      id: ef1bf632-35f8-4328-84f2-e406335e7f3d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 889c6278-31d9-422f-86ef-bba37545eb11
+    type: regular
+    task:
+      id: 889c6278-31d9-422f-86ef-bba37545eb11
+      version: -1
+      name: servicenow-oauth-login
+      description: This function should be used once before running any command when
+        using OAuth2 authentication.
+      script: ServiceNow v2|||servicenow-oauth-login
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      password:
+        simple: '@R6wWjITp39m7@Ev5uF#'
+      username:
+        simple: admin_test_Nov2020-01
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: db211e50-1faa-4bfd-8832-49cddcca083f
+    type: regular
+    task:
+      id: db211e50-1faa-4bfd-8832-49cddcca083f
+      version: -1
+      name: servicenow-oauth-test
+      description: Test the instance configuration when using OAuth2 authentication.
+      script: ServiceNow v2|||servicenow-oauth-test
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1918ff6c-e1a3-4ef9-84a0-751fc4f2d181
+    type: regular
+    task:
+      id: 1918ff6c-e1a3-4ef9-84a0-751fc4f2d181
+      version: -1
+      name: servicenow-get-table-name
+      description: Gets table names by a label to use in commands.
+      script: ServiceNow v2|||servicenow-get-table-name
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      label:
+        simple: Asset
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 91691330-16dc-495f-817f-419fad38d3c3
+    type: title
+    task:
+      id: 91691330-16dc-495f-817f-419fad38d3c3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

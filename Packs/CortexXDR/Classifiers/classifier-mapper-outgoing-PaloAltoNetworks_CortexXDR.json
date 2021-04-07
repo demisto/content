@@ -1,0 +1,135 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps outgoing Cortex XDR incidents fields.",
+	"feed": false,
+	"id": "Cortex XDR - IR-out-mapper",
+	"mapping": {
+		"Cortex XDR Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"assigned_user_mail": {
+					"complex": null,
+					"simple": "xdrassigneduseremail"
+				},
+				"assigned_user_pretty_name": {
+					"complex": null,
+					"simple": "xdrassigneduserprettyname"
+				},
+				"manual_severity": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "low"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "medium"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "2"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "high"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "high"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "4"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"resolve_comment": {
+					"complex": null,
+					"simple": "xdrresolvecomment"
+				},
+				"status": {
+					"complex": null,
+					"simple": "xdrstatusv2"
+				}
+			}
+		}
+	},
+	"name": "Cortex XDR - Outgoing Mapper",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

@@ -24,7 +24,7 @@ For more details about the authentication used in this integration, see [Microso
       - Microsoft.Security/informationProtectionPolicies/read
       - Microsoft.Security/locations/jitNetworkAccessPolicies/*
       - Microsoft.Security/locations/jitNetworkAccessPolicies/initiate/action
-    * Select the Azure Secruity Center application.
+    * Select the Azure Security Center application.
 
 ## Configure Azure Security Center v2 on Demisto
 

@@ -12,6 +12,7 @@ requests.packages.urllib3.disable_warnings()
 """
 Created on August 1, 2019
 Updated on April 2, 2020
+Updated on September 24, 2020
 
 @author: Saadat Abid
 """
@@ -1183,26 +1184,25 @@ def api_quota_command():
             '##### Note: {}'.format(quota_data.get('note'))
 
     snx_ioc_cont = {
-        'Licensed Quota': quota_data.get('licensedQuota'),
-        'Remaining Quota': quota_data.get('remainingQuota'),
-        'Expiration Date': quota_data.get('expiryDate')
+        'LicensedQuota': quota_data.get('licensedQuota'),
+        'RemainingQuota': quota_data.get('remainingQuota'),
+        'ExpirationDate': quota_data.get('expiryDate'),
+        'IsExpired': quota_data.get('isExpired')
+    }
+
+    ec = {
+        'SlashNext.Quota(val.Value === obj.Value)': snx_ioc_cont
     }
 
     md = tableToMarkdown(
         title,
         snx_ioc_cont,
-        ['Licensed Quota',
-         'Remaining Quota',
-         'Expiration Date']
+        ['LicensedQuota',
+         'RemainingQuota',
+         'ExpirationDate']
     )
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': snx_ioc_cont,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md
-    })
+    return_outputs(md, ec, snx_ioc_cont)
 
 
 ''' EXECUTION '''

@@ -81,14 +81,18 @@ def strip_unwanted_chars(s):
 
 def api_call(body, headers):
     """ Makes an HTTP Post to the SWS incidents API using the configured certificate """
-    # with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
-    res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert='', data=body, headers=headers)
-    if res.status_code < 200 or res.status_code >= 300:
-        raise Exception(
-            "Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(
-                res.headers))
-
-    return xml.etree.ElementTree.fromstring(strip_unwanted_chars(res.content))
+    with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
+        res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=body, headers=headers)
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception(
+                "Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(
+                    res.headers))
+        try:
+            return xml.etree.ElementTree.fromstring(res.content)
+        except xml.etree.ElementTree.ParseError as exc:
+            # in case of a parsing error, try to remove problematic chars and try again.
+            demisto.debug('failed to parse request content, trying to parse without problematic chars:\n{}'.format(exc))
+            return xml.etree.ElementTree.fromstring(strip_unwanted_chars(res.content))
 
 
 def event_to_incident(event):

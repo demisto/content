@@ -2,7 +2,7 @@ import json
 import math
 
 
-class TestVertex:
+class VertexTester:
     def __init__(self, test_name):
         self.neighbors = {}
         self.test_name = test_name
@@ -23,7 +23,7 @@ class TestVertex:
         return tests_in_component
 
 
-class TestsGraph:
+class GraphTester:
     """A graph representing the tests in Demisto and whether they use mutual integrations.
 
     Attributes:
@@ -39,7 +39,7 @@ class TestsGraph:
         for test_playbook_record in tests_data:
             playbook_name_in_record = test_playbook_record.get("playbookID")
             if playbook_name_in_record and playbook_name_in_record not in self.test_vertices:
-                new_test_vertex = TestVertex(playbook_name_in_record)
+                new_test_vertex = VertexTester(playbook_name_in_record)
                 self.test_vertices[playbook_name_in_record] = new_test_vertex
 
     def add_test_graph_neighbors(self, tests_data):
@@ -148,7 +148,7 @@ def get_test_dependencies(tests_file_path):
 
 
 def get_dependent_integrations_clusters_data(tests_file_path, dependent_tests):
-    tests_graph = TestsGraph()
+    tests_graph = GraphTester()
     tests_graph.build_tests_graph_from_conf_json(tests_file_path, dependent_tests)
     return tests_graph.clusters
 

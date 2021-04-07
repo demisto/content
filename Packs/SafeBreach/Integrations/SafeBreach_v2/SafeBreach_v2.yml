@@ -72,6 +72,7 @@ configuration:
   required: false
   type: 15
 - additionalinfo: The maximum number of indicators to generate. The default is 1000.
+  defaultvalue: '1000'
   display: Indicators Limit
   hidden: false
   name: indicatorLimit
@@ -577,7 +578,7 @@ script:
     - contextPath: SafeBreach.Test.ScheduledTime
       description: Time when the test was triggered.
       type: Datetime
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.5.11789
   feed: true
   isfetch: false
   longRunning: false

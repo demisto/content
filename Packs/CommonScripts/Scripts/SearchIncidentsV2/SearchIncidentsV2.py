@@ -3,7 +3,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 
 
@@ -24,7 +23,15 @@ def is_valid_args(args: Dict):
     for _key, value in args.items():
         if _key in array_args:
             try:
-                _ = bytes(value, "utf-8").decode("unicode_escape")
+                if _key == 'id':
+                    if type(value) != int and type(value) != str:
+                        error_msg.append(
+                            f'Error while parsing the incident id with the value: {value}. The given type: '
+                            f'{type(value)} is not a valid type for an ID. The supported id types are: int and str')
+                    elif type(value) == str:
+                        _ = bytes(value, "utf-8").decode("unicode_escape")
+                else:
+                    _ = bytes(value, "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as ex:
                 error_msg.append(f'Error while parsing the argument: "{_key}" '
                                  f'\nError:\n- "{str(ex)}"')
@@ -33,6 +40,14 @@ def is_valid_args(args: Dict):
         raise DemistoException('\n'.join(error_msg))
 
     return True
+
+
+def add_incidents_link(data):
+    server_url = demisto.demistoUrls().get('server')
+    for incident in data:
+        incident_link = urljoin(server_url, f'#/Details/{incident.get("id")}')
+        incident['incidentLink'] = incident_link
+    return data
 
 
 def search_incidents(args: Dict):
@@ -44,18 +59,25 @@ def search_incidents(args: Dict):
         if incident_found is False:
             return 'Incidents not found.', {}, {}
         else:
-            data: Dict = res[0]['Contents']['data']
-            context_entry: Dict = {'foundIncidents': data}
-            headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']
+            data = res[0]['Contents']['data']
+            data = add_incidents_link(data)
+            headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
             md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
-            return md, context_entry, res
+            return md, data, res
 
 
 def main():
     args: Dict = demisto.args()
     try:
         readable_output, outputs, raw_response = search_incidents(args)
-        return_outputs(readable_output, outputs, raw_response)
+        results = CommandResults(
+            outputs_prefix='foundIncidents',
+            outputs_key_field='id',
+            readable_output=readable_output,
+            outputs=outputs,
+            raw_response=raw_response
+        )
+        return_results(results)
     except DemistoException as error:
         return_error(str(error), error)
 

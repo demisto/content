@@ -3,10 +3,6 @@ commonfields:
   id: Traps
   version: -1
 configuration:
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - display: Server URL
   name: url
   required: true
@@ -377,7 +373,7 @@ script:
     - contextPath: Traps.ScanResult.Status
       description: The status of the scan.
       type: String
-  dockerimage: demisto/pyjwt3:1.0.0.8871
+  dockerimage: demisto/pyjwt3:1.0.0.13142
   feed: false
   isfetch: false
   longRunning: false

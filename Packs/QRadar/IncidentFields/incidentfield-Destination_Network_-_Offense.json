@@ -1,0 +1,49 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Qradar Generic"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "destinationnetworkoffense",
+    "closeForm": false,
+    "columns": null,
+    "content": true,
+    "defaultRows": null,
+    "description": "The destination network related to the offense.",
+    "editForm": true,
+    "extractIndicatorTypesIDs": [],
+    "fieldCalcScript": "",
+    "fromServerVersion": "",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_destinationnetworkoffense",
+    "isExtractingSpecificIndicatorTypes": false,
+    "isReadOnly": false,
+    "itemVersion": "",
+    "locked": false,
+    "name": "Destination Network - Offense",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "",
+    "selectValues": [
+        ""
+    ],
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": null,
+    "threshold": 72,
+    "toServerVersion": "",
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

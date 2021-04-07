@@ -1,5 +1,7 @@
 id: rsa_packets_and_logs_test
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: RSA Packets And Logs test
 description: Test RSA P&L integration
 starttaskid: "0"
@@ -14,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -21,13 +24,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 6bad06e4-975e-46f0-8d2c-ffe873025f58
@@ -61,12 +66,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 1770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 8a2b7b6f-aa7c-4303-8395-cd84f3454f29
@@ -100,13 +107,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: 3043e05e-ead5-49c6-866b-263adc3b8b17
@@ -115,7 +124,8 @@ tasks:
       id: 3043e05e-ead5-49c6-866b-263adc3b8b17
       version: -1
       name: nw-sdk-values
-      description: Performs a value count query and returns the matching values for a report
+      description: Performs a value count query and returns the matching values for
+        a report
       script: RSA NetWitness Packets and Logs|||nw-sdk-values
       type: regular
       iscommand: true
@@ -146,13 +156,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 5d0c6722-ce3c-4aa2-8a8f-346541bc5658
@@ -182,12 +194,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 1945
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: 69837a16-595c-44f6-8782-93220ee4e598
@@ -203,10 +217,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
-      - "2"
-      - "7"
-      - "14"
       - "16"
     scriptarguments:
       all:
@@ -216,13 +226,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: b949bbb5-1ee0-4b3f-8730-b8ff546fe89d
@@ -241,6 +253,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -251,13 +266,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: c2af2459-39ce-47db-8868-04d5b3d76236
@@ -276,6 +293,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -286,13 +306,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 545
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 5a84e5b2-9d39-4ef2-8862-5911446af4fd
@@ -330,13 +352,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 370
+          "x": 50,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: e76b7da3-c629-4954-8548-e7dbefd3be7a
@@ -355,6 +379,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
     scriptarguments:
       expectedValue: {}
       fields:
@@ -365,13 +392,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 545
+          "x": 50,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: 867d2922-85ea-41b5-80e9-21227da0f8a5
@@ -398,7 +427,8 @@ tasks:
         simple: "48"
       lastMinutes: {}
       query:
-        simple: select alias.host where alias.host contains 'skimresources' group by alias.host
+        simple: select alias.host where alias.host contains 'skimresources' group
+          by alias.host
       size:
         simple: "100"
       threshold: {}
@@ -406,13 +436,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 50,
           "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
     taskid: 9285deed-0147-46ce-86a8-6d80b9908d96
@@ -426,6 +458,9 @@ tasks:
       type: regular
       iscommand: true
       brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "14"
     scriptarguments:
       concentratorIP: {}
       concentratorPort: {}
@@ -444,20 +479,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 50,
           "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
-        "width": 2100,
+        "height": 1990,
+        "width": 380,
         "x": 50,
         "y": 50
       }

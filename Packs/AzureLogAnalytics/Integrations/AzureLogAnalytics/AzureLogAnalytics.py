@@ -30,7 +30,7 @@ class Client:
                  subscription_id, resource_group_name, workspace_name, verify, proxy):
 
         tenant_id = refresh_token if self_deployed else ''
-        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
         self.ms_client = MicrosoftClient(
@@ -54,7 +54,7 @@ class Client:
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
-                     data=None, resource=None):
+                     data=None, resource=None, timeout=10):
         if not params:
             params = {}
         if not full_url:
@@ -66,7 +66,8 @@ class Client:
                                           json_data=data,
                                           params=params,
                                           resp_type='response',
-                                          resource=resource)
+                                          resource=resource,
+                                          timeout=timeout)
 
         if res.status_code in (200, 204) and not res.text:
             return res
@@ -148,11 +149,18 @@ def test_connection(client, params):
     if params.get('self_deployed', False) and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
+    try:
+        execute_query_command(client, {'query': 'Usage | take 1'})
+    except Exception as e:
+        return_error('Could not authorize to `api.loganalytics.io` resource. This could be due to one of the following:'
+                     '\n1. Workspace ID is wrong.'
+                     '\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.', e)
     return_outputs('```✅ Success!```')
 
 
 def execute_query_command(client, args):
     query = args.get('query')
+    timeout = int(args.get('timeout', 10))
     workspace_id = demisto.params().get('workspaceID')
     full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
 
@@ -165,7 +173,7 @@ def execute_query_command(client, args):
     remove_nulls_from_dictionary(data)
 
     response = client.http_request('POST', full_url=full_url, data=data,
-                                   resource=LOG_ANALYTICS_RESOURCE)
+                                   resource=LOG_ANALYTICS_RESOURCE, timeout=timeout)
 
     output = []
 

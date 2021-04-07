@@ -1,0 +1,110 @@
+{
+  "id": "CrowdStrike Falcon",
+  "version": -1,
+  "defaultIncidentType": "CrowdStrike Falcon Incident",
+  "brandName": "CrowdStrike Falcon",
+  "mapping": {
+      "CrowdStrike Falcon Detection": {
+          "dontMapEventToLabels": true,
+          "internalMapping": {
+              "Account Name": {
+                  "complex": null,
+                  "simple": "behaviors.user_name"
+              },
+              "Assigned User": {
+                  "complex": null,
+                  "simple": "assigned_to_uid"
+              },
+              "Behaviour Objective": {
+                  "complex": null,
+                  "simple": "behaviors.objective"
+              },
+              "Behaviour Scenario": {
+                  "complex": null,
+                  "simple": "behaviors.scenario"
+              },
+              "Behaviour Tactic": {
+                  "complex": null,
+                  "simple": "behaviors.tactic"
+              },
+              "Device External IP": {
+                  "complex": null,
+                  "simple": "device.external_ip"
+              },
+              "Device Local IP": {
+                  "complex": null,
+                  "simple": "device.local_ip"
+              },
+              "Device Model": {
+                  "complex": null,
+                  "simple": "device.platform_name"
+              },
+              "Device Name": {
+                  "complex": null,
+                  "simple": "device.hostname"
+              },
+              "File Name": {
+                  "complex": null,
+                  "simple": "behaviors.filename"
+              },
+              "MAC Address": {
+                  "complex": null,
+                  "simple": "device.mac_address"
+              },
+              "MD5": {
+                  "complex": null,
+                  "simple": "behaviors.md5"
+              },
+              "OS": {
+                  "complex": null,
+                  "simple": "device.os_version"
+              },
+              "SHA256": {
+                  "complex": null,
+                  "simple": "behaviors.sha256"
+              }
+          }
+      },
+      "CrowdStrike Falcon Incident": {
+          "dontMapEventToLabels": false,
+          "internalMapping": {
+              "Device External IP": {
+                  "complex": null,
+                  "simple": "hosts.external_ip"
+              },
+              "Device Local IP": {
+                  "complex": null,
+                  "simple": "hosts.local_ip"
+              },
+              "Device Model": {
+                  "complex": null,
+                  "simple": "hosts.platform_name"
+              },
+              "Device Name": {
+                  "complex": null,
+                  "simple": "hosts.hostname"
+              },
+              "MAC Address": {
+                  "complex": null,
+                  "simple": "hosts.mac_address"
+              },
+              "OS": {
+                  "complex": null,
+                  "simple": "hosts.os_version"
+              }
+          }
+      }
+  },
+  "keyTypeMap": {},
+  "propagationLabels": [
+		"all"
+	],
+  "sortValues": null,
+  "transformer": {
+      "complex": null,
+      "simple": ""
+  },
+  "unclassifiedCases": {},
+  "fromVersion": "5.0.0",
+  "toVersion": "5.9.9"
+}

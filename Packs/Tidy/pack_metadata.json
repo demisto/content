@@ -1,0 +1,16 @@
+{
+    "name": "Tidy",
+    "description": "Tidy integration handle endpoints environment installation.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Hod Alpert & Gal Rabin & Eli Sharf & Bar Levy",
+    "url": "",
+    "email": "grabin@paloaltonetworks.com",
+    "created": "2020-09-29T18:29:50Z",
+    "categories": [],
+    "tags": [
+        "IT"
+    ],
+    "useCases": [],
+    "keywords": []
+}

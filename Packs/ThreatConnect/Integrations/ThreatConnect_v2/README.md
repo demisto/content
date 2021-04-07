@@ -1,4 +1,4 @@
-Threat intelligence platform.
+Deprecated. Use the ThreatConnect v2 integration instead.
 
 ## Configure ThreatConnect v2 on Cortex XSOAR
 
@@ -8,10 +8,11 @@ Threat intelligence platform.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| baseUrl | baseUrl | True |
+| baseUrl | Base Url | True |
 | accessId | Access ID | True |
 | secretKey | Secret Key | True |
 | defaultOrg | Default Organization | False |
+| Source Reliability | Reliability of the source providing the intelligence data. The default value is: B - Usually reliable. | True |
 | rating | Rating threshold for Malicious Indicators | False |
 | confidence | Confidence threshold for Malicious Indicators | False |
 | freshness | Indicator Reputation Freshness \(in days\) | False |
@@ -2430,4 +2431,3 @@ There is no context output for this command.
 >|id|name|type|
 >|---|---|---|
 >| 737 | Demisto Inc. | Organization |
-

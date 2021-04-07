@@ -1,0 +1,663 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Hatching Triage
+  version: -1
+fromversion: 5.5.0
+configuration:
+- additionalinfo: Private url is https://private.tria.ge/api/v0/
+  defaultvalue: https://api.tria.ge/v0/
+  name: base_url
+  required: true
+  type: 0
+- name: API Key
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  name: Verify SSL
+  required: false
+  type: 8
+description: Submit a high volume of samples to run in a sandbox and view reports
+display: Hatching Triage
+name: Hatching Triage
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Get samples from either private or public reports
+      isArray: false
+      name: subset
+      predefined:
+      - owned
+      - public
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-query-samples
+    outputs:
+      - contextPath: Triage.submissions.completed
+        description: Date the sample analysis was completed
+        type: Date
+      - contextPath: Triage.submissions.filename
+        description: Name of the file submitted
+        type: String
+      - contextPath: Triage.submissions.id
+        description: Unique identifier of the submission
+        type: String
+      - contextPath: Triage.submissions.kind
+        description: Type of analysis
+        type: String
+      - contextPath: Triage.submissions.private
+        description: If the submissions is private or publically viewable
+        type: Boolean
+      - contextPath: Triage.submissions.status
+        description: Status of the submitted file
+        type: String
+      - contextPath: Triage.submissions.submitted
+        description: Date the sample was submitted
+        type: Date
+      - contextPath: Triage.submissions.tasks.id
+        description: Array of tasks that have been applied to the sample (static, behavioral,
+          etc)
+        type: String
+      - contextPath: Triage.submissions.tasks.status
+        description: Status of the task
+        type: String
+      - contextPath: Triage.submissions.tasks.target
+        description: Sample the task is being run on
+        type: String
+      - contextPath: Triage.submissions.url
+        description: URL that was submitted
+        type: String
+    description: Get a list of all samples either private or public
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Select if sample is a URL or a file
+      isArray: false
+      name: kind
+      predefined:
+      - url
+      - file
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Choose if the sample should be interacted with in the GUI glovebox
+      isArray: false
+      name: interactive
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: Select what profile to run the sample with. Requires the user to
+        be registered with a company
+      isArray: false
+      name: profiles
+      required: false
+      secret: false
+    - default: false
+      description: Data to submit for analysis. For URLs give the URL. For files,
+        give the entry-id of the file
+      isArray: false
+      name: data
+      required: true
+      secret: false
+    deprecated: false
+    description: Submits a file or url for analysis
+    execution: false
+    name: triage-submit-sample
+    outputs:
+      - contextPath: Triage.submissions.filename
+        description: Name of the submitted file
+        type: String
+      - contextPath: Triage.submissions.id
+        description: Unique identifier of the submission
+        type: String
+      - contextPath: Triage.submissions.kind
+        description: Type of sample to analyze
+        type: String
+      - contextPath: Triage.submissions.private
+        description: If the file is private or publicly viewable
+        type: Boolean
+      - contextPath: Triage.submissions.status
+        description: Status of the analysis of the submission
+        type: String
+      - contextPath: Triage.submissions.submitted
+        description: Date that the sample was submitted on
+        type: Date
+  - arguments:
+    - default: false
+      description: Sample's unique identifier, can be found using the query samples command
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Pulls back basic information about the sample id given
+    execution: false
+    name: triage-get-sample
+    outputs:
+      - contextPath: Triage.samples.completed
+        description: Date the sample analysis was completed
+        type: Date
+      - contextPath: Triage.samples.filename
+        description: Name of the submitted sample
+        type: String
+      - contextPath: Triage.samples.id
+        description: Unique identifier of the sample
+        type: String
+      - contextPath: Triage.samples.kind
+        description: Type of sample submitted
+        type: String
+      - contextPath: Triage.samples.private
+        description: State of the visibility of the sample
+        type: Boolean
+      - contextPath: Triage.samples.status
+        description: Current status of the sample analysis
+        type: String
+      - contextPath: Triage.samples.submitted
+        description: Date the sample was submitted
+        type: Date
+      - contextPath: Triage.samples.tasks.id
+        description: Task name that was applied to the sample
+        type: String
+      - contextPath: Triage.samples.tasks.status
+        description: Status of the task
+        type: String
+      - contextPath: Triage.samples.tasks.target
+        description: Target of the task, e.g. filename for file submissions
+        type: String
+  - arguments:
+    - default: false
+      description: Sample's unique identifier, can be found using the query samples command
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a summary report of the sample id provided
+    execution: false
+    name: triage-get-sample-summary
+    outputs:
+      - contextPath: Triage.sample-summaries.completed
+        description: Date the sample analysis was completed
+        type: Date
+      - contextPath: Triage.sample-summaries.created
+        description: Date the analysis report was created
+        type: Date
+      - contextPath: Triage.sample-summaries.custom
+        description: ''
+        type: String
+      - contextPath: Triage.sample-summaries.owner
+        description: ''
+        type: String
+      - contextPath: Triage.sample-summaries.sample
+        description: Unique identifier of the sample
+        type: String
+      - contextPath: Triage.sample-summaries.score
+        description: Score of the sample on a scale of 0 to 10
+        type: Number
+      - contextPath: Triage.sample-summaries.sha256
+        description: SHA256 of the sample
+        type: String
+      - contextPath: Triage.sample-summaries.status
+        description: Status of the analysis
+        type: String
+      - contextPath: Triage.sample-summaries.target
+        description: Target for analysis
+        type: String
+      - contextPath: Triage.sample-summaries.tasks
+        description: Tasks performed in the analysis
+        type: String
+  - arguments:
+    - default: false
+      isArray: false
+      description: Sample's unique identifier, can be found using the query samples command
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a sample from the sandbox
+    execution: false
+    name: triage-delete-sample
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Let Triage automatically select a profile, default is True
+      isArray: false
+      name: auto
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: If submitting an archive file, select which files to analyze. Multiple
+        files can be specified with a comma seperator.Format is archive_file_name/sample_file.exe,archive_file_name/sample_file2.exe
+      isArray: false
+      name: pick
+      required: false
+      secret: false
+    - default: false
+      description: Profile ID to use
+      isArray: false
+      name: profiles
+      required: false
+      secret: false
+    deprecated: false
+    description: When a sample is in the static_analysis status, a profile should
+      be selected in order to continue.
+    execution: false
+    name: triage-set-sample-profile
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    description: Get the static analysis of a sample
+    name: triage-get-static-report
+    outputs:
+      - contextPath: Triage.sample.reports.static.analysis.reported
+        description: Date the sample was submitted
+        type: Unknown
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: task_id
+      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    description: Retrieves the generated Triage Report for a single task
+    name: triage-get-report-triage
+    outputs:
+      - contextPath: Triage.sample.reports.triage
+        description: Triage report of the submitted sample
+        type: Unknown
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: task_id
+      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    description: Retrieves the output of the kernel monitor
+    name: triage-get-kernel-monitor
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: task_id
+      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-get-pcap
+    description: Retrieves the PCAP of the analysis for further manual analysis
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      description: Sample's unique identifier, can be found using the query samples command
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: task_id
+      description: Name of the task for the sample (e.g. behavioral1, static1, etc)
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: file_name
+      description: Name of the dumped file
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-get-dumped-file
+    description: Retrieves files dumped by the sample. The names can be found under the "dumped" section from the triage report output
+  - arguments:
+    - default: false
+      isArray: false
+      name: userID
+      description: Unique identifier of the user. Leave blank to query for all users
+      required: false
+      secret: false
+    outputs:
+      - contextPath: Triage.users.company_id
+        description: Company unique identifier
+        type: String
+      - contextPath: Triage.users.created_at
+        description: Date users account was created
+        type: Date
+      - contextPath: Triage.users.email
+        description: Users email
+        type: String
+      - contextPath: Triage.users.email_confirmed_at
+        description: Date user confirmed their email/account
+        type: Date
+      - contextPath: Triage.users.first_name
+        description: Users first name
+        type: String
+      - contextPath: Triage.users.id
+        description: Users unique identifier
+        type: String
+      - contextPath: Triage.users.last_name
+        description: Users last name
+        type: String
+      - contextPath: Triage.users.permissions
+        description: Users permissions
+        type: String
+    deprecated: false
+    execution: false
+    name: triage-get-users
+    description: Return all users within the company as a paginated list. Returns a single user if a userID is provided
+  - arguments:
+    - default: false
+      isArray: false
+      name: username
+      description: Users username, usually their email
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: firstName
+      description: Users first name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: lastName
+      description: Users last name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: password
+      description: Users password
+      required: true
+      secret: true
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: permissions
+      description: Users permissions
+      predefined:
+      - view_samples
+      - submit_samples
+      - delete_samples
+      - edit_profiles
+      - access_api
+      - manage_machines
+      - manage_company
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-create-user
+    outputs:
+      - contextPath: Triage.users.company_id
+        description: Company unique identifier
+        type: String
+      - contextPath: Triage.users.created_at
+        description: Date users account was created
+        type: Date
+      - contextPath: Triage.users.email
+        description: Users email
+        type: String
+      - contextPath: Triage.users.email_confirmed_at
+        description: Date user confirmed their email/account
+        type: Date
+      - contextPath: Triage.users.first_name
+        description: Users first name
+        type: String
+      - contextPath: Triage.users.id
+        description: Users unique identifier
+        type: String
+      - contextPath: Triage.users.last_name
+        description: Users last name
+        type: String
+      - contextPath: Triage.users.permissions
+        description: Users permissions
+        type: String
+    description: Creates a new user and returns it. The user will become a member of the company the requesting user is a member of
+  - arguments:
+    - default: false
+      isArray: false
+      name: userID
+      description: Users unique identifier, can be found by querying for all users
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-delete-user
+    description: Delete a user and all associated data, invalidating any sessions and removing their API keys. Any samples submitted by this user are kept
+  - arguments:
+    - default: false
+      isArray: false
+      name: userID
+      description: Users unique identifier, can be found by querying for all users
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Created from XSOAR
+      isArray: false
+      name: name
+      description: Name of the API key
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-create-api-key
+    outputs:
+      - contextPath: Triage.apikey.key
+        description: API Key
+        type: String
+      - contextPath: Triage.apikey.name
+        description: Name of the API Key
+        type: String
+    description: Creates a new key can be used to make API calls on behalf of the specified user. The user should have been granted the access_api permission beforehand
+  - arguments:
+    - default: false
+      isArray: false
+      name: userID
+      description: Users unique identifier, can be found by querying for all users
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-get-api-key
+    outputs:
+      - contextPath: Triage.apikey.key
+        description: API Key
+        type: String
+      - contextPath: Triage.apikey.name
+        description: Name of the API Key
+        type: String
+    description: Lists all API keys that the user has.
+  - arguments:
+    - default: false
+      isArray: false
+      name: userID
+      description: Users unique identifier, can be found by querying for all users
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: name
+      description: Name of the API key to delete
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-delete-api-key
+    description: Delete the user's API key with the specified name
+  - arguments:
+    - default: false
+      isArray: false
+      name: profileID
+      description: Unique identifier of the profile, can be found by querying for all profiles
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-get-profiles
+    outputs:
+      - contextPath: Triage.profiles..id
+        description: Unique identifier of the profile
+        type: String
+      - contextPath: Triage.profiles..name
+        description: Name of the profile
+        type: String
+      - contextPath: Triage.profiles..network
+        description: Network configuration
+        type: String
+      - contextPath: Triage.profiles..options.browser
+        description: Browser options
+        type: String
+      - contextPath: Triage.profiles..tags
+        description: Applied tags
+        type: String
+      - contextPath: Triage.profiles..timeout
+        description: Max run time of the profile
+        type: Number
+    description: List all profiles that your company has
+  - arguments:
+    - default: false
+      isArray: false
+      name: name
+      description: Name of the profile to create
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: tags
+      description: Tags to apply to the profile
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: timeout
+      description: Length of time the profile should run for
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: network
+      description: Network configuration the profile should use
+      predefined:
+        - drop
+        - internet
+        - proxy
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-create-profile
+    outputs:
+      - contextPath: Triage.profiles.id
+        description: Profile unique identifier
+        type: String
+      - contextPath: Triage.profiles.name
+        description: Profile name
+        type: String
+      - contextPath: Triage.profiles.network
+        description: Profile network configuration
+        type: String
+      - contextPath: Triage.profiles.options
+        description: Profile options
+        type: Unknown
+      - contextPath: Triage.profiles.tags
+        description: Profile tags
+        type: String
+      - contextPath: Triage.profiles.timeout
+        description: Profile max run time
+        type: Number
+    description: Create a new profile
+  - arguments:
+    - default: false
+      isArray: false
+      name: profileID
+      description: Unique identifier of the profile to update
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: name
+      description: Name of the profile
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: tags
+      description: Tags to apply to the profile
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: timeout
+      description: Length of time the profile should run for
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-update-profile
+    description: Update an existing profile
+  - arguments:
+    - default: false
+      isArray: false
+      name: profileID
+      description: Unique identifier of the profile to delete
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-delete-profile
+    description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

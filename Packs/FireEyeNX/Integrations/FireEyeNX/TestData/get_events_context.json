@@ -1,0 +1,26 @@
+[
+  {
+    "ActionTaken": 1,
+    "AttackMode": "dummy",
+    "CveId": "CVE-123",
+    "DstIp": "1.1.1.1",
+    "DstMac": "dummy",
+    "DstPort": 1,
+    "EventId": 1,
+    "IncidentId": 1,
+    "InterfaceId": 1,
+    "Occurred": "2020-08-10T06:31:00Z",
+    "Protocol": 1,
+    "RuleName": "dummy",
+    "SensorId": "dummy",
+    "Severity": 1,
+    "SignatureIden": 1,
+    "SignatureMatchCnt": 1,
+    "SignatureRev": 1,
+    "SrcIp": "1.1.1.1",
+    "SrcMac": "dummy",
+    "SrcPort": 1,
+    "Vlan": 0,
+    "VmVerified": true
+  }
+]

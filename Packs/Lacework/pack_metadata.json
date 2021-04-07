@@ -1,0 +1,16 @@
+{
+    "name": "Lacework",
+    "description": "Lacework provides end-to-end cloud security automation for AWS, Azure, and GCP with a comprehensive view of risks across cloud workloads and containers.",
+    "support": "community",
+    "currentVersion": "1.0.2",
+    "author": "Alan Nix",
+    "url": "https://github.com/alannix-lw",
+    "email": "",
+    "created": "2020-08-19T16:14:09Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

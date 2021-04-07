@@ -1,0 +1,113 @@
+id: Create Jira Ticket - XM Cyber
+version: -1
+name: Create Jira Ticket - XM Cyber
+description: XM Cyber generates a Jira ticket based on the trend in the Security Score
+fromversion: 6.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dce2a904-316e-4caa-83ed-ccf2a94c41c3
+    type: start
+    task:
+      id: dce2a904-316e-4caa-83ed-ccf2a94c41c3
+      version: -1
+      name: ""
+      description: XM cyber generates jira ticket based on the security score
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 2309e261-bdd9-4907-83b7-ad383100f54e
+    type: regular
+    task:
+      id: 2309e261-bdd9-4907-83b7-ad383100f54e
+      version: -1
+      name: jira-create-issue
+      description: Creates a new issue in Jira.
+      script: '|||jira-create-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      assignee: {}
+      description:
+        simple: |-
+          Current security score is : ${incident.xmsecurityscore}.
+          Trend from the previous week is: ${incident.xmsecurityscoretrend}
+          Learn more: ${URL.Data}
+      dueDate: {}
+      issueJson: {}
+      issueTypeId:
+        simple: "10002"
+      issueTypeName:
+        simple: Task
+      labels: {}
+      parentIssueId: {}
+      parentIssueKey: {}
+      priority: {}
+      projectKey:
+        simple: ${inputs.Project Key}
+      projectName:
+        simple: ${inputs.Project Name}
+      reporter:
+        simple: XM Cyber via Cortex XSOAR
+      summary:
+        simple: XM Security Score has dropped to  ${incident.xmsecurityscore}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 315,
+        "width": 380,
+        "x": 480,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Project Name
+  value:
+    simple: projectName
+  required: true
+  description: Name of the project in Jira to add tasks from XM Cyber
+  playbookInputQuery: null
+- key: Project Key
+  value:
+    simple: XM Security Score Trend
+  required: false
+  description: The key with which to associate this issue
+  playbookInputQuery: null
+outputs: []
+tests:
+  - No tests

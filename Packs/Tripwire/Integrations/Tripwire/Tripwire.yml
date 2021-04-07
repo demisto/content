@@ -1,0 +1,554 @@
+category: File Integrity Management
+commonfields:
+  id: Tripwire
+  version: -1
+configuration:
+- defaultvalue: https://tripwire.com
+  display: Server URL (e.g. https://tripwire.com)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Rules IDs of elements versions to fetch, comma seperated.
+  display: Rule ids
+  hidden: false
+  name: rule_oids
+  required: false
+  type: 12
+- additionalinfo: Nodes IDs of elements versions to fetch, comma seperated.
+  display: Node ids
+  hidden: false
+  name: node_oids
+  required: false
+  type: 12
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Tripwire is a file integrity management (FIM), FIM monitors files and
+  folders on systems and is triggered when they have changed.
+display: Tripwire
+name: Tripwire
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Versions IDs given comma seperated.
+      isArray: true
+      name: version_oids
+      required: false
+      secret: false
+    - default: false
+      description: Elements IDs of elements versions to fetch, comma seperated.
+      isArray: true
+      name: element_oids
+      required: false
+      secret: false
+    - default: false
+      description: Element names of elements versions to fetch. (case insensitive)
+        .comma seperated
+      isArray: true
+      name: element_names
+      required: false
+      secret: false
+    - default: false
+      description: Nodes IDs of elements versions to fetch. comma seperated.
+      isArray: true
+      name: node_oids
+      required: false
+      secret: false
+    - default: false
+      description: Nodes names of elements versions to fetch. comma seperated.
+      isArray: true
+      name: node_names
+      required: false
+      secret: false
+    - default: false
+      description: Rules IDs of elements versions to fetch. comma seperated.
+      isArray: true
+      name: rule_oids
+      required: false
+      secret: false
+    - default: false
+      description: Rules names of elements versions to fetch. comma seperated.
+      isArray: true
+      name: rule_names
+      required: false
+      secret: false
+    - default: false
+      description: Possible Hashes value (md5, sha1, sha256, sha512) of elements versions
+        to fetch. comma seperated.
+      isArray: true
+      name: version_hashes
+      required: false
+      secret: false
+    - default: false
+      description: Last baseline versions of elements versions to fetch. comma seperated.
+      isArray: true
+      name: baseline_version_ids
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Start detected time of element versions to fetch.
+        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z".
+        When using start time , please make sure to use end time too, if not end time will be set to current time by default.
+      isArray: false
+      name: start_detected_time
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Start received time of element versions to fetch.
+        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z".
+        When using start time , please make sure to use end time too, if not end time will be set to current time by default.
+      isArray: false
+      name: start_received_time
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit for the number of returned results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: start index from which the results are returned.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        End detected time of element versions to fetch.
+        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z"
+      isArray: false
+      name: end_detected_time
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        End received time of element versions to fetch.
+        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z"
+      isArray: false
+      name: end_received_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all Element Versions that meet the search critiera.
+    execution: false
+    name: tripwire-versions-list
+    outputs:
+    - contextPath: Tripwire.Versions.approvalId
+      description: Approval IDs of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.baselineVersion
+      description: Last baseline versions of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.changeType
+      description: Change types of elements versions
+      type: String
+    - contextPath: Tripwire.Versions.elementId
+      description: Elements IDs of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.elementName
+      description: Element names of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.exists
+      description: Exists condition of elements versions.
+      type: Boolean
+    - contextPath: Tripwire.Versions.id
+      description: ID of element versions.
+      type: String
+    - contextPath: Tripwire.Versions.isPromoted
+      description: True if the element version has been promoted.
+      type: Boolean
+    - contextPath: Tripwire.Versions.md5
+      description: MD5 hashes of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.nodeId
+      description: Nodes IDs of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.nodeName
+      description: Nodes names of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.outsideMaintenanceWindow
+      description: Outside maintenance window condition of elements versions.
+      type: Boolean
+    - contextPath: Tripwire.Versions.promotionComment
+      description: Promotion comments of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.ruleId
+      description: Rules IDs of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.ruleName
+      description: Rules names of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.scanId
+      description: Scan IDs of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.severity
+      description: Severities of elements versions.
+      type: Number
+    - contextPath: Tripwire.Versions.sha1
+      description: SHA1 hashes of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.sha256
+      description: SHA256 hashes of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.sha512
+      description: SHA512 hashes of elements versions.
+      type: String
+    - contextPath: Tripwire.Versions.timeDetected
+      description: Times detected of elements versions.
+      type: Date
+    - contextPath: Tripwire.Versions.timeReceived
+      description: Times received of elements versions.
+      type: Date
+  - arguments:
+    - default: false
+      description: IDs of rules to fetch. comma seperated.
+      isArray: true
+      name: rule_oids
+      required: false
+      secret: false
+    - default: false
+      description: Names of rules to fetch. comma seperated.
+      isArray: true
+      name: rule_names
+      required: false
+      secret: false
+    - default: false
+      description: Types of rules to fetch. comma seperated.
+      isArray: true
+      name: rule_types
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Page limit for paging support.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: start index from which the results are returned.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all rules or those that match the provided filter
+      criteria.
+    execution: false
+    name: tripwire-rules-list
+    outputs:
+    - contextPath: Tripwire.Rules.command
+      description: Content of the rule.
+      type: String
+    - contextPath: Tripwire.Rules.elementName
+      description: Include Command Output Capture Rules with matching element name.
+      type: String
+    - contextPath: Tripwire.Rules.id
+      description: IDs of rules.
+      type: String
+    - contextPath: Tripwire.Rules.importedTime
+      description: Imported times of rules.
+      type: Date
+    - contextPath: Tripwire.Rules.modifiedTime
+      description: Modified times of rules.
+      type: Date
+    - contextPath: Tripwire.Rules.name
+      description: Names of rules.
+      type: String
+    - contextPath: Tripwire.Rules.severity
+      description: Severities of rules.
+      type: Number
+    - contextPath: Tripwire.Rules.timeoutMillis
+      description: Include Command Output Capture Rules with matching timeout in milliseconds.
+      type: Number
+    - contextPath: Tripwire.Rules.trackingId
+      description: Tracking ids of rules.
+      type: String
+    - contextPath: Tripwire.Rules.type
+      description: Types of rules.
+      type: String
+  - arguments:
+    - default: false
+      description: Id of the element. comma seperated.
+      isArray: true
+      name: element_oids
+      required: false
+      secret: false
+    - default: false
+      description: Name of the element (case insensitive). comma seperated.
+      isArray: true
+      name: element_names
+      required: false
+      secret: false
+    - default: false
+      description: Id of the node for this element. comma seperated.
+      isArray: true
+      name: node_oids
+      required: false
+      secret: false
+    - default: false
+      description: Id of the rule for this element. comma seperated.
+      isArray: true
+      name: rule_oids
+      required: false
+      secret: false
+    - default: false
+      description: Latest baseline version Id for this element. comma seperated.
+      isArray: true
+      name: baseline_version_ids
+      required: false
+      secret: false
+    - default: false
+      description: Id for the latest version of this element. comma seperated.
+      isArray: true
+      name: last_version_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit for the number of returned results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: start index from which the results are returned.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all elements or those that match the provided criteria.
+    execution: false
+    name: tripwire-elements-list
+    outputs:
+    - contextPath: Tripwire.Elements.baselineVersionId
+      description: Latest baseline version Id for this element.
+      type: String
+    - contextPath: Tripwire.Elements.description
+      description: Element description.
+      type: String
+    - contextPath: Tripwire.Elements.id
+      description: Id of the element.
+      type: String
+    - contextPath: Tripwire.Elements.inScope
+      description: False if element is no longer in scope for the rule.
+      type: Boolean
+    - contextPath: Tripwire.Elements.isRestorable
+      description: True if this can be restored by the restore action.
+      type: Boolean
+    - contextPath: Tripwire.Elements.lastSuccessDate
+      description: Timestamp of last successful run of the rule on the related node.
+      type: Date
+    - contextPath: Tripwire.Elements.lastVersionChangeSeverity
+      description: Severity value for the latest version of this element.
+      type: Number
+    - contextPath: Tripwire.Elements.lastVersionChangeType
+      description: Change type for the latest version of this element
+      type: String
+    - contextPath: Tripwire.Elements.lastVersionId
+      description: Id for the latest version of this element.
+      type: String
+    - contextPath: Tripwire.Elements.lastVersionTime
+      description: Time detected of that latest version of this element.
+      type: Date
+    - contextPath: Tripwire.Elements.name
+      description: Name of the element.
+      type: String
+    - contextPath: Tripwire.Elements.nodeId
+      description: Id of the node for this element.
+      type: String
+    - contextPath: Tripwire.Elements.ruleId
+      description: Id of the rule for this element.
+      type: String
+  - arguments:
+    - default: false
+      description: IDs of nodes to fetch. comma seperated.
+      isArray: true
+      name: node_oids
+      required: false
+      secret: false
+    - default: false
+      description: IP addresses of nodes to fetch (only finds agent nodes). comma
+        seperated.
+      isArray: true
+      name: node_ips
+      required: false
+      secret: false
+    - default: false
+      description: MAC addresses of nodes to fetch. comma seperat
+      isArray: true
+      name: node_mac_adresses
+      required: false
+      secret: false
+    - default: false
+      description: Support for case insensitive search for name parameter. comma seperat
+      isArray: true
+      name: node_names
+      required: false
+      secret: false
+    - default: false
+      description: Os names of nodes to fetch. comma seperated.
+      isArray: true
+      name: node_os_names
+      required: false
+      secret: false
+    - default: false
+      description: Tags of nodes to fetch. comma seperated.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit for the number of returned results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: start index from which the results are returned.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all nodes or those that match the provided filter
+      criteria.
+    execution: false
+    name: tripwire-nodes-list
+    outputs:
+    - contextPath: Tripwire.Nodes.agentType
+      description: Agent Type of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.agentVersion
+      description: Agent versions of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.auditEnabled
+      description: Audit enabled condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.description
+      description: Descriptions of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.elementCount
+      description: Element counts of nodes.
+      type: Number
+    - contextPath: Tripwire.Nodes.eventGeneratorEnabled
+      description: Event generator enabled condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.eventGeneratorInstalled
+      description: Event generator installed condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.hasFailures
+      description: Has failures condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.id
+      description: IDs of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.importedTime
+      description: Imported times of nodes.
+      type: Date
+    - contextPath: Tripwire.Nodes.ipAddresses
+      description: IP addresses of nodes (only finds agent nodes).
+      type: Unknown
+    - contextPath: Tripwire.Nodes.isDisabled
+      description: Is disabled condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.isSocksProxy
+      description: Is socks proxy condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.lastCheck
+      description: Last checks of nodes.
+      type: Date
+    - contextPath: Tripwire.Nodes.lastRegistration
+      description: Last registration dates of nodes.
+      type: Date
+    - contextPath: Tripwire.Nodes.licensedFeatures
+      description: Licensed features of nodes.
+      type: Unknown
+    - contextPath: Tripwire.Nodes.make
+      description: Make of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.maxSeverity
+      description: Max severities of nodes.
+      type: Number
+    - contextPath: Tripwire.Nodes.model
+      description: Models of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.modifiedTime
+      description: Modified times of nodes.
+      type: Date
+    - contextPath: Tripwire.Nodes.name
+      description: Names of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.realTimeEnabled
+      description: Real time enabled condition of nodes.
+      type: Boolean
+    - contextPath: Tripwire.Nodes.rmiHost
+      description: RMI hosts of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.rmiPort
+      description: RMI ports of nodes.
+      type: Number
+    - contextPath: Tripwire.Nodes.tags.tag
+      description: Tags of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.tags.tagset
+      description: Tags sets of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.tags.type
+      description: Tags types of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.trackingId
+      description: Tracking IDs of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.type
+      description: Node type of nodes.
+      type: String
+    - contextPath: Tripwire.Nodes.version
+      description: Versions of nodes.
+      type: String
+  dockerimage: demisto/python3:3.8.6.13358
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: Tripwire-mapper
+defaultclassifier: Tripwire
+fromversion: 5.0.0

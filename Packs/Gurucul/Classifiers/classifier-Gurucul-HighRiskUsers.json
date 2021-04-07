@@ -1,0 +1,26 @@
+{
+    "defaultIncidentType": "GraHighRiskUser",
+    "feed": false,
+    "id": "9474188a-4cc2-4ea2-8ad5-14cef42bdb03_custom",
+    "keyTypeMap": {
+        "HighRiskUser": "GraHighRiskUser"
+    },
+    "name": "Gurucul-HighRiskUsers - Classifier",
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+
+            ],
+            "root": "incidentType",
+            "transformers": [
+
+            ]
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "Classifies Gurucul GRA High Risk User Incident."
+}

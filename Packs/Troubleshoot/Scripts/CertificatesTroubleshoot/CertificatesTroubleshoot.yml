@@ -1,0 +1,395 @@
+args:
+- default: false
+  description: The endpoint identifier IP address or URL. For example, "google.com".
+  isArray: false
+  name: endpoint
+  required: true
+  secret: false
+- default: false
+  description: Operation mode. Determines how the endpoint is inspected. Options are either python or openssl.
+  name: mode
+  required: false
+  auto: PREDEFINED
+  predefined:
+  - python
+  - openssl
+  defaultValue: python
+  secret: false
+- default: false
+  defaultValue: '443'
+  description: The endpoint port. Default is 443.
+  isArray: false
+  name: port
+  required: false
+  secret: false
+comment: Exports all certificate-related information from the Python Docker container
+  and decodes it using RFC. It also retrieves the certificate located in the specified
+  endpoint.
+commonfields:
+  id: CertificatesTroubleshoot
+  version: -1
+enabled: true
+name: CertificatesTroubleshoot
+outputs:
+- contextPath: TroubleShoot.Engine.SSL/TLS.ShellVariables.SSL_CERT_FILE
+  description: The SSL_CERT_FILE environment variable. For example, "/etc/custom-python-ssl/certs.pem".
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.ShellVariables.CERT_FILE
+  description: The CERT_FILE environment variable. For example, "/etc/custom-python-ssl/certs.pem".
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.OrganizationalUnitName
+  description: The unit name of the organization that is the holder of the engine
+    custom SSL certificate. For example, "Content".
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.OrganizationName
+  description: The name of the organization that is the holder of the engine custom
+    SSL certificate. For example, "Cortex XSOAR".
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.BusinessCategory
+  description: The business category of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.Title
+  description: The title of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.SerialNumber
+  description: The serial number of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.StateOrProvinceName
+  description: The state or province of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.DomainComponent
+  description: The DNS domain name of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.GivenName
+  description: The given name of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.Pseudonym
+  description: The pseudonym of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.JurisdictionStateOrProvinceName
+  description: The jurisdiction state or province of the holder of the engine custom
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.GenerationQualifier
+  description: The generation qualifier of the holder of the engine custom SSL certificate.
+    For example, 3rd generation.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.LocalityName
+  description: The locality of the holder of the engine custom SSL certificate. For
+    example, "Birmingham".
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.SurName
+  description: The surname of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.CommonName
+  description: The common name of the holder of the engine custom SSL certificate.
+    For example, "Cortex XSOAR TLS".
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.JurisdictionLocalityName
+  description: The jurisdiction locality of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.StreetAddress
+  description: The street address of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.PostalCode
+  description: The postal code of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.PostalAddress
+  description: The postal address of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.JurisdictionCountryName
+  description: The jurisdiction country name of the holder of the engine custom SSL
+    certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.CountryName
+  description: The country of the holder of the engine custom SSL certificate. For
+    example, "GB".
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.EmailAddress
+  description: The email address of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Subject.DomainNameQualifier
+  description: The domain name qualifier of the holder of the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.OrganizationalUnitName
+  description: The unit name of the organization of the authority that issued the
+    engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.OrganizationName
+  description: The name of the organization of the authority that issued the engine
+    custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.BusinessCategory
+  description: The business category of the authority that issued the engine custom
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.Title
+  description: The title of the authority that issued the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.SerialNumber
+  description: The serial number of the authority that issued the engine custom SSL
+    certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.StateOrProvinceName
+  description: The state or province of the authority that issued the engine custom
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.DomainComponent
+  description: The DNS domain name of the authority that issued the engine custom
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.GivenName
+  description: The given name of the authority that issued the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.Pseudonym
+  description: The pseudonym of the authority that issued the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.JurisdictionStateOrProvinceName
+  description: The jurisdiction state or province of the authority that issued the
+    engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.GenerationQualifier
+  description: The generation qualifier of the authority that issued the engine custom
+    SSL certificate. For example, 3rd generation.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.LocalityName
+  description: The locality of the authority that issued the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.SurName
+  description: The surname of the authority that issued the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.CommonName
+  description: The common name of the authority that issued the engine custom SSL
+    certificate. For example, "Cortex XSOAR TLS".
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.JurisdictionLocalityName
+  description: The jurisdiction locality of the authority that issued the engine custom
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.StreetAddress
+  description: The street address of the authority that issued the engine custom SSL
+    certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.PostalCode
+  description: The postal code of the authority that issued the engine custom SSL
+    certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.PostalAddress
+  description: The postal address of the authority that issued the engine custom SSL
+    certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.JurisdictionCountryName
+  description: The jurisdiction country name of the authority that issued the engine
+    custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.CountryName
+  description: The country of the authority that issued the engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.EmailAddress
+  description: The email address of the authority that issued the engine custom SSL
+    certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.DomainNameQualifier
+  description: The domain name qualifier of the authority that issued the engine custom
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName
+  description: The alternate name of the issuer.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName
+  description: The alternate name of the subject.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore
+  description: The beginning of the validity period for the certificate in UTC format.
+  type: Date
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter
+  description: The end of the validity period for the certificate in UTC format.
+  type: Date
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Version
+  description: The version of the certificate.
+  type: Number
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Raw
+  description: The raw engine custom SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.Identifier
+  description: The engine SSL identifier.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.OrganizationalUnitName
+  description: The unit name of the organization that is the holder of the endpoint
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.OrganizationName
+  description: The name of the organization that is the holder of the endpoint SSL
+    certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.BusinessCategory
+  description: The business category of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.Title
+  description: The title of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.SerialNumber
+  description: The serial number of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.StateOrProvinceName
+  description: The state or province of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.DomainComponent
+  description: The DNS domain name of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.GivenName
+  description: The given name of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.Pseudonym
+  description: The pseudonym of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.JurisdictionStateOrProvinceName
+  description: The jurisdiction state or province of the holder of the endpoint SSL
+    certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.GenerationQualifier
+  description: The generation qualifier of the holder of the endpoint SSL certificate.
+    For example, 3rd generation.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.LocalityName
+  description: The locality of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.SurName
+  description: The surname of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.CommonName
+  description: The common name of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.JurisdictionLocalityName
+  description: The jurisdiction locality of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.StreetAddress
+  description: The street address of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.PostalCode
+  description: The postal code of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.PostalAddress
+  description: The postal address of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.JurisdictionCountryName
+  description: The jurisdiction country name of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.CountryName
+  description: The country of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.EmailAddress
+  description: The email address of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.DomainNameQualifier
+  description: The domain name qualifier of the holder of the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.OrganizationalUnitName
+  description: The unit name of the organization of the authority that issued the
+    endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.OrganizationName
+  description: The name of the organization of the authority that issued the endpoint
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.BusinessCategory
+  description: The business category of the authority that issued the endpoint SSL
+    certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.Title
+  description: The title of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.SerialNumber
+  description: The serial number of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.StateOrProvinceName
+  description: The state or province of the authority that issued the endpoint SSL
+    certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.DomainComponent
+  description: The DNS domain name of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.GivenName
+  description: The given name of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.Pseudonym
+  description: The pseudonym of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.JurisdictionStateOrProvinceName
+  description: The jurisdiction state or province of the authority that issued the
+    endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.GenerationQualifier
+  description: The generation qualifier of the authority that issued the endpoint
+    SSL certificate. For example, 3rd generation.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.LocalityName
+  description: The locality of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.SurName
+  description: The surname of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.CommonName
+  description: The common name of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.JurisdictionLocalityName
+  description: The jurisdiction locality of the authority that issued the endpoint
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.StreetAddress
+  description: The street address of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.PostalCode
+  description: The postal code of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.PostalAddress
+  description: The postal address of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.JurisdictionCountryName
+  description: The jurisdiction country name of the authority that issued the endpoint
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.CountryName
+  description: The country of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.EmailAddress
+  description: The email address of the authority that issued the endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.DomainNameQualifier
+  description: The domain name qualifier of the authority that issued the endpoint
+    SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName
+  description: The alternate name of the issuer.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName
+  description: The alternate name of the subject.
+  type: String
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore
+  description: The beginning of the validity period for the certificate in UTC format.
+  type: Date
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter
+  description: The end of the validity period for the certificate in UTC format.
+  type: Date
+- contextPath: TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Version
+  description: The version of the certificate.
+  type: Number
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Certificates.Raw
+  description: The raw endpoint SSL certificate.
+  type: String
+- contextPath: TroubleShoot.Endpoint.SSL/TLS.Identifier
+  description: The endpoint SSL identifier.
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- Utility
+timeout: '0'
+type: python
+dockerimage: demisto/ssl-analyze:1.0.0.14890
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

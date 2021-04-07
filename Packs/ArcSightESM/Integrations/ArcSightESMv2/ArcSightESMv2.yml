@@ -237,7 +237,7 @@ script:
     - contextPath: ArcSightESM.ActiveList.ListID
       description: The ActiveList ID
       type: list
-    - contextPath: ArcSightESM.ActiveList.Entry
+    - contextPath: ArcSightESM.ActiveList.Entries
       description: Active List is a map of active list resource id => active list
       type: Unknown
   - arguments:

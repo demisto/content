@@ -7,11 +7,20 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
+- display: Username/Client ID
   name: credentials
   required: false
   type: 9
-- defaultvalue: incident
+- additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?)
+    for more information.
+  display: Use OAuth Login
+  hidden: false
+  name: use_oauth
+  required: false
+  type: 8
+- additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request,
+    sc_task or sc_req_item.'
+  defaultvalue: incident
   display: Default ticket type for running ticket commands and fetching incidents
   name: ticket_type
   required: false
@@ -62,8 +71,9 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-- additionalinfo: "Choose the direction to mirror the incident: Incoming (from
-    ServiceNow to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to XSOAR and ServiceNow)."
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow
+    to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to
+    XSOAR and ServiceNow).'
   defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -75,28 +85,39 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
-- additionalinfo: Choose the tag to add to an entry to mirror it as
-    a comment in ServiceNow.
+- additionalinfo: Choose the tag to add to an entry to mirror it as a comment in ServiceNow.
   defaultvalue: comments
   display: Comment Entry Tag
   hidden: false
   name: comment_tag
   required: false
   type: 0
-- additionalinfo: Choose the tag to add to an entry to mirror it as
-    a work note in ServiceNow.
+- additionalinfo: Choose the tag to add to an entry to mirror it as a work note in
+    ServiceNow.
   defaultvalue: work_notes
   display: Work Note Entry Tag
   hidden: false
   name: work_notes_tag
   required: false
   type: 0
-- additionalinfo: Choose the tag to add to an entry to mirror it as
-    a file in ServiceNow.
+- additionalinfo: Choose the tag to add to an entry to mirror it as a file in ServiceNow.
   defaultvalue: ForServiceNow
   display: File Entry Tag
   hidden: false
   name: file_tag
+  required: false
+  type: 0
+- additionalinfo: According to the timestamp in this field, records will be queried to check for updates.
+  defaultvalue: sys_updated_on
+  display: Timestamp field to query for updates as part of the mirroring flow
+  name: update_timestamp_field
+  required: false
+  type: 0
+- additionalinfo: If a greater number of incidents than the limit were modified, then
+    they won't be mirrored in.
+  defaultvalue: '100'
+  display: How many incidents to mirror incoming each time
+  name: mirror_limit
   required: false
   type: 0
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex
@@ -171,7 +192,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Custom fields on which to query. For example: state_code=AR,time_zone=PST.'
+      description: 'Custom fields on which to query. For example: state_code=AR;time_zone=PST.'
       isArray: false
       name: custom_fields
       required: false
@@ -181,6 +202,14 @@ script:
         context.
       isArray: true
       name: additional_fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields
+        in an argument for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -393,9 +422,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)",
-        "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved
-        (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
+      description: Ticket's close code. Can be "Solved (Work
+        Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved
+        Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too
+        Costly)", or "Closed/Resolved by Caller".
       isArray: false
       name: close_code
       predefined:
@@ -474,17 +504,6 @@ script:
       name: delivery_plan
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to display comments, work notes, and so on. Can be "true"
-        or "false".
-      isArray: false
-      name: display
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Ticket description.
       isArray: false
@@ -495,12 +514,6 @@ script:
       description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       isArray: false
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: Escalation
-      isArray: false
-      name: escalation
       required: false
       secret: false
     - default: false
@@ -761,13 +774,21 @@ script:
       default: false
       defaultValue: 'false'
       description: Flag that indicates whether to set field values using the display
-        value or the actual value. 'true' treats input values as the dispaly value.
+        value or the actual value. 'true' treats input values as the display value.
         'false' treats input values as actual values. Default is false.
       isArray: false
       name: input_display_value
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields
+        in an argument for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -957,7 +978,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket's close code. Ticket's close code. Can be "Solved (Work
+      description: Ticket's close code. Can be "Solved (Work
         Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved
         Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too
         Costly)", or "Closed/Resolved by Caller".
@@ -1039,17 +1060,6 @@ script:
       name: delivery_plan
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to display comments, work notes, and so on. Can be "true"
-        or "false".
-      isArray: false
-      name: display
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Ticket description.
       isArray: false
@@ -1060,12 +1070,6 @@ script:
       description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       isArray: false
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: Escalation.
-      isArray: false
-      name: escalation
       required: false
       secret: false
     - default: false
@@ -1318,13 +1322,21 @@ script:
       default: false
       defaultValue: 'false'
       description: Flag that indicates whether to set field values using the display
-        value or the actual value. 'true' treats input values as the dispaly value.
+        value or the actual value. 'true' treats input values as the display value.
         'false' treats input values as actual values. Default is false.
       isArray: false
       name: input_display_value
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields
+        in an argument for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -1378,6 +1390,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       required: false
       secret: false
     - default: false
@@ -1402,7 +1415,7 @@ script:
       secret: false
     - default: false
       description: 'System parameters in the format: fieldname1=value;fieldname2=value.
-        For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+        For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True"'
       isArray: false
       name: system_params
       required: false
@@ -1423,7 +1436,7 @@ script:
       type: date
     - contextPath: Ticket.Assignee
       description: Specifies the user assigned to complete the ticket. By default,
-        this field uses a reference qualifier to only display users with the itil
+        this field uses a reference qualifier to only display users with the ITIL
         role.
       type: string
     - contextPath: Ticket.State
@@ -1669,7 +1682,7 @@ script:
       secret: false
     - default: false
       description: 'System parameters in the format: fieldname1=value;fieldname2=value.
-        For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+        For example: "sysparm_display_value=true&sysparm_exclude_reference_link=True"'
       isArray: false
       name: system_params
       required: false
@@ -1720,13 +1733,21 @@ script:
       default: false
       defaultValue: 'false'
       description: Flag that indicates whether to set field values using the display
-        value or the actual value. 'true' treats input value as the dispaly value.
+        value or the actual value. 'true' treats input value as the display value.
         'false' treats input values as actual values. Default is false.
       isArray: false
       name: input_display_value
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields
+        in an argument for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -1782,13 +1803,21 @@ script:
       default: false
       defaultValue: 'false'
       description: Flag that indicates whether to set field values using the display
-        value or the actual value. 'true' treats input value as the dispaly value.
+        value or the actual value. 'true' treats input value as the display value.
         'false' treats input values as actual values. Default is false.
       isArray: false
       name: input_display_value
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields
+        in an argument for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -2314,7 +2343,7 @@ script:
         case record.'
       type: String
   - deprecated: false
-    description: Returns the list of fields for an incident type
+    description: Returns the list of fields for an incident type.
     execution: false
     name: get-mapping-fields
   - arguments:
@@ -2335,7 +2364,43 @@ script:
       the current incident, and should be used for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/python3:3.8.5.10845
+  - arguments:
+    - default: false
+      description: The username to use for login.
+      isArray: false
+      name: username
+      required: true
+      secret: true
+    - default: false
+      description: The password to use for login.
+      isArray: false
+      name: password
+      required: true
+      secret: true
+    deprecated: false
+    description: This function should be used once before running any command when
+      using OAuth2 authentication.
+    execution: false
+    name: servicenow-oauth-login
+  - deprecated: false
+    description: Test the instance configuration when using OAuth2 authentication.
+    execution: false
+    name: servicenow-oauth-test
+  - arguments:
+    - default: false
+      description: Date string in local time representing the last time the incident was updated. 
+        The incident is only returned if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the list of incidents that were modified since the last update time.
+      Note that this method is here for debugging purposes. The get-modified-remote-data command
+      is used as part of a Mirroring feature, which is available from version 6.1.
+    execution: false
+    name: get-modified-remote-data
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false
@@ -2348,5 +2413,6 @@ script:
   subtype: python3
   type: python
 tests:
-- No test
+- servicenow_test_v2
+- ServiceNow_OAuth_Test
 fromversion: 5.0.0

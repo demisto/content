@@ -1,0 +1,61 @@
+{
+ "id": "incident_techniqueadvices",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2020-10-27T07:36:08.425425618Z",
+ "name": "Technique Advices",
+ "ownerOnly": false,
+ "cliName": "techniqueadvices",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "XM Cyber Technique"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "type",
+   "displayName": "type",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "text",
+   "displayName": "text",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": [
+  {
+
+  }
+ ],
+ "sla": 0,
+ "threshold": 72
+}

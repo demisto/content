@@ -1,0 +1,29 @@
+name: Handle stale contributor branches
+on:
+  schedule:
+    # runs every day at midnight (UTC time).
+    - cron:  '0 0 * * *'
+jobs:
+  handle_contributor_stale_branches:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
+      - name: Delete Stale Contributor Branches
+        env:
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+        run: |
+          echo "Deleting stale contribution base branches (contrib/*)"
+          cd Utils/github_workflow_scripts
+          pipenv install --dev
+          pipenv run ./delete_stale_contrib_branches.py
+          echo "Finished deleting stale branches"

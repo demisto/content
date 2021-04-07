@@ -1,148 +1,103 @@
-## Overview
+Use the Microsoft Graph Files integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
 
----
+## Configure Microsoft_Graph_Files on Cortex XSOAR
 
-Microsoft Graph lets your app get an authorized access to files in OneDrive, SharePoint and MS Teams across all organization. (requires admin consent).
-This integration was integrated and tested with version xx of Microsoft_Graph_Files
-
-## Authentication
----
-For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
-
-### Required Permissions
-1. Directory.Read.All - Delegated
-2. Files.ReadWrite.All - Application
-3. Files.ReadWrite.All - Delegated
-4. Sites.ReadWrite.All - Application
-5. Sites.ReadWrite.All - Delegated
-6. User.Read - Delegated
-
-## Configure Microsoft Graph Files on Demisto
-
-
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft_Graph_Files.
-3. Click __Add instance__ to create and configure a new integration instance.
-   - __Name__: a textual name for the integration instance.
-   - __Server URL__
-   - __ID (received from the admin consent - see Detailed Instructions)__
-   - __Token (received from the admin consent - see Detailed Instructions)__
-   - __Key (received from the admin consent - see Detailed Instructions)__
-   - __Trust any certificate (not secure)__
-   - __Use system proxy settings__
-4. Click __Test__ to validate the URLs, token, and connection.
+3. Click **Add instance** to create and configure a new integration instance.
 
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| host | Server URL | True |
+| auth_id | ID \(received from the admin consent - see Detailed Instructions\) | True |
+| tenant_id | Token \(received from the admin consent - see Detailed Instructions\) | False |
+| enc_key | Key \(received from the admin consent - see Detailed Instructions\) | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| self_deployed | Use a self-deployed Azure Application | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-
----
-
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### msgraph-delete-file
+***
+Deletes an item from OneDrive.
 
-1. msgraph-delete-file
-2. msgraph-upload-new-file
-3. msgraph-replace-existing-file
-4. msgraph-create-new-folder
-5. msgraph-list-drives-in-site
-6. msgraph-list-drive-content
-7. msgraph-list-share-point-sites
-8. msgraph-download-file
 
-### 1. msgraph-delete-file
-
----
-
-Delete a DriveItem by using its ID
-
-##### Required Permissions
-
-    Files.ReadWrite.All
-
-##### Base Command
+#### Base Command
 
 `msgraph-delete-file`
+#### Input
 
-##### Input
-
-| **Argument Name** | **Description**       | **Required** |
-| ----------------- | --------------------- | ------------ |
-| object_type       | MS Graph resource.    | Required     |
-| object_type_id    | MS Graph resource id. | Required     |
-| item_id           | Ms Graph item_id.     | Required     |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
+| object_type_id | MS Graph resource ID.<br/> For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| item_id | The ID of the item to delete.<br/>In order to get the ID of the file you want to delete you can use the msgraph-list-drive-content command. | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
-##### Command Example
-
+#### Command Example
 ```!msgraph-delete-file object_type=drives object_type_id=test item_id=test```
 
-##### Human Readable Output
-
-### MsGraphFiles - File information:
-
+#### Human Readable Output
 | 123 |
 | ---------------------------------- |
 | Item was deleted successfully      |
 
 
-### 2. msgraph-upload-new-file
+### msgraph-upload-new-file
+***
+Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 
----
 
-Uploads a file from Demisto to MS Graph resource
-
-##### Required Permissions
-
-    Files.ReadWrite.All
-
-##### Base Command
+#### Base Command
 
 `msgraph-upload-new-file`
+#### Input
 
-##### Input
-
-| **Argument Name** | **Description**                            | **Required** |
-| ----------------- | ------------------------------------------ | ------------ |
-| object_type       | MS Graph resource.                         | Required     |
-| object_type_id    | MS Graph resource id.                      | Required     |
-| parent_id         | An ID of the folder to upload the file to. | Required     |
-| file_name         | A file name for the uploaded file.         | Required     |
-| entry_id          | Desmito entry ID of the file               | Required     |
-
-
-##### Context Output
-
-| **Path**                                                     | **Type** | **Description**                                              |
-| ------------------------------------------------------------ | -------- | ------------------------------------------------------------ |
-| MsGraphFiles.UploadedFiles.ParentReference.DriveId           | String   | Unique identifier of the drive that contains the item.       |
-| MsGraphFiles.UploadedFiles.ParentReference.DriveType         | String   | Identifies the type of drive.                                |
-| MsGraphFiles.UploadedFiles.ParentReference.ID                | String   | Unique identifier of the item in the drive.                  |
-| MsGraphFiles.UploadedFiles.ParentReference.Path              | String   | Path to navigate to the item                                 |
-| MsGraphFiles.UploadedFiles.LastModifiedDateTime              | String   | Date and time that the item was last modified.               |
-| MsGraphFiles.UploadedFiles.File.MimeType                     | String   | File type                                                    |
-| MsGraphFiles.UploadedFiles.File.Hashes                       | String   | Hash type                                                    |
-| MsGraphFiles.UploadedFiles.CreatedDateTime                   | String   | Timestamp of item creation.                                  |
-| MsGraphFiles.UploadedFiles.WebUrl                            | String   | URL to the resource in the browser                           |
-| MsGraphFiles.UploadedFiles.OdataContext                      | String   | OData query                                                  |
-| MsGraphFiles.UploadedFiles.FileSystemInfo.CreatedDateTime    | String   | The date and time the item was created on a client.          |
-| MsGraphFiles.UploadedFiles.FileSystemInfo.LastModifiedDateTime | String   | The date and time the item was last modified on a client.    |
-| MsGraphFiles.UploadedFiles.LastModifiedBy.DisplayName        | String   | The item display name                                        |
-| MsGraphFiles.UploadedFiles.LastModifiedBy.Type               | String   | Application, user or device                                  |
-| MsGraphFiles.UploadedFiles.CreatedBy.DisplayName             | String   | Identity of the user, device,or application which created the item |
-| MsGraphFiles.UploadedFiles.CreatedBy.ID                      | String   | The ID of the creator                                        |
-| MsGraphFiles.UploadedFiles.CreatedBy.Type                    | String   | Application, user or device                                  |
-| MsGraphFiles.UploadedFiles.DownloadUrl                       | String   | URL to download this file's content                          |
-| MsGraphFiles.UploadedFiles.Size                              | Number   | File's size                                                  |
-| MsGraphFiles.UploadedFiles.ID                                | String   | File ID                                                      |
-| MsGraphFiles.UploadedFiles.Name                              | String   | The file's name                                              |
-| MsGraph.UploadedFiles.File                                   | String   | Graph's file object                                          |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| parent_id | The ID of the folder in which to upload the file.<br/>In order to get the ID of a folder, you can use the msgraph-list-drive-content command. | Required | 
+| file_name | A name for the file to upload. | Required | 
+| entry_id | The Cortex XSOAR entry ID of the file. | Required | 
 
 
-##### Command Example
+#### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraphFiles.UploadedFiles.ParentReference.DriveId | String | Unique identifier of the drive that contains the item. | 
+| MsGraphFiles.UploadedFiles.ParentReference.DriveType | String | Identifies the drive type. | 
+| MsGraphFiles.UploadedFiles.ParentReference.ID | String | Unique identifier of the item in the drive. | 
+| MsGraphFiles.UploadedFiles.ParentReference.Path | String | The path of the item. | 
+| MsGraphFiles.UploadedFiles.LastModifiedDateTime | String | Timestamp of when the item was last modified. | 
+| MsGraphFiles.UploadedFiles.File.MimeType | String | The file type. | 
+| MsGraphFiles.UploadedFiles.File.Hashes | String | The file hash type. | 
+| MsGraphFiles.UploadedFiles.CreatedDateTime | String | Timestamp of when the item was created. | 
+| MsGraphFiles.UploadedFiles.WebUrl | String | URL to the resource in the browser. | 
+| MsGraphFiles.UploadedFiles.OdataContext | String | The OData query. | 
+| MsGraphFiles.UploadedFiles.FileSystemInfo.CreatedDateTime | String | Timestamp of when the item was created on a client. | 
+| MsGraphFiles.UploadedFiles.FileSystemInfo.LastModifiedDateTime | String | Timestamp of when the item was last modified on a client. | 
+| MsGraphFiles.UploadedFiles.LastModifiedBy.DisplayName | String | The item display name. | 
+| MsGraphFiles.UploadedFiles.LastModifiedBy.Type | String | The application, user, or device that last modified the item. | 
+| MsGraphFiles.UploadedFiles.CreatedBy.DisplayName | String | The identity of the user, device,or application that created the item. | 
+| MsGraphFiles.UploadedFiles.CreatedBy.ID | String | The ID of the creator. | 
+| MsGraphFiles.UploadedFiles.CreatedBy.Type | String | The application, user, or device that created the item. | 
+| MsGraphFiles.UploadedFiles.DownloadUrl | String | URL to download this file's content. | 
+| MsGraphFiles.UploadedFiles.Size | Number | The file size. | 
+| MsGraphFiles.UploadedFiles.ID | String | The file ID. | 
+| MsGraphFiles.UploadedFiles.Name | String | The file name. | 
+| MsGraph.UploadedFiles.File | String | The MS Graph file object. | 
+
+
+#### Command Example
 ```!msgraph-upload-new-file object_type=drives object_type_id=123 parent_id=123 file_name="test.txt" entry_id=123```
 
 ##### Context Example
@@ -188,71 +143,61 @@ Uploads a file from Demisto to MS Graph resource
 }
 ```
 
-##### Human Readable Output
-
-### MsGraphFiles - File information:
-
+#### Human Readable Output
 | CreatedBy       | CreatedDateTime      | ID   | LastModifiedBy  | Name     | Size | WebUrl |
 | --------------- | -------------------- | ---- | --------------- | -------- | ---- | ------ |
 | Microsoft Graph | 2020-01-22T20:03:00Z | Test | Microsoft Graph | test.txt | 15   | Test   |
 
 
-### 3. msgraph-replace-existing-file
+### msgraph-replace-existing-file
+***
+Replaces the content of the file in the specified MS Graph resource.
 
----
 
-Replace file context in MS Graph resource
-
-##### Required Permissions
-
-    Files.ReadWrite.All
-    Sites.ReadWrite.All
-
-##### Base Command
+#### Base Command
 
 `msgraph-replace-existing-file`
+#### Input
 
-##### Input
-
-| **Argument Name** | **Description**        | **Required** |
-| ----------------- | ---------------------- | ------------ |
-| object_type       | MS Graph resource.     | Required     |
-| object_type_id    | MS Graph resource id.  | Required     |
-| item_id           | Ms Graph item_id.      | Required     |
-| entry_id          | Demisto file entry id. | Required     |
-
-
-##### Context Output
-
-| **Path**                                                     | **Type** | **Description**                                              |
-| ------------------------------------------------------------ | -------- | ------------------------------------------------------------ |
-| MsGraphFiles.ReplacedFiles.ParentReference.DriveId           | String   | Unique identifier of the drive that contains the item.       |
-| MsGraphFiles.ReplacedFiles.ParentReference.DriveType         | String   | Identifies the type of drive.                                |
-| MsGraphFiles.ReplacedFiles.ParentReference.ID                | String   | Unique identifier of the item in the drive.                  |
-| MsGraphFiles.ReplacedFiles.ParentReference.Path              | String   | Path to navigate to the item                                 |
-| MsGraphFiles.ReplacedFiles.LastModifiedDateTime              | Date     | Date and time that the item was last modified.               |
-| MsGraphFiles.ReplacedFiles.File.MimeType                     | String   | File type                                                    |
-| MsGraphFiles.ReplacedFiles.File.Hashes                       | String   | Hash type                                                    |
-| MsGraphFiles.ReplacedFiles.CreatedDateTime                   | String   | Timestamp of item creation                                   |
-| MsGraphFiles.ReplacedFiles.WebUrl                            | String   | URL to the resource in the browser                           |
-| MsGraphFiles.ReplacedFiles.OdataContext                      | String   | OData query                                                  |
-| MsGraphFiles.ReplacedFiles.FileSystemInfo.CreatedDateTime    | Date     | The date and time the item was created on a client           |
-| MsGraphFiles.ReplacedFiles.FileSystemInfo.LastModifiedDateTime | Date     | The date and time the item was last modified on a client     |
-| MsGraphFiles.ReplacedFiles.LastModifiedBy.DisplayName        | String   | The item display name                                        |
-| MsGraphFiles.ReplacedFiles.LastModifiedBy.ID                 | String   | Identity of the application which last modified the item     |
-| MsGraphFiles.ReplacedFiles.CreatedBy.DisplayName             | String   | Identity of the user, device,or application which created the item |
-| MsGraphFiles.ReplacedFiles.CreatedBy.ID                      | String   | The ID of the creator                                        |
-| MsGraphFiles.ReplacedFiles.CreatedBy.Type                    | String   | Application, user or device                                  |
-| MsGraphFiles.ReplacedFiles.DownloadUrl                       | String   | URL to download the file's content                           |
-| MsGraphFiles.ReplacedFiles.Size                              | Number   | File's size                                                  |
-| MsGraphFiles.ReplacedFiles.Id                                | String   | File ID                                                      |
-| MsGraphFiles.ReplacedFiles.Name                              | String   | The file's name                                              |
-| MsGraphFiles.ReplacedFiles.File                              | String   | Graph's file object                                          |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| item_id | The MS Graph item ID of the file you want to replace.<br/>In order to get the ID of the file you want to replace you can use the msgraph-list-drive-content command. | Required | 
+| entry_id | The Cortex XSOAR entry ID of the replacing file. | Required | 
 
 
-##### Command Example
+#### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraphFiles.ReplacedFiles.ParentReference.DriveId | String | Unique identifier of the drive that contains the item. | 
+| MsGraphFiles.ReplacedFiles.ParentReference.DriveType | String | The drive type. | 
+| MsGraphFiles.ReplacedFiles.ParentReference.ID | String | Unique identifier of the item in the drive. | 
+| MsGraphFiles.ReplacedFiles.ParentReference.Path | String | The path of the item. | 
+| MsGraphFiles.ReplacedFiles.LastModifiedDateTime | Date | Timestamp of when the item was last modified. | 
+| MsGraphFiles.ReplacedFiles.File.MimeType | String | The file type. | 
+| MsGraphFiles.ReplacedFiles.File.Hashes | String | The file hash type. | 
+| MsGraphFiles.ReplacedFiles.CreatedDateTime | String | Timestamp of when the item was created. | 
+| MsGraphFiles.ReplacedFiles.WebUrl | String | URL to the resource in the browser. | 
+| MsGraphFiles.ReplacedFiles.OdataContext | String | The OData query. | 
+| MsGraphFiles.ReplacedFiles.FileSystemInfo.CreatedDateTime | Date | Timestamp of when the item was created on a client. | 
+| MsGraphFiles.ReplacedFiles.FileSystemInfo.LastModifiedDateTime | Date | Timestamp of when the item was last modified on a client. | 
+| MsGraphFiles.ReplacedFiles.LastModifiedBy.DisplayName | String | The item display name. | 
+| MsGraphFiles.ReplacedFiles.LastModifiedBy.ID | String | Identity of the application that last modified the item. | 
+| MsGraphFiles.ReplacedFiles.CreatedBy.DisplayName | String | Identity of the user, device, or application that created the item. | 
+| MsGraphFiles.ReplacedFiles.CreatedBy.ID | String | The ID of the creator. | 
+| MsGraphFiles.ReplacedFiles.CreatedBy.Type | String | Application, user, or device. | 
+| MsGraphFiles.ReplacedFiles.DownloadUrl | String | URL to download the file's content. | 
+| MsGraphFiles.ReplacedFiles.Size | Number | File's size | 
+| MsGraphFiles.ReplacedFiles.Id | String | The file ID. | 
+| MsGraphFiles.ReplacedFiles.Name | String | The file name. | 
+| MsGraphFiles.ReplacedFiles.File | String | The MS Graph file object. | 
+
+
+#### Command Example
 ```!msgraph-replace-existing-file object_type=drives entry_id=test item_id=test object_type_id=test ```
+
 
 ##### Context Example
 
@@ -296,9 +241,7 @@ Replace file context in MS Graph resource
     }
 }
 ```
-
-##### Human Readable Output
-
+#### Human Readable Output
 ### MsGraphFiles - File information:
 
 | Created By     | Created Date Time    | ID   | Last Modified By | Name     | Size | Web Url |
@@ -306,60 +249,52 @@ Replace file context in MS Graph resource
 | SharePoint DEV | 2020-01-05T15:30:21Z | 123  | Microsoft Graph  | yaya.txt | 15   | 123     |
 
 
-### 4. msgraph-create-new-folder
-
----
-
-Create a new folder in a Drive with a specified parent item or path.
-
-##### Required Permissions
-
-    Files.ReadWrite.All
-    Sites.ReadWrite.All
+### msgraph-create-new-folder
+***
+Creates a new folder in a drive with the specified parent item or path.
 
 
-##### Base Command
+#### Base Command
 
 `msgraph-create-new-folder`
+#### Input
 
-##### Input
-
-| **Argument Name** | **Description**                             | **Required** |
-| ----------------- | ------------------------------------------- | ------------ |
-| object_type       | MS Graph resource.                          | Required     |
-| object_type_id    | MS Graph resource id.                       | Required     |
-| parent_id         | An ID of the Drive to upload the folder to. | Required     |
-| folder_name       | the folder name for the created folder.     | Required     |
-
-
-##### Context Output
-
-| **Path**                                                     | **Type** | **Description**                                              |
-| ------------------------------------------------------------ | -------- | ------------------------------------------------------------ |
-| MsGraph.Folder                                               | Unknown  | Graph's folder object                                        |
-| Msgraphfiles.CreatedFolder.ParentReference.DriveId           | String   | Unique identifier of the drive that contains the item.       |
-| Msgraphfiles.CreatedFolder.ParentReference.DriveType         | String   | Identifies the type of drive.                                |
-| Msgraphfiles.CreatedFolder.ParentReference.ID                | String   | Unique identifier of the item in the drive.                  |
-| Msgraphfiles.CreatedFolder.ParentReference.Path              | String   | Path to navigate to the item                                 |
-| Msgraphfiles.CreatedFolder.LastModifiedDateTime              | Date     | Date and time that the item was last modified.               |
-| Msgraphfiles.CreatedFolder.Name                              | String   | The folder's name                                            |
-| Msgraphfiles.CreatedFolder.CreatedDateTime                   | Date     | Timestamp of item creation.                                  |
-| Msgraphfiles.CreatedFolder.WebUrl                            | String   | URL to the resource in the browser                           |
-| Msgraphfiles.CreatedFolder.OdataContext                      | String   | OData query                                                  |
-| Msgraphfiles.CreatedFolder.FileSystemInfo.CreatedDateTime    | Date     | The date and time the item was created on a client.          |
-| Msgraphfiles.CreatedFolder.FileSystemInfo.LastModifiedDateTime | Date     | The date and time the item was last modified on a client     |
-| Msgraphfiles.CreatedFolder.LastModifiedBy.DisplayName        | String   | The item display name                                        |
-| Msgraphfiles.CreatedFolder.LastModifiedBy.ID                 | String   | The item display name                                        |
-| Msgraphfiles.CreatedFolder.CreatedBy.DisplayName             | String   | Identity of the user, device,or application which created the item |
-| Msgraphfiles.CreatedFolder.CreatedBy.ID                      | String   | The ID of the creator                                        |
-| Msgraphfiles.CreatedFolder.ChildCount                        | Number   | The number of the folder's sub items                         |
-| Msgraphfiles.CreatedFolder.ID                                | String   | Folder ID                                                    |
-| Msgraphfiles.CreatedFolder.Size                              | Number   | Folder size                                                  |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| parent_id | The ID of the parent in which to upload the new folder.<br/>Parent can be either 'root' or another folder.<br/>In order to get the required folder ID you can use the msgraph-list-drive-content command. | Required | 
+| folder_name | The name of the new folder. | Required | 
 
 
-##### Command Example
+#### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Folder | Unknown | The MS Graph folder object. | 
+| Msgraphfiles.CreatedFolder.ParentReference.DriveId | String | Unique identifier of the drive that contains the item. | 
+| Msgraphfiles.CreatedFolder.ParentReference.DriveType | String | The drive type. | 
+| Msgraphfiles.CreatedFolder.ParentReference.ID | String | Unique identifier of the item in the drive. | 
+| Msgraphfiles.CreatedFolder.ParentReference.Path | String | The path to the item | 
+| Msgraphfiles.CreatedFolder.LastModifiedDateTime | Date | Timestamp of when the item was last modified. | 
+| Msgraphfiles.CreatedFolder.Name | String | The folder name. | 
+| Msgraphfiles.CreatedFolder.CreatedDateTime | Date | Timestamp of when the item was created. | 
+| Msgraphfiles.CreatedFolder.WebUrl | String | URL to the resource in the browser. | 
+| Msgraphfiles.CreatedFolder.OdataContext | String | The OData query. | 
+| Msgraphfiles.CreatedFolder.FileSystemInfo.CreatedDateTime | Date | Timestamp of when the item was created on a client. | 
+| Msgraphfiles.CreatedFolder.FileSystemInfo.LastModifiedDateTime | Date | Timestamp of when the item was last modified on a client. | 
+| Msgraphfiles.CreatedFolder.LastModifiedBy.DisplayName | String | The item display name. | 
+| Msgraphfiles.CreatedFolder.LastModifiedBy.ID | String | Identity of the application that last modified the item. | 
+| Msgraphfiles.CreatedFolder.CreatedBy.DisplayName | String | Identity of the user, device,or application that created the item. | 
+| Msgraphfiles.CreatedFolder.CreatedBy.ID | String | The ID of the creator. | 
+| Msgraphfiles.CreatedFolder.ChildCount | Number | The number of sub-items in the folder. | 
+| Msgraphfiles.CreatedFolder.ID | String | The folder ID. | 
+| Msgraphfiles.CreatedFolder.Size | Number | The folder size. | 
+
+
+#### Command Example
 ```!msgraph-create-new-folder object_type=drives object_type_id=123 parent_id=123 folder_name=test11```
+
 
 ##### Context Example
 
@@ -399,9 +334,7 @@ Create a new folder in a Drive with a specified parent item or path.
     }
 }
 ```
-
-##### Human Readable Output
-
+#### Human Readable Output
 ### MsGraphFiles - Folder information:
 
 | Child Count   | Created By      | Created Date Time    | ID   | Last Modified By | Name      | Size | Web Url |
@@ -409,51 +342,44 @@ Create a new folder in a Drive with a specified parent item or path.
 | ChildCount: 0 | Microsoft Graph | 2020-01-22T20:03:09Z | 123  | Microsoft Graph  | test11 19 | 0    | 123     |
 
 
-### 5. msgraph-list-drives-in-site
+### msgraph-list-drives-in-site
+***
+Returns the list of document libraries (drives) available for a target site.
 
----
 
-Returns the list of Drive resources available for a target Site
-
-##### Required Permissions
-
-    Sites.ReadWrite.All
-    Files.ReadWrite.All
-
-##### Base Command
+#### Base Command
 
 `msgraph-list-drives-in-site`
+#### Input
 
-##### Input
-
-| **Argument Name** | **Description**                    | **Required** |
-| ----------------- | ---------------------------------- | ------------ |
-| site_id           | Selected Site ID.                  | Optional     |
-| limit             | Sets the page size of results.     | Optional     |
-| next_page_url     | The URL for the next results page. | Optional     |
-
-
-##### Context Output
-
-| **Path**                                           | **Type** | **Description**                                              |
-| -------------------------------------------------- | -------- | ------------------------------------------------------------ |
-| MsGraphFiles.ListDrives.Value.LastModifiedDateTime | Date     | Date and time that the item was last modified                |
-| MsGraphFiles.ListDrives.Value.Description          | String   | A user visible description of the drive                      |
-| MsGraphFiles.ListDrives.Value.CreatedDateTime      | Date     | Timestamp of Drive creation                                  |
-| MsGraphFiles.ListDrives.Value.WebUrl               | String   | URL to the resource in the browser                           |
-| MsGraphFiles.ListDrives.Value.CreatedBy            | String   | Identity of the user, application, or device  which created the Drive. |
-| MsGraphFiles.ListDrives.Value.Owner.DisplayName    | String   | DisplayName of the user, device or application which owns the Drive |
-| MsGraphFiles.ListDrives.Value.Owner.ID             | String   | ID of the user, device or application which owns the Drive   |
-| MsGraphFiles.ListDrives.Value.Owner.Type           | String   | user, device or application                                  |
-| MsGraphFiles.ListDrives.Value.DriveType            | String   | Identifies the type of drive                                 |
-| MsGraphFiles.ListDrives.Value.ID                   | String   | Drive ID                                                     |
-| MsGraphFiles.ListDrives.Value.Name                 | String   | The drive's name                                             |
-| MsGraphFiles.ListDrives.OdataContext               | String   | OData query                                                  |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | The ID of the site for which to return available drive resources.<br/>To find a list of all sites, use the msgraph-list-sharepoint-sites command. | Optional | 
+| limit | The maximum number of results to return. | Optional | 
+| next_page_url | The URL for the next results page.<br/>If a next page of results exists, you will find it in Cortex XSOAR context under MsGraphFiles.ListDrives.OdataNextLink. | Optional | 
 
 
-##### Command Example
+#### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraphFiles.ListDrives.Value.LastModifiedDateTime | Date | Timestamp of when the item was last modified. | 
+| MsGraphFiles.ListDrives.Value.Description | String | A human-readable description of the drive. | 
+| MsGraphFiles.ListDrives.Value.CreatedDateTime | Date | Timestamp of when the drive was created. | 
+| MsGraphFiles.ListDrives.Value.WebUrl | String | URL to the resource in the browser. | 
+| MsGraphFiles.ListDrives.Value.CreatedBy | String | Identity of the user, application, or device that created the drive. | 
+| MsGraphFiles.ListDrives.Value.Owner.DisplayName | String | The display name of the user, device, or application that owns the drive. | 
+| MsGraphFiles.ListDrives.Value.Owner.ID | String | The ID of the user, device, or application that owns the drive. | 
+| MsGraphFiles.ListDrives.Value.Owner.Type | String | The owner type. Can be "user", "device", or "application". | 
+| MsGraphFiles.ListDrives.Value.DriveType | String | The drive type. | 
+| MsGraphFiles.ListDrives.Value.ID | String | The drive ID. | 
+| MsGraphFiles.ListDrives.Value.Name | String | The name of the drive. | 
+| MsGraphFiles.ListDrives.OdataContext | String | The OData query. | 
+
+
+#### Command Example
 ```!msgraph-list-drives-in-site limit=1 site_id=test limit=1```
+
 
 ##### Context Example
 
@@ -486,9 +412,7 @@ Returns the list of Drive resources available for a target Site
     }
 }
 ```
-
-##### Human Readable Output
-
+#### Human Readable Output
 ### MsGraphFiles - Drives information:
 
 | Created By     | Created Date Time    | Description | Drive Type      | ID   | Last Modified Date Time | Name      | Web Url |
@@ -496,59 +420,51 @@ Returns the list of Drive resources available for a target Site
 | System Account | 2019-09-21T08:17:20Z |             | documentLibrary | Test | 2019-09-21T08:17:20Z    | Documents | Test    |
 
 
-### 6. msgraph-list-drive-content
+### msgraph-list-drive-content
+***
+Returns a list of files and folders in the specified drive.
 
----
 
-This command list all the drive's files and folders
-
-##### Required Permissions
-
-    Files.ReadWrite.All
-    Sites.ReadWrite.All
-
-##### Base Command
+#### Base Command
 
 `msgraph-list-drive-content`
+#### Input
 
-##### Input
-
-| **Argument Name** | **Description**                    | **Required** |
-| ----------------- | ---------------------------------- | ------------ |
-| object_type       | MS Graph resource.                 | Required     |
-| object_type_id    | MS Graph resource id.              | Required     |
-| item_id           | Ms Graph item_id.                  | Optional     |
-| limit             | Sets the page size of results.     | Optional     |
-| next_page_url     | The URL for the next results page. | Optional     |
-
-
-##### Context Output
-
-| **Path**                                                     | **Type** | **Description**                                              |
-| ------------------------------------------------------------ | -------- | ------------------------------------------------------------ |
-| MsGraphFiles.ListChildren.Children.Value.OdataNextLink       | String   | The URL for the next results page.                           |
-| MsGraphFiles.ListChildren.Children.Value.ParentReference.DriveId | String   | Unique identifier of the drive that contains the item.       |
-| MsGraphFiles.ListChildren.Children.Value.ParentReference.DriveType | String   | Identifies the type of drive.                                |
-| MsGraphFiles.ListChildren.Children.Value.ParentReference.ID  | String   | Unique identifier of the item in the drive.                  |
-| MsGraphFiles.ListChildren.Children.Value.ParentReference.Path | String   | Path to navigate to the item                                 |
-| MsGraphFiles.ListChildren.Children.Value.LastModifiedDateTime | Date     | Date and time that the item was last modified.               |
-| MsGraphFiles.ListChildren.Children.Value.Name                | String   | The file's name                                              |
-| MsGraphFiles.ListChildren.Children.Value.CreatedDateTime     | Date     | Timestamp of item creation.                                  |
-| MsGraphFiles.ListChildren.Children.Value.WebUrl              | String   | URL to the resource in the browser                           |
-| MsGraphFiles.ListChildren.Children.Value.FileSystemInfo.CreatedDateTime | Date     | The date and time the item was created on a client.          |
-| MsGraphFiles.ListChildren.Children.Value.FileSystemInfo.LastModifiedDateTime | Date     | The date and time the item was last modified on a client.    |
-| MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.DisplayName | String   | The item display name                                        |
-| MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.ID   | String   | Identity of the application, user or device which last modified the item |
-| MsGraphFiles.ListChildren.Children.Value.CreatedBy.DisplayName | String   | Identity of the user, device,or application which created the item |
-| MsGraphFiles.ListChildren.Children.Value.CreatedBy.ID        | String   | The ID of the creator                                        |
-| MsGraphFiles.ListChildren.Children.Value.CreatedBy.Type      | String   | application, user or device                                  |
-| MsGraphFiles.ListChildren.ID                                 | String   | File or folder ID                                            |
-| MsGraphFiles.ListChildren.Children.Size                      | Number   | File or folder size                                          |
-| MsGraphFiles.ListChildren.Children.OdataContext              | String   | OData query                                                  |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| item_id | The MS Graph item ID.<br/>It can be either 'root' or another folder.<br/>Passing a folder ID retrieves files from a specified folder.<br/>The default is 'root': retrieve content in the root of the drive.<br/><br/>In order to get the required folder ID you can use this command and leave this argument empty in order to get a list of folders that are located in the root.<br/><br/>If your folder is nested inside another folder, pass the parent ID found when running this command without 'item_id', to this argument to get the required folder ID. | Optional | 
+| limit | The maximum number of results to return. | Optional | 
+| next_page_url | The URL for the next results page.<br/>If a next page of results exists, you will find it in Cortex XSOAR context under MsGraphFiles.ListChildren.OdataNextLink. | Optional | 
 
 
-##### Command Example
+#### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraphFiles.ListChildren.Children.Value.OdataNextLink | String | The URL for the next results page. | 
+| MsGraphFiles.ListChildren.Children.Value.ParentReference.DriveId | String | Unique identifier of the drive that contains the item. | 
+| MsGraphFiles.ListChildren.Children.Value.ParentReference.DriveType | String | The drive type. | 
+| MsGraphFiles.ListChildren.Children.Value.ParentReference.ID | String | Unique identifier of the item in the drive. | 
+| MsGraphFiles.ListChildren.Children.Value.ParentReference.Path | String | The path to the item. | 
+| MsGraphFiles.ListChildren.Children.Value.LastModifiedDateTime | Date | Timestamp of when the item was last modified. | 
+| MsGraphFiles.ListChildren.Children.Value.Name | String | The file name. | 
+| MsGraphFiles.ListChildren.Children.Value.CreatedDateTime | Date | Timestamp of when the item was created. | 
+| MsGraphFiles.ListChildren.Children.Value.WebUrl | String | URL to the resource in the browser. | 
+| MsGraphFiles.ListChildren.Children.Value.FileSystemInfo.CreatedDateTime | Date | Timestamp of when the item was created on a client. | 
+| MsGraphFiles.ListChildren.Children.Value.FileSystemInfo.LastModifiedDateTime | Date | Timestamp of when the item was last modified on a client. | 
+| MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.DisplayName | String | The item display name. | 
+| MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.ID | String | Identity of the application, user, or device that last modified the item. | 
+| MsGraphFiles.ListChildren.Children.Value.CreatedBy.DisplayName | String | Identity of the user, device, or application that created the item. | 
+| MsGraphFiles.ListChildren.Children.Value.CreatedBy.ID | String | The ID of the creator. | 
+| MsGraphFiles.ListChildren.Children.Value.CreatedBy.Type | String | The created by type. Can be "application", "user", or "device". | 
+| MsGraphFiles.ListChildren.ID | String | The file ID or folder ID. | 
+| MsGraphFiles.ListChildren.Children.Size | Number | The file size or folder size. | 
+| MsGraphFiles.ListChildren.Children.OdataContext | String | The OData query. | 
+
+
+#### Command Example
 ```!msgraph-list-drive-content object_type=drives limit=1 object_type_id=test parent_id=test```
 
 ##### Context Example
@@ -596,9 +512,7 @@ This command list all the drive's files and folders
     }
 }
 ```
-
-##### Human Readable Output
-
+#### Human Readable Output
 ### MsGraphFiles - drivesItems information:
 
 | Created By         | Created Date Time    | Description | ID   | Last Modified Date Time | Name        | Size | Web Url |
@@ -606,44 +520,37 @@ This command list all the drive's files and folders
 | MS Graph Files Dev | 2019-12-29T11:57:41Z |             | 123  | 2019-12-29T11:57:41Z    | Attachments | 0    | 123     |
 
 
-### 7. msgraph-list-share-point-sites
+### msgraph-list-sharepoint-sites
+***
+Returns a list of the tenant sites.
 
----
 
-Returns a list of the tenant Sites
+#### Base Command
 
-##### Required Permissions
-
-    Sites.ReadWrite.All
-
-##### Base Command
-
-`msgraph-list-share-point-sites`
-
-##### Input
+`msgraph-list-sharepoint-sites`
+#### Input
 
 There are no input arguments for this command.
 
-##### Context Output
+#### Context Output
 
-| **Path**                                             | **Type** | **Description**                                |
-| ---------------------------------------------------- | -------- | ---------------------------------------------- |
-| MsGraph.Sites                                        | Unknown  | Graph's site object                            |
-| MsGraphFiles.OdataContext                            | String   | OData query                                    |
-| MsGraphFiles.OdataNextLink                           | String   | The URL for the next results page.             |
-| MsGraphFiles.ListSites.Value.LastModifiedDateTime    | String   | Date and time that the item was last modified. |
-| MsGraphFiles.ListSites.Value.DisplayName             | String   | The item display name                          |
-| MsGraphFiles.ListSites.Value.Description             | String   | The item description                           |
-| MsGraphFiles.ListSites.Value.CreatedDateTime         | Date     | imestamp of site creation                      |
-| MsGraphFiles.ListSites.Value.WebUrl                  | String   | URL to the resource in the browser             |
-| MsGraphFiles.ListSites.Value.OdataContext            | String   | OData query                                    |
-| MsGraphFiles.ListSites.Value.SiteCollection.Hostname | String   | The hostname for the site collection           |
-| MsGraphFiles.ListSites.Value.ID                      | String   | Site id                                        |
-| MsGraphFiles.ListSites.Value.Name                    | String   | Site name                                      |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Sites | Unknown | The MS Graph site object. | 
+| MsGraphFiles.OdataContext | String | The OData query. | 
+| MsGraphFiles.OdataNextLink | String | The URL for the next results page. | 
+| MsGraphFiles.ListSites.Value.LastModifiedDateTime | String | Timestamp of when the item was last modified. | 
+| MsGraphFiles.ListSites.Value.DisplayName | String | The item display name. | 
+| MsGraphFiles.ListSites.Value.Description | String | The item description. | 
+| MsGraphFiles.ListSites.Value.CreatedDateTime | Date | Timestamp of when the site was created. | 
+| MsGraphFiles.ListSites.Value.WebUrl | String | URL to the resource in the browser. | 
+| MsGraphFiles.ListSites.Value.OdataContext | String | The OData query. | 
+| MsGraphFiles.ListSites.Value.SiteCollection.Hostname | String | The hostname for the site collection. | 
+| MsGraphFiles.ListSites.Value.ID | String | The site ID. | 
+| MsGraphFiles.ListSites.Value.Name | String | The site name. | 
 
 
-##### Command Example
-
+#### Command Example
 ```!msgraph-list-share-point-sites site_id=123```
 
 ##### Context Example
@@ -664,170 +571,50 @@ There are no input arguments for this command.
                 }, 
                 "Root": {}, 
                 "ID": "123"
-            }, 
-            {
-                "LastModifiedDateTime": "2019-09-21T08:17:21Z", 
-                "DisplayName": "123", 
-                "Description": "this is a private site", 
-                "CreatedDateTime": "2019-09-23T15:55:03Z", 
-                "WebUrl": "123", 
-                "SiteCollection": {
-                    "Hostname": "123"
-                }, 
-                "Root": {}, 
-                "ID": "123", 
-                "Name": "site_test_1"
-            }, 
-            {
-                "LastModifiedDateTime": "2019-09-21T08:17:21Z", 
-                "DisplayName": "site_test2", 
-                "Description": "this is a public site", 
-                "CreatedDateTime": "2019-09-23T15:57:14Z", 
-                "WebUrl": "123", 
-                "SiteCollection": {
-                    "Hostname": "123"
-                }, 
-                "Root": {}, 
-                "ID": "123", 
-                "Name": "site_test2"
-            }, 
-            {
-                "LastModifiedDateTime": "0001-01-01T08:00:00Z", 
-                "DisplayName": "Community", 
-                "Name": "Community", 
-                "CreatedDateTime": "2016-09-14T11:15:40Z", 
-                "WebUrl": "123", 
-                "SiteCollection": {
-                    "Hostname": "123"
-                }, 
-                "Root": {}, 
-                "ID": "123"
-            }, 
-            {
-                "LastModifiedDateTime": "0001-01-01T08:00:00Z", 
-                "DisplayName": "PointPublis", 
-                "Name": "hub", 
-                "CreatedDateTime": "2016-09-14T11:14:07Z", 
-                "WebUrl": "123", 
-                "SiteCollection": {
-                    "Hostname": "123"
-                }, 
-                "Root": {}, 
-                "ID": "123"
-            }, 
-            {
-                "LastModifiedDateTime": "0001-01-01T08:00:00Z", 
-                "DisplayName": "shelly", 
-                "Name": "DemistoTe", 
-                "CreatedDateTime": "2020-01-05T13:28:50Z", 
-                "WebUrl": "123", 
-                "SiteCollection": {
-                    "Hostname": "123"
-                }, 
-                "Root": {}, 
-                "ID": "123"
-            }, 
-            {
-                "LastModifiedDateTime": "0001-01-01T08:00:00Z", 
-                "DisplayName": "Sade - shelly", 
-                "Name": "Sade-shelly", 
-                "CreatedDateTime": "2020-01-05T13:27:51Z", 
-                "WebUrl": "123", 
-                "SiteCollection": {
-                    "Hostname": "123"
-                }, 
-                "Root": {}, 
-                "ID": "123"
-            }, 
-            {
-                "LastModifiedDateTime": "0001-01-01T08:00:00Z", 
-                "DisplayName": "DemistoTeam - test", 
-                "Name": "DemistoTeam79-test", 
-                "CreatedDateTime": "2020-01-06T08:05:27Z", 
-                "WebUrl": "123", 
-                "SiteCollection": {
-                    "Hostname": "123"
-                }, 
-                "Root": {}, 
-                "ID": "123"
             }
-
         ]
     }
 }
 ```
 
-##### Human Readable Output
-
-### List Sites:
-
+#### Human Readable Output
 | Created Date Time    | ID   | Last Modified Date Time | Name                 | Web Url |
 | -------------------- | ---- | ----------------------- | -------------------- | ------- |
 | 2016-09-14T11:12:59Z | 123  | 2016-09-14T11:13:53Z    | 123                  | 123     |
-| 2019-09-23T15:55:03Z | 123  | 2019-09-21T08:17:21Z    | site_test_1          | 123     |
-| 2019-09-23T15:57:14Z | 123  | 2019-09-21T08:17:21Z    | site_test2           | 123     |
-| 2016-09-14T11:15:40Z | 123  | 0001-01-01T08:00:00Z    | Community            | 123     |
-| 2016-09-14T11:14:07Z | 123  | 0001-01-01T08:00:00Z    | hub                  | 123     |
-| 2020-01-05T13:28:50Z | 123  | 0001-01-01T08:00:00Z    | DemistoTeam79-shelly | 123     |
-| 2020-01-05T13:27:51Z | 123  | 0001-01-01T08:00:00Z    | Sade-shelly          | 123     |
-| 2020-01-06T08:05:27Z | 123  | 0001-01-01T08:00:00Z    | DemistoTeam79-test   | 123     |
-| 2016-09-14T11:14:02Z | 123  | 2016-09-14T11:15:28Z    | contentTypeHub       | 123     |
-| 2018-12-26T09:44:17Z | 123  | 2018-11-17T12:17:41Z    | testpublic           | 123     |
-| 2018-12-26T09:42:25Z | 123  | 2018-11-17T12:17:41Z    | testgroup            | 123     |
-| 2019-08-03T11:31:53Z | 123  | 2019-07-27T08:31:04Z    | wowalias1            | 123     |
-| 2019-08-03T06:17:27Z | 123  | 2019-07-27T08:31:04Z    | library              | 123     |
-| 2019-08-03T11:30:11Z | 123  | 2019-07-27T08:31:04Z    | wowalias             | 123     |
-| 2019-08-24T09:39:08Z | 123  | 2019-07-27T08:31:04Z    | DemistoTeam79        | 123     |
-| 2019-08-27T13:00:28Z | 123  | 2019-08-24T10:14:13Z    | Sade                 | 123     |
-| 2019-10-25T20:20:29Z | 123  | 2019-10-19T23:21:12Z    | kkk                  | 123     |
-| 2019-11-12T13:49:07Z | 123  | 2019-11-03T01:15:16Z    | FileTestTeam         | 123     |
-| 2019-12-31T07:58:14Z | 123  | 2019-11-17T05:24:33Z    | ShellysTeam          | 123     |
-| 2020-01-05T15:17:45Z | 123  | 2019-11-17T05:24:33Z    | aaaaa                | 123     |
 
 
-### 8. msgraph-download-file
+### msgraph-download-file
+***
+Downloads the file contents of the drive item.
 
----
 
-Download the contents of the file of a DriveItem.
-
-##### Required Permissions
-
-    Files.ReadWrite.All
-    Sites.ReadWrite.All
-
-##### Base Command
+#### Base Command
 
 `msgraph-download-file`
+#### Input
 
-##### Input
-
-| **Argument Name** | **Description**       | **Required** |
-| ----------------- | --------------------- | ------------ |
-| object_type       | MS Graph resource.    | Required     |
-| object_type_id    | MS Graph resource id. | Required     |
-| item_id           | Ms Graph item_id.     | Required     |
-
-
-##### Context Output
-
-| **Path**     | **Type** | **Description**  |
-| ------------ | -------- | ---------------- |
-| File.Size    | String   | File's size      |
-| File.SHA1    | String   | File's SHA1      |
-| File.SHA256  | String   | File's SHA256    |
-| File.SHA512  | String   | File's SHA512    |
-| File.Name    | String   | File name        |
-| File.SSDeep  | String   | File's SSDeep    |
-| File.EntryID | Unknown  | Demisto file ID  |
-| File.Info    | String   | File information |
-| File.Type    | String   | File type        |
-| File.MD5     | String   | File's MD5       |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| item_id | The MS Graph item ID.<br/>In order to get the ID of the file you want to download you can use the msgraph-list-drive-content command. | Required | 
 
 
-##### Command Example
+#### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | String | The file size. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The file name. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | Unknown | The Cortex XSOAR file ID. | 
+| File.Info | String | Information about the file. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+
+
+#### Command Example
 ```!msgraph-download-file object_type=drives object_type_id=123 item_id=123```
-
-
-

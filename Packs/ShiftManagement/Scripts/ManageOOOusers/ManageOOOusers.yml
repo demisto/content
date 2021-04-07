@@ -1,0 +1,36 @@
+commonfields:
+  id: ManageOOOusers
+  version: -1
+name: ManageOOOusers
+script: ''
+type: python
+tags:
+- ooo
+- Shift Management
+comment: |-
+  Adds or removes an analyst from the out-of-office list in XSOAR. When used with the AssignAnalystToIncidentOOO automation, prevents incidents from being assigned to an analyst who is out of office.
+enabled: true
+args:
+- name: option
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - add
+  - remove
+  description: Add or remove an analyst from the out-of-office list. Possible values are "Add" and "Remove".
+- name: daysoff
+  description: Number of days the analyst will be off. Default is 7.
+  defaultValue: "7"
+- name: listname
+  description: A list to use in place of the out-of-office list. If the name of the list that you pass does not begin with OOO, the script automatically prefixes OOO to the script name. For example, if you pass a list called newList, the script will automatically change the name to OOO newList. Default is "OOO List".
+  defaultValue: OOO List
+- name: username
+  description: The name of the analyst to add to the list. The default is the current analyst.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.1.14969
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

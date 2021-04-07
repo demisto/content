@@ -30,6 +30,10 @@
       "playbookID": "fake_test_playbook"
     },
     {
+      "integrations": "test_fake_integration",
+      "playbookID": "fake_test_playbook_to_version"
+    },
+    {
       "playbookID": "Extract Indicators From File - test"
     },
     {

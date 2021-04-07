@@ -1,0 +1,15 @@
+{
+    "name": "ExtFilter",
+    "description": "This transformer enables you to make advanced filters with comlex conditions.",
+    "support": "community",
+    "currentVersion": "1.1.0",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2020-10-17T18:23:26Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
+

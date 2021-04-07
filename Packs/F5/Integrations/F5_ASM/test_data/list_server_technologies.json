@@ -1,0 +1,27 @@
+{
+  "_kind": "tm:asm:policies:server-technologies:server-technologycollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/server-technologies?ver=15.1.0",
+  "totalItems": 2,
+  "items": [
+    {
+      "_kind": "tm:asm:policies:server-technologies:server-technologystate",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/server-technologies/server-technology-md5-1?ver=15.1.0",
+      "id": "server-technology-md5-1",
+      "lastUpdateMicros": 1600079598000000.0,
+      "serverTechnologyReference": {
+        "link": "https://localhost/mgmt/tm/asm/server-technologies/11111?ver=15.1.0",
+        "serverTechnologyName": "IIS"
+      }
+    },
+    {
+      "_kind": "tm:asm:policies:server-technologies:server-technologystate",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/server-technologies/server-technology-md5-2?ver=15.1.0",
+      "id": "server-technology-md5-2",
+      "lastUpdateMicros": 1600078718000000.0,
+      "serverTechnologyReference": {
+        "link": "https://localhost/mgmt/tm/asm/server-technologies/22222?ver=15.1.0",
+        "serverTechnologyName": "ASP"
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+ "description": "Classifies XM Cyber alerts and events into 4 types",
+ "defaultIncidentType": "XM Cyber Choke Point",
+ "feed": false,
+ "id": "XM Cyber Incident Classifier",
+ "keyTypeMap": {
+  "XM Cyber Choke Point": "XM Cyber Choke Point",
+  "XM Cyber Critical Asset": "XM Cyber Critical Asset",
+  "XM Cyber Security Score": "XM Cyber Security Score",
+  "XM Cyber Technique": "XM Cyber Technique"
+ },
+ "name": "XM Cyber Incident Classifier",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": null,
+  "simple": "type"
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

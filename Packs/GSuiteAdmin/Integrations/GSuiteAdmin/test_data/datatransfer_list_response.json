@@ -1,0 +1,53 @@
+ {
+  "kind": "admin#datatransfer#dataTransfersList",
+  "etag": "\"0ZCareEOsqd7fL5YbEyMYIn-aNMMD4DuYtYoPon6N0Q/7oOnrpOPqFKaZmMLTgiPPeTsSSw\"",
+  "dataTransfers": [
+    {
+      "kind": "admin#datatransfer#DataTransfer",
+      "etag": "\"0ZCareEOsqd7fL5YbEyMYIn-aNMMD4DuYtYoPon6N0Q/HO9Y2vVfC-V6lqQgsYAeA2FdwIs\"",
+      "id": "AKrEtIZfGFDuqoS1x6-943mAWTo19Ct8aMf5j-UV-yMWu2z2k5TbcFcDYHk6CaHLf2dvKKRTfuHk5B5RH9UCH7gs8sdPV5m8jQ",
+      "oldOwnerUserId": "112697610726424936164",
+      "newOwnerUserId": "113493660192005193453",
+      "applicationDataTransfers": [
+        {
+          "applicationId": "435070579839",
+          "applicationTransferParams": [
+            {
+              "key": "RELEASE_RESOURCES",
+              "value": [
+                "true"
+              ]
+            }
+          ],
+          "applicationTransferStatus": "completed"
+        }
+      ],
+      "overallTransferStatusCode": "completed",
+      "requestTime": "2020-09-10T09:51:29.224Z"
+    },
+    {
+      "kind": "admin#datatransfer#DataTransfer",
+      "etag": "\"0ZCareEOsqd7fL5YbEyMYIn-aNMMD4DuYtYoPon6N0Q/iKC7uTHeVzjEhdyqJldNaFKWN7M\"",
+      "id": "AKrEtIZfGFDuqoS1x6-943mAWTo1UW52ZdcRRHiyCepLk-H9GBEKOfMhJvyzGfwO3OHs6TEf_13AIOP3PKSP31zgWmAoeKeGjQ",
+      "oldOwnerUserId": "112697610726424936164",
+      "newOwnerUserId": "113493660192005193453",
+      "applicationDataTransfers": [
+        {
+          "applicationId": "435070579839",
+          "applicationTransferParams": [
+            {
+              "key": "RSE_RESOURCES",
+              "value": [
+                "tue"
+              ]
+            }
+          ],
+          "applicationTransferStatus": "completed"
+        }
+      ],
+      "overallTransferStatusCode": "completed",
+      "requestTime": "2020-09-10T09:51:53.202Z"
+    }
+  ],
+  "nextPageToken": "AKrEtIZfGFDuqoS1x6-943mAWTo1UW52ZdcRRHiyCepLk-H9GBEKOfMhJvyzGfwO3OHs6TEf_13AIOP3PKSP31zgWmAoeKeGjQ"
+}

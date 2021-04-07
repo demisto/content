@@ -1,16 +1,16 @@
 {
-  "name": "AWS - IAM",
-  "description": "Amazon Web Services Identity and Access Management (IAM)",
-  "support": "xsoar",
-  "author": "Cortex XSOAR",
-  "currentVersion": "1.0.0",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "IT Services"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "AWS - IAM",
+    "description": "Amazon Web Services Identity and Access Management (IAM)",
+    "support": "xsoar",
+    "author": "Cortex XSOAR",
+    "currentVersion": "1.0.1",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }

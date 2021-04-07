@@ -1,0 +1,158 @@
+Received: from XYZ
+From: XYZ <no_reply@XYZ.com>
+Date: Wed, 21 Oct 2020 06:54:12 +0200
+Subject: New Fax received (493) 454-3102 on 21 October 2020
+To: randomName@randomDomain.com
+X-Mailer: ABC
+Content-Type: multipart/alternative;
+	boundary="5//1/NF3KTI1/WEV1OTK=="
+Content-Transfer-Encoding: 8bit
+Return-Path: no_reply@XYZ.com
+X-MS-Exchange-Organization-ExpirationStartTime: 21 Oct 2020 04:54:16.4224
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id:
+ QWE
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: WER
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-MS-PublicTrafficType: Email
+X-MS-Exchange-Organization-AuthSource:
+ ERT
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Office365-Filtering-Correlation-Id: 3317828a-9b3b-41b7-c293-08d8757d5cfa
+X-MS-TrafficTypeDiagnostic: BN7PR15MB2484:
+X-MS-Exchange-AtpMessageProperties: SL
+X-MS-Oob-TLC-OOBClassifiers: OLM:530;
+X-MS-Exchange-Organization-SCL: 1
+X-Microsoft-Antispam: BCL:0;
+MIME-Version: 1.0
+Received: from Lot (unknown [])	by (Postfix) with ESMTPA id 4CGJ7B1JClz2tBv	for <randomName@randomDomain.com>; Wed, 21 Oct 2020 06:54:13 +0200 (CEST)
+X-Priority: 2
+X-MSMail-Priority: Medium
+Importance: Medium
+
+--5//1/NF3KTI1/WEV1OTK==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+[External. Use Caution]
+
+[cid:logo2]
+
+You got 1 Fax N?te. Details below.
+
+Micr?s?ft Fax Message
+Name: RTY
+Number: 123
+Duration: 0m 28s
+_________________
+NEC SL1100 InMail
+
+[cid:logo5]<661706973616e69406d616e6e696e672d6e61706965722e636f6d>
+
+This email was sent to randomName@randomDomain.com.
+
+--5//1/NF3KTI1/WEV1OTK==
+Content-Type: multipart/related;
+	boundary="5//1/NF3KTI1/WEV1OTK=="
+
+
+--5//1/NF3KTI1/WEV1OTK==
+Content-Type: text/html; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+
+<!doctype html><html xmlns=3D"http://www.w3.org/1999/xhtml"><head><!-- NAME=
+: CONTRAST --><!--[if gte mso 15]>
+		<xml>
+			<o:OfficeDocumentSettings>
+			<o:AllowPNG/>
+			<o:PixelsPerInch>96</o:PixelsPerInch>
+			</o:OfficeDocumentSettings>
+		</xml>
+		<![endif]-->
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+>
+<title>493</title>
+</head>
+<body>
+<font color=3D"red">[External. Use Caution]</font><br>
+<br>
+<div><base href=3D"https://expired.badssl.com
+" src=3D"cid:logo2" border=3D"0">
+<table width=3D"100%" border=3D"0" cellspacing=3D"0" cellpadding=3D"0">
+<tbody>
+<tr>
+<td align=3D"left" valign=3D"top">
+<table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=3D"100%">
+<tbody>
+<tr>
+<td width=3D"20" align=3D"left" valign=3D"top" class=3D"border2">
+<div class=3D"border2" style=3D"display:block;" border=3D"0" alt=3D"" width=
+=3D"20" height=3D"1">
+</div>
+</td>
+<td class=3D"align_left" style=3D"font-family:Arial, Helvetica, sans-serif;=
+ font-size:14px; line-height:18px; color:#666666; text-decoration:none;" va=
+lign=3D"top">
+<br>
+<b>You got 1 Fax N&#959;te. Details below.</b><br>
+<br>
+Micr&#959;s&#959;ft Fax Message<br>
+Name: Kathryn Mcgregor<br>
+Number: (493) 454-3102<br>
+Duration: 0m 28s<br>
+_________________<br>
+<b>NEC SL1100 InMail</b><br>
+<br>
+<a href=3D"https://google.com" originalsrc=3D"http://google.com">
+<br>
+<b style=3D"font-size:10px">This email was sent to randomName@randomDomain.com=
+om.</b><br>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</body>
+</html>
+
+--5//1/NF3KTI1/WEV1OTK==
+Content-Type: image/png; name="logo2.png"
+Content-Transfer-Encoding: base64
+Content-ID: <logo2>
+Content-Disposition: inline; filename=logo2.png
+
+iVBORw0KGgoAAAANSUhEUgAAAxwAAAD5CAIAAAAiBKTzAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+jwv8YQUAAAAJcEhZcwAAHYcAAB2HAY/l8WUAAF1VSURBVHhe7b15dBRXnu9JLf3emX/mnOmuzRvY
+qnIS009ZrS1iIiKrxbRRuy3mtgMWl1CZFq/RThNCCCHuECSqchLTT1mtLWIi4jaxuITKtHiNdpoQ
+QghxhyBRlZOYfmqfCSGEEOIuQKIqJzF51D4TQgghxF2ARFVOYvKofSaEEEKIuwCJqpzE5FH7TAgh
+hBB3ARJVOYnJo/aZEEIIIe4CJKpyEpNH7TMhhBBC3AVIVOUkJo/aZ0IIIYS4C5CoyklMHrXPhBBC
+CHEXIFGVk5g8kslkMplMJmvFJKpykjFeMplMJpPJZFlNoionGeMlk8lkMplMltUkqnKSMV4ymUwm
+k8lkWU2iKicZ4yWTyWQymUyW1SSqcpIxXjKZTCaTyWRZTaIqJxnjJZPJZDKZTJbVJKpykjFeMplM
+JpPJZFlNoionGeMlk8lkMplMltUkqnKSMV4ymUwmk8lkWU2iKicZ4yWTyWQymUyW1SSqcpIxXjKZ
+TCaTyWRZTaIqJxnjJZPJZDKZTJbVJKpykjFeMplMJpPJZFlNoionGeMlk8lkMplMltUkqnKSMV4y
+mUwmk8lkWU2iKicZ4yWTyWQymUyW1SSqcpIxXjKZTCaTyWRZLOX9/8+BCeIwhdZlAAAAAElFTkSu
+QmCC
+
+--5//1/NF3KTI1/WEV1OTK==
+Content-Type: image/png; name="logo5.png"
+Content-Transfer-Encoding: base64
+Content-ID: <logo5>
+Content-Disposition: inline; filename=logo5.png
+
+0NFtCu5OEIkGBAURqQ8K3iSUSDRQcFTAKgWUvBRAd4CUF0gzl2fMeO3J4/H4ZQ9P8i9+ku15/LLe
+/wCwqG55Rt5JGQAAAABJRU5ErkJggg==
+
+--5//1/NF3KTI1/WEV1OTK==--
+
+--5//1/NF3KTI1/WEV1OTK==--

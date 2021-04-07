@@ -1,0 +1,51 @@
+{
+  "args": {
+    "application_id": "810260081642",
+    "applications_raw_json": "{ \"applicationDataTransfers\": [{\"applicationId\": 435070579839}]}",
+    "new_owner_id": "103744886667034914950",
+    "old_owner_id": "111046242590772774691",
+    "application_transfer_params": "PRIVACY_LEVEL:SHARED,PRIVATE"
+  },
+  "request_payload": {
+    "oldOwnerUserId": "111046242590772774691",
+    "newOwnerUserId": "103744886667034914950",
+    "applicationDataTransfers": [
+      {
+        "applicationId": "810260081642",
+        "applicationTransferParams": [
+          {
+            "key": "PRIVACY_LEVEL",
+            "value": [
+              "SHARED",
+              "PRIVATE"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "kind": "admin#datatransfer#DataTransfer",
+    "etag": "\"0ZCareEOsqd7fL5YbEyMYIn-aNMMD4DuYtYoPon6N0Q/zvARRowErYPZjnjTWvvYcjinfR4\"",
+    "id": "AKrEtIYG88pek5zyrIzBx7kV5g4Jbf54n-w7wfHn_XQk54wM4Ngt2wOp2QqSplMyhaA-4F4C5xzcMBpncZw4h6sif-XZH7-2Ug",
+    "oldOwnerUserId": "111046242590772774691",
+    "newOwnerUserId": "103744886667034914950",
+    "applicationDataTransfers": [
+      {
+        "applicationId": "810260081642",
+        "applicationTransferParams": [
+          {
+            "key": "PRIVACY_LEVEL",
+            "value": [
+              "SHARED",
+              "PRIVATE"
+            ]
+          }
+        ],
+        "applicationTransferStatus": "pending"
+      }
+    ],
+    "overallTransferStatusCode": "inProgress",
+    "requestTime": "2020-09-14T12:16:05.136Z"
+  }
+}

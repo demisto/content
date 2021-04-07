@@ -1,0 +1,85 @@
+{
+  "successAssetType": {
+                "totalElements": 10,
+                "totalPages": 1,
+                "last": true,
+                "numberOfElements": 1,
+                "first": true,
+                "size": 1,
+                "number": 0,
+                "content": [
+                    {
+                        "name": "dummy.com",
+                        "runDate": "2020-05-27",
+                        "measure": "added",
+                        "autoConfirmed": false,
+                        "enterprise": false,
+                        "hostExcluded": false,
+                        "state": "CANDIDATE",
+                        "priority": "NONE",
+                        "keystone": false,
+                        "type": "DOMAIN",
+                        "description": "dummy.com"
+                    }
+                ]
+},
+  "successAssetDetailType": {
+
+    "totalElements": 1,
+    "totalPages": 1,
+    "last": true,
+    "numberOfElements": 1,
+    "first": true,
+    "size": 2000,
+    "number": 0,
+    "content": [
+        {
+            "name": "parent_hostname",
+            "runDate": "2020-05-28",
+            "measure": "added",
+            "createdAt": 1588289600908,
+            "autoConfirmed": true,
+            "enterprise": false,
+            "confidence": "ABSOLUTE",
+            "hostExcluded": false,
+            "state": "CONFIRMED",
+            "id": 219488431,
+            "discoveryRun": 1915892,
+            "priority": "NONE",
+            "keystone": false,
+            "updatedAt": 1588289600908,
+            "childUrlFirstSeen": "1590653525225",
+            "resourceFirstSeen": "1590653525225",
+            "childUrlLastSeen": "1590653525225",
+            "dynamicScore": "0.42010650633937974",
+            "originalUrl": "https://parent_hostname/cdn-abc/bm/cv/1284585714/api.js",
+            "lastSeenResourceGuid": "f0211bf6-5545-4ffd-b613-45505b9c1202",
+            "lastSeenCrawlGuid": "745d7e57-7d42-49b5-b9f9-43fa5d72cbec",
+            "firstSeenPageGuid": "2cfb296d-4343-4d24-b480-a679f3ae4cc2",
+            "lastSeenPageGuid": "2dfb296f-4443-1f24-b480-a779f34e4cc2",
+            "firstSeenResourceGuid": "f0211b38-54f6-4ffd-b613-89405f9c1002",
+            "contentType": "text/javascript",
+            "resourceLastSeen": "1590653525225",
+            "responseBodySize": "74900",
+            "firstSeenCrawlGuid": "745d7127-7d4e-4934-b9d9-43fa7d45cbf4",
+            "md5": "42ca29ec36a2674460ff34f117c69e35",
+            "resource": "https://parent_hostname/cdn-abc/bm/cv/1284585714/api.js",
+            "type": "HOST",
+            "resourceHost": "resource_hostname",
+            "microDeltaType": "SELF_HOSTED_RESOURCE",
+            "description": "parent_child_hostname"
+        }
+    ]
+
+  },
+  "zeroRecords": {
+    "totalElements": 0,
+    "totalPages": 0,
+    "last": true,
+    "numberOfElements": 0,
+    "first": true,
+    "size": 20,
+    "number": 0,
+    "content": []
+  }
+}

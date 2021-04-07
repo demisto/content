@@ -1,0 +1,524 @@
+id: GSuiteAdmin-Test
+version: -1
+name: GSuiteAdmin-Test
+description: |-
+  This playbook uses the G Suite Admin integration and tests the scenarios
+  of the various commands like gsuite-user-create, gsuite-mobile-update, gsuite-mobile-delete, gsuite-role-assignment-list, gsuite-role-assignment-create, gsuite-user-alias-add, gsuite-token-revoke, gsuite-datatransfer-request-create, gsuite-datatransfer-list, gsuite-group-create, gsuite-role-create, gsuite-custom-user-schema-create, gsuite-custom-user-schema-update, gsuite-user-update, and gsuite-user-delete.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cc3dbef7-3f92-4371-849e-a16af6cb79ef
+    type: start
+    task:
+      id: cc3dbef7-3f92-4371-849e-a16af6cb79ef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8abd0656-72e2-4ba8-808a-47cfcac9f089
+    type: regular
+    task:
+      id: 8abd0656-72e2-4ba8-808a-47cfcac9f089
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4287afa7-2684-4102-8071-2fe9cce69ebc
+    type: regular
+    task:
+      id: 4287afa7-2684-4102-8071-2fe9cce69ebc
+      version: -1
+      name: gsuite-user-create
+      script: '|||gsuite-user-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      address_type: {}
+      admin_email:
+        simple: admin@demistodev.com
+      country: {}
+      extended_address: {}
+      first_name:
+        simple: XSOAR
+      gender: {}
+      is_address_primary: {}
+      is_ip_white_listed: {}
+      is_phone_number_primary: {}
+      last_name:
+        simple: XSOAR
+      notes_content_type: {}
+      notes_value: {}
+      password:
+        simple: Xsoar@111
+      phone_number: {}
+      phone_number_type: {}
+      postal_code: {}
+      primary_email:
+        simple: xsoar11@demistodev.com
+      recovery_email: {}
+      recovery_phone: {}
+      region: {}
+      secondary_email_address: {}
+      secondary_email_type: {}
+      street_address: {}
+      suspended: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 685d64c9-ae84-4f89-812b-b96be15c8315
+    type: condition
+    task:
+      id: 685d64c9-ae84-4f89-812b-b96be15c8315
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.primaryEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.firstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.lastName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.customerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.creationTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 65ac3caa-0c3f-405b-8319-cc50f764c523
+    type: condition
+    task:
+      id: 65ac3caa-0c3f-405b-8319-cc50f764c523
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.firstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.lastName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 308528a9-9652-404d-8b8a-7c7aa28e61c4
+    type: regular
+    task:
+      id: 308528a9-9652-404d-8b8a-7c7aa28e61c4
+      version: -1
+      name: gsuite-role-assignment-list
+      script: '|||gsuite-role-assignment-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      admin_email:
+        simple: admin@demistodev.com
+      customer_id:
+        simple: ${GSuite.User.customerId}
+      max_results: {}
+      page_token: {}
+      role_id: {}
+      user_key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 04dfa553-24d5-493e-83ce-9182af45d6bd
+    type: condition
+    task:
+      id: 04dfa553-24d5-493e-83ce-9182af45d6bd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.RoleAssignment.roleAssignmentId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.RoleAssignment.roleId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 7887bd97-7336-4edf-89e6-8eb8dba251f1
+    type: regular
+    task:
+      id: 7887bd97-7336-4edf-89e6-8eb8dba251f1
+      version: -1
+      name: gsuite-role-assignment-create
+      script: '|||gsuite-role-assignment-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      admin_email:
+        simple: admin@demistodev.com
+      assigned_to:
+        simple: ${GSuite.User.id}
+      customer_id:
+        simple: ${GSuite.User.customerId}
+      org_unit_id: {}
+      role_id:
+        complex:
+          root: GSuite.RoleAssignment
+          accessor: roleId
+          transformers:
+          - operator: FirstArrayElement
+      scope_type:
+        simple: CUSTOMER
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: fedb8ea4-f750-4db7-82aa-436de4a10d84
+    type: condition
+    task:
+      id: fedb8ea4-f750-4db7-82aa-436de4a10d84
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.RoleAssignment.roleAssignmentId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.RoleAssignment.roleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.RoleAssignment.assignedTo
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: d293172c-284e-405d-8c80-c697bcb3f8ef
+    type: title
+    task:
+      id: d293172c-284e-405d-8c80-c697bcb3f8ef
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 2a35c86d-4f16-4602-89d5-0fe9e38ad658
+    type: regular
+    task:
+      id: 2a35c86d-4f16-4602-89d5-0fe9e38ad658
+      version: -1
+      name: gsuite-user-delete
+      description: Deletes a user.
+      script: '|||gsuite-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      admin_email:
+        simple: admin@demistodev.com
+      user_key:
+        simple: ${GSuite.User.id}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 6f972f11-2ceb-42cc-84f3-493bb5ca50f0
+    type: regular
+    task:
+      id: 6f972f11-2ceb-42cc-84f3-493bb5ca50f0
+      version: -1
+      name: gsuite-user-update
+      description: Updates a user.
+      script: '|||gsuite-user-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      address_type: {}
+      admin_email: {}
+      archived: {}
+      country: {}
+      extended_address: {}
+      first_name:
+        simple: test update
+      gender: {}
+      is_address_primary: {}
+      is_ip_white_listed: {}
+      is_phone_number_primary: {}
+      last_name: {}
+      notes_content_type: {}
+      notes_value: {}
+      org_unit_path: {}
+      password: {}
+      phone_number: {}
+      phone_number_type: {}
+      postal_code: {}
+      primary_email: {}
+      recovery_email: {}
+      recovery_phone: {}
+      region: {}
+      secondary_email_address: {}
+      secondary_email_type: {}
+      street_address: {}
+      suspended: {}
+      user_key:
+        simple: ${GSuite.User.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -387,7 +387,7 @@ def get_bot_access_token() -> str:
     Retrieves Bot Framework API access token, either from cache or from Microsoft
     :return: The Bot Framework API access token
     """
-    integration_context: dict = demisto.getIntegrationContext()
+    integration_context: dict = get_integration_context()
     access_token: str = integration_context.get('bot_access_token', '')
     valid_until: int = integration_context.get('bot_valid_until', int)
     if access_token and valid_until:
@@ -418,7 +418,7 @@ def get_bot_access_token() -> str:
             expires_in -= time_buffer
         integration_context['bot_access_token'] = access_token
         integration_context['bot_valid_until'] = time_now + expires_in
-        demisto.setIntegrationContext(integration_context)
+        set_integration_context(integration_context)
         return access_token
     except ValueError:
         raise ValueError('Failed to get bot access token')
@@ -429,7 +429,7 @@ def get_graph_access_token() -> str:
     Retrieves Microsoft Graph API access token, either from cache or from Microsoft
     :return: The Microsoft Graph API access token
     """
-    integration_context: dict = demisto.getIntegrationContext()
+    integration_context: dict = get_integration_context()
     access_token: str = integration_context.get('graph_access_token', '')
     valid_until: int = integration_context.get('graph_valid_until', int)
     if access_token and valid_until:
@@ -468,23 +468,27 @@ def get_graph_access_token() -> str:
             expires_in -= time_buffer
         integration_context['graph_access_token'] = access_token
         integration_context['graph_valid_until'] = time_now + expires_in
-        demisto.setIntegrationContext(integration_context)
+        set_integration_context(integration_context)
         return access_token
     except ValueError:
         raise ValueError('Failed to get Graph access token')
 
 
 def http_request(
-        method: str, url: str = '', json_: dict = None, api: str = 'graph'
+        method: str, url: str = '', json_: dict = None, api: str = 'graph', params: Optional[Dict] = None
 ) -> Union[dict, list]:
-    """
-    A wrapper for requests lib to send our requests and handle requests and responses better
+    """A wrapper for requests lib to send our requests and handle requests and responses better
     Headers to be sent in requests
-    :param method: any restful method
-    :param url: URL to query
-    :param json_: HTTP JSON body
-    :param api: API to query (graph/bot)
-    :return: requests.json()
+
+    Args:
+        method (str): any restful method
+        url (str): URL to query
+        json_ (dict): HTTP JSON body
+        api (str): API to query (graph/bot)
+        params (dict): Object of key-value URL query parameters
+
+    Returns:
+        Union[dict, list]: The response in list or dict format.
     """
     if api == 'graph':
         access_token = get_graph_access_token()
@@ -502,7 +506,8 @@ def http_request(
             url,
             headers=headers,
             json=json_,
-            verify=USE_SSL
+            verify=USE_SSL,
+            params=params,
         )
 
         if not response.ok:
@@ -557,7 +562,7 @@ def integration_health():
     adi_health_human_readable: str = tableToMarkdown('Microsoft API Health', api_health_output)
 
     mirrored_channels_output = list()
-    integration_context: dict = demisto.getIntegrationContext()
+    integration_context: dict = get_integration_context()
     teams: list = json.loads(integration_context.get('teams', '[]'))
     for team in teams:
         mirrored_channels: list = team.get('mirrored_channels', [])
@@ -606,7 +611,7 @@ def validate_auth_header(headers: dict) -> bool:
         demisto.info('Authorization header validation - failed to verify issuer')
         return False
 
-    integration_context: dict = demisto.getIntegrationContext()
+    integration_context: dict = get_integration_context()
     open_id_metadata: dict = json.loads(integration_context.get('open_id_metadata', '{}'))
     keys: list = open_id_metadata.get('keys', [])
 
@@ -675,8 +680,7 @@ def validate_auth_header(headers: dict) -> bool:
         return False
 
     integration_context['open_id_metadata'] = json.dumps(open_id_metadata)
-    demisto.setIntegrationContext(integration_context)
-
+    set_integration_context(integration_context)
     return True
 
 
@@ -689,7 +693,7 @@ def get_team_aad_id(team_name: str) -> str:
     :param team_name: Team name to get AAD ID of
     :return: team AAD ID
     """
-    integration_context: dict = demisto.getIntegrationContext()
+    integration_context: dict = get_integration_context()
     if integration_context.get('teams'):
         teams: list = json.loads(integration_context['teams'])
         for team in teams:
@@ -712,13 +716,21 @@ def get_team_aad_id(team_name: str) -> str:
 #     http_request('POST', url, json_=requestjson_)
 
 
-def get_users() -> list:
-    """
-    Retrieves list of AAD users
-    :return: List of AAD users
+def get_user(user: str) -> list:
+    """Retrieves the AAD ID of requested user
+
+    Args:
+        user (str): Display name/mail/UPN of user to get ID of.
+
+    Return:
+        list: List containing the requsted user object
     """
     url: str = f'{GRAPH_BASE_URL}/v1.0/users'
-    users: dict = cast(Dict[Any, Any], http_request('GET', url))
+    params = {
+        '$filter': f"displayName eq '{user}' or mail eq '{user}' or userPrincipalName eq '{user}'",
+        '$select': 'id'
+    }
+    users = cast(Dict[Any, Any], http_request('GET', url, params=params))
     return users.get('value', [])
 
 
@@ -742,20 +754,13 @@ def add_user_to_channel_command():
     channel_name: str = demisto.args().get('channel', '')
     team_name: str = demisto.args().get('team', '')
     member = demisto.args().get('member', '')
-    users: list = get_users()
-    user_id: str = str()
-    found_member: bool = False
-    for user in users:
-        if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-            found_member = True
-            user_id = user.get('id', '')
-            break
-    if not found_member:
+    user: list = get_user(member)
+    if not (user and user[0].get('id')):
         raise ValueError(f'User {member} was not found')
 
     team_aad_id = get_team_aad_id(team_name)
     channel_id = get_channel_id(channel_name, team_aad_id, investigation_id=None)
-    add_user_to_channel(team_aad_id, channel_id, user_id)
+    add_user_to_channel(team_aad_id, channel_id, user[0].get('id'))
 
     demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
 
@@ -882,7 +887,7 @@ def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = 
     :return: Requested channel ID
     """
     investigation_id = investigation_id or str()
-    integration_context: dict = demisto.getIntegrationContext()
+    integration_context: dict = get_integration_context()
     teams: list = json.loads(integration_context.get('teams', '[]'))
     for team in teams:
         mirrored_channels: list = team.get('mirrored_channels', [])
@@ -952,7 +957,7 @@ def close_channel():
     """
     Deletes a mirrored Microsoft Teams channel
     """
-    integration_context: dict = demisto.getIntegrationContext()
+    integration_context: dict = get_integration_context()
     channel_name: str = demisto.args().get('channel', '')
     investigation: dict = demisto.investigation()
     investigation_id: str = investigation.get('id', '')
@@ -975,7 +980,7 @@ def close_channel():
         if not channel_id:
             raise ValueError('Could not find Microsoft Teams channel to close.')
         integration_context['teams'] = json.dumps(teams)
-        demisto.setIntegrationContext(integration_context)
+        set_integration_context(integration_context)
     else:
         team_name: str = demisto.args().get('team') or demisto.params().get('team')
         team_aad_id = get_team_aad_id(team_name)
@@ -1076,7 +1081,7 @@ def send_message():
         if severity < severity_threshold:
             return
 
-    team_member: str = demisto.args().get('team_member', '')
+    team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
 
     if not (team_member or channel_name):
         raise ValueError('No channel or team member to send message were provided.')
@@ -1090,7 +1095,7 @@ def send_message():
     if message and adaptive_card:
         raise ValueError('Provide either message or adaptive to send, not both.')
 
-    integration_context: dict = demisto.getIntegrationContext()
+    integration_context: dict = get_integration_context()
     channel_id: str = str()
     personal_conversation_id: str = str()
     if channel_name:
@@ -1154,7 +1159,7 @@ def mirror_investigation():
     if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
         raise ValueError('Can not perform this action in playground.')
 
-    integration_context: dict = demisto.getIntegrationContext()
+    integration_context: dict = get_integration_context()
 
     mirror_type: str = demisto.args().get('mirror_type', 'all')
     auto_close: str = demisto.args().get('autoclose', 'true')
@@ -1211,7 +1216,7 @@ def mirror_investigation():
         demisto.results(f'Investigation mirrored successfully in channel {channel_name}.')
     team['mirrored_channels'] = mirrored_channels
     integration_context['teams'] = json.dumps(teams)
-    demisto.setIntegrationContext(integration_context)
+    set_integration_context(integration_context)
 
 
 def channel_mirror_loop():
@@ -1220,7 +1225,7 @@ def channel_mirror_loop():
     """
     while True:
         found_channel_to_mirror: bool = False
-        integration_context = demisto.getIntegrationContext()
+        integration_context = get_integration_context()
         try:
             teams: list = json.loads(integration_context.get('teams', '[]'))
             for team in teams:
@@ -1243,7 +1248,7 @@ def channel_mirror_loop():
                             demisto.info(f'Could not mirror {investigation_id}')
                         team['mirrored_channels'] = mirrored_channels
                         integration_context['teams'] = json.dumps(teams)
-                        demisto.setIntegrationContext(integration_context)
+                        set_integration_context(integration_context)
                         found_channel_to_mirror = True
                         break
                 if found_channel_to_mirror:
@@ -1316,7 +1321,7 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
             'team_members': team_members
         })
     integration_context['teams'] = json.dumps(teams)
-    demisto.setIntegrationContext(integration_context)
+    set_integration_context(integration_context)
 
 
 def direct_message_handler(integration_context: dict, request_body: dict, conversation: dict, message: str):
@@ -1473,12 +1478,12 @@ def messages() -> Response:
         demisto.info(f'Authorization header failed: {str(headers)}')
     else:
         request_body: dict = request.json
-        integration_context: dict = demisto.getIntegrationContext()
+        integration_context: dict = get_integration_context()
         service_url: str = request_body.get('serviceUrl', '')
         if service_url:
             service_url = service_url[:-1] if service_url.endswith('/') else service_url
             integration_context['service_url'] = service_url
-            demisto.setIntegrationContext(integration_context)
+            set_integration_context(integration_context)
 
         channel_data: dict = request_body.get('channelData', {})
         event_type: str = channel_data.get('eventType', '')
@@ -1528,7 +1533,7 @@ def ring_user():
         None.
     """
     bot_id = demisto.params().get('bot_id')
-    integration_context: dict = demisto.getIntegrationContext()
+    integration_context: dict = get_integration_context()
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
         raise ValueError(
@@ -1537,13 +1542,8 @@ def ring_user():
         )
     # get user to call name and id
     username_to_call = demisto.args().get('username')
-    users: list = get_users()
-    user_id: str = str()
-    for user in users:
-        if username_to_call in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-            user_id = user.get('id', '')
-            break
-    if not user_id:
+    user: list = get_user(username_to_call)
+    if not (user and user[0].get('id')):
         raise ValueError(f'User {username_to_call} was not found')
 
     call_request_data = {
@@ -1568,7 +1568,7 @@ def ring_user():
                     "user": {
                         "@odata.type": "#microsoft.graph.identity",
                         "displayName": username_to_call,
-                        "id": user_id
+                        "id": user[0].get('id')
                     }
                 }
             }

@@ -40,7 +40,17 @@
 		"ee03a420-89d6-4745-a0ac-98878cb56cf4": "AWS EC2 Instance Misconfiguration",
 		"ef7c537b-72eb-42a7-bab7-cb2d22c76a0d": "AWS IAM Policy Misconfiguration",
 		"f53107a2-00b2-46fb-98a9-1f12262c7d44": "AWS IAM Policy Misconfiguration",
-		"fd4dae57-509e-4374-96d3-e136821fc3f3": "AWS IAM Policy Misconfiguration"
+		"fd4dae57-509e-4374-96d3-e136821fc3f3": "AWS IAM Policy Misconfiguration",
+		"6e125379-081e-4b06-a7ba-f04da2f0901a": "GCP Kubernetes Engine Misconfiguration",
+		"f57baa2a-6039-4a17-94e8-0be723bcdc75": "GCP Kubernetes Engine Misconfiguration",
+		"e1b70bb4-bb77-4326-93d5-5dd9c5170d3f": "GCP Kubernetes Engine Misconfiguration",
+		"6ddbfdfe-3936-43d0-8157-97a7899beae6": "GCP Kubernetes Engine Misconfiguration",
+		"53793c32-dd41-430f-bbea-2f002ddafe42": "GCP Kubernetes Engine Misconfiguration",
+		"ca4b4654-d36a-4b17-a055-9c5063fa2f41": "GCP Kubernetes Engine Misconfiguration",
+		"fe81b03a-c602-4b16-8ae9-973724c1adae": "GCP Kubernetes Engine Misconfiguration",
+		"a3688f2e-eb5b-4b8d-b26f-90d40f08fd84": "GCP Kubernetes Engine Misconfiguration",
+		"50d5ec3b-1710-4ff7-bb09-061c30deef96": "GCP Kubernetes Engine Misconfiguration",
+		"bee0893d-85fb-403f-9ba7-a5269a46d382": "GCP Kubernetes Engine Misconfiguration"
 	},
 	"transformer": {
 		"complex": {
@@ -61,7 +71,7 @@
 							"isContext": false,
 							"value": {
 								"complex": null,
-								"simple": "10bc76ee-6f29-4c04-98bb-b9f8bafb0964,72b422c8-bef1-4842-a6c6-7230bf0b3492,05befc8b-c78a-45e9-98dc-c7fbaef580e7,0d07ac51-fbfe-44fe-8edb-3314c9995ee0,36a5345a-230d-438e-a04c-a287a513e3dc,38e3d3cf-b694-46ec-8bd2-8f02194b5040,168bfaa0-8c1d-427e-bfa8-4d96d82e3d83,31626ca9-f659-4d25-9d88-fa32262bbba7,9a5813af-17a3-4058-be13-588ea00b4bfa,a2107824-6ed5-4c67-9450-8b154bb1fd2b,a8dcc272-0b02-4534-8627-cf70ddd264c5,b1acdeff-4959-4c14-8a5e-2adc1016a3d5,ef7c537b-72eb-42a7-bab7-cb2d22c76a0d,f53107a2-00b2-46fb-98a9-1f12262c7d44,fd4dae57-509e-4374-96d3-e136821fc3f3,14d10ad2-51df-4b07-be69-e94951cc7067,2378dbf4-b104-4bda-9b05-7417affbba3f,2dbda57f-33d4-459a-97ae-dec7e81f9ec4,3b642d25-4534-487a-9399-c2622754ecb5,519456f2-f9eb-407b-b32d-064f1ac7f0ca,520308c5-57e3-4061-b9bf-1ce5325a2d61,5599b97c-2965-4fd2-9370-927c368abd2d,566686e8-0581-4df5-ae22-5a901ed37b58,65daa6a0-e040-434e-aca3-9d5765c96e7c,6eaf6455-1659-4c4b-bff5-c8c7b0fda201,760f2823-997e-495f-a538-5fb073c0ee78,89cbc2f1-fcb0-48b9-be71-4cbe2d18a5f7,8dd9e369-0c09-4477-97a2-ff0d50507fe2,a9f1b983-f216-486e-b8ea-7259764fc420,ab7f8eda-18ab-457c-b5d3-fd4f53c722bc,ab8b6bb8-a730-4bdf-a4d5-080c01e97335,b82f90ce-ed8b-4b49-970c-2268b0a6c2e5,c2074d5a-aa28-4dde-90c1-82f528cec55e,cdcd663c-e9c9-4472-9779-e5f38751524a,ee03a420-89d6-4745-a0ac-98878cb56cf4"
+								"simple": "10bc76ee-6f29-4c04-98bb-b9f8bafb0964,72b422c8-bef1-4842-a6c6-7230bf0b3492,05befc8b-c78a-45e9-98dc-c7fbaef580e7,0d07ac51-fbfe-44fe-8edb-3314c9995ee0,36a5345a-230d-438e-a04c-a287a513e3dc,38e3d3cf-b694-46ec-8bd2-8f02194b5040,168bfaa0-8c1d-427e-bfa8-4d96d82e3d83,31626ca9-f659-4d25-9d88-fa32262bbba7,9a5813af-17a3-4058-be13-588ea00b4bfa,a2107824-6ed5-4c67-9450-8b154bb1fd2b,a8dcc272-0b02-4534-8627-cf70ddd264c5,b1acdeff-4959-4c14-8a5e-2adc1016a3d5,ef7c537b-72eb-42a7-bab7-cb2d22c76a0d,f53107a2-00b2-46fb-98a9-1f12262c7d44,fd4dae57-509e-4374-96d3-e136821fc3f3,14d10ad2-51df-4b07-be69-e94951cc7067,2378dbf4-b104-4bda-9b05-7417affbba3f,2dbda57f-33d4-459a-97ae-dec7e81f9ec4,3b642d25-4534-487a-9399-c2622754ecb5,519456f2-f9eb-407b-b32d-064f1ac7f0ca,520308c5-57e3-4061-b9bf-1ce5325a2d61,5599b97c-2965-4fd2-9370-927c368abd2d,566686e8-0581-4df5-ae22-5a901ed37b58,65daa6a0-e040-434e-aca3-9d5765c96e7c,6eaf6455-1659-4c4b-bff5-c8c7b0fda201,760f2823-997e-495f-a538-5fb073c0ee78,89cbc2f1-fcb0-48b9-be71-4cbe2d18a5f7,8dd9e369-0c09-4477-97a2-ff0d50507fe2,a9f1b983-f216-486e-b8ea-7259764fc420,ab7f8eda-18ab-457c-b5d3-fd4f53c722bc,ab8b6bb8-a730-4bdf-a4d5-080c01e97335,b82f90ce-ed8b-4b49-970c-2268b0a6c2e5,c2074d5a-aa28-4dde-90c1-82f528cec55e,cdcd663c-e9c9-4472-9779-e5f38751524a,ee03a420-89d6-4745-a0ac-98878cb56cf4,6e125379-081e-4b06-a7ba-f04da2f0901a,f57baa2a-6039-4a17-94e8-0be723bcdc75,e1b70bb4-bb77-4326-93d5-5dd9c5170d3f,6ddbfdfe-3936-43d0-8157-97a7899beae6,53793c32-dd41-430f-bbea-2f002ddafe42,ca4b4654-d36a-4b17-a055-9c5063fa2f41,fe81b03a-c602-4b16-8ae9-973724c1adae,a3688f2e-eb5b-4b8d-b26f-90d40f08fd84,50d5ec3b-1710-4ff7-bb09-061c30deef96,bee0893d-85fb-403f-9ba7-a5269a46d382"
 							}
 						}
 					},

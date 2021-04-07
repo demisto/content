@@ -1,0 +1,30 @@
+{
+"eventType":"Ips Events",
+"events":
+  [
+    {
+      "eventId":1,
+      "occurred":"2020-08-10T06:31:00Z",
+      "srcIp":"1.1.1.1",
+      "srcPort":1,
+      "dstIp":"1.1.1.1",
+      "dstPort":1,
+      "vlan":0,
+      "signatureMatchCnt":1,
+      "signatureIden":1,
+      "signatureRev":1,
+      "severity":1,
+      "vmVerified":true,
+      "srcMac":"dummy",
+      "dstMac":"dummy",
+      "ruleName":"dummy",
+      "sensorId":"dummy",
+      "cveId":"CVE-123",
+      "actionTaken":1,
+      "attackMode":"dummy",
+      "interfaceId":1,
+      "protocol":1,
+      "incidentId":1
+    }
+  ]
+}

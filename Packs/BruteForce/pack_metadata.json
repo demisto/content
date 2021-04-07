@@ -2,7 +2,7 @@
     "name": "Brute Force",
     "description": "This Content Pack helps you automate the repetitive tasks associated with Brute Force incidents. Custom incident views and layouts aid investigation.",
     "support": "xsoar",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

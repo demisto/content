@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Certificate"
+    ],
+    "caseInsensitive": true,
+    "cliName": "validitynotafter",
+    "closeForm": false,
+    "content": true,
+    "description": "End of certificate validity period",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_validitynotafter",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Validity Not After",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

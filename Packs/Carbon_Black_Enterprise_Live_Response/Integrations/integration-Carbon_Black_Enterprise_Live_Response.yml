@@ -1294,13 +1294,18 @@ script:
 
         command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         let commandEntry = commandEntries['get file'](command);
+        let fileEntry = {}
+        if (args.download == 'true') {
+          if (command.status !== 'complete') {
+              return commandEntry;
+          }
+          //download the file from Cb server and add file entry to the war room
+          fileEntry = downloadFileEntry(args['session'], command['file_id']);
 
-        if (command.status !== 'complete') {
-            return commandEntry;
+          return [commandEntry, fileEntry];
         }
-        //download the file from Cb server and add file entry to the war room
-        let fileEntry = downloadFileEntry(args['session'], command['file_id']);
-        return [commandEntry, fileEntry];
+
+        return commandEntry;
     }
 
 
@@ -1847,7 +1852,7 @@ script:
       description: Whether the file was deleted or not
     description: Delete a given file in the session from Cb server.
   - name: cb-file-get
-    deprecated: true
+    deprecated: false
     arguments:
     - name: session
       required: true
@@ -1855,7 +1860,28 @@ script:
     - name: file-id
       required: true
       description: File ID
-    description: Download a file from Cb server in a given session. Use cb-get-file-from-endpoint instead.
+    description: Download a file from Cb server in a given session.
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+    - contextPath: File.SHA1
+      description: File SHA1.
+    - contextPath: File.SHA256
+      description: File SHA256.
+    - contextPath: File.Name
+      description: File name.
+    - contextPath: File.SSDeep
+      description: File SSDeep.
+    - contextPath: File.EntryID
+      description: File EntryID.
+    - contextPath: File.Info
+      description: File info.
+    - contextPath: File.Type
+      description: File type.
+    - contextPath: File.MD5
+      description: File MD5.
+    - contextPath: File.Extension
+      description: File extension.
   - name: cb-file-info
     arguments:
     - name: session
@@ -2629,13 +2655,20 @@ script:
     - name: wait-timeout
       description: Time to wait (in seconds) for Cb command to be executed (change status from 'pending' to 'in-progress'/'complete').
       defaultValue: "20"
+    - name: download
+      description: If "true" will download the file from the CarbonBlack server. Default is "true". Set to false for large files.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error', 'canceled').
+      description: The command status ('pending', 'in progress', 'complete', 'error', 'canceled').
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2645,13 +2678,13 @@ script:
     - contextPath: CbLiveResponse.File.Size
       description: File size.
     - contextPath: CbLiveResponse.File.SHA1
-      description: File SHA1.
+      description: SHA1 hash.
     - contextPath: CbLiveResponse.File.SHA256
-      description: File SHA256.
+      description: SHA256 hash.
     - contextPath: CbLiveResponse.File.Name
       description: File name.
     - contextPath: CbLiveResponse.File.SSDeep
-      description: File SSDeep.
+      description: SSDeep hash.
     - contextPath: CbLiveResponse.File.EntryID
       description: File EntryID.
     - contextPath: CbLiveResponse.File.Info
@@ -2659,10 +2692,13 @@ script:
     - contextPath: CbLiveResponse.File.Type
       description: File type.
     - contextPath: CbLiveResponse.File.MD5
-      description: File MD5.
+      description: MD5 hash.
     - contextPath: CbLiveResponse.File.Extension
       description: File extension.
-    description: Retrieve a file from a path on the endpoint.
+    description: |
+      Retrieves a file from a path on the endpoint.
+      For large files, set the "download" argument to "false". Verify that the command completed by using the !cb-command-info command.
+      After the command completes, download the file using the !cb-file-get command.
   - name: cb-push-file-to-endpoint
     arguments:
     - name: session

@@ -1,0 +1,87 @@
+{
+  "Type": 1,
+  "ContentsFormat": "json",
+  "Contents": {
+  "kind": "admin#directory#user",
+  "id": "113493660192005193453",
+  "etag": "\"UZc68Yn_jDETK2xoIaU08U3l9kOfUJfF2U8govk4i9k/BS8MYYcgeO5xZow8j-5lVXwDCtI\"",
+  "primaryEmail": "test@domain.io",
+  "name": {
+    "givenName": "test",
+    "familyName": "account",
+    "fullName": "test account"
+  },
+  "isAdmin": true,
+  "isDelegatedAdmin": false,
+  "lastLoginTime": "2020-10-09T06:29:32.000Z",
+  "creationTime": "2020-08-07T06:17:07.000Z",
+  "agreedToTerms": true,
+  "suspended": false,
+  "archived": false,
+  "changePasswordAtNextLogin": false,
+  "ipWhitelisted": false,
+  "emails": [
+    {
+      "address": "test@domain.io",
+      "primary": true
+    },
+    {
+      "address": "test1@domain.io"
+    }
+  ],
+  "aliases": [
+    "user999@domain.io"
+  ],
+  "nonEditableAliases": [
+    "user999@domain.io.test-google-a.com"
+  ],
+  "customerId": "C03puekhd",
+  "orgUnitPath": "/",
+  "isMailboxSetup": true,
+  "includeInGlobalAddressList": true,
+  "recoveryEmail": "",
+  "recoveryPhone": "+9196648855"
+
+},
+  "HumanReadable": "### Updated User Details\n|Id|Customer Id|Primary Email|First Name|Last Name|Archived|Suspended|Org Unit Path|Is Admin|Creation Time|Secondary Email Details|Ip Whitelisted|Recovery Phone|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 113493660192005193453 | C03puekhd | test@domain.io | test | account | false | false | / | true | 2020-08-07T06:17:07.000Z | Address: test@domain.io<br>Primary: True | false | +9196648855 |\n",
+  "EntryContext": {
+    "GSuite.User(val.id == obj.id)": {
+       "firstName": "test",
+  "fullName": "test account",
+  "lastName": "account",
+  "kind": "admin#directory#user",
+  "id": "113493660192005193453",
+  "etag": "\"UZc68Yn_jDETK2xoIaU08U3l9kOfUJfF2U8govk4i9k/BS8MYYcgeO5xZow8j-5lVXwDCtI\"",
+  "primaryEmail": "test@domain.io",
+  "isAdmin": true,
+  "isDelegatedAdmin": false,
+  "lastLoginTime": "2020-10-09T06:29:32.000Z",
+  "creationTime": "2020-08-07T06:17:07.000Z",
+  "agreedToTerms": true,
+  "suspended": false,
+  "archived": false,
+  "changePasswordAtNextLogin": false,
+  "ipWhitelisted": false,
+  "emails": [
+    {
+      "address": "test@domain.io",
+      "primary": true
+    },
+    {
+      "address": "test1@domain.io"
+    }
+  ],
+  "aliases": [
+    "user999@domain.io"
+  ],
+  "nonEditableAliases": [
+    "user999@domain.io.test-google-a.com"
+  ],
+  "customerId": "C03puekhd",
+  "orgUnitPath": "/",
+  "isMailboxSetup": true,
+  "includeInGlobalAddressList": true,
+  "recoveryPhone": "+9196648855"
+    }
+  }
+}

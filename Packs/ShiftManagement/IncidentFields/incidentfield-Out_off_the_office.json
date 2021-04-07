@@ -1,0 +1,81 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Shift handover"
+    ],
+    "caseInsensitive": true,
+    "cliName": "outofftheoffice",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "User name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "username",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 231
+        },
+        {
+            "displayName": "Off until",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "offuntil",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 225
+        },
+        {
+            "displayName": "Added by",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "addedby",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {
+
+        },
+        {
+
+        },
+        {
+
+        }
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_outofftheoffice",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Out off the office",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

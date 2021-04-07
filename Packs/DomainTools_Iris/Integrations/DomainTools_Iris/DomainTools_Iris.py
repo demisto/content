@@ -15,7 +15,9 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
 
-BASE_URL = 'http://api.domaintools.com'
+BASE_URL = demisto.params().get('base_url')
+if not BASE_URL:
+    BASE_URL = 'http://api.domaintools.com'  # we keep old http url for backwards comp
 USERNAME = demisto.params().get('username')
 API_KEY = demisto.params().get('apikey')
 RISK_THRESHOLD = int(demisto.params().get('risk_threshold'))

@@ -1,0 +1,62 @@
+{
+    "CustomScripts": {
+        "brand": "Scripts",
+        "category": "automation",
+        "defaultIgnored": "false",
+        "state": "active"
+    },
+    "EWS v2_instance_1": {
+        "brand": "EWS v2",
+        "category": "Messaging",
+        "defaultIgnored": "false",
+        "state": "active"
+    },
+    "Elasticsearch v2_instance_1": {
+        "brand": "Elasticsearch v2",
+        "category": "Database",
+        "defaultIgnored": "false",
+        "state": "active"
+    },
+    "InnerServicesModule": {
+        "brand": "Builtin",
+        "category": "Builtin",
+        "defaultIgnored": "false",
+        "state": "active"
+    },
+    "Rapid7 Nexpose_instance_1": {
+        "brand": "Rapid7 Nexpose",
+        "category": "Vulnerability Management",
+        "defaultIgnored": "false",
+        "state": "active"
+    },
+    "ad-login": {
+        "brand": "activedir-login",
+        "category": "Messaging",
+        "defaultIgnored": "false",
+        "state": "active"
+    },
+    "ad-query": {
+        "brand": "activedir",
+        "category": "Data Enrichment & Threat Intelligence",
+        "defaultIgnored": "false",
+        "state": "disabled"
+    },
+    "d2": {
+        "brand": "d2",
+        "category": "Endpoint",
+        "defaultIgnored": "false",
+        "state": "disabled"
+    },
+    "splunk": {
+        "brand": "splunk",
+        "category": "Analytics & SIEM",
+        "defaultIgnored": "false",
+        "state": "disabled"
+    },
+    "testmodule": {
+        "brand": "testmodule",
+        "category": "Data Enrichment & Threat Intelligence",
+        "defaultIgnored": "false",
+        "state": "active"
+    }
+}

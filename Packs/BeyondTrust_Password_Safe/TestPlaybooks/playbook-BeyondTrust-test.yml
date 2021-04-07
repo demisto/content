@@ -134,7 +134,8 @@ tasks:
         simple: View
       account_id:
         simple: "8"
-      conflict_option: {}
+      conflict_option:
+        simple: reuse
       duration_minutes:
         simple: "1"
       reason: {}

@@ -1,0 +1,17 @@
+{
+    "defaultIncidentType": "Orca Alert",
+    "description": "Classifies Orca Alert incidents.",
+    "feed": false,
+    "id": "Orca",
+    "keyTypeMap": {
+
+    },
+    "name": "Orca Alert - Classification",
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

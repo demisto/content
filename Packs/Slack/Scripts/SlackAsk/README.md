@@ -49,7 +49,7 @@ reflect the answer back to Demisto.</p>
     </tr>
     <tr>
       <td>task</td>
-      <td>The task number to close with the reply. If empty, then no playbook tasks will be closed.</td>
+      <td>The task number or task tag to close with the reply. If empty, then no playbook tasks will be closed. We recommend using a task tag, as task number might change between playbook (or sub-playbook) executions.</td>
       <td>Optional</td>
     </tr>
     <tr>

@@ -1,0 +1,87 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Shift handover"
+    ],
+    "caseInsensitive": true,
+    "cliName": "shiftopenincidents",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Incident ID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "incidentid",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Incident name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "incidentname",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Incident owner",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "incidentowner",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Link to incident",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "linktoincident",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "url",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {
+
+        }
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_shiftopenincidents",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Shift open incidents",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

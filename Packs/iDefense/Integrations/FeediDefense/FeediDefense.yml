@@ -1,0 +1,187 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: iDefense Feed
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: API Key
+  hidden: false
+  name: api_token
+  required: true
+  type: 4
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. As the determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, and only indicators that are
+    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+    are labeled new or modified.
+  defaultvalue: 'true'
+  display: Incremental Feed
+  hidden: false
+  name: feedIncremental
+  required: false
+  type: 8
+- additionalinfo: How far back in time to go when performing the first fetch
+  defaultvalue: '14 days'
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- additionalinfo: Which indicator types to fetch
+  defaultvalue: IP,Domain,URL
+  display: Indicator Type
+  name: indicator_type
+  options:
+  - IP
+  - Domain
+  - URL
+  required: true
+  type: 16
+- additionalinfo: Severity of the indicator. The value to start fetching indicators from.
+  defaultvalue: '1'
+  display: Indicator Severity
+  name: severity
+  options:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  required: false
+  type: 15
+- additionalinfo: Threat Type denotes the type of threats the indicator has been associated
+    with.
+  display: Threat Type
+  hidden: false
+  name: threat_type
+  options:
+  - Vulnerability
+  - Cyber Crime
+  - Cyber Espionage
+  - Hacktivism
+  required: false
+  type: 16
+- additionalinfo: Confidence about the indicator details. The value
+    of confidence to fetch indicators from. The value between 0-100
+  display: Confidence
+  hidden: false
+  name: confidence_from
+  required: false
+  type: 0
+- additionalinfo: A malware family is a classification of malicious files and tools
+    based on certain behaviors and static properties
+  display: Malware Family
+  hidden: false
+  name: malware_family
+  required: false
+  type: 0
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Fetches indicators from a iDefense feed. You can filter returned indicators by indicator type, indicator severity, threat type, confidence, and malware family (each of these are an integration parameter). 
+display: iDefense Feed
+name: iDefense Feed
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the feed indicators.
+    execution: false
+    name: idefense-get-indicators
+  dockerimage: demisto/jmespath:1.0.0.12410
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- Feed iDefense Test
+fromversion: 5.5.0

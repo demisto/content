@@ -1,0 +1,791 @@
+id: Test-CreateDBotScore-With-Reliability
+version: -1
+description: |-
+  This is a test playbook for creating a DBotScore entry with the Reliability field.
+  It tests if the indicator's reputation score is being calculated by the most reliable source.
+name: Test-CreateDBotScore-With-Reliability
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9e0a8ae2-b7d2-4836-8a45-bb21d0c58e7d
+    type: start
+    task:
+      id: 9e0a8ae2-b7d2-4836-8a45-bb21d0c58e7d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 5b8c84ec-4152-4d1e-86b3-570b8f45cb5a
+    type: regular
+    task:
+      id: 5b8c84ec-4152-4d1e-86b3-570b8f45cb5a
+      version: -1
+      name: CreateDBotScoreEntry
+      description: |-
+        The script is being used by the `DBotScore - Create Indicator Test`.
+        The arguments with known predefined values (such as reliability and indciator_type) are not being chosen from a list of options in order to test invalid options as well.
+      scriptName: CreateDBotScoreEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      indicator_type:
+        simple: domain
+      integration_name:
+        simple: Source A
+      malicious_description: {}
+      reliability:
+        simple: B - Usually reliable
+      score:
+        simple: "2"
+      value:
+        simple: ${RandomString}.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 352410a1-0ea0-45bb-843c-838fb2e27edc
+    type: regular
+    task:
+      id: 352410a1-0ea0-45bb-843c-838fb2e27edc
+      version: -1
+      name: Create a Domain Indicator
+      description: Change the properties of an indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      certificatenames: {}
+      certificatesignature: {}
+      certificatevalidationchecks: {}
+      city: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      cryptocurrencyaddresstype: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      extension: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      issuerdn: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      malwaretypes: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      pem: {}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      primarymotivation: {}
+      processor: {}
+      processors: {}
+      publickey: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      serialnumber: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source:
+        simple: DBot
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      spkisha256: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      subjectalternativenames: {}
+      subjectdn: {}
+      surname: {}
+      tags: {}
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type:
+        simple: Domain
+      updateddate: {}
+      username: {}
+      validitynotafter: {}
+      validitynotbefore: {}
+      value:
+        simple: ${RandomString}.com
+      workphone: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7d74bcc4-6bf3-465a-839b-9325622748c3
+    type: regular
+    task:
+      id: 7d74bcc4-6bf3-465a-839b-9325622748c3
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 38a9ed6e-1505-4ac2-8d75-ec2b85f29250
+    type: regular
+    task:
+      id: 38a9ed6e-1505-4ac2-8d75-ec2b85f29250
+      version: -1
+      name: Enrich Indicator
+      description: Enrich existing indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      indicatorsValues:
+        simple: ${RandomString}.com
+      using-brand: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 32a5c55d-aee3-43e4-8e2c-176b46c652e1
+    type: title
+    task:
+      id: 32a5c55d-aee3-43e4-8e2c-176b46c652e1
+      version: -1
+      name: Domain Indicator Type
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 66e11439-2d85-4e6c-88c8-7c48df3546ac
+    type: title
+    task:
+      id: 66e11439-2d85-4e6c-88c8-7c48df3546ac
+      version: -1
+      name: Create  DBotScore Entry With Reliability = B - Usually reliable
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 73c5f38c-51f4-4314-8ba5-983e4fbaf93b
+    type: title
+    task:
+      id: 73c5f38c-51f4-4314-8ba5-983e4fbaf93b
+      version: -1
+      name: Create  DBotScore Entry With Reliability = A - Completely reliable
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 40d035b8-e5d3-4fc5-8010-441d49ea36e4
+    type: regular
+    task:
+      id: 40d035b8-e5d3-4fc5-8010-441d49ea36e4
+      version: -1
+      name: CreateDBotScoreEntry
+      description: |-
+        The script is being used by the `DBotScore - Create Indicator Test`.
+        The arguments with known predefined values (such as reliability and indciator_type) are not being chosen from a list of options in order to test invalid options as well.
+      scriptName: CreateDBotScoreEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      indicator_type:
+        simple: domain
+      integration_name:
+        simple: Source B
+      malicious_description: {}
+      reliability:
+        simple: A - Completely reliable
+      score:
+        simple: "1"
+      value:
+        simple: ${RandomString}.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 5575fb82-a21b-42d9-867d-948febbb9fca
+    type: condition
+    task:
+      id: 5575fb82-a21b-42d9-867d-948febbb9fca
+      version: -1
+      name: Verify reputation = Good
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Indicators.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 9956fcba-4980-4a96-8ec4-ee4b9fcf69fa
+    type: regular
+    task:
+      id: 9956fcba-4980-4a96-8ec4-ee4b9fcf69fa
+      version: -1
+      name: Enrich Indicator
+      description: Enrich existing indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      indicatorsValues:
+        simple: ${RandomString}.com
+      using-brand: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 27fe548e-bfd9-40b0-8394-83870816daa6
+    type: title
+    task:
+      id: 27fe548e-bfd9-40b0-8394-83870816daa6
+      version: -1
+      name: Create  DBotScore Entry With Reliability = B - Usually reliable
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: a4e2083d-8955-465a-876e-0fcac8766c1e
+    type: regular
+    task:
+      id: a4e2083d-8955-465a-876e-0fcac8766c1e
+      version: -1
+      name: CreateDBotScoreEntry with Reputation = Malicious
+      description: |-
+        The script is being used by the `DBotScore - Create Indicator Test`.
+        The arguments with known predefined values (such as reliability and indciator_type) are not being chosen from a list of options in order to test invalid options as well.
+      scriptName: CreateDBotScoreEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      indicator_type:
+        simple: domain
+      integration_name:
+        simple: Source A
+      malicious_description: {}
+      reliability:
+        simple: B - Usually reliable
+      score:
+        simple: "3"
+      value:
+        simple: ${RandomString}.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: f450d97e-73cf-4f76-8c60-52c3917b070b
+    type: regular
+    task:
+      id: f450d97e-73cf-4f76-8c60-52c3917b070b
+      version: -1
+      name: Enrich Indicator
+      description: Enrich existing indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      indicatorsValues:
+        simple: ${RandomString}.com
+      using-brand: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 11fb1b2d-852c-4c19-86f1-444a7077c104
+    type: condition
+    task:
+      id: 11fb1b2d-852c-4c19-86f1-444a7077c104
+      version: -1
+      name: Verify reputation = Good
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: feb5f8f4-e915-49b2-83bd-bcf57a178194
+    type: condition
+    task:
+      id: feb5f8f4-e915-49b2-83bd-bcf57a178194
+      version: -1
+      name: Verify reputation = Suspicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Indicators.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 3988c42f-69eb-4881-8527-77257a13dbdd
+    type: title
+    task:
+      id: 3988c42f-69eb-4881-8527-77257a13dbdd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: b80d4cab-721e-4e17-8682-68c3d0300bb3
+    type: regular
+    task:
+      id: b80d4cab-721e-4e17-8682-68c3d0300bb3
+      version: -1
+      name: Generate Domain Name
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "6"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2890,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

@@ -1,0 +1,17 @@
+{
+  "checkUrlLength": false,
+  "checkRequestLength": true,
+  "postDataLength": 100,
+  "name": "cs",
+  "lastUpdateMicros": 1599575018000000.0,
+  "checkPostDataLength": true,
+  "_kind": "tm:asm:policies:filetypes:filetypestate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/filetypes/md5-1234?ver=15.1.0",
+  "allowed": true,
+  "responseCheck": true,
+  "requestLength": 5000,
+  "id": "md5-1234",
+  "type": "explicit",
+  "performStaging": true,
+  "checkQueryStringLength": false
+}

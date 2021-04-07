@@ -527,9 +527,9 @@ def aws_session(config,
         kwargs.update({'Policy': rolePolicy})
     elif AWS_ROLE_POLICY is not None:
         kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and AWS_ACCESS_KEY_ID is None:
+    if kwargs and not AWS_ACCESS_KEY_ID:
 
-        if AWS_ACCESS_KEY_ID is None:
+        if not AWS_ACCESS_KEY_ID:
             sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
@@ -706,8 +706,9 @@ def get_findings_command(client, args):
     response = client.get_findings(**kwargs)
     next_token = response.get('NextToken')
     while next_token:
+        kwargs['NextToken'] = next_token
         findings.extend(response.get('Findings'))
-        response = client.get_findings(NextToken=next_token)
+        response = client.get_findings(**kwargs)
         next_token = response.get('NextToken')
     outputs = {'AWS-SecurityHub.Findings(val.Id === obj.Id)': findings}
     table_header = 'AWS SecurityHub GetFindings'
@@ -810,7 +811,7 @@ def fetch_incidents(client):
     if last_run is None:
         first_fetch_timestamp = demisto.params().get('first_fetch_timestamp', '15 days').strip()
         date_from = parse(f'{first_fetch_timestamp} UTC')
-        last_run = date_from.isoformat()
+        last_run = date_from.isoformat()  # type: ignore
 
     now = datetime.now(timezone.utc)
 

@@ -7,7 +7,7 @@ on:
 jobs:
   check_contributor_pack:
     runs-on: ubuntu-latest
-    if: startsWith(github.head_ref, 'contrib/') == false && startsWith(github.head_ref, 'to-merge/') == false
+    if: github.repository == 'demisto/content' && startsWith(github.head_ref, 'contrib/') == false && startsWith(github.head_ref, 'to-merge/') == false && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false
     steps:
       - name: Checkout
         uses: actions/checkout@v2

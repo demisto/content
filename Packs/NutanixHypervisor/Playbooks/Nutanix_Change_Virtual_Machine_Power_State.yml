@@ -1,0 +1,354 @@
+id: Nutanix Change Virtual Machine Power State
+version: -1
+name: Nutanix Change Virtual Machine Power State
+description: Use this playbook to perform a power status change for a virtual machine,
+  and wait until the power status change task is completed. This playbook receives
+  the desired power status, calls the Nutanix service to perform the power status
+  change, and continuously polls by running the nutanix-hypervisor-task-results-get
+  command on the task ID provided as an output from Nutanix to power the status change
+  operation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c216b30b-9880-4766-8496-7c0edebec93f
+    type: start
+    task:
+      id: c216b30b-9880-4766-8496-7c0edebec93f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7e939403-872f-44be-8ab0-77c5b1f4596d
+    type: playbook
+    task:
+      id: 7e939403-872f-44be-8ab0-77c5b1f4596d
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${NutanixHypervisor.VMPowerStatus.task_uuid}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: task_ids
+      PollingCommandName:
+        simple: nutanix-hypervisor-task-results-get
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: NutanixHypervisor.Task(val.progress_status == 'In Progress').uuid
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b7e8426e-4a58-4992-8e21-aa7331073ff7
+    type: title
+    task:
+      id: b7e8426e-4a58-4992-8e21-aa7331073ff7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ccd66a1e-e508-4732-8d1b-7f2b61f01c14
+    type: regular
+    task:
+      id: ccd66a1e-e508-4732-8d1b-7f2b61f01c14
+      version: -1
+      name: Nutanix Get Completed Task Info
+      description: Returns all the results of the tasks from the task_ids list that
+        are ready at the moment the Nutanix service was polled. If no task is ready,
+        returns a timeout response.
+      script: '|||nutanix-hypervisor-task-results-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      task_ids:
+        simple: ${NutanixHypervisor.VMPowerStatus.task_uuid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 84b9cc38-2d4c-4338-82b8-61fbf2e81cd6
+    type: condition
+    task:
+      id: 84b9cc38-2d4c-4338-82b8-61fbf2e81cd6
+      version: -1
+      name: Check If Task Was Returned
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Performs a check to see if task was indeed returned, or the polling
+        timed out.
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              complex:
+                root: NutanixHypervisor.Task
+                accessor: progress_status
+            iscontext: true
+          right:
+            value:
+              simple: In Progress
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7cff51c0-687a-41aa-8618-d73bc0bb6af8
+    type: regular
+    task:
+      id: 7cff51c0-687a-41aa-8618-d73bc0bb6af8
+      version: -1
+      name: Print Error Message
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: One of the performed tasks did not finish
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b9ad1669-5b1a-4e92-84e0-ada84cf4f0f0
+    type: regular
+    task:
+      id: b9ad1669-5b1a-4e92-84e0-ada84cf4f0f0
+      version: -1
+      name: Nutanix Virtual Machine Power Status Change
+      description: Set the power state of a virtual machine. If the virtual machine
+        is being powered on and no host is specified, the scheduler will pick the
+        host with the most available CPU and memory that can support the virtual machine.
+        Note a host must be available. If the virtual machine is being power cycled,
+        a different host can be specified to start it on. This is an asynchronous
+        operation that results in the creation of a task object. The UUID of this
+        task object is returned as the response of this operation. With this task
+        UUID, the task status can be monitored by using the nutanix-hypervisor-task-results-get
+        command.
+      script: '|||nutanix-hypervisor-vm-powerstatus-change'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      host_uuid:
+        simple: ${inputs.host_uuid}
+      transition:
+        simple: ${inputs.transition}
+      vm_uuid:
+        simple: ${inputs.vm_uuid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4b1d152e-4f91-4636-8234-4ad47c440056
+    type: regular
+    task:
+      id: 4b1d152e-4f91-4636-8234-4ad47c440056
+      version: -1
+      name: Put results in context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: NutanixHypervisor.PowerStatusResults
+      stringify: {}
+      value:
+        simple: ${NutanixHypervisor.Task}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: vm_uuid
+  value: {}
+  required: true
+  description: ID of the virtual machine to change its power status.
+  playbookInputQuery:
+- key: transition
+  value: {}
+  required: true
+  description: |-
+    The new power state to transfer the virtual machine to.
+    Possible values are:
+    ON, OFF, POWERCYCLE, RESET, PAUSE, SUSPEND, RESUME, SAVE, ACPI_SHUTDOWN, ACPI_REBOOT
+  playbookInputQuery:
+- key: host_uuid
+  value: {}
+  required: false
+  description: If the virtual machine is being transitioned with 'ON' or 'POWERCYCLE',
+    this host will be used to run the virtual machine. If host_uuid is not given,
+    then Nutanix will chose the host with the most available CPU.
+  playbookInputQuery:
+- key: interval
+  value: {}
+  required: false
+  description: Frequency that the polling command will run (in minutes).
+  playbookInputQuery:
+- key: timeout
+  value: {}
+  required: false
+  description: Number of times that the polling command will run until declaring a
+    timeout and resuming the playbook.
+  playbookInputQuery:
+outputs: []
+tests:
+- Nutanix-test
+fromversion: 5.0.0

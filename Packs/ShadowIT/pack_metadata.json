@@ -1,0 +1,38 @@
+{
+    "name": "Shadow IT",
+    "description": "This Content Pack provides a new incident type for Shadow IT incidents, and a playbook to handle such scenarios.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-11-18T14:55:33Z",
+    "categories": [
+        "IT Services",
+        "Case Management"
+    ],
+    "tags": [
+        "Security",
+        "Compliance"
+    ],
+    "useCases": [
+        "Compliance"
+    ],
+    "keywords": [
+        "Prisma Cloud",
+        "Public Cloud",
+	"Expanse",
+	"TIM",
+	"Unsanctioned"
+    ],
+    "dependencies": {
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        }
+    }
+}

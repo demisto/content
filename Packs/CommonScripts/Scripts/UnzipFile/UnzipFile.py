@@ -10,6 +10,10 @@ from subprocess import Popen, PIPE
 from tempfile import mkdtemp
 import shutil
 import shlex
+import zipfile as z
+
+MAX_FILENAME_SIZE_BYTES = 255
+SLICE_FILENAME_SIZE_BYTES = 235
 
 
 def get_zip_path(args):
@@ -72,10 +76,11 @@ def get_zip_path(args):
     return res[0]['Contents']
 
 
-def extract(file_info, dir_path, password=None):
+def extract(file_info, dir_path, zip_tool='7z', password=None):
     """
-    :param file_path: the zip file path.
-    :param dir_path: directory  that the file will be extract to
+    :param file_info: The file data.
+    :param dir_path: directory that the file will be extract to
+    :param zip_tool: The tool to extract files with (7z or zipfile).
     :param password: password if the zip file is encrypted
     :return:
         excluded_dirs: the excluded dirs which are in dir_path
@@ -91,13 +96,34 @@ def extract(file_info, dir_path, password=None):
     We check the python version to ensure the docker image contains the necessary packages. 4.5+
     use the new docker image.
     """
+    stdout = ''
     if '.rar' in file_name and sys.version_info > (3, 0):
-        if password:
-            cmd = 'unrar x -p {} {} {}'.format(password, file_path, dir_path)
-        else:
-            cmd = 'unrar x -p- {} {}'.format(file_path, dir_path)
+        stdout = extract_using_unrar(file_path, dir_path, password=password)
     else:
-        cmd = '7z x -p{} -o{} {}'.format(password, dir_path, file_path)
+        if zip_tool == '7z':
+            stdout = extract_using_7z(file_path, dir_path, password=password)
+        elif zip_tool == 'zipfile':
+            extract_using_zipfile(file_path, dir_path, password=password)
+        else:
+            return_error(f'There is no zipTool named: {zip_tool}')
+
+    if 'Wrong password?' in stdout:
+        demisto.debug(stdout)
+        return_error("Data Error in encrypted file. Wrong password?")
+
+    return excluded_dirs, excluded_files
+
+
+def extract_using_unrar(file_path, dir_path, password=None):
+    """
+    :param file_path: The file path.
+    :param dir_path: directory that the file will be extract to
+    :param password: password if the zip file is encrypted
+    """
+    if password:
+        cmd = 'unrar x -p {} {} {}'.format(password, file_path, dir_path)
+    else:
+        cmd = 'unrar x -p- {} {}'.format(file_path, dir_path)
     process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
     # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
@@ -107,10 +133,53 @@ def extract(file_info, dir_path, password=None):
             return_error("The .rar file provided requires a password.")
         else:
             return_error(str(stderr))
-    if 'Wrong password?' in stdout:
-        demisto.debug(stdout)
-        return_error("Data Error in encrypted file. Wrong password?")
-    return excluded_dirs, excluded_files
+    return stdout
+
+
+def extract_using_7z(file_path, dir_path, password=None):
+    """
+    :param file_path: The file path.
+    :param dir_path: directory that the file will be extract to
+    :param password: password if the zip file is encrypted
+    """
+    cmd = '7z x -p{} -o{} {}'.format(password, dir_path, file_path)
+    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
+    stdout, stderr = process.communicate()
+    stdout = str(stdout)
+
+    if "Errors" in stdout:
+        return_error("7z couldn't extract this file - try using zipTool=zipfile\n"
+                     "If you already tried both zipfile and 7z check that the zip file is valid.")
+    return stdout
+
+
+def extract_using_zipfile(file_path, dir_path, password=None):
+    """
+    :param file_path: The file path.
+    :param dir_path: directory that the file will be extract to
+    :param password: password if the zip file is encrypted
+    """
+    try:
+        with z.ZipFile(file_path, 'r') as given_zip:
+            for f in given_zip.filelist:
+                full_filename = f.filename
+                filename_length = len(full_filename.encode('utf-8'))
+                if filename_length > MAX_FILENAME_SIZE_BYTES:
+                    file_name_splited = full_filename.rsplit('.', 1)
+                    file_name = file_name_splited[0]
+                    extension = file_name_splited[1]
+                    slice_object = slice(SLICE_FILENAME_SIZE_BYTES)
+                    file_name_bytes = file_name.encode('utf-8')[slice_object]
+                    # Rename the filename to a shorten filename.
+                    f.filename = f"{file_name_bytes.decode('utf-8', errors='ignore')}_shortened_.{extension}"
+                    demisto.results(f"The filename {full_filename} is too long - change file name to:\n{f.filename}")
+            for filename in given_zip.filelist:
+                given_zip.extract(filename, path=dir_path, pwd=password)
+        given_zip.close()
+    except Exception as e:
+        return_error(f"zipfile couldn't extract this file - try using zipTool=7z\n"
+                     f"If you already tried both zipfile and 7z check that the zip file is valid. {e}")
 
 
 def upload_files(excluded_dirs, excluded_files, dir_path):
@@ -167,8 +236,10 @@ def main():
     dir_path = mkdtemp()
     try:
         args = demisto.args()
+        zip_tool = args.get('zipTool', '7z')
         file_info = get_zip_path(args)
-        excluded_dirs, excluded_files = extract(file_info=file_info, dir_path=dir_path, password=args.get('password'))
+        excluded_dirs, excluded_files = extract(file_info=file_info, dir_path=dir_path, password=args.get('password'),
+                                                zip_tool=zip_tool)
         upload_files(excluded_dirs, excluded_files, dir_path)
 
     except Exception as e:

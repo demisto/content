@@ -1,0 +1,2 @@
+!graphql-query query="query($number_of_repos:Int!) {viewer {name repositories(last: $number_of_repos) { nodes { name } } } }" variables_names="number_of_repos" variables_values="3" variables_types="Int" max_result_size="10" populate_context_data="true"
+!graphql-mutation query="mutation AddReactionToIssue {addReaction(input:{subjectId:"MDU6SXNzdWUyMzEzOTE1NTE=",content:HOORAY}) {reaction {content} subject { id } } }" max_result_size="10" populate_context_data="true"

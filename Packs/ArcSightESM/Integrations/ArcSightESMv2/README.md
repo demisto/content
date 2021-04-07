@@ -481,7 +481,7 @@ Returns up to 2000 entries.
 | --- | --- | --- |
 | ArcSightESM.ActiveList | Unknown | Active List is a map of active list resource id =&gt; active list entries | 
 | ArcSightESM.ActiveList.ListID | list | The ActiveList ID | 
-| ArcSightESM.ActiveList.Entry | Unknown | Active List is a map of active list resource id =&gt; active list | 
+| ArcSightESM.ActiveList.Entries | Unknown | Active List is a map of active list resource id =&gt; active list | 
 
 
 #### Command Example

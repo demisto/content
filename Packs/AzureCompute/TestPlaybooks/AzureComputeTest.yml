@@ -162,6 +162,8 @@ tasks:
     scriptarguments:
       resource_group:
         simple: compute-integration
+      retry-count:
+        simple: "3"
       virtual_machine_name:
         simple: TestOAuth
     separatecontext: false

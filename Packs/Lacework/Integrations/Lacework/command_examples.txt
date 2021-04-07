@@ -1,0 +1,10 @@
+!lw-get-aws-compliance-assessment account_id=1234567890 report_type=SOC
+!lw-get-azure-compliance-assessment tenant_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx subscription_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx report_type=AZURE_CIS
+!lw-get-gcp-compliance-assessment organization_id=123456789 project_id=project-name report_type=GCP_PCI
+!lw-get-event-details event_id=13245
+!lw-get-container-vulnerabilities id_type=image_digest image_digest=sha256:123456789abcdef
+!lw-run-aws-compliance-assessment account_id=123456789
+!lw-run-azure-compliance-assessment tenant_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+!lw-run-gcp-compliance-assessment project_id=project-name
+!lw-get-gcp-projects-by-organization organization_id=123456789
+!lw-get-host-vulnerabilities cve="ALAS-2019-1214"

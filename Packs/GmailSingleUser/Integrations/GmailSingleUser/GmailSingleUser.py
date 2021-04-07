@@ -4,7 +4,8 @@ from CommonServerPython import *
 import re
 import json
 import base64
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime, format_datetime
 import httplib2
 import sys
 from html.parser import HTMLParser
@@ -14,24 +15,27 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 from email.header import Header
 import mimetypes
 import random
 import string
 from apiclient import discovery
 from oauth2client.client import AccessTokenCredentials
+from googleapiclient.discovery_cache.base import Cache
 import itertools as it
 import urllib.parse
-from typing import Tuple
+from typing import List, Optional, Tuple
 import secrets
 import hashlib
 
 ''' GLOBAL VARS '''
 params = demisto.params()
 EMAIL = params.get('email', '')
-PROXY = params.get('proxy')
+PROXIES = handle_proxy()
 DISABLE_SSL = params.get('insecure', False)
 FETCH_TIME = params.get('fetch_time', '1 days')
+MAX_FETCH = int(params.get('fetch_limit') or 50)
 AUTH_CODE = params.get('code')
 
 CLIENT_ID = params.get('client_id') or "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"
@@ -41,10 +45,19 @@ TOKEN_FORM_HEADERS = {
     'Accept': 'application/json',
 }
 
-TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
-
 
 ''' HELPER FUNCTIONS '''
+
+
+# See: https://github.com/googleapis/google-api-python-client/issues/325#issuecomment-274349841
+class MemoryCache(Cache):
+    _CACHE: dict = {}
+
+    def get(self, url):
+        return MemoryCache._CACHE.get(url)
+
+    def set(self, url, content):
+        MemoryCache._CACHE[url] = content
 
 
 class TextExtractHtmlParser(HTMLParser):
@@ -103,8 +116,7 @@ class Client:
         return parser.get_text()
 
     def get_http_client_with_proxy(self):
-        proxies = handle_proxy()
-        https_proxy = proxies.get('https')
+        https_proxy = PROXIES.get('https')
         proxy_info = None
         if https_proxy:
             if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
@@ -121,10 +133,10 @@ class Client:
     def get_service(self, serviceName, version):
         token = self.get_access_token()
         credentials = AccessTokenCredentials(token, 'Demisto Gmail integration')
-        if PROXY or DISABLE_SSL:
+        if PROXIES or DISABLE_SSL:
             http_client = credentials.authorize(self.get_http_client_with_proxy())
-            return discovery.build(serviceName, version, http=http_client)
-        return discovery.build(serviceName, version, credentials=credentials)
+            return discovery.build(serviceName, version, http=http_client, cache=MemoryCache())
+        return discovery.build(serviceName, version, credentials=credentials, cache=MemoryCache())
 
     def get_refresh_token(self, integration_context):
         # use cached refresh_token only if auth code hasn't changed. If it has we will try to obtain a new
@@ -228,43 +240,82 @@ class Client:
 
         return body, html, attachments
 
-    def localization_extract(self, time_from_mail):
-        if time_from_mail is None or len(time_from_mail) < 5:
-            return '-0000', 0
+    @staticmethod
+    def get_date_from_email_header(header: str) -> Optional[datetime]:
+        """Parse an email header such as Date or Received. The format is either just the date
+        or name value pairs followed by ; and the date specification. For example:
+        by 2002:a17:90a:77cb:0:0:0:0 with SMTP id e11csp4670216pjs;        Mon, 21 Dec 2020 12:11:57 -0800 (PST)
 
-        utc = time_from_mail[-5:]
-        if utc[0] != '-' and utc[0] != '+':
-            return '-0000', 0
-
-        for ch in utc[1:]:
-            if not ch.isdigit():
-                return '-0000', 0
-
-        delta_in_seconds = int(utc[0] + utc[1:3]) * 3600 + int(utc[0] + utc[3:]) * 60
-        return utc, delta_in_seconds
-
-    def create_base_time(self, internal_date_timestamp, header_date):
-        """
         Args:
-            internal_date_timestamp: The timestamp from the Gmail API response.
-            header_date: The date string from the email payload.
+            header (str): header value to parse
 
-        Returns: A date string in the senders local time in the format of "Mon, 26 Aug 2019 14:40:04 +0300"
+        Returns:
+            Optional[datetime]: parsed datetime
+        """
+        if not header:
+            return None
+        try:
+            date_part = header.split(';')[-1].strip()
+            res = parsedate_to_datetime(date_part)
+            if res.tzinfo is None:
+                # some headers may contain a non TZ date so we assume utc
+                res = res.replace(tzinfo=timezone.utc)
+            return res
+        except Exception as ex:
+            demisto.debug(f'Failed parsing date from header value: [{header}]. Err: {ex}. Will ignore and continue.')
+        return None
+
+    @staticmethod
+    def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
+        """Get the occurred date of an email. The date gmail uses is actually the X-Received or the top Received
+        dates in the header. If fails finding these dates will fall back to internal date.
+
+        Args:
+            email_data (dict): email to extract from
+
+        Returns:
+            Tuple[datetime, bool]: occurred datetime, can be used for incrementing search date
+        """
+        headers = demisto.get(email_data, 'payload.headers')
+        if not headers or not isinstance(headers, list):
+            demisto.error(f"couldn't get headers for msg (shouldn't happen): {email_data}")
+        else:
+            # use x-received or recvived. We want to use x-received first and fallback to received.
+            for name in ['x-received', 'received', ]:
+                header = next(filter(lambda ht: ht.get('name', '').lower() == name, headers), None)
+                if header:
+                    val = header.get('value')
+                    if val:
+                        res = Client.get_date_from_email_header(val)
+                        if res:
+                            demisto.debug(f"Using occurred date: {res} from header: {name} value: {val}")
+                            return res, True
+        internalDate = email_data.get('internalDate')
+        demisto.info(f"couldn't extract occurred date from headers trying internalDate: {internalDate}")
+        if internalDate and internalDate != '0':
+            # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
+            # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
+            timestamp_len = len(str(int(time.time())))
+            if len(str(internalDate)) > timestamp_len:
+                internalDate = (str(internalDate)[:timestamp_len])
+            return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
+        # we didn't get a date from anywhere
+        demisto.info("Failed finding date from internal or headers. Using 'datetime.now()'")
+        return datetime.now(tz=timezone.utc), False
+
+    def get_email_context(self, email_data, mailbox) -> Tuple[dict, dict, dict, datetime, bool]:
+        """Get the email context from email data
+
+        Args:
+            email_data (dics): the email data received from the gmail api
+            mailbox (str): mail box name
+
+        Returns:
+            (context_gmail, headers, context_email, received_date, is_valid_recieved): note that if received date is not
+                resolved properly is_valid_recieved will be false
 
         """
-        # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
-        # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
-        timestamp_len = len(str(int(time.time())))
-        if len(str(internal_date_timestamp)) > timestamp_len:
-            internal_date_timestamp = int(str(internal_date_timestamp)[:timestamp_len])
-
-        utc, delta_in_seconds = self.localization_extract(header_date)
-        base_time = datetime.utcfromtimestamp(internal_date_timestamp) + \
-            timedelta(seconds=delta_in_seconds)
-        base_time = str(base_time.strftime('%a, %d %b %Y %H:%M:%S')) + " " + utc
-        return base_time
-
-    def get_email_context(self, email_data, mailbox):
+        occurred, occurred_is_valid = Client.get_occurred_date(email_data)
         context_headers = email_data.get('payload', {}).get('headers', [])
         context_headers = [{'Name': v['name'], 'Value':v['value']}
                            for v in context_headers]
@@ -272,16 +323,11 @@ class Client:
         body = demisto.get(email_data, 'payload.body.data')
         body = body.encode('ascii') if body is not None else ''
         parsed_body = base64.urlsafe_b64decode(body)
-        if email_data.get('internalDate') is not None:
-            base_time = self.create_base_time(email_data.get('internalDate'), str(headers.get('date', '')))
-
-        else:
-            # in case no internalDate field exists will revert to extracting the date from the email payload itself
-            # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
-            # email payload nor internalDate
-            demisto.info("No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
-            base_time = str(headers.get('date', ''))
-
+        base_time = headers.get('date', '')
+        if not base_time or not Client.get_date_from_email_header(base_time):
+            # we have an invalid date. use the occurred in rfc 2822
+            demisto.debug(f'Using Date base time from occurred: {occurred} instead of date header: [{base_time}]')
+            base_time = format_datetime(occurred)
         context_gmail = {
             'Type': 'Gmail',
             'Mailbox': EMAIL if mailbox == 'me' else mailbox,
@@ -343,18 +389,7 @@ class Client:
             context_email['Attachment Names'] = ', '.join(
                 [attachment['Name'] for attachment in context_email['Attachments']])  # type: ignore
 
-        return context_gmail, headers, context_email
-
-    def move_to_gmt(self, t):
-        # there is only one time refernce is the string
-        base_time, _, sign, hours, minutes = TIME_REGEX.findall(t)[0]
-        if all([sign, hours, minutes]):
-            seconds = -1 * (int(sign + hours) * 3600 + int(sign + minutes) * 60)
-            parsed_time = datetime.strptime(
-                base_time, '%a, %d %b %Y %H:%M:%S') + timedelta(seconds=seconds)
-            return parsed_time.isoformat() + 'Z'
-        else:
-            return datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
+        return context_gmail, headers, context_email, occurred, occurred_is_valid
 
     def create_incident_labels(self, parsed_msg, headers):
         labels = [
@@ -375,9 +410,47 @@ class Client:
 
         return labels
 
-    def mail_to_incident(self, msg, service, user_key):
-        parsed_msg, headers, _ = self.get_email_context(msg, user_key)
+    @staticmethod
+    def get_date_isoformat_server(dt: datetime) -> str:
+        """Get the  datetime str in the format a server can parse. UTC based with Z at the end
 
+        Args:
+            dt (datetime): datetime
+
+        Returns:
+            str: string representation
+        """
+        return datetime.fromtimestamp(dt.timestamp()).isoformat(timespec='seconds') + 'Z'
+
+    @staticmethod
+    def parse_date_isoformat_server(dt: str) -> datetime:
+        """Get the datetime by parsing the format passed to the server. UTC basded with Z at the end
+
+        Args:
+            dt (str): datetime as string
+
+        Returns:
+            datetime: datetime representation
+        """
+        return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+
+    def mail_to_incident(self, msg, service, user_key) -> Tuple[dict, datetime, bool]:
+        """Parse an email message
+
+        Args:
+            msg
+            service
+            user_key
+
+        Raises:
+            Exception: when problem getting attachements
+
+        Returns:
+            Tuple[dict, datetime, bool]: incident object, occurred datetime, boolean indicating if date is valid or not
+        """
+        parsed_msg, headers, _, occurred, occurred_is_valid = self.get_email_context(msg, user_key)
+        # conver occurred to gmt and then isoformat + Z
+        occurred_str = Client.get_date_isoformat_server(occurred)
         file_names = []
         command_args = {
             'messageId': parsed_msg['ID'],
@@ -401,19 +474,17 @@ class Client:
                 'path': file_result['FileID'],
                 'name': attachment['Name'],
             })
-        # date in the incident itself is set to GMT time, the correction to local time is done in Demisto
-        gmt_time = self.move_to_gmt(parsed_msg['Date'])
 
         incident = {
             'type': 'Gmail',
             'name': parsed_msg['Subject'],
             'details': parsed_msg['Body'],
             'labels': self.create_incident_labels(parsed_msg, headers),
-            'occurred': gmt_time,
+            'occurred': occurred_str,
             'attachment': file_names,
             'rawJSON': json.dumps(parsed_msg),
         }
-        return incident
+        return incident, occurred, occurred_is_valid
 
     def sent_mail_to_entry(self, title, response, to, emailfrom, cc, bcc, bodyHtml, body, subject):
         gmail_context = []
@@ -672,7 +743,7 @@ class Client:
                 else:
                     file_name = file['name']
 
-                content_type, encoding = mimetypes.guess_type(file_path)
+                content_type, encoding = mimetypes.guess_type(file_name)
                 if content_type is None or encoding is not None:
                     content_type = 'application/octet-stream'
 
@@ -727,6 +798,15 @@ class Client:
                     msg_aud.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_aud)
 
+            elif att['maintype'] == 'application':
+                msg_app = MIMEApplication(att['data'], att['subtype'])
+                if att['cid'] is not None:
+                    msg_app.add_header('Content-Disposition', 'inline', filename=att['name'])
+                    msg_app.add_header('Content-ID', '<' + att['name'] + '>')
+                else:
+                    msg_app.add_header('Content-Disposition', 'attachment', filename=att['name'])
+                message.attach(msg_app)
+
             else:
                 msg_base = MIMEBase(att['maintype'], att['subtype'])
                 msg_base.set_payload(att['data'])
@@ -738,15 +818,9 @@ class Client:
                     msg_base.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_base)
 
-    def send_mail(self, emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
+    def send_mail(self, emailto, emailfrom, cc, bcc, subject, body, htmlBody, entry_ids, replyTo, file_names,
+                  attach_cid, manualAttachObj,
                   transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
-        message = MIMEMultipart()
-        message['to'] = emailto
-        message['cc'] = cc
-        message['bcc'] = bcc
-        message['from'] = emailfrom
-        message['subject'] = subject
-        message['reply-to'] = replyTo
 
         templateParams = self.template_params(templateParams)
         if templateParams is not None:
@@ -756,33 +830,71 @@ class Client:
             if htmlBody is not None:
                 htmlBody = htmlBody.format(**templateParams)
 
+        attach_body_to = None
+        if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body]):
+            # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
+            message = MIMEText(htmlBody, 'html')  # type: ignore
+        elif body and not any([entry_ids, file_names, attach_cid, manualAttachObj, htmlBody]):
+            # if there is only body and no attachments to the mail , we would like to send it without attaching every part
+            message = MIMEText(body, 'plain', 'utf-8')  # type: ignore
+        elif htmlBody and body and any([entry_ids, file_names, attach_cid, manualAttachObj]):
+            # if all these exist - htmlBody, body and one of the attachment's items, the message object will be:
+            # a MimeMultipart object of type 'mixed' which contains
+            # a MIMEMultipart object of type `alternative` which contains
+            # the 2 MIMEText objects for each body part and the relevant Mime<type> object for the attachments.
+            message = MIMEMultipart('mixed')  # type: ignore
+            alt = MIMEMultipart('alternative')
+            message.attach(alt)
+            attach_body_to = alt
+        else:
+            message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
+
+        if not attach_body_to:
+            attach_body_to = message  # type: ignore
+
+        message['to'] = emailto
+        message['cc'] = cc
+        message['bcc'] = bcc
+        message['from'] = emailfrom
+        message['subject'] = subject
+        message['reply-to'] = replyTo
+
+        # # The following headers are being used for the reply-mail command.
+        # if inReplyTo:
+        #     message['In-Reply-To'] = header(' '.join(inReplyTo))
+        # if references:
+        #     message['References'] = header(' '.join(references))
+
+        # if there are any attachments to the mail or both body and htmlBody were given
+        if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
+            msg = MIMEText(body, 'plain', 'utf-8')
+            attach_body_to.attach(msg)  # type: ignore
+            htmlAttachments = []  # type: list
+            inlineAttachments = []  # type: list
+
+            if htmlBody:
+                # htmlBody, htmlAttachments = handle_html(htmlBody)
+                htmlBody, htmlAttachments = self.handle_html(htmlBody)
+                msg = MIMEText(htmlBody, 'html', 'utf-8')
+                attach_body_to.attach(msg)  # type: ignore
+                if attach_cid:
+                    inlineAttachments = self.collect_inline_attachments(attach_cid)
+
+            else:
+                # if not html body, cannot attach cids in message
+                transientFileCID = None
+
+            attachments = self.collect_attachments(entry_ids, file_names)
+            manual_attachments = self.collect_manual_attachments()
+            transientAttachments = self.transient_attachments(transientFile, transientFileContent, transientFileCID)
+
+            attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
+            self.attachment_handler(message, attachments)
+
         if additional_headers is not None and len(additional_headers) > 0:
             for h in additional_headers:
-                header_name_and_value = h.split('=')
-                message[header_name_and_value[0]] = self.header(header_name_and_value[1])
-
-        msg = MIMEText(body, 'plain', 'utf-8')
-        message.attach(msg)
-        htmlAttachments = []  # type: list
-        inlineAttachments = []  # type: list
-
-        if htmlBody is not None:
-            htmlBody, htmlAttachments = self.handle_html(htmlBody)
-            msg = MIMEText(htmlBody, 'html', 'utf-8')
-            message.attach(msg)
-            if attach_cid is not None and len(attach_cid) > 0:
-                inlineAttachments = self.collect_inline_attachments(attach_cid)
-
-        else:
-            # if not html body, cannot attach cids in message
-            transientFileCID = None
-        attachments = self.collect_attachments(entry_ids, file_names)
-        manual_attachments = self.collect_manual_attachments()
-        transientAttachments = self.transient_attachments(transientFile, transientFileContent, transientFileCID)
-
-        attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
-        self.attachment_handler(message, attachments)
-
+                header_name, header_value = h.split('=', 1)
+                message[header_name] = self.header(header_value)
         encoded_message = base64.urlsafe_b64encode(message.as_bytes())
         command_args = {'raw': encoded_message.decode()}
 
@@ -804,7 +916,7 @@ class Client:
         integration_context = demisto.getIntegrationContext() or {}
         integration_context['verifier'] = verifier
         demisto.setIntegrationContext(integration_context)
-        return (link, challenge)
+        return link, challenge
 
 
 def test_module(client):
@@ -823,14 +935,15 @@ def send_mail_command(client):
     replyTo = args.get('replyTo')
     file_names = argToList(args.get('attachNames'))
     attchCID = argToList(args.get('attachCIDs'))
+    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
     transientFile = argToList(args.get('transientFile'))
     transientFileContent = argToList(args.get('transientFileContent'))
     transientFileCID = argToList(args.get('transientFileCID'))
     additional_headers = argToList(args.get('additionalHeader'))
     template_param = args.get('templateParams')
 
-    result = client.send_mail(emailto, EMAIL, subject, body, entry_ids, cc, bcc, htmlBody,
-                              replyTo, file_names, attchCID, transientFile, transientFileContent,
+    result = client.send_mail(emailto, EMAIL, cc, bcc, subject, body, htmlBody, entry_ids,
+                              replyTo, file_names, attchCID, manualAttachObj, transientFile, transientFileContent,
                               transientFileCID, additional_headers, template_param)
     return client.sent_mail_to_entry('Email sent:', [result], emailto, EMAIL, cc, bcc, htmlBody, body, subject)
 
@@ -838,46 +951,85 @@ def send_mail_command(client):
 '''FETCH INCIDENTS'''
 
 
-def fetch_incidents(client):
+def fetch_incidents(client: Client):
     user_key = 'me'
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
+    demisto.debug(f'last run: {last_run}')
     last_fetch = last_run.get('gmt_time')
+    next_last_fetch = last_run.get('next_gmt_time')
+    page_token = last_run.get('page_token') or None
+    ignore_ids: List[str] = last_run.get('ignore_ids') or []
+    ignore_list_used = last_run.get('ignore_list_used') or False  # can we reset the ignore list if we haven't used it
     # handle first time fetch - gets current GMT time -1 day
-    if last_fetch is None:
+    if not last_fetch:
         last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
-        last_fetch = str(last_fetch.isoformat()).split('.')[0] + 'Z'
-
-    last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
-    current_fetch = last_fetch
+        last_fetch = str(last_fetch.isoformat(timespec='seconds')) + 'Z'
+    # use replace(tzinfo) to  make the datetime aware of the timezone as all other dates we use are aware
+    last_fetch = client.parse_date_isoformat_server(last_fetch)
+    if next_last_fetch:
+        next_last_fetch = client.parse_date_isoformat_server(next_last_fetch)
+    else:
+        next_last_fetch = last_fetch + timedelta(seconds=1)
     service = client.get_service('gmail', 'v1')
 
-    query += last_fetch.strftime(' after:%Y/%m/%d')
-    LOG('GMAIL: fetch parameters:\nuser: %s\nquery=%s\nfetch time: %s' %
-        (user_key, query, last_fetch, ))
-
+    # use seconds for the filter (note that it is inclusive)
+    # see: https://developers.google.com/gmail/api/guides/filtering
+    query += f' after:{int(last_fetch.timestamp())}'
+    max_results = MAX_FETCH
+    if MAX_FETCH > 200:
+        max_results = 200
+    LOG(f'GMAIL: fetch parameters: user: {user_key} query={query}'
+        f' fetch time: {last_fetch} page_token: {page_token} max results: {max_results}')
     result = service.users().messages().list(
-        userId=user_key, maxResults=100, q=query).execute()
+        userId=user_key, maxResults=max_results, pageToken=page_token, q=query).execute()
 
     incidents = []
     # so far, so good
     LOG('GMAIL: possible new incidents are %s' % (result, ))
     for msg in result.get('messages', []):
+        msg_id = msg['id']
+        if msg_id in ignore_ids:
+            demisto.info(f'Ignoring msg id: {msg_id} as it is in the ignore list')
+            ignore_list_used = True
+            continue
         msg_result = service.users().messages().get(
-            id=msg['id'], userId=user_key).execute()
-        incident = client.mail_to_incident(msg_result, service, user_key)
-        temp_date = datetime.strptime(
-            incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
-        # update last run
-        if temp_date > last_fetch:
-            last_fetch = temp_date + timedelta(seconds=1)
+            id=msg_id, userId=user_key).execute()
+        incident, occurred, is_valid_date = client.mail_to_incident(msg_result, service, user_key)
+        if not is_valid_date:  # if  we can't trust the date store the msg id in the ignore list
+            demisto.info(f'appending to ignore list msg id: {msg_id}. name: {incident.get("name")}')
+            ignore_list_used = True
+            ignore_ids.append(msg_id)
+        # update last run only if we trust the occurred timestamp
+        if is_valid_date and occurred > next_last_fetch:
+            next_last_fetch = occurred + timedelta(seconds=1)
 
         # avoid duplication due to weak time query
-        if temp_date > current_fetch:
+        if (not is_valid_date) or (occurred >= last_fetch):
             incidents.append(incident)
+        else:
+            demisto.info(f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
 
     demisto.info('extract {} incidents'.format(len(incidents)))
-    demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z'})
+    next_page_token = result.get('nextPageToken', '')
+    if next_page_token:
+        # we still have more results
+        demisto.info(f'keeping current last fetch: {last_fetch} as result has additional pages to fetch.'
+                     f' token: {next_page_token}. Ignoring incremented last_fatch: {next_last_fetch}')
+    else:
+        demisto.debug(f'will use new last fetch date (no next page token): {next_last_fetch}')
+        # if we are not in a tokenized search and we didn't use the ignore ids we can reset it
+        if (not page_token) and (not ignore_list_used) and (len(ignore_ids) > 0):
+            demisto.info(f'reseting igonre list of len: {len(ignore_ids)}')
+            ignore_ids = []
+        last_fetch = next_last_fetch
+    demisto.setLastRun({
+        'gmt_time': client.get_date_isoformat_server(last_fetch),
+        'next_gmt_time': client.get_date_isoformat_server(next_last_fetch),
+        'page_token': next_page_token,
+        'ignore_ids': ignore_ids,
+        'ignore_list_used': ignore_list_used,
+    })
     return incidents
 
 

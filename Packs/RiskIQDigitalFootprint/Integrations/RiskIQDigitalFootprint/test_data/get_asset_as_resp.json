@@ -1,0 +1,279 @@
+{
+  "name": "63245",
+  "type": "AS",
+  "firstSeen": 1532708763182,
+  "lastSeen": 1591634429689,
+  "uuid": "9ca2cd53-af69-cbca-f398-e891ecf413d3",
+  "label": "63245",
+  "description": "AS63245",
+  "asset": {
+    "asNames": [
+      {
+        "value": "DUMMY-01",
+        "firstSeen": 1532708763182,
+        "lastSeen": 1587456222572,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "orgNames": [
+      {
+        "value": "dummy.com",
+        "firstSeen": 1532708763182,
+        "lastSeen": 1586212561931,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "orgIds": [
+      {
+        "value": "DUMMY-ORG",
+        "firstSeen": 1532708763182,
+        "lastSeen": 1586212561931,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "countries": [
+      {
+        "value": "united states",
+        "firstSeen": 1586212561934,
+        "lastSeen": 1587456222572,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "us",
+        "firstSeen": 1532708763182,
+        "lastSeen": 1586212561931
+      },
+      {
+        "value": "US",
+        "firstSeen": 1532708763182,
+        "lastSeen": 1532708763182
+      }
+    ],
+    "registries": [
+      {
+        "value": "DUMMYREG",
+        "firstSeen": 1532708763182,
+        "lastSeen": 1587456222572,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "firstSeen": 1532708763182,
+    "lastSeen": 1591600289183,
+    "count": 3411,
+    "asnNumber": 63245,
+    "asn": {
+      "asnID": 63245,
+      "description": "DUMMY-01, united states",
+      "registry": "DUMMYREG",
+      "countryCode": "united states",
+      "name": "AS63245",
+      "id": 63245,
+      "fullName": "AS63245 - united states - DUMMY-01, united states"
+    },
+    "mailServers": [
+      {
+        "value": "dummy.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy1.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy2.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy3.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy4.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "whois": {
+      "createdAt": 1591402147858,
+      "updatedAt": 1591402147858,
+      "status": "ACTIVE",
+      "whoisID": 6674824394369493291,
+      "domain": "dummydomain.com",
+      "domainMd5": "9b4f498908b61ea0887cdfdca9f47542",
+      "domainUnicode": "dummydomain.com",
+      "tld": "com",
+      "nameservers": [
+        "dummy.nameserver.com",
+        "dummy1.nameserver.com",
+        "dummy2.nameserver.com",
+        "dummy3.nameserver.com"
+      ],
+      "whoisServer": "dummy.com",
+      "registrarIanaID": 146,
+      "registrarName": "Dummy, LLC",
+      "registrarEmail": "abuse@dummydomain.com",
+      "registrarCreatedAt": 1137076406000,
+      "registrarUpdatedAt": 1483618972000,
+      "registrarExpiresAt": 1768228406000,
+      "registrant": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "state": "cyprus",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "admin": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "technical": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "billing": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "domainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
+      "auditCreatedAt": 1591402147834,
+      "auditUpdatedAt": 1591402147834,
+      "registrarParseCode": 36643,
+      "noRecord": false,
+      "domainAvailable": false,
+      "contactEmails": [
+        "dummy@dummy.com"
+      ],
+      "expired": false,
+      "contacts": [
+        {
+          "whoisContactID": 0,
+          "organization": "Dummy Organization",
+          "state": "california",
+          "country": "united states",
+          "address": "california\nunited states\n",
+          "id": 0
+        }
+      ],
+      "contactNames": [
+        "Dummy"
+      ],
+      "contactOrganizations": [
+        "Dummy Organization"
+      ],
+      "contactCountries": [
+        "united states"
+      ],
+      "compositeParseCode": 36643,
+      "id": 6674824394369493291
+    }
+  },
+  "data": {
+    "hostPairs": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "attributes": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "webComponents": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "sslCerts": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "cookies": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    }
+  }
+}

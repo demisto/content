@@ -1,0 +1,30 @@
+!identityiq-search-identities
+!identityiq-search-identities id=8a8080824df45873014df45bd97400c9
+!identityiq-search-identities email=jerry.bennett@sailpointdemo.com
+!identityiq-search-identities active=False
+!identityiq-search-identities risk=500
+!identityiq-search-identities active=False risk=500
+!identityiq-get-policyviolations
+!identityiq-get-policyviolations id=8a8080824df45873014df46036521328
+!identityiq-get-taskresults
+!identityiq-get-taskresults id=0a0000016b951ded816bb41351e901b3
+!identityiq-get-accounts
+!identityiq-get-accounts id=8a8080824df45873014df45bb504000e
+!identityiq-get-accounts last_refresh=2020-10-05T15:53:46
+!identityiq-get-accounts native_identity=1b2c
+!identityiq-get-accounts last_target_agg=2020-10-05T15:53:46
+!identityiq-get-accounts identity_name=Amanda.Ross
+!identityiq-get-accounts application_name=TRAKK
+!identityiq-get-accounts identity_name=Amanda.Ross application_name=TRAKK
+!identityiq-disable-account id=8a8080824df45873014df45c719f038c
+!identityiq-enable-account id=8a8080824df45873014df45c719f038c
+!identityiq-delete-account id=8a80808162f446a9016338cd2cbf005c
+!identitytiq-get-launched-workflows
+!identitytiq-get-launched-workflows id=0a0000016b951ded816bb41348e20197
+!identityiq-get-roles
+!identityiq-get-roles id=8a8080824df45873014df45f8b6810e9
+!identityiq-get-entitlements
+!identityiq-get-entitlements id=8a8080824df45873014df45d9f9008a8
+!identityiq-get-alerts
+!identityiq-get-alerts id=0a000001758a173e817645983c0c023b
+!identityiq-create-alert display_name=XSOAR-Alert

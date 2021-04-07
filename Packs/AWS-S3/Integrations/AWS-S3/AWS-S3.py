@@ -59,9 +59,9 @@ def aws_session(service='s3', region=None, roleArn=None, roleSessionName=None, r
         kwargs.update({'Policy': rolePolicy})
     elif AWS_ROLE_POLICY is not None:
         kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and AWS_ACCESS_KEY_ID is None:
+    if kwargs and not AWS_ACCESS_KEY_ID:
 
-        if AWS_ACCESS_KEY_ID is None:
+        if not AWS_ACCESS_KEY_ID:
             sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
@@ -231,14 +231,14 @@ def get_bucket_policy_command(args):
     for statement in statements:
         data.append({
             'BucketName': args.get('bucket'),
-            'PolicyId': policy['Id'],
-            'PolicyVersion': policy['Version'],
-            'Sid': statement['Sid'],
-            'Action': statement['Action'],
-            'Principal': statement['Principal'],
-            'Resource': statement['Resource'],
-            'Effect': statement['Effect'],
-            'Json': response['Policy']
+            'PolicyId': policy.get('Id'),
+            'PolicyVersion': policy.get('Version'),
+            'Sid': statement.get('Sid'),
+            'Action': statement.get('Action'),
+            'Principal': statement.get('Principal'),
+            'Resource': statement.get('Resource'),
+            'Effect': statement.get('Effect'),
+            'Json': response.get('Policy')
         })
     ec = {'AWS.S3.Buckets(val.BucketName === obj.BucketName).Policy': data}
     human_readable = tableToMarkdown('AWS S3 Bucket Policy', data)
@@ -298,16 +298,18 @@ def list_objects_command(args):
     )
     data = []
     response = client.list_objects(Bucket=args.get('bucket'))
-    for key in response['Contents']:
-        data.append({
-            'Key': key['Key'],
-            'Size': convert_size(key['Size']),
-            'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
-        })
-
-    ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
-    human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
-    return_outputs(human_readable, ec)
+    if response.get('Contents', None):
+        for key in response['Contents']:
+            data.append({
+                'Key': key['Key'],
+                'Size': convert_size(key['Size']),
+                'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
+            })
+        ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
+        human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
+        return_outputs(human_readable, ec)
+    else:
+        return_outputs("The {} bucket contains no objects.".format(args.get('bucket')))
 
 
 def get_file_path(file_id):

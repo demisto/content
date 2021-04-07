@@ -1,0 +1,58 @@
+{
+  "brandName": "Tripwire",
+  "custom": true,
+  "defaultIncidentType": "Tripwire File Change",
+  "id": "Tripwire",
+  "isDefault": false,
+  "mapping": {
+    "Tripwire File Change": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "Device Id": {
+          "complex": null,
+          "simple": "nodeId"
+        },
+        "Device Name": {
+          "complex": null,
+          "simple": "nodeName"
+        },
+        "File Name": {
+          "complex": null,
+          "simple": "elementName"
+        },
+        "MD5": {
+          "complex": null,
+          "simple": "md5"
+        },
+        "Policy Description": {
+          "complex": null,
+          "simple": "ruleName"
+        },
+        "Policy ID": {
+          "complex": null,
+          "simple": "ruleId"
+        },
+        "SHA1": {
+          "complex": null,
+          "simple": "sha1"
+        },
+        "SHA256": {
+          "complex": null,
+          "simple": "sha256"
+        },
+        "SHA512": {
+          "complex": null,
+          "simple": "sha512"
+        }
+      }
+    }
+  },
+  "version": -1,
+  "fromVersion": "5.0.0",
+  "toVersion": "5.9.9",
+  "transformer": {
+    "complex": null,
+    "simple": ""
+  },
+  "keyTypeMap": {}
+}

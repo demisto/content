@@ -1,0 +1,23 @@
+{
+  "Type": 1,
+  "ContentsFormat": "json",
+  "Contents": {
+    "kind": "admin#directory#roleAssignment",
+    "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/wD3eixORrMKjVBkAhgq-kthmaJs\"",
+    "roleAssignmentId": "13801188331880449",
+    "roleId": "13801188331880449",
+    "assignedTo": "102585217528814888330",
+    "scopeType": "CUSTOMER"
+  },
+  "HumanReadable": "### Role Assignment Details\n|Role Assignment Id|Role Id|Assigned To|Scope Type|\n|---|---|---|---|\n| 13801188331880449 | 13801188331880449 | 102585217528814888330 | CUSTOMER |\n",
+  "EntryContext": {
+    "GSuite.RoleAssignment(val.roleAssignmentId == obj.roleAssignmentId)": {
+      "kind": "admin#directory#roleAssignment",
+      "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/wD3eixORrMKjVBkAhgq-kthmaJs\"",
+      "roleAssignmentId": "13801188331880449",
+      "roleId": "13801188331880449",
+      "assignedTo": "102585217528814888330",
+      "scopeType": "CUSTOMER"
+    }
+  }
+}

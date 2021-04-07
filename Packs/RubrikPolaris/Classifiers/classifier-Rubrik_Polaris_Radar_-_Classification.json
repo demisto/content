@@ -1,0 +1,16 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "c3e38fe1-e429-4836-8050-a8d399518fe8",
+    "keyTypeMap": {
+        "RubrikRadar": "Rubrik Radar"
+    },
+    "name": "Rubrik Polaris Radar - Classification",
+    "transformer": {
+        "complex": null,
+        "simple": "incidentClassification"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

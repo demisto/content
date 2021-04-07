@@ -274,9 +274,9 @@ def test_get_file_metadata_command(mocker):
                         return_value=util_load_json('test_data/get_metadata_raw_response.json'))
     result = get_file_metadata_command(client,
                                        {'file': 'accc6794951290467e01b7676e8b4ba177076d54f836589ea7d3298cdf6fc995'})
-    assert 3 == result.indicators[0].dbot_score.score
-    assert hr in result.readable_output
-    assert outputs == result.outputs
+    assert 3 == result[0].indicator.dbot_score.score
+    assert hr in result[0].readable_output
+    assert outputs[0] == result[0].outputs
 
 
 def test_samples_multidownload_command(mocker):

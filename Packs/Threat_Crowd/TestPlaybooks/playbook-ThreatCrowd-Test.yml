@@ -42,11 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
-      - "4"
-      - "6"
       - "8"
-      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -108,7 +104,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -182,7 +178,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -239,7 +235,7 @@ tasks:
       - "7"
     scriptarguments:
       domain:
-        simple: google.com
+        simple: ynet.com
     separatecontext: false
     view: |-
       {
@@ -253,10 +249,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: aaada247-f9b0-41d7-822d-e45b2757362e
+    taskid: 7e8e728f-959b-4135-83b4-04cd0790c877
     type: condition
     task:
-      id: aaada247-f9b0-41d7-822d-e45b2757362e
+      id: 7e8e728f-959b-4135-83b4-04cd0790c877
       version: -1
       name: validate-domain
       type: condition
@@ -264,7 +260,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "2"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -276,7 +272,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: "2"
       - - operator: isEqualString
           left:
             value:
@@ -292,7 +288,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: google.com
+              simple: ynet.com
       - - operator: isEqualString
           left:
             value:
@@ -300,7 +296,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: "0"
     view: |-
       {
         "position": {
@@ -354,7 +350,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"

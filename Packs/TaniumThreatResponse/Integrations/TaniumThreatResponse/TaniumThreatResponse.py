@@ -468,12 +468,12 @@ def alarm_to_incident(client, alarm):
 
 
 def state_params_suffix(alerts_states_to_retrieve):
-    valid_alert_states = ['unresolved', 'in progress', 'resolved', 'suppressed']
+    valid_alert_states = ['unresolved', 'inprogress', 'resolved', 'suppressed']
 
     for state in alerts_states_to_retrieve:
         if state.lower() not in valid_alert_states:
             raise ValueError(f'Invalid state \'{state}\' in filter_alerts_by_state parameter.'
-                             f'Possible values are \'unresolved\', \'in progress\', \'resolved\' or \'suppressed\'.')
+                             f'Possible values are \'unresolved\', \'inprogress\', \'resolved\' or \'suppressed\'.')
 
     return '&'.join(['state=' + state.lower() for state in alerts_states_to_retrieve])
 

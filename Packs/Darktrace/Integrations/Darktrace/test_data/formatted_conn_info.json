@@ -1,0 +1,470 @@
+{
+  "deviceInfo": [
+    {
+      "did": 1,
+      "similarityScore": 100,
+      "graphData": [
+        {
+          "time": 1598302800000,
+          "count": 390
+        },
+        {
+          "time": 1598306400000,
+          "count": 7
+        },
+        {
+          "time": 1598652000000,
+          "count": 94
+        },
+        {
+          "time": 1598990400000,
+          "count": 88
+        },
+        {
+          "time": 1598994000000,
+          "count": 25
+        },
+        {
+          "time": 1598997600000,
+          "count": 16
+        },
+        {
+          "time": 1599001200000,
+          "count": 15
+        },
+        {
+          "time": 1599004800000,
+          "count": 25
+        },
+        {
+          "time": 1599008400000,
+          "count": 13
+        },
+        {
+          "time": 1599012000000,
+          "count": 14
+        },
+        {
+          "time": 1599015600000,
+          "count": 13
+        },
+        {
+          "time": 1599019200000,
+          "count": 14
+        },
+        {
+          "time": 1599022800000,
+          "count": 18
+        },
+        {
+          "time": 1599026400000,
+          "count": 14
+        },
+        {
+          "time": 1599030000000,
+          "count": 13
+        },
+        {
+          "time": 1599033600000,
+          "count": 14
+        },
+        {
+          "time": 1599037200000,
+          "count": 13
+        },
+        {
+          "time": 1599040800000,
+          "count": 19
+        },
+        {
+          "time": 1599044400000,
+          "count": 13
+        },
+        {
+          "time": 1599048000000,
+          "count": 14
+        },
+        {
+          "time": 1599051600000,
+          "count": 624
+        },
+        {
+          "time": 1599055200000,
+          "count": 187
+        },
+        {
+          "time": 1599663600000,
+          "count": 169
+        },
+        {
+          "time": 1599667200000,
+          "count": 363
+        },
+        {
+          "time": 1599670800000,
+          "count": 329
+        },
+        {
+          "time": 1599674400000,
+          "count": 324
+        },
+        {
+          "time": 1599678000000,
+          "count": 332
+        },
+        {
+          "time": 1599681600000,
+          "count": 340
+        },
+        {
+          "time": 1599685200000,
+          "count": 334
+        },
+        {
+          "time": 1599688800000,
+          "count": 328
+        },
+        {
+          "time": 1599692400000,
+          "count": 340
+        },
+        {
+          "time": 1599696000000,
+          "count": 330
+        },
+        {
+          "time": 1599699600000,
+          "count": 332
+        },
+        {
+          "time": 1599703200000,
+          "count": 325
+        },
+        {
+          "time": 1599706800000,
+          "count": 344
+        },
+        {
+          "time": 1599710400000,
+          "count": 328
+        },
+        {
+          "time": 1599714000000,
+          "count": 338
+        },
+        {
+          "time": 1599750000000,
+          "count": 76
+        },
+        {
+          "time": 1599753600000,
+          "count": 336
+        },
+        {
+          "time": 1599757200000,
+          "count": 334
+        },
+        {
+          "time": 1599760800000,
+          "count": 334
+        },
+        {
+          "time": 1599764400000,
+          "count": 329
+        },
+        {
+          "time": 1599768000000,
+          "count": 342
+        },
+        {
+          "time": 1599771600000,
+          "count": 329
+        },
+        {
+          "time": 1599775200000,
+          "count": 336
+        },
+        {
+          "time": 1599778800000,
+          "count": 332
+        },
+        {
+          "time": 1599782400000,
+          "count": 332
+        },
+        {
+          "time": 1599786000000,
+          "count": 329
+        },
+        {
+          "time": 1599789600000,
+          "count": 328
+        },
+        {
+          "time": 1599793200000,
+          "count": 332
+        },
+        {
+          "time": 1599796800000,
+          "count": 341
+        },
+        {
+          "time": 1599800400000,
+          "count": 326
+        },
+        {
+          "time": 1599804000000,
+          "count": 330
+        },
+        {
+          "time": 1599807600000,
+          "count": 332
+        },
+        {
+          "time": 1599811200000,
+          "count": 334
+        },
+        {
+          "time": 1599814800000,
+          "count": 335
+        },
+        {
+          "time": 1599818400000,
+          "count": 333
+        },
+        {
+          "time": 1599822000000,
+          "count": 326
+        },
+        {
+          "time": 1599825600000,
+          "count": 328
+        },
+        {
+          "time": 1599829200000,
+          "count": 333
+        },
+        {
+          "time": 1599832800000,
+          "count": 335
+        },
+        {
+          "time": 1599836400000,
+          "count": 339
+        },
+        {
+          "time": 1599840000000,
+          "count": 351
+        },
+        {
+          "time": 1599843600000,
+          "count": 325
+        },
+        {
+          "time": 1599847200000,
+          "count": 329
+        },
+        {
+          "time": 1599850800000,
+          "count": 328
+        }
+      ],
+      "info": {
+        "totalUsed": 1589,
+        "totalServed": 0,
+        "totalDevicesAndPorts": 1589,
+        "devicesAndPorts": [
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": 2,
+              "port": 53
+            },
+            "size": 24
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": 0,
+              "port": 53
+            },
+            "size": 19
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": -5,
+              "port": 80
+            },
+            "size": 12
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": 0,
+              "port": 123
+            },
+            "size": 11
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": -3,
+              "port": "5001 - 10000"
+            },
+            "size": 10
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": 3,
+              "port": 67
+            },
+            "size": 9
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": 0,
+              "port": 443
+            },
+            "size": 4
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": -6,
+              "port": 1514
+            },
+            "size": 4
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": 0,
+              "port": 80
+            },
+            "size": 3
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": -4,
+              "port": "5001 - 10000"
+            },
+            "size": 1
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": -4,
+              "port": 3289
+            },
+            "size": 1
+          },
+          {
+            "deviceAndPort": {
+              "direction": "out",
+              "device": -4,
+              "port": 1124
+            },
+            "size": 1
+          },
+          {
+            "deviceAndPort": "others",
+            "size": 1
+          }
+        ],
+        "portsUsed": [
+          {
+            "port": 53,
+            "size": 44,
+            "firstTime": 1591729360000
+          },
+          {
+            "port": 80,
+            "size": 15,
+            "firstTime": 1591729360000
+          },
+          {
+            "port": "5001 - 10000",
+            "size": 11,
+            "firstTime": 1592496475000
+          },
+          {
+            "port": 123,
+            "size": 11,
+            "firstTime": 1591730311000
+          },
+          {
+            "port": 67,
+            "size": 9,
+            "firstTime": 1591730311000
+          },
+          {
+            "port": 1514,
+            "size": 4,
+            "firstTime": 1592952598000
+          },
+          {
+            "port": 443,
+            "size": 4,
+            "firstTime": 1591729361000
+          },
+          {
+            "port": 3289,
+            "size": 1,
+            "firstTime": 1592497916000
+          },
+          {
+            "port": "others",
+            "size": 1
+          }
+        ],
+        "portsServed": [],
+        "devicesUsed": [
+          {
+            "did": 0,
+            "size": 37,
+            "firstTime": 1591729360000
+          },
+          {
+            "did": 2,
+            "size": 25,
+            "firstTime": 1591729360000
+          },
+          {
+            "did": -5,
+            "size": 12,
+            "firstTime": 1591730027000
+          },
+          {
+            "did": -3,
+            "size": 10,
+            "firstTime": 1591729360000
+          },
+          {
+            "did": 3,
+            "size": 9,
+            "firstTime": 1591730311000
+          },
+          {
+            "did": -6,
+            "size": 4,
+            "firstTime": 1591730311000
+          },
+          {
+            "did": -4,
+            "size": 2,
+            "firstTime": 1591729360000
+          },
+          {
+            "did": "others",
+            "size": 1
+          }
+        ],
+        "devicesServed": []
+      }
+    }
+  ]
+}

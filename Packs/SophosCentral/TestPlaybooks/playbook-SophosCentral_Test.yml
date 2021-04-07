@@ -1,0 +1,2600 @@
+id: Sophos Central Test
+version: -1
+fromversion: 5.0.0
+name: Sophos Central Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3843276b-ce1c-4e3e-83cd-feeed2cdf3ef
+    type: start
+    task:
+      id: 3843276b-ce1c-4e3e-83cd-feeed2cdf3ef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a3639170-663b-4e02-876f-5eaa60d58479
+    type: regular
+    task:
+      id: a3639170-663b-4e02-876f-5eaa60d58479
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2023f5a3-ed34-422a-8813-530d3da65b48
+    type: regular
+    task:
+      id: 2023f5a3-ed34-422a-8813-530d3da65b48
+      version: -1
+      name: sophos-central-alert-list
+      script: '|||sophos-central-alert-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3a886294-fb19-4b70-8d84-b4fe6cab3dc0
+    type: condition
+    task:
+      id: 3a886294-fb19-4b70-8d84-b4fe6cab3dc0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.allowedActions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.groupKey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.product
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.raisedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.tenantId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.tenantName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7ef60650-7335-402f-8ede-1decb22202cf
+    type: regular
+    task:
+      id: 7ef60650-7335-402f-8ede-1decb22202cf
+      version: -1
+      name: sophos-central-alert-get
+      script: '|||sophos-central-alert-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alert_id:
+        simple: ${SophosCentral.Alert.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2952ff17-9b7e-4bcd-8a6c-e63cd61a81fc
+    type: condition
+    task:
+      id: 2952ff17-9b7e-4bcd-8a6c-e63cd61a81fc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.allowedActions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.groupKey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.product
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.raisedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.tenantId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.tenantName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e6a8d984-e0e1-4227-8b1b-c7a6847cf235
+    type: regular
+    task:
+      id: e6a8d984-e0e1-4227-8b1b-c7a6847cf235
+      version: -1
+      name: sophos-central-alert-action
+      script: '|||sophos-central-alert-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action:
+        complex:
+          root: SophosCentral.Alert.allowedActions
+          accessor: '[0]'
+      alert_id:
+        simple: ${SophosCentral.Alert.[0].id}
+      message: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ad0918b4-f3b3-48ee-886c-67850f03cb02
+    type: condition
+    task:
+      id: ad0918b4-f3b3-48ee-886c-67850f03cb02
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AlertAction.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AlertAction.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AlertAction.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AlertAction.requestedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AlertAction.result
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AlertAction.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e47beec6-0a75-4f5d-83d1-dc0ef5a343a3
+    type: regular
+    task:
+      id: e47beec6-0a75-4f5d-83d1-dc0ef5a343a3
+      version: -1
+      name: sophos-central-alert-search
+      script: '|||sophos-central-alert-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      category: {}
+      date_range: {}
+      end: {}
+      group_key: {}
+      ids: {}
+      limit: {}
+      product: {}
+      severity: {}
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 76e94c5d-f2cd-4768-8271-c966dc83a2ec
+    type: condition
+    task:
+      id: 76e94c5d-f2cd-4768-8271-c966dc83a2ec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.allowedActions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.groupKey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.product
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.raisedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.tenantId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.tenantName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Alert.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: def7ed60-4386-41fa-8280-b7256730a5fc
+    type: regular
+    task:
+      id: def7ed60-4386-41fa-8280-b7256730a5fc
+      version: -1
+      name: sophos-central-endpoint-list
+      script: '|||sophos-central-endpoint-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6697995d-411f-401c-85b0-bffd214b7ef6
+    type: condition
+    task:
+      id: 6697995d-411f-401c-85b0-bffd214b7ef6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Endpoint.assignedProductCodes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Endpoint.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Endpoint.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Endpoint.health
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Endpoint.ipv4Addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Endpoint.ipv6Addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Endpoint.macAddresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Endpoint.osIsServer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Endpoint.osName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.Endpoint.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 80030202-0502-43ff-86e2-b6d00ac9c353
+    type: regular
+    task:
+      id: 80030202-0502-43ff-86e2-b6d00ac9c353
+      version: -1
+      name: sophos-central-endpoint-scan
+      script: '|||sophos-central-endpoint-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      endpoint_id:
+        simple: ${SophosCentral.Endpoint.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 303c8b49-cea5-406e-8236-9b7c5418cf72
+    type: condition
+    task:
+      id: 303c8b49-cea5-406e-8236-9b7c5418cf72
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.EndpointScan.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.EndpointScan.requestedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.EndpointScan.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: eddc0e4e-aa63-45f6-87de-38dc20449ae9
+    type: regular
+    task:
+      id: eddc0e4e-aa63-45f6-87de-38dc20449ae9
+      version: -1
+      name: sophos-central-endpoint-tamper-get
+      script: '|||sophos-central-endpoint-tamper-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      endpoint_id:
+        simple: ${SophosCentral.Endpoint.id}
+      get_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 7fe6e879-4ada-450d-8e04-45adb795f659
+    type: condition
+    task:
+      id: 7fe6e879-4ada-450d-8e04-45adb795f659
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.EndpointTamper.endpointId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SophosCentral.EndpointTamper.enabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 18d690ac-3f1f-4fd9-85bb-38c0521d6d64
+    type: regular
+    task:
+      id: 18d690ac-3f1f-4fd9-85bb-38c0521d6d64
+      version: -1
+      name: sophos-central-endpoint-tamper-update
+      script: '|||sophos-central-endpoint-tamper-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      enabled:
+        simple: "false"
+      endpoint_id:
+        simple: ${SophosCentral.EndpointTamper.endpointId}
+      get_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: a1d01709-08c4-481d-8664-a1ba4c3efeb7
+    type: condition
+    task:
+      id: a1d01709-08c4-481d-8664-a1ba4c3efeb7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.EndpointTamper.endpointId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SophosCentral.EndpointTamper.enabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 8461b21a-a9cc-4cf2-821e-c9789aa31d6d
+    type: regular
+    task:
+      id: 8461b21a-a9cc-4cf2-821e-c9789aa31d6d
+      version: -1
+      name: sophos-central-allowed-item-list
+      script: '|||sophos-central-allowed-item-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: f1ea2999-a56e-4ff6-8d5e-1d2686689e10
+    type: condition
+    task:
+      id: f1ea2999-a56e-4ff6-8d5e-1d2686689e10
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.updatedAt
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 5e1708c1-48e7-48de-83ef-b2f1998ad694
+    type: regular
+    task:
+      id: 5e1708c1-48e7-48de-83ef-b2f1998ad694
+      version: -1
+      name: sophos-central-allowed-item-get
+      script: '|||sophos-central-allowed-item-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      allowed_item_id:
+        simple: ${SophosCentral.AllowedItem.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 0dfe21d4-d27f-49dc-8d3a-dd603429e0b0
+    type: condition
+    task:
+      id: 0dfe21d4-d27f-49dc-8d3a-dd603429e0b0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.updatedAt
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 99473380-7715-46f9-8dac-11643ddf4a68
+    type: regular
+    task:
+      id: 99473380-7715-46f9-8dac-11643ddf4a68
+      version: -1
+      name: sophos-central-allowed-item-add
+      script: '|||sophos-central-allowed-item-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      certificate_signer: {}
+      comment:
+        simple: Added with playbook
+      file_name: {}
+      item_type:
+        simple: path
+      origin_endpoint_id: {}
+      path:
+        simple: test/12345
+      sha256: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 6a679f15-8f89-4598-8bc8-f889e52c24c7
+    type: condition
+    task:
+      id: 6a679f15-8f89-4598-8bc8-f889e52c24c7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 312e7a82-6ec8-4b57-8801-b4efd561dfe5
+    type: regular
+    task:
+      id: 312e7a82-6ec8-4b57-8801-b4efd561dfe5
+      version: -1
+      name: sophos-central-allowed-item-update
+      script: '|||sophos-central-allowed-item-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      allowed_item_id:
+        simple: ${SophosCentral.AllowedItem.[0].id}
+      comment:
+        simple: changed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 07c610b6-489e-47ee-8d65-f98999f53352
+    type: condition
+    task:
+      id: 07c610b6-489e-47ee-8d65-f98999f53352
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.AllowedItem.updatedAt
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: b56f7748-8b2d-4795-8940-36074fdab736
+    type: regular
+    task:
+      id: b56f7748-8b2d-4795-8940-36074fdab736
+      version: -1
+      name: sophos-central-allowed-item-delete
+      script: '|||sophos-central-allowed-item-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      allowed_item_id:
+        simple: ${SophosCentral.AllowedItem.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: bf34daea-3298-4ad6-80d3-3238184b0f76
+    type: condition
+    task:
+      id: bf34daea-3298-4ad6-80d3-3238184b0f76
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DeletedAllowedItem.deletedItemId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 4898dd69-cd85-42a1-8dd8-751ef6722934
+    type: regular
+    task:
+      id: 4898dd69-cd85-42a1-8dd8-751ef6722934
+      version: -1
+      name: sophos-central-blocked-item-list
+      script: '|||sophos-central-blocked-item-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 1123dce1-1c36-482d-8834-4ee4a4b9f5ba
+    type: condition
+    task:
+      id: 1123dce1-1c36-482d-8834-4ee4a4b9f5ba
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 5e357ac4-eba0-402d-8408-93c5e6b315d3
+    type: regular
+    task:
+      id: 5e357ac4-eba0-402d-8408-93c5e6b315d3
+      version: -1
+      name: sophos-central-blocked-item-get
+      script: '|||sophos-central-blocked-item-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      blocked_item_id:
+        simple: ${SophosCentral.BlockedItem.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 1a45039a-9746-4e6f-8eb0-9e7cee1fdd30
+    type: condition
+    task:
+      id: 1a45039a-9746-4e6f-8eb0-9e7cee1fdd30
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 1fbc396a-6361-43ea-88ff-55df691a746f
+    type: regular
+    task:
+      id: 1fbc396a-6361-43ea-88ff-55df691a746f
+      version: -1
+      name: sophos-central-blocked-item-add
+      script: '|||sophos-central-blocked-item-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      certificate_signer: {}
+      comment:
+        simple: Playbook
+      file_name: {}
+      item_type:
+        simple: sha256
+      path: {}
+      sha256:
+        simple: 3274A3F1EE4867C936DDF6FE0498C170DC370EC444E1992C16CAF26696EE7AAB
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 48faeb02-db91-46be-8b05-0af142ed9939
+    type: condition
+    task:
+      id: 48faeb02-db91-46be-8b05-0af142ed9939
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.BlockedItem.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 2316f866-0632-4cf4-8cbb-fa6ce9369bc0
+    type: regular
+    task:
+      id: 2316f866-0632-4cf4-8cbb-fa6ce9369bc0
+      version: -1
+      name: sophos-central-blocked-item-delete
+      script: '|||sophos-central-blocked-item-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      blocked_item_id:
+        simple: ${SophosCentral.BlockedItem.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 6fd08d31-c685-4772-8d68-31186b7220a1
+    type: condition
+    task:
+      id: 6fd08d31-c685-4772-8d68-31186b7220a1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DeletedBlockedItem.deletedItemId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 484fca7c-ccbc-4154-85a0-95de28823f46
+    type: regular
+    task:
+      id: 484fca7c-ccbc-4154-85a0-95de28823f46
+      version: -1
+      name: sophos-central-scan-exclusion-list
+      script: '|||sophos-central-scan-exclusion-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: e4ce8ae2-3dda-4be2-8faf-7318046c860e
+    type: condition
+    task:
+      id: e4ce8ae2-3dda-4be2-8faf-7318046c860e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.scanMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: b20661f3-4c26-48e3-85d3-dad2d44dcfae
+    type: regular
+    task:
+      id: b20661f3-4c26-48e3-85d3-dad2d44dcfae
+      version: -1
+      name: sophos-central-scan-exclusion-get
+      script: '|||sophos-central-scan-exclusion-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      exclusion_id:
+        simple: ${SophosCentral.ScanExclusion.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: b222235a-edc5-4f94-8d04-ba3839c1f9f4
+    type: condition
+    task:
+      id: b222235a-edc5-4f94-8d04-ba3839c1f9f4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.scanMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 2c7c292e-da5d-44c3-833f-60c2b64534ba
+    type: regular
+    task:
+      id: 2c7c292e-da5d-44c3-833f-60c2b64534ba
+      version: -1
+      name: sophos-central-scan-exclusion-add
+      script: '|||sophos-central-scan-exclusion-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      comment: {}
+      exclusion_type:
+        simple: path
+      scan_mode: {}
+      value:
+        simple: test/12345
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: eaf832b4-05c8-40ec-88e8-28ce97f01e86
+    type: condition
+    task:
+      id: eaf832b4-05c8-40ec-88e8-28ce97f01e86
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.scanMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 4ee1665e-4adc-4da4-83bd-72c276466387
+    type: regular
+    task:
+      id: 4ee1665e-4adc-4da4-83bd-72c276466387
+      version: -1
+      name: sophos-central-scan-exclusion-update
+      script: '|||sophos-central-scan-exclusion-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      comment: {}
+      exclusion_id:
+        simple: ${SophosCentral.ScanExclusion.[0].id}
+      scan_mode: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 52ddbca1-ba0c-4986-8b2c-3d93a6b2a98b
+    type: condition
+    task:
+      id: 52ddbca1-ba0c-4986-8b2c-3d93a6b2a98b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.scanMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ScanExclusion.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: eb595408-2d08-4e99-80ad-f7a97e301f55
+    type: regular
+    task:
+      id: eb595408-2d08-4e99-80ad-f7a97e301f55
+      version: -1
+      name: sophos-central-scan-exclusion-delete
+      script: '|||sophos-central-scan-exclusion-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      exclusion_id:
+        simple: ${SophosCentral.ScanExclusion.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 0ac164da-0203-4b13-8c87-086add604b7e
+    type: condition
+    task:
+      id: 0ac164da-0203-4b13-8c87-086add604b7e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DeletedScanExclusion.deletedExclusionId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: f71ca283-411d-4686-8278-485fa1480d94
+    type: regular
+    task:
+      id: f71ca283-411d-4686-8278-485fa1480d94
+      version: -1
+      name: sophos-central-exploit-mitigation-list
+      script: '|||sophos-central-exploit-mitigation-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 4b58dd33-5a5e-42cb-8494-69102fdc5fcd
+    type: condition
+    task:
+      id: 4b58dd33-5a5e-42cb-8494-69102fdc5fcd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.paths
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: de1ded08-fa49-4ab7-8e3e-5f11137a7df1
+    type: regular
+    task:
+      id: de1ded08-fa49-4ab7-8e3e-5f11137a7df1
+      version: -1
+      name: sophos-central-exploit-mitigation-get
+      script: '|||sophos-central-exploit-mitigation-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      mitigation_id:
+        simple: ${SophosCentral.ExploitMitigation.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 829f88e9-9f60-464a-8fd5-89f4cda2bb8b
+    type: condition
+    task:
+      id: 829f88e9-9f60-464a-8fd5-89f4cda2bb8b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.paths
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 847cbd62-d30e-4f06-85be-e651ea523bad
+    type: regular
+    task:
+      id: 847cbd62-d30e-4f06-85be-e651ea523bad
+      version: -1
+      name: sophos-central-exploit-mitigation-add
+      script: '|||sophos-central-exploit-mitigation-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      path:
+        simple: test/12345
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 2f76a51a-77e1-4ee8-8352-18792875c7b2
+    type: condition
+    task:
+      id: 2f76a51a-77e1-4ee8-8352-18792875c7b2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.paths
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: a94a6def-334f-4cb6-86d6-53214ee4df3f
+    type: regular
+    task:
+      id: a94a6def-334f-4cb6-86d6-53214ee4df3f
+      version: -1
+      name: sophos-central-exploit-mitigation-update
+      script: '|||sophos-central-exploit-mitigation-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      mitigation_id:
+        simple: ${SophosCentral.ExploitMitigation.[0].id}
+      path:
+        simple: test/123456
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: c273b991-01c1-4d56-8fd0-a42e0ad050e7
+    type: condition
+    task:
+      id: c273b991-01c1-4d56-8fd0-a42e0ad050e7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.paths
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.ExploitMitigation.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 07896700-cea8-43ef-8b86-095a33f95b22
+    type: regular
+    task:
+      id: 07896700-cea8-43ef-8b86-095a33f95b22
+      version: -1
+      name: sophos-central-exploit-mitigation-delete
+      script: '|||sophos-central-exploit-mitigation-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      mitigation_id:
+        simple: ${SophosCentral.ExploitMitigation.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: f1c6d6a6-9da9-45e8-86b7-9062f3e511a9
+    type: condition
+    task:
+      id: f1c6d6a6-9da9-45e8-86b7-9062f3e511a9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DeletedExploitMitigation.deletedMitigationId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: bf7cccf7-5eee-4cdc-8e9b-0109d1c217e5
+    type: regular
+    task:
+      id: bf7cccf7-5eee-4cdc-8e9b-0109d1c217e5
+      version: -1
+      name: sophos-central-detected-exploit-list
+      script: '|||sophos-central-detected-exploit-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      page: {}
+      page_size: {}
+      thumbprint_not_in: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: cb09f265-dcd0-48ee-8d2e-e03bc1ed8e9d
+    type: condition
+    task:
+      id: cb09f265-dcd0-48ee-8d2e-e03bc1ed8e9d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.firstSeenAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.lastSeenAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.lastEndpointId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.thumbprint
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: d12fbecd-e136-4eb8-830a-8dfebd071275
+    type: regular
+    task:
+      id: d12fbecd-e136-4eb8-830a-8dfebd071275
+      version: -1
+      name: sophos-central-detected-exploit-get
+      script: '|||sophos-central-detected-exploit-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      detected_exploit_id:
+        simple: ${SophosCentral.DetectedExploit.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: df6917c7-e762-4721-8398-9af3e2fb26e6
+    type: condition
+    task:
+      id: df6917c7-e762-4721-8398-9af3e2fb26e6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.firstSeenAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.lastSeenAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.lastEndpointHostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.lastEndpointId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosCentral.DetectedExploit.thumbprint
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 65d0dcfa-7d5d-4f08-8760-c3a7d6adb3ba
+    type: title
+    task:
+      id: 65d0dcfa-7d5d-4f08-8760-c3a7d6adb3ba
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 12015,
+        "width": 390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

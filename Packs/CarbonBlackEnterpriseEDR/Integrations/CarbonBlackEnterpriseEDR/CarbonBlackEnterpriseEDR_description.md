@@ -14,3 +14,7 @@ Set up Access Levels and API Keys in the Carbon Black Cloud Console.
 4. Hit save, and you will be provided with your API Key Credentials:
   - API Secret Key
   - API ID
+  
+##### Creating Carbon Black's Query: 
+Carbon Black EEDR uses Advanced Search Queries to query for events and processes.
+Here's some more information about [Advanced Search Queries](https://developer.carbonblack.com/resources/query_overview.pdf).

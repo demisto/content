@@ -1,0 +1,91 @@
+{
+    "data": [
+        {
+            "id": "A100",
+            "name": "A100"
+        },
+        {
+            "id": "Akamai",
+            "name": "Akamai Technologies"
+        },
+        {
+            "id": "AlibabaCloud",
+            "name": "Alibaba Cloud"
+        },
+        {
+            "id": "AWS",
+            "name": "Amazon Web Services"
+        },
+        {
+            "id": "Azure",
+            "name": "Microsoft Azure"
+        },
+        {
+            "id": "CharterCommunications",
+            "name": "Charter Communications"
+        },
+        {
+            "id": "ChinaMobile",
+            "name": "China Mobile"
+        },
+        {
+            "id": "Chinanet",
+            "name": "Chinanet"
+        },
+        {
+            "id": "CloudFlare",
+            "name": "CloudFlare"
+        },
+        {
+            "id": "DigitalOcean",
+            "name": "Digital Ocean"
+        },
+        {
+            "id": "Fastly",
+            "name": "Fastly"
+        },
+        {
+            "id": "GoDaddy",
+            "name": "GoDaddy"
+        },
+        {
+            "id": "Google",
+            "name": "Google"
+        },
+        {
+            "id": "JupiterTelecommunications",
+            "name": "Jupiter Telecommunications"
+        },
+        {
+            "id": "Level3",
+            "name": "Level 3"
+        },
+        {
+            "id": "Linode",
+            "name": "Linode"
+        },
+        {
+            "id": "OnPrem",
+            "name": "On Prem"
+        },
+        {
+            "id": "Other",
+            "name": "Other"
+        },
+        {
+            "id": "Rackspace",
+            "name": "Rackspace"
+        },
+        {
+            "id": "Salesforce",
+            "name": "Salesforce"
+        }
+    ],
+    "pagination": {
+        "next": null,
+        "pref": null
+    },
+    "meta": {
+        "totalCount": 20
+     }
+}

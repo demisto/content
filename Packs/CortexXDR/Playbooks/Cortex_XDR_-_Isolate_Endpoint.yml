@@ -221,7 +221,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "9"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
@@ -244,6 +244,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -349,6 +350,60 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: d97abe12-9cd8-412a-8774-f4c985206034
+    type: regular
+    task:
+      id: d97abe12-9cd8-412a-8774-f4c985206034
+      version: -1
+      name: Cortex XDR - check isolation status
+      description: Gets a list of endpoints, according to the passed filters. Filtering
+        by multiple fields is concatenated using the AND condition (OR is not supported).
+        Maximum result set size is 100. Offset is the zero-based number of endpoint
+        from the start of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alias_name: {}
+      dist_name: {}
+      endpoint_id_list:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Isolation.endpoint_id
+      first_seen_gte: {}
+      first_seen_lte: {}
+      group_name: {}
+      hostname: {}
+      ip_list: {}
+      isolate: {}
+      last_seen_gte: {}
+      last_seen_lte: {}
+      limit: {}
+      page: {}
+      platform: {}
+      sort_by: {}
+      sort_order: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -359,7 +414,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1285,
+        "height": 1465,
         "width": 1040,
         "x": 50,
         "y": 50
@@ -394,7 +449,20 @@ inputs:
       - operator: uniq
   required: false
   description: A comma-separated list of IP addresses.
-outputs: []
+  playbookInputQuery: null
+outputs:
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
+  description: The endpoint ID.
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
+  description: The endpoint name.
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
+  description: The status of the endpoint'
+- contextPath: PaloAltoNetworksXDR.Endpoint.ip
+  description: A list of IP addresses.
+- contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
+  description: Whether the endpoint is isolated.
+- contextPath: Endpoint.Hostname
+  description: The hostname that is mapped to this endpoint.
 fromversion: 5.0.0
 tests:
 - No Test

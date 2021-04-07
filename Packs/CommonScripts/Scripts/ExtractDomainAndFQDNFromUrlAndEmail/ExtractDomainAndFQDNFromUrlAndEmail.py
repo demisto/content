@@ -114,9 +114,14 @@ def main():
             "ContentsFormat": formats["json"],
             "Contents": [extract_fqdn_or_domain(item, is_fqdn=True), extract_fqdn_or_domain(item, is_domain=True)]
         }
+        if input_entry.get("Contents") == ['', '']:
+            input_entry['Contents'] = []
         entries_list.append(input_entry)
-
-    demisto.results(entries_list)
+    if entries_list:
+        demisto.results(entries_list)
+    else:
+        # Return empty string so it wouldn't create an empty domain indicator.
+        demisto.results('')
 
 
 # python2 uses __builtin__ python3 uses builtins

@@ -1,6 +1,6 @@
 The Nozomi Networks Guardian platform is a hardware or virtual appliance that is used to monitor OT/IoT/IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring and threat detection in a single solution.
   This integration is used to gather alert and asset information from Nozomi.
-This integration was integrated and tested with version xx of Nozomi Networks
+
 ## Configure Nozomi Networks on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -242,7 +242,7 @@ Take a look to n2os manual to know how to do a query.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nozomi.Result | Unknown | An array of items | 
+| Nozomi.Query.Result | Unknown | An array of items | 
 | Nozomi.Error | String | In case the query is not correct the errors shows you the reason. | 
 
 
@@ -284,7 +284,7 @@ Find a node ip from a mac address
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nozomi.Ips | Unknown | Array of ips found for the mac address passed, empty if not found. | 
+| Nozomi.IpByMac.ips | Unknown | Array of ips found for the mac address passed, empty if not found. | 
 | Nozomi.Error | String | Usually an ip not found error | 
 
 

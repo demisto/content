@@ -1,6 +1,7 @@
 import pytest
 import json
 import os
+import demistomock as demisto
 from CrowdStrikeFalconIntel_v2 import *
 from CommonServerPython import DBotScoreType, Common, DemistoException
 
@@ -163,3 +164,31 @@ class TestHelperFunctions:
                 get_dbot_score_type(_type)
         else:
             assert get_dbot_score_type(_type) == output
+
+
+BANG_COMMANDS_PACK = [
+    ('ip', '2.2.2.2'),
+    ('ip', '2.2.2.2,3.3.3.3'),
+    ('url', 'www.demisto.com'),
+    ('url', 'www.demisto.com,www.xsoar.pan.dev'),
+    ('file', '123456789012345'),
+    ('file', '123456789012345,123456789012345123456789012345123456789012345'),
+    ('domain', 'demisto.com'),
+    ('domain', 'demisto.com,paloaltonetworks.com'),
+]
+
+
+@pytest.mark.parametrize('indicators_type,values', BANG_COMMANDS_PACK)
+def test_bang_commands(mocker, indicators_type, values):
+    mocker.patch.object(demisto, 'args', return_value={indicators_type: values})
+    mocker.patch.object(demisto, 'command', return_value=indicators_type)
+    mocker.patch.object(demisto, 'results')
+
+    import CrowdStrikeFalconIntel_v2 as csfi2
+    mocker.patch.object(csfi2, 'build_indicator', return_value=['item'])
+    mocker.patch.object(Client, '__init__', return_value=None)
+
+    main()
+
+    results = demisto.results.call_args[0][0]
+    assert len(results) == len(values.split(','))

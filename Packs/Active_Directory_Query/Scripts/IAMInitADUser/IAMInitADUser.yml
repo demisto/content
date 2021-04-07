@@ -1,0 +1,41 @@
+args:
+- name: pwdGenerationScript
+  description: The password generator script.
+  defaultValue: GeneratePassword
+- name: sAMAccountName
+  required: true
+  description: The sAMAccountName of the employee.
+- name: email
+  required: true
+  description: The email of the employee.
+- name: displayname
+  description: The display name of the employee.
+- name: to_email
+  required: true
+  description: The email address that the password will send to.
+comment: |-
+  Generates password,
+  Set an AD user account with this password.
+  Enable the account.
+  Send mail to the user with tha account information.
+  This script is running `send-mail` command, make sure there is a matching Integration configurated.
+commonfields:
+  id: IAMInitADUser
+  version: -1
+enabled: true
+name: IAMInitADUser
+script: '-'
+subtype: python3
+system: false
+tags:
+- IAM
+- active directory
+- Utility
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.2.17957
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

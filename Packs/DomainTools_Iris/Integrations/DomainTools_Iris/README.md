@@ -1,11 +1,4 @@
-## Overview
----
-
-This integration was integrated and tested with version xx of DomainTools Iris
 ## DomainTools Iris Playbook
----
-
-## Use Cases
 ---
 
 ## Configure DomainTools Iris on Demisto
@@ -548,13 +541,3 @@ Using one of the arguements allows a user to get back data on domains related to
 ```
 
 ##### Human Readable Output
-
-
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----

@@ -1,0 +1,106 @@
+{
+  "name": "393d40623205b0afd4bc110291306888656e7bf4",
+  "type": "SSL_CERT",
+  "firstSeen": 1589304272929,
+  "lastSeen": 1591634717876,
+  "uuid": "d02ea1d1-7129-094a-50b0-3b285798d28d",
+  "label": "393d40623205b0afd4bc110291306888656e7bf4",
+  "data": {
+    "sslCerts": [
+      {
+        "certificateAuthority": false,
+        "count": 34106,
+        "firstSeen": 1589304272929,
+        "id": "393d40623205b0afd4bc110291306888656e7bf4",
+        "issuer": {
+          "common name": "dummy IT TLS CA 1",
+          "country": "US",
+          "locale": "Dummy street",
+          "organization": "dummy Corporation",
+          "state": "Washington",
+          "unit": "dummy IT"
+        },
+        "lastSeen": 1591685944569,
+        "notAfter": 1652300115000,
+        "notBefore": 1589228115000,
+        "publicKeyAlgorithm": "RSA",
+        "selfSigned": false,
+        "serialNumber": "2163180916825397708934050871055278985287655020",
+        "sha1": "393d40623205b0afd4bc110291306888656e7bf4",
+        "signatureAlgorithm": "SHA256withRSA",
+        "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+        "subject": {
+          "common name": "stamp2.login.dummyonline.com"
+        },
+        "subjectAlternativeNames": "login.dummyonline-int.com, login.dummyonline-p.com, login.dummyonline.com, login2.dummyonline-int.com, login2.dummyonline.com, loginex.dummyonline-int.com, loginex.dummyonline.com, stamp2.login.dummyonline-int.com, stamp2.login.dummyonline.com",
+        "version": 3
+      }
+    ]
+  },
+  "description": "stamp2.login.dummyonline.com: dummy IT TLS CA 1",
+  "assetSha1": "393d40623205b0afd4bc110291306888656e7bf4",
+  "assetSerialNumber": "6100195e6c1b57bc799e2d5d23000000195e6c",
+  "assetFirstSeen": 1589304272929,
+  "assetLastSeen": 1591599614894,
+  "assetCount": 31019,
+  "assetKeySize": 2048,
+  "assetVersion": 3,
+  "assetCertificateAuthority": false,
+  "assetSelfSigned": false,
+  "assetSignatureAlgorithm": "SHA256withRSA",
+  "assetSignatureAlgorithmOid": "1.2.840.113549.1.1.11",
+  "assetNotBefore": 1589228115000,
+  "assetNotAfter": 1652300115000,
+  "assetPublicKeyAlgorithm": "RSA",
+  "assetId": "393d40623205b0afd4bc110291306888656e7bf4",
+  "assetNameServers": [
+    {
+      "value": "dummy.nameserver.com",
+      "firstSeen": 1475863092000,
+      "lastSeen": 1591568678000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy1.nameserver.com",
+      "firstSeen": 1475863092000,
+      "lastSeen": 1591568678000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy2.nameserver.com",
+      "firstSeen": 1475863092000,
+      "lastSeen": 1591568678000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy3.nameserver.com",
+      "firstSeen": 1475863092000,
+      "lastSeen": 1591568678000,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "discoveryRunID": 1915892,
+  "discoveryRunWorkspaceID": 2946,
+  "discoveryRunRunType": "MANUAL",
+  "discoveryRunUserID": 3287,
+  "discoveryRunRunDate": 1588288766000,
+  "discoveryRunFullName": "2020-04-30 4:19 PM PDT - Manual",
+  "issuerCountry": "US",
+  "issuerUnit": "dummy IT",
+  "issuerOrganization": "dummy Corporation",
+  "issuerCommonname": "dummy IT TLS CA 1",
+  "issuerState": "Washington",
+  "issuerLocale": "Dummy street",
+  "subjectCommonname": "stamp2.login.dummyonline.com",
+  "subjectCountry": "US",
+  "subjectUnit": "dummy IT",
+  "subjectOrganization": "dummy Corporation",
+  "subjectState": "Washington",
+  "subjectLocale": "Dummy street",
+  "issuerAlternativeNames": "login.dummyonline-int.com, login.dummyonline-p.com, login.dummyonline.com",
+  "subjectAlternativeNames": "login.dummyonline-int.com, login.dummyonline-p.com, login.dummyonline.com, login2.dummyonline-int.com, login2.dummyonline.com, loginex.dummyonline-int.com, loginex.dummyonline.com, stamp2.login.dummyonline-int.com, stamp2.login.dummyonline.com"
+}

@@ -1,0 +1,36 @@
+{
+    "data": {
+        "id": "7b77198d-1abe-4470-81cc-b6f4d4cb1d7d",
+        "job_id": null,
+        "status": "finished",
+        "credits": 0,
+        "code": null,
+        "message": null,
+        "percent": 100,
+        "operation": "export/url",
+        "result": {
+            "files": [
+                {
+                    "filename": "Screen.jpg",
+                    "size": 202825,
+                    "url": "https://storage.de.cloud.ovh.net/v1/AUTH_b2cffe8f45324c2bba39e8db1aedb58f/cloudconvert-files/7b77198d-1abe-4470-81cc-b6f4d4cb1d7d/Screen.jpg?temp_url_sig=016299ca9cd1106158f75d6913fa786b15f41724&temp_url_expires=1603886918"
+                }
+            ]
+        },
+        "created_at": "2020-10-27T12:08:37+00:00",
+        "started_at": "2020-10-27T12:08:37+00:00",
+        "ended_at": "2020-10-27T12:08:38+00:00",
+        "retry_of_task_id": null,
+        "copy_of_task_id": null,
+        "user_id": 45698979,
+        "priority": -10,
+        "host_name": "margarette",
+        "storage": "ovh-lim",
+        "depends_on_task_ids": [
+            "4ed140d1-8ccb-4f09-8439-78be92f10c86"
+        ],
+        "links": {
+            "self": "https://api.cloudconvert.com/v2/tasks/7b77198d-1abe-4470-81cc-b6f4d4cb1d7d"
+        }
+    }
+}

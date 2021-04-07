@@ -1,0 +1,29 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Integration Troubleshooting"
+ ],
+ "caseInsensitive": true,
+ "cliName": "runwithinsecure",
+ "closeForm": false,
+ "content": true,
+ "description": "Will run the command with 'insecure' flag.",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_runwithinsecure",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Run with 'insecure'",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "type": "boolean",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

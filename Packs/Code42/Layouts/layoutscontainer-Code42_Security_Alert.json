@@ -313,7 +313,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "exfiltratedfilelist",
+                                "fieldId": "exfiltratedfiles",
                                 "height": 110,
                                 "id": "d857da20-5985-11ea-b904-997d555669cb",
                                 "index": 0,

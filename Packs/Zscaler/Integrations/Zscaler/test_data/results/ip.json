@@ -1,29 +1,44 @@
 {
-  "Type": 1,
-  "Contents": [
-    {
-      "ipClassifications": "MISCELLANEOUS_OR_UNKNOWN",
-      "ipClassificationsWithSecurityAlert": "",
-      "ip": "1.22.33.4"
-    }
-  ],
-  "ContentsFormat": "json",
-  "ReadableContentsFormat": "markdown",
-  "HumanReadable": "### Zscaler IP Lookup\n|ip|ipClassifications|\n|---|---|\n| 1.22.33.4 | MISCELLANEOUS_OR_UNKNOWN |\n",
-  "EntryContext": {
-    "IP(val.Address && val.Address == obj.Address)": [
-      {
-        "Address": "1.22.33.4",
-        "ipClassifications": "MISCELLANEOUS_OR_UNKNOWN"
-      }
+    "Type": 1,
+    "Contents": [
+        {
+            "ipClassifications": "MISCELLANEOUS_OR_UNKNOWN",
+            "ipClassificationsWithSecurityAlert": "",
+            "ip": "1.22.33.4"
+        },
+        {
+            "ipClassifications": "MISCELLANEOUS_OR_UNKNOWN",
+            "ipClassificationsWithSecurityAlert": "",
+            "ip": "111.222.33.44"
+        }
     ],
-    "DBotScore": [
-      {
-        "Indicator": "1.22.33.4",
-        "Score": 1,
-        "Type": "ip",
-        "Vendor": "Zscaler"
-      }
-    ]
-  }
+    "ContentsFormat": "json",
+    "ReadableContentsFormat": "markdown",
+    "HumanReadable": "### Zscaler IP Lookup\n|ip|ipClassifications|\n|---|---|\n| 1.22.33.4 | MISCELLANEOUS_OR_UNKNOWN |\n| 111.222.33.44 | MISCELLANEOUS_OR_UNKNOWN |\n",
+    "EntryContext": {
+        "IP(val.Address && val.Address == obj.Address)": [
+            {
+                "Address": "1.22.33.4",
+                "ipClassifications": "MISCELLANEOUS_OR_UNKNOWN"
+            },
+            {
+                "Address": "111.222.33.44",
+                "ipClassifications": "MISCELLANEOUS_OR_UNKNOWN"
+            }
+        ],
+        "DBotScore": [
+            {
+                "Indicator": "1.22.33.4",
+                "Score": 1,
+                "Type": "ip",
+                "Vendor": "Zscaler"
+            },
+            {
+                "Indicator": "111.222.33.44",
+                "Score": 1,
+                "Type": "ip",
+                "Vendor": "Zscaler"
+            }
+        ]
+    }
 }

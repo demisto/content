@@ -729,12 +729,14 @@ class TAXIIClient(object):
             data=req,
             stream=True
         )
+        result.raw.decode_content = True
 
         while True:
             result_part_number = None
             result_id = None
             more = None
             tag_stack = collections.deque()  # type: ignore
+
             try:
                 for action, element in etree.iterparse(result.raw, events=('start', 'end'), recover=True):
                     if action == 'start':
@@ -979,15 +981,19 @@ def fetch_indicators_command(client):
         indicator = item.get('indicator')
         if indicator:
             item['value'] = indicator
-            indicators.append({
+            indicator_obj = {
                 'value': indicator,
                 'type': item.get('type'),
                 'fields': {
                     'tags': client.tags,
-                    'trafficlightprotocol': client.tlp_color
                 },
                 'rawJSON': item,
-            })
+            }
+            if client.tlp_color:
+                indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+
+            indicators.append(indicator_obj)
+
     return indicators
 
 

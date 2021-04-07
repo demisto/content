@@ -1,0 +1,14 @@
+{
+  "eventId": "event-id-1",
+  "fileName": "test.txt",
+  "fileId": "file-id-1",
+  "name": "event-file-name-1",
+  "eventType": "Type1",
+  "description": "This is a description",
+  "insights": [],
+  "information": "",
+  "severity": 3,
+  "date": 1601145608054,
+  "status": "",
+  "sourceApplication": "source-app"
+}

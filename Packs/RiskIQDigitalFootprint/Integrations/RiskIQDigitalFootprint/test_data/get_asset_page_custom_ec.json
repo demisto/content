@@ -1,0 +1,1265 @@
+{
+  "name": "http://www.dummy.org/",
+  "type": "PAGE",
+  "firstSeen": 1539018024251,
+  "lastSeen": 1591634124324,
+  "uuid": "8dfdd21e-5012-3bd6-f9a5-c3151f1b9e40",
+  "label": "http://www.dummy.org/",
+  "description": "http://www.dummy.org/",
+  "data": {
+    "hostPairs": [
+        {
+          "firstSeen": 1587240574392,
+          "lastSeen": 1591682405138,
+          "count": 5071,
+          "id": "www.dummy.org$ae01.alicdn.com$parentPage",
+          "childHostname": "ae01.alicdn.com",
+          "parentHostname": "www.dummy.org",
+          "cause": "parentPage",
+          "childCount": 136290652,
+          "parentCount": 507584,
+          "childScore": 3.720724635059014E-5,
+          "parentScore": 0.009990464895963669,
+          "pairScore": 7.413838466163725E-5
+        },
+        {
+          "firstSeen": 1587278424091,
+          "lastSeen": 1591555747171,
+          "count": 474022,
+          "id": "www.dummy.org$ae01.alicdn.com$img.src",
+          "childHostname": "ae01.alicdn.com",
+          "parentHostname": "www.dummy.org",
+          "cause": "img.src",
+          "childCount": 136290652,
+          "parentCount": 507584,
+          "childScore": 0.0034780227579176426,
+          "parentScore": 0.9338788986206055,
+          "pairScore": 0.006930235773324966
+        }
+      ],
+    "attributes": [
+        {
+          "firstSeen": 1588571785721,
+          "lastSeen": 1590537939334,
+          "count": 401,
+          "id": "org.dummy.www$GoogleAnalyticsAccountNumber$ua-908",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "attributeValue": "ua-908",
+          "attributeType": "GoogleAnalyticsAccountNumber"
+        },
+        {
+          "firstSeen": 1587332054055,
+          "lastSeen": 1590399084776,
+          "count": 19,
+          "id": "org.dummy.www$GoogleAnalyticsAccountNumber$ua-853",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "attributeValue": "ua-853",
+          "attributeType": "GoogleAnalyticsAccountNumber"
+        }
+      ],
+    "webComponents": [
+        {
+          "firstSeen": 1587240574392,
+          "lastSeen": 1591682405138,
+          "count": 359218,
+          "id": "org.dummy.www$CloudFlare$DDOS Protection$",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "webComponentName": "CloudFlare",
+          "webComponentCategory": "DDOS Protection",
+          "ports": [
+            {
+              "firstSeen": 1587240988037,
+              "lastSeen": 1591682405138,
+              "count": 188302,
+              "portNumber": 80
+            },
+            {
+              "firstSeen": 1587240574392,
+              "lastSeen": 1591624309886,
+              "count": 170916,
+              "portNumber": 443
+            }
+          ]
+        },
+        {
+          "firstSeen": 1587240574392,
+          "lastSeen": 1591682405138,
+          "count": 62864,
+          "id": "org.dummy.www$CloudFlare$Server$",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "webComponentName": "CloudFlare",
+          "webComponentCategory": "Server",
+          "ports": [
+            {
+              "firstSeen": 1587240988037,
+              "lastSeen": 1591682405138,
+              "count": 33014,
+              "portNumber": 80
+            },
+            {
+              "firstSeen": 1587240574392,
+              "lastSeen": 1591624309886,
+              "count": 29850,
+              "portNumber": 443
+            }
+          ]
+        }
+      ],
+    "sslCerts": [
+        {
+          "firstSeen": 1587240574392,
+          "lastSeen": 1591682405138,
+          "count": 5822,
+          "id": "e965281f19845533ea1eeb4708ea214bbc916975",
+          "sha1": "e965281f19845533ea1eeb4708ea214bbc916975",
+          "version": 3,
+          "serialNumber": "119138148879edf7f27212d34971093",
+          "signatureAlgorithm": "SHA256withECDSA",
+          "signatureAlgorithmOid": "1.2.840.10045.4.3.2",
+          "issuer": {
+            "country": "US",
+            "organization": "CloudFlare, Inc.",
+            "common name": "CloudFlare Inc ECC CA-2",
+            "state": "CA",
+            "locale": "San Francisco"
+          },
+          "notBefore": 1587168000000,
+          "notAfter": 1602244800000,
+          "subject": {
+            "country": "US",
+            "organization": "Cloudflare, Inc.",
+            "common name": "sni.cloudflaressl.com",
+            "state": "CA",
+            "locale": "San Francisco"
+          },
+          "subjectAlternativeNames": "dummy.org, *.dummy.org, sni.cloudflaressl.com",
+          "publicKeyAlgorithm": "EC",
+          "certificateAuthority": false,
+          "selfSigned": false
+        }
+      ],
+    "cookies": [
+        {
+          "firstSeen": 1587240574392,
+          "lastSeen": 1591595881794,
+          "count": 64122,
+          "id": "org.dummy.www$.dummy.org$9f13ed63618f434b8389cd737292c591",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "cookieDomain": ".dummy.org",
+          "cookieName": "__cfduid"
+        },
+        {
+          "firstSeen": 1587278381401,
+          "lastSeen": 1591555686897,
+          "count": 940,
+          "id": "org.dummy.www$.rsms.me$9f13ed63618f434b8389cd737292c591",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "cookieDomain": ".rsms.me",
+          "cookieName": "__cfduid"
+        }
+      ]
+  },
+  "assetUrl": "http://www.dummy.org/",
+  "assetHttpMethod": "GET",
+  "assetService": "http://www.dummy.org:80",
+  "assetIpAddresses": [
+    {
+      "value": "104.28.12.78",
+      "firstSeen": 1587471221101,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "172.67.132.223",
+      "firstSeen": 1590571255102,
+      "lastSeen": 1591580985105,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "104.28.13.78",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591555686897,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "0.0.0.0",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1587159528213,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetSuccessful": [
+    {
+      "value": true,
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": false,
+      "firstSeen": 1539018024251,
+      "lastSeen": 1587159528213
+    }
+  ],
+  "assetHttpResponseCodes": [
+    {
+      "value": 200,
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": 0,
+      "firstSeen": 1539018024251,
+      "lastSeen": 1587159528213
+    }
+  ],
+  "assetHttpResponseMessages": [
+    {
+      "value": "OK",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "Service Unavailable",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1587159528213
+    },
+    {
+      "value": "Proxy Authentication Required",
+      "firstSeen": 1539233562406,
+      "lastSeen": 1543521869887
+    }
+  ],
+  "assetResponseTimes": [
+    {
+      "value": 414,
+      "firstSeen": 1591595881794,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetFrames": [
+    {
+      "value": true,
+      "firstSeen": 1587471221101,
+      "lastSeen": 1591555686897,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetWindows": [
+    {
+      "value": true,
+      "firstSeen": 1587471221101,
+      "lastSeen": 1591555686897,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetContentTypes": [
+    {
+      "value": "text/html",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetContentLengths": [
+    {
+      "value": 60901,
+      "firstSeen": 1591580985105,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetWindowNames": [
+    {
+      "value": ": TopLevelWindow@7229a64a",
+      "firstSeen": 1591555686897,
+      "lastSeen": 1591555686897,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": ": TopLevelWindow@385ca21f",
+      "firstSeen": 1591238861984,
+      "lastSeen": 1591238861984
+    },
+    {
+      "value": ": TopLevelWindow@6c87806e",
+      "firstSeen": 1591136873627,
+      "lastSeen": 1591136873627
+    },
+    {
+      "value": ": TopLevelWindow@695c4275",
+      "firstSeen": 1591099672610,
+      "lastSeen": 1591099672610
+    },
+    {
+      "value": ": TopLevelWindow@203fc20f",
+      "firstSeen": 1590947995325,
+      "lastSeen": 1590947995325
+    },
+    {
+      "value": ": TopLevelWindow@4a328ca1",
+      "firstSeen": 1590611910698,
+      "lastSeen": 1590611910698
+    },
+    {
+      "value": ": TopLevelWindow@3dca558b",
+      "firstSeen": 1590538330662,
+      "lastSeen": 1590538330662
+    },
+    {
+      "value": ": TopLevelWindow@56cbcec9",
+      "firstSeen": 1590505303630,
+      "lastSeen": 1590505303630
+    },
+    {
+      "value": ": TopLevelWindow@127790d3",
+      "firstSeen": 1590003319818,
+      "lastSeen": 1590003319818
+    },
+    {
+      "value": ": TopLevelWindow@9946b3b",
+      "firstSeen": 1589890950501,
+      "lastSeen": 1589890950501
+    },
+    {
+      "value": ": TopLevelWindow@f9cc51a",
+      "firstSeen": 1589395866636,
+      "lastSeen": 1589395866636
+    },
+    {
+      "value": ": TopLevelWindow@f710547",
+      "firstSeen": 1589300598858,
+      "lastSeen": 1589300598858
+    },
+    {
+      "value": ": TopLevelWindow@3d0d3c54",
+      "firstSeen": 1589288238636,
+      "lastSeen": 1589288238636
+    },
+    {
+      "value": ": TopLevelWindow@6e28ee27",
+      "firstSeen": 1588799034862,
+      "lastSeen": 1588799034862
+    },
+    {
+      "value": ": TopLevelWindow@4adbc2a2",
+      "firstSeen": 1588714322905,
+      "lastSeen": 1588714322905
+    },
+    {
+      "value": ": TopLevelWindow@4d44a84e",
+      "firstSeen": 1588714037011,
+      "lastSeen": 1588714037011
+    },
+    {
+      "value": ": TopLevelWindow@3e5fa653",
+      "firstSeen": 1588676046434,
+      "lastSeen": 1588676046434
+    },
+    {
+      "value": ": TopLevelWindow@76ee6116",
+      "firstSeen": 1588183902230,
+      "lastSeen": 1588183902230
+    },
+    {
+      "value": ": TopLevelWindow@42570a80",
+      "firstSeen": 1588094754189,
+      "lastSeen": 1588094754189
+    },
+    {
+      "value": ": TopLevelWindow@14a3df5e",
+      "firstSeen": 1587551369327,
+      "lastSeen": 1587551369327
+    },
+    {
+      "value": ": TopLevelWindow@bfa3cee",
+      "firstSeen": 1587471221101,
+      "lastSeen": 1587471221101
+    }
+  ],
+  "assetCharsets": [
+    {
+      "value": "UTF-8",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "utf-8",
+      "firstSeen": 1587471221101,
+      "lastSeen": 1591555686897
+    }
+  ],
+  "assetTitles": [
+    {
+      "value": "ja tarvikud - e-pood",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "ERROR: The requested URL could not be retrieved",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1587159528213
+    },
+    {
+      "value": "ERROR: Cache Access Denied",
+      "firstSeen": 1539233562406,
+      "lastSeen": 1543521869887
+    }
+  ],
+  "assetLanguages": [
+    {
+      "value": "et",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetResponseHeaders": [
+    {
+      "headerName": "CF-Cache-Status",
+      "headerValue": "DYNAMIC",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794
+    },
+    {
+      "headerName": "CF-RAY",
+      "headerValue": "59d6279a5b260507-LAX",
+      "firstSeen": 1591078248838,
+      "lastSeen": 1591595881794
+    },
+    {
+      "headerName": "Connection",
+      "headerValue": "close",
+      "firstSeen": 1590661399485,
+      "lastSeen": 1591595881794
+    },
+    {
+      "headerName": "Content-Encoding",
+      "headerValue": "gzip",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794
+    },
+    {
+      "headerName": "Content-Type",
+      "headerValue": "text/html",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794
+    },
+    {
+      "headerName": "Date",
+      "headerValue": "Mon, 08 Jun 2020 05:58:01 GMT",
+      "firstSeen": 1591595881794,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "headerName": "Server",
+      "headerValue": "cloudflare",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794
+    },
+    {
+      "headerName": "Set-Cookie",
+      "headerValue": "__cfduid=d08757163fb72ae75df81aae5757da6f01591595880; expires=Wed, 08-Jul-20 05:58:00 GMT; path=/; domain=.dummy.org; HttpOnly; SameSite=Lax",
+      "firstSeen": 1591595881794,
+      "lastSeen": 1591595881794
+    },
+    {
+      "headerName": "X-Powered-By",
+      "headerValue": "PHP/5.4.16",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794
+    },
+    {
+      "headerName": "cf-request-id",
+      "headerValue": "03341aea11000004ef551e9200000001",
+      "firstSeen": 1591595881794,
+      "lastSeen": 1591595881794
+    }
+  ],
+  "assetCookies": [
+    {
+      "cookieName": "__cfduid",
+      "cookieDomain": "dummy.org",
+      "firstSeen": 1590661399485,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetWebComponents": [
+    {
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "webComponentName": "CloudFlare",
+      "webComponentCategory": "CDN",
+      "current": true
+    },
+    {
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "webComponentName": "CloudFlare",
+      "webComponentCategory": "DDOS Protection",
+      "current": true
+    },
+    {
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "webComponentName": "CloudFlare",
+      "webComponentCategory": "Server",
+      "current": true
+    },
+    {
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "webComponentName": "PHP",
+      "webComponentCategory": "Framework",
+      "webComponentVersion": "5.4.16",
+      "cves": [
+        {
+          "name": "CVE-2015-8994",
+          "cvssScore": 6.800000190734863,
+          "cweID": "CWE-264"
+        }
+      ],
+      "current": true
+    },
+    {
+      "firstSeen": 1587471221101,
+      "lastSeen": 1591555686897,
+      "recent": true,
+      "webComponentName": "Microsoft Ajax CDN",
+      "webComponentCategory": "CDN",
+      "current": true
+    },
+    {
+      "firstSeen": 1587471221101,
+      "lastSeen": 1591555686897,
+      "recent": true,
+      "webComponentName": "Microsoft Ajax Content Delivery Network",
+      "webComponentCategory": "CDN",
+      "current": true
+    },
+    {
+      "firstSeen": 1587471221101,
+      "lastSeen": 1591555686897,
+      "recent": true,
+      "webComponentName": "jQuery",
+      "webComponentCategory": "JavaScript Library",
+      "webComponentVersion": "2.2.4",
+      "current": true
+    },
+    {
+      "firstSeen": 1587471221101,
+      "lastSeen": 1591555686897,
+      "recent": true,
+      "webComponentName": "jquery",
+      "webComponentCategory": "JavaScript Library",
+      "webComponentVersion": "2.2.4",
+      "current": true
+    },
+    {
+      "firstSeen": 1587471221101,
+      "lastSeen": 1591555686897,
+      "recent": true,
+      "webComponentName": "twitter-bootstrap",
+      "webComponentCategory": "JavaScript Library",
+      "webComponentVersion": "4.1.3",
+      "current": true
+    }
+  ],
+  "assetAttributes": [
+    {
+      "attributeType": "address",
+      "attributeValue": "162.6.217.33",
+      "firstSeen": 1563583176558,
+      "lastSeen": 1591539554297,
+      "recent": true,
+      "current": true
+    },
+    {
+      "attributeType": "address",
+      "attributeValue": "unknown",
+      "firstSeen": 1586044395500,
+      "lastSeen": 1591191958789,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetSecurityPolicies": [
+    {
+      "policyName": "content-security-policy-high",
+      "isAffected": false,
+      "description": "no violations",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "content-security-policy-low",
+      "isAffected": false,
+      "description": "no violations",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "form",
+      "isAffected": true,
+      "description": "Page contains forms.",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "insecure-form",
+      "isAffected": true,
+      "description": "Page contains insecure forms.",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "insecure-login-form",
+      "isAffected": false,
+      "description": "Form does not use insecure login.",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "login-form",
+      "isAffected": false,
+      "description": "Form does not use password input types.",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "public-key-pinning-extensions-for-http",
+      "isAffected": false,
+      "description": "Page does not use HTTPS.",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "strict-transport-security",
+      "isAffected": false,
+      "description": "Page does not use HTTPS.",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "x-content-type-options",
+      "isAffected": true,
+      "description": "Header X-Content-Type-Options is not present.",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "x-frame-options",
+      "isAffected": true,
+      "description": "X-Frame-Options not found.",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "x-permitted-cross-domain-policies",
+      "isAffected": false,
+      "description": "Header X-Permitted-Cross-Domain-Policies is not present.",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "form",
+      "isAffected": false,
+      "description": "Page does not contain forms.",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1587159528213,
+      "recent": true,
+      "current": true
+    },
+    {
+      "policyName": "insecure-form",
+      "isAffected": false,
+      "description": "Page does not contain forms.",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1587159528213,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetResponseBodyHashSignatures": [
+    {
+      "value": "d7f9d9c9364528a3f1461b5b27c66fef754772d6",
+      "firstSeen": 1591580985105,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetErrors": [
+    {
+      "value": "DNS lookup failed",
+      "firstSeen": 1539018024251,
+      "lastSeen": 1587159528213,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "Socket timeout: timeout",
+      "firstSeen": 1560827385625,
+      "lastSeen": 1580502057115
+    },
+    {
+      "value": "Socket timeout: connect timed out",
+      "firstSeen": 1563128573358,
+      "lastSeen": 1568234100098
+    },
+    {
+      "value": "Unknown host: lookup for 198.46.179.176 failed: host not found",
+      "firstSeen": 1564178960388,
+      "lastSeen": 1564178960388
+    },
+    {
+      "value": "Unknown host: lookup for 38.111.164.0 failed: host not found",
+      "firstSeen": 1564096524706,
+      "lastSeen": 1564096524706
+    },
+    {
+      "value": "Upstream Failure: ERR_CACHE_ACCESS_DENIED 0",
+      "firstSeen": 1539233562406,
+      "lastSeen": 1543521869887
+    }
+  ],
+  "assetSslCerts": [
+    {
+      "sha1": "a33fc7ab5ab26b33dd23fce194dc47a9904c6e70",
+      "serialNumber": "4f219e40599f0dfad05ad0ec72c55fc",
+      "subjectAlternativeNames": [
+        "dsars.dummy.org",
+        "test.dsars.dummy.org",
+        "train.dsars.dummy.org"
+      ],
+      "firstSeen": 1563888637711,
+      "lastSeen": 1591473937119,
+      "keySize": 2048,
+      "version": 3,
+      "certificateAuthority": false,
+      "selfSigned": false,
+      "recent": true,
+      "signatureAlgorithm": "SHA256withRSA",
+      "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+      "notBefore": 1561939200000,
+      "notAfter": 1593604800000,
+      "publicKeyAlgorithm": "RSA",
+      "id": "a33fc7ab5ab26b33dd23fce194dc47a9904c6e70",
+      "issuer": {
+        "country": "US",
+        "organization": "DigiCert Inc",
+        "common name": "DigiCert SHA2 Secure Server CA"
+      },
+      "subject": {
+        "country": "US",
+        "unit": "IT Infrastructure Service Delivery",
+        "organization": "American Red Cross",
+        "common name": "dsars.dummy.org",
+        "state": "District of Columbia",
+        "locale": "Washington"
+      },
+      "current": true
+    }
+  ],
+  "assetFirstSeen": 1539018024251,
+  "assetLastSeen": 1591595881794,
+  "assetCount": 860,
+  "assetCause": {
+    "causepageguid": "En4ObZVNRueBKmCVuEovPQ==",
+    "cause": "redirect",
+    "location": "http://www.dummy.org/",
+    "possiblematches": 0,
+    "loopdetected": false,
+    "version": 103
+  },
+  "assetReferrer": "http://dummy.org/",
+  "assetRedirectType": "FINAL",
+  "assetFinalUrls": [
+    {
+      "value": "http://www.dummy.org/",
+      "firstSeen": 1543430385561,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetFinalResponseCodes": [
+    {
+      "value": 200,
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": 0,
+      "firstSeen": 1543430385561,
+      "lastSeen": 1587159528213
+    }
+  ],
+  "assetParkedPage": [
+    {
+      "value": false,
+      "firstSeen": 1543945850937,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": true,
+      "firstSeen": 1543814870293,
+      "lastSeen": 1543869195356
+    }
+  ],
+  "assetResourceUrls": [
+    {
+      "url": "http://www.dummy.org/plugins/slickslider/slick.min.js",
+      "resources": [
+        {
+          "md5": "29065e3aefec2f239f60f5d121bf0dfb",
+          "responseBodySize": 42851,
+          "firstSeen": 1587471222547,
+          "lastSeen": 1591555689072,
+          "count": 21,
+          "firstSeenCrawlGuid": "d1ed541e-b07c-4bf2-8f23-985db7a7d295",
+          "firstSeenPageGuid": "5f5e754e-4acf-49bd-ab8e-9a9d8ac1acd2",
+          "firstSeenResourceGuid": "6a5c7e17-464b-44a7-81a1-386ef03e2422",
+          "lastSeenCrawlGuid": "d705245f-e1f6-4a43-8c38-d3e4f983c2f6",
+          "lastSeenPageGuid": "69f251b6-b07e-4dbc-acc8-c07278e3d72a",
+          "lastSeenResourceGuid": "1d6a8a0c-3b91-4c03-a571-20699a8c8d7d",
+          "contentType": "application/javascript",
+          "sha256": "JrrvXATohmgu/ndLA0htWZ8Y85YdaNXNhl7lh/HEcwY=",
+          "sha384": "mt4VQN6XDRstFYbic8mSw5SwvknKpOVBJJT3eVhu8/ge1ub4414oxJi+xj52kciQ",
+          "sha512": "TSAq8pK7wJFP9JMBQ434BT8gZpRpEx00go5EQfujQf7iFg3Zr6htxW5Ac/aBS+oEgeGnBzP6EHnsYrJHsOftgg==",
+          "url": "http://www.dummy.org/plugins/slickslider/slick.min.js",
+          "cached": false,
+          "host": "www.dummy.org"
+        }
+      ],
+      "firstSeen": 1587471222547,
+      "lastSeen": 1591555689072,
+      "recent": true,
+      "current": true
+    },
+    {
+      "url": "http://www.dummy.org/js/bootstrap.bundle.min.js",
+      "resources": [
+        {
+          "md5": "ef58fee438cd2da2c3b33ff6f1cfeebf",
+          "responseBodySize": 70966,
+          "firstSeen": 1587471222185,
+          "lastSeen": 1591555688360,
+          "count": 21,
+          "firstSeenCrawlGuid": "d1ed541e-b07c-4bf2-8f23-985db7a7d295",
+          "firstSeenPageGuid": "5f5e754e-4acf-49bd-ab8e-9a9d8ac1acd2",
+          "firstSeenResourceGuid": "45451c5e-568a-4883-ab27-4171a2041d35",
+          "lastSeenCrawlGuid": "d705245f-e1f6-4a43-8c38-d3e4f983c2f6",
+          "lastSeenPageGuid": "69f251b6-b07e-4dbc-acc8-c07278e3d72a",
+          "lastSeenResourceGuid": "414c982a-a634-4824-bf3a-0a526781c084",
+          "contentType": "application/javascript",
+          "sha256": "E/V4cWE4qvAeO5MOhjtGtqDzPndRO1LBk8lJ/PR7CA4=",
+          "sha384": "pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl",
+          "sha512": "U85Jq47KunKegjv6gVMAnQwtQjovdXz/DQOvQoxrD6j3aGfDDbp5AAJuOdnQx1sefM90D9KBKSQkZGR5hrLbtg==",
+          "url": "http://www.dummy.org/js/bootstrap.bundle.min.js",
+          "cached": false,
+          "host": "www.dummy.org"
+        }
+      ],
+      "firstSeen": 1587471222185,
+      "lastSeen": 1591555688360,
+      "recent": true,
+      "current": true
+    },
+    {
+      "url": "https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js",
+      "resources": [
+        {
+          "md5": "2f6b11a7e914718e0290410e85366fe9",
+          "responseBodySize": 85578,
+          "firstSeen": 1587471221384,
+          "lastSeen": 1591555687123,
+          "count": 21,
+          "firstSeenCrawlGuid": "d1ed541e-b07c-4bf2-8f23-985db7a7d295",
+          "firstSeenPageGuid": "5f5e754e-4acf-49bd-ab8e-9a9d8ac1acd2",
+          "firstSeenResourceGuid": "0bb23baf-0d09-4cde-8909-04ce55568dc5",
+          "lastSeenCrawlGuid": "d705245f-e1f6-4a43-8c38-d3e4f983c2f6",
+          "lastSeenPageGuid": "69f251b6-b07e-4dbc-acc8-c07278e3d72a",
+          "lastSeenResourceGuid": "9e3a0a7f-71a6-40f3-b265-c9a02d4b06d2",
+          "contentType": "application/javascript",
+          "sha256": "BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=",
+          "sha384": "rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB",
+          "sha512": "DUC8yqWf7ez3JD1jszxCWSVB0DMP78eOyBpMa5aJki1bIRARykviOuImIczkxlj1KhVSyS16w2FSQetkD4UU2w==",
+          "url": "https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js",
+          "cached": false,
+          "host": "ajax.aspnetcdn.com"
+        }
+      ],
+      "firstSeen": 1587471221384,
+      "lastSeen": 1591555687123,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetGuids": [
+    {
+      "pageGuid": "69f251b6-b07e-4dbc-acc8-c07278e3d72a",
+      "crawlStateGuid": "d705245f-e1f6-4a43-8c38-d3e4f983c2f6",
+      "loadDate": 1591555686897
+    },
+    {
+      "pageGuid": "28b32f72-8285-4ec8-8c95-e0d12c35c5da",
+      "crawlStateGuid": "a6be1784-6717-448d-8391-f2e843ea4bcb",
+      "loadDate": 1591238861984
+    },
+    {
+      "pageGuid": "758b1f76-d211-45ca-9bbe-3fdb64092725",
+      "crawlStateGuid": "4a776d04-40df-4567-a4eb-87c949e2b028",
+      "loadDate": 1591136873627
+    },
+    {
+      "pageGuid": "97e44648-586c-467b-871e-3a03ae94f9ba",
+      "crawlStateGuid": "0138f316-015f-4157-a9c4-bd155bbf968d",
+      "loadDate": 1591099672610
+    },
+    {
+      "pageGuid": "83d8ef28-32be-40b9-a042-c428110159b1",
+      "crawlStateGuid": "c7e16015-1cb0-4087-92b5-4ea122ea38e3",
+      "loadDate": 1590947995325
+    },
+    {
+      "pageGuid": "1dc0441f-63ab-406a-a18d-eb0e526f377d",
+      "crawlStateGuid": "b7b781b3-8487-4048-9eec-0b33d89c1043",
+      "loadDate": 1590611910698
+    },
+    {
+      "pageGuid": "a03515b4-3ada-41b8-bb43-7abb87f7e93c",
+      "crawlStateGuid": "21c4c5ea-5d01-42b7-8189-3549ab7e47d5",
+      "loadDate": 1590538330662
+    },
+    {
+      "pageGuid": "e0dc82f9-763d-4f52-a8a9-ad27941341d9",
+      "crawlStateGuid": "17efc848-542b-4320-8e0e-2d665d6746c5",
+      "loadDate": 1590505303630
+    },
+    {
+      "pageGuid": "e6a8d6d0-916e-4946-ab64-a80aca5024cf",
+      "crawlStateGuid": "24cf04f1-7414-4d13-adbc-a7e055eb6848",
+      "loadDate": 1590003319818
+    },
+    {
+      "pageGuid": "f7ca3219-8139-449d-a28e-e9ebfaf578ad",
+      "crawlStateGuid": "b5420c2e-b3dc-4124-9650-a12a60a91b43",
+      "loadDate": 1589890950501
+    },
+    {
+      "pageGuid": "d2ecd7ee-a020-42ee-8b7e-45197ab26841",
+      "crawlStateGuid": "c2b63d73-d22f-45de-8bc8-5a39f0175a5a",
+      "loadDate": 1589395866636
+    },
+    {
+      "pageGuid": "edde809e-2db4-4a54-9c63-59faec06f2c8",
+      "crawlStateGuid": "759131fc-8d01-445f-a198-fb9ee889fdd2",
+      "loadDate": 1589300598858
+    },
+    {
+      "pageGuid": "8ffc6e38-7460-4038-856a-5be822ef72a4",
+      "crawlStateGuid": "bbb6af8d-9c88-4568-ae32-373713d8ecc5",
+      "loadDate": 1589288238636
+    },
+    {
+      "pageGuid": "27f4b727-e005-436b-b9ec-545fbf6ef9bd",
+      "crawlStateGuid": "6ce11be2-6117-493f-b62d-9a08f69e882c",
+      "loadDate": 1588799034862
+    },
+    {
+      "pageGuid": "6270ae18-c269-4d6f-91e1-2ff70ded84de",
+      "crawlStateGuid": "6515c906-c1e7-4078-8c01-17908b1684b3",
+      "loadDate": 1588714322905
+    },
+    {
+      "pageGuid": "36b30846-0eac-4e18-bf11-86eb0f643fbb",
+      "crawlStateGuid": "c399821c-b848-4f3d-b08d-3f1aa33e0994",
+      "loadDate": 1588714037011
+    },
+    {
+      "pageGuid": "42eaefba-7a32-441f-949e-115f842fd17a",
+      "crawlStateGuid": "1fd7032c-0c8e-43ac-887b-e5c627b5417c",
+      "loadDate": 1588676046434
+    },
+    {
+      "pageGuid": "5593105d-da57-4933-9029-f784ac1fdbae",
+      "crawlStateGuid": "8b1228cd-be68-4148-b10a-0b6485347cb3",
+      "loadDate": 1588183902230
+    },
+    {
+      "pageGuid": "c8305ac9-76ad-4940-9a33-efc08d3c7f06",
+      "crawlStateGuid": "20c64cba-55b6-46cb-9b3b-cc3291d8e419",
+      "loadDate": 1588094754189
+    },
+    {
+      "pageGuid": "8fac79c9-e220-4e29-b531-d99801108c33",
+      "crawlStateGuid": "474a076a-0142-48b5-92f6-775d8df60ff6",
+      "loadDate": 1587551369327
+    },
+    {
+      "pageGuid": "5f5e754e-4acf-49bd-ab8e-9a9d8ac1acd2",
+      "crawlStateGuid": "d1ed541e-b07c-4bf2-8f23-985db7a7d295",
+      "loadDate": 1587471221101
+    }
+  ],
+  "assetFinalIpAddresses": [
+    {
+      "value": "104.28.12.78",
+      "firstSeen": 1587507942671,
+      "lastSeen": 1591595881794,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "172.67.132.223",
+      "firstSeen": 1590571255102,
+      "lastSeen": 1591580985105
+    },
+    {
+      "value": "104.28.13.78",
+      "firstSeen": 1587240988037,
+      "lastSeen": 1591349073046
+    },
+    {
+      "value": "0.0.0.0",
+      "firstSeen": 1557369370175,
+      "lastSeen": 1587159528213
+    }
+  ],
+  "assetIpBlocks": [
+    {
+      "ipBlock": "104.28.0.0/20",
+      "firstSeen": 1591007889526,
+      "lastSeen": 1591007889526,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetFinalAsns": [
+    {
+      "value": 13335,
+      "firstSeen": 1591007889526,
+      "lastSeen": 1591007889526,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetFinalIpBlocks": [
+    {
+      "ipBlock": "104.28.0.0/20",
+      "firstSeen": 1591007889526,
+      "lastSeen": 1591007889526,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetIsRootUrl": true,
+  "assetLocation": [
+    {
+      "value": {
+        "countrycode": "US",
+        "countryname": "United States",
+        "latitude": 37.750999450683594,
+        "longitude": -97.8219985961914
+      },
+      "firstSeen": 1591415062622,
+      "lastSeen": 1591595881794
+    }
+  ],
+  "assetAsnNumbers": [
+    {
+      "value": 13335,
+      "firstSeen": 1591007889526,
+      "lastSeen": 1591007889526,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetMailServers": [
+    {
+      "value": "dummy.mailserver.com",
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy1.mailserver.com",
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy2.mailserver.com",
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy3.mailserver.com",
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy4.mailserver.com",
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "whoisCreatedAt": 1591402147858,
+  "whoisUpdatedAt": 1591402147858,
+  "whoisStatus": "ACTIVE",
+  "whoisID": 6674824394369493291,
+  "whoisDomain": "dummydomain.com",
+  "whoisDomainMd5": "9b4f498908b61ea0887cdfdca9f47542",
+  "whoisDomainUnicode": "dummydomain.com",
+  "whoisTld": "com",
+  "whoisNameservers": "dummy.nameserver.com, dummy1.nameserver.com, dummy2.nameserver.com, dummy3.nameserver.com",
+  "whoisServer": "dummy.com",
+  "whoisRegistrarIanaID": 146,
+  "whoisRegistrarName": "Dummy, LLC",
+  "whoisRegistrarEmail": "abuse@dummydomain.com",
+  "whoisRegistrarCreatedAt": 1137076406000,
+  "whoisRegistrarUpdatedAt": 1483618972000,
+  "whoisRegistrarExpiresAt": 1768228406000,
+  "whoisRegistrantWhoisContactID": 0,
+  "whoisRegistrantEmail": "dummy@whoisdummydomain.com",
+  "whoisRegistrantName": "DUMMY, LLC",
+  "whoisRegistrantOrganization": "DUMMY, LLC.",
+  "whoisRegistrantStreet": "157, Dummy street, office 1",
+  "whoisRegistrantCity": "limassol",
+  "whoisRegistrantZip": "3026",
+  "whoisRegistrantCountry": "cyprus",
+  "whoisRegistrantPhone": "12345678901",
+  "whoisRegistrantFax": "12345678901",
+  "whoisRegistrantState": "cyprus",
+  "whoisRegistrantAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisRegistrantId": 0,
+  "whoisAdminWhoisContactID": 0,
+  "whoisAdminEmail": "dummy@whoisdummydomain.com",
+  "whoisAdminName": "DUMMY, LLC",
+  "whoisAdminOrganization": "DUMMY, LLC.",
+  "whoisAdminStreet": "157, Dummy street, office 1",
+  "whoisAdminCity": "limassol",
+  "whoisAdminZip": "3026",
+  "whoisAdminCountry": "cyprus",
+  "whoisAdminPhone": "12345678901",
+  "whoisAdminFax": "12345678901",
+  "whoisAdminAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisAdminId": 0,
+  "whoisTechnicalWhoisContactID": 0,
+  "whoisTechnicalEmail": "dummy@whoisdummydomain.com",
+  "whoisTechnicalName": "DUMMY, LLC",
+  "whoisTechnicalOrganization": "DUMMY, LLC.",
+  "whoisTechnicalStreet": "157, Dummy street, office 1",
+  "whoisTechnicalCity": "limassol",
+  "whoisTechnicalZip": "3026",
+  "whoisTechnicalCountry": "cyprus",
+  "whoisTechnicalPhone": "12345678901",
+  "whoisTechnicalFax": "12345678901",
+  "whoisTechnicalAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisTechnicalId": 0,
+  "whoisBillingWhoisContactID": 0,
+  "whoisBillingEmail": "dummy@whoisdummydomain.com",
+  "whoisBillingName": "DUMMY, LLC",
+  "whoisBillingOrganization": "DUMMY, LLC.",
+  "whoisBillingStreet": "157, Dummy street, office 1",
+  "whoisBillingCity": "limassol",
+  "whoisBillingZip": "3026",
+  "whoisBillingCountry": "cyprus",
+  "whoisBillingPhone": "12345678901",
+  "whoisBillingFax": "12345678901",
+  "whoisBillingAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisBillingId": 0,
+  "whoisDomainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
+  "whoisAuditCreatedAt": 1591402147834,
+  "whoisAuditUpdatedAt": 1591402147834,
+  "whoisRegistrarParseCode": 36643,
+  "whoisNoRecord": false,
+  "whoisDomainAvailable": false,
+  "whoisContactEmails": "dummy@dummy.com",
+  "whoisExpired": false,
+  "whoisContacts": [
+    {
+      "whoisContactID": 0,
+      "organization": "Dummy Organization",
+      "state": "california",
+      "country": "united states",
+      "address": "california\nunited states\n",
+      "id": 0
+    }
+  ],
+  "whoisContactNames": "Dummy",
+  "whoisContactOrganizations": "Dummy Organization",
+  "whoisContactCountries": "united states",
+  "whoisCompositeParseCode": 36643,
+  "whoisId": 6674824394369493291
+}

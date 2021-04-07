@@ -169,11 +169,6 @@ tasks:
             value:
               simple: Domain.VirusTotal.Resolutions
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Domain.VirusTotal.Categories
-            iscontext: true
     view: |-
       {
         "position": {

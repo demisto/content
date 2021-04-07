@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ea63e051-33b1-4a6f-863a-169298759981
+    taskid: 1c928bb0-6316-467a-813b-81cc5186b3ed
     type: start
     task:
-      id: ea63e051-33b1-4a6f-863a-169298759981
+      id: 1c928bb0-6316-467a-813b-81cc5186b3ed
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -27,12 +28,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: e039ac7f-7fa0-4fef-8113-590aea23fa49
+    taskid: 8745de4e-9e1a-4c64-86e6-1cf34be41d2e
     type: regular
     task:
-      id: e039ac7f-7fa0-4fef-8113-590aea23fa49
+      id: 8745de4e-9e1a-4c64-86e6-1cf34be41d2e
       version: -1
       name: Check Malicious url
       description: Check if file MD5 is malicious
@@ -60,12 +63,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 660d0ea8-da7d-407b-87f3-392c1a132417
+    taskid: 029cf1ef-c631-4664-8eac-b462700417ef
     type: regular
     task:
-      id: 660d0ea8-da7d-407b-87f3-392c1a132417
+      id: 029cf1ef-c631-4664-8eac-b462700417ef
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -91,21 +96,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: aa129b6a-759b-42e1-8c01-940a6d9edb86
+    taskid: db2bf8ac-bae1-40a4-8deb-cb2b19095646
     type: condition
     task:
-      id: aa129b6a-759b-42e1-8c01-940a6d9edb86
+      id: db2bf8ac-bae1-40a4-8deb-cb2b19095646
       version: -1
       name: Get result
-      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
+      description: Filter context keys by applying one of the various available manipulations
+        and storing in a new context key. Please notice that the resulting context
+        key will not be available automatically as an option but you can still specify
+        it.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "18"
+      - "8"
     scriptarguments:
       additional: {}
       data: {}
@@ -134,17 +144,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: c7d9a72d-c1be-4d91-822a-192e883a1532
+    taskid: 30beddc3-eb2e-40fc-8dc9-a840c13a3bb3
     type: title
     task:
-      id: c7d9a72d-c1be-4d91-822a-192e883a1532
+      id: 30beddc3-eb2e-40fc-8dc9-a840c13a3bb3
       version: -1
       name: Not Malicious URLs
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -159,12 +172,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: e28b9c44-6bd9-4e9c-838d-41caee5c715a
+    taskid: 60db32f7-734c-4ec0-8755-7bf995400bf9
     type: regular
     task:
-      id: e28b9c44-6bd9-4e9c-838d-41caee5c715a
+      id: 60db32f7-734c-4ec0-8755-7bf995400bf9
       version: -1
       name: Check non-malicious url
       description: Check if file MD5 is malicious
@@ -192,15 +207,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 06cffd37-650e-41c4-812a-51789f03771c
+    taskid: 3a48ef08-f223-4e05-847a-47a047aa37d5
     type: condition
     task:
-      id: 06cffd37-650e-41c4-812a-51789f03771c
+      id: 3a48ef08-f223-4e05-847a-47a047aa37d5
       version: -1
       name: Get result
-      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
+      description: Filter context keys by applying one of the various available manipulations
+        and storing in a new context key. Please notice that the resulting context
+        key will not be available automatically as an option but you can still specify
+        it.
       type: condition
       iscommand: false
       brand: ""
@@ -235,17 +255,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: a124863b-c027-421d-8622-647ef81ac352
+    taskid: b70b5654-e4a3-47e7-84bf-86cebb05a60a
     type: title
     task:
-      id: a124863b-c027-421d-8622-647ef81ac352
+      id: b70b5654-e4a3-47e7-84bf-86cebb05a60a
       version: -1
       name: Rate Limiting Test
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -260,12 +283,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 97ab4e87-b89c-47fa-80e1-ebfea613944a
+    taskid: ca1ded19-8aa8-4252-844b-0e6009e9a645
     type: regular
     task:
-      id: 97ab4e87-b89c-47fa-80e1-ebfea613944a
+      id: ca1ded19-8aa8-4252-844b-0e6009e9a645
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -294,12 +319,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 9fc52f8b-997f-4338-8802-c8cd08e521a8
+    taskid: 879be1c7-fd7f-4663-8ee7-f7a474a9be60
     type: regular
     task:
-      id: 9fc52f8b-997f-4338-8802-c8cd08e521a8
+      id: 879be1c7-fd7f-4663-8ee7-f7a474a9be60
       version: -1
       name: Multiple url submission(rate limit test)
       description: Submit a url to scan
@@ -333,12 +360,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 9beb3f70-5c01-4ed5-83ff-6be35945035d
+    taskid: ed3fa390-88e4-4ba1-8739-5f10da9624dc
     type: regular
     task:
-      id: 9beb3f70-5c01-4ed5-83ff-6be35945035d
+      id: ed3fa390-88e4-4ba1-8739-5f10da9624dc
       version: -1
       name: url
       description: Submit a url to scan
@@ -372,12 +401,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 0979373f-503b-441f-895c-bfdfd9958237
+    taskid: ea18b359-90f7-44c7-8b8b-f30ddf4b96f7
     type: regular
     task:
-      id: 0979373f-503b-441f-895c-bfdfd9958237
+      id: ea18b359-90f7-44c7-8b8b-f30ddf4b96f7
       version: -1
       name: url
       description: Submit a url to scan
@@ -411,130 +442,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
-    taskid: ac163943-88fc-49bf-8d83-5667a2266696
-    type: regular
-    task:
-      id: ac163943-88fc-49bf-8d83-5667a2266696
-      version: -1
-      name: Check another Malicious url
-      description: Submit a url to scan
-      script: urlscan.io|||url
-      type: regular
-      iscommand: true
-      brand: urlscan.io
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      limit: {}
-      long: {}
-      public: {}
-      retries:
-        simple: "5"
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      timeout: {}
-      url:
-        simple: steel-apparatus-278809.el.r.appspot.com
-      wait:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: 5a056b1b-637b-4d9c-88ff-f3cbf2dea99f
-    type: regular
-    task:
-      id: 5a056b1b-637b-4d9c-88ff-f3cbf2dea99f
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 865
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 7aba8ec6-7d38-4ef9-8fb0-60ef9a6ed7c9
-    type: condition
-    task:
-      id: 7aba8ec6-7d38-4ef9-8fb0-60ef9a6ed7c9
-      version: -1
-      name: Check DBot score is 3
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: DBotScore
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 5aed811e-b2c7-41d1-8e8f-9180c86daf32
+    taskid: ad53c55c-bf28-4d52-83c6-b5bb5ed22e8f
     type: title
     task:
-      id: 5aed811e-b2c7-41d1-8e8f-9180c86daf32
+      id: ad53c55c-bf28-4d52-83c6-b5bb5ed22e8f
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -546,17 +467,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 7b525f77-394a-495b-8e14-f17e254258de
+    taskid: ef93a6c8-29b6-417d-8a33-4fed0885c1a4
     type: title
     task:
-      id: 7b525f77-394a-495b-8e14-f17e254258de
+      id: ef93a6c8-29b6-417d-8a33-4fed0885c1a4
       version: -1
       name: Malicious URLs
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -571,17 +495,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: bd84959b-e9aa-4dd4-8e1f-5087b29b40c2
+    taskid: 20532079-78a3-43cc-8355-1f1d2c42c060
     type: title
     task:
-      id: bd84959b-e9aa-4dd4-8e1f-5087b29b40c2
+      id: 20532079-78a3-43cc-8355-1f1d2c42c060
       version: -1
       name: Batch URLs Test
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -596,12 +523,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 8791d497-23ee-469a-882d-7bfe6ca786e8
+    taskid: e51fba09-fba3-466c-8b68-35adc8aa38c4
     type: regular
     task:
-      id: 8791d497-23ee-469a-882d-7bfe6ca786e8
+      id: e51fba09-fba3-466c-8b68-35adc8aa38c4
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -630,12 +559,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: da77b165-1bbe-4efb-86bb-7d5b7e738c1c
+    taskid: 262b51dd-45b4-4069-8215-c95f01eae889
     type: regular
     task:
-      id: da77b165-1bbe-4efb-86bb-7d5b7e738c1c
+      id: 262b51dd-45b4-4069-8215-c95f01eae889
       version: -1
       name: Batch URL Submission
       description: Submits a URL to scan.
@@ -671,12 +602,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: b492243e-12f1-42aa-880e-d842ae0d0880
+    taskid: d370690e-7862-410c-8635-1a14bd3f0e0e
     type: condition
     task:
-      id: b492243e-12f1-42aa-880e-d842ae0d0880
+      id: d370690e-7862-410c-8635-1a14bd3f0e0e
       version: -1
       name: Validate Results
       type: condition
@@ -727,6 +660,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -742,3 +677,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

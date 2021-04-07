@@ -1,0 +1,14 @@
+{
+    "artifactsInfoList": [
+        {
+            "artifactType": "artifact type test 1",
+            "artifactName": "artifact name test 1",
+            "artifactSize": "1010"
+        },
+        {
+            "artifactType": "artifact type test 2",
+            "artifactName": "artifact name test 2",
+            "artifactSize": "1010"
+        }
+    ]
+}

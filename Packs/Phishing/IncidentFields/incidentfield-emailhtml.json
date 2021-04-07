@@ -27,7 +27,9 @@
   "Phishing",
   "Email Communication"
  ],
- "systemAssociatedTypes": null,
+ "systemAssociatedTypes": [
+  "Email Communication"
+ ],
  "associatedToAll": false,
  "unmapped": false,
  "unsearchable": false,
