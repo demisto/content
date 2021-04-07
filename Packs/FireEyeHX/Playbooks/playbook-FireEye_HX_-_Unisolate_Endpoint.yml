@@ -1,8 +1,8 @@
 id: FireEye HX - Unisolate Endpoint
 version: -1
 name: FireEye HX - Unisolate Endpoint
-description: This playbook will auto Isolate endpoints by the endpoint id that was
-  provided in the playbook input.
+description: This playbook unisolates endpoints according to the hostname/endpoint ID
+ that is provided by the playbook input. 
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
       version: -1
       name: Is FireEye HX enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -262,13 +262,13 @@ inputs:
 - key: Endpoint_id
   value: {}
   required: false
-  description: The endpoint id/device  id that  you wish to unisolate.
+  description: The endpoint ID/device ID that you want to unisolate.
   playbookInputQuery:
 - key: Hostname
   value:
     simple:
   required: false
-  description: The hostname that you wish to unisolate.
+  description: The hostname that you want to unisolate.
   playbookInputQuery:
 outputs: []
 tests:
