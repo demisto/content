@@ -1430,6 +1430,7 @@ def get_indicators_context(incident):
         file_details = {
             'Name': alert.get('action_file_name'),
             'Path': alert.get('action_file_path'),
+            'SHA265': alert.get('action_file_sha256'),  # Here for backward compatibility
             'SHA256': alert.get('action_file_sha256'),
             'MD5': alert.get('action_file_md5'),
         }
