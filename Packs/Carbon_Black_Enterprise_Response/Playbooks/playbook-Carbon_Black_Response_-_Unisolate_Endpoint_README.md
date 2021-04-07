@@ -1,4 +1,4 @@
-This playbook will unisolate sensors in Carbon Black Response.
+This playbook unisolates sensors according to the sensor ID that is provided in the playbook input.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,7 +7,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* integration-Carbon_Black_Enterprise_Response
 * carbonblack-v2
 
 ### Scripts
@@ -23,7 +22,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Endpoint_ID | The agent id/sensor id/endpoint id that you wish to unisolate.  |  | Optional |
+| Endpoint_ID | The sensor id you want to unisolate.  |  | Optional |
 
 ## Playbook Outputs
 ---
