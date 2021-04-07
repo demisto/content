@@ -366,7 +366,7 @@
                         "y": 0
                     },
                     {
-                        "h": 2,
+                        "h": 4,
                         "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "minH": 1,
@@ -381,7 +381,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 4,
                         "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "minH": 1,
@@ -393,68 +393,6 @@
                         "w": 1,
                         "x": 1,
                         "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-                        "isVisible": true,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Linked Incidents",
-                        "static": false,
-                        "type": "linkedIncidents",
-                        "w": 1,
-                        "x": 1,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Child Incidents",
-                        "static": false,
-                        "type": "childInv",
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Evidence",
-                        "static": false,
-                        "type": "evidence",
-                        "w": 1,
-                        "x": 2,
-                        "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Team Members",
-                        "static": false,
-                        "type": "team",
-                        "w": 1,
-                        "x": 2,
-                        "y": 6
                     },
                     {
                         "displayType": "CARD",
@@ -563,7 +501,7 @@
                     },
                     {
                         "displayType": "CARD",
-                        "h": 2,
+                        "h": 3,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
@@ -583,9 +521,9 @@
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
-                        "w": 1,
+                        "w": 2,
                         "x": 1,
-                        "y": 2
+                        "y": 4
                     }
                 ],
                 "type": "custom"
@@ -621,7 +559,7 @@
     "edit": {
         "sections": [
             {
-                "description": "Please provide either the name of your Panorama integration instance name or a comma-separated list of fw serials to enable FW monitoring.\n\nIt is also recommended to add an email address for notification in case  of FW issue.",
+                "description": "Please provide either the name of your Panorama integration or a comma-separated list of fw serials to enable FW monitoring.\n\nIt is also recommended to add an email address for notification in case  of FW issue.",
                 "fields": [
                     {
                         "fieldId": "incident_panosintegrationinstancename",
@@ -646,8 +584,8 @@
         ]
     },
     "group": "incident",
-    "id": "Cortex Data Lake Monitoring",
-    "name": "Cortex Data Lake Monitoring",
+    "id": "PAN-OS logging to Cortex Data Lake - Action Required",
+    "name": "PAN-OS logging to Cortex Data Lake - Action Required",
     "quickView": {
         "sections": [
             {

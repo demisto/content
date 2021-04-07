@@ -1,6 +1,6 @@
 {
-    "autorun": false,
-    "color": "#D74315",
+    "autorun": true,
+    "color": "#FF3F81",
     "days": 0,
     "daysR": 0,
     "default": false,
@@ -12,17 +12,17 @@
     },
     "hours": 0,
     "hoursR": 0,
-    "id": "Cortex Data Lake Monitoring",
-    "layout": "Cortex Data Lake Monitoring",
+    "id": "PAN-OS logging to Cortex Data Lake - Action Required",
+    "layout": "PAN-OS logging to Cortex Data Lake - Action Required",
     "locked": false,
-    "name": "Cortex Data Lake Monitoring",
+    "name": "PAN-OS logging to Cortex Data Lake - Action Required",
     "onChangeRepAlg": 1,
-    "playbookId": "PAN-OS to Cortex Data Lake Monitoring - Cron Job",
+    "playbookId": "PAN-OS logging to Cortex Data Lake - Action Required",
     "readonly": false,
     "reputationCalc": 1,
     "system": false,
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.0.0"
 }
