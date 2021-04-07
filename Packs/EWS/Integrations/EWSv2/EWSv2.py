@@ -105,6 +105,10 @@ AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
+FETCH_TIME = demisto.params().get('fetch_time', '10 minutes')
+TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
+                        'year': 365 * 24 * 60}
+
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
 START_COMPLIANCE = """
@@ -898,14 +902,38 @@ def get_last_run():
     return last_run
 
 
+def parse_fetch_time_to_minutes():
+    """
+    Calculate the time to fetch back in minutes
+    Returns (int): Time to fetch back in minutes
+    """
+    number_of_times, time_unit = FETCH_TIME.split(' ')
+    if str(number_of_times).isdigit():
+        number_of_times = int(number_of_times)
+    else:
+        return_error("Error: Invalid fetch time, need to be a positive integer with the time unit afterwards"
+                     " e.g '2 months, 4 days'.")
+    # If the user input contains a plural of a time unit, for example 'hours', we remove the 's' as it doesn't
+    # impact the minutes in that time unit
+    if time_unit[-1] == 's':
+        time_unit = time_unit[:-1]
+    time_unit_value_in_minutes = TIME_UNIT_TO_MINUTES.get(time_unit.lower())
+    if time_unit_value_in_minutes:
+        return number_of_times * time_unit_value_in_minutes
+
+    return_error('Error: Invalid time unit.')
+
+
 def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude_ids=None):
     qs = get_folder_by_path(account, folder_name, is_public=IS_PUBLIC_FOLDER)
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         if not FETCH_ALL_HISTORY:
-            last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
-            qs = qs.filter(datetime_received__gte=last_10_min)
+            fetch_time_in_minutes = parse_fetch_time_to_minutes()
+            start_time_for_fetch = timedelta(minutes=fetch_time_in_minutes)
+            last_fetch_minutes = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - start_time_for_fetch
+            qs = qs.filter(datetime_received__gte=last_fetch_minutes)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
     qs = qs.filter().order_by('datetime_received')
 
