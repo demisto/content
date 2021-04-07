@@ -5,7 +5,7 @@ name: QRadar v3
 display: IBM QRadar v3
 category: Analytics & SIEM
 description: IBM QRadar SIEM helps security teams accurately detect and prioritize
-  threats across the enterprise, and provides intelligent insights that enable
+  threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable
   teams to respond quickly to reduce the impact of incidents.
 configuration:
 - display: Server URL
@@ -2454,7 +2454,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: ' A comma-separated list of values to add or update in the reference
+      description: 'A comma-separated list of values to add or update in the reference
         set. Date values must be represented in milliseconds since the Unix Epoch
         January 1st 1970.'
       isArray: true
@@ -2760,7 +2760,7 @@ script:
   longRunningPort: false
   isFetchSamples: true
   ismappable: true
-fromversion: 6.0.0
+fromversion: 5.5.0
 defaultmapperin: QRadar - Generic Incoming Mapper
 defaultclassifier: QRadar
 tests:

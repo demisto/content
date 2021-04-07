@@ -1,4 +1,4 @@
-IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, and it provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
+IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
 This integration was integrated and tested with API versions 10.1-14.0 on QRadar platform 7.4.1.
 ## Configure QRadar v3 on Cortex XSOAR
 
@@ -25,6 +25,8 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+## Mapping limitations for XSOAR users below 6.0.0
+* For XSOAR users below 6.0.0 version, using 'Pull from instance' option when creating a new mapper is not supported.
 ## Migration from QRadar v2 to QRadar v3
 Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adjustments are required.
 ## Additions and changes between QRadar v3 and QRadar v2

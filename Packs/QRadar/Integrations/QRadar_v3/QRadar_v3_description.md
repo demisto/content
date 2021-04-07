@@ -23,6 +23,9 @@ You can apply additional (optional) filters for the fetch-incident query using t
 #### Reset the "last run" timestamp
 To reset fetch incidents, run the ***qradar-reset-last-run*** command - This will reset the fetch to its initial state. (Will try to fetch the first available offense).
 
+
+#### Mapping limitations for XSOAR users below 6.0.0
+* For XSOAR users below 6.0.0 version, using 'Pull from instance' option when creating a new mapper is not supported.
 #### Required Permissions
 | Component | Permission |
 | --- | --- |
