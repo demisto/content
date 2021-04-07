@@ -17,7 +17,7 @@ This integration was integrated and tested with VirusTotal - Premium (API v3)
 
     | **Parameter** | **Required** |
     | --- | --- |
-    |  | True |
+    | API Key | API Key  | True |
     | Fetch incidents | False |
     | Incident type | False |
     | Maximum number of incidents per fetch | False |
