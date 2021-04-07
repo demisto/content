@@ -989,7 +989,7 @@ def get_stale_prs(stale_time: str, label: str) -> list:
     query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
     if label:
         query += f' label:{label}'
-    matching_issues = search_issue(query).get('items', [])
+    matching_issues = search_issue(query, 100).get('items', [])
     relevant_prs = [get_pull_request(issue.get('number')) for issue in matching_issues]
     return relevant_prs
 
@@ -1094,20 +1094,20 @@ def list_all_command():
     create_issue_table(response, response, limit)
 
 
-def search_issue(query):
+def search_issue(query, limit):
     response = http_request(method='GET',
                             url_suffix='/search/issues',
-                            params={'q': query})
+                            params={'q': query, 'per_page': limit})
     return response
 
 
 def search_command():
     q = demisto.args().get('query')
     limit = int(demisto.args().get('limit'))
-    if limit > 200:
-        limit = 200
+    if limit > 100:
+        limit = 100
 
-    response = search_issue(q)
+    response = search_issue(q, limit)
     create_issue_table(response['items'], response, limit)
 
 
@@ -1318,5 +1318,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == '__main__':
     main()
