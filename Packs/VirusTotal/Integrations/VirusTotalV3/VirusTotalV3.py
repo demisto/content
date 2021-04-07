@@ -1583,7 +1583,11 @@ def file_scan(client: Client, args: dict) -> List[CommandResults]:
         except Exception as exc:
             err = f'Could not process {entry_id=}.\n{str(exc)}'
             demisto.debug(err)
-            results.append(CommandResults(readable_output=err))
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': err
+            })
     return results
 
 
