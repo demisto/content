@@ -7,7 +7,7 @@ args:
   secret: false
 - default: false
   defaultValue: phishing_model
-  description: The name in which the ML model will be saved.
+  description: The model name in which the ML model will be saved.
   isArray: false
   name: modelName
   required: false
@@ -15,7 +15,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: mlModel
-  description: The storing method of the imported model.
+  description: The method for storing the imported model.
   isArray: false
   name: modelStoreType
   predefined:
@@ -23,7 +23,7 @@ args:
   - list
   required: false
   secret: false
-comment: 'Imports a file that contains am ML model. '
+comment: 'Imports a file that contains an ML model. '
 commonfields:
   id: ImportMLModel
   version: -1
