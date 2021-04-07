@@ -76,7 +76,7 @@ class Client(BaseClient):
             if e.res.status_code == 404:
                 result = 404
             else:
-                raise DemistoException(e)
+                raise
         return result
 
 
