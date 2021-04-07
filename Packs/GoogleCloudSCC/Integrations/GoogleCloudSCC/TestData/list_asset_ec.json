@@ -1,5 +1,5 @@
 {
-  "GoogleCloudSCC.Asset(val.name == obj.name)": [
+  "GoogleCloudSCC.Asset(val.name && val.name == obj.name)": [
     {
       "name": "name",
       "securityCenterProperties": {
