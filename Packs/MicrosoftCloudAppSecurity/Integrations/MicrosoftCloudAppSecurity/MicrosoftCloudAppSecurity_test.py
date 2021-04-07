@@ -138,8 +138,9 @@ def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
                       json=incidents["incidents"])
     res_incidents, fetch_start_time, new_last_fetch_id = \
-        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], 1602771392519, {"last_fetch": 1603365903,
-                                                                                         "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
+        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], 1602771392519,
+                                                 {"last_fetch": 1603365903,
+                                                  "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
     assert fetch_start_time == 1603385903000
     assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d7"
     assert res_incidents == [{'name': 'block1', 'occurred': '2020-10-22T16:58:23Z',
@@ -167,23 +168,22 @@ def test_close_false_positive_command_success(requests_mock):
     """
     from MicrosoftCloudAppSecurity import close_false_positive_command
     raw_response = get_fetch_data()
-    args = {
-            "filters": {
-                "id": {
-                    "eq": [
-                        "6060c4300be9cfd6182c934d",
-                        "604f14400be9cfd6181b13fb"
-                    ]
-                }
-            }
+    args = {"filters": {
+        "id": {
+            "eq": [
+                "6060c4300be9cfd6182c934d",
+                "604f14400be9cfd6181b13fb"
+            ]
         }
-    filter = {"custom_filter": json.dumps(args)}
+    }
+    }
+    custom_filter = {"custom_filter": json.dumps(args)}
 
-    expected = get_fetch_data()["CLOSE_ALERT_SUCCESS"]
+    expected = raw_response["CLOSE_ALERT_SUCCESS"]
     requests_mock.post('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/close_false_positive/',
                        json=expected)
 
-    res = close_false_positive_command(client_mocker, filter).outputs
+    res = close_false_positive_command(client_mocker, custom_filter).outputs
     assert res == expected
 
 # close_benign and close_true_positive are the same as close_false_positive
