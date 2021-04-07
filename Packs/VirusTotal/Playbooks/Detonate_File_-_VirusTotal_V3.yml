@@ -1,7 +1,7 @@
 id: Detonate File - VirusTotal (API v3)
 version: -1
 name: Detonate File - VirusTotal (API v3)
-description: Detonate a file through VirusTotal V3
+description: Detonate a file through VirusTotal (API v3)
 starttaskid: "0"
 tasks:
   "0":
@@ -36,10 +36,10 @@ tasks:
     taskid: 19cc02a3-4cd2-4847-80fb-492f4f653092
     type: condition
     task:
-      description: Is VirusTotal V3 enabled?
+      description: Is VirusTotal (API v3) enabled?
       id: 19cc02a3-4cd2-4847-80fb-492f4f653092
       version: -1
-      name: Is VirusTotal V3 enabled?
+      name: Is VirusTotal (API v3) enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -374,4 +374,4 @@ outputs:
   type: string
 fromversion: "5.5.0"
 tests:
-- VirusTotal V3 Detonate Test
+- VirusTotal (API v3) Detonate Test

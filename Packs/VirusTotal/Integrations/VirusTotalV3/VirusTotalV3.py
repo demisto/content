@@ -1302,7 +1302,11 @@ def get_whois(whois_string: str) -> defaultdict:
     """
     whois: defaultdict = defaultdict(lambda: None)
     for line in whois_string.splitlines():
+        key: str,
+        value: str
         key, value = line.split(sep=':', maxsplit=1)
+        key = key.strip()
+        value = value.strip()
         if key in whois:
             if not isinstance(whois[key], list):
                 whois[key] = [whois[key]]

@@ -90,7 +90,7 @@ The following lists the changes in this version according to the commands from t
   additional information as *last_analysis_results* which contains the service name and its specific analysis.
 
 ### Comments
-In VirusTotal v3 you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.
+In VirusTotal (API v3) you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.
 If supplied, the command will use the resource type to add a comment. If not, the command will determine if the given input is a hash or a URL.
 This arguments is available in the following commands:
    - ***vt-comments-get***
@@ -277,14 +277,6 @@ Checks the file reputation of the specified hash.
                         [
                             "eicar",
                             7
-                        ],
-                        [
-                            "test",
-                            5
-                        ],
-                        [
-                            "file",
-                            2
                         ]
                     ],
                     "suggested_threat_label": "eicar/test"
@@ -520,8 +512,8 @@ Checks the reputation of an IP address.
                 "total_votes": {
                     "harmless": 22,
                     "malicious": 6
-                },
-                "whois": "Domain Name: one.one\r\nRegistry Domain ID: DB8D9612E99A84235AF9133FBE4EB27D5-ARI\r\nRegistrar WHOIS Server:\r\nRegistrar URL:\r\nUpdated Date: 2020-07-04T12:15:48Z\r\nCreation Date: 2015-05-20T12:15:44Z\r\nRegistry Expiry Date: 2021-05-20T12:15:44Z\r\nRegistrar: One.com A/S - ONE\r\nRegistrar IANA ID: 9998\r\nRegistrar Abuse Contact Email:\r\nRegistrar Abuse Contact Phone:\r\nDomain Status: ok https://icann.org/epp#ok\r\nRegistry Registrant ID: REDACTED FOR PRIVACY\r\nRegistrant Name: REDACTED FOR PRIVACY\r\nRegistrant Organization: One.com A/S\r\nRegistrant Street: REDACTED FOR PRIVACY\r\nRegistrant Street: REDACTED FOR PRIVACY\r\nRegistrant Street: REDACTED FOR PRIVACY\r\nRegistrant City: REDACTED FOR PRIVACY\r\nRegistrant State/Province:\r\nRegistrant Postal Code: REDACTED FOR PRIVACY\r\nRegistrant Country: dk\r\nRegistrant Phone: REDACTED FOR PRIVACY\r\nRegistrant Phone Ext: REDACTED FOR PRIVACY\r\nRegistrant Fax: REDACTED FOR PRIVACY\r\nRegistrant Fax Ext: REDACTED FOR PRIVACY\r\nRegistrant Email: Please query the RDDS service of the Registrar of Record identified in this output for information on how to contact the Registrant, Admin, or Tech contact of the queried domain name.\r\nRegistry Admin ID: REDACTED FOR PRIVACY\r\nAdmin Name: REDACTED FOR PRIVACY\r\nAdmin Organization: REDACTED FOR PRIVACY\r\nAdmin Street: REDACTED FOR PRIVACY\r\nAdmin Street: REDACTED FOR PRIVACY\r\nAdmin Street: REDACTED FOR PRIVACY\r\nAdmin City: REDACTED FOR PRIVACY\r\nAdmin State/Province: REDACTED FOR PRIVACY\r\nAdmin Postal Code: REDACTED FOR PRIVACY\r\nAdmin Country: REDACTED FOR PRIVACY\r\nAdmin Phone: REDACTED FOR PRIVACY\r\nAdmin Phone Ext: REDACTED FOR PRIVACY\r\nAdmin Fax: REDACTED FOR PRIVACY\r\nAdmin Fax Ext: REDACTED FOR PRIVACY\r\nAdmin Email: Please query the RDDS service of the Registrar of Record identified in this output for information on how to contact the Registrant, Admin, or Tech contact of the queried domain name.\r\nRegistry Tech ID: REDACTED FOR PRIVACY\r\nTech Name: REDACTED FOR PRIVACY\r\nTech Organization: REDACTED FOR PRIVACY\r\nTech Street: REDACTED FOR PRIVACY\r\nTech Street: REDACTED FOR PRIVACY\r\nTech Street: REDACTED FOR PRIVACY\r\nTech City: REDACTED FOR PRIVACY\r\nTech State/Province: REDACTED FOR PRIVACY\r\nTech Postal Code: REDACTED FOR PRIVACY\r\nTech Country: REDACTED FOR PRIVACY\r\nTech Phone: REDACTED FOR PRIVACY\r\nTech Phone Ext: REDACTED FOR PRIVACY\r\nTech Fax: REDACTED FOR PRIVACY\r\nTech Fax Ext: REDACTED FOR PRIVACY\r\nTech Email: Please query the RDDS service of the Registrar of Record identified in this output for information on how to contact the Registrant, Admin, or Tech contact of the queried domain name.\r\nName Server: a.b-one-dns.net\r\nName Server: b.b-one-dns.net\r\nDNSSEC: signedDelegation\r\nURL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf/\r\n>>> Last update of WHOIS database: 2021-03-15T01:25:26Z <<<\r\n\r\nFor more information on Whois status codes, please visit https://icann.org/epp\r\n\r\nThe above WHOIS results have been redacted to remove potential personal data. The full WHOIS output may be available to individuals and organisations with a legitimate interest in accessing this data not outweighed by the fundamental privacy rights of the data subject. To find out more, or to make a request for access, please visit: RDDSrequest.nic.one.\r\n\r\nData provided as WHOIS information on this page is intended to provide you with relevant contact information for a domain name registrant and associated administrative and technical contact.\r\n\r\nThe data in this record is provided by One Registry for information purposes only, and One Registry does not guarantee the accuracy of the information provided. One Registry is authoritative for WHOIS information in TLDs operated by One Registry under contract with the Internet Corporation for Assigned Names and Numbers (ICANN). \r\n\r\nThis WHOIS service is intended only for query-based access. By using this service, you agree that you will use any data presented only for lawful purposes and that, under no circumstances will you\r\n (a) use the data to allow, enable, or otherwise support any marketing activities, regardless of the medium used. Such media include but are not limited to e-mail, telephone, facsimile, postal mail and SMS; or\r\n (b) use the data to enable high volume, automated, electronic processes that send queries or data to the systems of any Registry Operator or ICANN-Accredited registrar, except as reasonably necessary to register domain names or modify existing registrations; or\r\n (c) sell or redistribute the data except insofar as it has been incorporated into a value-added product or service that does not permit the extraction of a substantial portion of the bulk data from the value-added product or service for use by other parties.\r\n\r\n One Registry reserves the right to modify these terms at any time. By submitting this query and using the WHOIS service provided by One Registry, you agree to these terms of use.\r\n",
+                 },
+                "whois": "**whois string**",
                 "whois_date": 1615771527
             },
             "id": "1.1.1.1",
@@ -631,10 +623,7 @@ Checks the reputation of a URL.
         "URL": {
             "attributes": {
                 "categories": {
-                    "Dr.Web": "known infection source",
-                    "Forcepoint ThreatSeeker": "information technology",
-                    "alphaMountain.ai": "Malicious",
-                    "sophos": "malware callhome, command and control"
+                    "Dr.Web": "known infection source"
                 },
                 "first_submission_date": 1554509044,
                 "has_content": false,
@@ -770,16 +759,12 @@ Checks the reputation of a domain.
             "Phone": null
         },
         "CreationDate": [
-            " 2017-01-21T16:26:19.0Z",
-            " 2017-01-21T16:26:19.00Z"
+            " 2017-01-21T16:26:19.0Z"
         ],
         "ExpirationDate": " 2018-01-21T23:59:59.0Z",
         "Name": "example.com",
         "NameServers": [
-            " PDNS1.REGISTRAR-SERVERS.COM",
-            " PDNS2.REGISTRAR-SERVERS.COM",
-            " pdns1.registrar-servers.com",
-            " pdns2.registrar-servers.com"
+            " PDNS1.REGISTRAR-SERVERS.COM"
         ],
         "Registrant": {
             "Country": " PA",
@@ -796,8 +781,7 @@ Checks the reputation of a domain.
             ]
         },
         "UpdatedDate": [
-            " 2017-03-06T21:52:39.0Z",
-            " 2017-01-21T16:26:23.00Z"
+            "2017-03-06T21:52:39.0Z"
         ],
         "WHOIS": {
             "Admin": {
@@ -807,15 +791,11 @@ Checks the reputation of a domain.
                 "Phone": null
             },
             "CreationDate": [
-                " 2017-01-21T16:26:19.0Z",
-                " 2017-01-21T16:26:19.00Z"
+                "2017-01-21T16:26:19.0Z"
             ],
             "ExpirationDate": " 2018-01-21T23:59:59.0Z",
             "NameServers": [
-                " PDNS1.REGISTRAR-SERVERS.COM",
-                " PDNS2.REGISTRAR-SERVERS.COM",
-                " pdns1.registrar-servers.com",
-                " pdns2.registrar-servers.com"
+                " PDNS1.REGISTRAR-SERVERS.COM"
             ],
             "Registrant": {
                 "Country": " PA",
@@ -832,8 +812,7 @@ Checks the reputation of a domain.
                 ]
             },
             "UpdatedDate": [
-                " 2017-03-06T21:52:39.0Z",
-                " 2017-01-21T16:26:23.00Z"
+                " 2017-03-06T21:52:39.0Z"
             ]
         }
     },

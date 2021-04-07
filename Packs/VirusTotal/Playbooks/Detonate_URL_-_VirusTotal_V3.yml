@@ -1,7 +1,7 @@
 id: Detonate URL - VirusTotal (API v3)
 version: -1
 name: Detonate URL - VirusTotal (API v3)
-description: Detonate URL through VirusTotal V3 integration.
+description: Detonate URL through VirusTotal (API v3) integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -39,7 +39,7 @@ tasks:
       description: ""
       id: 17262ca9-15d6-4d3b-85a1-4f5d91128b2b
       version: -1
-      name: Is VirusTotal V3 enabled?
+      name: Is VirusTotal (API v3) enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -331,4 +331,4 @@ outputs:
   type: string
 fromversion: "5.5.0"
 tests:
-- VirusTotal V3 Detonate Test
+- VirusTotal (API v3) Detonate Test

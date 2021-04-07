@@ -1,6 +1,6 @@
-id: VirusTotal V3 Detonate Test
+id: VirusTotal (API v3) Detonate Test
 version: -1
-name: VirusTotal V3 Detonate Test
+name: VirusTotal (API v3) Detonate Test
 description: Tests detonate playbooks of VT v3
 starttaskid: "0"
 tasks:
@@ -218,8 +218,8 @@ tasks:
     task:
       id: e283b36a-7b26-47d5-8a7f-99b86533dc2a
       version: -1
-      name: Detonate URL - VirusTotal V3
-      playbookName: Detonate URL - VirusTotal V3
+      name: Detonate URL - VirusTotal (API v3)
+      playbookName: Detonate URL - VirusTotal (API v3)
       type: playbook
       iscommand: false
       brand: ""

@@ -3211,7 +3211,7 @@
         },
         {
             "integrations": "VirusTotal (API v3)",
-            "playbookID": "VirusTotal V3 Detonate Test",
+            "playbookID": "VirusTotal (API v3) Detonate Test",
             "instance_names": [
                 "virus_total_v3",
                 "virus_total_v3_premium"
