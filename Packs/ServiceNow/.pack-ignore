@@ -6,3 +6,6 @@ ignore=PB106
 
 [file:ServiceNow_IAM.yml]
 ignore=IN135
+
+[file:layoutscontainer-ServiceNow_Create_Ticket_and_Mirror.json]
+ignore=BA101
