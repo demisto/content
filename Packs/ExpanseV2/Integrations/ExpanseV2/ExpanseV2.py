@@ -2192,8 +2192,7 @@ def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> Com
             matching_domains += client.fetch_ips(params=params)
 
     if len(matching_domains) == 0:
-        demisto.results("No data found")
-        return
+        return CommandResults(readable_output="No data found")
 
     context = get_expanse_certificate_to_domain_context(common_name=search, data=matching_domains)
 
