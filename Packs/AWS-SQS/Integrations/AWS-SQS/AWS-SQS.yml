@@ -1,8 +1,8 @@
 commonfields:
-  id: AWS - SQS_test
+  id: AWS - SQS
   version: -1
-name: AWS - SQS_test
-display: AWS - SQS_test
+name: AWS - SQS
+display: AWS - SQS
 category: IT Services
 description: Amazon Web Services Simple Queuing Service (SQS)
 configuration:
@@ -239,7 +239,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Deletes the messages in a queue specified by the QueueURL parameter.
-  dockerimage: demisto/boto3:1.9.55
+  dockerimage: demisto/boto3:2.0.0.18461
   isfetch: true
   runonce: false
 tests:
