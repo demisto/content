@@ -3195,6 +3195,10 @@
             "playbookID": "Nutanix-test"
         },
         {
+            "integrations": "Azure Storage",
+            "playbookID": "Azure Storage - Test"
+        },
+        {
             "integrations": "MicrosoftGraphApplications",
             "playbookID": "MSGraph Applications Test"
         },
@@ -3230,6 +3234,11 @@
         {
             "integrations": "OpenCTI",
             "playbookID": "OpenCTI Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Microsoft Graph API",
+            "playbookID": "Microsoft Graph API - Test",
             "fromversion": "5.0.0"
         }
     ],
@@ -3289,7 +3298,6 @@
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
         "HelloWorldPremium_Scan-Test": "Issue 32512",
-        "ThreatMiner-Test": "Issue 32688",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
@@ -3301,7 +3309,6 @@
         "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
-        "Azure SecurityCenter - Test": "Issue 27391",
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "Field polling test": "Issue 33951",
         "palo_alto_panorama_test_pb": "Issue 34371",
@@ -3419,9 +3426,7 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774",
-        "Tanium": "Issue 33974",
-        "Tanium Threat Response": "Issue 35302"
+        "AttackIQFireDrill": "License issues #29774"
     },
     "nightly_integrations": [
         "Lastline v2",
