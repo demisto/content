@@ -316,7 +316,7 @@ Get a report of an antivirus.
 There is no context output for this command.
 
 #### Command Example
-```!antivirus antivirus="example"```
+```!threat-crowd-antivirus antivirus="example"```
 
 #### Context Example
 ```json
