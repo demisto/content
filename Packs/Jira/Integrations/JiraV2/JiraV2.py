@@ -468,6 +468,12 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
         except TypeError as te:
             demisto.debug(str(te))
             return_error("issueJson must be in a valid json format")
+    elif 'issueJson' in issue_args:
+        try:
+            issue = json.loads(issue_args['issueJson'])
+        except TypeError as te:
+            demisto.debug(str(te))
+            return_error("issueJson must be in a valid json format")
 
     if not issue.get('fields'):
         issue['fields'] = {}
