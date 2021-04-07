@@ -3226,11 +3226,11 @@
             "fromversion": "5.5.0",
             "playbookID": "Cisco Stealthwatch Test"
         },
-		{
-			"integrations": "cymulate_v2",
-			"playbookID": "Cymulate V2 Test",
+        {
+            "integrations": "cymulate_v2",
+            "playbookID": "Cymulate V2 Test",
             "fromversion": "6.0.0"
-		},
+        },
         {
             "integrations": "OpenCTI",
             "playbookID": "OpenCTI Test",
@@ -3321,7 +3321,8 @@
         "Test-BPA_Integration": "Issue 28236",
         "pyEWS_Test": "Issue 27942",
         "EWS search-mailbox test": "Issue 27943",
-        "EWS Public Folders Test": "Issue 27941"
+        "EWS Public Folders Test": "Issue 27941",
+        "Azure NSG - Test": "Issue 33217"
     },
     "skipped_integrations": {
         
