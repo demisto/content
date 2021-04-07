@@ -38,7 +38,9 @@ def executeCommand(command, args=None):
     if command == 'getList':
         return [{'Contents': "ModelDataList", 'Type': 'note'}]
     elif command == 'getMLModel':
-        return [{'Contents': {'modelData': "ModelDataML"}, 'Type': 'note'}]
+        return [{'Contents': {'modelData': "ModelDataML",
+                              'model': {'type': {'type': ''}}},
+                 'Type': 'note'}]
     elif command == 'WordTokenizerNLP':
         TOKENIZATION_RESULT['originalText'] = args['value']
         TOKENIZATION_RESULT['tokenizedText'] = args['value']
@@ -56,8 +58,8 @@ def executeCommand(command, args=None):
 
 def test_get_model_data(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    assert "ModelDataList" == get_model_data("test", "list", True)
-    assert "ModelDataML" == get_model_data("test", "mlModel", True)
+    assert "ModelDataList" == get_model_data("test", "list", True)[0]
+    assert "ModelDataML" == get_model_data("test", "mlModel", True)[0]
 
 
 def test_predict_phishing_words(mocker):
