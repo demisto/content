@@ -26,11 +26,11 @@ configuration:
   type: 0
 - display: Client ID
   name: client_id
-  required: true
+  required: false
   type: 4
 - display: Client Secret
   name: client_secret
-  required: true
+  required: false
   type: 4
 - display: Refresh Token
   name: refresh_token
