@@ -4,7 +4,7 @@ ignore=IN126
 [file:layoutscontainer-Prisma_Cloud_Compute_Cloud_Discovery.json]
 ignore=BA101
 
-[file:layoutscontainer-Prisma_Cloud_Compute_Compliance.json ]
+[file:layoutscontainer-Prisma_Cloud_Compute_Compliance.json]
 ignore=BA101
 
 [file:layoutscontainer-Prisma_Cloud_Compute_Vulnerability.json]
