@@ -91,7 +91,7 @@ REFRESH_TOKEN_COMMAND_CLOUD = [
 
 # test commands with context:
 @pytest.mark.parametrize('command, args, response, expected_result', COMMANDS_LIST_WITH_CONTEXT)
-def test_commands(command, args, response, expected_result, mocker):
+def test_commands_cloud(command, args, response, expected_result, mocker):
     mocker.patch('ServiceDeskPlus.Client.get_access_token')
     client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
     mocker.patch.object(client, 'http_request', return_value=response)
@@ -294,7 +294,7 @@ def test_create_udf_field():
             assert 'Illegal udf fields format' in e.args[0]
 
 
-def test_fetch_incidents(mocker):
+def test_fetch_incidents_cloud(mocker):
     """
     Unit test
     Given

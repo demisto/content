@@ -6,7 +6,7 @@ IT Service Management
 2. Search for ServiceDeskPlus.
 3. Click **Add instance** to create and configure a new integration instance.
 
-## Instance Creation Flow
+## Instance Creation Flow for Cloud
 
 To create an instance of the Service Desk Plus integration, you need to get a Client ID, Client Secret, and Refresh Token.
 Follow the next steps to create an instance:
@@ -22,7 +22,7 @@ To create an instance of the Service Desk Plus integration, you need to get a On
 
 Follow the next steps to create an instance:
 
-1. Enter the Server URL info.
+1. Enter the On-Premise Server URL info.
 2. Enter the Technician Key.
 3. Click the **Test** button to validate the instance.
 
@@ -39,8 +39,8 @@ Follow the next steps to create an instance:
 | server_url | Data Center Location: Select the domain location that is applicable for you application | True |
 | technician_key | Technician Key | False |
 | server_url_on_premise | On-Premise Server URL | False |
-| client_id | Client ID | True |
-| client_secret | Client Secret | True |
+| client_id | Client ID | False |
+| client_secret | Client Secret | False |
 | refresh_token | Refresh Token | False |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |

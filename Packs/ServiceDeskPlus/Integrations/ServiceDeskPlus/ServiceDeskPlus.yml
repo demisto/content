@@ -63,7 +63,8 @@ configuration:
   - Canceled
   required: false
   type: 16
-- defaultvalue: 7 days
+- additionalinfo: 'Input format: <number> <time unit>, e.g., 1 hour, 30 minutes'
+  defaultvalue: 7 days
   display: First fetch time
   name: fetch_time
   required: false
@@ -876,7 +877,7 @@ script:
     description: Closes the specified request.
     execution: false
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.2.18414
   feed: false
   isfetch: true
   longRunning: false
