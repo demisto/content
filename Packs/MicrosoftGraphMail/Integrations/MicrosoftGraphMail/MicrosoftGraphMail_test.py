@@ -319,7 +319,7 @@ def test_get_attachment(client):
         - Validate that the message object created successfully
 
     """
-    output_prefix = 'MSGraphMail(val.ID == obj.ID)'
+    output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)

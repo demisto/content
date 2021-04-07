@@ -27,7 +27,7 @@
   },
   "HumanReadable": "### Total retrieved queue(s): 2\n|Id|Name|Email|\n|---|---|---|\n| id | name | email |\n| id | name |  |\n",
   "EntryContext": {
-    "BmcRemedyforce.Queue(val.Id == obj.Id)": [
+    "BmcRemedyforce.Queue(val.Id && val.Id == obj.Id)": [
       {
         "Id": "id",
         "Name": "name",

@@ -1345,7 +1345,7 @@ def test_expanse_get_certificate_by_hash(requests_mock):
     mock_certificate_data = util_load_json("test_data/expanse_certificate.json")
     mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
 
-    mock_result_data['Expanse.Certificate(val.id == obj.id)'] = [mock_certificate_data]
+    mock_result_data['Expanse.Certificate(val.id && val.id == obj.id)'] = [mock_certificate_data]
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     requests_mock.get(
@@ -1422,7 +1422,7 @@ def test_certificate_command(requests_mock, mocker):
     mock_ioc_data = util_load_json("test_data/expanse_certcommand_ioc.json")
     mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
 
-    mock_result_data['Expanse.Certificate(val.id == obj.id)'] = [mock_certificate_data]
+    mock_result_data['Expanse.Certificate(val.id && val.id == obj.id)'] = [mock_certificate_data]
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     requests_mock.get(
