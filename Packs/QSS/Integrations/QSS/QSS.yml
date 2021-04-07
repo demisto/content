@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Fetch Incidents
+- display: Fetch incidents
   name: isFetch
   required: false
   type: 8
@@ -21,6 +21,15 @@ configuration:
   name: apikey
   required: true
   type: 4
+- display: Minimum severity of cases to fetch
+  name: severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  type: 15
 - defaultvalue: "10"
   display: Max fetch
   name: max_fetch
@@ -31,15 +40,6 @@ configuration:
   options:
   - Open
   - Closed
-  required: false
-  type: 15
-- display: Minimum severity of cases to fetch
-  name: severity
-  options:
-  - Low
-  - Medium
-  - High
-  - Critical
   required: false
   type: 15
 - display: Flase positive cases to fetch
