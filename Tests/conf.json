@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
 	{
-	    "fromversion": "5.5.0",
+	    "fromversion": "5.0.0",
 	    "integrations": "AlphaVantage",
 	    "playbookID": "AlphaVantage Test Playbook"
 	},
