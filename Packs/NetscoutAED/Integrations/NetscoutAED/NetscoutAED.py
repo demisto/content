@@ -355,7 +355,9 @@ def test_module(client: Client, demisto_args: dict) -> str:
         client.country_code_list_command(demisto_args)
     except Exception as e:
         if 'UNAUTHORIZED' in str(e) or 'invalidAuthToken' in str(e):
-            raise DemistoException(f'Authorization failed, make sure API Key is correctly set. \n{str(e)}')
+            raise DemistoException('Test failed, make sure API Key is correctly set.')
+        elif 'Error in API call' in str(e):
+            raise DemistoException("Test failed, Error in API call")
         else:
             raise DemistoException(f'Test failed, Please check your parameters. \n{str(e)}')
     return "ok"
@@ -1022,7 +1024,6 @@ def main() -> None:
     proxy: bool = params.get('proxy', False)
     api_token = params.get('api_token')
     commands = init_commands_dict()
-
     try:
         handle_proxy()
         client = Client(
