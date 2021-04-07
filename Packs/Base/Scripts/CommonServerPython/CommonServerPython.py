@@ -495,9 +495,8 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
             'https': os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
         }
     else:
-        for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-            if k in os.environ:
-                del os.environ[k]
+        skip_proxy()
+
     if handle_insecure:
         if insecure_param_name is None:
             param_names = ('insecure', 'unsecure')
@@ -505,10 +504,33 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
             param_names = (insecure_param_name,)  # type: ignore[assignment]
         for p in param_names:
             if demisto.params().get(p, False):
-                for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
-                    if k in os.environ:
-                        del os.environ[k]
+                skip_cert_verification()
+
     return proxies
+
+
+def skip_proxy():
+    """
+    The function deletes the proxy environment vars in order to http requests to skip routing through proxy
+
+    :return: None
+    :rtype: ``None``
+    """
+    for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+        if k in os.environ:
+            del os.environ[k]
+
+
+def skip_cert_verification():
+    """
+    The function deletes the self signed certificate env vars in order to http requests to skip certificate validation.
+
+    :return: None
+    :rtype: ``None``
+    """
+    for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
+        if k in os.environ:
+            del os.environ[k]
 
 
 def urljoin(url, suffix=""):
@@ -5444,7 +5466,10 @@ if 'requests' in sys.modules:
             self._auth = auth
             self._session = requests.Session()
             if not proxy:
-                self._session.trust_env = False
+                skip_proxy()
+
+            if not verify:
+                skip_cert_verification()
 
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
@@ -5612,7 +5637,8 @@ if 'requests' in sys.modules:
                 address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
-                self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                if retries:
+                    self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 # Execute
                 res = self._session.request(
                     method,
