@@ -1,4 +1,4 @@
-This playbook will unisolate endpoints by the device id that was provided in the playbook input.
+This playbook unisolates devices according to the device ID that is provided in the playbook input.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,10 +7,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CrowdStrikeFalcon
+CrowdStrikeFalcon
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 * cs-falcon-lift-host-containment
@@ -21,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Endpoint_id | The endpoint id/device id that you wish to unisolate.  |  | Optional |
+| Endpoint_id | The endpoint ID/device ID that you want to unisolate.  |  | Optional |
 
 ## Playbook Outputs
 ---
