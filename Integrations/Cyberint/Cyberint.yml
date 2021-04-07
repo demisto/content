@@ -511,7 +511,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Analysis report file name
+      description: Analysis report file name.
       isArray: false
       name: report_name
       required: true

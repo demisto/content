@@ -112,11 +112,11 @@ class Client(BaseClient):
 
     def get_alert_attachment(self, alert_ref_id: str, attachment_id: str) -> Response:
         """
-        Retrieve attachment by alert reference id and attachment id.
+        Retrieve attachment by alert reference ID and attachment ID.
 
         Args:
             alert_ref_id (str): Reference ID of the alert.
-            attachment_id (str): Attachment ID.
+            attachment_id (str): The ID of the attachment.
 
         Returns:
             Response: API response from Cyberint.
@@ -130,10 +130,10 @@ class Client(BaseClient):
 
     def get_analysis_report(self, alert_ref_id: str) -> Response:
         """
-        Retrieve analysis report by alert reference id.
+        Retrieve analysis report by alert reference ID.
 
         Args:
-            alert_ref_id (str): Reference ID for the alert.
+            alert_ref_id (str): Reference ID of the alert.
 
         Returns:
             Response: API response from Cyberint.
@@ -325,40 +325,43 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
                           outputs=outputs)
 
 
-def cyberint_alerts_get_attachment_command(client: Client, args: dict) -> fileResult:
+def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str,
+                                           attachment_id: str, attachment_name: str) -> fileResult:
     """
-    Retrieve attachment by alert reference id and attachment internal id.
-    Attachments includes: CSV files , screenshots and alert attachments file.
+    Retrieve attachment by alert reference ID and attachment internal ID.
+    Attachments includes: CSV files , Screenshots, and alert attachments files.
 
     Args:
         client (Client): Cyberint API client.
-        args (dict): Command arguments from XSOAR.
+        alert_ref_id (str): Reference ID of the alert.
+        attachment_id (str): The ID of the alert attachment.
+        attachment_name (str): The file name of the alert attachment.
 
     Returns:
         fileResult: Alert attachment file.
 
     """
 
-    raw_response = client.get_alert_attachment(args.get('alert_ref_id', None),
-                                               args.get('attachment_id', None))
-    return fileResult(filename=args.get('attachment_name', None),
-                      data=raw_response.content)
+    raw_response = client.get_alert_attachment(alert_ref_id, attachment_id)
+
+    return fileResult(filename=attachment_name, data=raw_response.content)
 
 
-def cyberint_alerts_get_analysis_report_command(client: Client, args: dict) -> fileResult:
+def cyberint_alerts_get_analysis_report_command(client: Client, alert_ref_id: str, report_name: str) -> fileResult:
     """
-    Retrieve expert analysis report by alert reference id and report name.
+    Retrieve expert analysis report by alert reference ID and report name.
 
     Args:
         client (Client): Cyberint API client.
-        args (dict): Command arguments from XSOAR.
+        alert_ref_id (str): Reference ID of the alert.
+        report_name (str): The name of the alert expert analysis report.
 
     Returns:
         fileResult : Alert analysis report file.
 
     """
-    raw_response = client.get_analysis_report(args.get('alert_ref_id', None))
-    return fileResult(filename=args.get('report_name', None), data=raw_response.content)
+    raw_response = client.get_analysis_report(alert_ref_id)
+    return fileResult(filename=report_name, data=raw_response.content)
 
 
 def get_attachment_name(attachment_name: str) -> str:
@@ -366,38 +369,37 @@ def get_attachment_name(attachment_name: str) -> str:
     Retrieve attachment name or error string if none is provided.
 
     Args:
-        attachment_name (str): Attachment name to retrieve
+        attachment_name (str): Attachment name to retrieve.
 
     Returns:
-        str: If attachment_name is None or "" - return "demisto_untitled_attachment" ,
-        otherwise attachment_name
+        str: The attachment file name or 'xsoar_untitled_attachment' by default.
 
     """
     if attachment_name is None or attachment_name == "":
-        return "demisto_untitled_attachment"
+        return "xsoar_untitled_attachment"
     return attachment_name
 
 
-def create_fetch_incident_attachment(client: Client, attachment: object, alert_id: str) -> dict:
+def create_fetch_incident_attachment(client: Client, attachment_file_name: str, attachment_id: str,
+                                     alert_id: str) -> dict:
     """
     Create suitable attachment information dictionary object.
-    This dictionary object will be used as an entry in fetch-incidents attachments list.
+    This dictionary object will be used as an entry in the fetch-incidents attachments list.
 
     Args:
         client (Client): Cyberint API client.
-        attachment (object): Alert attachment object.
-        alert_id: Alert id.
+        alert_id (str): The ID of the alert.
+        attachment_file_name (str): The name of the attachment.
+        attachment_id (str): The ID of the attachment.
 
     Returns:
-        dict: Attachment information dictionary.Contains the following keys: "path" , "name" ,"showMediaFile"
+        dict: Attachment information.Includes - path, name, and showMediaFile.
 
     """
-    attachment_name = get_attachment_name(attachment.get('name', None))
-    attachment_id = attachment.get('id', None)
-
     if not attachment_id or not alert_id:
         return {}
 
+    attachment_name = get_attachment_name(attachment_file_name)
     get_attachment_response = client.get_alert_attachment(alert_id, attachment_id)
     file_result = fileResult(filename=attachment_name, data=get_attachment_response.content)
     # check for error
@@ -414,43 +416,29 @@ def create_fetch_incident_attachment(client: Client, attachment: object, alert_i
 
 def get_alert_attachments_files(client: Client, alert: dict) -> list:
     """
-    Retrieve all alert attachments files - Attachments , CSV , Screenshot and Analysis report.
+    Retrieve all alert attachments files - Attachments, CSV, Screenshot, and Analysis report.
 
     Args:
         client (Client): Cyberint API client.
         alert (dict): Cyberint Alert.
 
     Returns:
-        list: List of attachments - each attachment element will contain the following fields:
-        {
-            "path": file_result["FileID"],
-            "name": attachment_name,
-            "showMediaFile": True
-        }
+        list: List of attachments - each attachment element will contain the following fields - path, name and showMediaFile.
 
     """
     incident_attachments = []
     alert_id = alert.get('ref_id')
-    if not alert_id:
-        return []
 
-    alert_attachments = alert.get('attachments', [])
-    for attachment in alert_attachments:
-        attachment_details = create_fetch_incident_attachment(client, attachment, alert_id)
-        if attachment_details:
-            incident_attachments.append(attachment_details)
+    attachments_keys = [["attachments"], ["alert_data", "screenshot"], ["alert_data", "csv"]]
 
-    screenshot = dict_safe_get(alert, ["alert_data", "screenshot"])
-    if screenshot:
-        attachment_details = create_fetch_incident_attachment(client, screenshot, alert_id)
-        if attachment_details:
-            incident_attachments.append(attachment_details)
-
-    csv = dict_safe_get(alert, ["alert_data", "csv"])
-    if csv:
-        attachment_details = create_fetch_incident_attachment(client, csv, alert_id)
-        if attachment_details:
-            incident_attachments.append(attachment_details)
+    for key in attachments_keys:
+        alert_attachments = dict_safe_get(alert, key, default_return_value=[])
+        attachment_list = alert_attachments if isinstance(alert_attachments, list) else [alert_attachments]
+        for attachment in attachment_list:
+            attachment_details = create_fetch_incident_attachment(client, attachment.get('name', None),
+                                                                  attachment.get('id', None), alert_id)
+            if attachment_details:
+                incident_attachments.append(attachment_details)
 
     analysis_report = alert.get('analysis_report', None)
     if analysis_report:
@@ -580,10 +568,10 @@ def main():
             return_results(cyberint_alerts_status_update(client, demisto.args()))
 
         elif demisto.command() == 'cyberint-alerts-get-attachment':
-            return_results(cyberint_alerts_get_attachment_command(client, demisto.args()))
+            return_results(cyberint_alerts_get_attachment_command(client, **demisto.args()))
 
         elif demisto.command() == 'cyberint-alerts-analysis-report':
-            return_results(cyberint_alerts_get_analysis_report_command(client, demisto.args()))
+            return_results(cyberint_alerts_get_analysis_report_command(client, **demisto.args()))
     except Exception as e:
 
         if 'Invalid token or token expired' in str(e):
