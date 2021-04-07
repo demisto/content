@@ -222,8 +222,11 @@ class Client(BaseClient):
                     files={'file': file},
                     resp_type='response'
                 )
-        demisto.debug(f'scan_file response:\n{response.status_code}, {response.headers}, {response.content}')
-        return response
+        demisto.debug(
+            f'scan_file response:\n'
+            f'{str(response.status_code)=}, {str(response.headers)=}, {str(response.content)}'
+        )
+        return response.json()
 
     def get_upload_url(self) -> dict:
         """

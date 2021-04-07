@@ -7,7 +7,6 @@ from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
                           get_working_id, raise_if_hash_not_valid,
                           raise_if_ip_not_valid)
 
-import demistomock as demisto
 from CommonServerPython import DemistoException
 
 
