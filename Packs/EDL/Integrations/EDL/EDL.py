@@ -138,8 +138,8 @@ def refresh_edl_context(request_args: RequestArguments, save_integration_context
 
     while actual_indicator_amount < request_args.limit:
         # from where to start the new poll and how many results should be fetched
-        new_offset = len(iocs) + request_args.offset + actual_indicator_amount - 1
-        new_limit = request_args.limit - actual_indicator_amount
+        new_offset = len(iocs) + request_args.offset
+        new_limit = request_args.limit - len(iocs)
 
         # poll additional indicators into list from demisto
         new_iocs = find_indicators_to_limit(request_args.query, new_limit, new_offset)
