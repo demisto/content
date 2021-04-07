@@ -1,7 +1,7 @@
 id: Carbon Black Response - Unisolate Endpoint
 version: -1
 name: Carbon Black Response - Unisolate Endpoint
-description: This playbook will unisolate sensors in Carbon Black Response.
+description: This playbook unisolates sensors according to the sensor ID that is provided in the playbook input.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -148,7 +148,7 @@ tasks:
       id: d308391d-bca5-4895-8ca3-7212016b1112
       version: -1
       name: Get host information from Carbon Black Enterprise Response
-      description: Display information about the given sensor
+      description: Display information about the given sensor.
       script: carbonblack-v2|||cb-sensor-info
       type: regular
       iscommand: true
@@ -224,7 +224,7 @@ tasks:
       id: 6e64eb8f-6046-41a9-8f7c-d9210545d742
       version: -1
       name: Unisolate the sensor
-      description: Unquarantine the endpoint
+      description: Unquarantine the endpoint.
       script: carbonblack-v2|||cb-unquarantine-device
       type: regular
       iscommand: true
@@ -256,7 +256,7 @@ tasks:
       id: f9b56018-29bb-4a84-8c72-fc5bcaf10745
       version: -1
       name: Get CB sensor list
-      description: List the CarbonBlack sensors
+      description: List the CarbonBlack sensors.
       script: '|||cb-list-sensors'
       type: regular
       iscommand: true
@@ -300,7 +300,7 @@ inputs:
 - key: Endpoint_ID
   value: {}
   required: false
-  description: 'The agent id/sensor id/endpoint id that you wish to unisolate. '
+  description: 'The sensor id that you want to unisolate. '
   playbookInputQuery:
 outputs: []
 tests:
