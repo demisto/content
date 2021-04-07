@@ -1,5 +1,5 @@
 TOPdesk’s Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform.
-This integration was integrated and tested with 10.08.008-on-premises-release3-build2 for Linux x86 64-bit of TOPdesk
+This integration was integrated and tested with 10.08.008-on-premises-release3-build2 for Linux x86 64-bit of TOPdesk.
 
 ## Use cases
 1. Get, update, create, TOPdesk incidents, as well as (de-)escalate, (un)archive or upload files to the incidents.
@@ -56,7 +56,7 @@ A few implemented commands can take a query as a paramter. Those include:
 `topdesk-incidents-list`, `topdesk-branches-list`, `topdesk-persons-list`, `topdesk-operators-list`
 
 While the newest versions of TOPdesk all use the new [FIQL query format](https://developers.topdesk.com/tutorial.html#query), older versions use limited inline parameters for filters in the requests.
-More specifically there are 2 versions at work:
+Specifically there are 2 versions at work:
 #### [TOPdeskRestAPI](https://developers.topdesk.com/documentation/index.html) 
 Implements: `topdesk-incidents-list`
 

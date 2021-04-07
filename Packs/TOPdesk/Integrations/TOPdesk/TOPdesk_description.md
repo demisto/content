@@ -1,4 +1,5 @@
 ## TOPdesk
+This Integration supports SupportingFilesAPI from versions `1.38.0` and higher. See the integration documentation for additional information on version support and more.
 
 Some of TOPdesk's user types include person and operator. Each user type has a different set of actions that he is allowed to perfom.
 For example, a person can only update incidents he created while an operator can update a wider range of incidents.
