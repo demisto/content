@@ -17,7 +17,7 @@ requests.packages.urllib3.disable_warnings()
 USER = demisto.params().get('user')
 TOKEN = demisto.params().get('token', '')
 PRIVATE_KEY = demisto.params().get('credentials', {})
-PRIVATE_KEY = PRIVATE_KEY.get('credentials', {}).get('sshkey', '') if PRIVATE_KEY else PRIVATE_KEY
+PRIVATE_KEY = PRIVATE_KEY.get('sshkey', '') if PRIVATE_KEY else PRIVATE_KEY
 INTEGRATION_ID = demisto.params().get('integration_id')
 INSTALLATION_ID = demisto.params().get('installation_id')
 BASE_URL = 'https://api.github.com'
@@ -1289,16 +1289,16 @@ COMMANDS = {
 
 '''EXECUTION'''
 
-if TOKEN == '' and PRIVATE_KEY != '':
+if not TOKEN and PRIVATE_KEY:
     try:
         import jwt
     except Exception:
-        return_error("You need to update the docket image so that the jwt package could be used")
+        return_error("You need to update the docker image so that the jwt package could be used")
 
     generated_jwt_token = create_jwt(PRIVATE_KEY, INTEGRATION_ID)
     TOKEN = get_installation_access_token(INSTALLATION_ID, generated_jwt_token)
 
-if TOKEN == '' and PRIVATE_KEY == '':
+if not TOKEN and not PRIVATE_KEY:
     return_error("Insert api token or private key")
 
 HEADERS = {
@@ -1318,5 +1318,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == '__main__':
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

@@ -1,4 +1,4 @@
-import GitHub
+import demistomock as demisto
 
 
 def mock_http_request_for_search(method, url_suffix, params=None, data=None):
@@ -14,10 +14,11 @@ def test_search_issue(mocker):
     Then:
         Assert that the arguments are applied well
     """
-    from GitHub import search_issue
     query = 'hello'
     limit = 50
-    mocker.patch.object(GitHub, 'http_request', side_effect=mock_http_request_for_search)
+    mocker.patch.object(demisto, 'params', return_value={"token": "123456"})
+    mocker.patch('GitHub.http_request', side_effect=mock_http_request_for_search)
+    from GitHub import search_issue
 
     params_for_request = search_issue(query, limit)
 
