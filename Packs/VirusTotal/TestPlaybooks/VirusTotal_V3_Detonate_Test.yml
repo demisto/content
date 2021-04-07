@@ -218,8 +218,8 @@ tasks:
     task:
       id: e283b36a-7b26-47d5-8a7f-99b86533dc2a
       version: -1
-      name: Detonate File - VirusTotal V3
-      playbookName: Detonate File - VirusTotal V3
+      name: Detonate URL - VirusTotal V3
+      playbookName: Detonate URL - VirusTotal V3
       type: playbook
       iscommand: false
       brand: ""
@@ -247,8 +247,8 @@ tasks:
     task:
       id: 357d9cfb-82f6-4084-8709-b1f6c5a4df1a
       version: -1
-      name: Detonate URL - VirusTotal V3
-      playbookName: Detonate URL - VirusTotal V3
+      name: Detonate URL - VirusTotal (API v3)
+      playbookName: Detonate URL - VirusTotal (API v3)
       type: playbook
       iscommand: false
       brand: ""

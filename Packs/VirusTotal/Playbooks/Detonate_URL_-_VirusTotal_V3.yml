@@ -1,6 +1,6 @@
-id: Detonate URL - VirusTotal V3
+id: Detonate URL - VirusTotal (API v3)
 version: -1
-name: Detonate URL - VirusTotal V3
+name: Detonate URL - VirusTotal (API v3)
 description: Detonate URL through VirusTotal V3 integration.
 starttaskid: "0"
 tasks:

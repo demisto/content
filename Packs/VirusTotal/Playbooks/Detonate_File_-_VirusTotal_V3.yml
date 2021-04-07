@@ -1,7 +1,7 @@
-id: Detonate File - VirusTotal V3
+id: Detonate File - VirusTotal (API v3)
 version: -1
-name: Detonate File - VirusTotal V3
-description: Detonate a file through VirusTotal  V3
+name: Detonate File - VirusTotal (API v3)
+description: Detonate a file through VirusTotal V3
 starttaskid: "0"
 tasks:
   "0":

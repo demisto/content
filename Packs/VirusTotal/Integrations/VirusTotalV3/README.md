@@ -1,5 +1,5 @@
 This integration analyzes suspicious hashes, URLs, domains, and IP addresses.
-The integration was integrated and tested with version v3 API of VirusTotal (API v3)
+The integration was integrated and tested with version v3 API of VirusTotal.
 ## Configure VirusTotal (API v3) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -83,8 +83,8 @@ The following lists the changes in this version according to the commands from t
    - *VirusTotal.IP*
 
   To analyze (detonate) the indicator, you can use the following playbooks:
-     - **Detonate File - VirusTotal V3** 
-     - **Detonate URL - VirusTotal V3** 
+     - **Detonate File - VirusTotal (API v3)** 
+     - **Detonate URL - VirusTotal (API v3)** 
 - Each reputation command will use at least 1 API call. For advanced reputation commands, use the *Premium API* flag.
 - For each reputation command there is the new *extended_data* argument . When set to "true", the results returned by the commands will contain  
   additional information as *last_analysis_results* which contains the service name and its specific analysis.
@@ -104,8 +104,8 @@ This arguments is available in the following commands:
 ### Detonation (scan) Commands
 Removed the *vtLink* output from all commands as it does no longer return from the API.
 To easily use the scan commands we suggest using the following playbooks:
-  - **Detonate File - VirusTotal V3**
-  - **Detonate URL - VirusTotal V3** 
+  - **Detonate File - VirusTotal (API v3)**
+  - **Detonate URL - VirusTotal (API v3)** 
 
 Use the ***vt-analysis-get*** command to get the report from the scans.
 
@@ -703,7 +703,7 @@ Checks the reputation of a domain.
 
 #### Base Command
 
-`domain`
+`domain`\
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1287,7 +1287,7 @@ Retrieves a comment by comment ID.
 
 ### vt-search
 ***
-Search for an indicator in Virus Total.
+Search for an indicator in VirusTotal.
 
 
 #### Base Command
@@ -1348,356 +1348,13 @@ Search for an indicator in Virus Total.
                     "timeout": 0,
                     "undetected": 7
                 },
-                "last_dns_records": [
+                "last_dns_records": [  
                     {
                         "ttl": 14399,
                         "type": "TXT",
                         "value": "atlassian-domain-verification=WeW32v7AwYQEviMzlNjYyXNMUngcnmIMtNZKJ69TuQUoda5T6DFFV/A6rRvOzwvs"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "35g550m1f2732uuklt7om3fr0k"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "amazonses:wD8q9vBgr/tA/9V4Lh4CPADIMQs4LIW/EpqeYxrS5e8="
-                    },
-                    {
-                        "ttl": 21599,
-                        "type": "NS",
-                        "value": "ns7.dnsmadeeasy.com"
-                    },
-                    {
-                        "expire": 604800,
-                        "minimum": 3600,
-                        "refresh": 3600,
-                        "retry": 600,
-                        "rname": "domains.paloaltonetworks.com",
-                        "serial": 1616778508,
-                        "ttl": 14399,
-                        "type": "SOA",
-                        "value": "ns1.p23.dynect.net"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "e6dj6aj6redkv98nojsphl0bp6"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "mongodb-site-verification=iAfodgMVqXWglWqKv3qb4xzIjtZkfBwk"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "wcfF7BYKYfRSc96jwmhQfabmMPUMLVmBu1Pauas9oU0="
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "docusign=7979590c-2e52-4018-b599-54a429f449d1"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "b1kisgsns70occu4j4jpl552a9"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "status-page-domain-verification=gxhgqp5msy2m"
-                    },
-                    {
-                        "ttl": 23,
-                        "type": "A",
-                        "value": "**ip**"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "74H6MX8NRYBAQ3D8H2MJC3Y8P5AGSNB8"
-                    },
-                    {
-                        "priority": 10,
-                        "ttl": 14399,
-                        "type": "MX",
-                        "value": "mxa-00169c01.gslb.pphosted.com"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "CGJAZFH9QTYUPE2A6XJE8VEBUSSB47B5"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "3fln6bvgju1p5c0aa455mjl61n"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "lrlteq11f2vuhlvmkerhqnpua7"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "c2e1bv49egsn6v6ohlra47namp"
-                    },
-                    {
-                        "ttl": 21599,
-                        "type": "NS",
-                        "value": "ns6.dnsmadeeasy.com"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "logmein-verification-code=ccb897d5-1bed-410a-9c45-a6dd6be9b1c"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "p5cIVMfOtO93Vdzz9extJY700HwcOXxbhBcB+dyK028="
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "omi6ve5p04je278gjtiegkblh1"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "atlassian-domain-verification=OLe058dAXDG6kcCutEa7uSYy2iKLT7CvYNxGz2iROYa4NJ8FazXAkt/Elc8OzblS"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "okansnmkk1j60die0or78624gh"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "9j6u125ve5mvsd634h0gkovq27"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "amazonses:Do93Z/wjV5nZDDaT6n/geaLn2dcmC4LKxWJr6kW09J4="
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "o9c2hro57o4ahin6q2jj64lft8"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "5q1hlpu2u9j6lgrp3rp2ucv48p"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "gbe3h5tqf05k12gdkh1ch15c7r"
-                    },
-                    {
-                        "priority": 10,
-                        "ttl": 14399,
-                        "type": "MX",
-                        "value": "mxb-00169c01.gslb.pphosted.com"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "google-site-verification=8zcmNvhRzBOYw-GN3l86mhO5MTfJjEd8ocEyjdsSLak"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "vm77066l7cp2i2hr66uvsforij"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "hi8pl0b5i96m35pf2741v1hqth"
-                    },
-                    {
-                        "ttl": 21599,
-                        "type": "NS",
-                        "value": "ns5.dnsmadeeasy.com"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "h7vhs2ouk1vftgjoqqlmjcthbj"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "css6v61730u8halh3dec5lgreo"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "eks3p/qXVt97oL7X1IGBQdP05ev8rOuFOK8LAzqJ8iMkRDfXrKKGEFy3zHyGEAG8IkwimKG83eTQtoWgLClb2A=="
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "7is4vpdq4k8dcioag2dhd5dtot"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "jkt1bch6hqi27c4jisrstg5mke"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "atlassian-domain-verification=2eHeLgLQ13HybaqKxXx+k/uq1dD51Vcs0GAhz1rsbpWTAP3pagbUpE1SuY3dTIyi"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "rmrophudqgsjmkfu3fur0da1dh"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "lspo05pafcr60k2utns50jephr"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "o1l85onfiau3ujepq88nscnsbp"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "9n1sitvm4qt002dkp0riccqu3b"
-                    },
-                    {
-                        "ttl": 21599,
-                        "type": "NS",
-                        "value": "ns2.p23.dynect.net"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "nm70udiiaufkln1coolgar432q"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "ca2mn12n6lmqe0l187um71u78f"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "R4WKB79BFYVKQ8DVZPR2JCS5CS2CTXMY"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "uZ5++1a8ndinwH931iYZakLQiALyIpSMchkwXnu+cd4="
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "c552n5ffvckbvajtvlbq87h6e4"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "fu93k0bu02qfg8mhfiedij43fo"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "2342193"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "kel7gtj8ljaveug9l29u3eaeqf"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "hkitftvrblcmp35ccr2rfgmg0p"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "36fvpcfneha0psdkcongoslqhi"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "adobe-sign-verification=3f81eef2cae0ba508fad3d31356494b4"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "14cdviopi83qfqsr00edmeb02u"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "v4s6p80shob7d34obcvgthap5i"
-                    },
-                    {
-                        "ttl": 21599,
-                        "type": "NS",
-                        "value": "ns1.p23.dynect.net"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "adobe-idp-site-verification=9b01a9ad-47a1-4d79-a207-25b12d1958a7"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "p2avt2pnrn006tf2iht0ktphsp"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "v=spf1 include:spf-a.paloaltonetworks.com include:spf-b.paloaltonetworks.com include:spf-c.paloaltonetworks.com ~all"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "CGTGPGXPT3YNYUMKWS4RXNGXQHN5QEY3"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "logmein-verification-code=1379d49d-5d99-4141-9baa-0b30f7c69214"
-                    },
-                    {
-                        "ttl": 21599,
-                        "type": "NS",
-                        "value": "ns3.p23.dynect.net"
-                    },
-                    {
-                        "ttl": 21599,
-                        "type": "NS",
-                        "value": "ns4.p23.dynect.net"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "EHJSPTQUZK5WEHK7JD5XWWQAUGW3XMJT"
-                    },
-                    {
-                        "ttl": 14399,
-                        "type": "TXT",
-                        "value": "nncr5kvkcogrqimf5m5vtussp6"
                     }
-                ],
+],
                 "last_dns_records_date": 1616986415,
                 "last_https_certificate": {
                     "cert_signature": {
@@ -1715,7 +1372,6 @@ Search for an indicator in Virus Total.
                             "OCSP": "http://ocsp.example.com/"
                         },
                         "certificate_policies": [
-                            "**policy**",
                             "**policy**"
                         ],
                         "crl_distribution_points": [
@@ -1979,25 +1635,7 @@ Retrieves a behavioral relationship of the given file hash.
                         "c:\\windows\\system32\\imm32.dll",
                         "c:\\windows\\system32\\msctf.dll",
                         "c:\\windows\\microsoft.net\\framework\\v4.0.30319\\nlssorting.dll",
-                        "c:\\windows\\microsoft.net\\framework\\v4.0.30319\\clr.dll",
-                        "c:\\windows\\system32\\msvcr100_clr0400.dll",
-                        "c:\\windows\\system32\\ole32.dll",
-                        "c:\\windows\\system32\\xpsp2res.dll",
-                        "c:\\windows\\system32\\uxtheme.dll",
-                        "c:\\windows\\system32\\apphelp.dll",
-                        "c:\\windows\\system32\\mscoree.dll",
-                        "c:\\windows\\system32\\secur32.dll",
-                        "c:\\windows\\system32\\msvcrt.dll",
-                        "c:\\windows\\assembly\\nativeimages_v4.0.30319_32\\system\\964da027ebca3b263a05cadb8eaa20a3\\system.ni.dll",
-                        "c:\\windows\\system32\\msctfime.ime",
-                        "c:\\windows\\microsoft.net\\framework\\v4.0.30319\\culture.dll",
-                        "c:\\windows\\system32\\shlwapi.dll",
-                        "c:\\windows\\microsoft.net\\framework\\v4.0.30319\\mscoreei.dll",
-                        "c:\\windows\\system32\\gdi32.dll",
-                        "c:\\windows\\system32\\version.dll",
-                        "c:\\windows\\system32\\kernel32.dll",
-                        "c:\\windows\\assembly\\nativeimages_v4.0.30319_32\\system.core\\713647b987b140a17e3c4ffe4c721f85\\system.core.ni.dll",
-                        "c:\\windows\\system32\\rpcrt4.dll",
+
                         "c:\\windows\\assembly\\nativeimages_v4.0.30319_32\\system.drawing\\dd57bc19f5807c6dbe8f88d4a23277f6\\system.drawing.ni.dll",
                         "c:\\windows\\system32\\user32.dll",
                         "c:\\windows\\system32\\ntdll.dll",
