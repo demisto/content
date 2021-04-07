@@ -43,5 +43,24 @@
     "references": [],
     "votes": 0,
     "permalink": "https://www.threatcrowd.org/domain.php?domain=test1.com"
-  }
+  },
+  "email_response": {
+    "response_code": "1",
+    "domains": [
+      "test1.com",
+      "test2.com"
+    ],
+    "references": [],
+    "permalink": "https://www.threatcrowd.org/email.php?email=test@test.com"
+  },
+  "antivirus_response": {
+    "response_code": "1",
+    "hashes": [
+      "31d0e421894004393c48de1769744687"
+    ],
+    "references": [],
+    "permalink": "https://www.threatcrowd.org/listMalware.php?antivirus=test"
+  },
+  "file_response": {"response_code": "1", "md5": "test_md5", "sha1": "test_sha1", "scans": ["Trojan/W32.Small.34304.EG"], "ips": ["0.0.0.0"], "domains": ["bad.domain.com"], "references": [], "permalink": "https://www.threatcrowd.org/malware.php?md5=test_md5"}
+
 }

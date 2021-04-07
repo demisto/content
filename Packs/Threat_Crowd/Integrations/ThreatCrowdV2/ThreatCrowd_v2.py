@@ -80,7 +80,7 @@ def get_ip(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.IP',
-            outputs=res,
+            outputs=res.copy(),
             outputs_key_field='value',
             indicator=ip_object,
             readable_output=markdown,
@@ -107,7 +107,7 @@ def get_email(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.Account',
-            outputs=res,
+            outputs=res.copy(),
             outputs_key_field='value',
             indicator=email_object,
             readable_output=markdown,
@@ -139,7 +139,7 @@ def get_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         markdown += tableToMarkdown("\n", res_without_resolutions)
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.Domain',
-            outputs=res,
+            outputs=res.copy(),
             outputs_key_field='value',
             indicator=domain_object,
             readable_output=markdown,
@@ -162,7 +162,7 @@ def get_antivirus(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.AntiVirus',
-            outputs=res,
+            outputs=res.copy(),
             outputs_key_field='value',
             readable_output=markdown,
             raw_response=res
@@ -188,7 +188,7 @@ def get_file(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.File',
-            outputs=res,
+            outputs=res.copy(),
             outputs_key_field='value',
             indicator=file_object,
             readable_output=markdown,
