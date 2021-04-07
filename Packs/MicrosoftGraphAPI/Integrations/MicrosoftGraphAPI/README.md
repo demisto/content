@@ -56,6 +56,7 @@ The integration supports only Application permission type, and does not support 
 | scope | Scope (Required for using Cortex XSOAR Azure app) | False |
 | app_secret | Application Secret (Required for using self deployed Azure app) | False |
 | tenant_id | Tenant ID (Required for using self deployed Azure app) | False |
+| azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
