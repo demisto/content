@@ -86,7 +86,7 @@ script:
         try {
             // if fetching incidents, stringify long numbers to not round down long ids, e.g:
             // "dlp_incident_id":3747385551915191779 --> "dlp_incident_id":"3747385551915191779"
-            if (stringifyData && stringifyData.toLowerCase() == 'true') {
+            if (stringifyData) {
                 stringifyBody = result.Body.replace(/([\[:])?(\d{11,})([,\}\]])/g, "$1\"$2\"$3");
                 return JSON.parse(stringifyBody).data
             }
@@ -199,7 +199,7 @@ script:
 
 
     function getAlertsCommand() {
-        result = getAlerts('false')
+        result = getAlerts(false)
         var retArray = [];
         result.data.forEach(function(arrayItem) {
             var id = arrayItem._id;
@@ -301,7 +301,7 @@ script:
         args.type = "";
         args.starttime = last_run.toString();
         args.endtime = now().toString();
-        alerts = getAlerts('true');
+        alerts = getAlerts(true);
         var incidents = [];
         var latestIncidedentTimeString = null;
         var latestIncidedentTimeInt = null;
