@@ -129,7 +129,7 @@ args:
   predefined:
   - tokenizer
   - byWords
-  - byLetters
+  - byLette\rs
   required: false
   secret: false
 comment: Predict text label using a pre-trained machine learning phishing model, and
@@ -165,7 +165,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage:  demisto/mllocal:1.0
+dockerimage:  demisto/ml:1.0.0.18490
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test
