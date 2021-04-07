@@ -14,7 +14,8 @@ from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
     LANDING_PAGE_SECTIONS_PATH, get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, \
-    get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts
+    get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
+    get_trending_packs
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -922,11 +923,13 @@ def main():
     private_bucket_name = option.private_bucket_name
     circle_branch = option.circle_branch
     force_upload = option.force_upload
-    landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
+
+    # google cloud bigquery client initialized
+    bq_client = init_bigquery_client(service_account)
 
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
@@ -938,6 +941,8 @@ def main():
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
+    landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
+    trending_packs = get_trending_packs(bq_client, index_folder_path)
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
@@ -960,8 +965,6 @@ def main():
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
 
-    # google cloud bigquery client initialized
-    bq_client = init_bigquery_client(service_account)
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
 
     # clean index and gcs from non existing or invalid packs
@@ -1007,7 +1010,8 @@ def main():
                                            build_number=build_number, commit_hash=current_commit_hash,
                                            packs_statistic_df=packs_statistic_df,
                                            pack_was_modified=pack_was_modified,
-                                           landing_page_sections=landing_page_sections)
+                                           landing_page_sections=landing_page_sections,
+                                           trending_packs=trending_packs)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
