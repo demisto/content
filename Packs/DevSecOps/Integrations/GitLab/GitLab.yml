@@ -302,8 +302,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Return list of  anches containing the search string. You can use
-        ^term and term$ to find  anches that begin and end with term respectively.
+      description: Return list of branches containing the search string. You can use
+        ^term and term$ to find  branches that begin and end with term respectively.
       isArray: false
       name: search
       required: false
@@ -332,13 +332,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Name of the  anch. '
+      description: The name of the branch.
       isArray: false
       name: branch
       required: true
       secret: false
     - default: false
-      description: 'Branch name or commit SHA to create  anch from. '
+      description: Branch name or commit SHA to create branch from.
       isArray: false
       name: ref
       required: true
@@ -366,7 +366,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Name of the  anch. '
+      description: The name of the branch.
       isArray: false
       name: branch
       required: true
@@ -384,7 +384,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Will delete all branches that are merged into the project’s default  anch.
+    description: Will delete all branches that are merged into the project’s default branch.
     execution: false
     name: gitlab-projects-delete-repository-merged-branches
   - deprecated: false
