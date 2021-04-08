@@ -315,6 +315,10 @@ references:
         gcloud auth revoke --all
 
         python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
+        
+        zip -j $CIRCLE_ARTIFACTS/uploadable_packs.zip $CIRCLE_ARTIFACTS/uploadable_packs/* || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure" && exit 0)
+        rm -rf $CIRCLE_ARTIFACTS/uploadable_packs
+
 
         zip -j $CIRCLE_ARTIFACTS/uploadable_packs.zip $CIRCLE_ARTIFACTS/uploadable_packs/* || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure" && exit 0)
         rm -rf $CIRCLE_ARTIFACTS/uploadable_packs
