@@ -78,7 +78,7 @@ tasks:
       id: 64b551fa-6c41-4856-89ba-04f168e0e782
       version: -1
       name: Predict Using Out Of The Box Model
-      scriptName: DBotPredictOutOfTheBox
+      scriptName: DBotPredictOutOfTheBoxV2
       type: regular
       iscommand: false
       brand: ""
