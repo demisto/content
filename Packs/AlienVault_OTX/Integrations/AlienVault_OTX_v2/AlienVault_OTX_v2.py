@@ -666,12 +666,10 @@ def main():
     demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': test_module_command,
-        'ip': ip_command,
         'domain': domain_command,
         'file': file_command,
         'url': url_command,
         f'{INTEGRATION_COMMAND_NAME}-search-hostname': alienvault_search_hostname_command,
-        f'{INTEGRATION_COMMAND_NAME}-search-ipv6': ip_command,
         f'{INTEGRATION_COMMAND_NAME}-search-cve': alienvault_search_cve_command,
         f'{INTEGRATION_COMMAND_NAME}-get-related-urls-by-indicator': alienvault_get_related_urls_by_indicator_command,
         f'{INTEGRATION_COMMAND_NAME}-get-related-hashes-by-indicator': alienvault_get_related_hashes_by_indicator_command,

@@ -107,10 +107,28 @@ def test_file_command(mocker, raw_response_general, raw_response_analysis, expec
     assert expected == results[1]
 
 
-@pytest.mark.parametrize('function, command_function, args, mocker_result, expected_result', URL_COMMAND)
-def test_functions(mocker, function, command_function, args, mocker_result, expected_result):
-    mocker.patch.object(client, function, return_value=mocker_result)
-    command_results = url_command(client, args.get("url"))
-    output = command_results[0]
+def test_url_command(mocker):
+    """
+    Given
+    - A url with status code 404.
 
-    assert output == expected_result
+    When
+    - Running url_command with the url.
+
+    Then
+    - Return no matches for the url.
+    """
+    url = 'http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026data=LeFzS0ZTdINxJN2UMVFvyPotO31n'\
+          'Q1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9'\
+          'TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8'\
+          'cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5JVX3kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
+    expected_result = 'No matches for URL http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026dat' \
+                      'a=LeFzS0ZTdINxJN2UMVFvyPotO31nQ1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB' \
+                      '2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFO' \
+                      'qG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5JVX3' \
+                      'kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
+    mocker.patch.object(client, 'query', return_value=404)
+
+    command_results = url_command(client, url)
+
+    assert command_results[0] == expected_result
