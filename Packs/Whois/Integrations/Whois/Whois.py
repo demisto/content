@@ -8430,7 +8430,7 @@ def ip_command(ips, reliability):
             geo_country=response.get('asn_country_code'),
             organization_name=response.get('asn_description'),
             dbot_score=dbot_score,
-            feed_related_indicators=related_feed
+            feed_related_indicators=[related_feed]
         )
         result = CommandResults(
             outputs_prefix='Whois.IP',
