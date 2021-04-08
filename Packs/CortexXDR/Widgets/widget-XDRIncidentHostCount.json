@@ -1,0 +1,10 @@
+{
+  "id": "XDRIncidentHostCountWidget",
+  "name": "Cortex XDR Unique Host Count In Active Incidents",
+  "dataType": "scripts",
+  "widgetType": "number",
+  "query": "XDRIncidentHostCount",
+  "version": -1,
+  "isPredefined": false,
+  "fromVersion": "6.0.0"
+}

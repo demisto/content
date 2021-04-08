@@ -1,0 +1,51 @@
+commonfields:
+  id: XDRIncidentWidgetBase
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: XDRIncidentWidgetBase
+script: ''
+type: python
+tags: []
+comment: This script used to gets statistics on Cortex XDR open incidents and generate
+  widget according to queryType parameter.
+enabled: true
+args:
+- name: limit
+  description: The maximum number of incidents to fetch. The default value is 3000.
+  defaultValue: "300"
+- name: reultType
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Top10
+  - DistinctCount
+  description: The result of the widget.
+- name: from
+  description: 'The start date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
+- name: to
+  description: 'The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
+- name: queryType
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Categories
+  - Users
+  - Hosts
+  - Alerts
+  - MitreTactic
+  - MitreTechnique
+  - FileSHA2
+  - File
+  description: The query item to gets the result in the incident, e.g Usere is the
+    value in PaloAltoNetworksXDR.Incident.users.
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.1.15759
+runas: DBotWeakRole
+fromversion: 6.0.0

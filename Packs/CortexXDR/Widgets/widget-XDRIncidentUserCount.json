@@ -1,0 +1,10 @@
+{
+  "id": "XDRIncidentUserCountWidget",
+  "name": "Cortex XDR Unique User Count In Active Incidents",
+  "dataType": "scripts",
+  "widgetType": "number",
+  "query": "XDRIncidentUserCount",
+  "version": -1,
+  "isPredefined": false,
+  "fromVersion": "6.0.0"
+}
