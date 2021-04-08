@@ -3242,10 +3242,6 @@ script:
     - contextPath: Tidy.Install.AdditionalInfo
       description: Additinal information about the installed software
       type: String
-  - deprecated: false
-    description: Install python environment.
-    execution: false
-    name: tidy-python-env
   dockerimage: demisto/tidy:1.0.0.16979
   feed: false
   isfetch: false
