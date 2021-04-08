@@ -89,7 +89,7 @@ tasks:
       emailBody: {}
       emailBodyHTML: {}
       emailSubject:
-        simple: want to lose weight? best diet click here for free
+        simple: "Re: PO# OP848784204 Dear office, \n \n \nKindly find attached our new order (Po# OP848784204) and the attached letter for the bank payment. Please sign, stamp and resend. \n \n \nKindly ship our order by using the service DHL EXPRESS WORLDWIDE. Our DHL account number is: 950389383 \n \n Thanks \n Best Regards, \n Cristina Cadano Marketing Officer - Procurement Officer Marketing@trustm.tv Tel. +974 4431 3336 Fax +974 4435 3336 P.O. Box 10536 Doha,"
       labelProbabilityThreshold: {}
       minTextLength: {}
       returnError: {}
@@ -134,7 +134,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: spam
+              simple: Malicious
       - - operator: greaterThan
           left:
             value:
