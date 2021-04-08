@@ -59,13 +59,15 @@ class Client(BaseClient):
     def get_stock_history(
             self, symbol: str, interval: str, output_size: str = 'compact'
     ) -> dict:
-        """TODO
+        """Gets stock history data
+	Documentation Link: https://www.alphavantage.co/documentation/#intraday
+	Example: https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&outputsize=full&apikey=demo
         Args:
             symbol: the stock's ticker/symbol: MSFT, AAPL etc
             interval:  1min, 5min, 15min, 30min, 60min
             output_size: compact - latest 100 data points, full - full length array
         Returns:
-            TODO
+            JSON Response
         """
         params = {
             'function': 'TIME_SERIES_INTRADAY',
@@ -77,11 +79,12 @@ class Client(BaseClient):
 
     def get_stock_data(self, symbol: str) -> dict:
         """Gets stock data about last trading day:
-        Link: https://www.alphavantage.co/documentation/#
-        Example: https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=PANW&apikey=demo
+        Documentation Link: https://www.alphavantage.co/documentation/#latestprice
+        Example: https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo
         Args:
             symbol: The stock's symbol/ticker. Example: PANW, AAPL, MSFT etc
         Returns:
+	    JSON Response
         """
 
         params = {
@@ -98,14 +101,16 @@ def remove_indexing_from_dictionary_keys(
         api_response: dict,
         regex: re.Pattern = re.compile(r'^[0-9][0-9]*\.\s*')
 ) -> dict:
-    """Removes the running index from a json
+    """Removes the running index from the keys in a json
+	 01.Key -> Key
+	 01. Key -> Key
 
     Args:
         regex: expression to filter out
         api_response: json response from api
 
     Returns:
-        TODO
+        json response without the unneccsary indices at first 
     """
 
     return {regex.sub('', key): value for key, value in api_response.items()}
