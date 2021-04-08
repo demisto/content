@@ -4541,11 +4541,14 @@ class CommandResults:
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
             'Note': mark_as_note,
-            'PollingCommand': self.polling_command,
-            'PollingArgs': self.polling_args,
-            'Timeout': self.polling_timeout,
-            'NextRun': self.polling_next_run
         }
+        if self.polling_command and self.polling_next_run:
+            return_entry.update({
+                'PollingCommand': self.polling_command,
+                'PollingArgs': self.polling_args,
+                'Timeout': self.polling_timeout,
+                'NextRun': self.polling_next_run
+            })
         return return_entry
 
 
