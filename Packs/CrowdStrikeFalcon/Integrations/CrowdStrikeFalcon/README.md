@@ -2026,11 +2026,11 @@ Lists incident summaries.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | unknown | Endpoint Hostname | 
-| Endpoint.OS | unknown | Endpoint OS | 
-| Endpoint.IPAddress | unknown | Endpoint IP Addresses | 
-| Endpoint.ID | unknown | Endpoint ID | 
-| Endpoint.Status | unknown | Endpoint Status | 
+| Endpoint.Hostname | String | Endpoint Hostname | 
+| Endpoint.OS | String | Endpoint OS | 
+| Endpoint.IPAddress | String | Endpoint IP Addresses | 
+| Endpoint.ID | String | Endpoint ID | 
+| Endpoint.Status | String | Endpoint Status | 
 
 
 #### Command Example
