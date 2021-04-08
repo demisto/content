@@ -4465,7 +4465,6 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
         raise ValueError('"{}" is not a valid date'.format(arg))
 
 
-
 class EntityRelation:
     """
     XSOAR entity relation.
@@ -4556,11 +4555,10 @@ class EntityRelation:
 
             return EntityRelation.Relations.RELATIONS_NAMES[_name]
 
-
     def __init__(self, name, reverse_name, entity_a, relation_type, entity_a_family,
                  object_type_a,
-                 entity_b, entity_b_family, object_type_b, source_reliability = "",
-                 fields = None, brand = ""):
+                 entity_b, entity_b_family, object_type_b, source_reliability="",
+                 fields=None, brand=""):
 
         # Relation
         if not EntityRelation.Relations.is_valid(name):
@@ -4586,14 +4584,12 @@ class EntityRelation:
             raise ValueError("Invalid entity A Family type: " + entity_a_family)
         self._entity_a_family = str(entity_a_family)
 
-
-
         # Entity B - Destination
         self._entity_b = str(entity_b)
 
         # The type of the entity doesnt have to be a indicator type
         if not FeedIndicatorType.is_valid_type(object_type_b):
-            raise ValueError('Invalid entity B type: '+ object_type_b)
+            raise ValueError('Invalid entity B type: ' + object_type_b)
         self._object_type_b = str(object_type_b)
 
         if not EntityRelation.RelationsFamily.is_valid_type(entity_b_family):
@@ -4614,7 +4610,7 @@ class EntityRelation:
 
         if source_reliability:
             if not DBotScoreReliability.is_valid_type(source_reliability):
-                raise ValueError("Invalid source reliability value",source_reliability)
+                raise ValueError("Invalid source reliability value", source_reliability)
             self._source_reliability = source_reliability
 
     def to_entry(self):
@@ -4638,7 +4634,6 @@ class EntityRelation:
         if self._brand:
             entry["brand"] = self._brand
         return entry
-
 
     def to_indicator(self):
         """ Convert object to XSOAR entry
@@ -4665,7 +4660,7 @@ class EntityRelation:
         :return: XSOAR context representation.
         """
         indicator_relation_context = {
-            "Name": self._entity_a + " "  + self._name + " "  + self._entity_b,
+            "Name": self._entity_a + " " + self._name + " " + self._entity_b,
             "EntityA": self._entity_a,
             "ObjectTypeA": self._object_type_a,
             "EntityB": self._entity_b,
@@ -4673,7 +4668,6 @@ class EntityRelation:
             "Type": self._relation_type,
         }
         return indicator_relation_context
-
 
 
 class CommandResults:
@@ -4722,7 +4716,7 @@ class CommandResults:
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
                  mark_as_note=False, relations=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool) -> None
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, list) -> None
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -4808,7 +4802,6 @@ class CommandResults:
                 outputs[outputs_key] = self.outputs
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
-
 
         if self.relations:
             relations = [relation.to_entry() for relation in self.relations]

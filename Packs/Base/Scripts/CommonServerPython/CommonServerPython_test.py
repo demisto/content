@@ -1548,6 +1548,7 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
+            'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -1634,6 +1635,7 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
+            'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -1665,6 +1667,7 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
+            'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -1699,6 +1702,7 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
+            'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
         })
@@ -3604,6 +3608,7 @@ class TestCommonTypes:
                 ]
             },
             'IndicatorTimeline': [],
+            'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -4007,6 +4012,7 @@ class TestCommonTypes:
                 }]
             },
             'IndicatorTimeline': [],
+            'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
