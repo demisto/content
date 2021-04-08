@@ -761,7 +761,7 @@ def tc_get_indicator_command():
     else:
         indicator_type = None
 
-    ec, indicators, raw_indicators, indicators_associations, indicator_groups, \ 
+    ec, indicators, raw_indicators, indicators_associations, indicator_groups, 
     indicator_observations, indicator_tags, indicator_attributes \
         = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups,
                            associated_indicators, include_observations, include_tags, indicator_type, include_attributes)
@@ -887,7 +887,7 @@ def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, 
         if 'indicator_attributes' in raw_indicators[0]:
             indicator_attributes = raw_indicators[0]['indicator_attributes']
 
-    return ec, indicators, raw_indicators, indicators_associations, \ 
+    return ec, indicators, raw_indicators, indicators_associations,
     indicator_groups, indicator_observations, indicator_tags, indicator_attributes
 
 
