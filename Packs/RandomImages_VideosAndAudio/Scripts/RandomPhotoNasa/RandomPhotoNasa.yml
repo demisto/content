@@ -2,7 +2,7 @@ args:
 - description: Search query
   name: search
 commonfields:
-  id: random-photo-nasa
+  id: RandomPhotoNasa
   version: -1
 dockerimage: demisto/python3:3.9.2.18414
 enabled: true
