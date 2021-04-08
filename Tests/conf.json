@@ -3315,22 +3315,14 @@
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
-<<<<<<< HEAD
-=======
-        "Slack Test Playbook": "Issue 33448",
->>>>>>> ff66587a389205efe864b8110d0bee188be250f3
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
         "test playbook - QRadarCorrelations For V2": "Issue 30876",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "pyEWS_Test": "Issue 27942",
         "EWS search-mailbox test": "Issue 27943",
-<<<<<<< HEAD
         "EWS Public Folders Test": "Issue 27941",
         "Azure NSG - Test": "Issue 33217"
-=======
-        "EWS Public Folders Test": "Issue 27941"
->>>>>>> ff66587a389205efe864b8110d0bee188be250f3
     },
     "skipped_integrations": {
         

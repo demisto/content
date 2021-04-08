@@ -105,7 +105,7 @@ def list_objects_command(client, args):
 
 
 def get_object_command(client, args):
-    response = []
+    response = None
 
     bucket_name = str(args.get('bucket_name'))
     object_name = str(args.get('name'))
@@ -115,16 +115,19 @@ def get_object_command(client, args):
     request_headers = args.get('request_headers', None)
     object_bytes = None
     try:
-        response = client.get_object(bucket_name=bucket_name, object_name=object_name, offset=offset,
-                                     length=length, extra_query_params=extra_query_params,
-                                     request_headers=request_headers)
+        response = client.get_object(
+            bucket_name=bucket_name,
+            object_name=object_name,
+            offset=offset,
+            length=length,
+            extra_query_params=extra_query_params,
+            request_headers=request_headers
+        )
         object_bytes = response.read()
     finally:
-        try:
+        if response:
             response.close()
             response.release_conn()
-        except Exception:
-            return_error("Failed to get object")
 
     return fileResult(filename=object_name, data=object_bytes)
 
@@ -260,7 +263,7 @@ def main():
     access_secret = params.get('access_secret')
     secure_connection = params.get('ssl', False)
 
-    endpoint = server+":"+port
+    endpoint = server + ":" + port
 
     command = demisto.command()
 
