@@ -96,22 +96,34 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     current_time_for_fetch = datetime.utcnow()
     dem_params = demisto.params()
     if demisto.get(dem_params, 'timezone'):
+        demisto.debug(f"Using Timezone Param {dem_params['timezone']}")
         timezone = dem_params['timezone']
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    demisto.debug(f"Now is: {now}")
     if demisto.get(dem_params, 'useSplunkTime'):
+        demisto.debug(f"Using Splunk Time.")
         now = get_current_splunk_time(service)
+        demisto.debug(f"New Now (splunk time) is: {now}")
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+
         current_time_for_fetch = current_time_in_splunk
+        demisto.debug(f"current_time_for_fetch is: {current_time_for_fetch}")
 
     if not last_run:
+        demisto.debug(f"Is not Last Run")
         fetch_time_in_minutes = parse_time_to_minutes()
+        demisto.debug(f"fetch_time_in_minutes is: {fetch_time_in_minutes}")
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+        demisto.debug(f"start_time_for_fetch is: {start_time_for_fetch}")
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+        demisto.debug(f"last_run is: {last_run}")
 
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+    demisto.debug(f"earliest_fetch_time_fieldname is: {earliest_fetch_time_fieldname}")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+    demisto.debug(f"latest_fetch_time_fieldname is: {latest_fetch_time_fieldname}")
 
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
@@ -129,10 +141,12 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     reader = results.ResultsReader(oneshotsearch_results)
 
     notables = []
+    demisto.debug(f"Length of Notables is: {len(notables)}")
     for item in reader:
         notables.append(Notable(data=item))
 
     if not enrich_notables:
+        demisto.debug("Not Enriching Notables")
         incidents = [n.to_incident() for n in notables]
         demisto.incidents(incidents)
     else:
@@ -144,9 +158,12 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
             last_run_object.update({DUMMY: DUMMY})
 
     if len(notables) < FETCH_LIMIT:
+        demisto.debug("Length of notables is less than Fetch Limit")
         updated_fetch_timeframe = {'time': now, 'offset': 0}
     else:
+        demisto.debug("Length of notables is More than Fetch Limit")
         updated_fetch_timeframe = {'time': last_run, 'offset': search_offset + FETCH_LIMIT}
+    demisto.debug(f"updated_fetch_timeframe is: {updated_fetch_timeframe}")
 
     last_run_object.update(updated_fetch_timeframe)
     demisto.setLastRun(last_run_object)
