@@ -4550,23 +4550,21 @@ class EntityRelation:
             return _type in EntityRelation.Relations.RELATIONS_NAMES.keys()
 
         @staticmethod
-        def get_reverse(_name):
+        def get_reverse(name):
             # type: (str) -> str
 
-            return EntityRelation.Relations.RELATIONS_NAMES[_name]
+            return EntityRelation.Relations.RELATIONS_NAMES[name]
 
-    def __init__(self, name, reverse_name, entity_a, relation_type, entity_a_family,
-                 object_type_a,
-                 entity_b, entity_b_family, object_type_b, source_reliability="",
-                 fields=None, brand=""):
+    def __init__(self, name, entity_a, object_type_a, entity_b, object_type_b,
+                 relation_type='indicatorToIndicator',entity_a_family='Indicator', entity_b_family='Indicator',
+                 source_reliability="", fields=None, brand=""):
 
         # Relation
         if not EntityRelation.Relations.is_valid(name):
             raise ValueError("Invalid relation: " + name)
         self._name = str(name)
 
-        # when will have the dict of reverse will add it using the dict.
-        self._reverse_name = str(reverse_name)
+        self._reverse_name = EntityRelation.Relations.get_reverse(str(name))
 
         if not EntityRelation.RelationsTypes.is_valid_type(relation_type):
             raise ValueError("Invalid relation type: " + relation_type)

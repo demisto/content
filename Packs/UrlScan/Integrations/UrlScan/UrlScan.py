@@ -218,18 +218,11 @@ def urlscan_submit_url(client):
 
 
 def create_relationship(scan_type, field, entity_a, object_type_a, entity_b, object_type_b):
-    relations_type = 'indicatorToIndicator'
-    entity_a_family = 'Indicator'
-    entity_b_family = 'Indicator'
     brand = 'urlscan.io'
     return EntityRelation(name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('name', ''),
-                          reverse_name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('reversed_name', ''),
-                          relation_type=relations_type,
                           entity_a=entity_a,
-                          entity_a_family=entity_a_family,
                           object_type_a=object_type_a,
                           entity_b=entity_b,
-                          entity_b_family=entity_b_family,
                           object_type_b=object_type_b,
                           source_reliability='F - Reliability cannot be judged',
                           brand=brand)
