@@ -1361,6 +1361,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
 
     user_query = f' AND {user_query}' if user_query else ''
 
+
     filter_fetch_query = f'id>{offense_highest_id}{user_query}'
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
     range_ = f'items=0-{range_max}'
