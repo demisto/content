@@ -19,7 +19,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class Client(BaseClient):
     """Client class to interact with the service API
-
     This Client implements API calls, and does not contain any XSOAR logic.
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
@@ -59,9 +58,9 @@ class Client(BaseClient):
     def get_stock_history(
             self, symbol: str, interval: str, output_size: str = 'compact'
     ) -> dict:
-	"""Gets stock history data
-	Documentation Link: https://www.alphavantage.co/documentation/#intraday
-        Example: https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&outputsize=full&apikey=demo
+        """Gets stock history data
+        Documentation Link: https://www.alphavantage.co/documentation/#intraday
+        https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&outputsize=full&apikey=demo
         Args:
             symbol: the stock's ticker/symbol: MSFT, AAPL etc
             interval:  1min, 5min, 15min, 30min, 60min
@@ -102,15 +101,13 @@ def remove_indexing_from_dictionary_keys(
         regex: re.Pattern = re.compile(r'^[0-9][0-9]*\.\s*')
 ) -> dict:
     """Removes the running index from the keys in a json
-	01.Key -> Key
-	01. Key -> Key
-
+    01.Key -> Key
+    01. Key -> Key
     Args:
         regex: expression to filter out
         api_response: json response from api
-
     Returns:
-    	json response without the unneccsary indices at first
+        json response without the unnecessary indices at first
     """
 
     return {regex.sub('', key): value for key, value in api_response.items()}
@@ -121,14 +118,11 @@ def remove_indexing_from_dictionary_keys(
 # region Commands
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
-
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
-
     Args:
         client: client to use
-
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
