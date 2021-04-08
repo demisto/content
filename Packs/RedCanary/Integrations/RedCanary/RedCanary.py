@@ -614,10 +614,10 @@ def main():
                 demisto.results(command_func())
 
     except Exception as e:
-        LOG(e.message)
+        LOG(str(e))
         if demisto.command() != 'test-module':
             LOG.print_log()
-        return_error('error has occurred: {}'.format(e.message, ))
+        return_error(f'error has occurred: {str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins'):
