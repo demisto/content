@@ -841,8 +841,7 @@ script:
         - 'true'
         - 'false'
     deprecated: false
-    description: Gets compliance search action from the Security & Compliance Center. An additional result will be
-      shown only for "Preview" action type.
+    description: Gets compliance search action from the Security & Compliance Center.
     execution: false
     name: o365-sc-get-search-action
     outputs:
@@ -956,6 +955,9 @@ script:
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
       description: Security and compliance search action status. Either "Started" or "Completed".
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Location
+      description: Security and compliance search action Location.
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
