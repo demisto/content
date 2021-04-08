@@ -534,43 +534,6 @@ class Client(BaseClient):
             changed = True
         return assets, ml_feature_list, changed
 
-    def fetch_certificates(self, params):
-        """
-        Fetches all certificates that match the provided params.
-
-        :param params: Search parameters
-        :return: List of certificate objects
-        """
-        return self._paginate(
-            method='GET',
-            url_suffix='v2/assets/certificates',
-            params=params)
-
-    def fetch_certificate(self, md5_hash):
-        """
-        Returns details for a single certificate.
-
-        :param md5_hash: Search term for certificates
-        :return: Certificate details objects
-        """
-        url = 'v2/assets/certificates/{}'.format(md5_hash)
-        return self._http_request(
-            method='GET',
-            url_suffix=url,
-            params={})
-
-    def fetch_ips(self, params):
-        """
-        Returns all ip results matching search params.
-
-        :param params: Search parameters
-        :return: List of ip objects
-        """
-        return self._paginate(
-            method='GET',
-            url_suffix='v2/assets/ips',
-            params=params)
-
 
 """ HELPER FUNCTIONS """
 
@@ -2092,18 +2055,19 @@ def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> Com
 
     matching_domains = []
 
-    certificates_iterator = client.fetch_certificates(params=params)
+    certificates_iterator = client.get_certificates(params=params)
     certificates = [certificate for certificate in certificates_iterator]
 
     for certificate in certificates:
-        certificate_details = client.fetch_certificate(md5_hash=certificate.get('certificate', {}).get('md5Hash'))
+        certificate_details = client.get_certificate_by_md5_hash(
+            md5_hash=certificate.get('certificate', {}).get('md5Hash'))
 
         for ip in certificate_details.get('details', {}).get('recentIps', []):
             params = {
                 'inetSearch': ip.get('ip'),
                 'assetType': 'DOMAIN'
             }
-            matching_domains += client.fetch_ips(params=params)
+            matching_domains += client.get_ips(params=params)
 
     if len(matching_domains) == 0:
         return CommandResults(readable_output="No data found")
