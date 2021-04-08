@@ -1,4 +1,4 @@
-from GenerateAsBuilt import ReturnedAPIData
+from GenerateAsBuilt import ReturnedAPIData,
 
 
 def test_as_html():
@@ -10,3 +10,5 @@ def test_as_html():
     r = o.as_html(["name", "blah"])
     assert "<th>name</th>" in r
     assert "<td>test</td>" in r
+
+
