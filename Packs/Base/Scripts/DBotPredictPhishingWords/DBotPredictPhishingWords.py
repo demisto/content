@@ -14,6 +14,7 @@ def suppress_stdout_stderr():
         with redirect_stderr(fnull) as err:
             yield (err)
 
+
 # silent import of demisto_ml
 with suppress_stdout_stderr():
     import demisto_ml
