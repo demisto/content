@@ -16,6 +16,10 @@ subtype: python3
 tags:
 - dynamic-section
 - widget
+comment: This automation script will pull a random image from https://images.nasa.gov
+  based on the search parameter provided. If the script is used within a widget, it
+  will output an image in markdown format. If it is used anywhere else it will output
+  an image in markdown format and also context data.
 type: python
 fromversion: 6.0.0
 tests:
