@@ -12,6 +12,8 @@ a HTML and Markdown output based on this.
 DEMISTO_INTEGRATIONS_PATH = "/settings/integration/search"
 DEMISTO_INSTALLED_PATH = "/contentpacks/metadata/installed"
 DEMISTO_PLAYBOOKS_PATH = "/playbook/search"
+DEMISTO_AUTOMATIONS_PATH = "/automation/search"
+DEMISTO_CONFIG_PATH = "/system/config"
 MAX_REQUEST_SIZE = demisto.args().get("size", 500)
 HTML_TABLE_TEMPLATE = """
 <table>
@@ -35,6 +37,8 @@ MD_DOCUMENT_TEMPLATE = """
 {{ installed_packs_table }}
 
 {{ playbooks_table }}
+
+{{ automations_table }}
 """
 
 
@@ -54,12 +58,18 @@ class ReturnedAPIData:
         return len(self.data)
 
 
-def build_md_document(integrations_table, installed_packs_table, playbooks_table):
+def build_md_document(
+        integrations_table,
+        installed_packs_table,
+        playbooks_table,
+        automations_table
+):
     template = jinja2.Template(MD_DOCUMENT_TEMPLATE)
     return template.render(
         integrations_table=integrations_table,
         installed_packs_table=installed_packs_table,
-        playbooks_table=playbooks_table
+        playbooks_table=playbooks_table,
+        automations_table=automations_table
     )
 
 
@@ -127,14 +137,29 @@ def get_custom_playbooks():
     return rd
 
 
+def get_custom_automations():
+    r = post_api_request(DEMISTO_AUTOMATIONS_PATH, {"query": "system:F AND hidden:F"}).get("scripts")
+    rd = ReturnedAPIData(r, "Custom Automations")
+    return rd
+
+
+def get_system_config():
+    r = get_api_request(DEMISTO_CONFIG_PATH).get("defaultMap")
+    rd = ReturnedAPIData(r, "System Configuration")
+    return rd
+
+
 def main():
+    system_config = get_system_config()
     integrations = get_enabled_integrations()
     installed_packs = get_installed_packs()
     playbooks = get_custom_playbooks()
+    automations = get_custom_automations()
     hr = build_md_document(
         integrations.as_markdown(["name", "brand"]),
         installed_packs.as_markdown(["name", "currentVersion"]),
-        playbooks.as_markdown(["name", "TotalTasks"])
+        playbooks.as_markdown(["name", "TotalTasks"]),
+        automations.as_markdown(["name", "comment"])
     )
     return_results(hr)
 
