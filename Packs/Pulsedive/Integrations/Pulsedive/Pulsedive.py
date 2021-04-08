@@ -115,7 +115,7 @@ def test_module(client: Client, api_key) -> str:
 
     try:
         client.test_connect(api_key)
-    except Exception as e:
+    except DemistoException:
         return 'Could not connect to Pulsedive'
     return 'ok'
 
@@ -158,14 +158,14 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List
                 outputs=ip_data,
                 indicator=ip_standard_context
             ))
-        except Exception as e:
+        except DemistoException:
             # Create the DBotScore structure first using the Common.DBotScore class.
             dbot_score = Common.DBotScore(
                 indicator=ip,
                 indicator_type=DBotScoreType.IP,
                 integration_name='Pulsedive',
                 score=Common.DBotScore.NONE,
-                malicious_description=f'Pulsedive returned reputation None'
+                malicious_description='Pulsedive returned reputation None'
             )
 
             # Create the IP Standard Context structure using Common.IP and add
@@ -210,7 +210,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> 
                 integration_name='Pulsedive',
                 indicator_type=DBotScoreType.DOMAIN,
                 score=score,
-                malicious_description=f'Pulsedive returned reputation {reputation}'
+                malicious_description='Pulsedive returned reputation {reputation}'
             )
 
             domain_standard_context = Common.Domain(
@@ -233,14 +233,14 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> 
                 outputs=domain_data,
                 indicator=domain_standard_context
             ))
-        except Exception as e:
+        except DemistoException:
             # Create the DBotScore structure first using the Common.DBotScore class.
             dbot_score = Common.DBotScore(
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name='Pulsedive',
                 score=Common.DBotScore.NONE,
-                malicious_description=f'Pulsedive returned reputation None'
+                malicious_description='Pulsedive returned reputation None'
             )
 
             domain_standard_context = Common.Domain(
@@ -294,14 +294,14 @@ def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> Lis
                 outputs=url_data,
                 indicator=url_standard_context
             ))
-        except Exception as e:
+        except DemistoException:
             # Create the DBotScore structure first using the Common.DBotScore class.
             dbot_score = Common.DBotScore(
                 indicator=str(url),
                 indicator_type=DBotScoreType.URL,
                 integration_name='Pulsedive',
                 score=Common.DBotScore.NONE,
-                malicious_description=f'Pulsedive returned reputation None'
+                malicious_description='Pulsedive returned reputation None'
             )
 
             url_standard_context = Common.URL(
