@@ -430,6 +430,7 @@ def get_alert_attachments_files(client: Client, alert: dict) -> list:
     alert_id = alert.get('ref_id')
 
     attachments_keys = [["attachments"], ["alert_data", "screenshot"], ["alert_data", "csv"]]
+    current_alert_attachments = []
 
     for key in attachments_keys:
         alert_attachments = dict_safe_get(alert, key, default_return_value=[])
@@ -439,6 +440,7 @@ def get_alert_attachments_files(client: Client, alert: dict) -> list:
                                                                   attachment.get('id', None), alert_id)
             if attachment_details:
                 incident_attachments.append(attachment_details)
+                current_alert_attachments.append(attachment)
 
     analysis_report = alert.get('analysis_report', None)
     if analysis_report:
@@ -456,6 +458,7 @@ def get_alert_attachments_files(client: Client, alert: dict) -> list:
             "showMediaFile": True
         })
 
+    alert["attachments"] = current_alert_attachments
     return incident_attachments
 
 
@@ -494,7 +497,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
                                 datetime.strftime(datetime.now(), DATE_FORMAT), None, None,
                                 fetch_environment, fetch_status, fetch_severity, fetch_type)
     last_file = None
-    for alert in alerts.get('alerts', []):
+    for calert in alerts.get('alerts', []):
+        alert = dict(calert)
         #  Create the XS0AR incident.
         alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
         alert_id = alert.get('ref_id')
