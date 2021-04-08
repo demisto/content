@@ -6418,3 +6418,24 @@ class TableOrListWidget(BaseWidget):
             'total': len(self.data),
             'data': self.data
         })
+
+
+class SearchIndicatorsByVersion:
+    def __init__(self, page=0):
+        # searchAfter is available in searchIndicators from version 6.2.0
+        self._can_use_search_after = is_demisto_version_ge('6.2.0')
+        self._search_after_title = 'searchAfter'
+        self._search_after_param = None
+        self._page = page
+
+    def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
+        if self._can_use_search_after:
+            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value, searchAfter=self._search_after_param)
+            if self._search_after_title in res and res[self._search_after_title] is not None:
+                self._search_after_param = res[self._search_after_title]
+
+        else:
+            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page, value=value)
+            self._page += 1
+
+        return res
