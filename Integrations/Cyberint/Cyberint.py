@@ -396,9 +396,6 @@ def create_fetch_incident_attachment(client: Client, attachment_file_name: str, 
         dict: Attachment information.Includes - path, name, and showMediaFile.
 
     """
-    if not attachment_id or not alert_id:
-        return {}
-
     attachment_name = get_attachment_name(attachment_file_name)
     get_attachment_response = client.get_alert_attachment(alert_id, attachment_id)
     file_result = fileResult(filename=attachment_name, data=get_attachment_response.content)
