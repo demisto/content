@@ -13,27 +13,27 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 VENDOR = 'Threat Crowd'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
+DEFAULT_RESOLUTION_LIMIT = 10
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify, proxy, reliability):
+    def __init__(self, base_url, verify, proxy, reliability, extended_data):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.reliability = reliability
-
-    def http_request(self, url_postfix: str, **kwargs) -> dict:
-        """
-        Overrides Base client request function, retrieves and adds to headers access token before sending the request.
-
-        Returns:
-            requests.Response: The http response
-        """
-
-        return super()._http_request('GET', url_postfix, params=kwargs)
+        self.extended_data = extended_data
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def handle_resolutions(resolutions: List[dict], limit: int) -> List[dict]:
+    """ Gets a resolution section from response.
+     return a limited sorted list, desc by time.
+     Resolution section should be with following struct: [{"last_resolved": "2014-12-14", "domain": "example.com"},"""
+    resolutions = resolutions[:limit]
+    resolutions.sort(key=lambda x: x.get('last_resolved'), reverse=True)
+    return resolutions
 
 
 def _get_dbot_score(json_res: dict) -> int:
@@ -57,11 +57,10 @@ def _get_dbot_score(json_res: dict) -> int:
 def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'ip/report/'
-    resolution_limit = args.get('resolution_limit')
-    resolution_limit = int(resolution_limit) if resolution_limit else resolution_limit
+    resolution_limit = None
     ips = argToList(args.get('ip'))
     for ip in ips:
-        res = client.http_request(url_postfix=api_url, **{'ip': ip})
+        res = client._http_request(method='GET', url_suffix=api_url, params={'ip': ip})
         res['value'] = ip
         score = _get_dbot_score(res)
         dbot = Common.DBotScore(
@@ -69,7 +68,10 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         ip_object = Common.IP(ip, dbot)
 
         markdown = f"Threat crowd report for ip {ip}: \n"
-        markdown += tableToMarkdown('Resolutions', res.get('resolutions', [])[:resolution_limit])
+        if not client.extended_data:
+            resolution_limit = DEFAULT_RESOLUTION_LIMIT
+
+        markdown += tableToMarkdown('Resolutions', handle_resolutions(res.get('resolutions', []), resolution_limit))
         markdown += f"Hashes: \n {res.get('hashes')} \n"
         markdown += tableToMarkdown('References', res.get('references'))
 
@@ -91,7 +93,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     api_url = 'email/report/'
     emails = argToList(args.get('email'))
     for email in emails:
-        res = client.http_request(url_postfix=api_url, **{'email': email})
+        res = client._http_request(method='GET', url_suffix=api_url, params={'email': email})
         res['value'] = email
         score = _get_dbot_score(res)
         dbot = Common.DBotScore(
@@ -116,11 +118,10 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'domain/report/'
-    resolution_limit = args.get('resolution_limit')
-    resolution_limit = int(resolution_limit) if resolution_limit else resolution_limit
+    resolution_limit = None
     domains = argToList(args.get('domain'))
     for domain in domains:
-        res = client.http_request(url_postfix=api_url, **{'domain': domain})
+        res = client._http_request(method='GET', url_suffix=api_url, params={'domain': domain})
         res['value'] = domain
         score = _get_dbot_score(res)
         dbot = Common.DBotScore(
@@ -128,7 +129,10 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
         domain_object = Common.Domain(domain, dbot)
 
         markdown = f"Threat crowd report for domain {domain} \n"
-        markdown += tableToMarkdown('Resolutions', res.get('resolutions', [])[:resolution_limit])
+        if not client.extended_data:
+            resolution_limit = DEFAULT_RESOLUTION_LIMIT
+
+        markdown += tableToMarkdown('Resolutions', handle_resolutions(res.get('resolutions', []), resolution_limit))
         res_without_resolutions = res.copy()
         res_without_resolutions.pop('resolutions')
         markdown += tableToMarkdown("\n", res_without_resolutions)
@@ -150,7 +154,7 @@ def antivirus_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     api_url = 'antivirus/report/'
     antivirus_list = argToList(args.get('antivirus'))
     for antivirus in antivirus_list:
-        res = client.http_request(url_postfix=api_url, **{'antivirus': antivirus})
+        res = client._http_request(method='GET', url_suffix=api_url, params={'antivirus': antivirus})
         res['value'] = antivirus
 
         markdown = tableToMarkdown(f"Threat crowd report for antivirus {antivirus}", res)
@@ -171,7 +175,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     api_url = 'file/report/'
     files = argToList(args.get('file'))
     for file_hash in files:
-        res = client.http_request(url_postfix=api_url, **{'resource': file_hash})
+        res = client._http_request(method='GET', url_suffix=api_url, params={'file': file_hash})
         res['value'] = file_hash
 
         score = _get_dbot_score(res)
@@ -225,6 +229,8 @@ def main() -> None:
     base_url = params.get('server_url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    extended_data = bool(params.get('extended_data', False))
+
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.C
 
@@ -240,7 +246,8 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
-            reliability=reliability
+            reliability=reliability,
+            extended_data=extended_data
         )
 
         if demisto.command() == 'test-module':
