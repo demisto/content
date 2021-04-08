@@ -1,3 +1,5 @@
+from typing import Generator
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -181,7 +183,7 @@ def get_full_timeline(detection_id, per_page=100):
                        params={
                            'page': page,
                            'per_page': per_page,
-        })
+                       })
         current_data = res.get('data')
 
         # if there is no more data to get from this http request
@@ -328,8 +330,7 @@ def detections_to_entry(detections, show_timeline=False):
     }
 
 
-def get_unacknowledged_detections(t, per_page=50):
-    # type: (datetime, int) -> Generator[dict, None, None]
+def get_unacknowledged_detections(t: datetime, per_page: int = 50) -> Generator[dict, None, None]:
     """ iterate over all unacknowledged detections later then time t
 
     Args:
@@ -436,7 +437,7 @@ def remediate_detection(_id, remediation_state, comment):
                      data={
                          'remediation_state': remediation_state,
                          'comment': comment,
-    })
+                     })
     return res
 
 
@@ -539,7 +540,7 @@ def execute_playbook(playbook_id, detection_id):
                     params={
                         'resource_type': 'Detection',
                         'resource_id': detection_id,
-    })
+                    })
 
     return res
 
