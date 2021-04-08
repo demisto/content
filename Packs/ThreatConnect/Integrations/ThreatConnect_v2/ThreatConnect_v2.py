@@ -23,6 +23,8 @@ if DBotScoreReliability.is_valid_type(RELIABILITY):
 else:
     return_error("Please provide a valid value for the Source Reliability parameter.")
 
+ENCODED_API_BRANCHES = ["urls", "hosts"]
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -527,7 +529,9 @@ def tc_associated_groups(tc, owners, indicator_value, indicator_type):
     ro.set_http_method('GET')
     ro.set_owner(owners)
     if apiBranch is not None:
-        ro.set_request_uri("/v2/indicators/{}/{}/groups".format(apiBranch, quote(indicator_value).replace("/", "%2F")))
+        if apiBranch in ENCODED_API_BRANCHES:
+            indicator_value = quote(indicator_value, safe='')
+        ro.set_request_uri("/v2/indicators/{}/{}/tags".format(apiBranch, indicator_value))
         results = tc.api_request(ro)
         if results.headers['content-type'] == 'application/json':
             if 'data' in results.json():
@@ -569,7 +573,9 @@ def tc_indicator_get_tags(tc, owners, indicator_value, indicator_type):
     ro.set_http_method('GET')
     ro.set_owner(owners)
     if apiBranch is not None:
-        ro.set_request_uri("/v2/indicators/{}/{}/tags".format(apiBranch, quote(indicator_value).replace("/", "%2F")))
+        if apiBranch in ENCODED_API_BRANCHES:
+            indicator_value = quote(indicator_value, safe='')
+        ro.set_request_uri("/v2/indicators/{}/{}/tags".format(apiBranch, indicator_value))
         results = tc.api_request(ro)
         if results.headers['content-type'] == 'application/json':
             if 'data' in results.json():
@@ -611,7 +617,9 @@ def tc_indicator_get_attributes(tc, owners, indicator_value, indicator_type):
     ro.set_http_method('GET')
     ro.set_owner(owners)
     if apiBranch is not None:
-        ro.set_request_uri("/v2/indicators/{}/{}/attributes".format(apiBranch, quote(indicator_value).replace("/", "%2F")))
+        if apiBranch in ENCODED_API_BRANCHES:
+            indicator_value = quote(indicator_value, safe='')
+        ro.set_request_uri("/v2/indicators/{}/{}/tags".format(apiBranch, indicator_value))
         results = tc.api_request(ro)
         if results.headers['content-type'] == 'application/json':
             if 'data' in results.json():
