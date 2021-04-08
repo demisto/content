@@ -6,13 +6,6 @@ This pack includes 4 integrations:
  - Analyze suspicious hashes, URLs, domains, and IP addresses.
  - Use your premium API key for advanced indicator analysis (Check "Premium Subscription' box in the integration parameters)
 
-- VirusTotal Premium (API v3) integration: 
-  - Fetch live hunt notifications as incidents. 
-  - Use retro hunt to analyze files with custom YARA rules.
-  - Download suspicious files from VirusTotal for further analysis.
-  - Group several files from VirusTotal into a password-protected ZIP file.
-  - Get a PCAP file generated from VirusTotal's sandbox for further analysis. 
-
 - VirusTotal - Private integration:
  - Get extensive reports on interactions between files, domains, URLs, IP addresses, and hashes.
  - Investigate activity of recognized malware.

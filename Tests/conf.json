@@ -3210,6 +3210,22 @@
             "timeout": 250
         },
         {
+            "integrations": "VirusTotal (API v3)",
+            "playbookID": "VirusTotal (API v3) Detonate Test",
+            "instance_names": [
+                "virus_total_v3",
+                "virus_total_v3_premium"
+            ],
+            "is_mockable": false
+        },
+        {
+            "integrations": "VirusTotal (API v3)",
+            "playbookID": "VirusTotalV3-test",
+            "instance_names": [
+                "virus_total_v3"
+            ]
+        },
+        {
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
         },
