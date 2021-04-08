@@ -1,5 +1,5 @@
 """
-AlphaVantage is a stock data API TODO: MA?
+AlphaVantage is a stock data API
 """
 
 import urllib3
