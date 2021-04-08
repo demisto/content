@@ -18,10 +18,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """
-    Client will implement the service API.
-    """
-
     def __init__(self, base_url, verify, proxy, reliability):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.reliability = reliability
