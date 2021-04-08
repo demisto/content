@@ -1,6 +1,5 @@
-id: c98f69a4-1154-49c1-88b8-40330fb8d6c5
-version: 19
-vcShouldKeepItemLegacyProdMachine: false
+id: Trello Test
+version: -1
 name: Trello Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -698,6 +698,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -729,5 +730,7 @@ inputs:
     simple: 602f2f91cc8a4e23e393556a
   required: false
   description: Trello ID of board to use as test
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 6.0.0
+description: ''
