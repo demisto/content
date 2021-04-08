@@ -41,7 +41,8 @@ As an example, you can fetch incidents that were created by the CyberGate rulese
 The following 2 commands appear in both the *VirusTotal - Private API* and *VirusTotal Premium - (API v3)* integrations.
 - **vt-private-search-file**
 - **vt-private-download-file**
- It is recommended to use these commands in the *VirusTotal Premium - (API v3)* integration. For all other commands, you should use the *VirusTotal - Private API* integration.
+- It is recommended to use these commands in the *VirusTotal Premium - (API v3)* integration.   
+- For all other commands, you should use the *VirusTotal - Private API* integration.
 
 ## Report commands alternatives / Enrichment
 To enrich indicators, you can use the *VirusTotal (API v3)* integration reputation commands.
@@ -100,9 +101,6 @@ Downloads file from VirusTotal
     }
 }
 ```
-
-#### Human Readable Output
-
 
 
 ### vt-private-zip-create

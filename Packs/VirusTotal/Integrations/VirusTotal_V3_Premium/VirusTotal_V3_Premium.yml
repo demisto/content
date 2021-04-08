@@ -1504,7 +1504,7 @@ script:
     name: vt-private-retrohunt-jobs-get-matching-files
   - arguments:
     - default: false
-      description: The rules to create.
+      description: The rules to create. https://yara.readthedocs.io/en/stable/
       isArray: false
       name: rules
       required: true
