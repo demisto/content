@@ -242,3 +242,75 @@ def test_reliability(mocker):
     mocker.patch.object(CommonServerPython.Common, 'IP')
     AutofocusV2.search_ip_command('1.1.1.1', DBotScoreReliability.B)
     assert mocked_dbot.call_args[1].get('reliability') == 'B - Usually reliable'
+
+
+def test_get_tags_for_tags_and_malware_family_fields():
+    """
+
+     Given:
+         - The 'Tags' values returned from the API for a given response.
+     When:
+         - When the user uses 'file' 'ip' 'domain' or 'url' commands.
+     Then:
+         - Only specific tags should be parsed in to context.
+
+     """
+    import AutofocusV2
+    tags = AutofocusV2.get_tags_for_tags_and_malware_family_fields(TAGS_FROM_RESPONSE)
+    tags.sort()
+    assert tags == ['Bladabindi', 'NJRat', 'NanoCoreRAT', 'RemoteAccessTrojan', 'Unit42.NJRat', 'Unit42.NanoCoreRAT']
+
+
+TAGS_FROM_RESPONSE = [
+    {
+        "aliases": [
+            "Bladabindi"
+        ],
+        "count": 2273664,
+        "customer_industry": "High Tech",
+        "customer_name": "Palo Alto Networks Unit42",
+        "description": "NJRa.",
+        "downVotes": "",
+        "lasthit": "2020-11-17 12:04:36",
+        "myVote": "",
+        "public_tag_name": "Unit42.NJRat",
+        "source": "Unit 42",
+        "support_id": 1,
+        "tagGroups": [
+            {
+                "description": "Remote",
+                "tag_group_name": "RemoteAccessTrojan"
+            }
+        ],
+        "tag_class_id": 3,
+        "tag_definition_id": 31426,
+        "tag_definition_scope_id": 4,
+        "tag_definition_status_id": 1,
+        "tag_name": "NJRat",
+        "upVotes": 1
+    },
+    {
+        "count": 506972,
+        "customer_industry": "High Tech",
+        "customer_name": "Palo Alto Networks Unit42",
+        "description": "Generally",
+        "downVotes": "",
+        "lasthit": "2020-11-17 16:31:52",
+        "myVote": "",
+        "public_tag_name": "Unit42.NanoCoreRAT",
+        "source": "Unit 42",
+        "support_id": 1,
+        "tag_class_id": 3,
+        "tag_definition_id": 31987,
+        "tag_definition_scope_id": 4,
+        "tag_definition_status_id": 1,
+        "tag_name": "NanoCoreRAT",
+        "tagGroups": [
+            {
+                "description": "Remote",
+                "tag_group_name": "RemoteAccessTrojan"
+            }
+        ],
+        "upVotes": 3
+    }
+]
