@@ -87,7 +87,7 @@ script:
       type: String
     - contextPath: IP.Tags
       description: (List) Tags of the IP.
-      type: Unknown
+      type: String
     - contextPath: IP.FeedRelatedIndicators.value
       description: Indicators that are associated with the IP.
       type: String
