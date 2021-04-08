@@ -1,26 +1,25 @@
 id: Content developer setup
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: Tidy
-    itemVersion: 1.0.1
+  contentitemfields: {}
 name: Content developer setup
 description: 6.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c00cc1d2-766d-4828-8813-41d1f285a6a7
+    taskid: 85ab7fbf-584b-4ce8-8e93-cc79d975ab0e
     type: start
     task:
-      id: c00cc1d2-766d-4828-8813-41d1f285a6a7
+      id: 85ab7fbf-584b-4ce8-8e93-cc79d975ab0e
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -34,14 +33,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 44a9168c-3b94-4368-89a2-f9cda7dcc76a
+    taskid: f0a935af-b00d-413e-8d3c-7b47854fe301
     type: regular
     task:
-      id: 44a9168c-3b94-4368-89a2-f9cda7dcc76a
+      id: f0a935af-b00d-413e-8d3c-7b47854fe301
       version: -1
       name: Install osx-command line tools
       description: Install OSx command-line tools, For more info - https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/
@@ -52,10 +49,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "4"
-        - "2"
-        - "3"
-        - "5"
+      - "4"
+      - "2"
+      - "3"
+      - "5"
     separatecontext: false
     view: |-
       {
@@ -69,14 +66,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6219563e-4e8d-471d-8582-d440ba8990ff
+    taskid: b6573aaf-e090-41e4-8f25-09f079f241c9
     type: regular
     task:
-      id: 6219563e-4e8d-471d-8582-d440ba8990ff
+      id: b6573aaf-e090-41e4-8f25-09f079f241c9
       version: -1
       name: Install basic packages using homebrew
       description: Install and configure homebrew, Install additional homebrew/-cask
@@ -107,14 +102,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 3b37a511-c2af-4c69-8142-c70b4c35e4ab
+    taskid: eb608257-c0bb-4840-84ec-eb0fb20331e5
     type: regular
     task:
-      id: 3b37a511-c2af-4c69-8142-c70b4c35e4ab
+      id: eb608257-c0bb-4840-84ec-eb0fb20331e5
       version: -1
       name: Git user configuration
       description: Configure git cli.
@@ -124,7 +117,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "6"
+      - "6"
     scriptarguments:
       key:
         simple: user.name
@@ -134,8 +127,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3162.5,
-          "y": 370
+          "x": 2250,
+          "y": 360
         }
       }
     note: false
@@ -143,14 +136,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 48930179-2adc-4f57-88ef-92002fdad568
+    taskid: e6963bab-105e-46b1-8da2-75365c702dd4
     type: regular
     task:
-      id: 48930179-2adc-4f57-88ef-92002fdad568
+      id: e6963bab-105e-46b1-8da2-75365c702dd4
       version: -1
       name: Git email configuration
       description: Configure git cli.
@@ -160,7 +151,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "6"
+      - "6"
     scriptarguments:
       key:
         simple: user.name
@@ -170,8 +161,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 370
+          "x": 1770,
+          "y": 350
         }
       }
     note: false
@@ -179,14 +170,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: be66b8bc-3769-4959-8efa-f4e41e05f293
+    taskid: da9f524e-c84c-463b-88db-b08652790ecf
     type: regular
     task:
-      id: be66b8bc-3769-4959-8efa-f4e41e05f293
+      id: da9f524e-c84c-463b-88db-b08652790ecf
       version: -1
       name: ZSH, p10k, oh-my-zsh
       description: Install zsh, oh-my-zsh, p10k.
@@ -196,14 +185,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "7"
-        - "8"
+      - "7"
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 4095,
-          "y": 720
+          "x": 3880,
+          "y": 520
         }
       }
     note: false
@@ -211,14 +200,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: cb763ebd-6504-48f1-86ef-8fc14341c00b
+    taskid: 71452bae-72f2-423f-81a8-6bba84aba0ea
     type: regular
     task:
-      id: cb763ebd-6504-48f1-86ef-8fc14341c00b
+      id: 71452bae-72f2-423f-81a8-6bba84aba0ea
       version: -1
       name: GitHub deploy public ssh key
       description: Generate private/public key, Configure ssh client, and deploy keys
@@ -229,10 +216,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "24"
+      - "24"
     scriptarguments:
       access_token:
-        simple: ${inputs.Github token}
+        simple: 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
       user:
         simple: ${inputs.user}
     separatecontext: false
@@ -248,14 +235,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ec6988b6-936e-4191-8078-805947978bb8
+    taskid: 394c2899-79d8-4582-8cc1-c04edec1704a
     type: regular
     task:
-      id: ec6988b6-936e-4191-8078-805947978bb8
+      id: 394c2899-79d8-4582-8cc1-c04edec1704a
       version: -1
       name: Install Pyenv (Python)
       description: Install Python versions, Using Pyenv.
@@ -265,12 +250,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "9"
+      - "9"
     scriptarguments:
       execution-timeout:
         simple: "7200"
       globals:
         simple: 3.8.5,2.7.18
+      retry-count:
+        simple: "2"
       versions:
         simple: 3.8.5,2.7.18
     separatecontext: false
@@ -286,14 +273,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 68665d19-5939-4871-854f-cd70d7b6f9fc
+    taskid: 62e0c1ab-6817-45dd-8898-1305c257162e
     type: regular
     task:
-      id: 68665d19-5939-4871-854f-cd70d7b6f9fc
+      id: 62e0c1ab-6817-45dd-8898-1305c257162e
       version: -1
       name: Install Goenv (GoLang)
       description: Install GoLang versions, Using Goenv.
@@ -303,19 +288,21 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "20"
+      - "20"
     scriptarguments:
       execution-timeout:
         simple: "7200"
       globals:
-        simple: 1.15.6
+        simple: 1.16.0
+      retry-count:
+        simple: "2"
       versions:
-        simple: 1.15.6
+        simple: 1.16.0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 4310,
+          "x": 4320,
           "y": 1070
         }
       }
@@ -324,14 +311,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2c365cf9-a98c-4b75-8c93-65006319a969
+    taskid: c1467866-0313-4725-883c-abd403cc83da
     type: regular
     task:
-      id: 2c365cf9-a98c-4b75-8c93-65006319a969
+      id: c1467866-0313-4725-883c-abd403cc83da
       version: -1
       name: Install nodenv (Node.js)
       description: Install Node.js versions, Using nodenv.
@@ -341,14 +326,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "21"
+      - "21"
     scriptarguments:
       execution-timeout:
         simple: "7200"
       globals:
-        simple: 11.6.0
+        simple: 12.20.1
       versions:
-        simple: 11.6.0
+        simple: 12.20.1
     separatecontext: false
     view: |-
       {
@@ -362,26 +347,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: c4ef4eed-0210-4750-8880-2ac589f29dc4
+    taskid: 1ad6ae2e-a7bd-4d85-8738-8e72d4b97b22
     type: title
     task:
-      id: c4ef4eed-0210-4750-8880-2ac589f29dc4
+      id: 1ad6ae2e-a7bd-4d85-8738-8e72d4b97b22
       version: -1
-      name: Server related repos
+      name: Content related repos
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-        - "12"
-        - "13"
-        - "14"
-        - "15"
-        - "16"
+      - "12"
+      - "13"
+      - "14"
+      - "15"
+      - "16"
     separatecontext: false
     view: |-
       {
@@ -395,25 +379,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: e47b645d-a535-4782-859a-1f799c513bd4
+    taskid: cb43beac-a574-4f1c-81d8-42d77c23da0c
     type: title
     task:
-      id: e47b645d-a535-4782-859a-1f799c513bd4
+      id: cb43beac-a574-4f1c-81d8-42d77c23da0c
       version: -1
-      name: Content related repos
+      name: Server related repos
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-        - "17"
-        - "18"
-        - "19"
-        - "25"
+      - "17"
+      - "18"
+      - "19"
+      - "25"
     separatecontext: false
     view: |-
       {
@@ -427,14 +410,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 002c58a6-18bb-4edb-8cef-c9654f6deb84
+    taskid: 72a0a9b0-3a58-40e9-8e8d-e14c72c94efb
     type: regular
     task:
-      id: 002c58a6-18bb-4edb-8cef-c9654f6deb84
+      id: 72a0a9b0-3a58-40e9-8e8d-e14c72c94efb
       version: -1
       name: Clone content
       description: Clone git repository to destination.
@@ -444,7 +425,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "22"
+      - "27"
     scriptarguments:
       dest:
         simple: ~/dev/demisto/content
@@ -467,14 +448,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 675604cf-f360-4b8f-899d-35b72b34aed2
+    taskid: fb33282c-5975-4c68-854d-49957c5f26b9
     type: regular
     task:
-      id: 675604cf-f360-4b8f-899d-35b72b34aed2
+      id: fb33282c-5975-4c68-854d-49957c5f26b9
       version: -1
       name: Clone demisto-sdk
       description: Clone git repository to destination.
@@ -504,14 +483,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 41c1514f-c905-4ad2-8e2f-b910162e7e5b
+    taskid: 50b9834f-50e4-49ca-8fb7-c480b02f71ea
     type: regular
     task:
-      id: 41c1514f-c905-4ad2-8e2f-b910162e7e5b
+      id: 50b9834f-50e4-49ca-8fb7-c480b02f71ea
       version: -1
       name: Clone internal-content
       description: Clone git repository to destination.
@@ -541,14 +518,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: da893fd2-fdb8-4caf-8af9-b708b00b4646
+    taskid: 1c5f7fcc-327f-4b34-8aff-9474f8b3847f
     type: regular
     task:
-      id: da893fd2-fdb8-4caf-8af9-b708b00b4646
+      id: 1c5f7fcc-327f-4b34-8aff-9474f8b3847f
       version: -1
       name: Clone content-test-conf
       description: Clone git repository to destination.
@@ -578,14 +553,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 6914ac3b-ae1e-486c-8192-68e46f1535ce
+    taskid: 8c0c08d1-eea8-4859-896e-00589920d296
     type: regular
     task:
-      id: 6914ac3b-ae1e-486c-8192-68e46f1535ce
+      id: 8c0c08d1-eea8-4859-896e-00589920d296
       version: -1
       name: Clone dockerfiles
       description: Clone git repository to destination.
@@ -615,14 +588,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 63cd0601-a808-48bb-8db2-81088d1d98d1
+    taskid: 2602b29e-c149-45dc-82ec-2cd2d8f4aad5
     type: regular
     task:
-      id: 63cd0601-a808-48bb-8db2-81088d1d98d1
+      id: 2602b29e-c149-45dc-82ec-2cd2d8f4aad5
       version: -1
       name: Clone web-client
       description: Clone git repository to destination.
@@ -632,7 +603,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "21"
+      - "21"
     scriptarguments:
       dest:
         simple: ~/dev/demisto/web-client
@@ -655,14 +626,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: cf3f4125-7ca1-4ffd-80ae-b223af2f228d
+    taskid: 05d86f80-0407-473e-89d7-dc7b52e5bd37
     type: regular
     task:
-      id: cf3f4125-7ca1-4ffd-80ae-b223af2f228d
+      id: 05d86f80-0407-473e-89d7-dc7b52e5bd37
       version: -1
       name: Clone etc
       description: Clone git repository to destination.
@@ -692,14 +661,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 7064fb55-1c44-4ec7-89bd-da7d02a3908f
+    taskid: 151317fa-e1ce-4d04-8f15-155de5469f91
     type: regular
     task:
-      id: 7064fb55-1c44-4ec7-89bd-da7d02a3908f
+      id: 151317fa-e1ce-4d04-8f15-155de5469f91
       version: -1
       name: Clone server
       description: Clone git repository to destination.
@@ -709,7 +676,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "20"
+      - "20"
     scriptarguments:
       dest:
         simple: ~/dev/go/src/github.com/demisto/server
@@ -732,14 +699,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 86f3eb4a-88fa-41e5-830d-bd1d052bc9ec
+    taskid: 43ddb945-4207-4368-8ce0-50035c9febd2
     type: regular
     task:
-      id: 86f3eb4a-88fa-41e5-830d-bd1d052bc9ec
+      id: 43ddb945-4207-4368-8ce0-50035c9febd2
       version: -1
       name: Install server
       description: Set demisto developement server.
@@ -760,22 +725,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 3d296bed-cc5a-4dc7-82c9-3029a39c4f81
+    taskid: ae893f4d-cd2c-4ff8-8ffb-867397b46716
     type: regular
     task:
-      id: 3d296bed-cc5a-4dc7-82c9-3029a39c4f81
+      id: ae893f4d-cd2c-4ff8-8ffb-867397b46716
       version: -1
-      name: |-
-        Install web-client
+      name: Install web-client
       description: Set demisto developement web-client.
       script: Tidy|||tidy-demisto-web-client
       type: regular
       iscommand: true
       brand: Tidy
+    scriptarguments:
+      execution-timeout:
+        simple: "7200"
+      retry-count:
+        simple: "2"
     separatecontext: false
     view: |-
       {
@@ -789,54 +756,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 6d16b503-9be0-4e9f-8090-6dc0a997f7db
-    type: regular
-    task:
-      id: 6d16b503-9be0-4e9f-8090-6dc0a997f7db
-      version: -1
-      name: Install requirements
-      description: Run command in host.
-      script: '|||tidy-exec'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-        - "23"
-    scriptarguments:
-      chdir:
-        simple: ~/dev/demisto/content
-      command:
-        simple: pip3 install -r dev-requirements-py3.txt
-      execution-timeout:
-        simple: "7200"
-      retry-count:
-        simple: "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: a6db9007-9b47-4450-81e7-b0880ed96643
+    taskid: 4bef64b7-cca9-4a93-8801-95020e358f9a
     type: regular
     task:
-      id: a6db9007-9b47-4450-81e7-b0880ed96643
+      id: 4bef64b7-cca9-4a93-8801-95020e358f9a
       version: -1
       name: Set git hooks
       description: Run command in host.
@@ -854,7 +779,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1440
         }
       }
     note: false
@@ -862,14 +787,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 4ad64efc-9fc0-4502-84e8-cd12a542a0f9
+    taskid: 08000a51-61a9-46df-8c5f-292b3a7658de
     type: collection
     task:
-      id: 4ad64efc-9fc0-4502-84e8-cd12a542a0f9
+      id: 08000a51-61a9-46df-8c5f-292b3a7658de
       version: -1
       name: Enable github SSO
       type: collection
@@ -877,8 +800,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "10"
-        - "11"
+      - "10"
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -897,9 +820,9 @@ tasks:
         simple: Enable SSO
       body: {}
       methods:
-        - email
+      - email
       format: ""
-      bcc: null
+      bcc:
       cc:
         simple: Read-Only
       timings:
@@ -908,23 +831,23 @@ tasks:
         completeafterreplies: 1
     form:
       questions:
-        - id: "0"
-          label: ""
-          labelarg:
-            simple: Did you enabled GitHub ssh key - SSO
-          required: true
-          gridcolumns: []
-          defaultrows: []
-          type: singleSelect
-          options: []
-          optionsarg:
-            - {}
-            - simple: "Yes"
-            - simple: "No"
-          fieldassociated: ""
-          placeholder: ""
-          tooltip: ""
-          readonly: false
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Did you enabled GitHub ssh key - SSO
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
       title: GitHub SSH SSO
       description: ""
       sender: Your SOC team
@@ -932,14 +855,12 @@ tasks:
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 0c86f788-735a-4083-82a1-b9befa7a3c19
+    taskid: 68a8be61-a093-47e9-83f4-e90d34ecbc7e
     type: regular
     task:
-      id: 0c86f788-735a-4083-82a1-b9befa7a3c19
+      id: 68a8be61-a093-47e9-83f4-e90d34ecbc7e
       version: -1
       name: Clone oproxy
       description: Clone git repository to destination.
@@ -969,32 +890,70 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-system: true
+  "27":
+    id: "27"
+    taskid: bff55f1d-2943-405b-89fc-a7f242b0ba8a
+    type: regular
+    task:
+      id: bff55f1d-2943-405b-89fc-a7f242b0ba8a
+      version: -1
+      name: Install requirements
+      description: Run command in host.
+      script: '|||tidy-exec'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      chdir:
+        simple: ~/dev/demisto/content
+      command:
+        simple: pip3 install -r dev-requirements-py3.txt
+      execution-timeout:
+        simple: "7200"
+      retry-count:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
-        "width": 4640,
+        "height": 1485,
+        "width": 4650,
         "x": 50,
         "y": 50
       }
     }
   }
 inputs:
-  - key: user
-    value:
-      simple: ec2-user
-    required: true
-    description: User to configure as git user.
-    playbookInputQuery: null
-  - key: Github token
-    value:
-      simple: ${incident.tidygithubtoken}
-    required: true
-    description: Github token with public key admin permissions.
-    playbookInputQuery: null
+- key: user
+  value:
+    simple: ec2-user
+  required: true
+  description: User to configure as git user.
+  playbookInputQuery:
+- key: Github token
+  value:
+    simple: ${incident.tidygithubtoken}
+  required: true
+  description: Github token with public key admin permissions.
+  playbookInputQuery:
 outputs: []
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
