@@ -240,7 +240,8 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
             'value': 'AS397539'
         },
         'type': indicator_type,
-        'value': 'AS397539'
+        'value': 'AS397539',
+        'fields': {'tags': ['tag1', 'tag2'], 'trafficlightprotocol': 'AMBER'}
     } in indicators
 
 
