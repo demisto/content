@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 83eb397f-7a62-4cad-8579-e38cea76660b
+    taskid: db6599b1-3e59-46e4-8677-eed02abeff0d
     type: start
     task:
-      id: 83eb397f-7a62-4cad-8579-e38cea76660b
+      id: db6599b1-3e59-46e4-8677-eed02abeff0d
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: cedef0eb-8720-43d2-885c-8b7865ba1149
+    taskid: 497de4b0-e0da-4318-8439-d739e1699210
     type: regular
     task:
-      id: cedef0eb-8720-43d2-885c-8b7865ba1149
+      id: 497de4b0-e0da-4318-8439-d739e1699210
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -66,10 +66,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 1d1a32b8-f7fb-4a65-8633-482c6572aba0
+    taskid: 68f6db58-20e0-46ef-8067-ee9a07f6e46d
     type: regular
     task:
-      id: 1d1a32b8-f7fb-4a65-8633-482c6572aba0
+      id: 68f6db58-20e0-46ef-8067-ee9a07f6e46d
       version: -1
       name: expanse-get-issues
       script: '|||expanse-get-issues'
@@ -103,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: a64ff891-fbc1-42b1-8890-7c73f5455632
+    taskid: c90f72f1-7309-4317-8446-9ca268022ab7
     type: condition
     task:
-      id: a64ff891-fbc1-42b1-8890-7c73f5455632
+      id: c90f72f1-7309-4317-8446-9ca268022ab7
       version: -1
       name: Verify Outputs
       type: condition
@@ -260,10 +260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a80639f9-18e0-4e43-87b3-de483a78c780
+    taskid: 25701241-e243-4934-805c-294fe0215f70
     type: regular
     task:
-      id: a80639f9-18e0-4e43-87b3-de483a78c780
+      id: 25701241-e243-4934-805c-294fe0215f70
       version: -1
       name: expanse-get-issue-updates
       script: '|||expanse-get-issue-updates'
@@ -301,10 +301,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 65a6d7bb-048f-40c7-8965-3da41febe3d0
+    taskid: 10890976-fb37-4401-8ed6-2c2c5c8b0f30
     type: condition
     task:
-      id: 65a6d7bb-048f-40c7-8965-3da41febe3d0
+      id: 10890976-fb37-4401-8ed6-2c2c5c8b0f30
       version: -1
       name: Verify Outputs
       type: condition
@@ -374,10 +374,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7dabb138-c429-46fd-819c-a991c70a5fd8
+    taskid: 48829e36-7f52-4f6b-8c6c-ce56ea3d1e18
     type: regular
     task:
-      id: 7dabb138-c429-46fd-819c-a991c70a5fd8
+      id: 48829e36-7f52-4f6b-8c6c-ce56ea3d1e18
       version: -1
       name: expanse-get-issue-comments
       script: '|||expanse-get-issue-comments'
@@ -411,10 +411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: cba891a4-b3f7-46e3-838e-94aeae38a39d
+    taskid: f2a30765-c178-4fd7-8040-435e8ec81e80
     type: condition
     task:
-      id: cba891a4-b3f7-46e3-838e-94aeae38a39d
+      id: f2a30765-c178-4fd7-8040-435e8ec81e80
       version: -1
       name: Verify Outputs
       type: condition
@@ -476,10 +476,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3e78f53e-aadc-4f21-8dfb-ebd353ecd33c
+    taskid: b1270498-0ff5-4160-8a79-255e9f8b1352
     type: regular
     task:
-      id: 3e78f53e-aadc-4f21-8dfb-ebd353ecd33c
+      id: b1270498-0ff5-4160-8a79-255e9f8b1352
       version: -1
       name: expanse-update-issue (Add Comment)
       script: '|||expanse-update-issue'
@@ -514,10 +514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 489e2d98-cf97-409d-899d-ecbe0755cf39
+    taskid: 4ffa9aa3-927e-4928-835d-ff2eeb72abdb
     type: condition
     task:
-      id: 489e2d98-cf97-409d-899d-ecbe0755cf39
+      id: 4ffa9aa3-927e-4928-835d-ff2eeb72abdb
       version: -1
       name: Verify Outputs
       type: condition
@@ -581,10 +581,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 27aaadf8-f030-4274-87ed-96d9fd4dd9eb
+    taskid: bb542a09-bd34-4dce-849e-d5f908acdfe3
     type: regular
     task:
-      id: 27aaadf8-f030-4274-87ed-96d9fd4dd9eb
+      id: bb542a09-bd34-4dce-849e-d5f908acdfe3
       version: -1
       name: expanse-get-issue
       script: '|||expanse-get-issue'
@@ -615,10 +615,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0955e4e6-cc0a-447c-8292-0f4f27c5b581
+    taskid: 756872f7-4598-49aa-8fd5-c79716122d3d
     type: condition
     task:
-      id: 0955e4e6-cc0a-447c-8292-0f4f27c5b581
+      id: 756872f7-4598-49aa-8fd5-c79716122d3d
       version: -1
       name: Verify Outputs
       type: condition
@@ -780,10 +780,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ec328201-2e3a-4115-874e-409416076fb4
+    taskid: 3c1ae7dd-7eea-4c57-8c3b-8b927471de80
     type: regular
     task:
-      id: ec328201-2e3a-4115-874e-409416076fb4
+      id: 3c1ae7dd-7eea-4c57-8c3b-8b927471de80
       version: -1
       name: expanse-list-businessunits
       script: '|||expanse-list-businessunits'
@@ -813,10 +813,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 8014076c-7ede-4ec3-8796-91d6402ac0a5
+    taskid: ebd9759e-6b6a-413e-8076-d591f53ceb6b
     type: condition
     task:
-      id: 8014076c-7ede-4ec3-8796-91d6402ac0a5
+      id: ebd9759e-6b6a-413e-8076-d591f53ceb6b
       version: -1
       name: Verify Outputs
       type: condition
@@ -855,10 +855,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 01eec71b-6815-4290-8f08-dd6badfd0c55
+    taskid: 9d198ee1-062a-4a1a-8ffa-04991955ee28
     type: regular
     task:
-      id: 01eec71b-6815-4290-8f08-dd6badfd0c55
+      id: 9d198ee1-062a-4a1a-8ffa-04991955ee28
       version: -1
       name: expanse-list-providers
       script: '|||expanse-list-providers'
@@ -888,10 +888,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 19a0cbdd-6a7d-44b1-822e-b022efcb8ebb
+    taskid: 340de361-45d9-4630-8a79-79ee82ba232b
     type: condition
     task:
-      id: 19a0cbdd-6a7d-44b1-822e-b022efcb8ebb
+      id: 340de361-45d9-4630-8a79-79ee82ba232b
       version: -1
       name: Verify Outputs
       type: condition
@@ -930,10 +930,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: bf072057-90e2-4cb6-8a3d-4cd940d8499a
+    taskid: 365ad6a5-c6b6-4f78-8a2c-50212c8dcb85
     type: regular
     task:
-      id: bf072057-90e2-4cb6-8a3d-4cd940d8499a
+      id: 365ad6a5-c6b6-4f78-8a2c-50212c8dcb85
       version: -1
       name: expanse-list-tags
       script: '|||expanse-list-tags'
@@ -963,10 +963,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 10b4b432-ec4c-48d3-8b8d-d9a67bf2887c
+    taskid: c653733f-cc34-4f4e-88e3-e1e649943532
     type: condition
     task:
-      id: 10b4b432-ec4c-48d3-8b8d-d9a67bf2887c
+      id: c653733f-cc34-4f4e-88e3-e1e649943532
       version: -1
       name: Verify Outputs
       type: condition
@@ -1028,10 +1028,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 95d6734c-6db4-4873-8ff2-9e1568985b91
+    taskid: 7b98a7d7-0348-484f-8cb6-3be95250d771
     type: regular
     task:
-      id: 95d6734c-6db4-4873-8ff2-9e1568985b91
+      id: 7b98a7d7-0348-484f-8cb6-3be95250d771
       version: -1
       name: expanse-assign-tags-to-asset
       script: '|||expanse-assign-tags-to-asset'
@@ -1077,10 +1077,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: b48a2773-1643-44b0-8403-9976f9950255
+    taskid: 3213f7ff-e598-4987-85d8-f43f35aae533
     type: regular
     task:
-      id: b48a2773-1643-44b0-8403-9976f9950255
+      id: 3213f7ff-e598-4987-85d8-f43f35aae533
       version: -1
       name: expanse-unassign-tags-from-asset
       script: '|||expanse-unassign-tags-from-asset'
@@ -1126,10 +1126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: d4c7e130-e818-4e61-8ad7-9dc424152bc3
+    taskid: b2972a38-4976-47e6-84a4-e4bc075561b4
     type: regular
     task:
-      id: d4c7e130-e818-4e61-8ad7-9dc424152bc3
+      id: b2972a38-4976-47e6-84a4-e4bc075561b4
       version: -1
       name: expanse-assign-tags-to-iprange
       script: '|||expanse-assign-tags-to-iprange'
@@ -1162,10 +1162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 85d0f4b0-7cd8-444b-8f6e-52a6e43e324b
+    taskid: 936c51ad-a79e-4e8a-89ce-aa61371bdac7
     type: regular
     task:
-      id: 85d0f4b0-7cd8-444b-8f6e-52a6e43e324b
+      id: 936c51ad-a79e-4e8a-89ce-aa61371bdac7
       version: -1
       name: expanse-unassign-tags-from-iprange
       script: '|||expanse-unassign-tags-from-iprange'
@@ -1198,10 +1198,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 88b4e930-19d9-4535-89c6-ac41ce98a762
+    taskid: c42f274f-d9cf-47b2-86d3-df132f7a97c6
     type: regular
     task:
-      id: 88b4e930-19d9-4535-89c6-ac41ce98a762
+      id: c42f274f-d9cf-47b2-86d3-df132f7a97c6
       version: -1
       name: expanse-assign-tags-to-certificate
       script: '|||expanse-assign-tags-to-certificate'
@@ -1234,10 +1234,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: e3398be9-d102-480e-88e1-d67cc72bcd84
+    taskid: 5f80ee7a-8bea-4c5a-8b93-c16bde05453a
     type: regular
     task:
-      id: e3398be9-d102-480e-88e1-d67cc72bcd84
+      id: 5f80ee7a-8bea-4c5a-8b93-c16bde05453a
       version: -1
       name: expanse-unassign-tags-from-certificate
       script: '|||expanse-unassign-tags-from-certificate'
@@ -1270,10 +1270,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 8f379a15-ad7d-4525-8daa-66a3cf6ce341
+    taskid: a761ed62-9834-418c-8bc5-fb98bbe8011e
     type: regular
     task:
-      id: 8f379a15-ad7d-4525-8daa-66a3cf6ce341
+      id: a761ed62-9834-418c-8bc5-fb98bbe8011e
       version: -1
       name: expanse-assign-tags-to-domain
       script: '|||expanse-assign-tags-to-domain'
@@ -1306,10 +1306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 635fb02b-2baf-4e3d-801f-d65ba3be707b
+    taskid: a8d74fc8-1ef0-4241-887a-8232e6f7bb9e
     type: regular
     task:
-      id: 635fb02b-2baf-4e3d-801f-d65ba3be707b
+      id: a8d74fc8-1ef0-4241-887a-8232e6f7bb9e
       version: -1
       name: expanse-unassign-tags-from-domain
       script: '|||expanse-unassign-tags-from-domain'
@@ -1342,10 +1342,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 7524eb92-f174-460c-84ca-085c839fc69c
+    taskid: 58c364f9-15b5-421c-81c7-ba086ca15536
     type: regular
     task:
-      id: 7524eb92-f174-460c-84ca-085c839fc69c
+      id: 58c364f9-15b5-421c-81c7-ba086ca15536
       version: -1
       name: expanse-create-tag
       script: '|||expanse-create-tag'
@@ -1377,10 +1377,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: bc0b4045-f50e-430a-87d8-f65ba4df6ef7
+    taskid: f5b767d6-e6c3-4674-8385-095cd4b1de00
     type: regular
     task:
-      id: bc0b4045-f50e-430a-87d8-f65ba4df6ef7
+      id: f5b767d6-e6c3-4674-8385-095cd4b1de00
       version: -1
       name: expanse-get-iprange
       script: '|||expanse-get-iprange'
@@ -1410,10 +1410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: da8afea0-8462-498b-85cb-99a207e51da3
+    taskid: 30275d96-e1c4-4a6c-8d0a-f4bd6a631d63
     type: condition
     task:
-      id: da8afea0-8462-498b-85cb-99a207e51da3
+      id: 30275d96-e1c4-4a6c-8d0a-f4bd6a631d63
       version: -1
       name: Verify Outputs
       type: condition
@@ -1526,10 +1526,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: bc8f1b8f-187c-4eb2-8269-9e21f18cb373
+    taskid: fbf6874a-3eed-4c6d-8144-47460aec16c9
     type: regular
     task:
-      id: bc8f1b8f-187c-4eb2-8269-9e21f18cb373
+      id: fbf6874a-3eed-4c6d-8144-47460aec16c9
       version: -1
       name: expanse-get-domain
       script: '|||expanse-get-domain'
@@ -1559,10 +1559,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: e127304a-ce49-48a8-89c6-1b5e332d0050
+    taskid: 0221372e-5eff-4958-8edf-6e7a39a8a7c1
     type: condition
     task:
-      id: e127304a-ce49-48a8-89c6-1b5e332d0050
+      id: 0221372e-5eff-4958-8edf-6e7a39a8a7c1
       version: -1
       name: Verify Outputs
       type: condition
@@ -1745,10 +1745,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: a8f23b47-35fa-436f-83a3-d0b4758998ce
+    taskid: 927087f1-5d9d-4873-8c7f-6d4e7b6ecb14
     type: regular
     task:
-      id: a8f23b47-35fa-436f-83a3-d0b4758998ce
+      id: 927087f1-5d9d-4873-8c7f-6d4e7b6ecb14
       version: -1
       name: expanse-get-certificate
       script: '|||expanse-get-certificate'
@@ -1778,10 +1778,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: d005c15a-a1a3-49eb-8431-c9e30abbe71d
+    taskid: c48f97ba-33f2-4f66-8d9d-f049baf1b63b
     type: condition
     task:
-      id: d005c15a-a1a3-49eb-8431-c9e30abbe71d
+      id: c48f97ba-33f2-4f66-8d9d-f049baf1b63b
       version: -1
       name: Verify Outputs
       type: condition
@@ -2049,10 +2049,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 63d05dd4-7586-4397-88fb-434964b78875
+    taskid: 8adf1099-4187-46c2-8488-88bd21b339e3
     type: regular
     task:
-      id: 63d05dd4-7586-4397-88fb-434964b78875
+      id: 8adf1099-4187-46c2-8488-88bd21b339e3
       version: -1
       name: certificate
       script: '|||certificate'
@@ -2085,10 +2085,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: a232f30c-d5db-46a2-8c45-73ef88baa777
+    taskid: fc6bc026-0e1c-4ff9-882e-28fb75d47d1b
     type: condition
     task:
-      id: a232f30c-d5db-46a2-8c45-73ef88baa777
+      id: fc6bc026-0e1c-4ff9-882e-28fb75d47d1b
       version: -1
       name: Verify Outputs
       type: condition
@@ -2379,10 +2379,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 7416d60e-b91a-402e-8331-46bec4b18c54
+    taskid: e19c1fd0-99a5-427a-8deb-e4c2079e8cbb
     type: regular
     task:
-      id: 7416d60e-b91a-402e-8331-46bec4b18c54
+      id: e19c1fd0-99a5-427a-8deb-e4c2079e8cbb
       version: -1
       name: domain
       script: ExpanseV2|||domain
@@ -2413,10 +2413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 262ca1c8-2353-4e80-8043-9dd7ccf5e46c
+    taskid: 437d757d-cd6b-4427-8b1d-7337680a9e77
     type: condition
     task:
-      id: 262ca1c8-2353-4e80-8043-9dd7ccf5e46c
+      id: 437d757d-cd6b-4427-8b1d-7337680a9e77
       version: -1
       name: Verify Outputs
       type: condition
@@ -2619,10 +2619,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 736c166d-a56d-4988-88ef-575deb94bec0
+    taskid: 4ec6cdce-b0b3-431f-8fec-f7dbe502f720
     type: regular
     task:
-      id: 736c166d-a56d-4988-88ef-575deb94bec0
+      id: 4ec6cdce-b0b3-431f-8fec-f7dbe502f720
       version: -1
       name: cidr
       script: '|||cidr'
@@ -2655,10 +2655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 666f2dce-8907-487c-8292-377630b70baa
+    taskid: e02619b4-cb89-454b-834b-684e74053217
     type: condition
     task:
-      id: 666f2dce-8907-487c-8292-377630b70baa
+      id: e02619b4-cb89-454b-834b-684e74053217
       version: -1
       name: Verify Outputs
       type: condition
@@ -2791,10 +2791,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 663e074d-ac58-4b02-885c-3707db02a5a6
+    taskid: b2eaa140-497a-4862-89e1-c6425c99055d
     type: title
     task:
-      id: 663e074d-ac58-4b02-885c-3707db02a5a6
+      id: b2eaa140-497a-4862-89e1-c6425c99055d
       version: -1
       name: Test Done
       type: title
@@ -2805,7 +2805,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10520
+          "y": 10170
         }
       }
     note: false
@@ -2817,10 +2817,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: ddc955fe-e670-4e2f-8865-ddfc418de92f
+    taskid: 6e347e22-01b6-4e02-834b-a814b593eb74
     type: regular
     task:
-      id: ddc955fe-e670-4e2f-8865-ddfc418de92f
+      id: 6e347e22-01b6-4e02-834b-a814b593eb74
       version: -1
       name: Save Expanse Issue Id to Context
       description: Set a value in context under the key you entered.
@@ -2855,10 +2855,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 8fcb327b-0cb7-4d5c-8a2d-68c1040ceea6
+    taskid: 3581841b-b683-4b1c-8f13-af514ac91921
     type: regular
     task:
-      id: 8fcb327b-0cb7-4d5c-8a2d-68c1040ceea6
+      id: 3581841b-b683-4b1c-8f13-af514ac91921
       version: -1
       name: expanse-update-issue (Change Progress Status)
       script: '|||expanse-update-issue'
@@ -2893,10 +2893,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 84b86a02-b739-4c1c-82e8-9cc89bcda142
+    taskid: 42a3c359-839e-4ad8-8d0d-094d1ca4f5f7
     type: regular
     task:
-      id: 84b86a02-b739-4c1c-82e8-9cc89bcda142
+      id: 42a3c359-839e-4ad8-8d0d-094d1ca4f5f7
       version: -1
       name: Save Expanse Issue Progress Status to Context
       description: Set a value in context under the key you entered.
@@ -2931,10 +2931,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 9950aebd-ae7f-4fc1-82d9-79e95be18434
+    taskid: 40f9a7d2-2caa-46d7-8301-f24616746651
     type: regular
     task:
-      id: 9950aebd-ae7f-4fc1-82d9-79e95be18434
+      id: 40f9a7d2-2caa-46d7-8301-f24616746651
       version: -1
       name: Delete Expanse Issue From Context
       description: Delete field from context
@@ -2967,10 +2967,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 43264a2a-3af3-457a-8dd1-96312790d8a9
+    taskid: ea43c7ea-8cdc-4bd8-8652-f2c5a25b844f
     type: regular
     task:
-      id: 43264a2a-3af3-457a-8dd1-96312790d8a9
+      id: ea43c7ea-8cdc-4bd8-8652-f2c5a25b844f
       version: -1
       name: expanse-update-issue (Reset Progress Status to Original Value)
       script: '|||expanse-update-issue'
@@ -3006,10 +3006,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: ea45785f-1b47-43f0-8c9b-61eceecf5eb9
+    taskid: 6b805eff-fdc6-4e56-8a97-1bd2a800dff4
     type: regular
     task:
-      id: ea45785f-1b47-43f0-8c9b-61eceecf5eb9
+      id: 6b805eff-fdc6-4e56-8a97-1bd2a800dff4
       version: -1
       name: Save Expanse IP Range ID
       description: Set a value in context under the key you entered.
@@ -3046,10 +3046,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 83631bd4-5ec9-477d-8aea-8499942783c4
+    taskid: fd8c8d3f-dd6b-40d6-8d6d-1aaee7e046cc
     type: regular
     task:
-      id: 83631bd4-5ec9-477d-8aea-8499942783c4
+      id: fd8c8d3f-dd6b-40d6-8d6d-1aaee7e046cc
       version: -1
       name: Delete Context (Except things to keep)
       description: Delete field from context
@@ -3082,10 +3082,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: fafce561-43d5-448e-8459-0e214ff0f93e
+    taskid: de31cbc9-6020-4230-858c-3fd9880570b9
     type: regular
     task:
-      id: fafce561-43d5-448e-8459-0e214ff0f93e
+      id: de31cbc9-6020-4230-858c-3fd9880570b9
       version: -1
       name: Save Expanse IP Range CIDR
       description: Set a value in context under the key you entered.
@@ -3122,10 +3122,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: b0b75fe0-76de-4bf8-86bb-29f929f95d91
+    taskid: c7b91458-049c-4add-8734-a177422d36d4
     type: regular
     task:
-      id: b0b75fe0-76de-4bf8-86bb-29f929f95d91
+      id: c7b91458-049c-4add-8734-a177422d36d4
       version: -1
       name: Save Expanse Certificate ID
       description: Set a value in context under the key you entered.
@@ -3162,10 +3162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 0b621b45-b3d1-4bf8-8360-73313ac779d5
+    taskid: 4d115c3d-91a6-4c74-80f3-8e26b186c7de
     type: regular
     task:
-      id: 0b621b45-b3d1-4bf8-8360-73313ac779d5
+      id: 4d115c3d-91a6-4c74-80f3-8e26b186c7de
       version: -1
       name: Save Expanse Certificate MD5
       description: Set a value in context under the key you entered.
@@ -3202,10 +3202,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 117dfb37-2b6d-4412-87b3-6263f50d6922
+    taskid: 3b3fef80-faf9-4884-8853-7f190ba54159
     type: regular
     task:
-      id: 117dfb37-2b6d-4412-87b3-6263f50d6922
+      id: 3b3fef80-faf9-4884-8853-7f190ba54159
       version: -1
       name: Delete Context (Except things to keep)
       description: Delete field from context
@@ -3238,10 +3238,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: c973ee7b-a36b-440f-8e92-43dc5edf61d6
+    taskid: e5e3039f-e381-40c5-8d5f-963af0ec620e
     type: regular
     task:
-      id: c973ee7b-a36b-440f-8e92-43dc5edf61d6
+      id: e5e3039f-e381-40c5-8d5f-963af0ec620e
       version: -1
       name: Save Expanse Certificate SHA256
       description: Set a value in context under the key you entered.
@@ -3278,10 +3278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 18ae6af3-d2ff-4861-8e3d-8c4a22883751
+    taskid: 5f4e8908-edf5-4278-8b33-ea3343c1fb33
     type: regular
     task:
-      id: 18ae6af3-d2ff-4861-8e3d-8c4a22883751
+      id: 5f4e8908-edf5-4278-8b33-ea3343c1fb33
       version: -1
       name: Save Expanse Domain ID
       description: Set a value in context under the key you entered.
@@ -3318,10 +3318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: a56323b8-f427-45c7-812a-b96750c5c291
+    taskid: 7fa07b01-6003-4adb-80e9-8e34b76b2156
     type: regular
     task:
-      id: a56323b8-f427-45c7-812a-b96750c5c291
+      id: 7fa07b01-6003-4adb-80e9-8e34b76b2156
       version: -1
       name: Save Expanse Domain Name
       description: Set a value in context under the key you entered.
@@ -3358,10 +3358,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 78988199-59f1-4cea-896a-36f841d96c1d
+    taskid: 1994804e-9afe-494c-80a4-71082cf41993
     type: regular
     task:
-      id: 78988199-59f1-4cea-896a-36f841d96c1d
+      id: 1994804e-9afe-494c-80a4-71082cf41993
       version: -1
       name: Delete Context (Except things to keep)
       description: Delete field from context
@@ -3394,10 +3394,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 403ab61f-e20c-4af3-8b05-67ac5c9427cb
+    taskid: 62e59a9c-9120-4f77-8a36-ef08aa2c692d
     type: regular
     task:
-      id: 403ab61f-e20c-4af3-8b05-67ac5c9427cb
+      id: 62e59a9c-9120-4f77-8a36-ef08aa2c692d
       version: -1
       name: Save Expanse Issue IP to Context
       description: Set a value in context under the key you entered.
@@ -3432,10 +3432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 3910b269-9930-4d33-8063-cf0c8172cdd8
+    taskid: df64b11d-a57f-4b38-8ba8-627bc7ecf08b
     type: regular
     task:
-      id: 3910b269-9930-4d33-8063-cf0c8172cdd8
+      id: df64b11d-a57f-4b38-8ba8-627bc7ecf08b
       version: -1
       name: Save Expanse Creation Time To Context
       description: Set a value in context under the key you entered.
@@ -3470,10 +3470,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 498ff51b-fdf3-4153-8e65-2e0d6bd2051c
+    taskid: 86302047-41f8-4f2e-8c36-e0c62830eca8
     type: regular
     task:
-      id: 498ff51b-fdf3-4153-8e65-2e0d6bd2051c
+      id: 86302047-41f8-4f2e-8c36-e0c62830eca8
       version: -1
       name: expanse-get-domains-for-certificate
       description: Returns all domains which have been seen with the specified certificate.
@@ -3504,10 +3504,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: a5d8f4a1-42ee-4b08-8222-21e3a8f2ff01
+    taskid: 6b5ff2c9-e076-4e21-8449-7aa08198bc75
     type: condition
     task:
-      id: a5d8f4a1-42ee-4b08-8222-21e3a8f2ff01
+      id: 6b5ff2c9-e076-4e21-8449-7aa08198bc75
       version: -1
       name: Verify domains for certificate
       description: Check if a given value exists in the context. Will return 'no'
@@ -3518,7 +3518,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "68"
+      - "48"
     scriptarguments:
       value:
         simple: ${Expanse.IPDomains.TotalDomainCount}
@@ -3537,81 +3537,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "68":
-    id: "68"
-    taskid: d2319a81-c243-4c8f-8272-bbec2d818df8
-    type: regular
-    task:
-      id: d2319a81-c243-4c8f-8272-bbec2d818df8
-      version: -1
-      name: expanse-get-exposures
-      description: Returns exposure information about the ip.
-      script: '|||expanse-get-exposures'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "69"
-    scriptarguments:
-      ip:
-        simple: ${inputs.ip}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "69":
-    id: "69"
-    taskid: 95d405a9-b288-4509-88db-7ebfb1a1c713
-    type: condition
-    task:
-      id: 95d405a9-b288-4509-88db-7ebfb1a1c713
-      version: -1
-      name: Verify exposures
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "48"
-    scriptarguments:
-      value:
-        simple: ${Expanse.Exposures.TotalExposureCount}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10345
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10535,
+        "height": 10185,
         "width": 380,
         "x": 50,
         "y": 50
@@ -3627,7 +3558,7 @@ inputs:
   playbookInputQuery: null
 - key: common_name
   value:
-    simple: circuitcity.com
+    simple: shack.com
   required: false
   description: A partial certificate common name
   playbookInputQuery: null

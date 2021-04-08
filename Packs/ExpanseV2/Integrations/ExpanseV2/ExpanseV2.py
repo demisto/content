@@ -534,12 +534,6 @@ class Client(BaseClient):
             changed = True
         return assets, ml_feature_list, changed
 
-    def get_exposures_ips(self, params):
-        return self._paginate(
-            method='GET',
-            url_suffix='v2/exposures/ip-ports',
-            params=params)
-
     def fetch_certificates(self, params):
         """
         Fetches all certificates that match the provided params.
@@ -1305,8 +1299,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
         updated_field = ISSUE_UPDATE_TYPES[update_type]
         previous_value = update.get('previousValue')
         update_user = update['user']['username'] \
-            if ('user' in update and isinstance(update['user'], dict) and 'username' in update[
-                'user']) else 'Unknown user'
+            if ('user' in update and isinstance(update['user'], dict)
+                and 'username' in update['user']) else 'Unknown user'
 
         # handle incoming comment
         if update_type == 'Comment':
@@ -2086,86 +2080,6 @@ def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def exposures_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """
-    searches by ip for exposure data from Expanse
-    """
-    ip = args.get('ip')
-
-    params = {
-        "inet": ip,
-        "activityStatus": "active"
-    }
-
-    exposures_iterator = client.get_exposures_ips(params)
-    exposures_list = [exposure for exposure in exposures_iterator]
-    if not exposures_list:
-        return CommandResults(readable_output="No data found")
-
-    expanse_exposure_context = get_expanse_exposure_context(exposures_list)
-
-    raw_exposures = expanse_exposure_context['Exposures']
-    del expanse_exposure_context['Exposures']  # Remove exposure objects from human readable response
-    human_readable = tableToMarkdown("Expanse Exposure information for: {search}".format(search=ip),
-                                     expanse_exposure_context)
-    expanse_exposure_context['Exposures'] = raw_exposures
-
-    return CommandResults(
-        outputs_prefix="Expanse.Exposures",
-        readable_output=human_readable,
-        raw_response=exposures_list,
-        outputs_key_field="SearchTerm",
-        outputs=expanse_exposure_context,
-    )
-
-
-def get_expanse_exposure_context(data):
-    """
-    provides custom context information from the Expanse Exposure API
-    """
-
-    def exposure_to_obj(exposure):
-        return {
-            "ExposureType": exposure['exposureType'],
-            "BusinessUnit": exposure['businessUnit']['name'],
-            "Ip": exposure['ip'],
-            "Port": exposure['port'],
-            "Severity": exposure['severity'],
-            "Certificate": exposure['certificate'],
-            "FirstObservsation": exposure['firstObservation'],
-            "LastObservsation": exposure['lastObservation'],
-            "Status": exposure['statuses'],
-            "Provider": exposure['provider']
-        }
-
-    def exposure_to_summary(exposure):
-        return "{exposureType} exposure on {ip}:{port}".format(**exposure)
-
-    def exposure_stats(exposures):
-        results = {
-            "CRITICAL": 0,
-            "WARNING": 0,
-            "ROUTINE": 0,
-            "UNKNOWN": 0
-        }
-        for exposure in exposures:
-            results[exposure['severity']] += 1
-
-        return results
-
-    counts = exposure_stats(data)
-    return {
-        "SearchTerm": data[0]['ip'],
-        "TotalExposureCount": len(data),
-        "CriticalExposureCount": counts['CRITICAL'],
-        "WarningExposureCount": counts['WARNING'],
-        "RoutineExposureCount": counts['ROUTINE'],
-        "UnknownExposureCount": counts['UNKNOWN'],
-        "ExposureSummaries": '\n'.join([exposure_to_summary(exposure) for exposure in data]),
-        "Exposures": [exposure_to_obj(exposure) for exposure in data]
-    }
-
-
 def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Returns all domains that have resolved to IP addresses a certificate has been seen on. There is no direct way to
@@ -2412,9 +2326,6 @@ def main() -> None:
 
         elif command == "expanse-list-risk-rules":
             return_results(list_risk_rules_command(client, demisto.args()))
-
-        elif command == 'expanse-get-exposures':
-            return_results(exposures_command(client, demisto.args()))
 
         elif command == 'expanse-get-domains-for-certificate':
             return_results(domains_for_certificate_command(client, demisto.args()))
