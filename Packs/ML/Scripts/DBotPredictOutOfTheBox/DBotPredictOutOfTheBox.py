@@ -1,16 +1,12 @@
 # pylint: disable=no-member
 import demisto_ml
-import dill
-from CommonServerPython import *
-import traceback
 
-TARGET_PRECISION = 0.97
-THRESHOLD = 0.9
-OUT_OF_THE_BOX_MODEL_NAME = 'demisto_out_of_the_box_model_v2'
-OUT_OF_THE_BOX_MODEL_PATH = '/var/encrypted_model.b'
-EVALUATION_PATH = '/var/oob_evaluation.txt'
+from CommonServerPython import *
+
+OUT_OF_THE_BOX_MODEL_NAME = 'demisto_out_of_the_box_model'
+OUT_OF_THE_BOX_MODEL_PATH = '/var/oob_model.ftz'
+EVALUATION_PATH = '/var/oob_evaluation.json'
 HASH_SEED = 5381
-dill._dill._reverse_typemap['ClassType'] = type
 
 
 def oob_model_exists():
@@ -19,32 +15,23 @@ def oob_model_exists():
 
 
 def load_oob_model():
-    try:
-        encoded_model = demisto_ml.load_oob(OUT_OF_THE_BOX_MODEL_PATH)
-    except Exception:
-        return_error(traceback.format_exc())
-    res = demisto.executeCommand('createMLModel', {'modelData': encoded_model.decode('utf8'),
+    encoded_model = demisto_ml.load_oob(OUT_OF_THE_BOX_MODEL_PATH)
+    res = demisto.executeCommand('createMLModel', {'modelData': encoded_model,
                                                    'modelName': OUT_OF_THE_BOX_MODEL_NAME,
-                                                   'modelLabels': ['Malicious', 'Non-Malicious'],
-                                                   'modelOverride': 'true',
-                                                   'modelType': 'torch',
-                                                   'modelExtraInfo': {'threshold': THRESHOLD}
-                                                   })
+                                                   'modelLabels': ['legit', 'spam', 'malicious'],
+                                                   'modelOverride': 'true'})
     if is_error(res):
         return_error(get_error(res))
 
     with open(EVALUATION_PATH, 'r') as json_file:
         data = json.load(json_file)
-    y_test = data['YTrue']
-    y_pred = data['YPred']
-    y_pred_prob = data['YPredProb']
-
-    y_pred_evaluation = [{pred: prob} for pred, prob in zip(y_pred, y_pred_prob)]
+    y_test = data['y_true']
+    y_pred = data['y_pred']
     res = demisto.executeCommand('GetMLModelEvaluation', {'yTrue': json.dumps(y_test),
-                                                          'yPred': json.dumps(y_pred_evaluation),
-                                                          'targetPrecision': str(0.85),
+                                                          'yPred': json.dumps(y_pred),
+                                                          'targetPrecision': str(0),
                                                           'targetRecall': str(0),
-                                                          'detailedOutput': 'true'
+                                                          'detailedOutput': 'false'
                                                           })
     if is_error(res):
         return_error(get_error(res))
@@ -54,15 +41,7 @@ def load_oob_model():
                                for k, v in confusion_matrix_no_all.items()}
     res = demisto.executeCommand('evaluateMLModel',
                                  {'modelConfusionMatrix': confusion_matrix_no_all,
-                                  'modelName': OUT_OF_THE_BOX_MODEL_NAME,
-                                  'modelEvaluationVectors': {'Ypred': y_pred,
-                                                             'Ytrue': y_test,
-                                                             'YpredProb': y_pred_prob
-                                                             },
-                                  'modelConfidenceThreshold': THRESHOLD,
-                                  'modelTargetPrecision': TARGET_PRECISION
-                                  })
-
+                                  'modelName': OUT_OF_THE_BOX_MODEL_NAME})
     if is_error(res):
         return_error(get_error(res))
 
@@ -72,6 +51,7 @@ def predict_phishing_words():
         load_oob_model()
     dargs = demisto.args()
     dargs['modelName'] = OUT_OF_THE_BOX_MODEL_NAME
+    dargs['hashSeed'] = '5381'
     res = demisto.executeCommand('DBotPredictPhishingWords', dargs)
     if is_error(res):
         return_error(get_error(res))
