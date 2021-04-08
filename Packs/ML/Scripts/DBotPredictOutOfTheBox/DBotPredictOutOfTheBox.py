@@ -1,7 +1,6 @@
 # pylint: disable=no-member
 import demisto_ml
 import dill
-from demisto_ml import ProductionTorchPhishingClassifier
 from CommonServerPython import *
 import traceback
 
@@ -69,7 +68,7 @@ def load_oob_model():
 
 
 def predict_phishing_words():
-    if not oob_model_exists() or True:
+    if not oob_model_exists():
         load_oob_model()
     dargs = demisto.args()
     dargs['modelName'] = OUT_OF_THE_BOX_MODEL_NAME

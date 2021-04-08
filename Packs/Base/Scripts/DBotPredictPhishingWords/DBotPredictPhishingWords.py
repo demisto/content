@@ -11,6 +11,7 @@ FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
 TORCH_TYPE = 'torch'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 
+
 def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
 
@@ -94,7 +95,6 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     if predicted_prob < label_threshold:
         handle_error("Label probability is {:.2f} and it's below the input confidence threshold".format(
             predicted_prob), is_return_error)
-
 
     positive_tokens = OrderedSet(explain_result['PositiveWords'])
     negative_tokens = OrderedSet(explain_result['NegativeWords'])
