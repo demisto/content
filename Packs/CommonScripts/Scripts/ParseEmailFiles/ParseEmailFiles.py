@@ -2928,12 +2928,18 @@ class Message(object):
         property_name = property_details.get("name")
         property_type = property_details.get("data_type")
         if not property_type:
+            demisto.info('could not parse property type, skipping property "{}"'.format(property_details))
             return None
 
         try:
             raw_content = ole_file.openstream(stream_name).read()
         except IOError:
-            raw_content = None
+            raw_content = ''
+        if not raw_content:
+            demisto.debug('Could not read raw content from stream "{}", '
+                          'skipping property "{}"'.format(stream_name, property_details))
+            return None
+
         property_value = self._data_model.get_value(raw_content, data_type=property_type)
         if property_value:
             property_detail = {property_name: property_value}
