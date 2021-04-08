@@ -84,8 +84,9 @@ class TidyClient:
         runner = run(
             private_data_dir=IMAGE_PLAYBOOKS_PATH,
             playbook=f'playbook-{playbook_name}.yml',
-            inventory=f"{self.username}@{self.hostname} ansible_host=\"{self.hostname}\" ansible_user=\"{self.username}\""
-                      f" ansible_password=\"{self.password}\" ansible_become_password=\"{self.password}\" ansible_connection=ssh ansible_ssh_private_key_file=\"~/.ssh/oregon-ci.pem\"",
+            inventory=f"{self.username}@{self.hostname} ansible_host=\"{self.hostname}\" "
+                      f"ansible_user=\"{self.username}\" ansible_password=\"{self.password}\" "
+                      f"ansible_become_password=\"{self.password}\" ansible_connection=ssh",
             verbosity=2,
             extravars=extra_vars,
             json_mode=False,
