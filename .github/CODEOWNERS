@@ -32,3 +32,6 @@
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @yaakovi
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
+
+# Build related
+.circleci/config.yml @hod-alpert

@@ -251,7 +251,8 @@ data_test_create_context = [
 def test_create_context(indicators, expected_output, params, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     output = create_context(indicators)
-    assert output == expected_output, f'expected_output({indicators})\n\treturns: {output}\n\tinstead: {expected_output}'
+    assert output == expected_output, f'expected_output({indicators})\n\treturns: ' \
+                                      f'{output}\n\tinstead: {expected_output}'
 
 
 data_test_create_context_debotscore = [
@@ -275,7 +276,8 @@ data_test_create_context_debotscore = [
 
 @ pytest.mark.parametrize('params, rate, expected_score', data_test_create_context_debotscore)
 def test_create_context_debotscore(params, rate, expected_score, mocker):
-    expected_output = {'Indicator': '88.88.88.88', 'Score': expected_score, 'Type': 'ip', 'Vendor': 'ThreatConnect'}
+    expected_output = {'Indicator': '88.88.88.88', 'Score': expected_score, 'Type': 'ip', 'Vendor': 'ThreatConnect',
+                       'Reliability': 'B - Usually reliable'}
     indicator = deepcopy(IP_INDICATOR)
     indicator[0]['rating'] = float(rate)
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -321,3 +323,4 @@ def test_create_context_debotscore_samilar_indicator(mocker):
     assert len(context['DBotScore']) == 1
     assert context['DBotScore'][0]['Indicator'] == '88.88.88.88'
     assert context['DBotScore'][0]['Score'] == 3
+    assert context['DBotScore'][0]['Reliability'] == 'B - Usually reliable'
