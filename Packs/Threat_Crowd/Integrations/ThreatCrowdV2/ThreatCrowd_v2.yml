@@ -185,7 +185,7 @@ script:
       type: String
     - contextPath: Domain.Tags
       description: (List) Tags of the domain.
-      type: Unknown
+      type: String
     - contextPath: Domain.FeedRelatedIndicators.value
       description: Indicators that are associated with the domain.
       type: String
