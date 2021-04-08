@@ -514,22 +514,22 @@ script:
     - contextPath: TC.Indicator.File.SHA256
       description: The SHA256 hash of the indicator of the file.
       type: string
-    - contextPath: TC.Indicator.IndicatorAttribute.dateAdded
+    - contextPath: TC.Indicator.IndicatorAttributes.dateAdded
       description: The SHA256 hash of the indicator of the file.
       type: date
-    - contextPath: TC.Indicator.IndicatorAttribute.displayed
+    - contextPath: TC.Indicator.IndicatorAttributes.displayed
       description: A boolean flag to show on ThreatConnect.
       type: boolean
-    - contextPath: TC.Indicator.IndicatorAttribute.id
+    - contextPath: TC.Indicator.IndicatorAttributes.id
       description: The ID of the attribute.
       type: number
-    - contextPath: TC.Indicator.IndicatorAttribute.lastModified
+    - contextPath: TC.Indicator.IndicatorAttributes.lastModified
       description: The date on which the indicator attribute was last modified.
       type: date
-    - contextPath: TC.Indicator.IndicatorAttribute.type
+    - contextPath: TC.Indicator.IndicatorAttributes.type
       description: The name of the attribute.
       type: string
-    - contextPath: TC.Indicator.IndicatorAttribute.value
+    - contextPath: TC.Indicator.IndicatorAttributes.value
       description: The contents of the attribute.
       type: string
     - contextPath: DBotScore.Indicator
@@ -585,9 +585,6 @@ script:
       type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
-      type: string
-    - contextPath: TC.Indicator.Attributes
-      description: A list of all of the attributes associated with the Indicator
       type: string
   - arguments:
     - default: true
