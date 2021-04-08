@@ -1,10 +1,5 @@
 {
-	"close": null,
-	"description": "",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -394,22 +389,11 @@
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "",
 	"group": "incident",
 	"id": "a1b1b03c-7f05-43ae-8384-232da58053d0",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
 	"name": "Trello Layout",
-	"packID": "8b69249a-48dd-43e8-84eb-1b78b3a41ff7",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
 	"system": false,
-	"toServerVersion": "",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"description": ""
 }
