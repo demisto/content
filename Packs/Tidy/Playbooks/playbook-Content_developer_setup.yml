@@ -219,7 +219,7 @@ tasks:
       - "24"
     scriptarguments:
       access_token:
-        simple: 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
+        simple: ""
       user:
         simple: ${inputs.user}
     separatecontext: false
