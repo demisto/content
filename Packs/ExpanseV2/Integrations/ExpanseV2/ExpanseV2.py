@@ -2053,7 +2053,7 @@ def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> Com
         "commonNameSearch": search
     }
 
-    matching_domains = []
+    matching_domains = []  # type:ignore
 
     certificates_iterator = client.get_certificates(params=params)
     certificates = [certificate for certificate in certificates_iterator]
