@@ -35,17 +35,21 @@ def query_samples(client, **args) -> CommandResults:
 
 
 def submit_sample(client: Client, **args) -> CommandResults:
-    data = {"kind": args.get("kind"), "profile": args.get("profiles", [])}
+    data = {"kind": args.get("kind"), "interactive": False}
 
+    if args.get("profiles", []):
+        profiles_data = []
+        for i in args.get("profiles", "").split(","):
+            profiles_data.append({"profile": i, "pick": "sample"})
+        data["profiles"] = profiles_data
+    
     if data["kind"] == "url":
         data.update({"url": args.get("data")})
         r = client._http_request("POST", "samples", json_data=data)
     elif data["kind"] == "file":
-
         file_path = demisto.getFilePath(demisto.args().get("data")).get("path")
         with open(file_path, "rb") as f:
-            files = {"file": f, "_json": (None, '{"kind":"file","interactive":false}')}
-
+            files = {"file": f}
             r = client._http_request("POST", "samples", json_data=data, files=files)
     else:
         return_error(
