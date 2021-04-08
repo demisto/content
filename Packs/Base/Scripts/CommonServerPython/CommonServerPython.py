@@ -4465,112 +4465,112 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
         raise ValueError('"{}" is not a valid date'.format(arg))
 
 
-class RelationsTypes(object):
-    """
-    Enum: Relations types
-    """
-    # dict which keys is a relationship type and the value is the reverse type.
-    RELATIONSHIP_TYPES = ['indicatorToIndicator']
-
-    def __init__(self):
-        # required to create __init__ for create_server_docs.py purpose
-        pass
-
-    @staticmethod
-    def is_valid_type(_type):
-        # type: (str) -> bool
-
-        return _type in RelationsTypes.RELATIONSHIP_TYPES
-
-
-class RelationsFamily(object):
-  """
-  Enum: Relations object type.
-  """
-
-  INDICATOR = ["Indicator"]
-
-  def __init__(self):
-      # required to create __init__ for create_server_docs.py purpose
-      pass
-
-  @staticmethod
-  def is_valid_type(_type):
-      # type: (str) -> bool
-
-      return _type in RelationsFamily.INDICATOR
-
-
-
-class Relations(object):
-  """
-  Enum: Relations names and their reverse
-  """
-
-  RELATIONS_NAMES = {'related to': 'related to',
-                     'hosted on' : 'hosts'}
-
-  def __init__(self):
-      # required to create __init__ for create_server_docs.py purpose
-      pass
-
-  @staticmethod
-  def is_valid(_type):
-      # type: (str) -> bool
-
-      return _type in Relations.RELATIONS_NAMES.keys()
-
-  @staticmethod
-  def get_reverse(_name):
-      # type: (str) -> str
-
-      return Relations.RELATIONS_NAMES[_name]
-
 
 class EntityRelation:
     """
-    XSOAR entity relation object - use to return relations to demisto.
+    XSOAR entity relation.
+
+    :type name: ``str``
+    :param name: Relation name.
+
+    :type reverse_name: ``str``
+    :param reverse_name: Relation reverse name.
+
+    :type relation_type: ``str``
+    :param relation_type: Relation type.
+
+    :type entity_a: ``str``
+    :param entity_a: A value, A aka Source of the relation.
+
+    :type entity_a_family: ``str``
+    :param entity_a_family: Entity family of type A, A aka Source of the relation. (e.g. IP/URL/...).
+
+    :type object_type_a: ``str``
+    :param object_type_a: Entity type B, B aka Source of the relation. (For future use).
+
+    :type entity_b: ``str``
+    :param entity_b: B value, B aka Source of the relation.
+
+    :type entity_b_family: ``str``
+    :param entity_b_family: Entity family of type B, B aka Source of the relation. (e.g. IP/URL/...)
+
+    :type object_type_b: ``str``
+    :param object_type_b: Entity type B, B aka Source of the relation. (For future use).
+
+    :type source_reliability: ``str``
+    :param source_reliability: Source_reliability.
+
+    :type fields: ``dict``
+    :param fields: Custom fields.
+
+    :type entity_a: ``str``
+    :param brand: Source brand name. (Optional)
+
+    :return: None
+    :rtype: ``None``
     """
+
+    class RelationsTypes(object):
+        """
+        Relations Types objects.
+        """
+        # dict which keys is a relationship type and the value is the reverse type.
+        RELATIONSHIP_TYPES = ['indicatorToIndicator']
+
+        @staticmethod
+        def is_valid_type(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelation.RelationsTypes.RELATIONSHIP_TYPES
+
+    class RelationsFamily(object):
+        """
+        Relations Family object list.
+        """
+
+        INDICATOR = ["Indicator"]
+
+        @staticmethod
+        def is_valid_type(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelation.RelationsFamily.INDICATOR
+
+    class Relations(object):
+        """
+        Enum: Relations names and their reverse
+        """
+
+        RELATIONS_NAMES = {'related to': 'related to',
+                           'hosted on': 'hosts'}
+
+        @staticmethod
+        def is_valid(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelation.Relations.RELATIONS_NAMES.keys()
+
+        @staticmethod
+        def get_reverse(_name):
+            # type: (str) -> str
+
+            return EntityRelation.Relations.RELATIONS_NAMES[_name]
+
+
     def __init__(self, name, reverse_name, entity_a, relation_type, entity_a_family,
                  object_type_a,
                  entity_b, entity_b_family, object_type_b, source_reliability = "",
                  fields = None, brand = ""):
-        """ XSOAR entity relation.
-        :type name: ``str``
-        :param name: Relation name.
-        :type reverse_name: ``str``
-        :param reverse_name: Relation reverse name.
-        :type relation_type: ``str``
-        :param relation_type: Relation type.
-        :type entity_a: ``str``
-        :param entity_a: A value, A aka Source of the relation.
-        :type entity_a_family: ``str``
-        :param entity_a_family: Entity family of type A, A aka Source of the relation. (e.g. IP/URL/...).
-        :type object_type_a: ``str``
-        :param object_type_a: Entity type B, B aka Source of the relation. (For future use).
-        :type entity_b: ``str``
-        :param entity_b: B value, B aka Source of the relation.
-        :type entity_b_family: ``str``
-        :param entity_b_family: Entity family of type B, B aka Source of the relation. (e.g. IP/URL/...)
-        :type object_type_b: ``str``
-        :param object_type_b: Entity type B, B aka Source of the relation. (For future use).
-        :type source_reliability: ``str``
-        :param source_reliability: Source_reliability.
-        :type fields: ``dict``
-        :param fields: Custom fields.
-        :type entity_a: ``str``
-        :param brand: Source brand name. (Optional)
-        """
 
         # Relation
-        if not Relations.is_valid(name):
+        if not EntityRelation.Relations.is_valid(name):
             raise ValueError("Invalid relation: " + name)
         self._name = str(name)
 
         # when will have the dict of reverse will add it using the dict.
         self._reverse_name = str(reverse_name)
 
-        if not RelationsTypes.is_valid_type(relation_type):
+        if not EntityRelation.RelationsTypes.is_valid_type(relation_type):
             raise ValueError("Invalid relation type: " + relation_type)
         self._relation_type = str(relation_type)
 
@@ -4582,7 +4582,7 @@ class EntityRelation:
             raise ValueError("Invalid entity A type: " + object_type_a)
         self._object_type_a = str(object_type_a)
 
-        if not RelationsFamily.is_valid_type(entity_a_family):
+        if not EntityRelation.RelationsFamily.is_valid_type(entity_a_family):
             raise ValueError("Invalid entity A Family type: " + entity_a_family)
         self._entity_a_family = str(entity_a_family)
 
@@ -4596,7 +4596,7 @@ class EntityRelation:
             raise ValueError('Invalid entity B type: '+ object_type_b)
         self._object_type_b = str(object_type_b)
 
-        if not RelationsFamily.is_valid_type(entity_b_family):
+        if not EntityRelation.RelationsFamily.is_valid_type(entity_b_family):
             raise ValueError("Invalid entity B Family type: " + entity_b_family)
         self._entity_b_family = str(entity_b_family)
 
