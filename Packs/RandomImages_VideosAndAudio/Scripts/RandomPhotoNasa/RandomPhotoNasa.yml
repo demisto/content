@@ -1,6 +1,7 @@
 args:
 - description: Search query
   name: search
+  defaultValue: nebula
 commonfields:
   id: RandomPhotoNasa
   version: -1
