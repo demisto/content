@@ -2655,7 +2655,7 @@ script:
     - contextPath: Endpoint.Status
       description: The endpoint's status.
       type: String
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.2.18414
   feed: false
   isfetch: true
   ismappable: true
