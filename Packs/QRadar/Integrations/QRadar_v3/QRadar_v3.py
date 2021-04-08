@@ -1411,7 +1411,6 @@ def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional
     } for offense in offenses]
 
 
-
 def long_running_execution_command(client: Client, params: Dict):
     """
     Long running execution of fetching incidents from QRadar service.
