@@ -1,6 +1,6 @@
 {
     "name": "AlphaVantage",
-    "description": "API for stocks prices data",
+    "description": "The Alpha Vantage content pack provides accessible APIs for financial market data such as stock prices. Utilize this pack to get open stock prices, high/low price, trade volume, and so on.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Ohad Valtzer",
@@ -16,3 +16,4 @@
     ],
     "githubUser": []
 }
+
