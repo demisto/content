@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 import requests
 import traceback
