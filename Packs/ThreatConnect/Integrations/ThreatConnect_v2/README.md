@@ -560,7 +560,7 @@ Retrieves information about an indicator.
 | TC.Indicator.File.SHA1 | string | The SHA1 hash of the indicator of the file. | 
 | TC.Indicator.File.SHA256 | string | The SHA256 hash of the indicator of the file. | 
 | TC.Indicator.IndicatorAttribute.dateAdded | date | The date on which the indicator attribute was originally added. | 
-| TC.Indicator.IndicatorAttribute.displayed | boolean | A boolean flag to show on ThreatConnect   | 
+| TC.Indicator.IndicatorAttribute.displayed | boolean | A boolean flag to show on ThreatConnect.   | 
 | TC.Indicator.IndicatorAttribute.id | number | The ID of the attribute. | 
 | TC.Indicator.IndicatorAttribute.lastModified | date | The date on which the indicator attribute was last modified. | 
 | TC.Indicator.IndicatorAttribute.type | string | The name of the attribute. | 
