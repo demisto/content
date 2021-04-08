@@ -48,12 +48,6 @@ script:
       name: ip
       required: true
       secret: false
-    - default: false
-      description: Maximum number of entries under resolution section.
-      isArray: false
-      name: resolution_limit
-      required: false
-      secret: false
     deprecated: false
     description: Get a report of an IP.
     execution: false
@@ -119,12 +113,6 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of entries under resolution section.
-      isArray: false
-      name: resolution_limit
-      required: false
       secret: false
     deprecated: false
     description: Get a report of a domain.
@@ -383,7 +371,7 @@ script:
     - contextPath: File.Malicious.Description
       description: A description explaining why the file was determined to be malicious.
       type: String
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.2.18414
   feed: false
   isfetch: false
   longRunning: false

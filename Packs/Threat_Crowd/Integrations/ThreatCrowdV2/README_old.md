@@ -6,13 +6,11 @@ This integration was integrated and tested with version v2 of TheatCrowdv2
 2. Search for TheatCrowdv2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Use Extended Data | Whether to get full Resolution section. If disabled only 10 most recent entries will be fetched. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Your server URL | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -31,6 +29,7 @@ Get a report of an IP.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | Get a report of an IP. | Required | 
+| resolution_limit | Maximum number of entries under resolution section. | Optional | 
 
 
 #### Context Output
@@ -57,7 +56,7 @@ Get a report of an IP.
 
 
 #### Command Example
-```!ip ip="x.x.x.x"```
+```!ip ip="x.x.x.x" resolution_limit=5```
 
 #### Context Example
 ```json
@@ -123,6 +122,7 @@ Get a report of a domain.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | Get a report of a domain. | Required | 
+| resolution_limit | Maximum number of entries under resolution section. | Optional | 
 
 
 #### Context Output
@@ -148,7 +148,7 @@ Get a report of a domain.
 | Domain.Registrant.Email | String | The email address of the registrant. | 
 | Domain.Registrant.Name | String | The name of the registrant. | 
 | Domain.Registrant.Phone | String | The phone number for receiving abuse reports. | 
-| Domain.Tags | String | \(List\) Tags of the domain. | 
+| Domain.Tags | Unknown | \(List\) Tags of the domain. | 
 | Domain.FeedRelatedIndicators.value | String | Indicators that are associated with the domain. | 
 | Domain.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the domain. | 
 | Domain.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the domain. | 
@@ -173,7 +173,7 @@ Get a report of a domain.
 
 
 #### Command Example
-```!domain domain="example.com"```
+```!domain domain="example.com" resolution_limit=5```
 
 #### Context Example
 ```json
@@ -257,7 +257,7 @@ Get a report of an email address.
 
 
 #### Command Example
-```!email email=example@example.com```
+```!email email=example@example.com using=TheatCrowdv2_instance_1```
 
 #### Context Example
 ```json
@@ -296,14 +296,14 @@ Get a report of an email address.
 >| example.com,<br/> | https://www.threatcrowd.org/email.php?email=example@example.com |  | 1 | example@example.com |
 
 
-### threat-crowd-antivirus
+### antivirus
 ***
 Get a report of an antivirus.
 
 
 #### Base Command
 
-`threat-crowd-antivirus`
+`antivirus`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -343,7 +343,6 @@ There is no context output for this command.
 >|---|---|---|---|---|
 
 >| 31d0e421894004393c48de1769744687,<br/>5cd3f073caac28f915cf501d00030b31,<br/>bbd9acdd758ec2316855306e83dba469,<br/>ef9d8cd06de03bd5f07b01c1cce9761f,<br/>06bd026c77ce6ab8d85b6ae92bb34034 | https://www.threatcrowd.org/listMalware.php?antivirus=plugx |  | 1 | plugx |
-
 
 ### file
 ***
@@ -442,4 +441,3 @@ Get a report of a hash.
 >|domains|ips|md5|permalink|references|response_code|scans|sha1|value|
 >|---|---|---|---|---|---|---|---|---|
 >| example.com | x.x.x.x | hash_example | https://www.threatcrowd.org/malware.php?md5=hash_example |  | 1 | ,<br/>Trojan/W32.Small.34304.EG,<br/>Trojan.Win32.Cossta!O | hash_example_sha1 | hash_example |
-

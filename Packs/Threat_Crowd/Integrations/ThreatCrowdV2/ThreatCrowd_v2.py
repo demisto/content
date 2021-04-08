@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 import requests
 import traceback
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -27,12 +27,12 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def handle_resolutions(resolutions: List[dict], limit: int) -> List[dict]:
+def handle_resolutions(resolutions: List[dict], limit: Optional[int]) -> List[dict]:
     """ Gets a resolution section from response.
      return a limited sorted list, desc by time.
      Resolution section should be with following struct: [{"last_resolved": "2014-12-14", "domain": "example.com"},"""
     resolutions = resolutions[:limit]
-    resolutions.sort(key=lambda x: x.get('last_resolved'), reverse=True)
+    resolutions.sort(key=lambda x: x['last_resolved'], reverse=True)
     return resolutions
 
 
@@ -67,7 +67,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             ip, DBotScoreType.IP, VENDOR, score, reliability=client.reliability)
         ip_object = Common.IP(ip, dbot)
 
-        markdown = f"Threat crowd report for ip {ip}: \n"
+        markdown = f"### Threat crowd report for ip {ip}: \n"
         if not client.extended_data:
             resolution_limit = DEFAULT_RESOLUTION_LIMIT
 
@@ -128,7 +128,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
             domain, DBotScoreType.DOMAIN, VENDOR, score, reliability=client.reliability)
         domain_object = Common.Domain(domain, dbot)
 
-        markdown = f"Threat crowd report for domain {domain} \n"
+        markdown = f"### Threat crowd report for domain {domain} \n"
         if not client.extended_data:
             resolution_limit = DEFAULT_RESOLUTION_LIMIT
 
@@ -175,7 +175,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     api_url = 'file/report/'
     files = argToList(args.get('file'))
     for file_hash in files:
-        res = client._http_request(method='GET', url_suffix=api_url, params={'file': file_hash})
+        res = client._http_request(method='GET', url_suffix=api_url, params={'resource': file_hash})
         res['value'] = file_hash
 
         score = _get_dbot_score(res)
@@ -200,7 +200,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 def test_module(client: Client) -> str:
     try:
         api_url = 'ip/report/'
-        client.http_request(url_postfix=api_url, **{'ip': '1.1.1.1'})
+        client._http_request(url_postfix=api_url, **{'ip': '1.1.1.1'})
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):

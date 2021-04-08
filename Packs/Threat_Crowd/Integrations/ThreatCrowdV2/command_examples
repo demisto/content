@@ -1,5 +1,5 @@
-!ip ip="1.2.3.5" using="TheatCrowdv2_instance_1" resolution_limit=5
-!file file=ec8c89aa5e521572c74e2dd02a4daf78 using=TheatCrowdv2_instance_1
+!ip ip="x.x.x.x" using="TheatCrowdv2_instance_1"
+!file file=file_hash using=TheatCrowdv2_instance_1
 !threat-crowd-antivirus antivirus="plugx" using="TheatCrowdv2_instance_1"
-!email email=william19770319@yahoo.com using=TheatCrowdv2_instance_1
-!domain domain="aoldaily.com" resolution_limit=5 using="TheatCrowdv2_instance_1"
+!email email=example@example.com using=TheatCrowdv2_instance_1
+!domain domain="example.com" using="TheatCrowdv2_instance_1"
