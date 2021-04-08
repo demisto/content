@@ -920,7 +920,6 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
     # each CommandResult will contain context standard for Domain
     command_results: List[CommandResults] = []
 
-    demisto.debug("bla bla bla!")
     for domain in domains:
         domain_data = client.get_domain_reputation(domain)
         domain_data['domain'] = domain

@@ -221,11 +221,8 @@ script:
       default: true
       description: List of IPs.
       isArray: true
-      required: true
     - name: threshold
-      description: If the IP has reputation above the threshold then the IP defined
-        as malicious. If threshold not set, then threshold from instance configuration
-        is used.
+      description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
       defaultValue: 65
     outputs:
     - contextPath: DBotScore.Indicator
@@ -349,7 +346,6 @@ script:
       default: true
       description: List of Domains.
       isArray: true
-      required: true
     - name: threshold
       description: If the domain has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used.
       defaultValue: 65
@@ -590,5 +586,3 @@ script:
 defaultclassifier: HelloWorld
 defaultmapperin: HelloWorld-mapper
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
