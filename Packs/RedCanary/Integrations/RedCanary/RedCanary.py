@@ -18,7 +18,7 @@ TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def get_time_obj(t, time_format=None):
-    '''
+    """
     convert a time string to datetime object
 
     :type t: ``string`` or ``int``
@@ -29,7 +29,7 @@ def get_time_obj(t, time_format=None):
 
     :return: datetime object
     :rtype: ``datetime``
-    '''
+    """
     if time_format is not None:
         return datetime.strptime(t, time_format)
     if isinstance(t, int):
@@ -44,22 +44,22 @@ def get_time_obj(t, time_format=None):
 
 
 def get_time_str(time_obj, time_format=None):
-    '''
+    """
     convert a datetime object to time format string
 
-    :type t: ``datetime``
-    :param t: time object (required)
+    :type time_obj: ``datetime``
+    :param time_obj: time object (required)
 
     :type time_format: ``string``
     :param time_format: time format string (optional)
 
     :return: time format string
     :rtype: ``string``
-    '''
+    """
     if time_format is None:
         return time_obj.isoformat().split('.')[0] + 'Z'
     else:
-        return datetime.strftime(t, time_format)  # type:ignore  # pylint: disable=E0602
+        return datetime.strftime(time_obj, time_format)  # type:ignore  # pylint: disable=E0602
 
 
 def http_request(requests_func, url_suffix, **kwargs):
@@ -80,7 +80,7 @@ def http_request(requests_func, url_suffix, **kwargs):
     if res.status_code not in [200, 201, ]:
         LOG('result is: %s' % (res.json(),))
         error = res.json()
-        raise Exception('Your request failed with the following error: {}.\n'.format(error, ))
+        raise Exception(f'Your request failed with the following error: {error}.\n')
 
     return res.json()
 
@@ -111,7 +111,7 @@ def playbook_name_to_id(name):
 
 def get_endpoint_context(res=None, endpoint_id=None):
     if res is None:
-        res = http_get('/endpoints/{}'.format(endpoint_id)).get('data', [])
+        res = http_get(f'/endpoints/{endpoint_id}').get('data', [])
 
     endpoint_context = []
     for endpoint in res:
@@ -149,7 +149,7 @@ def get_endpoint_context(res=None, endpoint_id=None):
 
 def get_endpoint_user_context(res=None, endpoint_user_id=None):
     if res is None:
-        res = http_get('/endpoint_users/{}'.format(endpoint_user_id))['data']
+        res = http_get(f'/endpoint_users/{endpoint_user_id}')['data']
 
     endpoint_users = []
     for endpoint_user in res:
@@ -177,7 +177,7 @@ def get_full_timeline(detection_id, per_page=100):
     last_data = {}  # type:ignore
 
     while not done:
-        res = http_get('/detections/{}/timeline'.format(detection_id),
+        res = http_get(f'/detections/{detection_id}/timeline',
                        params={
                            'page': page,
                            'per_page': per_page,
@@ -301,7 +301,7 @@ def detections_to_entry(detections, show_timeline=False):
     activities = ''
     title = 'Detections'
     if show_timeline and len(detections) == 1:
-        title = 'Detection {}'.format(fixed_detections[0]['Headline'])
+        title = f'Detection {fixed_detections[0]["Headline"]}'
         activities, domains, files, ips, processes = process_timeline(fixed_detections[0]['ID'])
         activities = tableToMarkdown('Detection Timeline', activities,
                                      headers=['Time', 'Type', 'Activity Details', 'Notes'])
@@ -402,7 +402,7 @@ def get_detection_command():
 
 @logger
 def get_detection(_id):
-    res = http_get('/detections/{}'.format(_id))
+    res = http_get(f'/detections/{_id}')
     return res['data']
 
 
@@ -416,7 +416,7 @@ def acknowledge_detection_command():
 
 @logger
 def acknowledge_detection(_id):
-    res = http_patch('/detections/{}/mark_acknowledged'.format(_id))
+    res = http_patch(f'/detections/{_id}/mark_acknowledged')
     return res['data']
 
 
@@ -432,7 +432,7 @@ def remediate_detection_command():
 
 @logger
 def remediate_detection(_id, remediation_state, comment):
-    res = http_patch('/detections/{}/update_remediation_state'.format(_id),
+    res = http_patch(f'/detections/{_id}/update_remediation_state',
                      data={
                          'remediation_state': remediation_state,
                          'comment': comment,
@@ -484,7 +484,7 @@ def get_endpoint_command():
         'Type': entryTypes['note'],
         'Contents': endpoints,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('EndPoint {}'.format(endpoints[0]['Hostname']), endpoints, headers=headers,
+        'HumanReadable': tableToMarkdown(f'EndPoint {endpoints[0]["Hostname"]}', endpoints, headers=headers,
                                          removeNull=True),
         'EntryContext': {
             'EndPoint(val.Hostname == obj.Hostname)': createContext(endpoints, removeNull=True),
@@ -494,7 +494,7 @@ def get_endpoint_command():
 
 @logger
 def get_endpoint(_id):
-    res = http_get('/endpoints/{}'.format(_id))
+    res = http_get(f'/endpoints/{_id}')
 
     return res['data']
 
@@ -531,11 +531,11 @@ def execute_playbook_command():
 
     execute_playbook(playbook_id, detection_id)
 
-    return 'playbook #{} execution started successfully.'.format(playbook_id)
+    return f'playbook #{playbook_id} execution started successfully.'
 
 
 def execute_playbook(playbook_id, detection_id):
-    res = http_post('/exec/playbooks/{}/execute'.format(playbook_id),
+    res = http_post(f'/exec/playbooks/{playbook_id}/execute',
                     params={
                         'resource_type': 'Detection',
                         'resource_id': detection_id,
@@ -555,11 +555,11 @@ def fetch_incidents(last_run):
         # first time fetching
         last_fetch = parse_date_range(demisto.params().get('fetch_time', '3 days'), TIME_FORMAT)[0]
 
-    LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
+    demisto.debug(f'iterating on detections, looking for more recent than {last_fetch}')
     incidents = []
     new_incidents_ids = []
     for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
-        LOG('found a new detection in RedCanary #{}'.format(raw_detection['id']))
+        demisto.debug(f'found a new detection in RedCanary #{raw_detection["id"]}')
         incident = detection_to_incident(raw_detection)
         # the rawJson is a string of dictionary e.g. - ('{"ID":2,"Type":5}')
         incident_id = json.loads(incident.get('rawJSON')).get("ID")
