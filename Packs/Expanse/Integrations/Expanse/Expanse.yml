@@ -592,7 +592,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns exposure information about the ip.
+    description: Deprecated command by Expanse. Returns exposure information about the ip.
     execution: false
     name: expanse-get-exposures
     outputs:
