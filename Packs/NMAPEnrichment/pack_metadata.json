@@ -1,0 +1,17 @@
+{
+    "name": "NMAP Enrichment",
+    "description": "This pack provides a playbook, new layout for the IP, IPv6 and Host Indicator Type and an automation script.\n\nCombined they provide the ability to use the NMAP tool to enumerate a host (or hosts) and optionally update the relevant indicator in the indicators.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2021-04-08T16:08:12Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "aburt-demisto"
+    ]
+}

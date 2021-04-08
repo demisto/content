@@ -1,0 +1,642 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 45afb96d-fdfd-4031-84d5-5af07ff47ec8
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: c576f057-7d5c-42fe-816e-05071f945d94
+inputs:
+- description: The hosts to scan. Accepts comman separated list
+  key: hosts
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: |
+    The ports to scan. Accept NMAP compatible port definitions. Examples:
+    22
+    1-65535
+     U:53,111,137,T:21-25,80,139,8080,S:9
+  key: ports
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Whether to enumerate the service attached to the port (true or false)
+  key: enumerate_service
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "true"
+- description: Whether or not to attempt OS detection (true or false)
+  key: detect_OS
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "true"
+- description: Whether or not this is an IPv6 scan (true or false)
+  key: isIPv6
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "false"
+- description: Whether or not to update the indicator with the relevant information
+    (true or false)
+  key: update_indicator
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "true"
+name: NMAP Enrichment
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 051f58c0-3f83-4cfa-83cd-8b87114ae087
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 051f58c0-3f83-4cfa-83cd-8b87114ae087
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: nmap
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e3d33847-adaa-426c-86e5-8ee4c2b4d808
+      iscommand: false
+      name: Is NMAP enabled?
+      type: condition
+      version: -1
+    taskid: e3d33847-adaa-426c-86e5-8ee4c2b4d808
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 450
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 74518756-d8e2-454e-80a4-5b94dc2dfd00
+      iscommand: false
+      name: No hosts or NMAP enabled
+      type: title
+      version: -1
+    taskid: 74518756-d8e2-454e-80a4-5b94dc2dfd00
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 640
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ffd39494-f269-4025-88d6-d6eb2fdfed53
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ffd39494-f269-4025-88d6-d6eb2fdfed53
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 2570
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.hosts
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.ports
+          operator: isNotEmpty
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: db0c1cef-e0e6-40b0-83da-c48fe67f7f82
+      iscommand: false
+      name: Is there a host and port to scan?
+      type: condition
+      version: -1
+    taskid: db0c1cef-e0e6-40b0-83da-c48fe67f7f82
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      execution-timeout:
+        simple: "3600"
+      options:
+        simple: ${scanOptions}
+      targets:
+        simple: ${inputs.hosts}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Scan targets with the given parameters
+      id: e3a493ff-9d24-4e38-8971-3005ab75be15
+      iscommand: true
+      name: Scan the host
+      script: '|||nmap-scan'
+      type: regular
+      version: -1
+    taskid: e3a493ff-9d24-4e38-8971-3005ab75be15
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2010
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: scanOptions
+      stringify: {}
+      value:
+        simple: -sS -p${inputs.ports} -Pn
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: f62c2261-4c7d-42ea-8c0d-166ec4dc3af1
+      iscommand: false
+      name: Define host and port
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: f62c2261-4c7d-42ea-8c0d-166ec4dc3af1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 780
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.detect_OS
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f4738b32-a1bd-480f-83ef-71604d71d0e6
+      iscommand: false
+      name: Perform OS Detection?
+      type: condition
+      version: -1
+    taskid: f4738b32-a1bd-480f-83ef-71604d71d0e6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 945
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: scanOptions
+      stringify: {}
+      value:
+        simple: ${scanOptions} -O -A
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 2eaa7670-6e2e-410c-8426-0da65cde98e7
+      iscommand: false
+      name: Add OS Detection
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 2eaa7670-6e2e-410c-8426-0da65cde98e7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1140
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 152b8ba2-d329-4abe-8b7f-73d44dbbfeee
+      iscommand: false
+      name: Build scan option
+      type: title
+      version: -1
+    taskid: 152b8ba2-d329-4abe-8b7f-73d44dbbfeee
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 645
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.enumerate_service
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3f463846-f98f-4d5b-87d1-7c030e327346
+      iscommand: false
+      name: Enumerate Services?
+      type: condition
+      version: -1
+    taskid: 3f463846-f98f-4d5b-87d1-7c030e327346
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1310
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: scanOptions
+      stringify: {}
+      value:
+        simple: ${scanOptions} -sV
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 671e8236-eeb7-4cc6-8baf-08fee93ba309
+      iscommand: false
+      name: Add Service Enumeration
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 671e8236-eeb7-4cc6-8baf-08fee93ba309
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1495
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.isIPv6
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: db388314-710c-4679-8b02-62f34f4e6b37
+      iscommand: false
+      name: Is this IPv6?
+      type: condition
+      version: -1
+    taskid: db388314-710c-4679-8b02-62f34f4e6b37
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1665
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: scanOptions
+      stringify: {}
+      value:
+        simple: ${scanOptions} -6
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: dc7ab8cf-a1a7-4513-8617-21596fab61c1
+      iscommand: false
+      name: Add IPv6 flag
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: dc7ab8cf-a1a7-4513-8617-21596fab61c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1840
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.update_indicator
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c81b2e0d-8897-47d8-8d56-fbbf78df73a6
+      iscommand: false
+      name: Update indicator?
+      type: condition
+      version: -1
+    taskid: c81b2e0d-8897-47d8-8d56-fbbf78df73a6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2190
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      nmap_data:
+        simple: ${NMAP}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7e4dac76-19aa-4242-8623-6fded1359c87
+      iscommand: false
+      name: Update the Indicator(s)
+      scriptName: updateIndicatorNMAP
+      type: regular
+      version: -1
+    taskid: 7e4dac76-19aa-4242-8623-6fded1359c87
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 2360
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2585,
+        "width": 1740,
+        "x": -550,
+        "y": 50
+      }
+    }
+  }

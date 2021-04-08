@@ -1,0 +1,141 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IP",
+        "IPv6",
+        "Host"
+    ],
+    "caseInsensitive": true,
+    "cliName": "nmapports",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "port",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "port",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "number",
+            "width": 100
+        },
+        {
+            "displayName": "protocol",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "protocol",
+            "required": false,
+            "script": "",
+            "selectValues": [
+                "",
+                "",
+                "tcp",
+                "udp"
+            ],
+            "type": "multiSelect",
+            "width": 150
+        },
+        {
+            "displayName": "state",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "state",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "service",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "service",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 178
+        },
+        {
+            "displayName": "banner",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "banner",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "longText",
+            "width": 218
+        },
+        {
+            "displayName": "date",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "date",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "date",
+            "width": 245
+        },
+        {
+            "displayName": "os",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "os",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "osversion",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "osversion",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "description": "Ports as described by an NMAP scan",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_nmapports",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "NMAP Ports",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
