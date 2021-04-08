@@ -12,7 +12,7 @@ def test_search_issue(mocker):
     When:
         search_command is running
     Then:
-        Assert that the arguments are applied well
+        Assert that the arguments are what we expected
     """
     query = 'hello'
     limit = 50

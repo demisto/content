@@ -40,18 +40,17 @@ MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+jso
 ''' HELPER FUNCTIONS '''
 
 
-def create_jwt(private_key: bytes, integration_id: str):
+def create_jwt(private_key: str, integration_id: str):
     """
     Create a JWT token used for getting access token. It's needed for github bots.
     POSTs https://api.github.com/app/installations/<installation_id>/access_tokens
-    :param private_key: bytes: github's private key
+    :param private_key: str: github's private key
     :param integration_id: str: ID of the github integration (bot)
     """
     now = int(time.time())
     expiration = 60
     payload = {"iat": now, "exp": now + expiration, "iss": integration_id}
-    jwt_token = jwt.encode(payload, private_key, algorithm='RS256')
-    return jwt_token.decode()
+    return jwt.encode(payload, private_key, algorithm='RS256')
 
 
 def get_installation_access_token(installation_id: str, jwt_token: str):
@@ -1289,7 +1288,7 @@ COMMANDS = {
 
 '''EXECUTION'''
 
-if not TOKEN and PRIVATE_KEY:
+if TOKEN == '' and PRIVATE_KEY != '':
     try:
         import jwt
     except Exception:
@@ -1298,7 +1297,7 @@ if not TOKEN and PRIVATE_KEY:
     generated_jwt_token = create_jwt(PRIVATE_KEY, INTEGRATION_ID)
     TOKEN = get_installation_access_token(INSTALLATION_ID, generated_jwt_token)
 
-if not TOKEN and not PRIVATE_KEY:
+if TOKEN == '' and PRIVATE_KEY == '':
     return_error("Insert api token or private key")
 
 HEADERS = {

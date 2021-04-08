@@ -4,7 +4,7 @@
 import pytest
 
 # Import local packages
-from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command
+from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command
 from CommonServerPython import DBotScoreReliability
 
 INTEGRATION_NAME = 'AlienVault OTX v2'
@@ -65,22 +65,6 @@ EC_WITHOUT_ANALYSIS = {
         {'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Score': 0, 'Type': 'file',
          'Vendor': 'AlienVault OTX v2', 'Reliability': 'C - Fairly reliable'}]}
 
-URL_COMMAND = [(
-    'query',
-    'url_command',
-    {
-        'url': 'http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026data=LeFzS0ZTdINxJN2UMVFvyPotO31n'
-               'Q1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9'
-               'TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8'
-               'cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5JVX3kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
-    },
-    404,
-    'No matches for URL http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026data=LeFzS0ZTdINxJN2UMVFv'
-    'yPotO31nQ1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9Tyx'
-    'cDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8cirtcm1_CG8NVh'
-    'vfc5wnattncML1PF6zctl5JVX3kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
-)]
-
 client = Client(
     base_url="base_url",
     headers={'X-OTX-API-KEY': "TOKEN"},
@@ -105,12 +89,3 @@ def test_file_command(mocker, raw_response_general, raw_response_analysis, expec
     results = file_command(client, {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'})
     # results is tuple (human_readable, context_entry, raw_response).
     assert expected == results[1]
-
-
-@pytest.mark.parametrize('function, command_function, args, mocker_result, expected_result', URL_COMMAND)
-def test_functions(mocker, function, command_function, args, mocker_result, expected_result):
-    mocker.patch.object(client, function, return_value=mocker_result)
-    command_results = url_command(client, args.get("url"))
-    output = command_results[0]
-
-    assert output == expected_result
