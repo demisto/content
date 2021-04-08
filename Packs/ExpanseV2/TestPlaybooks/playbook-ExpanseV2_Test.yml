@@ -2805,7 +2805,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10170
+          "y": 9995
         }
       }
     note: false
@@ -3483,7 +3483,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "67"
+      - "48"
     scriptarguments:
       common_name:
         simple: ${inputs.common_name}
@@ -3502,47 +3502,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "67":
-    id: "67"
-    taskid: 6b5ff2c9-e076-4e21-8449-7aa08198bc75
-    type: condition
-    task:
-      id: 6b5ff2c9-e076-4e21-8449-7aa08198bc75
-      version: -1
-      name: Verify domains for certificate
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "48"
-    scriptarguments:
-      value:
-        simple: ${Expanse.IPDomains.TotalDomainCount}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 9995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10185,
+        "height": 10010,
         "width": 380,
         "x": 50,
         "y": 50
