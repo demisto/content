@@ -301,6 +301,6 @@ inputs:
 outputs: []
 tests:
 - AlphaVantage Test Playbook
-fromversion: 5.0.0
+fromversion: 6.0.0
 description: This playbook sends a message on Telegram when a stock price rises higher
   than a predefined price
