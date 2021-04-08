@@ -36,7 +36,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def _get_dbot_score(json_res: dict):
+def _get_dbot_score(json_res: dict) -> int:
     """Gets a json response and calculate the dbot score by the response"""
 
     if json_res.get('response_code') == '1':
