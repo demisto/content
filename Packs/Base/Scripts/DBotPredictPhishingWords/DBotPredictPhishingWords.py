@@ -1,7 +1,7 @@
 # pylint: disable=no-member
 
 from CommonServerPython import *
-from contextlib import contextmanager, redirect_stderr, redirect_stdout
+from contextlib import contextmanager, redirect_stderr
 from os import devnull
 from string import punctuation
 from nltk import word_tokenize
