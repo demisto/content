@@ -4196,3 +4196,101 @@ Provides data enrichment for CIDR blocks using Expanse IP Range.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| tags: {'id': 'e00bc79d-d367-36f4-824c-042836fef5fc', 'created': '2020-12-07', 'modified': '2020-12-07', 'name': 'xsoar-test-pb-tag'}<br/>additionalNotes: <br/>pointsOfContact:  | {'reason': 'This parent range is attributed via IP network registration records for 1.179.133.116–1.179.133.119'},<br/>{'reason': 'This parent range is attributed via IP network registration records for 1.179.133.112–1.179.133.115'} | {'id': 'c94c50ca-124f-4983-8da5-1756138e2252', 'name': 'PANW Acme Latex Supply Dev'} | 1.179.133.112/29 | 2020-09-22 |  | 0a8f44f9-05dc-42a3-a395-c83dad49fadf | 4 |  | 2020-12-18 | 2020-09-22 | 8 | parent | {'handle': '1.179.133.112 - 1.179.133.115', 'startAddress': '1.179.133.112', 'endAddress': '1.179.133.115', 'ipVersion': '4', 'country': 'th', 'name': 'saim-synthetic-latex', 'parentHandle': '', 'whoisServer': 'whois.apnic.net', 'updatedDate': '2020-09-22', 'remarks': 'saim synthetic latex,Nong Khaem Province', 'registryEntities': [{'id': '125d112c-1169-3025-89e7-4c8c5a16db0b', 'handle': '', 'address': '', 'email': '', 'events': [], 'firstRegistered': None, 'formattedName': '', 'lastChanged': None, 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [''], 'roles': ['administrative']}, {'id': '13cb65ca-9572-394b-b385-b2bd15aceb95', 'handle': '', 'address': '', 'email': '', 'events': [], 'firstRegistered': None, 'formattedName': '', 'lastChanged': None, 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [''], 'roles': ['technical']}, {'id': '3c5ef28b-64d7-3d1f-b343-a31078292b04', 'handle': 'IRT-TOT-TH', 'address': 'TOT Public Company Limited\n89/2 Moo 3 Chaengwattana Rd, Laksi,Bangkok 10210 THAILAND          ', 'email': 'apipolg@tot.co.th, abuse@totisp.net', 'events': [{'action': 'last changed', 'actor': 'null', 'date': '2017-06-21T07:19:22Z', 'links': []}], 'firstRegistered': None, 'formattedName': 'IRT-TOT-TH', 'lastChanged': '2017-06-21', 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [], 'roles': ['abuse']}]},<br/>{'handle': '1.179.133.116 - 1.179.133.119', 'startAddress': '1.179.133.116', 'endAddress': '1.179.133.119', 'ipVersion': '4', 'country': 'th', 'name': 'siam-synthetic-latex', 'parentHandle': '', 'whoisServer': 'whois.apnic.net', 'updatedDate': '2020-09-22', 'remarks': 'siam synthetic latex,Nong Khaem Province', 'registryEntities': [{'id': '125d112c-1169-3025-89e7-4c8c5a16db0b', 'handle': '', 'address': '', 'email': '', 'events': [], 'firstRegistered': None, 'formattedName': '', 'lastChanged': None, 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [''], 'roles': ['administrative']}, {'id': '13cb65ca-9572-394b-b385-b2bd15aceb95', 'handle': '', 'address': '', 'email': '', 'events': [], 'firstRegistered': None, 'formattedName': '', 'lastChanged': None, 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [''], 'roles': ['technical']}, {'id': '3c5ef28b-64d7-3d1f-b343-a31078292b04', 'handle': 'IRT-TOT-TH', 'address': 'TOT Public Company Limited\n89/2 Moo 3 Chaengwattana Rd, Laksi,Bangkok 10210 THAILAND          ', 'email': 'apipolg@tot.co.th, abuse@totisp.net', 'events': [{'action': 'last changed', 'actor': 'null', 'date': '2017-06-21T07:19:22Z', 'links': []}], 'firstRegistered': None, 'formattedName': 'IRT-TOT-TH', 'lastChanged': '2017-06-21', 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [], 'roles': ['abuse']}]} | 0 | {'type': 'CRITICAL', 'count': 0},<br/>{'type': 'ROUTINE', 'count': 0},<br/>{'type': 'UNCATEGORIZED', 'count': 0},<br/>{'type': 'WARNING', 'count': 0} |
 
+
+### expanse-get-domains-for-certificate
+***
+Returns all domains which have been seen with the specified certificate.
+
+##### Required Permissions
+**none**
+##### Base Command
+
+`expanse-get-domains-for-certificate`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| common_name | The certificate common name | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Expanse.IPDomains.SearchTerm | string | The common name that was searched |
+| Expanse.IPDomains.TotalDomainCount | number | The number of domains found matching the specified certificate |
+| Expanse.IPDomains.FlatDomainList | number | An array of all domain names found. This is truncated at 50 |
+| Expanse.IPDomains.DomainList | number | An array of domain objects. This is truncated at 50 |
+
+##### Command Example
+```!expanse-get-domains-for-certificate common_name="*.us.expanse.co"```
+
+##### Context Example
+<!-- disable-secrets-detection-start -->
+```json
+{
+    "SearchTerm": "*.us.expanse.co",
+    "TotalDomainCount": 2,
+    "FlatDomainList": ["california.us.expanse.co", "dc.us.expanse.co"],
+    "DomainList": [
+        {
+            "ip": "33.2.243.123",
+            "domain": "california.us.expanse.co",
+            "type": "DOMAIN_RESOLUTION",
+            "assetType": "DOMAIN",
+            "assetKey": "california.us.expanse.co",
+            "provider": {
+                "id": "AWS",
+                "name": "Amazon Web Services"
+            },
+            "lastObserved": "2020-06-22T05:20:32.883Z",
+            "tenant": {
+                "id": "4b7efca7-c595-408e-b4d1-634080e48367",
+                "name": "Palo Alto Networks",
+                "tenantId": "4b7efca7-c595-408e-b4d1-634080e48367"
+            },
+            "businessUnits": [
+                {
+                    "id": "a1f0f39b-f358-3c8c-947b-926887871b88",
+                    "name": "VanDelay Import-Export",
+                    "tenantId": "a1f0f39b-f358-3c8c-947b-926887871b88"
+                }
+            ],
+            "commonName": null
+        },
+        {
+            "ip": "33.2.243.123",
+            "domain": "dc.us.expanse.co",
+            "type": "DOMAIN_RESOLUTION",
+            "assetType": "DOMAIN",
+            "assetKey": "dc.us.expanse.co",
+            "provider": {
+                "id": "AWS",
+                "name": "Amazon Web Services"
+            },
+            "lastObserved": "2020-06-21T07:20:32.883Z",
+            "tenant": {
+                "id": "4b7efca7-c595-408e-b4d1-634080e48367",
+                "name": "Palo Alto Networks",
+                "tenantId": "4b7efca7-c595-408e-b4d1-634080e48367"
+            },
+            "businessUnits": [
+                {
+                    "id": "a1f0f39b-f358-3c8c-947b-926887871b88",
+                    "name": "VanDelay Import-Export",
+                    "tenantId": "a1f0f39b-f358-3c8c-947b-926887871b88"
+                }
+            ],
+            "commonName": null
+        }
+    ]
+}
+```
+<!-- disable-secrets-detection-start -->
+
+##### Human Readable Output
+### Expanse Domains matching Certificate Common Name: *.us.expanse.co
+| FlatDomainList | SearchTerm | TotalDomainCount |
+|---|---|---|
+| california.us.expanse.co, dc.us.expanse.co | *.us.expanse.co | 2 |
+
+
