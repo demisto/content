@@ -16,7 +16,9 @@ DEMISTO_AUTOMATIONS_PATH = "/automation/search"
 DEMISTO_CONFIG_PATH = "/system/config"
 MAX_REQUEST_SIZE = demisto.args().get("size", 500)
 HTML_TABLE_TEMPLATE = """
-<table>
+<h3>{{ name }}</h3>
+<table class="table">
+    {% if headers %}
     <tr>
         {% for header in headers %}
         <th>{{ header }}</th>
@@ -29,8 +31,20 @@ HTML_TABLE_TEMPLATE = """
         {% endfor %}
     </tr>
     {% endfor %}
+    {% else %}
+    {% for row in rows %}
+        {% for k,v in row.items() %}
+        <tr>
+            <td>{{ k }}</td>
+            <td>{{ v }}</td>
+        </tr>
+        {% endfor %}
+    {% endfor %}
+    {% endif %}
+
 </table>
 """
+
 MD_DOCUMENT_TEMPLATE = """
 {{ integrations_table }}
 
@@ -39,6 +53,19 @@ MD_DOCUMENT_TEMPLATE = """
 {{ playbooks_table }}
 
 {{ automations_table }}
+
+{{ system_config }} 
+"""
+
+HTML_DOCUMENT_TEMPLATE = """
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+</head>
+<body>
+    <h1>XSOAR AS-Built Document.</h1>
+    <hr>
+    {{ system_config }}
+</body>
 """
 
 
@@ -48,28 +75,67 @@ class ReturnedAPIData:
         self.name = name
 
     def as_markdown(self, headers):
-        return tableToMarkdown(self.name, self.data, headers=headers)
+        if not headers:
+            return tableToMarkdown(self.name, self.data, removeNull=True)
+        else:
+            return tableToMarkdown(self.name, self.data, headers=headers, removeNull=True)
 
-    def as_html(self, headers):
+    def as_html(self, headers=None):
         template = jinja2.Template(HTML_TABLE_TEMPLATE)
-        return template.render(headers=headers, rows=self.data)
+        rows = self.data
+        if type(self.data) is dict:
+            rows = []
+            for k, v in self.data.items():
+                rows.append({k: v})
+        return template.render(headers=headers, rows=rows, name=self.name)
 
     def total(self):
         return len(self.data)
 
 
-def build_md_document(
+class Document:
+    def __init__(
+            self,
+            template,
+            integrations_table,
+            installed_packs_table,
+            playbooks_table,
+            automations_table,
+            system_config
+    ):
+        self.template = template
+        self.integrations_table = integrations_table
+        self.installed_packs_table = installed_packs_table
+        self.playbooks_table = playbooks_table
+        self.automations_table = automations_table
+        self.system_config = system_config
+
+    def html(self):
+        template = jinja2.Template(self.template)
+        return template.render(
+            integrations_table=self.integrations_table.as_html(["name", "brand"]),
+            installed_packs_table=self.installed_packs_table.as_html(["name", "currentVersion"]),
+            playbooks_table=self.playbooks_table.as_html(["name", "TotalTasks"]),
+            automations_table=self.automations_table.as_html(["name", "comment"]),
+            system_config=self.system_config.as_html()
+        )
+
+
+def build_document(
+        template,
         integrations_table,
         installed_packs_table,
         playbooks_table,
-        automations_table
+        automations_table,
+        system_config
 ):
-    template = jinja2.Template(MD_DOCUMENT_TEMPLATE)
+    template = jinja2.Template(template)
     return template.render(
-        integrations_table=integrations_table,
+        integrations_table=integrations_table.as_html(),
         installed_packs_table=installed_packs_table,
         playbooks_table=playbooks_table,
-        automations_table=automations_table
+        automations_table=automations_table,
+        system_config=system_config
     )
 
 
@@ -155,13 +221,21 @@ def main():
     installed_packs = get_installed_packs()
     playbooks = get_custom_playbooks()
     automations = get_custom_automations()
-    hr = build_md_document(
-        integrations.as_markdown(["name", "brand"]),
+    d = Document(
+        HTML_DOCUMENT_TEMPLATE,
+        system_config=system_config,
+        integrations_table=integrations,
+        installed_packs_table=installed_packs,
+        playbooks_table=playbooks,
+        automations_table=automations
+    )
+    """
+            integrations.as_markdown(["name", "brand"]),
         installed_packs.as_markdown(["name", "currentVersion"]),
         playbooks.as_markdown(["name", "TotalTasks"]),
         automations.as_markdown(["name", "comment"])
-    )
-    return_results(hr)
+    """
+    return_results(d.html())
 
 
 if __name__ in ('__builtin__', 'builtins'):
