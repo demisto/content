@@ -3343,7 +3343,9 @@
         "pyEWS_Test": "Issue 27942",
         "EWS search-mailbox test": "Issue 27943",
         "EWS Public Folders Test": "Issue 27941",
-        "Azure NSG - Test": "Issue 33217"
+        "Azure NSG - Test": "Issue 33217",
+        "FireEyeNX-Test": "Issue 33216",
+        "Microsoft Graph User - Test": "Issue 31234"
     },
     "skipped_integrations": {
         
