@@ -193,6 +193,10 @@ class DataModel(object):
                 res = chardet.detect(data_value)
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
                 if enc != 'ascii':
+                    if enc.lower() == 'windows-1252' and res['confidence'] < 0.9:
+                        demisto.debug('encoding detection confidence below threshold {}, '
+                                      'switching encoding to "windows-1250"'.format(res))
+                        enc = 'windows-1250'
                     data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
                 elif '\x00' not in data_value:
                     data_value = data_value.decode("ascii", errors="ignore").replace('\x00', '')
