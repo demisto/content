@@ -59,12 +59,53 @@ MD_DOCUMENT_TEMPLATE = """
 
 HTML_DOCUMENT_TEMPLATE = """
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous"
+    media='all'>
 </head>
+<style>
+    td {
+        font-size: small;
+    }
+</style>
 <body>
-    <h1>XSOAR AS-Built Document.</h1>
-    <hr>
-    {{ system_config }}
+<div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"
+        style="min-width:500px;">
+            <span class="fs-4">XSOAR as built</span>
+        </div>
+        <div>
+            <img src="https://www.paloaltonetworks.com/content/dam/pan/en_US/images/logos/brand/primary-company-logo/PANW_Parent_Brand_Primary_Logo_RGB.png?imbypass=on"
+                 height="35px">
+        </div>
+    </header>
+
+    {{ integrations_table }}
+    <p>The system configuration above represents the server configuration of XSOAR, including advanced
+        server config parameters such as HTTP proxy. This configuration is accessible via
+        settings->about->troubleshooting.</p>
+    <p style="page-break-after: always;"></p>
+
+    {{ installed_packs_table }}
+    <p>The installed packs are all the content packs currently installed on the server. Content packs
+    include playbooks, automations, and in some cases, integrations.</p>
+    <p style="page-break-after: always;"></p>
+
+
+    {{ playbooks_table }}
+    <p>
+        Custom playbooks are written specifically for this deployment, or adapted from existing OOTB playbooks.
+        The tasks in each playbook represent the overall size and complexity of each developed playbook.
+    </p>
+    <p style="page-break-after: always;"></p>
+
+    {{ automations_table }}
+    <p>
+        Custom automations are used to add additional logic and support to playbooks and use cases.
+    </p>
+    <p style="page-break-after: always;"></p>
+</div>
 </body>
 """
 
