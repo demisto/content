@@ -33,7 +33,8 @@ For more information on activating the license see [Activating AutoFocus License
    | **Parameter** | **Description** | **Example** |
    | ---------             | -----------           | -------            |
    | Name | A meaningful name for the integration instance. | AutoFocus V2_instance_2 |
-   |  API Key | Account's private token. | N/A  |
+   | API Key | Account's private token. | N/A  |
+   | Source Reliability | Reliability of the source providing the intelligence data. | B - Usually reliable |
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/www.markdownguide.org |
    | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |
@@ -1187,6 +1188,8 @@ Returns the reputation of an IP address.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | IP.Address | String | The IP address. | 
+| IP.Tags | String | Tags that are associated with the IP. | 
+| IP.MalwareFamily | String | The malware family associated with the IP. |
 | AutoFocus.IP.IndicatorValue | String | The IP address value. | 
 | AutoFocus.IP.IndicatorType | String | The indicator type. | 
 | AutoFocus.IP.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1268,6 +1271,8 @@ Returns the reputation of a URL.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | URL.Data | String | The URL address. | 
+| URL.Tags | String | Tags that are associated with the URL. | 
+| URL.MalwareFamily | String | The malware family associated with the URL. |
 | AutoFocus.URL.IndicatorValue | String | The URL value. | 
 | AutoFocus.URL.IndicatorType | String | The indicator type. | 
 | AutoFocus.URL.LatestPanVerdicts | Unknown |The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1352,6 +1357,8 @@ Returns the reputation of a file.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Tags | String | Tags that are associated with the file. | 
+| File.MalwareFamily | String | The malware family associated with the file. |
 | AutoFocus.File.IndicatorValue | String | The SHA256 hash value of the file. | 
 | AutoFocus.File.IndicatorType | String | The indicator type. | 
 | AutoFocus.File.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1442,6 +1449,8 @@ Returns the reputation of a domain.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | Domain.Name | String | The name of the domain. | 
+| Domain.Tags | String | Tags that are associated with the domain. | 
+| Domain.MalwareFamily | String | The malware family associated with the domain. |
 | AutoFocus.Domain.IndicatorValue | String | The value of the domain. | 
 | AutoFocus.Domain.IndicatorType | String | The indicator type. | 
 | AutoFocus.Domain.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
