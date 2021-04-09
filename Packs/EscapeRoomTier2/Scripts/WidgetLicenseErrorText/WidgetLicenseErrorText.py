@@ -13,10 +13,10 @@ import demistomock as demisto
 from CommonServerPython import *
 
 WRONG_DATE_RANGE_HINT = '''
-## You cannot drive a vehicle without a driver's license.
-## You cannot practice medicine without a medical license.
-## You cannot practice law without a law license.
-## You cannot practice security without an XSOAR license.
+### You cannot drive a vehicle without a driver's license.
+### You cannot practice medicine without a medical license.
+### You cannot practice law without a law license.
+### You cannot practice security without an XSOAR license.
 '''
 
 INVALID_LICENSE_HINT = '''
