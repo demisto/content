@@ -8,8 +8,6 @@
 
 import pytz
 import random
-import demisto_client.demisto_api
-from demisto_client.demisto_api.rest import ApiException
 
 import demistomock as demisto
 from CommonServerPython import *

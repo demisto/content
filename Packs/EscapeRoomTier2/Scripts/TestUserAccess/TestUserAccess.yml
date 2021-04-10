@@ -3,7 +3,7 @@ comment: ''
 commonfields:
   id: TestUserAccess
   version: -1
-dockerimage: devdemisto/escape-room:1.0.0.12195
+dockerimage: demisto/xsoar-tools:1.0.0.18207
 enabled: true
 name: TestUserAccess
 runas: DBotWeakRole
