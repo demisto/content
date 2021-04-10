@@ -8,4 +8,4 @@ From project planning and source code management to CI/CD and monitoring, GitLab
 4. Copy and paste the key.
 
 ### URL
-The Base URL of LGTM API v4.0: https://gitlab.com/api/v4
+The Base URL of Gitlab API v4.0: https://gitlab.com/api/v4

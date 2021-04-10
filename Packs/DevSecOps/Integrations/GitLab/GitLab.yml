@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: GitLab Integration
+  id: GitLab
   version: -1
 configuration:
 - defaultvalue: https://gitlab.com/api/v4
@@ -21,8 +21,8 @@ configuration:
   required: false
   type: 8
 description: An Integration with GitLab
-display: GitLab Integration
-name: GitLab Integration
+display: GitLab
+name: GitLab
 script:
   commands:
   - arguments:
@@ -71,19 +71,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limit by archived status .
+      description: Limit by archived status.
       isArray: false
       name: archived
       required: false
       secret: false
     - default: false
-      description: Return list of projects matching the search criteria .
+      description: Return list of projects matching the search criteria.
       isArray: false
       name: search
       required: false
       secret: false
     - default: false
-      description: Limit results to projects with IDs less than the specified ID .
+      description: Limit results to projects with IDs less than the specified ID.
       isArray: false
       name: id_before
       required: false
@@ -121,13 +121,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Include project statistics .
+      description: Include project statistics.
       isArray: false
       name: statistics
       required: false
       secret: false
     - default: false
-      description: Limit by visibility public, internal, or private .
+      description: Limit by visibility public, internal, or private.
       isArray: false
       name: visibility
       required: false
@@ -139,7 +139,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limit by enabled issues feature .
+      description: Limit by enabled issues feature.
       isArray: false
       name: with_issues_enabled
       required: false
@@ -164,22 +164,22 @@ script:
     name: gitlab-get-projects
     outputs:
     - contextPath: GitLab.Projects.web_url
-      description: Project Web URL
+      description: Project Web URL.
       type: Unknown
     - contextPath: GitLab.Projects.name
-      description: Project Name
+      description: Project Name.
       type: Unknown
     - contextPath: GitLab.Projects.path
-      description: Project Path
+      description: Project Path.
       type: Unknown
     - contextPath: GitLab.Projects.created_at
-      description: Project Created At
+      description: Project Created At.
       type: Unknown
     - contextPath: GitLab.Projects.visibility
-      description: Project Visiblity
+      description: Project Visiblity.
       type: Unknown
     - contextPath: GitLab.Projects.id
-      description: Project ID
+      description: Project ID.
       type: Unknown
   - arguments:
     - default: false
@@ -195,16 +195,16 @@ script:
     name: gitlab-projects-get-access-requests
     outputs:
     - contextPath: GitLab.AccessRequests.id
-      description: Access Request ID
+      description: Access Request ID.
       type: Unknown
     - contextPath: GitLab.AccessRequests.username
-      description: Access Request User
+      description: Access Request User.
       type: Unknown
     - contextPath: GitLab.AccessRequests.requested_at
-      description: Access Request Create Time
+      description: Access Request Create Time.
       type: Unknown
     - contextPath: GitLab.AccessRequests.state
-      description: Access Request State
+      description: Access Request State.
       type: Unknown
   - arguments:
     - default: false
@@ -220,16 +220,16 @@ script:
     name: gitlab-projects-request-access
     outputs:
     - contextPath: GitLab.AccessRequests.id
-      description: Access Request ID
+      description: Access Request ID.
       type: Unknown
     - contextPath: GitLab.AccessRequests.username
-      description: Access Request User
+      description: Access Request User.
       type: Unknown
     - contextPath: GitLab.AccessRequests.requested_at
-      description: Access Request Create Time
+      description: Access Request Create Time.
       type: Unknown
     - contextPath: GitLab.AccessRequests.state
-      description: Access Request State
+      description: Access Request State.
       type: Unknown
   - arguments:
     - default: false
@@ -240,13 +240,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The user ID of the access requester .
+      description: The user ID of the access requester.
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
-      description: 'A valid access level (defaults: 30, developer access level) '
+      description: 'A valid access level (defaults: 30, developer access level)'
       isArray: false
       name: access_level
       required: false
@@ -277,7 +277,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The user ID of the access requester .
+      description: The user ID of the access requester.
       isArray: false
       name: user_id
       required: true

@@ -8,112 +8,76 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
     def abort_upload_request(self, session_id):
-
-        headers = self._headers
-
-        response = self._http_request('delete', f'snapshots/uploads/{session_id}', headers=headers)
+        response = self._http_request('delete', f'snapshots/uploads/{session_id}')
 
         return response
 
     def add_project_request(self, repository, language, mode, commit, date, worker_label):
         params = assign_params(repository=repository, language=language, mode=mode,
                                commit=commit, date=date, worker_label=worker_label)
-
         headers = self._headers
         headers['Content-Type'] = 'application/x-yaml'
-
         response = self._http_request('post', 'projects', params=params, headers=headers)
 
         return response
 
     def get_alerts_request(self, analysis_id, sarif_version, excluded_files):
         params = assign_params(sarif_version=sarif_version, excluded_files=excluded_files)
-
-        headers = self._headers
-
-        response = self._http_request('get', f'analyses/{analysis_id}/alerts', params=params, headers=headers)
+        response = self._http_request('get', f'analyses/{analysis_id}/alerts', params=params)
 
         return response
 
     def get_analysis_request(self, analysis_id):
-
-        headers = self._headers
-
-        response = self._http_request('get', f'analyses/{analysis_id}', headers=headers)
+        response = self._http_request('get', f'analyses/{analysis_id}')
 
         return response
 
     def get_analysis_for_commit_request(self, project_id, commit_id):
-
-        headers = self._headers
-
-        response = self._http_request('get', f'analyses/{project_id}/commits/{commit_id}', headers=headers)
+        response = self._http_request('get', f'analyses/{project_id}/commits/{commit_id}')
 
         return response
 
     def get_code_review_request(self, review_id):
-
-        headers = self._headers
-
-        response = self._http_request('get', f'codereviews/{review_id}', headers=headers)
+        response = self._http_request('get', f'codereviews/{review_id}')
 
         return response
 
     def get_project_request(self, project_id):
-
-        headers = self._headers
-
-        response = self._http_request('get', f'projects/{project_id}', headers=headers)
+        response = self._http_request('get', f'projects/{project_id}')
 
         return response
 
     def get_project_by_url_identifier_request(self, provider, org, name):
-
-        headers = self._headers
-
-        response = self._http_request('get', f'projects/{provider}/{org}/{name}', headers=headers)
+        response = self._http_request('get', f'projects/{provider}/{org}/{name}')
 
         return response
 
     def get_project_config_request(self, project_id, source):
         params = assign_params(source=source)
-
-        headers = self._headers
-
         response = self._http_request(
-            'get', f'projects/{project_id}/settings/analysis-configuration', params=params, headers=headers, resp_type='text')
+            'get', f'projects/{project_id}/settings/analysis-configuration', params=params, resp_type='text')
 
         return response
 
     def get_projects_request(self, limit, start):
         params = assign_params(limit=limit, start=start)
-
-        headers = self._headers
-
-        response = self._http_request('get', 'projects', params=params, headers=headers)
+        response = self._http_request('get', 'projects', params=params)
 
         return response
 
     def get_version_request(self):
-
-        headers = self._headers
-
-        response = self._http_request('get', '', headers=headers)
+        response = self._http_request('get', '')
 
         return response
 
     def request_analysis_request(self, project_id, commit, language):
         params = assign_params(commit=commit, language=language)
-
-        headers = self._headers
-
-        response = self._http_request('post', f'analyses/{project_id}', params=params, headers=headers)
+        response = self._http_request('post', f'analyses/{project_id}', params=params)
 
         return response
 
     def request_review_request(self, project_id, base, external_id,
                                callback_url, callback_secret, patch_file):
-
         params = {
             "base": base,
             "external-id": external_id,
@@ -122,45 +86,33 @@ class Client(BaseClient):
         }
         headers = self._headers
         headers['Content-Type'] = 'application/octet-stream'
-
         response = self._http_request('post', f'codereviews/{project_id}', params=params,
                                       headers=headers, files=patch_file)
 
         return response
 
     def create_query_job_request(self, language, project_id, query):
-
-        headers = self._headers
         parameters = {
             'project-id': project_id,
             'language': language
         }
-        response = self._http_request('post', 'queryjobs', params=parameters, headers=headers, data=query)
+        response = self._http_request('post', 'queryjobs', params=parameters, data=query)
 
         return response
 
     def get_query_job_request(self, queryjob_id):
-
-        headers = self._headers
-
-        response = self._http_request('get', f'queryjobs/{queryjob_id}', headers=headers)
+        response = self._http_request('get', f'queryjobs/{queryjob_id}')
 
         return response
 
     def get_query_job_results_for_project_request(self, queryjob_id, project_id, start, limit, nofilter):
         params = assign_params(start=start, limit=limit, nofilter=nofilter)
-
-        headers = self._headers
-
-        response = self._http_request('get', f'queryjobs/{queryjob_id}/results/{project_id}', params=params, headers=headers)
+        response = self._http_request('get', f'queryjobs/{queryjob_id}/results/{project_id}', params=params)
 
         return response
 
     def get_query_job_results_overview_request(self, queryjob_id):
-
-        headers = self._headers
-
-        response = self._http_request('get', f'queryjobs/{queryjob_id}/results', headers=headers)
+        response = self._http_request('get', f'queryjobs/{queryjob_id}/results')
 
         return response
 
