@@ -3,7 +3,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
 import traceback
 from typing import Dict, Any
 
@@ -11,7 +10,7 @@ from typing import Dict, Any
 def hint(args: Dict[str, Any]) -> CommandResults:
     text = args.get('text', '')
 
-    result = {
+    result: Dict[str, Union[int, str]] = {
         'ID': 1,
     }
     if text and text.istitle():

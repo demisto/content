@@ -7,7 +7,6 @@
 """
 
 import pytz
-import random
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -34,7 +33,6 @@ please help me with my failing task.
 
 > with great power comes great responsibility!
     - B. parker
-  
 '''
 
 VICTORY_MESSAGE = '''

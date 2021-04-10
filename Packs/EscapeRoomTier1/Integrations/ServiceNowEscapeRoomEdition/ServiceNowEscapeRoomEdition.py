@@ -16,15 +16,20 @@ WRONG_CREDS = {
     ('Hans', 'SantinoFontana'): "Access Denied!!! Don't ever try this again!",
 }
 
-AUTO_EXTRACT_DETAILS = '''The Auto Extract feature extracts indicators and enriches their reputations using commands and scripts defined for the indicator type.
-Cortex XSOAR recommends that you turn off Auto Extract using the server configurations for the different Auto Extract options and only turn it on for those specific scenarios where it is necessary.
-![autoextract](https://raw.githubusercontent.com/demisto/content/a23895448f47d58f7a7ac296db5d3f853eb4fc80/Packs/EscapeRoomTier1/images/autoextract.png)
-'''
+AUTO_EXTRACT_DETAILS = (
+    'The Auto Extract feature extracts indicators and enriches their reputations using commands and'
+    ' scripts defined for the indicator type.\n'
+    'Cortex XSOAR recommends that you turn off Auto Extract using the server configurations for the different'
+    ' Auto Extract options and only turn it on for those specific scenarios where it is necessary.\n'
+    '![autoextract](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials'
+    '/Packs/EscapeRoomTier1/images/autoextract.png)'
+)
 
-DUPLICATE_INCIDENT = '''
-This is a duplicate of a previous incident. try fetching the original incident again.
-![Nothing to see](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/snowincident_NothingToSee.png)
-'''
+DUPLICATE_INCIDENT = (
+    'This is a duplicate of a previous incident. try fetching the original incident again.\n'
+    '![Nothing to see](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials'
+    '/Packs/EscapeRoomTier1/images/snowincident_NothingToSee.png)'
+)
 
 
 def validate_credentials(credentials):
@@ -47,7 +52,7 @@ def fetch_incident(credentials, last_run):
 
     if last_run:
         incident = {
-            'name': f"ServiceNow Incident No. 1337",
+            'name': 'ServiceNow Incident No. 1337',
             'details': DUPLICATE_INCIDENT,
             'CustomFields': {
                 'servicenowdetails': DUPLICATE_INCIDENT,
@@ -59,7 +64,7 @@ def fetch_incident(credentials, last_run):
         }
     else:
         incident = {
-            'name': f"ServiceNow Incident No. 1337",
+            'name': 'ServiceNow Incident No. 1337',
             'details': AUTO_EXTRACT_DETAILS,
             'CustomFields': {
                 'servicenowdetails': AUTO_EXTRACT_DETAILS,
@@ -91,7 +96,18 @@ def main() -> None:
             demisto.incidents(incidents)
             demisto.setLastRun(last_run)
         else:
-            return_results('all good!')
+            if command in [
+                'servicenow-get-ticket', 'servicenow-create-ticket', 'servicenow-update-ticket',
+                'servicenow-delete-ticket', 'servicenow-query-tickets', 'servicenow-add-link',
+                'servicenow-add-comment', 'servicenow-upload-file', 'servicenow-get-record',
+                'servicenow-query-table', 'servicenow-create-record', 'servicenow-update-record',
+                'servicenow-delete-record', 'servicenow-list-table-fields', 'servicenow-query-computers',
+                'servicenow-query-groups', 'servicenow-query-users', 'servicenow-get-table-name',
+                'servicenow-get-ticket-notes', 'servicenow-add-tag', 'servicenow-query-items',
+                'servicenow-get-item-details', 'servicenow-create-item-order', 'servicenow-document-route-to-queue',
+                'get-mapping-fields', 'get-remote-data', 'servicenow-oauth-login', 'servicenow-oauth-test'
+            ]:
+                return_results('all good!')
 
     # Log exceptions and return errors
     except Exception as e:

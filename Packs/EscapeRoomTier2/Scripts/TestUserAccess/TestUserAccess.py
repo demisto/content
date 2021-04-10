@@ -23,7 +23,8 @@ def get_server_url():
     p = subprocess.Popen(args, stdout=subprocess.PIPE)
     stdout, _ = p.communicate()
 
-    if match := re.match('default via (.*) dev', stdout.decode('utf-8')):
+    match = re.match('default via (.*) dev', stdout.decode('utf-8'))
+    if match:
         return f'https://{match.group(1)}/acc_temp'
 
     else:
