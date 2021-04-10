@@ -1254,29 +1254,29 @@ def get_github_get_check_run():
     check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id, commit_id=commit_id)
 
     for check_run in check_runs:
-            check_run_id = check_run.get('id', '')
-            check_external_id = check_run.get('external_id', '')
-            check_run_name = check_run.get('name', '')
-            check_run_app_name = check_run['app'].get('name', '')
-            check_run_pr = check_run.get('pull_requests')
-            check_run_status = check_run.get('status', '')
-            check_run_conclusion = check_run.get('conclusion', '')
-            check_run_started_at = check_run.get('started_at', '')
-            check_run_completed_at = check_run.get('completed_at', '')
-            check_run_output = check_run.get('output', '')
+        check_run_id = check_run.get('id', '')
+        check_external_id = check_run.get('external_id', '')
+        check_run_name = check_run.get('name', '')
+        check_run_app_name = check_run['app'].get('name', '')
+        check_run_pr = check_run.get('pull_requests')
+        check_run_status = check_run.get('status', '')
+        check_run_conclusion = check_run.get('conclusion', '')
+        check_run_started_at = check_run.get('started_at', '')
+        check_run_completed_at = check_run.get('completed_at', '')
+        check_run_output = check_run.get('output', '')
 
-            check_run_result.append({
-                'CheckRunID': check_run_id,
-                'CheckExternalID': check_external_id,
-                'CheckRunName': check_run_name,
-                'CheckRunAppName': check_run_app_name,
-                'CheckRunPR': check_run_pr,
-                'CheckRunStatus': check_run_status,
-                'CheckRunConclusion': check_run_conclusion,
-                'CheckRunStartedAt': check_run_started_at,
-                'CheckRunCompletedAt': check_run_completed_at,
-                'CheckRunOutPut': check_run_output
-            })
+        check_run_result.append({
+            'CheckRunID': check_run_id,
+            'CheckExternalID': check_external_id,
+            'CheckRunName': check_run_name,
+            'CheckRunAppName': check_run_app_name,
+            'CheckRunPR': check_run_pr,
+            'CheckRunStatus': check_run_status,
+            'CheckRunConclusion': check_run_conclusion,
+            'CheckRunStartedAt': check_run_started_at,
+            'CheckRunCompletedAt': check_run_completed_at,
+            'CheckRunOutPut': check_run_output
+        })
 
     ec = {
         'GitHub.CheckRuns(val.ID == obj.CheckRunID)': check_run_result
