@@ -251,7 +251,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "escaperoomdetails",
+                                "fieldId": "details",
                                 "height": 22,
                                 "id": "incident-details-field",
                                 "index": 0,

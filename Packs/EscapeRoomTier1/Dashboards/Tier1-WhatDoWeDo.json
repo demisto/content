@@ -103,9 +103,7 @@
                     "text": "![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_Simpsons.gif)![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_GilmoreGirls.gif)![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_Robot.gif)\n![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_ProdigalSon.gif)![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_Snooping.gif)![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_DreamCorp.gif)\n![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_ChicagoPD.gif)![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_GrandHotel.gif)![](https://raw.githubusercontent.com/demisto/content/EscapeRoomMaterials/Packs/EscapeRoomTier1/images/incident_BrokenWood.gif)"
                 },
                 "prevName": "Text Widget",
-                "propagationLabels": [
-
-                ],
+                "propagationLabels": [],
                 "query": "",
                 "shouldCommit": false,
                 "size": 0,

@@ -1,5 +1,5 @@
 {
-    "id": "indicator_usercredentials",
+    "id": "indicator_logininfo",
     "version": -1,
     "name": "Login Info",
     "ownerOnly": false,

@@ -51,8 +51,8 @@ tasks:
     scriptarguments:
       value:
         simple: |-
-            ![](https://github.com/demisto/content/raw/a23895448f47d58f7a7ac296db5d3f853eb4fc80/Packs/EscapeRoomTier1/images/reports.gif)
-            No time to waste, it is time for the special reports!
+          ![](https://github.com/demisto/content/raw/a23895448f47d58f7a7ac296db5d3f853eb4fc80/Packs/EscapeRoomTier1/images/reports.gif)
+          No time to waste, it is time for the special reports!
     separatecontext: false
     view: |-
       {
@@ -235,6 +235,7 @@ tasks:
       id: f13f75fa-9422-4e39-8f4e-dd696e39f9c9
       version: -1
       name: Check if its the main escape room incident
+      description: Check if its the main escape room incident
       type: condition
       iscommand: false
       brand: ""

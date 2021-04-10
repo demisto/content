@@ -1,8 +1,7 @@
 {
-    "category": "",
     "dataType": "scripts",
     "id": "Yearly Time Spent (In Months)",
-    "isPredefined": false,
+    "isPredefined": true,
     "name": "Yearly Time Spent (In Months)",
     "description": "Details of the time spent on content tasks (in months)",
     "query": "WidgetContentDevTimeCycle",

@@ -1,16 +1,7 @@
 {
-    "id": "⚠️D'oh!⚠️",
-    "version": 1,
-    "modified": "2021-04-10T01:18:31.378611+03:00",
-    "sortValues": null,
-    "packID": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
+    "id": "D'oh!⚠️",
+    "version": -1,
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "D'oh!⚠️",
     "prevName": "D'oh!⚠️",
@@ -25,15 +16,13 @@
     "readonly": false,
     "default": false,
     "autorun": true,
-    "preProcessingScript": "",
-    "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "5.0.0"
 }
