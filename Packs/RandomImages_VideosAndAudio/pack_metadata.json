@@ -1,6 +1,6 @@
 {
     "name": "Random Images, Videos and Audio",
-    "description": "This packs automation scripts and / or integrations that can pull random photos, videos or audio.\n\nThere is nothing special about this pack. It was designed to lighten up dashboards and incident layouts if so desired.\n\nMore and more scripts and automations will be added over time.\n\nSimply add the automation script to a dynamic-section in an incident layout, or into a script based widget in a dashboard.",
+    "description": "This packs automation scripts and integrations that can pull random photos, videos or audio.\n\nThis pack was designed to change the theme of your dashboards and incident layouts\n\nMore and more scripts and automations will be added over time.\n\nSimply add the automation script to a dynamic-section in an incident layout, or into a script based widget in a dashboard.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Adam Burt",
