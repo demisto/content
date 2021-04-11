@@ -91,6 +91,15 @@ configuration:
   required: false
   type: 0
 - name: feed
+- name: feedReputation
+- name: feedReliability
+- name: feedExpirationPolicy
+- name: feedExpirationInterval
+- name: feedFetchInterval
+- name: feedBypassExclusionList
+- name: feedTags
+- name: tlp_color
+- name: feed
   must_equal:
     defaultvalue: 'true'
     display: Fetch indicators
