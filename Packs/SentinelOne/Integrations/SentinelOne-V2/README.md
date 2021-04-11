@@ -1,23 +1,23 @@
-Use the SentinelOne integratation to send requests to your Management Server and responds with data pulled from Agents or from the management database.
-This integration was integrated and tested with versions 2.0 and 2.1 of SentinelOne
+Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
+This integration was integrated and tested with versions 2.0 and 2.1 of SentinelOne V2
 ## Configure SentinelOne V2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SentinelOne V2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | Server URL \(e.g., https://usea1.sentinelone.net\) | True |
-    | token | API Token | True |
-    | api_version | API Version. | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | isFetch | Fetch incidents | False |
-    | incidentType | Incident type | False |
-    | fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
-    | fetch_threat_rank | Minimum risk score for importing incidents \(0-10\), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. | False |
-    | fetch_limit | Fetch limit: the maximum number of incidents to fetch | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server URL (e.g., https://usea1.sentinelone.net) | True |
+    | API Token | True |
+    | API Version. | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Fetch incidents | False |
+    | Incident type | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+    | Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. | False |
+    | Fetch limit: the maximum number of incidents to fetch | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -38,8 +38,8 @@ Returns all agents that match the specified criteria.
 | computer_name | Filter by computer name. | Optional | 
 | scan_status | A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted". Possible values are: started, none, finished, aborted. | Optional | 
 | os_type | Included OS types, for example: "windows". Possible values are: windows, windows_legacy, macos, linux. | Optional | 
-| created_at | Endpoint created at timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
-| min_active_threats | Minimum number of threats for an agent. | Optional | 
+| created_at | Endpoint creation timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
+| min_active_threats | Minimum number of threats per agent. | Optional | 
 
 
 #### Context Output
@@ -51,7 +51,7 @@ Returns all agents that match the specified criteria.
 | SentinelOne.Agents.AgentVersion | string | The agent software version. | 
 | SentinelOne.Agents.IsDecommissioned | boolean | Whether the agent is decommissioned. | 
 | SentinelOne.Agents.IsActive | boolean | Whether the agent is active. | 
-| SentinelOne.Agents.LastActiveDate | date | The last active date of the agent | 
+| SentinelOne.Agents.LastActiveDate | date | When was the agent last active. | 
 | SentinelOne.Agents.RegisteredAt | date | The registration date of the agent. | 
 | SentinelOne.Agents.ExternalIP | string | The agent IP address. | 
 | SentinelOne.Agents.ThreatCount | number | Number of active threats. | 
@@ -113,13 +113,14 @@ Creates an exclusion item that matches the specified input filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclusion_type | Exclusion item type. Can be "file_type", "path", "white_hash", "certificate", or "browser". Possible values are: file_type, path, white_hash, certificate, browser. | Required | 
+| exclusion_type | Exclusion item type. The options are: file_type, path, white_hash, certificate, or browser. Possible values are: file_type, path, white_hash, certificate, browser. | Required | 
 | exclusion_value | Value of the exclusion item for the exclusion list. | Required | 
-| os_type | OS type. Can be "windows", "windows_legacy", "macos", or "linux". OS type is required for hash exclusions. Possible values are: windows, windows_legacy.macos, linux. | Required | 
-| description | Description for adding the item. | Optional | 
+| os_type | OS type. Can be "windows", "windows_legacy", "macos", or "linux". OS type is required for hash exclusions. Possible values are: windows, windows_legacy, macos, linux. | Required | 
+| description | Description for adding then exclusion item. | Optional | 
 | exclusion_mode | Exclusion mode (path exclusion only). Can be "suppress", "disable_in_process_monitor_deep", "disable_in_process_monitor", "disable_all_monitors", or "disable_all_monitors_deep". Possible values are: suppress, disable_in_process_monitor_deep, disable_in_process_monitor, disable_all_monitors, disable_all_monitors_deep. | Optional | 
 | path_exclusion_type | Excluded path for a path exclusion list. | Optional | 
-| group_ids | A comma-separated list of group IDs by which to filter. Can be "site_ids" or "group_ids". | Optional | 
+| group_ids | A comma-separated list of group IDs by which to filter. | Optional | 
+| site_ids | A comma-separated list of site IDs by which to filter. | Optional | 
 
 
 #### Context Output
@@ -153,16 +154,16 @@ Lists all exclusion items that match the specified input filter.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.Exclusions.ID | string | The item ID. | 
+| SentinelOne.Exclusions.ID | string | The exclusion item ID. | 
 | SentinelOne.Exclusions.Type | string | The exclusion item type. | 
-| SentinelOne.Exclusions.CreatedAt | date | Timestamp when the item was added. | 
-| SentinelOne.Exclusions.Value | string | Value of the added item. | 
-| SentinelOne.Exclusions.Source | string | Source of the added item. | 
-| SentinelOne.Exclusions.UserID | string | User ID of the user that added the item. | 
-| SentinelOne.Exclusions.UpdatedAt | date | Timestamp when the item was updated | 
-| SentinelOne.Exclusions.OsType | string | OS type. | 
-| SentinelOne.Exclusions.UserName | string | User name of the user that added the item. | 
-| SentinelOne.Exclusions.Mode | string | A comma-separated list of modes by which to filter \(ath exclusions only\), for example: "suppress". | 
+| SentinelOne.Exclusions.CreatedAt | date | Timestamp when the exclusion item was added. | 
+| SentinelOne.Exclusions.Value | string | Value of the exclusion item. | 
+| SentinelOne.Exclusions.Source | string | Source of the exclusion item. | 
+| SentinelOne.Exclusions.UserID | string | User ID of the user that added the exclusion item. | 
+| SentinelOne.Exclusions.UpdatedAt | date | Timestamp when the exclusion item was updated. | 
+| SentinelOne.Exclusions.OsType | string | OS type of the exclusion item. | 
+| SentinelOne.Exclusions.UserName | string | User name of the user that added the exclusion item. | 
+| SentinelOne.Exclusions.Mode | string | A comma-separated list of modes by which to filter \(path exclusions only\), for example: "suppress". | 
 
 
 #### Command Example
@@ -199,7 +200,7 @@ Lists all exclusion items that match the specified input filter.
 
 ### sentinelone-get-hash
 ***
-Get file reputation by a SHA1 hash.
+Gets the file reputation by a SHA1 hash.
 
 
 #### Base Command
@@ -246,7 +247,7 @@ Get file reputation by a SHA1 hash.
 
 ### sentinelone-get-threats
 ***
-Returns threats according to specified filters.
+Returns threats according to the specified filters.
 
 
 #### Base Command
@@ -256,18 +257,18 @@ Returns threats according to specified filters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| content_hash | The content hash of the threat. | Optional | 
+| content_hash | The content hash of the threat. Supports a comma-separated list of hashes. | Optional | 
 | mitigation_status | A comma-separated list of mitigation statuses. Can be "mitigated", "active", "blocked", "suspicious", "pending", or "suspicious_resolved". Possible values are: mitigated, active, blocked, suspicious, pending, suspicious_resolved. | Optional | 
-| created_before | Searches for threats created before this date, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
-| created_after | Searches for threats created after this date, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
-| created_until | Searches for threats created on or before this date, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
-| created_from | Search for threats created on or after this date, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
+| created_before | Searches for threats created before this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
+| created_after | Searches for threats created after this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
+| created_until | Searches for threats created on or before this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
+| created_from | Search for threats created on or after this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | resolved | Whether to only return resolved threats. Possible values are: false, true. Default is false. | Optional | 
-| display_name | Threat display name. For API version 2.0 can be a partial display name, not an exact match. | Optional | 
+| display_name | Threat display name. For API version 2.0 it can be a partial display name, doesn't have to be an exact match. | Optional | 
 | limit | The maximum number of threats to return. Default is 20. Default is 20. | Optional | 
 | query | Full free-text search for fields. Can be "content_hash", "file_display_name", "file_path", "computer_name", or "uuid". | Optional | 
 | threat_ids | A comma-separated list of threat IDs, for example: "225494730938493804,225494730938493915". | Optional | 
-| classifications |  CSV list of threat classifications to search, for example: "Malware", "Network", "Benign". Possible values are: Engine, Static, Cloud, Behavioral. | Optional | 
+| classifications | CSV list of threat classifications to search, for example: "Malware", "Network", "Benign". Possible values are: Engine, Static, Cloud, Behavioral. | Optional | 
 | rank | Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only. | Optional | 
 
 
@@ -277,15 +278,15 @@ Returns threats according to specified filters.
 | --- | --- | --- |
 | SentinelOne.Threat.ID | String | The threat ID. | 
 | SentinelOne.Threat.AgentComputerName | String | The agent computer name. | 
-| SentinelOne.Threat.CreatedDate | Date | File created date. | 
+| SentinelOne.Threat.CreatedDate | Date | The threat creation date. | 
 | SentinelOne.Threat.SiteID | String | The site ID. | 
-| SentinelOne.Threat.Classification | string | Classification name. | 
+| SentinelOne.Threat.Classification | string | The threat classification. | 
 | SentinelOne.Threat.ClassificationSource | string | Source of the threat Classification. | 
 | SentinelOne.Threat.ConfidenceLevel | string | SentinelOne threat confidence level. | 
-| SentinelOne.Threat.FileSha256 | string | SHA256 hash of file content. | 
-| SentinelOne.Threat.MitigationStatus | String | The agent status. | 
-| SentinelOne.Threat.AgentID | String | The agent ID. | 
-| SentinelOne.Threat.Rank | Number | Number representing cloud reputation \(1-10\). | 
+| SentinelOne.Threat.FileSha256 | string | SHA256 hash of the file content. | 
+| SentinelOne.Threat.MitigationStatus | String | The agent mitigation status. | 
+| SentinelOne.Threat.AgentID | String | The threat agent ID. | 
+| SentinelOne.Threat.Rank | Number | The number representing the cloud reputation \(1-10\). | 
 | SentinelOne.Threat.MarkedAsBenign | Boolean | Whether the threat is marked as benign. Relevant for version 2.0 only. | 
 
 
@@ -408,7 +409,7 @@ Returns a dashboard threat summary.
 
 ### sentinelone-mark-as-threat
 ***
-Mark suspicious threats as threats
+Marks suspicious threats as threats.
 
 
 #### Base Command
@@ -442,8 +443,8 @@ Applies a mitigation action to a group of threats that match the specified input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Mitigation action. Can be "kill", "quarantine", "un-quarantine", "remediate", or "rollback-remediation". | Required | 
-| threat_ids | CSV list of threat IDs. | Required | 
+| action | Mitigation action. Can be "kill", "quarantine", "un-quarantine", "remediate", or "rollback-remediation". Possible values are: kill, quarantine, un-quarantine, remediate, rollback-remediation. | Required | 
+| threat_ids | A comma-separated list of threat IDs. | Required | 
 
 
 #### Context Output
@@ -457,7 +458,7 @@ Applies a mitigation action to a group of threats that match the specified input
 
 ### sentinelone-resolve-threat
 ***
-Resolves threat using the threat ID.
+Resolves threats using the threat ID.
 
 
 #### Base Command
@@ -480,7 +481,7 @@ Resolves threat using the threat ID.
 
 ### sentinelone-get-agent
 ***
-Returns details of an agent, by agent ID.
+Returns the details of an agent according to the agent ID.
 
 
 #### Base Command
@@ -490,7 +491,7 @@ Returns details of an agent, by agent ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | A comma-separated list of Agent IDs. | Required | 
+| agent_id | A comma-separated list of agent IDs. | Required | 
 
 
 #### Context Output
@@ -502,7 +503,7 @@ Returns details of an agent, by agent ID.
 | SentinelOne.Agent.AgentVersion | string | The agent software version. | 
 | SentinelOne.Agent.IsDecommissioned | boolean | Whether the agent is decommissioned. | 
 | SentinelOne.Agent.IsActive | boolean | Whether the agent is active. | 
-| SentinelOne.Agent.LastActiveDate | date | The last active date of the agent. | 
+| SentinelOne.Agent.LastActiveDate | date | When was the agent last active. | 
 | SentinelOne.Agent.RegisteredAt | date | The registration date of the agent. | 
 | SentinelOne.Agent.ExternalIP | string | The agent IP address. | 
 | SentinelOne.Agent.ThreatCount | number | Number of active threats. | 
@@ -562,16 +563,16 @@ Returns all sites that match the specified criteria.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| updated_at | Timestamp of last update, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
+| updated_at | Timestamp of the last update, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | query | Full-text search for fields: name, account_name. | Optional | 
 | site_type | Site type. Can be "Trial", "Paid", "POC", "DEV", or "NFR". Possible values are: Trial, Paid, POC, DEV, NFR. | Optional | 
 | features | Returns sites that support the specified features. Can be "firewall-control", "device-control", or "ioc". Possible values are: firewall-control, device-control, ioc. | Optional | 
 | state | Site state. Can be "active", "deleted", or "expired". Possible values are: active, deleted, expired. | Optional | 
 | suite | The suite of product features active for this site. Can be "Core" or "Complete". Possible values are: Core, Complete. | Optional | 
-| admin_only | Sites to which the user has Admin privileges. Possible values are: true, false. | Optional | 
+| admin_only | Sites for which the user has admin privileges. Possible values are: true, false. | Optional | 
 | account_id | Account ID, for example: "225494730938493804". | Optional | 
 | site_name | Site name, for example: "My Site". | Optional | 
-| created_at | Timestamp of site creation, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
+| created_at | Timestamp of the site creation, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
 
 
@@ -579,16 +580,16 @@ Returns all sites that match the specified criteria.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.Site.Creator | string | The creator name. | 
+| SentinelOne.Site.Creator | string | The site creator name. | 
 | SentinelOne.Site.Name | string | The site name. | 
 | SentinelOne.Site.Type | string | The site type. | 
-| SentinelOne.Site.AccountName | string | The account name. | 
+| SentinelOne.Site.AccountName | string | The site account name. | 
 | SentinelOne.Site.State | string | The site state. | 
 | SentinelOne.Site.HealthStatus | boolean | The health status of the site. | 
 | SentinelOne.Site.Suite | string | The suite to which the site belongs. | 
-| SentinelOne.Site.ActiveLicenses | number | Number of active licenses on the site. | 
+| SentinelOne.Site.ActiveLicenses | number | Number of active licenses for the site. | 
 | SentinelOne.Site.ID | string | ID of the site. | 
-| SentinelOne.Site.TotalLicenses | number | Number of total licenses on the site. | 
+| SentinelOne.Site.TotalLicenses | number | Number of total licenses for the site. | 
 | SentinelOne.Site.CreatedAt | date | Timestamp when the site was created. | 
 | SentinelOne.Site.Expiration | string | Timestamp when the site will expire. | 
 | SentinelOne.Site.UnlimitedLicenses | boolean | Whether the site has unlimited licenses. | 
@@ -631,7 +632,7 @@ Returns all sites that match the specified criteria.
 
 ### sentinelone-get-site
 ***
-Returns a site, by site ID.
+Returns information about the site, according to the site ID.
 
 
 #### Base Command
@@ -648,20 +649,20 @@ Returns a site, by site ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.Site.Creator | string | The creator name. | 
+| SentinelOne.Site.Creator | string | The site creator name. | 
 | SentinelOne.Site.Name | string | The site name. | 
 | SentinelOne.Site.Type | string | The site type. | 
-| SentinelOne.Site.AccountName | string | The account name. | 
+| SentinelOne.Site.AccountName | string | The site account name. | 
 | SentinelOne.Site.State | string | The site state. | 
 | SentinelOne.Site.HealthStatus | boolean | The health status of the site. | 
 | SentinelOne.Site.Suite | string | The suite to which the site belongs. | 
-| SentinelOne.Site.ActiveLicenses | number | Number of active licenses on the site. | 
+| SentinelOne.Site.ActiveLicenses | number | Number of active licenses for the site. | 
 | SentinelOne.Site.ID | string | ID of the site. | 
-| SentinelOne.Site.TotalLicenses | number | Number of total licenses on the site. | 
+| SentinelOne.Site.TotalLicenses | number | Number of total licenses for the site. | 
 | SentinelOne.Site.CreatedAt | date | Timestamp when the site was created. | 
 | SentinelOne.Site.Expiration | string | Timestamp when the site will expire. | 
-| SentinelOne.Site.UnlimitedLicenses | boolean | Unlimited licenses boolean. | 
-| SentinelOne.Site.AccountID | string | Account ID. | 
+| SentinelOne.Site.UnlimitedLicenses | boolean | Whether the site has unlimited licenses. | 
+| SentinelOne.Site.AccountID | string | Site account ID. | 
 | SentinelOne.Site.IsDefault | boolean | Whether the site is the default site. | 
 
 
@@ -714,7 +715,7 @@ Reactivates an expired site.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site_id | Site ID. Example: "225494730938493804". | Required | 
+| site_id | Site ID. For example: "225494730938493804". | Required | 
 
 
 #### Context Output
@@ -739,9 +740,9 @@ Returns a list of activities.
 | --- | --- | --- |
 | created_after | Return activities created after this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | user_emails | Email address of the user who invoked the activity (if applicable). | Optional | 
-| group_ids | List of Group IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
+| group_ids | List of group IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
 | created_until | Return activities created on or before this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
-| include_hidden | Include internal activities hidden from display, for example: "False". Possible values are: true, false. | Optional | 
+| include_hidden | Include internal activities hidden from display. Possible values are: true, false. | Optional | 
 | activities_ids | A comma-separated list of activity IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
 | created_before | Return activities created before this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | threats_ids | A comma-separated list of threat IDs for which to return activities, for example: "225494730938493804,225494730938493915". | Optional | 
@@ -749,7 +750,7 @@ Returns a list of activities.
 | user_ids | A comma-separated list of user IDs for users that invoked the activity (if applicable), for example: "225494730938493804,225494730938493915". | Optional | 
 | created_from | Return activities created on or after this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | created_between | Return activities created within this range (inclusive), for example: "1514978764288-1514978999999". | Optional | 
-| agent_ids | Return activities related to specified agents. Example: "225494730938493804,225494730938493915". | Optional | 
+| agent_ids | Return activities related to specified agents. For example: "225494730938493804,225494730938493915". | Optional | 
 | limit | Maximum number of items to return (1-100). | Optional | 
 
 
@@ -913,7 +914,7 @@ Returns data for the specified group.
 | group_id | Group ID by which to filter, for example: "225494730938493804". | Optional | 
 | is_default | Whether this is the default group. Possible values are: true, false. | Optional | 
 | name | The name of the group. | Optional | 
-| query | Free-text search on fields name. | Optional | 
+| query | Free-text search. | Optional | 
 | rank | The rank sets the priority of a dynamic group over others, for example, "1", which is the highest priority. | Optional | 
 | limit | Maximum number of items to return (1-200). | Optional | 
 
@@ -1227,7 +1228,7 @@ Runs a Deep Visibility Query and returns the queryId. You can use the queryId fo
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query string for which to return events. | Required | 
-| from_date | Query start date, for example, "2019-08-03T04:49:26.257525Z". Limited to 93 ago. | Required | 
+| from_date | Query start date, for example, "2019-08-03T04:49:26.257525Z". Limited to 93 days ago. | Required | 
 | to_date | Query end date, for example, "2019-08-03T04:49:26.257525Z". | Required | 
 
 
