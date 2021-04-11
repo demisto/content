@@ -618,7 +618,7 @@ def main():
         LOG(str(e))
         if demisto.command() != 'test-module':
             LOG.print_log()
-        return_error('error has occurred: {}'.format(e.message, ))
+        return_error('error has occurred: {}'.format(str(e)))
 
 
 if __name__ in ('__builtin__', 'builtins'):
