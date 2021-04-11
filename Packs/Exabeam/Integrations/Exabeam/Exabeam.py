@@ -1774,8 +1774,8 @@ def get_notable_assets(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any],
         contents = contents_append_notable_assets_info(contents, asset, asset_, highest_risk_sequence,
                                                        latest_asset_comment)
 
-    entry_context = {'Exabeam.NotableAsset(val.ipAddress && val.ipAddress === obj.ipAddress '
-                     '|| (val.hostName && val.hostName === obj.hostName)': contents}
+    entry_context = {'Exabeam.NotableAsset((val.ipAddress && val.ipAddress === obj.ipAddress) '
+                     '|| (val.hostName && val.hostName === obj.hostName))': contents}
     human_readable = tableToMarkdown('Exabeam Notable Assets:', contents, removeNull=True)
 
     return human_readable, entry_context, notable_assets

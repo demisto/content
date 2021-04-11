@@ -83,7 +83,8 @@ EXPECTED_MODEL_DATA = {
 }
 
 EXPECTED_NOTABLE_ASSET_DATA = {
-    'Exabeam.NotableAsset(val.ipAddress && val.ipAddress === obj.ipAddress)': [{
+    'Exabeam.NotableAsset((val.ipAddress && val.ipAddress === obj.ipAddress) '
+    '|| (val.hostName && val.hostName === obj.hostName))': [{
         'highestRiskScore': 150,
         'id': '1111',
         'entityName': 'asset',
@@ -173,7 +174,7 @@ EXPECTED_NOTABLE_SEQUENCE_DETAILS = {
 }
 
 EXPECTED_NOTABLE_SEQUENCE_EVENTS = {
-    'Exabeam.SequenceEventTypes(val.eventType && val.eventType === obj.eventType)':
+    'Exabeam.SequenceEventTypes(val.sequenceId && val.sequenceId === obj.sequenceId)':
         [{'eventType': 'type1', 'displayName': 'dn1', 'count': 1},
          {'eventType': 'type2', 'displayName': 'dn2', 'count': 1},
          {'eventType': 'type3', 'displayName': 'dn3', 'count': 1},
