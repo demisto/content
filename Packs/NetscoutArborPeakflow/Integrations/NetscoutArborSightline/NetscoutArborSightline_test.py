@@ -57,7 +57,7 @@ def test_fetch_incidents_command(mocker):
         ('list_alerts', list_alerts_command, {}, 'incidents', 'get_incidents'),
         ('get_alert', list_alerts_command, {'alert_id': 1}, 'incident', 'get_incident'),
         ('get_annotations', alert_annotation_list_command, {'alert_id': '2009'}, 'annotations', 'list_annotations'),
-        ('list_mitigations', mitigation_list_command, {}, 'mitigations', 'list_mitigations'),
+        ('list_mitigations', mitigation_list_command, {'limit':'3'}, 'mitigations', 'list_mitigations'),
         ('create_mitigation', mitigation_create_command,
          {"description": "just desc", "ip_version": "IPv4", "name": "test_mit", "ongoing": "true",
           "sub_object": "{\"protection_prefixes\": [\"192.0.2.0/24\"]}", "sub_type": "flowspec"}, 'mitigation',
@@ -68,8 +68,8 @@ def test_fetch_incidents_command(mocker):
         ('managed_object_list', managed_object_list_command, {}, 'managed_objects', 'list_managed_objects'),
         ('tms_group_list', tms_group_list_command, {}, 'tms_groups', 'list_tms_group'),
     ])
-def test_list_alerts_commands(mocker, function_to_mock, function_to_test, args, http_response_key,
-                              expected_command_results_key):
+def test_commands(mocker, function_to_mock, function_to_test, args, http_response_key,
+                  expected_command_results_key):
     """
     Given:
     - NetscoutClient client.
@@ -247,21 +247,40 @@ def test_build_human_readable(object_to_build, expected_result):
 
 @pytest.mark.parametrize('args_dict, expected_json_str', [
     ({
-"limit" = ""
-"page" = ""
-"alert_id" = ""
-"alert_class" = ""
-"alert_type" = ""
-"classification" = ""
-"importance" = ""
-"importance_operator" = ""
-"ongoing" = ""
-"start_time" = ""
-"start_time_operator" = ""
-"stop_time" = ""
-"stop_time_operator" = ""
-    })
+         "limit": "10",
+         "page": "2",
+         "alert_id": "123",
+         "alert_class": "bgp",
+         "alert_type": "bgp_hijack",
+         "classification": "Flash Crowd",
+         "importance": "1",
+         "importance_operator": "=",
+         "ongoing": "true",
+         "start_time": "2021-01-11T13:15:00",
+         "start_time_operator": ">",
+         "stop_time": "2021-01-12T13:15:00",
+         "stop_time_operator": "<"
+     },
+     '/data/attributes/limit=10 AND /data/attributes/page=2 AND /data/attributes/alert_id=123 AND '
+     '/data/attributes/alert_class=bgp AND /data/attributes/alert_type=bgp_hijack AND '
+     '/data/attributes/classification=Flash Crowd AND /data/attributes/importance=1 AND '
+     '/data/attributes/ongoing=true AND /data/attributes/start_time>2021-01-11T13:15:00 AND '
+     '/data/attributes/stop_time<2021-01-12T13:15:00'),
+    ({
+
+         "importance": "1",
+         "importance_operator": "=",
+         "start_time": "2021-01-11T13:15:00 ",
+         "start_time_operator": ">",
+         "stop_time": "2021-01-12T13:15:00 ",
+         "stop_time_operator": "<"
+     },
+     '/data/attributes/limit=10 AND /data/attributes/page=2 AND /data/attributes/alert_id=123 AND '
+     '/data/attributes/alert_class=bgp AND /data/attributes/alert_type=bgp_hijack AND '
+     '/data/attributes/classification=Flash Crowd AND /data/attributes/importance=1 AND '
+     '/data/attributes/ongoing=true AND /data/attributes/start_time>2021-01-11T13:15:00  AND '
+     '/data/attributes/stop_time<2021-01-12T13:15:00')
 ])
 def test_build_relationships(args_dict, expected_json_str):
-    result = client.build_data_attribute_filter(args_dict)
+    result = client.build_data_attribute_filter(**args_dict)
     assert result == expected_json_str
