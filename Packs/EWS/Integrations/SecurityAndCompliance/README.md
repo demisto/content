@@ -1021,8 +1021,6 @@ Gets compliance search action from the Security & Compliance Center.
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion | String | Security and compliance search action SharePoint locations to exclude. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Status | String | Security and compliance search action status. Either "Started" or "Completed". |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId | String | Security and compliance search action Tenant ID. |
-| O365.SecurityAndCompliance.ContentSearch.SearchAction.Location | String | Security and compliance search action result location. |
-
 
 #### Command Example
 ```!o365-sc-get-search-action search_action_name="example_Preview"```
