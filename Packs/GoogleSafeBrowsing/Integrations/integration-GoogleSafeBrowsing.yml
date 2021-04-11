@@ -154,7 +154,7 @@ script:
             var reliability = params.integrationReliability;
 
             if(!reliability){
-                reliability = 'C - Fairly reliable';
+                reliability = 'B - Usually reliable';
             }
             if(!isValidReliability(reliability)) {
                 return 'Error, Source Reliability value is invalid. Please choose from available reliability options.';
