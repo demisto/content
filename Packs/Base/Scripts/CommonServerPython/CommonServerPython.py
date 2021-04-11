@@ -4502,7 +4502,7 @@ class EntityRelation:
     :type fields: ``dict``
     :param fields: Custom fields.
 
-    :type entity_a: ``str``
+    :type brand: ``str``
     :param brand: Source brand name. (Optional)
 
     :return: None
