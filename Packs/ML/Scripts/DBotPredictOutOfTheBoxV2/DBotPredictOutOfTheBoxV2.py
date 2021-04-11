@@ -1,6 +1,5 @@
 # pylint: disable=no-member
 import demisto_ml
-import dill
 from CommonServerPython import *
 import traceback
 
@@ -9,8 +8,6 @@ THRESHOLD = 0.9
 OUT_OF_THE_BOX_MODEL_NAME = 'demisto_out_of_the_box_model_v2'
 OUT_OF_THE_BOX_MODEL_PATH = '/var/encrypted_model.b'
 EVALUATION_PATH = '/var/oob_evaluation.txt'
-HASH_SEED = 5381
-dill._dill._reverse_typemap['ClassType'] = type
 
 
 def oob_model_exists():
