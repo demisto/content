@@ -1132,7 +1132,18 @@
   "dbot_classification_incident_type_all": {
    "dontMapEventToLabels": false,
    "internalMapping": {
-
+    "dbotMirrorDirection": {
+     "complex": null,
+     "simple": "mirror_direction"
+    },
+    "dbotMirrorId": {
+     "complex": null,
+     "simple": "id"
+    },
+    "dbotMirrorInstance": {
+     "complex": null,
+     "simple": "mirror_instance"
+    }
    }
   }
  },
