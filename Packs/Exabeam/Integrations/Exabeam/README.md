@@ -1156,3 +1156,130 @@ createdSize: 0, updatedSize: 0, removedSize: 2, duplicates: []
 | 5137afa2-36d4-4818-93ec-f3fd0e244c38 | removed | test_table | key: <br/>id: testv2 | 64e660b7-5f70-40df-adf7-3e8a4bf25462 |
 
 
+#### Base Command
+
+`exabeam-get-notable-assets`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of returned results. | Required | 
+| time_period | The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Exabeam.NotableAsset.hostName | String | The notable asset host name. | 
+| Exabeam.NotableAsset.ipAddress | String | The notable asset IP address. | 
+| Exabeam.NotableAsset.assetType | String | The notable asset type. | 
+| Exabeam.NotableAsset.firstSeen | Date | Time when the asset was first seen. | 
+| Exabeam.NotableAsset.lastSeen | Date | Time when the asset was last seen. | 
+| Exabeam.NotableAsset.highestRiskScore | Number | The highest risk score of the asset. | 
+| Exabeam.NotableAsset.id | String | The notable asset ID. | 
+| Exabeam.NotableAsset.entityName | String | The entity name of the asset. | 
+| Exabeam.NotableAsset.entityValue | String | The entity value of the asset. | 
+| Exabeam.NotableAsset.day | Date | The notable asset date. | 
+| Exabeam.NotableAsset.triggeredRuleCountOpt | Number | The number that asset triggered rule count opt. | 
+| Exabeam.NotableAsset.riskScoreOpt | Number | Risk score opt of the asset. | 
+| Exabeam.NotableAsset.incidentIds | Unknown | The incident IDs of the notable asset. | 
+| Exabeam.NotableAsset.commentId | String | The comment ID of the notable asset. | 
+| Exabeam.NotableAsset.commentType | String | The comment type of the notable asset. | 
+| Exabeam.NotableAsset.commentObjectId | String | The comment object ID of the notable asset. | 
+| Exabeam.NotableAsset.text | String | The notable asset text. | 
+| Exabeam.NotableAsset.exaUser | String | The notable asset exaUser. | 
+| Exabeam.NotableAsset.exaUserFullname | String | The notable asset exaUser fullname. | 
+| Exabeam.NotableAsset.createTime | Date | Time when the asset was created. | 
+| Exabeam.NotableAsset.updateTime | Date | Time when the asset was updated. | 
+| Exabeam.NotableAsset.edited | Boolean | Whether or not the notable asset is edited. | 
+| Exabeam.NotableAsset.zone | String | The number that asset triggered rule count opt. | 
+
+
+#### Base Command
+
+`exabeam-get-notable-session-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | ID of the asset to fetch info for. | Required | 
+| sort_by | The key to sort results by. Possible values are: date, riskScore. Default is date. | Optional | 
+| sort_order | The results order (ascending or descending). Possible values are: asc, desc. Default is desc. | Optional | 
+| limit | Maximal number of results. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Exabeam.NotableSession.UserName | String | The notable session user name. | 
+| Exabeam.NotableSession.RiskScore | number | The notable session risk score. | 
+| Exabeam.NotableSession.AverageRiskScore | number | The average risk score of the notable session. | 
+| Exabeam.NotableSession.FirstSeen | Date | Time when the notable session was first seen. | 
+| Exabeam.NotableSession.LastSeen | Date | Time when the notable session was last seen. | 
+| Exabeam.NotableSession.lastActivityType | String | The last activity type of the user. | 
+| Exabeam.NotableSession.Labels | Unknown | The labels of the user. | 
+| Exabeam.NotableSession.LastSessionID | String | The last session ID of the user. | 
+| Exabeam.NotableSession.EmployeeType | String | The employee type of the user. | 
+| Exabeam.NotableSession.Department | String | The department of the user. | 
+| Exabeam.NotableSession.Title | String | The role of the user. | 
+| Exabeam.NotableSession.Location | String | The location of the user. | 
+| Exabeam.NotableSession.Email | String | The email of the user. | 
+| Exabeam.NotableSession.SessionID | String | The Session ID. | 
+| Exabeam.NotableSession.InitialRiskScore | Number | Initial risk score of the session. | 
+| Exabeam.NotableSession.LoginHost | String | The host from which the user was logged in. | 
+| Exabeam.NotableSession.Accounts | String | Accounts in the session. | 
+| Exabeam.NotableSession.executiveUserFlags | Boolean | Whether the user is a executive user. | 
+
+
+#### Base Command
+
+`exabeam-get-notable-sequence-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | The asset ID for which to fetch data. | Required | 
+| start_time | The Start time of the time range. For example, 2018-08-01T11:50:16). | Optional | 
+| end_time | The end time of the time range. For example, 2018-08-01T11:50:16. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Exabeam.Sequence.sequenceId | String | The ID of the sequence. | 
+| Exabeam.Sequence.isWhitelisted | Boolean | Whether or not the sequence is white listed. | 
+| Exabeam.Sequence.areAllTriggeredRulesWhiteListed | Boolean | Whether or not the sequence are all triggered rules white listed. | 
+| Exabeam.Sequence.hasBeenPartiallyWhiteListed | Boolean | Whether or not the sequence has been partially white listed. | 
+| Exabeam.Sequence.riskScore | Number | The sequence risk score. | 
+| Exabeam.Sequence.startTime | Date | Start time of the sequence. | 
+| Exabeam.Sequence.endTime | Date | End time of the sequence. | 
+| Exabeam.Sequence.numOfReasons | Number | Number of reasons in the sequence. | 
+| Exabeam.Sequence.numOfEvents | Number | Number of events in the sequence. | 
+| Exabeam.Sequence.numOfUsers | Number | Number of users in the sequence. | 
+| Exabeam.Sequence.numOfSecurityEvents | Number | Number of security events in the sequence. | 
+| Exabeam.Sequence.numOfZones | Number | Number of zones in the sequence. | 
+| Exabeam.Sequence.numOfAssets | Number | Number of assets in the sequence. | 
+| Exabeam.Sequence.assetId | String | The asset ID of the sequence. | 
+
+
+#### Base Command
+
+`exabeam-get-sequence-eventtypes`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_sequence_id | The asset sequence ID. | Required | 
+| search_str | String to search for inside display name. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Exabeam.SequenceEventTypes.eventType | String | The sequence event type. | 
+| Exabeam.SequenceEventTypes.displayName | String | The sequence display name. | 
+| Exabeam.SequenceEventTypes.count | Number | The number of the sequences. | 
