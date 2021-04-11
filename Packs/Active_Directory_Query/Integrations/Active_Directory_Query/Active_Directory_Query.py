@@ -689,7 +689,7 @@ def create_user():
     user_dn = args.get('user-dn')
     username = args.get("username")
     password = args.get("password")
-    custome_attributes = args.get('custom-attributes')
+    custom_attributes = args.get('custom-attributes')
     attributes = {
         "sAMAccountName": username
     }
@@ -706,17 +706,17 @@ def create_user():
     if args.get('title'):
         attributes['title'] = args['title']
 
-    # set user custome attributes
-    if custome_attributes:
+    # set user custom attributes
+    if custom_attributes:
         try:
-            custome_attributes = json.loads(custome_attributes)
+            custom_attributes = json.loads(custom_attributes)
         except Exception as e:
             demisto.info(str(e))
             raise Exception(
                 "Failed to parse custom attributes argument. Please see an example of this argument in the description."
             )
-        for attribute_name, attribute_value in custome_attributes.items():
-            # can run default attribute stting
+        for attribute_name, attribute_value in custom_attributes.items():
+            # can run default attribute setting
             attributes[attribute_name] = attribute_value
 
     # add user
