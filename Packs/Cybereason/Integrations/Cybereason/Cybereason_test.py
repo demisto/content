@@ -317,6 +317,8 @@ def test_query_file(mocker):
 
 
 def test_malop_processes_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value={"malopGuids": ["11.-6236127207710541535"]})
     raw_response = util_load_json('test_files/malop_processes_raw_response.json')
     mocker.patch('Cybereason.malop_processes', return_value=raw_response)
     mocker.patch.object(demisto, 'results')
