@@ -1196,6 +1196,15 @@ createdSize: 0, updatedSize: 0, removedSize: 2, duplicates: []
 | Exabeam.NotableAsset.zone | String | The number that asset triggered rule count opt. | 
 
 
+#### Command Example
+```!exabeam-get-notable-assets limit=1 time_period="1 day"```
+
+
+### exabeam-get-notable-session-details
+***
+Returns notable session details.
+
+
 #### Base Command
 
 `exabeam-get-notable-session-details`
@@ -1233,6 +1242,15 @@ createdSize: 0, updatedSize: 0, removedSize: 2, duplicates: []
 | Exabeam.NotableSession.executiveUserFlags | Boolean | Whether the user is a executive user. | 
 
 
+#### Command Example
+```!exabeam-get-notable-session-details asset_id=asset_id sort_by=date sort_order=asc limit=1```
+
+
+### exabeam-get-notable-sequence-details
+***
+Returns sequence details for the given asset ID and time range.
+
+
 #### Base Command
 
 `exabeam-get-notable-sequence-details`
@@ -1265,6 +1283,15 @@ createdSize: 0, updatedSize: 0, removedSize: 2, duplicates: []
 | Exabeam.Sequence.assetId | String | The asset ID of the sequence. | 
 
 
+#### Command Example
+```!exabeam-get-notable-sequence-details asset_id=asset_id start_time="30 days"```
+
+
+### exabeam-get-sequence-eventtypes
+***
+Returns sequence event types for the given asset sequence ID and time range.
+
+
 #### Base Command
 
 `exabeam-get-sequence-eventtypes`
@@ -1283,3 +1310,7 @@ createdSize: 0, updatedSize: 0, removedSize: 2, duplicates: []
 | Exabeam.SequenceEventTypes.eventType | String | The sequence event type. | 
 | Exabeam.SequenceEventTypes.displayName | String | The sequence display name. | 
 | Exabeam.SequenceEventTypes.count | Number | The number of the sequences. | 
+
+
+#### Command Example
+```!exabeam-get-sequence-eventtypes asset_sequence_id=asset_sequence_id search_str="search_str"```
