@@ -1,9 +1,8 @@
 # pylint: disable=unsubscriptable-object
-from requests import Response
-
 from CommonServerPython import *
 
 ''' IMPORTS '''
+from requests import Response
 from contextlib import closing
 import json
 import requests
@@ -347,7 +346,8 @@ def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str,
     return fileResult(filename=attachment_name, data=raw_response.content)
 
 
-def cyberint_alerts_get_analysis_report_command(client: Client, alert_ref_id: str, report_name: str) -> fileResult:
+def cyberint_alerts_get_analysis_report_command(client: Client,
+                                                alert_ref_id: str, report_name: str) -> fileResult:
     """
     Retrieve expert analysis report by alert reference ID and report name.
 
@@ -380,24 +380,20 @@ def get_attachment_name(attachment_name: str) -> str:
     return attachment_name
 
 
-def create_fetch_incident_attachment(client: Client, attachment_file_name: str, attachment_id: str,
-                                     alert_id: str) -> dict:
+def create_fetch_incident_attachment(get_attachment_response, attachment_file_name: str) -> dict:
     """
     Create suitable attachment information dictionary object.
     This dictionary object will be used as an entry in the fetch-incidents attachments list.
 
     Args:
-        client (Client): Cyberint API client.
-        alert_id (str): The ID of the alert.
-        attachment_file_name (str): The name of the attachment.
+        get_attachment_response (Response): Cyberint API response that retrieved the alert attachment.
         attachment_id (str): The ID of the attachment.
 
     Returns:
         dict: Attachment information.Includes - path, name, and showMediaFile.
-
     """
+
     attachment_name = get_attachment_name(attachment_file_name)
-    get_attachment_response = client.get_alert_attachment(alert_id, attachment_id)
     file_result = fileResult(filename=attachment_name, data=get_attachment_response.content)
     # check for error
     if file_result["Type"] == EntryType.ERROR:
@@ -411,53 +407,40 @@ def create_fetch_incident_attachment(client: Client, attachment_file_name: str, 
     }
 
 
-def get_alert_attachments_files(client: Client, alert: dict) -> list:
+def get_alert_attachments(client: Client, alert_attachments: Union[List, Dict],
+                          attachment_type: str, alert_id: str) -> Tuple[List, List]:
     """
-    Retrieve all alert attachments files - Attachments, CSV, Screenshot, and Analysis report.
 
     Args:
         client (Client): Cyberint API client.
-        alert (dict): Cyberint Alert.
+        alert_attachments: Alert attachments object. Contains id:106,mimetype and name fields.
+        attachment_type: The type of the attachment. Can be either 'attachment' or 'analysis_report'.
+        alert_id: The ID of the alert.
 
     Returns:
-        list: List of attachments - each attachment element will contain the following fields - path, name and showMediaFile.
+        (Tuple): incident attachments list and all alert attachments details.
 
     """
+    attachment_list = alert_attachments if isinstance(alert_attachments, list) else [alert_attachments]
     incident_attachments = []
-    alert_id = alert.get('ref_id')
-
-    attachments_keys = [["attachments"], ["alert_data", "screenshot"], ["alert_data", "csv"]]
     all_alert_attachments = []
 
-    for key in attachments_keys:
-        alert_attachments = dict_safe_get(alert, key, default_return_value=[])
-        attachment_list = alert_attachments if isinstance(alert_attachments, list) else [alert_attachments]
-        for attachment in attachment_list:
-            attachment_details = create_fetch_incident_attachment(client, attachment.get('name', None),
-                                                                  attachment.get('id', None), alert_id)
+    for attachment in attachment_list:
+        if attachment:
+            if attachment_type == 'analysis_report':
+                get_attachment_response = client.get_analysis_report(alert_id)
+                attachment_details = create_fetch_incident_attachment(get_attachment_response,
+                                                                      attachment.get('name', None))
+            else:
+                get_attachment_response = client.get_alert_attachment(alert_id, attachment.get('id', None))
+                attachment_details = create_fetch_incident_attachment(get_attachment_response,
+                                                                      attachment.get('name', None))
+
             if attachment_details:
                 incident_attachments.append(attachment_details)
                 all_alert_attachments.append(attachment)
 
-    analysis_report = alert.get('analysis_report', None)
-    if analysis_report:
-        analysis_raw_response = client.get_analysis_report(alert_id)
-        file_result = fileResult(filename=get_attachment_name(analysis_report.get("name", None)),
-                                 data=analysis_raw_response.content)
-        # check for error
-        if file_result["Type"] == EntryType.ERROR:
-            demisto.error(file_result["Contents"])
-            raise Exception(file_result["Contents"])
-
-        incident_attachments.append({
-            "path": file_result["FileID"],
-            "name": get_attachment_name(analysis_report.get("name", None)),
-            "showMediaFile": True
-        })
-        all_alert_attachments.append(analysis_report)
-
-    alert["attachments"] = all_alert_attachments
-    return incident_attachments
+    return incident_attachments, all_alert_attachments
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
@@ -494,15 +477,30 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     alerts = client.list_alerts('1', max_fetch, datetime.strftime(last_fetch, DATE_FORMAT),
                                 datetime.strftime(datetime.now(), DATE_FORMAT), None, None,
                                 fetch_environment, fetch_status, fetch_severity, fetch_type)
-    last_file = None
-    for calert in alerts.get('alerts', []):
-        alert = dict(calert)
+
+    for alert_object in alerts.get('alerts', []):
+        alert = dict(alert_object)
         #  Create the XS0AR incident.
         alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
         alert_id = alert.get('ref_id')
         alert_title = alert.get('title')
+        all_alert_attachments = []
+        incident_attachments = []
 
-        incident_attachments = get_alert_attachments_files(client, alert)
+        attachments_keys = {'attachment': [["attachments"], ["alert_data", "screenshot"], ["alert_data", "csv"]],
+                            'analysis_report': [['analysis_report']]}
+        for attachment_type, attachments_path in attachments_keys.items():
+            for path in attachments_path:
+                alert_attachments = dict_safe_get(alert, path, default_return_value=[])
+                current_incident_attachments, current_attachments = get_alert_attachments(client, alert_attachments,
+                                                                                          attachment_type,
+                                                                                          alert_id)
+
+                incident_attachments.extend(current_incident_attachments)
+                all_alert_attachments.extend(current_attachments)
+
+        alert["attachments"] = all_alert_attachments
+
         incident = {
             'name': f'Cyberint alert {alert_id}: {alert_title}',
             'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
