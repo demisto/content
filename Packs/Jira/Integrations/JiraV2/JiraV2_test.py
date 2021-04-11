@@ -994,3 +994,31 @@ def test_get_comments_command(mocker):
     assert outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["User"] == "Test"
     assert outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["Created"] == "10.12"
     assert context == comments
+
+
+def test_get_issue_fields_issue_json_param():
+    """
+    Given:
+        - issue_json param
+    When
+        - editing an issue using 'jira-edit-issue' command
+    Then
+        - json as dict
+    """
+    from JiraV2 import get_issue_fields
+    res = get_issue_fields(issue_json='{"description": "test"}')
+    assert {'description': 'test', 'fields': {}} == res
+
+
+def test_get_issue_fields_issuejson_param():
+    """
+    Given:
+        - issueJson param
+    When
+        - Creating a new issue using 'jira-create-issue' command
+    Then
+        - json as dict
+    """
+    from JiraV2 import get_issue_fields
+    res = get_issue_fields(issueJson='{"description": "test"}')
+    assert {'description': 'test', 'fields': {}} == res
