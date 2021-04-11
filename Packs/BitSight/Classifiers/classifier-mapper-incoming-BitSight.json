@@ -6,7 +6,7 @@
         "BitSight Findings": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Affects Rating": {
+                "BitSight Affects Rating": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -15,7 +15,7 @@
                     },
                     "simple": ""
                 },
-                "Assets": {
+                "BitSight Assets": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -24,7 +24,7 @@
                     },
                     "simple": ""
                 },
-                "Evidence Key": {
+                "BitSight Evidence Key": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -33,7 +33,7 @@
                     },
                     "simple": ""
                 },
-                "Remaining Decay": {
+                "BitSight Remaining Decay": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -42,7 +42,7 @@
                     },
                     "simple": ""
                 },
-                "Risk Category": {
+                "BitSight Risk Category": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -51,7 +51,7 @@
                     },
                     "simple": ""
                 },
-                "Risk Vector": {
+                "BitSight Risk Vector": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -60,7 +60,7 @@
                     },
                     "simple": ""
                 },
-                "Risk Vector Label": {
+                "BitSight Risk Vector Label": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -69,7 +69,7 @@
                     },
                     "simple": ""
                 },
-                "Rolledup Observation Id": {
+                "BitSight Rolledup Observation Id": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -78,7 +78,7 @@
                     },
                     "simple": ""
                 },
-                "Severity Category": {
+                "BitSight Severity Category": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -96,7 +96,7 @@
                     },
                     "simple": ""
                 },
-                "Temporary Id": {
+                "BitSight Temporary Id": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
