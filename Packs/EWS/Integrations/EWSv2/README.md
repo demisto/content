@@ -48,9 +48,10 @@
 <strong>Email address from which to fetch incidents</strong><span> </span>This argument can take various user accounts in your organization. Usually is used as phishing mailbox.<br> Note: To use this functionality, your account must have impersonation rights or delegation for the account specified. In the case of impersonation, make sure to check the<span> </span><code>Has impersonation rights</code><span> </span>checkbox in the instance settings. For more information on impersonation rights see ‘Additional Info’ section below.</li>
 <li><strong>Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)</strong></li>
 <li><strong>Public Folder</strong></li>
-<li><strong>Has impersonation rights</strong></li>
+<li><stroxng>Has impersonation rights</stroxng></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>
+<li><strong>First fetch timestamp</strong></li>
 <li><strong>Mark fetched emails as read</strong></li>
 <li>
 <strong>Incident type</strong><br> ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br> ‎ Manual Mode<br> <code>In case the auto-discovery process failed, you will need to configure manually the exchange server endpoint, domain\username for exchange on-premise and enter exchange server version</code>
