@@ -325,7 +325,7 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
 
 
 def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str,
-                                           attachment_id: str, attachment_name: str) -> Any:
+                                           attachment_id: str, attachment_name: str) -> Dict:
     """
     Retrieve attachment by alert reference ID and attachment internal ID.
     Attachments includes: CSV files , Screenshots, and alert attachments files.
@@ -337,7 +337,7 @@ def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str,
         attachment_name (str): The file name of the alert attachment.
 
     Returns:
-        fileResult: Alert attachment file.
+        Dict: Alert attachment file result.
 
     """
 
@@ -347,7 +347,7 @@ def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str,
 
 
 def cyberint_alerts_get_analysis_report_command(client: Client,
-                                                alert_ref_id: str, report_name: str) -> Any:
+                                                alert_ref_id: str, report_name: str) -> Dict:
     """
     Retrieve expert analysis report by alert reference ID and report name.
 
@@ -357,7 +357,7 @@ def cyberint_alerts_get_analysis_report_command(client: Client,
         report_name (str): The name of the alert expert analysis report.
 
     Returns:
-        fileResult : Alert analysis report file.
+        Dict: Alert attachment file result.
 
     """
     raw_response = client.get_analysis_report(alert_ref_id)
@@ -380,17 +380,19 @@ def get_attachment_name(attachment_name: str) -> str:
     return attachment_name
 
 
-def create_fetch_incident_attachment(raw_response, attachment_file_name: str) -> dict:
+def create_fetch_incident_attachment(raw_response: Response, attachment_file_name: str) -> dict:
     """
     Create suitable attachment information dictionary object.
     This dictionary object will be used as an entry in the fetch-incidents attachments list.
+    For each attachment file, it is necessary to save the relevant fields that return from this function,
+    in order to represent the attachment in the layout.
 
     Args:
         raw_response (Response): Cyberint API response from retrieving the alert attachment.
-        attachment_id (str): The ID of the attachment.
+        attachment_file_name (str): The name of the attachment.
 
     Returns:
-        dict: Attachment information.Includes - path, name, and showMediaFile.
+        dict: Attachment file information.Includes - path, name, and showMediaFile.
     """
 
     attachment_name = get_attachment_name(attachment_file_name)
@@ -407,24 +409,23 @@ def create_fetch_incident_attachment(raw_response, attachment_file_name: str) ->
     }
 
 
-def get_alert_attachments(client: Client, alert_attachments: Union[List, Dict],
-                          attachment_type: str, alert_id: str) -> Tuple[List, List]:
+def get_alert_attachments(client: Client, attachment_list: List,
+                          attachment_type: str, alert_id: str) -> List:
     """
     Retrieve all alert attachments files - Attachments, CSV, Screenshot, and Analysis report.
+    For each attachment, we save and return the relevant fields in order to represent the attachment in the layout.
 
     Args:
         client (Client): Cyberint API client.
-        alert_attachments (Union[List, Dict]): Alert attachments dict object. Contains id, mimetype and name fields.
+        attachment_list (List): Alert attachments list. Each element in the list contains id, mimetype and name fields.
         attachment_type (str): The type of the attachment. Can be 'attachment' or 'analysis_report'.
         alert_id (str): The ID of the alert.
 
     Returns:
-        (Tuple): incident attachments list and all alert attachments details.
+        (List): incident attachments details - contains the file details of the attachment.
 
     """
-    attachment_list = alert_attachments if isinstance(alert_attachments, list) else [alert_attachments]
     incident_attachments = []
-    all_alert_attachments = []
 
     for attachment in attachment_list:
         if attachment:
@@ -440,9 +441,8 @@ def get_alert_attachments(client: Client, alert_attachments: Union[List, Dict],
 
             if incidents_attachment:
                 incident_attachments.append(incidents_attachment)
-                all_alert_attachments.append(attachment)
 
-    return incident_attachments, all_alert_attachments
+    return incident_attachments
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
@@ -486,24 +486,28 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
         alert_id = alert.get('ref_id')
         alert_title = alert.get('title')
-        all_alert_attachments = []
+        attachments = []
         incident_attachments = []
 
         attachments_keys = {'attachment': [["attachments"], ["alert_data", "screenshot"], ["alert_data", "csv"]],
                             'analysis_report': [['analysis_report']]}
         for attachment_type, attachments_path in attachments_keys.items():
             for path in attachments_path:
-                alert_attachments = dict_safe_get(alert, path, default_return_value=[])
-                # Retrieve alert attachments files - Attachments, CSV, Screenshot, and Analysis report.
-                current_incident_attachments, current_attachments = get_alert_attachments(client,
-                                                                                          alert_attachments,
-                                                                                          attachment_type,
-                                                                                          alert_id)
+                current_attachments = dict_safe_get(alert, path, default_return_value=[])
+                attachment_list = current_attachments if isinstance(current_attachments, list) else [
+                    current_attachments]
+                # Retrieve alert Incident attachments files - Attachments, CSV, Screenshot, and Analysis report.
+                current_incident_attachments = get_alert_attachments(client,
+                                                                     attachment_list,
+                                                                     attachment_type,
+                                                                     alert_id)
 
                 incident_attachments.extend(current_incident_attachments)
-                all_alert_attachments.extend(current_attachments)
+                for tmp_attachment in attachment_list:
+                    if tmp_attachment:
+                        attachments.append(tmp_attachment)
 
-        alert["attachments"] = all_alert_attachments
+        alert["attachments"] = attachments
 
         incident = {
             'name': f'Cyberint alert {alert_id}: {alert_title}',
