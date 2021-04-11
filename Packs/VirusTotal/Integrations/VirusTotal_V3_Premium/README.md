@@ -35,6 +35,8 @@ Your API key carries all your privileges, so keep it secure and don't share it w
 ## Fetch Incidents
 Fetch incidents will fetch livehunt notifications of the given ruleset or identifier. 
 As an example, you can fetch incidents that were created by the CyberGate ruleset by using the "cybergate" tag.
+The scope of the rule-set should be narrowed to catch only indicators that you want to analyze by a playbook.
+Defining a broad rule-set will cause the integration to create multiple redundant incidents.  
 
 ## VirusTotal - Private API compatibility
 The following 2 commands appear in both the *VirusTotal - Private API* and *VirusTotal Premium - (API v3)* integrations.
