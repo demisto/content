@@ -4,8 +4,9 @@ from CommonServerPython import *
 from contextlib import contextmanager, redirect_stderr
 from os import devnull
 from string import punctuation
+import nltk
 from nltk import word_tokenize
-
+nltk.data.path = '/root/nltk_data'
 
 @contextmanager
 def suppress_stdout_stderr():
