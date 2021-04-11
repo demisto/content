@@ -6429,10 +6429,17 @@ class SearchIndicatorsByVersion:
         self._page = page
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
+        """
+        There are 2 cases depends on the sever version:
+        1. Search indicators using paging, raise the page number in each call.
+        2. Search indicators using searchAfter param, update the _search_after_param in each call.
+        """
         if self._can_use_search_after:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value, searchAfter=self._search_after_param)
             if self._search_after_title in res and res[self._search_after_title] is not None:
                 self._search_after_param = res[self._search_after_title]
+            else:
+                demisto.log('Elastic search using searchAfter was not found in searchIndicators')
 
         else:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page, value=value)
