@@ -2348,7 +2348,7 @@ tasks:
     task:
       id: 468a9d20-de34-4874-8cc2-e11bfadc2eb6
       version: -1
-      name: Where should emails be searched & deleted?
+      name: From where should emails be searched and deleted?
       description: Checks where to search for and delete emails from. Determined by
         the O365DeleteTarget playbook input.
       type: condition
@@ -2394,7 +2394,7 @@ tasks:
       version: -1
       name: Set the "email to" as the mailbox to search
       description: Sets the email address of the person who received the phishing
-        email in a context key which determines where to search and delete emails.
+        email in a context key which determines from where to search and delete emails.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2432,7 +2432,7 @@ tasks:
       id: f6ea8fad-ac4f-41d5-8890-c99607306e9a
       version: -1
       name: Set all mailboxes to be searched
-      description: Sets the value of "All" in a context key which determines where
+      description: Sets the value of "All" in a context key which determines from where
         to search and delete emails.
       scriptName: Set
       type: regular
@@ -2624,11 +2624,11 @@ inputs:
 - key: O365DeleteTarget
   value: {}
   required: false
-  description: The exchange location. Determines where to search and delete emails
+  description: The exchange location. Determines from where to search and delete emails
     searched using O365 playbooks. Use the value "All" to search all mailboxes. If
     any another input is specified, the email will be searched and deleted only from
-    the mailbox of the person to whom it was sent. Note - searching all mailboxes
-    may take significantly longer to complete. This input is only applicable if the
+    the mailbox of the person to whom it was sent. Note - Searching all mailboxes
+    may take a significant amount of time to complete. This input is only applicable if the
     UseO365ForSearchAndDelete input is set to True.
   playbookInputQuery:
 outputs: []
