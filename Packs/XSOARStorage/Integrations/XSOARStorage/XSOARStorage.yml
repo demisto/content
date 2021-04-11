@@ -45,7 +45,7 @@ script:
     - contextPath: XSOAR.Store
       description: The data retrieved from the key.
       type: string
-  dockerimage: demisto/python3:3.9.2.18414
+  dockerimage: demisto/python3:3.9.4.18682
   runonce: false
   script: ''
   subtype: python3
