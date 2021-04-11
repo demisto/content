@@ -47,7 +47,7 @@ tasks:
       - "5"
     scriptarguments:
       custom-attributes:
-        simple: '{\"notes\":\"a note about the contact\"}'
+        simple: '{\"company\": \"test\"}'
       description: {}
       display-name:
         simple: Samurai Jack
