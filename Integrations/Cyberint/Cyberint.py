@@ -427,7 +427,7 @@ def get_alert_attachments_files(client: Client, alert: dict) -> list:
     alert_id = alert.get('ref_id')
 
     attachments_keys = [["attachments"], ["alert_data", "screenshot"], ["alert_data", "csv"]]
-    current_alert_attachments = []
+    all_alert_attachments = []
 
     for key in attachments_keys:
         alert_attachments = dict_safe_get(alert, key, default_return_value=[])
@@ -437,7 +437,7 @@ def get_alert_attachments_files(client: Client, alert: dict) -> list:
                                                                   attachment.get('id', None), alert_id)
             if attachment_details:
                 incident_attachments.append(attachment_details)
-                current_alert_attachments.append(attachment)
+                all_alert_attachments.append(attachment)
 
     analysis_report = alert.get('analysis_report', None)
     if analysis_report:
@@ -454,8 +454,9 @@ def get_alert_attachments_files(client: Client, alert: dict) -> list:
             "name": get_attachment_name(analysis_report.get("name", None)),
             "showMediaFile": True
         })
+        all_alert_attachments.append(analysis_report)
 
-    alert["attachments"] = current_alert_attachments
+    alert["attachments"] = all_alert_attachments
     return incident_attachments
 
 
