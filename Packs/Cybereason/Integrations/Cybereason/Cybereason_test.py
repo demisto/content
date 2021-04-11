@@ -329,4 +329,5 @@ def test_malop_processes_command(mocker):
     assert result[0].get('ContentsFormat', '') == 'json'
     assert 'Cybereason Malop Processes' in result[0].get('HumanReadable', '')
     assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('Name', '') == 'bdata.bin'
-    assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('SHA1', '') == 'f56238da9fbfa3864d443a85bb80743bd2415682'
+    assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('SHA1', '') ==\
+           'f56238da9fbfa3864d443a85bb80743bd2415682 '
