@@ -4471,6 +4471,9 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
 class RelationsTypes(object):
     """
     Relations Types objects.
+    
+    :return: None
+    :rtype: ``None``
     """
     # dict which keys is a relationship type and the value is the reverse type.
     RELATIONSHIP_TYPES = ['indicatorToIndicator']
@@ -4485,6 +4488,10 @@ class RelationsTypes(object):
 class RelationsFamily(object):
     """
     Relations Family object list.
+
+    :return: None
+    :rtype: ``None``
+
     """
 
     INDICATOR = ["Indicator"]
@@ -4497,8 +4504,12 @@ class RelationsFamily(object):
 
 
 class Relations(object):
+
     """
     Enum: Relations names and their reverse
+
+    :return: None
+    :rtype: ``None``
     """
     APPLIED = 'applied'
     ATTACHEMENT_OF = 'attachement-of'
