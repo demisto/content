@@ -6549,7 +6549,7 @@ script:
       values exactly.
     execution: true
     name: aws-ec2-revoke-security-group-egress-rule
-  dockerimage: demisto/boto3:2.0.0.18461
+  dockerimage: demisto/boto3:2.0.0.18824
   runonce: false
   script: '-'
   type: python
