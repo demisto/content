@@ -29,8 +29,7 @@ This integration was integrated and tested with VirusTotal - Premium (API v3)
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Acquire API Key 
-Your API key can be found in your VirusTotal account user menu:  
-![](https://files.readme.io/ddeb298-Screen_Shot_2019-10-17_at_3.17.04_PM.png)  
+Your API key can be found in your VirusTotal account user menu.
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ## Fetch Incidents
@@ -252,9 +251,7 @@ Download a ZIP file.
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
+```!vt-private-zip-download zip_id=5548746369433600```
 
 
 
@@ -290,10 +287,7 @@ Extracted PCAP from a sandbox analysis.
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
+```!vt-private-file-sandbox-pcap report_id="699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3_VirusTotal Jujubox"```
 
 
 ### vt-private-intelligence-search
@@ -423,104 +417,7 @@ Search for files.
                         {
                             "namespace": "System.Reflection",
                             "type_definitions": [
-                                "AssemblyFileVersionAttribute",
-                                "AssemblyCopyrightAttribute",
-                                "AssemblyProductAttribute",
-                                "AssemblyCompanyAttribute",
-                                "AssemblyDescriptionAttribute",
-                                "AssemblyTitleAttribute"
-                            ]
-                        },
-                        {
-                            "namespace": "Microsoft.VisualBasic",
-                            "type_definitions": [
-                                "HideModuleNameAttribute",
-                                "MyGroupCollectionAttribute"
-                            ]
-                        },
-                        {
-                            "namespace": "System.Diagnostics",
-                            "type_definitions": [
-                                "DebuggerHiddenAttribute"
-                            ]
-                        },
-                        {
-                            "namespace": "System.Text",
-                            "type_definitions": [
-                                "Encoding"
-                            ]
-                        },
-                        {
-                            "namespace": "System",
-                            "type_definitions": [
-                                "Object",
-                                "Type",
-                                "RuntimeTypeHandle",
-                                "Activator",
-                                "ThreadStaticAttribute",
-                                "Byte",
-                                "UInt32",
-                                "Int32",
-                                "String",
-                                "Exception",
-                                "STAThreadAttribute"
-                            ]
-                        },
-                        {
-                            "namespace": "System.CodeDom.Compiler",
-                            "type_definitions": [
-                                "GeneratedCodeAttribute"
-                            ]
-                        },
-                        {
-                            "namespace": "System.Runtime.CompilerServices",
-                            "type_definitions": [
-                                "RuntimeHelpers",
-                                "CompilerGeneratedAttribute",
-                                "CompilationRelaxationsAttribute",
-                                "RuntimeCompatibilityAttribute"
-                            ]
-                        },
-                        {
-                            "namespace": "Microsoft.VisualBasic.ApplicationServices",
-                            "type_definitions": [
-                                "ApplicationBase",
-                                "User"
-                            ]
-                        },
-                        {
-                            "namespace": "Microsoft.VisualBasic.Devices",
-                            "type_definitions": [
-                                "Computer"
-                            ]
-                        },
-                        {
-                            "namespace": "Microsoft.VisualBasic.CompilerServices",
-                            "type_definitions": [
-                                "StandardModuleAttribute",
-                                "NewLateBinding",
-                                "Operators",
-                                "Conversions",
-                                "ProjectData"
-                            ]
-                        },
-                        {
-                            "namespace": "System.Runtime.InteropServices",
-                            "type_definitions": [
-                                "ComVisibleAttribute"
-                            ]
-                        },
-                        {
-                            "namespace": "System.ComponentModel",
-                            "type_definitions": [
-                                "EditorBrowsableAttribute",
-                                "EditorBrowsableState"
-                            ]
-                        },
-                        {
-                            "namespace": "System.ComponentModel.Design",
-                            "type_definitions": [
-                                "HelpKeywordAttribute"
+                                "AssemblyFileVersionAttribute"
                             ]
                         }
                     ]
@@ -590,33 +487,6 @@ Search for files.
                 "names": [
                     "Po160118.exe",
                     "C:\\Users\\TCS1\\Desktop\\Win32.AgentTesla.exe",
-                    "./SP_FYP/malware/original/Win32.AgentTesla.exe",
-                    "Win32.AgentTesla.exe",
-                    "699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3.exe",
-                    "C:\\Users\\IEUser\\Desktop\\Win32.AgentTesla.exe",
-                    "C:\\Users\\IEUser\\Desktop\\theZoo-master\\malwares\\Binaries\\Win32.AgentTesla\\Win32.AgentTesla\\Win32.AgentTesla.exe",
-                    "C:\\Users\\supara\\Desktop\\virusler\\Win32.AgentTesla.exe",
-                    "/var/www/clean-mx/virusesevidence/output.158085278.txt",
-                    "../VirusShare/Data/raw/Malicious/malicious766.exe",
-                    "/var/www/clean-mx/virusesevidence/output.150543660.txt",
-                    "myfile.exe",
-                    "2b294b3499d1cce794badffc959b7618_Win32.AgentTesla.exe",
-                    "2019_08_01_20_10_15.000118",
-                    "\\Users\\Petra\\AppData\\Local\\Temp\\xws\\xws.exe",
-                    "C:\\Users\\nghia\\Downloads\\ransomware.exe",
-                    "/var/www/clean-mx/virusesevidence/output.112722133.txt",
-                    "xws.exe",
-                    "Po160118.exe_",
-                    "Z:\\tmp\\Po160118.exe",
-                    "C:\\Users\\1mm0rt41PC\\Desktop\\MalwareCheck\\Malware\\theZoo\\malwares\\Binaries\\win32.agenttesla\\Win32.AgentTesla.exe.infected",
-                    "C:\\Users\\ESG\\Desktop\\Win32.AgentTesla.exe",
-                    "C:\\Users\\Kiefer\\AppData\\Local\\Temp\\xws\\xws.exe",
-                    "C:\\Users\\family\\Downloads\\Compressed\\Win32.AgentTesla.exe",
-                    "C:/Users/SQL/AppData/Local/Temp/xws/xws.exe",
-                    "C:\\Users\\Aidas\\AppData\\Local\\Temp\\xws\\xws.exe",
-                    "c:\\users\\aidas\\appdata\\local\\temp\\xws\\xws.exe",
-                    "C:/Users/User/AppData/Local/Temp/xws/xws.exe",
-                    "C:\\Users\\User\\Desktop\\Win32.AgentTesla.exe"
                 ],
                 "reputation": 0,
                 "sha1": "9aa826795798948e8058e3ff1342d81d5d8ee4fa",
@@ -634,11 +504,7 @@ Search for files.
                 "ssdeep": "12288:5qIrEFD09leQEA49darfr3/2AbitnVYE96ltR:5AFD1A498H2D",
                 "tags": [
                     "peexe",
-                    "assembly",
-                    "runtime-modules",
-                    "detect-debug-environment",
-                    "direct-cpu-clock-access",
-                    "persistence"
+                    "assembly"
                 ],
                 "times_submitted": 41,
                 "tlsh": "T106A4063C2DEA602BF2B2EF718BD47597E9DAB6733635585A1482030AC513983EEC153D",
@@ -650,22 +516,6 @@ Search for files.
                     {
                         "file_type": "Generic CIL Executable (.NET, Mono, etc.)",
                         "probability": 72.5
-                    },
-                    {
-                        "file_type": "Win64 Executable (generic)",
-                        "probability": 10.4
-                    },
-                    {
-                        "file_type": "Win32 Dynamic Link Library (generic)",
-                        "probability": 6.5
-                    },
-                    {
-                        "file_type": "Win32 Executable (generic)",
-                        "probability": 4.4
-                    },
-                    {
-                        "file_type": "OS/2 Executable (generic)",
-                        "probability": 2
                     }
                 ],
                 "type_description": "Win32 EXE",
@@ -687,9 +537,9 @@ Search for files.
 #### Human Readable Output
 
 >### Results
->|attributes|id|links|type|
->|---|---|---|---|
->| type_description: Win32 EXE<br/>tlsh: T106A4063C2DEA602BF2B2EF718BD47597E9DAB6733635585A1482030AC513983EEC153D<br/>vhash: 24503665151e06161z22<br/>exiftool: {"UninitializedDataSize": "0", "Comments": "Comverse Technology Kopl", "InitializedDataSize": "25088", "ImageVersion": "0.0", "ProductName": "Comverse Technology Cemp Kopl", "FileVersionNumber": "file version", "LanguageCode": "Neutral", "FileFlagsMask": "0x003f", "FileDescription": "Comverse Technology", "ImageFileCharacteristics": "Executable, 32-bit", "CharacterSet": "Unicode", "LinkerVersion": "11.0", "EntryPoint": "0x6c2ce", "OriginalFileName": "Po160118.exe", "MIMEType": "application/octet-stream", "LegalCopyright": "(c) 2015Comverse Technology", "FileVersion": "file version", "TimeStamp": "2018:01:16 08:15:19+00:00", "FileType": "Win32 EXE", "PEType": "PE32", "InternalName": "Po160118.exe", "ProductVersion": "file version", "SubsystemVersion": "4.0", "OSVersion": "4.0", "FileOS": "Win32", "Subsystem": "Windows GUI", "MachineType": "Intel 386 or later, and compatibles", "CompanyName": "Comverse Technology", "CodeSize": "435200", "FileSubtype": "0", "ProductVersionNumber": "file version", "FileTypeExtension": "exe", "ObjectFileType": "Executable application", "AssemblyVersion": "assemlyVersion"}<br/>trid: {'file_type': 'Generic CIL Executable (.NET, Mono, etc.)', 'probability': 72.5},<br/>{'file_type': 'Win64 Executable (generic)', 'probability': 10.4},<br/>{'file_type': 'Win32 Dynamic Link Library (generic)', 'probability': 6.5},<br/>{'file_type': 'Win32 Executable (generic)', 'probability': 4.4},<br/>{'file_type': 'OS/2 Executable (generic)', 'probability': 2.0}<br/>signature_info: {"product": "Comverse Technology Cemp Kopl", "internal name": "Po160118.exe", "file version": "file version", "original name": "Po160118.exe", "comments": "Comverse Technology Kopl", "copyright": "(c) 2015Comverse Technology", "description": "Comverse Technology"}<br/>creation_date: 1516090519<br/>names: Po160118.exe,<br/>C:\Users\TCS1\Desktop\Win32.AgentTesla.exe,<br/>./SP_FYP/malware/original/Win32.AgentTesla.exe,<br/>Win32.AgentTesla.exe,<br/>699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3.exe,<br/>C:\Users\IEUser\Desktop\Win32.AgentTesla.exe,<br/>C:\Users\IEUser\Desktop\theZoo-master\malwares\Binaries\Win32.AgentTesla\Win32.AgentTesla\Win32.AgentTesla.exe,<br/>C:\Users\supara\Desktop\virusler\Win32.AgentTesla.exe,<br/>/var/www/clean-mx/virusesevidence/output.158085278.txt,<br/>../VirusShare/Data/raw/Malicious/malicious766.exe,<br/>/var/www/clean-mx/virusesevidence/output.150543660.txt,<br/>myfile.exe,<br/>2b294b3499d1cce794badffc959b7618_Win32.AgentTesla.exe,<br/>2019_08_01_20_10_15.000118,<br/>\Users\Petra\AppData\Local\Temp\xws\xws.exe,<br/>C:\Users\nghia\Downloads\ransomware.exe,<br/>/var/www/clean-mx/virusesevidence/output.112722133.txt,<br/>xws.exe,<br/>Po160118.exe_,<br/>Z:\tmp\Po160118.exe,<br/>C:\Users\1mm0rt41PC\Desktop\MalwareCheck\Malware\theZoo\malwares\Binaries\win32.agenttesla\Win32.AgentTesla.exe.infected,<br/>C:\Users\ESG\Desktop\Win32.AgentTesla.exe,<br/>C:\Users\Kiefer\AppData\Local\Temp\xws\xws.exe,<br/>C:\Users\family\Downloads\Compressed\Win32.AgentTesla.exe,<br/>C:/Users/SQL/AppData/Local/Temp/xws/xws.exe,<br/>C:\Users\Aidas\AppData\Local\Temp\xws\xws.exe,<br/>c:\users\aidas\appdata\local\temp\xws\xws.exe,<br/>C:/Users/User/AppData/Local/Temp/xws/xws.exe,<br/>C:\Users\User\Desktop\Win32.AgentTesla.exe<br/>dot_net_guids: {"mvid": "746a48dd-5234-4945-aa08-2ebddca5a942"}<br/>last_modification_date: 1616598130<br/>type_tag: peexe<br/>capabilities_tags: <br/>total_votes: {"harmless": 0, "malicious": 0}<br/>size: 460800<br/>authentihash: 249ffc3cf7a9e7e8970089eb468262484bc9dd197bd0eab49469bb4a31b16776<br/>times_submitted: 41<br/>last_submission_date: 1614668707<br/>meaningful_name: Po160118.exe<br/>downloadable: true<br/>sha256: 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3<br/>type_extension: exe<br/>tags: peexe,<br/>assembly,<br/>runtime-modules,<br/>detect-debug-environment,<br/>direct-cpu-clock-access,<br/>persistence<br/>last_analysis_date: 1616590701<br/>unique_sources: 23<br/>first_submission_date: 1516098585<br/>sha1: 9aa826795798948e8058e3ff1342d81d5d8ee4fa<br/>ssdeep: 12288:5qIrEFD09leQEA49darfr3/2AbitnVYE96ltR:5AFD1A498H2D<br/>md5: 2b294b3499d1cce794badffc959b7618<br/>dot_net_assembly: {"entry_point_token": 100663315, "metadata_header_rva": 274480, "assembly_name": "Po160118.exe", "assembly_data": {"majorversion": 17, "minorversion": 18, "hashalgid": 32772, "flags_text": "afPA_None", "buildnumber": 7, "culture": "", "flags": 0, "pubkey": "", "revisionnumber": 0, "name": "Po160118"}, "resources_va": 241622, "strongname_va": 0, "external_assemblies": {"mscorlib": {"version": "4.0"}, "Microsoft.VisualBasic": {"version": "10.0.0.0"}, "System": {"version": "4.0"}}, "type_definition_list": [{"type_definitions": ["AssemblyFileVersionAttribute", "AssemblyCopyrightAttribute", "AssemblyProductAttribute", "AssemblyCompanyAttribute", "AssemblyDescriptionAttribute", "AssemblyTitleAttribute"], "namespace": "System.Reflection"}, {"type_definitions": ["HideModuleNameAttribute", "MyGroupCollectionAttribute"], "namespace": "Microsoft.VisualBasic"}, {"type_definitions": ["DebuggerHiddenAttribute"], "namespace": "System.Diagnostics"}, {"type_definitions": ["Encoding"], "namespace": "System.Text"}, {"type_definitions": ["Object", "Type", "RuntimeTypeHandle", "Activator", "ThreadStaticAttribute", "Byte", "UInt32", "Int32", "String", "Exception", "STAThreadAttribute"], "namespace": "System"}, {"type_definitions": ["GeneratedCodeAttribute"], "namespace": "System.CodeDom.Compiler"}, {"type_definitions": ["RuntimeHelpers", "CompilerGeneratedAttribute", "CompilationRelaxationsAttribute", "RuntimeCompatibilityAttribute"], "namespace": "System.Runtime.CompilerServices"}, {"type_definitions": ["ApplicationBase", "User"], "namespace": "Microsoft.VisualBasic.ApplicationServices"}, {"type_definitions": ["Computer"], "namespace": "Microsoft.VisualBasic.Devices"}, {"type_definitions": ["StandardModuleAttribute", "NewLateBinding", "Operators", "Conversions", "ProjectData"], "namespace": "Microsoft.VisualBasic.CompilerServices"}, {"type_definitions": ["ComVisibleAttribute"], "namespace": "System.Runtime.InteropServices"}, {"type_definitions": ["EditorBrowsableAttribute", "EditorBrowsableState"], "namespace": "System.ComponentModel"}, {"type_definitions": ["HelpKeywordAttribute"], "namespace": "System.ComponentModel.Design"}], "entry_point_rva": 32856, "tables_rows_map": "1267050130403702f0000d000205500900001003000012320", "manifest_resource": ["Bmf.Resources.resources"], "assembly_flags": 3, "tables_present": 19, "assembly_flags_txt": "COMIMAGE_FLAGS_ILONLY, COMIMAGE_FLAGS_32BITREQUIRED", "streams": {"#~": {"chi2": 78347.59375, "size": 1616, "entropy": 4.5347442626953125, "md5": "5134507689ba5ca0af57836ecfad8923"}, "#Strings": {"chi2": 20380.203125, "size": 1724, "entropy": 4.854885101318359, "md5": "47bd71fae4b150ff3a0484c3bfaa7977"}, "#US": {"chi2": 10436212.0, "size": 163116, "entropy": 3.9474689960479736, "md5": "3a0604a1944e85f1b38d3e9ca3e42a70"}, "#GUID": {"chi2": 240.0, "size": 16, "entropy": 4.0, "md5": "e6777e9fe14ccf9d6f246304551050d2"}, "#Blob": {"chi2": 91925.3125, "size": 1944, "entropy": 3.741455316543579, "md5": "406538c401776a3398e3f350249889ff"}}, "clr_version": "v4.0.30319", "clr_meta_version": "1.1", "tables_present_map": "f0909a21557L", "tables_rows_map_log": "4765758864556454454"}<br/>magic: PE32 executable for MS Windows (GUI) Intel 80386 32-bit Mono/.Net assembly<br/>main_icon: {"raw_md5": "e96f5b5bf8d769b31cf1d0c4a77bc0e8", "dhash": "ce92b2b2f2321e0a"}<br/>last_analysis_stats: {"harmless": 0, "type-unsupported": 5, "suspicious": 0, "confirmed-timeout": 0, "timeout": 0, "failure": 0, "malicious": 51, "undetected": 19}<br/>reputation: 0<br/>first_seen_itw_date: 1516269526 | 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3 | self: https://www.virustotal.com/api/v3/files/699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3 | file |
+>|attributes|id|
+>|---|---| 
+>| type_description: Win32 EXE | 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3 | 
 
 
 ### vt-private-search-file
@@ -717,10 +567,13 @@ Search for files.
 
 
 #### Command Example
-``` ```
+```!vt-private-search-file query="type:peexe size:90kb+ positives:5+ behaviour:'taskkill'"```
 
 #### Human Readable Output
-
+> ### Found hashes for query: "type:peexe size:90kb+ positives:5+ behaviour:'taskkill'"
+>| Found hashes |
+>|---|
+>| 83bafb3147b885c78fbda8a4f6a7f9f58c82b86681da38f48232e0205c57774b |
 
 
 ### vt-private-livehunt-rules-get-by-id
@@ -756,10 +609,13 @@ Retrieve VT Hunting livehunt rulesets.
 
 
 #### Command Example
-``` ```
+```!vt-private-livehunt-rules-get-by-id id=6360290934161408```
 
 #### Human Readable Output
-
+> ### Livehunt Ruleset 5950298890469376
+> | name | enabled | rule_names |
+> |---|---|---|
+> | A rule name | false | foobar | 
 
 
 ### vt-private-livehunt-rules-list
@@ -1407,10 +1263,13 @@ Retrieve file objects for VT Hunting Livehunt notifications.
 
 
 #### Command Example
-``` ```
+```!vt-private-livehunt-notifications-files-get-by-hash hash=389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79```
 
 #### Human Readable Output
-
+>### Notifications file listed:
+>|id|meaningful_name|last_analysis_stats|
+>|---|---|---|
+>| 389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79 | /tmp/eml_attach_for_scan/c1726acd63066eeabfb9af65d1e7c3ba.file | harmless: 0<br>type-unsupported: 12<br>suspicious: 0<br>confirmed-timeout: 0<br>timeout: 1<br>failure: 1<br>malicious: 0<br>undetected: 59 |
 
 
 ### vt-private-livehunt-rule-list-files
@@ -1439,10 +1298,13 @@ Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
 
 
 #### Command Example
-``` ```
+```!vt-private-livehunt-rule-list-files id=6393327418376192```
 
 #### Human Readable Output
-
+>### Files found by rule 6393327418376192
+>|context_attributes|id|type|
+>|---|---|---|
+>| notification_id: 6393327418376192-9d90aa797c1c16ea7afac7368c53cc0b-389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79-1617876439<br>notification_source_key: 9d712fef<br>notification_tags: new_file_from_china,<br>389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79,<br>chinese_files<br>ruleset_name: Chinese Files<br>notification_source_country: CN<br>rule_name: new_file_from_china<br>notification_snippet: <br>ruleset_id: 6393327418376192<br>rule_tags: <br>notification_date: 1617880045<br>match_in_subfile: false | 389647cfa6f2ffd56601f6f18f69e6874d2068486d1c72d19fc5f2a2571eda79 | file |
 
 
 ### vt-private-retrohunt-jobs-list
@@ -1677,10 +1539,13 @@ Retrieve matches for a retrohunt job matching file relationship.
 
 
 #### Command Example
-``` ```
+```!vt-private-retrohunt-jobs-get-matching-files id=akrupnik_panw-1610969096```
 
 #### Human Readable Output
-
+>### Files matching id "akrupnik_panw-1610969096"
+>|sha256|popular_threat_classification|reputation|
+>|---|---|---|
+>| cf13811bb818c02149ad1745c95a11ef8b122801953aee463343627a2ffaa29a |  | 0 |
 
 
 ### vt-private-retrohunt-jobs-create

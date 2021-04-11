@@ -1,0 +1,39 @@
+{
+	"brandName": "VirusTotal - Premium (API v3)",
+	"custom": true,
+	"defaultIncidentType": "VirusTotal Intelligence LiveHunt Notification",
+	"feed": false,
+	"id": "f192b87f-c0ab-4f1d-8636-1c925429cbe3",
+	"incidentSamples": [],
+	"indicatorSamples": null,
+	"isDefault": false,
+	"keyTypeMap": {},
+	"mapping": {
+		"VirusTotal Intelligence LiveHunt Notification": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"Rule Name": {
+					"complex": null,
+					"simple": "attributes.rule_name"
+				},
+				"Tags": {
+					"complex": null,
+					"simple": "attributes.tags"
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"unclassifiedCases": {},
+	"version": -1,
+	"fromVersion": "5.5.0",
+	"toVersion": "5.9.9"
+}

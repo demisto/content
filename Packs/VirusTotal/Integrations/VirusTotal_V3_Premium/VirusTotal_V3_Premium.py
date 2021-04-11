@@ -850,6 +850,10 @@ def list_files_by_rule(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.LiveHuntFiles',
         'id',
+        readable_output=tableToMarkdown(
+            f'Files found by rule {id_}',
+            data
+        ),
         outputs=data,
         raw_response=raw_response
     )
