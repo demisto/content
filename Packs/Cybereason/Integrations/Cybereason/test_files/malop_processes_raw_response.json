@@ -24,13 +24,11 @@
           "endTime": {
             "totalValues": 1,
             "values": [
-              "1598274878939"
             ]
           },
           "imageFile.md5String": {
             "totalValues": 1,
             "values": [
-              "0e5aec928765f529f238bf2a1d3b6234"
             ]
           },
           "imageFile.isSigned": {
@@ -48,7 +46,6 @@
           "commandLine": {
             "totalValues": 1,
             "values": [
-              "c:\\windows\\temp\\sb-sim-temp-a33bzo\\sb_636252251_bs_mjobkr\\\\bdata.bin"
             ]
           },
           "isLiveProcess": {
@@ -60,7 +57,6 @@
           "creationTime": {
             "totalValues": 1,
             "values": [
-              "1598274868928"
             ]
           },
           "pid": {
@@ -90,7 +86,6 @@
           "imageFile.correctedPath": {
             "totalValues": 1,
             "values": [
-              "c:\\windows\\temp\\sb-sim-temp-a33bzo\\sb_636252251_bs_mjobkr\\bdata.bin"
             ]
           },
           "imageFile.productType": {
@@ -118,7 +113,7 @@
             "elementValues": [
               {
                 "elementType": "File",
-                "guid": "1589170329.-5690955530787519821",
+                "guid": "",
                 "name": "bdata.bin",
                 "hasSuspicions": true,
                 "hasMalops": false
@@ -133,8 +128,8 @@
             "elementValues": [
               {
                 "elementType": "User",
-                "guid": "0.1485290445256027459",
-                "name": "desktop-sb01\\system",
+                "guid": "",
+                "name": "",
                 "hasSuspicions": false,
                 "hasMalops": false
               }
@@ -155,8 +150,8 @@
             "elementValues": [
               {
                 "elementType": "Process",
-                "guid": "1589170329.7376310617849680762",
-                "name": "python_sb_636252251_bs_1947466.exe",
+                "guid": "",
+                "name": "",
                 "hasSuspicions": true,
                 "hasMalops": false
               }
@@ -179,19 +174,13 @@
             "totalMalicious": 0,
             "guessedTotal": 0
           },
-          "hasNotInLoaderDbEvidence": {
-            "totalValues": 1,
-            "elementValues": null,
-            "totalSuspicious": 0,
-            "totalMalicious": 0,
-            "guessedTotal": 0
-          },
+
           "imageFileUnsignedHasSignedVersionEvidence": {
             "totalValues": 1,
             "elementValues": [
               {
                 "elementType": "File",
-                "guid": "1589170329.-5690955530787519821",
+                "guid": "",
                 "name": "bdata.bin",
                 "hasSuspicions": true,
                 "hasMalops": false
@@ -206,7 +195,7 @@
             "elementValues": [
               {
                 "elementType": "Process",
-                "guid": "1589170329.-285868401975015536",
+                "guid": "",
                 "name": "bdata.bin",
                 "hasSuspicions": true,
                 "hasMalops": true
@@ -221,8 +210,8 @@
             "elementValues": [
               {
                 "elementType": "Machine",
-                "guid": "1589170329.1198775089551518743",
-                "name": "desktop-sb01",
+                "guid": "",
+                "name": "",
                 "hasSuspicions": false,
                 "hasMalops": false
               }
@@ -236,7 +225,7 @@
             "elementValues": [
               {
                 "elementType": "File",
-                "guid": "1589170329.-5690955530787519821",
+                "guid": "",
                 "name": "bdata.bin",
                 "hasSuspicions": true,
                 "hasMalops": false
@@ -251,8 +240,8 @@
             "elementValues": [
               {
                 "elementType": "User",
-                "guid": "0.1485290445256027459",
-                "name": "desktop-sb01\\system",
+                "guid": "",
+                "name": "",
                 "hasSuspicions": false,
                 "hasMalops": false
               }
@@ -266,7 +255,7 @@
             "elementValues": [
               {
                 "elementType": "File",
-                "guid": "1589170329.-5690955530787519821",
+                "guid": "",
                 "name": "bdata.bin",
                 "hasSuspicions": true,
                 "hasMalops": false
@@ -278,16 +267,16 @@
           }
         },
         "suspicions": {
-          "knownMalwareSuspicion": 1598274876499,
-          "malwareModuleSuspicion": 1601438329815
+          "knownMalwareSuspicion": 4798274876499,
+          "malwareModuleSuspicion": 1301477329815
         },
         "filterData": {
-          "sortInGroupValue": "1589170329.-285868401975015536",
+          "sortInGroupValue": "",
           "groupByValue": "bdata.bin"
         },
         "isMalicious": true,
         "suspicionCount": 2,
-        "guidString": "1589170329.-285868401975015536",
+        "guidString": "",
         "labelsIds": null,
         "malopPriority": null,
         "malicious": true,
@@ -299,14 +288,14 @@
         "potentialEvidence": [
           "malwareEvidence"
         ],
-        "firstTimestamp": 1598274876499,
+        "firstTimestamp": 1598888976499,
         "totalSuspicions": 1
       },
       "malwareModuleSuspicion": {
         "potentialEvidence": [
           "malwareModuleEvidence"
         ],
-        "firstTimestamp": 1601438329815,
+        "firstTimestamp": 1601434569815,
         "totalSuspicions": 1
       }
     },
@@ -316,8 +305,7 @@
       "malwareEvidence": 1,
       "malwareModuleEvidence": 1,
       "imageFileUnsignedHasSignedVersionEvidence": 1,
-      "systemUserEvidence": 1,
-      "hasNotInLoaderDbEvidence": 1
+      "systemUserEvidence": 1
     },
     "totalPossibleResults": 1,
     "guessedPossibleResults": 0,
