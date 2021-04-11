@@ -6,7 +6,7 @@ from os import devnull
 from string import punctuation
 import nltk
 from nltk import word_tokenize
-nltk.data.path = '/root/nltk_data'
+nltk.data.path.append('/root/nltk_data')
 
 @contextmanager
 def suppress_stdout_stderr():
