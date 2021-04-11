@@ -628,11 +628,11 @@ class Client(BaseClient):
             'numberOfResults': limit
         }
 
-        response = self._http_request('GET', url_suffix=f'uba/api/assets/notable', params=params)
+        response = self._http_request('GET', url_suffix='uba/api/assets/notable', params=params)
         return response
 
     def get_notable_session_details_request(self, asset_id: str = None, sort_by: str = None,
-                                             sort_order: int = None, limit: int = None) -> Dict:
+                                            sort_order: int = None, limit: int = None) -> Dict:
         """
         Args:
             asset_id: ID of the asset to fetch info for
@@ -655,7 +655,7 @@ class Client(BaseClient):
         return response
 
     def get_notable_sequence_details_request(self, asset_id: str = None, parse_start_time=None,
-                                             parse_end_time=None) -> Dict:
+                                             parse_end_time=None):
         """
         Args:
             asset_id: ID of the asset to fetch info for
@@ -673,7 +673,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=f'/uba/api/asset/{asset_id}/sequences', params=params)
         return response
 
-    def get_notable_sequence_event_types_request(self, asset_sequence_id: str = None, search_str: str = None) -> Dict:
+    def get_notable_sequence_event_types_request(self, asset_sequence_id: str = None, search_str: str = None):
         """
         Args:
             asset_sequence_id: ID of the asset sequence to fetch info for
@@ -847,40 +847,52 @@ def contents_append_notable_assets_info(contents, asset, asset_, highest_risk_se
     return contents
 
 
-def contents_append_notable_session_details(contents, session, user, executive_user_flags) -> List[Any]:
+def contents_append_notable_session_details(contents, session) -> List[Any]:
     """Appends a dictionary of data to the base list
 
     Args:
         contents: base list
         session: session object
-        user: user object
-        executive_user_flags: executive user flags object
 
     Returns:
         A contents list with the relevant notable session details
     """
-    user_info = user.get('info')
     contents.append({
-        'UserName': user.get('username'),
-        'RiskScore': round(user.get('riskScore')) if 'riskScore' in user else None,
-        'AverageRiskScore': user.get('averageRiskScore'),
-        'FirstSeen': convert_unix_to_date(user.get('firstSeen')) if 'firstSeen' in user else None,
-        'LastSeen': convert_unix_to_date(user.get('lastSeen')) if 'lastSeen' in user else None,
-        'lastActivityType': user.get('lastActivityType'),
-        'Labels': user.get('labels'),
-        'LastSessionID': user.get('lastSessionId'),
+        'SessionID': session.get('sessionId'),
+        'InitialRiskScore': session.get('initialRiskScore'),
+        'LoginHost': session.get('loginHost'),
+        'Accounts': session.get('accounts'),
+    })
+    return contents
+
+
+def contents_append_notable_session_user_details(users, user_details, user_info) -> List[Any]:
+    """Appends a dictionary of data to the base list
+
+    Args:
+        users: base list
+        user_details: user details object
+        user_info: user info object
+
+    Returns:
+        A contents list with the relevant notable session details
+    """
+    users.append({
+        'UserName': user_details.get('username'),
+        'RiskScore': round(user_details.get('riskScore')) if 'riskScore' in user_details else None,
+        'AverageRiskScore': user_details.get('averageRiskScore'),
+        'FirstSeen': convert_unix_to_date(user_details.get('firstSeen')) if 'firstSeen' in user_details else None,
+        'LastSeen': convert_unix_to_date(user_details.get('lastSeen')) if 'lastSeen' in user_details else None,
+        'lastActivityType': user_details.get('lastActivityType'),
+        'Labels': user_details.get('labels'),
+        'LastSessionID': user_details.get('lastSessionId'),
         'EmployeeType': user_info.get('employeeType'),
         'Department': user_info.get('department'),
         'Title': user_info.get('title'),
         'Location': user_info.get('location'),
         'Email': user_info.get('email'),
-        'SessionID': session.get('sessionId'),
-        'InitialRiskScore': session.get('initialRiskScore'),
-        'LoginHost': session.get('loginHost'),
-        'Accounts': session.get('accounts'),
-        'executiveUserFlags': executive_user_flags
     })
-    return contents
+    return users
 
 
 def contents_append_notable_sequence_details(sequence, sequence_info, contents) -> List[Any]:
@@ -898,10 +910,10 @@ def contents_append_notable_sequence_details(sequence, sequence_info, contents) 
         'sequenceId': sequence.get('sequenceId'),
         'isWhitelisted': sequence.get('isWhitelisted'),
         'areAllTriggeredRulesWhiteListed': sequence.get('areAllTriggeredRulesWhiteListed'),
-        'hasBeenPartiallyWhiteListed': sequence_info.get('hasBeenPartiallyWhiteListed'),
+        'hasBeenPartiallyWhiteListed': sequence.get('hasBeenPartiallyWhiteListed'),
         'riskScore': round(sequence_info.get('riskScore')) if 'riskScore' in sequence_info else None,
-        'startTime': convert_unix_to_date(sequence_info.get('startTime')) if 'firstSeen' in sequence_info else None,
-        'endTime': convert_unix_to_date(sequence_info.get('endTime')) if 'lastSeen' in sequence_info else None,
+        'startTime': convert_unix_to_date(sequence_info.get('startTime')) if 'startTime' in sequence_info else None,
+        'endTime': convert_unix_to_date(sequence_info.get('endTime')) if 'endTime' in sequence_info else None,
         'numOfReasons': sequence_info.get('numOfReasons'),
         'numOfEvents': sequence_info.get('numOfEvents'),
         'numOfUsers': sequence_info.get('numOfUsers'),
@@ -1010,7 +1022,7 @@ def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple
                     event['dest_zone'] = event.pop("getvalue('zone_info', dest)")
 
             title = f"{activity['count']} {activity['event_type']} event(s) " \
-                f"between {activity['start_time']} and {activity['end_time']}"
+                    f"between {activity['start_time']} and {activity['end_time']}"
             human_readable += tableToMarkdown(title, activity_events, removeNull=True,
                                               headerTransform=underscoreToCamelCase) + '\n'
             outputs.extend(activity_events)
@@ -1726,7 +1738,7 @@ def get_context_table_csv(client: Client, args: Dict[str, str]) -> Tuple[Any, Di
     return f'Successfully downloaded Context Table CSV file {context_table_name}.', {}, None
 
 
-def get_notable_assets(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def get_notable_assets(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
     """  Updates records of a context table.
 
     Args:
@@ -1784,21 +1796,28 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
     session_details_raw_data = client.get_notable_session_details_request(asset_id, sort_by, sort_order, limit)
 
     contents: list = []
-    for user_ in range(session_details_raw_data.get('totalCount')):
-        session = session_details_raw_data.get('sessions')[user_]
-        user_name = session.get('username')
-        user_info = session_details_raw_data.get('users').get(user_name)
-        executive_user_flags = session_details_raw_data.get('executiveUserFlags').get(user_name)
-        contents = contents_append_notable_session_details(contents, session, user_info, executive_user_flags)
+    users: list = []
+    executive_user_flags: list = []
 
-    entry_context = {
-        'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)': {
-            'AssetID': asset_id,
-            'NotableSession': contents
-        }
-    }
+    for session in session_details_raw_data.get('sessions', {}):
+        contents = contents_append_notable_session_details(contents, session)
 
-    human_readable = tableToMarkdown(f'Notable Session details:', contents, removeNull=True)
+    users_response = session_details_raw_data.get('users', {})
+    for user_name, user_details in users_response.items():
+        user_info = user_details.get('info', {})
+        users = contents_append_notable_session_user_details(users, user_details, user_info)
+
+    executive_user = session_details_raw_data.get('executiveUserFlags', {})
+    for username, status in executive_user.items():
+        executive_user_flags.append({
+            username: status
+        })
+
+    contents_entry = {'sessions': contents, 'users': users, 'executiveUserFlags': executive_user_flags}
+
+    entry_context = {'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)': contents_entry}
+
+    human_readable = tableToMarkdown('Notable Session details:', contents_entry, removeNull=True)
 
     return human_readable, entry_context, session_details_raw_data
 
@@ -1826,12 +1845,8 @@ def get_notable_sequence_details(client: Client, args: Dict[str, str]) -> Tuple[
         sequence_info = sequence.get('sequenceInfo')
         contents = contents_append_notable_sequence_details(sequence, sequence_info, contents)
 
-    entry_context = {
-        'Exabeam.Sequence(val.sequenceId && val.sequenceId === obj.sequenceId)': {
-            'AssetID': asset_id,
-            'Session': contents
-        }
-    }
+    entry_context = {'Exabeam.Sequence(val.sequenceId && val.sequenceId === obj.sequenceId)': contents}
+
     human_readable = tableToMarkdown('Notable sequence details:', contents, removeNull=True)
 
     return human_readable, entry_context, sequence_details_raw_data
@@ -1856,12 +1871,8 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
     for sequence in sequence_event_types_raw_data:
         contents = contents_append_notable_sequence_event_types(sequence, contents)
 
-    entry_context = {
-        'Exabeam.SequenceEventTypes(val.eventType && val.eventType === obj.eventType)': {
-            'AssetSequenceID': asset_sequence_id,
-            'Session': contents
-        }
-    }
+    entry_context = {'Exabeam.SequenceEventTypes(val.eventType && val.eventType === obj.eventType)': contents}
+
     human_readable = tableToMarkdown('Sequence event types:', contents, removeNull=True)
 
     return human_readable, entry_context, sequence_event_types_raw_data

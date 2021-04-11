@@ -85,28 +85,102 @@ EXPECTED_MODEL_DATA = {
 EXPECTED_NOTABLE_ASSET_DATA = {
     'Exabeam.NotableAsset(val.ipAddress && val.ipAddress === obj.ipAddress)': [{
         'highestRiskScore': 150,
-        'id': 'asset@lt-fweber-888-20200702',
+        'id': '1111',
         'entityName': 'asset',
-        'entityValue': 'lt-fweber-888',
+        'entityValue': 'test',
         'day': '2020-07-02T00:00:00',
         'triggeredRuleCountOpt': 15,
         'riskScoreOpt': 150.0,
-        'commentId': '60195e5b130b3800075b8e27',
+        'commentId': 'test1111',
         'commentType': 'asset',
-        'commentObjectId': 'lt-fweber-888',
+        'commentObjectId': 'test',
         'text': 'test',
-        'exaUser': 'siemplify',
-        'createTime': '	2021-02-02T14:14:51.188000',
+        'exaUser': 'test',
+        'createTime': '2021-02-02T14:14:51.188000',
         'updateTime': '2021-02-02T14:14:51.188000',
         'edited': False,
-        'HostName': 'lt-fweber-888',
-        'IPAddress': '10.27.129.64',
-        'AssetType': 'Windows',
+        'HostName': 'host',
+        'IPAddress': '1.1.1.1',
+        'AssetType': 'test',
         'FirstSeen': '2020-06-01T14:36:00',
         'LastSeen': '2020-07-03T23:52:00',
         'Labels': None,
         'exaUserFullname': '',
         'zone': None,
-        'incidentIds': []
+        'incidentIds': None
     }]
+}
+
+EXPECTED_NOTABLE_SESSION_DETAILS = {
+    'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)':
+        {'sessions': [{
+            'SessionID': 'session1',
+            'InitialRiskScore': 0,
+            'LoginHost': 'host1',
+            'Accounts': ['account1', 'account2']},
+            {'SessionID': 'session2',
+             'InitialRiskScore': 26,
+             'LoginHost': 'host2',
+             'Accounts': ['account1', 'account2']}],
+            'users': [
+            {'UserName': 'username2',
+             'RiskScore': 313,
+             'AverageRiskScore': 171.41,
+             'FirstSeen': '2020-06-01T14:25:00',
+             'LastSeen': '2020-07-03T23:52:00',
+             'lastActivityType': 'Account is active',
+             'Labels': [],
+             'LastSessionID': 'session2',
+             'EmployeeType': 'employee',
+             'Department': 'department',
+             'Title': 'title',
+             'Location': 'us',
+             'Email': 'test@.com'},
+                {'UserName': 'username1',
+                 'RiskScore': 110,
+                 'AverageRiskScore': 52.25,
+                 'FirstSeen': '2020-06-01T15:27:00',
+                 'LastSeen': '2020-07-02T22:03:00',
+                 'lastActivityType': 'Account is active',
+                 'Labels': [],
+                 'LastSessionID': 'session1',
+                 'EmployeeType': 'employee',
+                 'Department': 'department',
+                 'Title': 'title',
+                 'Location': 'us',
+                 'Email': 'test@.com'}],
+            'executiveUserFlags': [
+              {'username1': False},
+              {'username2': False}]}
+}
+
+EXPECTED_NOTABLE_SEQUENCE_DETAILS = {
+    'Exabeam.Sequence(val.sequenceId && val.sequenceId === obj.sequenceId)':
+        [{'sequenceId': 'ID',
+          'isWhitelisted': False,
+          'areAllTriggeredRulesWhiteListed': False,
+          'hasBeenPartiallyWhiteListed': False,
+          'riskScore': 150,
+          'startTime': '2020-07-02T00:00:00',
+          'endTime': '2020-07-02T23:59:59.999000',
+          'numOfReasons': 8,
+          'numOfEvents': 18,
+          'numOfUsers': 4,
+          'numOfSecurityEvents': 0,
+          'numOfZones': 3,
+          'numOfAssets': 8,
+          'assetId': 'ID'}]
+}
+
+EXPECTED_NOTABLE_SEQUENCE_EVENTS = {
+    'Exabeam.SequenceEventTypes(val.eventType && val.eventType === obj.eventType)':
+        [{'eventType': 'type1', 'displayName': 'dn1', 'count': 1},
+         {'eventType': 'type2', 'displayName': 'dn2', 'count': 1},
+         {'eventType': 'type3', 'displayName': 'dn3', 'count': 1},
+         {'eventType': 'type4', 'displayName': 'dn4', 'count': 1},
+         {'eventType': 'type5', 'displayName': 'dn5', 'count': 2},
+         {'eventType': 'type6', 'displayName': 'dn6', 'count': 2},
+         {'eventType': 'type7', 'displayName': 'dn7', 'count': 8},
+         {'eventType': 'type8', 'displayName': 'dn8', 'count': 1},
+         {'eventType': 'type9', 'displayName': 'dn9', 'count': 1}]
 }

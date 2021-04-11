@@ -1,11 +1,14 @@
 import pytest
 from Exabeam import Client, contents_append_notable_user_info, contents_user_info, get_peer_groups, \
     get_user_labels, get_watchlist, get_asset_data, get_session_info_by_id, get_rules_model_definition, \
-    parse_context_table_records_list, get_notable_assets, contents_append_notable_assets_info
+    parse_context_table_records_list, get_notable_assets, get_notable_session_details, get_notable_sequence_details, \
+    get_notable_sequence_event_types
 from test_data.response_constants import RESPONSE_PEER_GROUPS, RESPONSE_USER_LABELS, RESPONSE_WATCHLISTS, \
-    RESPONSE_ASSET_DATA, RESPONSE_SESSION_INFO, RESPONSE_MODEL_DATA, RESPONSE_NOTABLE_ASSET_DATA
+    RESPONSE_ASSET_DATA, RESPONSE_SESSION_INFO, RESPONSE_MODEL_DATA, RESPONSE_NOTABLE_ASSET_DATA, \
+    RESPONSE_NOTABLE_SESSION_DETAILS, RESPONSE_NOTABLE_SEQUENCE_DETAILS, RESPONSE_NOTABLE_SEQUENCE_EVENTS
 from test_data.result_constants import EXPECTED_PEER_GROUPS, EXPECTED_USER_LABELS, EXPECTED_WATCHLISTS, \
-    EXPECTED_ASSET_DATA, EXPECTED_SESSION_INFO, EXPECTED_MODEL_DATA, EXPECTED_NOTABLE_ASSET_DATA
+    EXPECTED_ASSET_DATA, EXPECTED_SESSION_INFO, EXPECTED_MODEL_DATA, EXPECTED_NOTABLE_ASSET_DATA, \
+    EXPECTED_NOTABLE_SESSION_DETAILS, EXPECTED_NOTABLE_SEQUENCE_DETAILS, EXPECTED_NOTABLE_SEQUENCE_EVENTS
 
 
 def test_contents_append_notable_user_info():
@@ -93,12 +96,14 @@ def test_contents_user_info():
     (get_asset_data, {'asset_name': 'dummmy'}, RESPONSE_ASSET_DATA, EXPECTED_ASSET_DATA),
     (get_session_info_by_id, {'session_id': 'dummmy'}, RESPONSE_SESSION_INFO, EXPECTED_SESSION_INFO),
     (get_rules_model_definition, {'model_name': 'dummmy'}, RESPONSE_MODEL_DATA, EXPECTED_MODEL_DATA),
-    (get_notable_assets, {'limit': 1, 'time_period': '1 y'}, RESPONSE_NOTABLE_ASSET_DATA, EXPECTED_NOTABLE_ASSET_DATA)
+    (get_notable_assets, {'limit': 1, 'time_period': '1 y'}, RESPONSE_NOTABLE_ASSET_DATA, EXPECTED_NOTABLE_ASSET_DATA),
+    (get_notable_session_details, {'limit': 1}, RESPONSE_NOTABLE_SESSION_DETAILS, EXPECTED_NOTABLE_SESSION_DETAILS),
+    (get_notable_sequence_details, {'limit': 1}, RESPONSE_NOTABLE_SEQUENCE_DETAILS, EXPECTED_NOTABLE_SEQUENCE_DETAILS),
+    (get_notable_sequence_event_types, {}, RESPONSE_NOTABLE_SEQUENCE_EVENTS, EXPECTED_NOTABLE_SEQUENCE_EVENTS)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     import requests
     requests.packages.urllib3.disable_warnings()
-
     mocker.patch.object(Client, '_login')
     client = Client('http://exabeam.com/api/auth/login', verify=False, username='user',
                     password='1234', proxy=False, headers={})
@@ -153,11 +158,3 @@ def test_parse_context_table_records_list_bad_input(records_input, fmt, is_delet
         assert False
     except ValueError:
         assert True
-
-
-def test_get_notable_assets():
-    pass
-
-
-def test_contents_append_notable_assets_info():
-    pass
