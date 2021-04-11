@@ -40,6 +40,11 @@ configuration:
   name: is_public
   required: false
   type: 8
+- defaultvalue: 'true'
+  display: Create Relationships
+  name: relationships
+  required: false
+  type: 8
 description: Urlscan.io reputation
 display: urlscan.io
 name: urlscan.io

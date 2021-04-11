@@ -30,41 +30,33 @@ RELATIONSHIP_TYPE = {
     'lists': {
         'domains': {
             'indicator_type': 'Domain',
-            'name': 'related to',
-            'reversed_name': 'related to'
+            'name': 'related-to'
         },
         'hashes': {
             'indicator_type': 'File',
-            'name': 'related to',
-            'reversed_name': 'related to'
+            'name': 'related-to'
         },
         'ips': {
             'indicator_type': 'IP',
-            'name': 'related to',
-            'reversed_name': 'related to'
-
+            'name': 'related-to',
         },
         'linkDomains': {
             'indicator_type': 'Domain',
-            'name': 'related to',
-            'reversed_name': 'related to'
+            'name': 'related-to'
         },
         'urls': {
             'indicator_type': 'URL',
-            'name': 'related to',
-            'reversed_name': 'related to'
+            'name': 'related-to'
         }
     },
     'page': {
         'domain': {
             'indicator_type': 'Domain',
-            'name': 'hosted on',
-            'reversed_name': 'hosts'
+            'name': 'hosted-on'
         },
         'ip': {
             'indicator_type': 'IP',
-            'name': 'hosted on',
-            'reversed_name': 'hosts'
+            'name': 'hosted-on'
         }
     }
 }
@@ -251,6 +243,7 @@ def create_list_relationships(scans_dict, url):
 def format_results(client, uuid):
     # Scan Lists sometimes returns empty
     num_of_attempts = 0
+    relationships = []
     response = urlscan_submit_request(client, uuid)
     scan_lists = response.get('lists')
     while scan_lists is None:
@@ -421,8 +414,8 @@ def format_results(client, uuid):
             related_indicators.append(Common.FeedRelatedIndicators(value=related_indicator['value'],
                                                                   indicator_type=related_indicator['type']))
         url_cont['FeedRelatedIndicators'] = related_indicators
-
-    relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query)
+    if demisto.params().get('relationships') is True:
+        relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query)
     outputs = {
         'URLScan(val.URL && val.URL == obj.URL)': cont,
         outputPaths['file']: file_context
@@ -438,11 +431,8 @@ def format_results(client, uuid):
                                   integration_name=dbot_score.get('Vendor'), score=dbot_score.get('Score'),
                                   reliability=dbot_score.get('Reliability'))
 
-
     url = Common.URL(url=url_cont.get('Data'), dbot_score=dbot_score, relations=relationships,
                      feed_related_indicators=url_cont.get('FeedRelatedIndicators'))
-
-
 
     command_result = CommandResults(
         readable_output=tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
