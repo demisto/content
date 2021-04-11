@@ -1,0 +1,20 @@
+commonfields:
+  id: XDRIncidentHostCount
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: XDRIncidentHostCount
+script: ''
+type: python
+tags:
+- widget
+enabled: true
+args:
+- name: from
+- name: to
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.1.14969
+runas: DBotWeakRole
+fromversion: 6.0.0
