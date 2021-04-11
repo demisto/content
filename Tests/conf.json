@@ -3261,6 +3261,11 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "VirusTotal - Premium (API v3)",
+            "playbookID": "VirusTotal Premium v3 TestPlaybook",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
