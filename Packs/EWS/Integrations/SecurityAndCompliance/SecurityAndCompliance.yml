@@ -956,9 +956,6 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
       description: Security and compliance search action status. Either "Started" or "Completed".
       type: String
-    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Location
-      description: Security and compliance search action Location.
-      type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
