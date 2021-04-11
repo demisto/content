@@ -1,7 +1,11 @@
 from datetime import datetime
 
 import pytest
-from VirusTotal_V3_Premium import get_last_run_time, get_time_range_object, decrease_data_size, fetch_incidents, Client
+from VirusTotal_V3_Premium import get_last_run_time, \
+    get_time_range_object, \
+    decrease_data_size, \
+    fetch_incidents, \
+    Client, convert_epoch_to_readable
 from dateparser import parse
 
 
@@ -63,3 +67,17 @@ class TestFetchIncidents:
         incidents, time = fetch_incidents(self.ClientMock, {}, fetch_time)
         assert not incidents
         assert time == fetch_time
+
+
+class TestHelpers:
+    def test_convert_epoch_to_readable(self):
+        assert convert_epoch_to_readable({'creation_date': 1617056782}, ['creation_date']) == {
+            'creation_date': '2021-03-30T01:26:22'}
+
+    def test_convert_epoch_to_readable_no_key(self):
+        assert convert_epoch_to_readable({'something_else': 1617056782}) == {
+            'something_else': 1617056782}
+
+    def test_convert_epoch_to_readable_key_not_epoch(self):
+        assert convert_epoch_to_readable({'creation_date': 'nothing-is-wrong'}, ['creation_date']) == {
+            'creation_date': 'nothing-is-wrong'}

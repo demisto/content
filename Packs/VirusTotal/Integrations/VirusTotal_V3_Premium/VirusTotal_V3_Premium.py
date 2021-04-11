@@ -3,7 +3,7 @@ VirusTotal V3 - Premium API
 Difference: https://developers.virustotal.com/v3.0/reference#public-vs-premium-api
 """
 import copy
-from typing import Tuple
+from typing import Tuple, Iterable
 
 import urllib3
 from dateparser import parse
@@ -24,6 +24,26 @@ INTEGRATION_ENTRY_CONTEXT = "VirusTotal"
 # endregion
 
 # region Helper functions
+def convert_epoch_to_readable(
+        readable_inputs: dict,
+        keys: Iterable[str] = ('start_date', 'creation_date', 'finish_date')
+) -> dict:
+    """Gets the readable input from a function and converts it times to readable outputs
+
+    Args:
+        readable_inputs: a readable output with epoch times in it
+        keys: keys to convert
+
+    Returns:
+        epoch time in readable output
+    """
+    for date_ in keys:
+        if creation_date := readable_inputs.get(date_):
+            if creation_date := parse(str(creation_date)):
+                readable_inputs[date_] = creation_date.replace(microsecond=0).isoformat()
+    return readable_inputs
+
+
 def decrease_data_size(data: Union[dict, list]) -> Union[dict, list]:
     """ Minifying data size.
     Args:
@@ -918,12 +938,9 @@ def get_retrohunt_job_by_id(client: Client, args: dict) -> CommandResults:
         **data,
         **data.get('attributes', {})
     }
-    if creation_date := readable_inputs.get('creation_date'):
-        if creation_date := parse(str(creation_date)) and isinstance(creation_date, datetime):
-            readable_inputs['creation_date'] = creation_date.replace(microsecond=0).isoformat()
-    if finish_date := readable_inputs.get('finish_date'):
-        if finish_date := parse(str(finish_date)) and isinstance(finish_date, datetime):
-            readable_inputs['finish_date'] = finish_date.replace(microsecond=0).isoformat()
+
+    readable_inputs.pop('attributes', None)
+    readable_inputs = convert_epoch_to_readable(readable_inputs)
 
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.RetroHuntJob',
