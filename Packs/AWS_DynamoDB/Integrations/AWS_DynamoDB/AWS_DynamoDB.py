@@ -1217,7 +1217,7 @@ def untag_resource_command(args):
     response = client.untag_resource(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB.ConsumedCapacity': response['ConsumedCapacity']}
+    outputs = {'AWS-DynamoDB.ConsumedCapacity': response.get('ConsumedCapacity')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB UntagResource'
     human_readable = aws_table_to_markdown(response, table_header)
