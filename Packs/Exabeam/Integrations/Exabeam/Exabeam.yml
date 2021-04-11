@@ -1613,73 +1613,73 @@ script:
     execution: false
     name: exabeam-get-notable-assets
     outputs:
-    - contextPath: Exabeam.NotableAssets.hostName
+    - contextPath: Exabeam.NotableAsset.hostName
       description: The notable asset host name.
       type: String
-    - contextPath: Exabeam.NotableAssets.ipAddress
+    - contextPath: Exabeam.NotableAsset.ipAddress
       description: The notable asset IP address.
       type: String
-    - contextPath: Exabeam.NotableAssets.assetType
+    - contextPath: Exabeam.NotableAsset.assetType
       description: The notable asset type.
       type: String
-    - contextPath: Exabeam.NotableAssets.firstSeen
+    - contextPath: Exabeam.NotableAsset.firstSeen
       description: Time when the asset was first seen.
       type: Date
-    - contextPath: Exabeam.NotableAssets.lastSeen
+    - contextPath: Exabeam.NotableAsset.lastSeen
       description: Time when the asset was last seen.
       type: Date
-    - contextPath: Exabeam.NotableAssets.highestRiskScore
+    - contextPath: Exabeam.NotableAsset.highestRiskScore
       description: The highest risk score of the asset.
       type: Number
-    - contextPath: Exabeam.NotableAssets.id
+    - contextPath: Exabeam.NotableAsset.id
       description: The notable asset ID.
       type: String
-    - contextPath: Exabeam.NotableAssets.entityName
+    - contextPath: Exabeam.NotableAsset.entityName
       description: The entity name of the asset.
       type: String
-    - contextPath: Exabeam.NotableAssets.entityValue
+    - contextPath: Exabeam.NotableAsset.entityValue
       description: The entity value of the asset.
       type: String
-    - contextPath: Exabeam.NotableAssets.day
+    - contextPath: Exabeam.NotableAsset.day
       description: The notable asset date.
       type: Date
-    - contextPath: Exabeam.NotableAssets.triggeredRuleCountOpt
+    - contextPath: Exabeam.NotableAsset.triggeredRuleCountOpt
       description: The number that asset triggered rule count opt.
       type: Number
-    - contextPath: Exabeam.NotableAssets.riskScoreOpt
+    - contextPath: Exabeam.NotableAsset.riskScoreOpt
       description: Risk score opt of the asset.
       type: Number
-    - contextPath: Exabeam.NotableAssets.incidentIds
+    - contextPath: Exabeam.NotableAsset.incidentIds
       description: The incident IDs of the notable asset.
       type: Unknown
-    - contextPath: Exabeam.NotableAssets.commentId
+    - contextPath: Exabeam.NotableAsset.commentId
       description: The comment ID of the notable asset.
       type: String
-    - contextPath: Exabeam.NotableAssets.commentType
+    - contextPath: Exabeam.NotableAsset.commentType
       description: The comment type of the notable asset.
       type: String
-    - contextPath: Exabeam.NotableAssets.commentObjectId
+    - contextPath: Exabeam.NotableAsset.commentObjectId
       description: The comment object ID of the notable asset.
       type: String
-    - contextPath: Exabeam.NotableAssets.text
+    - contextPath: Exabeam.NotableAsset.text
       description: The notable asset text.
       type: String
-    - contextPath: Exabeam.NotableAssets.exaUser
+    - contextPath: Exabeam.NotableAsset.exaUser
       description: The notable asset exaUser.
       type: String
-    - contextPath: Exabeam.NotableAssets.exaUserFullname
+    - contextPath: Exabeam.NotableAsset.exaUserFullname
       description: The notable asset exaUser fullname.
       type: String
-    - contextPath: Exabeam.NotableAssets.createTime
+    - contextPath: Exabeam.NotableAsset.createTime
       description: Time when the asset was created.
       type: Date
-    - contextPath: Exabeam.NotableAssets.updateTime
+    - contextPath: Exabeam.NotableAsset.updateTime
       description: Time when the asset was updated.
       type: Date
-    - contextPath: Exabeam.NotableAssets.edited
+    - contextPath: Exabeam.NotableAsset.edited
       description: Whether or not the notable asset is edited.
       type: Boolean
-    - contextPath: Exabeam.NotableAssets.zone
+    - contextPath: Exabeam.NotableAsset.zone
       description: The number that asset triggered rule count opt.
       type: String
   - arguments:
