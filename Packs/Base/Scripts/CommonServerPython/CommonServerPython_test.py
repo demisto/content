@@ -4073,8 +4073,8 @@ class TestCommonTypes:
 
 class TestEntityRelation:
     """Global vars for all of the tests"""
-    name = 'related to'
-    reverse_name = 'related to'
+    name = 'related-to'
+    reverse_name = 'related-to'
     relation_type = 'indicatorToIndicator'
     entity_a = 'test1'
     entity_a_family = 'Indicator'
@@ -4096,8 +4096,7 @@ class TestEntityRelation:
         - Validate that the expected context is created
         """
         from CommonServerPython import EntityRelation
-        relation = EntityRelation(name='related to',
-                                  reverse_name='related to',
+        relation = EntityRelation(name='related-to',
                                   relation_type='indicatorToIndicator',
                                   entity_a='test1',
                                   entity_a_family='Indicator',
@@ -4109,7 +4108,7 @@ class TestEntityRelation:
                                   brand='test')
 
         expected_context = {
-            "Name": 'test1 related to test2',
+            "Name": 'test1 related-to test2',
             "EntityA": 'test1',
             "ObjectTypeA": 'Domain',
             "EntityB": 'test2',
@@ -4131,7 +4130,6 @@ class TestEntityRelation:
         """
         from CommonServerPython import EntityRelation
         relation = EntityRelation(name=TestEntityRelation.name,
-                                  reverse_name=TestEntityRelation.reverse_name,
                                   relation_type=TestEntityRelation.relation_type,
                                   entity_a=TestEntityRelation.entity_a,
                                   entity_a_family=TestEntityRelation.entity_a_family,
@@ -4170,7 +4168,6 @@ class TestEntityRelation:
         """
         from CommonServerPython import EntityRelation
         relation = EntityRelation(name=TestEntityRelation.name,
-                                  reverse_name=TestEntityRelation.reverse_name,
                                   relation_type=TestEntityRelation.relation_type,
                                   entity_a=TestEntityRelation.entity_a,
                                   entity_a_family=TestEntityRelation.entity_a_family,
@@ -4208,7 +4205,6 @@ class TestEntityRelation:
         from CommonServerPython import EntityRelation
         try:
             EntityRelation(name='ilegal',
-                           reverse_name=TestEntityRelation.reverse_name,
                            relation_type=TestEntityRelation.relation_type,
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family=TestEntityRelation.entity_a_family,
@@ -4234,7 +4230,6 @@ class TestEntityRelation:
         from CommonServerPython import EntityRelation
         try:
             EntityRelation(name=TestEntityRelation.name,
-                           reverse_name=TestEntityRelation.reverse_name,
                            relation_type='TestRelationType',
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family=TestEntityRelation.entity_a_family,
@@ -4260,7 +4255,6 @@ class TestEntityRelation:
         from CommonServerPython import EntityRelation
         try:
             EntityRelation(name=TestEntityRelation.name,
-                           reverse_name=TestEntityRelation.reverse_name,
                            relation_type=TestEntityRelation.relation_type,
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family='IndicatorIlegal',
@@ -4286,7 +4280,6 @@ class TestEntityRelation:
         from CommonServerPython import EntityRelation
         try:
             EntityRelation(name=TestEntityRelation.name,
-                           reverse_name=TestEntityRelation.reverse_name,
                            relation_type=TestEntityRelation.relation_type,
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family=TestEntityRelation.entity_a_family,
@@ -4312,7 +4305,6 @@ class TestEntityRelation:
         from CommonServerPython import EntityRelation
         try:
             EntityRelation(name=TestEntityRelation.name,
-                           reverse_name=TestEntityRelation.reverse_name,
                            relation_type=TestEntityRelation.relation_type,
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family=TestEntityRelation.entity_a_family,
@@ -4338,7 +4330,6 @@ class TestEntityRelation:
         from CommonServerPython import EntityRelation
         try:
             EntityRelation(name=TestEntityRelation.name,
-                           reverse_name=TestEntityRelation.reverse_name,
                            relation_type=TestEntityRelation.relation_type,
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family=TestEntityRelation.entity_a_family,

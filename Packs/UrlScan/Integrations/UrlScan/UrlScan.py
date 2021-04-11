@@ -29,34 +29,34 @@ BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
 RELATIONSHIP_TYPE = {
     'lists': {
         'domains': {
-            'indicator_type': 'Domain',
-            'name': 'related-to'
+            'indicator_type': FeedIndicatorType.Domain,
+            'name': Relations.RELATED_TO
         },
         'hashes': {
-            'indicator_type': 'File',
-            'name': 'related-to'
+            'indicator_type': FeedIndicatorType.File,
+            'name': Relations.RELATED_TO
         },
         'ips': {
-            'indicator_type': 'IP',
-            'name': 'related-to',
+            'indicator_type': FeedIndicatorType.IP,
+            'name': Relations.RELATED_TO
         },
         'linkDomains': {
-            'indicator_type': 'Domain',
-            'name': 'related-to'
+            'indicator_type': FeedIndicatorType.Domain,
+            'name': Relations.RELATED_TO
         },
         'urls': {
-            'indicator_type': 'URL',
-            'name': 'related-to'
+            'indicator_type': FeedIndicatorType.URL,
+            'name': Relations.RELATED_TO
         }
     },
     'page': {
         'domain': {
-            'indicator_type': 'Domain',
-            'name': 'hosted-on'
+            'indicator_type': FeedIndicatorType.Domain,
+            'name': Relations.HOSTED_ON
         },
         'ip': {
-            'indicator_type': 'IP',
-            'name': 'hosted-on'
+            'indicator_type': FeedIndicatorType.IP,
+            'name': Relations.HOSTED_ON
         }
     }
 }
