@@ -3342,7 +3342,6 @@
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
-        "test playbook - QRadarCorrelations For V2": "Issue 30876",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "pyEWS_Test": "Issue 27942",
