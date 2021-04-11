@@ -179,11 +179,10 @@ def get_full_timeline(detection_id, per_page=100):
     last_data = {}  # type:ignore
 
     while not done:
-        res = http_get('/detections/{}/timeline'.format(detection_id),
-                       params={
-                           'page': page,
-                           'per_page': per_page,
-                       })
+        res = http_get('/detections/{}/timeline'.format(detection_id), params={
+            'page': page,
+            'per_page': per_page,
+        })
         current_data = res.get('data')
 
         # if there is no more data to get from this http request
@@ -433,11 +432,10 @@ def remediate_detection_command():
 
 @logger
 def remediate_detection(_id, remediation_state, comment):
-    res = http_patch('/detections/{}/update_remediation_state'.format(_id),
-                     data={
-                         'remediation_state': remediation_state,
-                         'comment': comment,
-                     })
+    res = http_patch('/detections/{}/update_remediation_state'.format(_id), data={
+        'remediation_state': remediation_state,
+        'comment': comment,
+    })
     return res
 
 
@@ -536,11 +534,10 @@ def execute_playbook_command():
 
 
 def execute_playbook(playbook_id, detection_id):
-    res = http_post('/exec/playbooks/{}/execute'.format(playbook_id),
-                    params={
-                        'resource_type': 'Detection',
-                        'resource_id': detection_id,
-                    })
+    res = http_post('/exec/playbooks/{}/execute'.format(playbook_id), params={
+        'resource_type': 'Detection',
+        'resource_id': detection_id,
+    })
 
     return res
 
