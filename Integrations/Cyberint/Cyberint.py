@@ -414,8 +414,8 @@ def get_alert_attachments(client: Client, alert_attachments: Union[List, Dict],
 
     Args:
         client (Client): Cyberint API client.
-        alert_attachments (Union[List, Dict]): Alert attachments object. Contains id:106,mimetype and name fields.
-        attachment_type (str): The type of the attachment. Can be either 'attachment' or 'analysis_report'.
+        alert_attachments (Union[List, Dict]): Alert attachments dict object. Contains id, mimetype and name fields.
+        attachment_type (str): The type of the attachment. Can be 'attachment' or 'analysis_report'.
         alert_id (str): The ID of the alert.
 
     Returns:
