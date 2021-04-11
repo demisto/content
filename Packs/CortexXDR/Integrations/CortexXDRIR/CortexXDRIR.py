@@ -1,16 +1,16 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-from datetime import timezone
+import copy
+import hashlib
 import secrets
 import string
-import hashlib
-from typing import Any, Dict, Tuple
-import dateparser
-import urllib3
 import traceback
+from datetime import timezone
 from operator import itemgetter
-import copy
+from typing import Any, Dict, Tuple
+
+import dateparser
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -995,7 +995,7 @@ class Client(BaseClient):
 
         return files
 
-    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list, file_path_list: list)\
+    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list, file_path_list: list) \
             -> Dict[str, Any]:
         # there are 2 options, either the paths are given with separation to a specific os or without
         # it using generic_file_path
@@ -2239,6 +2239,21 @@ def endpoint_scan_command(client, args):
     alias = args.get('alias')
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
+    all_ = argToBoolean(args.get('all', 'false'))
+
+    # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
+    err_msg = 'To scan all the endpoints run this command with the \'all\' argument as True ' \
+              'and without any other filters. This may cause performance issues.\n' \
+              'To scan some of the endpoints, please use the filter arguments.'
+    if all_:
+        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
+                or ip_list or group_name or platform or alias or hostname:
+            raise Exception(err_msg)
+    else:
+        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+                and not alias and not hostname:
+            raise Exception(err_msg)
 
     reply = client.endpoint_scan(
         endpoint_id_list=argToList(endpoint_id_list),
