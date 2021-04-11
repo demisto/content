@@ -1,15 +1,12 @@
 {
-    "name": "Box",
-    "description": "Manage Box users",
+    "name": "Azure Storage",
+    "description": "Deploy and manage storage accounts and blob service properties.",
     "support": "xsoar",
-    "currentVersion": "2.1.2",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "IT Services"
-    ],
+    "categories": [],
     "tags": [],
     "useCases": [],
     "keywords": []
