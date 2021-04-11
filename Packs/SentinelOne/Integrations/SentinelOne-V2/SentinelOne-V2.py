@@ -389,12 +389,14 @@ class Client(BaseClient):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module(client: Client, is_fetch: bool):
+def test_module(client: Client, is_fetch: bool, first_fetch: str = None):
     """
     Performs basic get request to verify connection and creds.
     """
     if is_fetch:
-        client.get_threats_request(limit=1)
+        last_fetch = date_to_timestamp(dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}))
+        last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
+        client.get_threats_request(limit=1, created_after=last_fetch_date_string)
     else:
         client._http_request(method='GET', url_suffix='activities/types')
     return 'ok'
@@ -1328,7 +1330,7 @@ def main():
         )
 
         if command == 'test-module':
-            return_results(test_module(client, params.get('isFetch')))
+            return_results(test_module(client, params.get('isFetch'), first_fetch_time))
         if command == 'fetch-incidents':
             fetch_incidents(client, fetch_limit, first_fetch_time, fetch_threat_rank)
 
