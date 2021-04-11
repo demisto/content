@@ -187,7 +187,7 @@ tasks:
     type: regular
     task:
       elasticcommonfields: {}
-      id: 8b49572a-0b69-4ea4-82cc-39a39235938f
+      id: 8b49572a-0b69-4ea4-82cc-39a39235938f3
       version: -1
       name: Load Automation's Docker
       description: Predict phishing incidents using the out-of-the-box pretrained model.
