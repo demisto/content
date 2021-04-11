@@ -3,12 +3,12 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from botocore.config import Config
 
-AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
+AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
+AWS_roleArn = demisto.params().get('roleArn')
+AWS_roleSessionName = demisto.params().get('roleSessionName')
+AWS_roleSessionDuration = demisto.params().get('sessionDuration')
 AWS_rolePolicy = None
-AWS_QUEUEURL = demisto.params()['queueUrl']
+AWS_QUEUEURL = demisto.params().get('queueUrl')
 AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
 AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
