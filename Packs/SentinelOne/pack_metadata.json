@@ -1,6 +1,6 @@
 {
     "name": "SentinelOne",
-    "description": "End point protection",
+    "description": "Endpoint protection",
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",
