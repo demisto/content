@@ -55,7 +55,7 @@ Checks the file reputation of the given hash.
 
 
 #### Command Example
-```!file file=bf4692a98a658dd7fb3599a47b6b48188a12345 using=ThreatExchange_instance_1```
+```!file file=bf4692a98a658dd7fb3599a47b6b48188a12345```
 
 #### Context Example
 ```json
