@@ -1611,7 +1611,7 @@ tasks:
       version: -1
       name: GitHub-get-file-content
       description: Gets the content of a file from GitHub.
-      script: GitHub|||GitHub-get-file-content
+      script: '|||GitHub-get-file-content'
       type: regular
       iscommand: true
       brand: GitHub
@@ -1620,7 +1620,7 @@ tasks:
       - "56"
     scriptarguments:
       branch_name: {}
-      create_war_room_entry:
+      create_file_from_content:
         simple: "false"
       file_path:
         simple: TEST.md

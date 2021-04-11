@@ -34,10 +34,6 @@ RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Publis
 ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
                  'Assignees', 'Labels']
 
-HEADERS = {
-    'Authorization': "Bearer " + TOKEN
-}
-
 # Headers to be sent in requests
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
 
@@ -1233,17 +1229,14 @@ def get_github_actions_usage():
 def get_file_content_from_repo():
     """Gets the content of a file from GitHub.
     """
-    params = demisto.params()
     args = demisto.args()
 
-    owner_name = params.get('user')
-    repository_name = params.get('repository')
     file_path = args.get('file_path')
     branch_name = args.get('branch_name')
     media_type = args.get('media_type', 'raw')
-    create_war_room_entry = argToBoolean(args.get('create_war_room_entry', True))
+    create_file_from_content = argToBoolean(args.get('create_file_from_content', False))
 
-    url_suffix = f'/repos/{owner_name}/{repository_name}/contents/{file_path}'
+    url_suffix = f'/repos/{USER}/{REPOSITORY}/contents/{file_path}'
     if branch_name:
         url_suffix += f'?ref={branch_name}'
 
@@ -1254,6 +1247,11 @@ def get_file_content_from_repo():
 
     file_data = http_request(method="GET", url_suffix=url_suffix, headers=headers, is_raw_response=True)
 
+    if create_file_from_content:
+        file_name = file_path.split('/')[-1]
+        demisto.results(fileResult(filename=file_name, data=file_data, file_type=EntryType.ENTRY_INFO_FILE))
+        return
+
     file_processed_data = {
         'Path': file_path,
         'Content': file_data,
@@ -1262,16 +1260,11 @@ def get_file_content_from_repo():
     if branch_name:
         file_processed_data['Branch'] = branch_name
 
-    if create_war_room_entry:
-        readable_output = tableToMarkdown(f'File {file_path} successfully fetched.', file_processed_data, removeNull=True)
-    else:
-        readable_output = f'File {file_path} successfully fetched.'
-
     results = CommandResults(
         outputs_prefix='GitHub.FileContent',
         outputs_key_field=['Path', 'Branch', 'MediaType'],
         outputs=file_processed_data,
-        readable_output=readable_output,
+        readable_output=f'File {file_path} successfully fetched.',
         raw_response=file_data,
     )
 
@@ -1355,6 +1348,10 @@ if TOKEN == '' and PRIVATE_KEY != '':
 
 if TOKEN == '' and PRIVATE_KEY == '':
     return_error("Insert api token or private key")
+
+HEADERS = {
+    'Authorization': "Bearer " + TOKEN
+}
 
 
 def main():
