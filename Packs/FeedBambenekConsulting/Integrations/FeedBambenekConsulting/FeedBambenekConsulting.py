@@ -33,7 +33,7 @@ def main():
             'indicator_type': FeedIndicatorType.Domain,
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s$', None)
             }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt': {
@@ -63,7 +63,7 @@ def main():
             'indicator_type': FeedIndicatorType.Domain,
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)(\(|DGA)', None)
             },
             'is_zipped_file': True
         },

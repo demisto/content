@@ -108,6 +108,11 @@ configuration:
   name: polling_timeout
   required: true
   type: 0
+- defaultvalue: 'true'
+  display: Create Relationships
+  name: relationships
+  required: false
+  type: 8
 description: Use the Bambenek Consulting feed integration to fetch indicators from
   the feed.
 display: Bambenek Consulting Feed
