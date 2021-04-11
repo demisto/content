@@ -200,13 +200,20 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     description: Check URL Reputation
 hidden: false
 system: true

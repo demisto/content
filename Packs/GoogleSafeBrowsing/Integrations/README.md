@@ -46,6 +46,7 @@ Check URL Reputation
 | DBotScore.Type | string | The type of the indicator | 
 | DBotScore.Vendor | string | Vendor used to calculate the score | 
 | DBotScore.Score | int | The actual score | 
+| DBotScore.Reliability | string | Reliability of the source providing the intelligence data. |
 
 
 #### Command Example
