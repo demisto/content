@@ -1,0 +1,15 @@
+!domain domain=example.com
+!url url=https://example.com
+!ip ip=1.1.1.1
+!file file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
+!vt-analysis-get id=u-20694f234fbac92b1dcc16f424aa1c85e9dd7af75b360745df6484dcae410853-1613980758
+!vt-file-sandbox-report file=2b294b3499d1cce794badffc959b7618
+!url-scan url=https://example.com
+!file-scan entryID=VyoASWK4aRCWLS8T3Jc7EL@2c18b8c3-8f96-458e-8849-39fc741e78fa
+!file-rescan file=6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
+!vt-comments-add resource=paloaltonetworks.com resource_type=domain comment="this is a comment"
+!vt-comments-get resource=https://paloaltonetworks.com
+!vt-comments-get-by-id id=d-paloaltonetworks.com-64591897
+!vt-search query=paloaltonetworks.com
+!vt-passive-dns-data ip=1.1.1.1
+!vt-file-scan-upload-url
