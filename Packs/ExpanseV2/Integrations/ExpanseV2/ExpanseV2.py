@@ -298,7 +298,8 @@ class Client(BaseClient):
             demisto.debug(f'get_asset_details: unsupported asset type {asset_type}')
         return data
 
-    def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str, tag_ids: List[str]) -> Dict[str, Any]:
+    def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str,
+                          tag_ids: List[str]) -> Dict[str, Any]:
         endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
 
         data: Dict = {"operations": [{
@@ -579,7 +580,8 @@ def range_to_cidrs(start: str, end: str) -> Iterator[str]:
         raise ValueError(f'Invalid IP address in range: {str(e)}')
 
 
-def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None, required: bool = False) -> Optional[int]:
+def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None,
+              required: bool = False) -> Optional[int]:
     """Converts a string argument to a Python int
     This function is used to quickly validate an argument provided and convert
     it into an ``int`` type. It will throw a ValueError if the input is invalid
@@ -1260,7 +1262,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
         updated_field = ISSUE_UPDATE_TYPES[update_type]
         previous_value = update.get('previousValue')
         update_user = update['user']['username'] \
-            if ('user' in update and isinstance(update['user'], dict) and 'username' in update['user']) else 'Unknown user'
+            if ('user' in update and isinstance(update['user'], dict)
+                and 'username' in update['user']) else 'Unknown user'
 
         # handle incoming comment
         if update_type == 'Comment':
@@ -2040,6 +2043,67 @@ def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
+def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns all domains that have resolved to IP addresses a certificate has been seen on. There is no direct way to
+    correlate between certificates and domains in Expanse this does so indirectly.
+    """
+    search = args['common_name']
+    params = {
+        "commonNameSearch": search
+    }
+
+    matching_domains = []  # type:ignore
+
+    certificates_iterator = client.get_certificates(params=params)
+    certificates = [certificate for certificate in certificates_iterator]
+
+    for certificate in certificates:
+        certificate_details = client.get_certificate_by_md5_hash(
+            md5_hash=certificate.get('certificate', {}).get('md5Hash'))
+
+        for ip in certificate_details.get('details', {}).get('recentIps', []):
+            params = {
+                'inetSearch': ip.get('ip'),
+                'assetType': 'DOMAIN'
+            }
+            matching_domains += client.get_ips(params=params)
+
+    if len(matching_domains) == 0:
+        return CommandResults(readable_output="No data found")
+
+    context = get_expanse_certificate_to_domain_context(common_name=search, data=matching_domains)
+
+    context_copy = context.copy()
+    del context_copy['DomainList']  # Remove full objects from human readable response
+    human_readable = tableToMarkdown("Expanse Domains matching Certificate Common Name: {search}".format(search=search),
+                                     context_copy)
+
+    return CommandResults(
+        outputs_prefix="Expanse.IPDomains",
+        readable_output=human_readable,
+        raw_response=matching_domains,
+        outputs_key_field="SearchTerm",
+        outputs=context,
+    )
+
+
+def get_expanse_certificate_to_domain_context(common_name, data):
+    """
+    Provides custom context information for domains looked up via certificate.
+
+    :param common_name: The original search parameter
+    :param data: The data returned from the API query
+    :return: A dict of aggregated domain details
+    """
+    return {
+        "SearchTerm": common_name,
+        "TotalDomainCount": len(data),
+        "FlatDomainList": [domain.get('domain') for domain in data],
+        "DomainList": data
+    }
+
+
 """ MAIN FUNCTION """
 
 
@@ -2226,6 +2290,9 @@ def main() -> None:
 
         elif command == "expanse-list-risk-rules":
             return_results(list_risk_rules_command(client, demisto.args()))
+
+        elif command == 'expanse-get-domains-for-certificate':
+            return_results(domains_for_certificate_command(client, demisto.args()))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
