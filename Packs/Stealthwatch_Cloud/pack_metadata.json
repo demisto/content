@@ -1,5 +1,5 @@
 {
-    "name": "Stealthwatch Cloud",
+    "name": "Cisco Secure Cloud Analytics (Stealthwatch Cloud)",
     "description": "Protect your cloud assets and private network",
     "support": "xsoar",
     "currentVersion": "1.0.3",

@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 8
 description: Scalable visibility and security analytics.
-display: Cisco Stealthwatch
+display: Cisco Secure Network Analytics (Stealthwatch)
 name: Cisco Stealthwatch
 script:
   commands:
