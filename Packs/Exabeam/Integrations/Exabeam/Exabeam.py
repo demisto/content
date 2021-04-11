@@ -925,12 +925,13 @@ def contents_append_notable_sequence_details(sequence, sequence_info, contents) 
     return contents
 
 
-def contents_append_notable_sequence_event_types(sequence, contents) -> List[Any]:
+def contents_append_notable_sequence_event_types(sequence, contents, asset_sequence_id) -> List[Any]:
     """Appends a dictionary of data to the base list
 
     Args:
         contents: base list
         sequence: sequence object
+        asset_sequence_id: asset sequence ID
 
     Returns:
         A contents list with the relevant notable sequence event types
@@ -938,7 +939,8 @@ def contents_append_notable_sequence_event_types(sequence, contents) -> List[Any
     contents.append({
         'eventType': sequence.get('eventType'),
         'displayName': sequence.get('displayName'),
-        'count': sequence.get('count')
+        'count': sequence.get('count'),
+        'sequenceId': asset_sequence_id
     })
     return contents
 
@@ -1870,7 +1872,7 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
 
     contents: list = []
     for sequence in sequence_event_types_raw_data:
-        contents = contents_append_notable_sequence_event_types(sequence, contents)
+        contents = contents_append_notable_sequence_event_types(sequence, contents, asset_sequence_id)
 
     entry_context = {'Exabeam.SequenceEventTypes(val.sequenceId && val.sequenceId === obj.sequenceId)': contents}
 

@@ -1871,6 +1871,9 @@ script:
     - contextPath: Exabeam.SequenceEventTypes.count
       description: The number of the sequences.
       type: Number
+    - contextPath: Exabeam.SequenceEventTypes.sequenceId
+      description: The sequence ID.
+      type: String
   dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
