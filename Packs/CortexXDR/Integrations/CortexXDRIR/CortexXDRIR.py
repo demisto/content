@@ -2323,16 +2323,16 @@ def endpoint_scan_abort_command(client, args):
 
 
 def validate_args_scan_commands(args):
-    endpoint_id_list = args.get('endpoint_id_list')
-    dist_name = args.get('dist_name')
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
     gte_first_seen = args.get('gte_first_seen')
     gte_last_seen = args.get('gte_last_seen')
     lte_first_seen = args.get('lte_first_seen')
     lte_last_seen = args.get('lte_last_seen')
-    ip_list = args.get('ip_list')
-    group_name = args.get('group_name')
-    platform = args.get('platform')
-    alias = args.get('alias')
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias = argToList(args.get('alias'))
     hostname = argToList(args.get('hostname'))
     all_ = argToBoolean(args.get('all', 'false'))
 
