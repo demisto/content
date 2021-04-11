@@ -15,55 +15,6 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
-  defaultvalue: Bad
-  display: Indicator Reputation
-  name: feedReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: F - Reliability cannot be judged
-  display: Source Reliability
-  name: feedReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
-  display: Traffic Light Protocol Color
-  name: tlp_color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  required: false
-  type: 15
-- defaultvalue: '30'
-  display: Feed Fetch Interval
-  name: feedFetchInterval
-  required: false
-  type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  defaultvalue: 'true'
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -72,33 +23,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: ''
-  name: feedExpirationPolicy
-  type: 17
-  required: false
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-- display: ''
-  name: feedExpirationInterval
-  type: 1
-  required: false
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
-  required: false
-  type: 0
-- name: feed
-- name: feedReputation
-- name: feedReliability
-- name: feedExpirationPolicy
-- name: feedExpirationInterval
-- name: feedFetchInterval
-- name: feedBypassExclusionList
-- name: feedTags
-- name: tlp_color
 - name: feed
   must_equal:
     defaultvalue: 'true'
@@ -108,6 +32,7 @@ configuration:
   must_contain: {}
 - name: feedReputation
   must_equal:
+    defaultvalue: Bad
     display: Indicator Reputation
     type: 18
     required: false
@@ -121,6 +46,7 @@ configuration:
       this reputation
 - name: feedReliability
   must_equal:
+    defaultvalue: F - Reliability cannot be judged
     display: Source Reliability
     type: 15
     required: true
@@ -152,12 +78,14 @@ configuration:
   must_contain: {}
 - name: feedFetchInterval
   must_equal:
+    defaultvalue: '30'
     display: Feed Fetch Interval
     type: 19
     required: false
   must_contain: {}
 - name: feedBypassExclusionList
   must_equal:
+    defaultvalue: 'true'
     display: Bypass exclusion list
     type: 8
     required: false
