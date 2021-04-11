@@ -71,8 +71,8 @@ class TestFetchIncidents:
 
 class TestHelpers:
     def test_convert_epoch_to_readable(self):
-        assert convert_epoch_to_readable({'creation_date': 1617056782}, ['creation_date']) == {
-            'creation_date': '2021-03-30T01:26:22'}
+        key = 'creation_date'
+        assert parse(convert_epoch_to_readable({key: 1617056782}, [key])[key])
 
     def test_convert_epoch_to_readable_no_key(self):
         assert convert_epoch_to_readable({'something_else': 1617056782}) == {
