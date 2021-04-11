@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import print_function
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
-    data_to_md, create_headers_map
+    data_to_md, create_headers_map, DataModel
 from CommonServerPython import entryTypes
 import demistomock as demisto
 import pytest
@@ -930,3 +930,11 @@ def test_pkcs7_mime(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['Subject'] == 'Testing signed multipart email'
+
+
+def test_PtypString():
+    data_value = DataModel.PtypString('IPM.Note')
+    assert data_value == u'IPM.Note'
+
+    data_value = DataModel.PtypString('I\x00P\x00M\x00.\x00N\x00o\x00t\x00e\x00')
+    assert data_value == u'IPM.Note'
