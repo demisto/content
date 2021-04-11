@@ -8,9 +8,9 @@ configuration:
   required: false
   defaultvalue: 'true'
   type: 8
-- display: The AutoFocus API key
+- display: API Key
   name: api_key
-  required: true
+  required: false
   type: 4
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
@@ -78,6 +78,11 @@ configuration:
     indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: Whether to override the default AutoFocus API Key given by the Cortex XSOAR platform.
+  display: Override default credentials
+  name: override_default_credentials
   required: false
   type: 8
 - display: Trust any certificate (not secure)

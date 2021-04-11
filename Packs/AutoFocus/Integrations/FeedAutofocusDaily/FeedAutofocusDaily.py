@@ -237,17 +237,26 @@ def main():
     params = demisto.params()
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
-    client = Client(api_key=params.get('api_key'),
-                    insecure=params.get('insecure'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
-    # Switch case
+
     commands = {
         'test-module': module_test_command,
         'autofocus-daily-get-indicators': get_indicators_command
     }
     try:
+        api_key = params.get('api_key')
+        if not api_key:
+            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
+                raise Exception('For versions earlier than 6.2.0, configure an API Key.')
+            if not params.get('override_default_credentials'):
+                raise Exception('If you wish to override the default credentials, please configure an API Key.')
+            api_key = demisto.getAutoFocusApiKey()
+
+        client = Client(api_key=api_key,
+                        insecure=params.get('insecure'))
+
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client, feed_tags, tlp_color)
             # we submit the indicators in batches
