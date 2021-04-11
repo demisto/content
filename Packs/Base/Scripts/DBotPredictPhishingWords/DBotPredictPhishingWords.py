@@ -1,24 +1,9 @@
 # pylint: disable=no-member
 
 from CommonServerPython import *
-from contextlib import contextmanager, redirect_stderr
-from os import devnull
 from string import punctuation
-import nltk
 from nltk import word_tokenize
-nltk.data.path.append('/root/nltk_data')
-
-@contextmanager
-def suppress_stdout_stderr():
-    """A context manager that redirects stdout and stderr to devnull"""
-    with open(devnull, 'w') as fnull:
-        with redirect_stderr(fnull) as err:
-            yield (err)
-
-
-# silent import of demisto_ml
-with suppress_stdout_stderr():
-    import demisto_ml
+import demisto_ml
 
 FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
 TORCH_TYPE = 'torch'
