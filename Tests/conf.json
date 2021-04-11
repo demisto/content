@@ -3256,6 +3256,11 @@
             "integrations": "Microsoft Graph API",
             "playbookID": "Microsoft Graph API - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "QRadar v3",
+            "playbookID": "QRadar_v3-test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
