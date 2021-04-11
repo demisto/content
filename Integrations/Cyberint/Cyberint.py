@@ -325,7 +325,7 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
 
 
 def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str,
-                                           attachment_id: str, attachment_name: str) -> fileResult:
+                                           attachment_id: str, attachment_name: str) -> Any:
     """
     Retrieve attachment by alert reference ID and attachment internal ID.
     Attachments includes: CSV files , Screenshots, and alert attachments files.
@@ -347,7 +347,7 @@ def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str,
 
 
 def cyberint_alerts_get_analysis_report_command(client: Client,
-                                                alert_ref_id: str, report_name: str) -> fileResult:
+                                                alert_ref_id: str, report_name: str) -> Any:
     """
     Retrieve expert analysis report by alert reference ID and report name.
 
@@ -432,7 +432,8 @@ def get_alert_attachments(client: Client, alert_attachments: Union[List, Dict],
                 attachment_details = create_fetch_incident_attachment(get_attachment_response,
                                                                       attachment.get('name', None))
             else:
-                get_attachment_response = client.get_alert_attachment(alert_id, attachment.get('id', None))
+                get_attachment_response = client.get_alert_attachment(alert_id,
+                                                                      attachment.get('id', None))
                 attachment_details = create_fetch_incident_attachment(get_attachment_response,
                                                                       attachment.get('name', None))
 
@@ -492,7 +493,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         for attachment_type, attachments_path in attachments_keys.items():
             for path in attachments_path:
                 alert_attachments = dict_safe_get(alert, path, default_return_value=[])
-                current_incident_attachments, current_attachments = get_alert_attachments(client, alert_attachments,
+                current_incident_attachments, current_attachments = get_alert_attachments(client,
+                                                                                          alert_attachments,
                                                                                           attachment_type,
                                                                                           alert_id)
 
@@ -530,6 +532,7 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
+    command = demisto.command()
     access_token = params.get('access_token')
     environment = params.get('environment')
 
@@ -537,7 +540,7 @@ def main():
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     proxy = params.get('proxy', False)
     base_url = f'https://{environment}.cyberint.io/alert/'
-    demisto.info(f'Command being called is {demisto.command()}')
+    demisto.info(f'Command being called is {command}')
     try:
         client = Client(
             base_url=base_url,
@@ -545,11 +548,11 @@ def main():
             access_token=access_token,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             fetch_environment = argToList(params.get('fetch_environment', ''))
             fetch_status = params.get('fetch_status', [])
             fetch_type = params.get('fetch_type', [])
@@ -561,16 +564,16 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'cyberint-alerts-fetch':
+        elif command == 'cyberint-alerts-fetch':
             return_results(cyberint_alerts_fetch_command(client, demisto.args()))
 
-        elif demisto.command() == 'cyberint-alerts-status-update':
+        elif command == 'cyberint-alerts-status-update':
             return_results(cyberint_alerts_status_update(client, demisto.args()))
 
-        elif demisto.command() == 'cyberint-alerts-get-attachment':
+        elif command == 'cyberint-alerts-get-attachment':
             return_results(cyberint_alerts_get_attachment_command(client, **demisto.args()))
 
-        elif demisto.command() == 'cyberint-alerts-analysis-report':
+        elif command == 'cyberint-alerts-analysis-report':
             return_results(cyberint_alerts_get_analysis_report_command(client, **demisto.args()))
     except Exception as e:
 
@@ -584,7 +587,7 @@ def main():
         elif 'Unauthorized alerts requested' in str(e):
             error_message = 'Some of the alerts selected to update are either blocked or not found.'
         else:
-            error_message = f'Failed to execute {demisto.command()} command. Error: {str(e)}'
+            error_message = f'Failed to execute {command} command. Error: {str(e)}'
         return_error(error_message)
 
 
