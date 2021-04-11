@@ -25,7 +25,7 @@ def get_server_url():
 
     match = re.match('default via (.*) dev', stdout.decode('utf-8'))
     if match:
-        return f'https://{match.group(1)}/acc_temp'
+        return f'https://{match.group(1)}/acc_Tier2'
 
     else:
         raise ValueError('could not find server URL')

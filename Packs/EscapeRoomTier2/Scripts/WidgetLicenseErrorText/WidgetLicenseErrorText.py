@@ -81,12 +81,22 @@ def is_valid_license():
 
 
 def create_starting_incident():
-    demisto.executeCommand('createNewIncident',
-                           args={
-                               'name': 'Springfield Nuclear Power Plant',
-                               'severity': IncidentSeverity.CRITICAL,
-                               # 'type': "D'oh!",
-                           })
+    res = demisto.executeCommand('getIncidents', args={'name': 'Springdfield', 'raw-reponse': 'true'})
+    if is_error(res):
+        raise DemistoException('failed to search incident', res=res)
+
+    if res[0]['Contents']['total']:
+        # already created an incident
+        return
+
+    res = demisto.executeCommand('createNewIncident',
+                                 args={
+                                     'name': 'Springfield Nuclear Power Plant',
+                                     'severity': IncidentSeverity.CRITICAL,
+                                     'type': "D'oh!⚠️",
+                                 })
+    if is_error(res):
+        raise DemistoException('failed to create incident', res=res)
 
 
 def v_for_vendetta(time_from: datetime, time_to: datetime):
