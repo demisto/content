@@ -2,9 +2,9 @@ TOPdesk’s Enterprise Service Management software (ESM) lets your service teams
 This integration was integrated and tested with 10.08.008-on-premises-release3-build2 for Linux x86 64-bit of TOPdesk.
 
 ## Use cases
-1. Get, update, create, TOPdesk incidents, as well as (de-)escalate, (un)archive or upload files to the incidents.
+1. Get, update, and create TOPdesk incidents, as well as (de-)escalate, (un)archive or upload files to the incidents.
 2. Fetch newly created TOPdesk incidents.
-3. Get branches, persons and operators information.
+3. Get information about branches, persons and operators.
 
 ## Configure TOPdesk on Cortex XSOAR
 
@@ -28,51 +28,54 @@ This integration was integrated and tested with 10.08.008-on-premises-release3-b
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Auth Details
-Some of TOPdesk's user types include Customer and Operator. Each user type has a different set of actions that he is allowed to perfom.
-For example, a Customer can only update incidents he created while an Operator can update a wider range of incidents.
+*Person* and *operator* are TOPdesk's user types. Each user type has a different set of actions that he is allowed to perform.
+For example, a *person* can only update incidents he created, while an *operator* can update a wider range of incidents.
 
-In general, if an account is able to preform the requested command in TOPdesk's UI it should be able to preform it using this integration. 
-- Make sure you use the right account for your needs and that the account used has permissions to make all needed requests.
+In general, if an account is able to preform the requested command in TOPdesk's UI, it should be able to preform it using this integration. 
+Make sure you use the right account for your needs and that the account used has all the required permissions. 
 
 #### Setup TOPdesk's application password
 1. Login to TOPdesk with the designated account.
 2. In TOPdesk, click **Open user menu** (top right side of the front page) > Choose **My settings**
-3. At the bottom of the page should be an **Application passwords** section. You can view all application passwords that are configured to the logged in account. 
+3. At the bottom of the page should be an **Application passwords** section. You can view all application passwords that are configured for the logged in account. 
 4. At the bottom right corner, click **Add**.
-5. A window should open requesting a name for the application. Choose any convenient name (e.g. XSOAR-key) and click **Create**. 
-6. The application password should be shown, copy it to a safe location. This is the password that will be used for the integration in XSOAR.
+5. A window should open requesting a name for the application. Choose any convenient name (e.g., XSOAR-key) and click **Create**. 
+6. The application password should be shown - copy it to a safe location. This is the password that will be used for the integration in XSOAR.
 7. Once copied for further usage you can click **Close**.
 
 #### Configure Username and Password
 **Username**: Use the account username from which the application password was generated. (*Not* the key name)
 
-**Password**: Use the application password generated at step 6 of Setup TOPdesk's application password. 
+**Password**: Use the application password generated in step 6 of the **Setup TOPdesk's application password** procedure. 
 
 #### Troubleshooting
-- Make sure the application password is not expired by logging in TOPdesk and viewing it as described in the **Setup TOPdesk's application password** section step 3. 
+Make sure the application password is not expired by logging in TOPdesk and viewing it as described in step 3 of the **Setup TOPdesk's application password** procedure. 
 
 ### FIQL query
-A few implemented commands can take a query as a paramter. Those include: 
-`topdesk-incidents-list`, `topdesk-branches-list`, `topdesk-persons-list`, `topdesk-operators-list`
+A few implemented commands can get a query as a parameter. A partial list of these commands: 
+- `topdesk-incidents-list`
+- `topdesk-branches-list` 
+- `topdesk-persons-list` 
+- `topdesk-operators-list`
 
-While the newest versions of TOPdesk all use the new [FIQL query format](https://developers.topdesk.com/tutorial.html#query), older versions use limited inline parameters for filters in the requests.
-Specifically there are 2 versions at work:
+While the new versions of TOPdesk all use the new [FIQL query format](https://developers.topdesk.com/tutorial.html#query), older versions use limited inline parameters for filters in the requests.
+Specifically there are 2 versions being used:
 #### [TOPdeskRestAPI](https://developers.topdesk.com/documentation/index.html) 
 Implements: `topdesk-incidents-list`
 
-Supports FIQL query from versions `3.4.0` and higher.
+Supports FIQL query version `3.4.0` and higher.
 
-Convinently TOPdeskRestAPI also provides an endpoint revealing the api version. 
-Therefore once the integration is configured, it automatically translates FIQL query to 
-inline parameters and otherwise depending on the TOPdesk version.
+Conveniently, TOPdeskRestAPI also provides an endpoint revealing the API version. 
+Therefore, once the integration is configured, it automatically translates FIQL query to 
+inline parameters and vice versa depending on the TOPdesk version.
 
 #### [SupportingFilesAPI](https://developers.topdesk.com/explorer/?page=supporting-files) 
 Implements: `topdesk-branches-list`, `topdesk-persons-list`, `topdesk-operators-list`
 
-Supports FIQL query from versions `1.38.0` and higher.
+Supports FIQL query version `1.38.0` and higher.
 
-Unlike TOPdeskRestAPI, SupportingFilesAPI does not currently provide an endpoint revealing the api version.
-Therefore this integration only supports SupportingFilesAPI from versions `1.38.0` and higher. 
+Unlike TOPdeskRestAPI, SupportingFilesAPI does not currently provide an endpoint revealing the API version.
+Therefore, this integration only supports SupportingFilesAPI version `1.38.0` and higher. 
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -82,9 +85,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 Get list of subcategories.
 
 #### Permissions
-**Operator**: With 1st/2nd line incident permission; Category/Branch/Operator filters apply
+**Operator**: 1st/2nd line incident permissions; Category/Branch/Operator filters apply.
 
-**Person**: Unrestricted access
+**Person**: Unrestricted access.
 
 #### Base Command
 
