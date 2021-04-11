@@ -5,10 +5,9 @@ Unlike `PAN-OS EDL Management`, This integration hosts the EDL on the Cortex XSO
 1. Convert existing EDL list to indicators in Cortex XSOAR. This can be done automatically: extract your EDL as a text file from the web server it's currently hosted on, upload it as a file to the Playground and use the `ExtractIndicatorsFromTextFile` automation. e.g, `!ExtractIndicatorsFromTextFile entryID=<entry_id>` 
 2. Go to the `Indicators` page and [filter](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html#idf15421df-a0e0-41fb-b8d4-07d0f610bbec) to find all of the Indicators you extracted from the text file.
 3. If needed, batch select the indicators and add a tag to indicators you wish to host as a specific EDL. Use this tag in the `Indicator Query` integration parameter when configuring the integration. 
-4. Maintain your indicators by understanding the (expiration)[https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/understand-indicators/indicator-expiration.html] policy and the [exclusion](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/understand-indicators/exclusion-list.html) list.
-5. You can always edit a single or bulk of indicators from the Indicators screen.
-6. Follow the rest of this guide to make sure that the PAN-OS device has connection to the EDL service.
-7. Upon a configuration of 100 FWs or more, we recommend using your Panorama device and creating an EDL object there that will be populated from the `PAN-OS EDL Service`. The EDL object should be pushed to its respective FWs. 
+4. You can always edit a single or bulk of indicators from the Indicators screen.
+5. Follow the rest of this guide to make sure that the PAN-OS device has connection to the EDL service.
+6. Upon a configuration of 100 FWs or more, we recommend using your Panorama device and creating an EDL object there that will be populated from the `PAN-OS EDL Service`. The EDL object should be pushed to its respective FWs. 
 
 ## Use Cases
 ---
