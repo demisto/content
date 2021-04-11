@@ -22,7 +22,7 @@ def get_private_key():
     return rsa.PrivateKey.load_pkcs1(content)
 
 
-def encrypt(cipher_base64) -> bytes:
+def encrypt(cipher_base64) -> str:
     # nedpq = get_public_key()
     # public_key = rsa.PublicKey(*nedpq)
     public_key = get_public_key()
@@ -30,18 +30,18 @@ def encrypt(cipher_base64) -> bytes:
     try:
         # cipher_text = base64.b64decode(cipher_base64)
         plain_text = rsa.encrypt(cipher_base64, public_key)
-        return plain_text
+        return base64.b64encode(plain_text).decode('utf-8')
     except Exception as e:
         raise DemistoException(f'Could not encrypt\n{e}')
 
 
-def decrypt(cipher_base64) -> bytes:
+def decrypt(cipher_base64) -> str:
     # nedpq = get_private_key()
     # private_key = rsa.PrivateKey(*nedpq)
     private_key = get_private_key()
     try:
-        # cipher_text = base64.b64decode(cipher_base64)
-        plain_text = rsa.decrypt(cipher_base64, private_key)
+        cipher_text = base64.b64decode(cipher_base64)
+        plain_text = rsa.decrypt(cipher_text, private_key)
         return plain_text.decode('utf-8')
     except Exception as e:
         raise DemistoException(f'Could not decrypt\n{e}')
