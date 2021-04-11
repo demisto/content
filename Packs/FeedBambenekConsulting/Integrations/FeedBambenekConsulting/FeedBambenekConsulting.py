@@ -1,5 +1,5 @@
 from CommonServerPython import *
-
+from demistomock import *
 name_to_url = {
     'C2 IP Feed': 'https://faf.bambenekconsulting.com/feeds/dga/c2-ipmasterlist.txt',
     'High-Confidence C2 IP Feed': 'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt',
@@ -20,6 +20,8 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
+            'relation_name': 'indicator-of',
+            'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
                 'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
@@ -31,9 +33,11 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'relation_name': 'indicator-of',
+            'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s$', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?),', None)
             }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt': {
@@ -41,6 +45,8 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
+            'relation_name': 'indicator-of',
+            'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
                 'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
@@ -51,6 +57,8 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'relation_name': 'indicator-of',
+            'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
                 'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
@@ -61,6 +69,8 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'relation_name': 'indicator-of',
+            'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
                 'malwarefamily': ('description', r'.*used\s+by\s(.*?)(\(|DGA)', None)
@@ -72,6 +82,8 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'relation_name': 'indicator-of',
+            'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
                 'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
@@ -86,6 +98,7 @@ def main():
                            'description',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'object_type_b': FeedIndicatorType.IP,
             'mapping': {
                 'ipaddress': 'ip'
             }
@@ -98,6 +111,7 @@ def main():
                            'description',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'object_type_b': FeedIndicatorType.IP,
             'mapping': {
                 'ipaddress': 'ip'
             }
@@ -124,5 +138,5 @@ def main():
 
 from CSVFeedApiModule import *  # noqa: E402
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == '__main__':
     main()

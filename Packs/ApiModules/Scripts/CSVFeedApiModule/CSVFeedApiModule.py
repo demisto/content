@@ -291,7 +291,7 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
 
 
 def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, limit: int = 0,
-                             relationships:bool=False, **kwargs):
+                             relations_types: bool = False, **kwargs):
     iterator = client.build_iterator(**kwargs)
     relationships_of_indicator = []
     indicators = []
@@ -311,13 +311,13 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, auto_detect,
                                                               value)
                     raw_json['type'] = indicator_type
-                    if relationships:
+                    if relations_types:
                         relationships_lst = EntityRelation(
-                            name='indicates',
+                            name=config.get(url, {}).get('relation_name'),
                             entity_a=value,
                             object_type_a=indicator_type,
                             entity_b=fields_mapping.get('malwarefamily'),
-                            object_type_b='Malware',
+                            object_type_b=config.get(url, {}).get('object_type_b'),
                         )
                         relationships_of_indicator = [relationships_lst.to_indicator()]
 
@@ -351,7 +351,7 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
         raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
     relationships = demisto.params().get('relationships', False)
-    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit,relationships)
+    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit, relationships)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
