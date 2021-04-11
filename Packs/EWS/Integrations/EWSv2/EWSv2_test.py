@@ -23,12 +23,28 @@ def test_start_logging():
 
 
 def test_parse_fetch_time_to_minutes_no_error():
+    """
+    Given:
+       - First fetch timestamp
+    When
+       - parse fetch time into minutes
+    Then
+       - Get the fetch time in minutes as expected
+    """
     EWSv2.FETCH_TIME = '3 hours'
-    res = EWSv2.parse_fetch_time_to_minutes()
-    assert res == 180
+    fetch_time_in_minutes = EWSv2.parse_fetch_time_to_minutes()
+    assert fetch_time_in_minutes == 180
 
 
 def test_parse_fetch_time_to_minutes_invalid_time_integer(mocker):
+    """
+    Given:
+       - Invalid first fetch timestamp
+    When
+       - parse fetch time into minutes
+    Then
+       - Get an error message
+    """
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
     EWSv2.FETCH_TIME = 'abc hours'
@@ -39,6 +55,14 @@ def test_parse_fetch_time_to_minutes_invalid_time_integer(mocker):
 
 
 def test_parse_fetch_time_to_minutes_invalid_time_unit(mocker):
+    """
+    Given:
+       - Invalid first fetch timestamp (Invalid time unit)
+    When
+       - parse fetch time into minutes
+    Then
+       - Get an error message
+    """
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
     EWSv2.FETCH_TIME = '3 hoursss'
