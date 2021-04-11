@@ -20,7 +20,7 @@ For more details on permissions specific to commands visit the TOPdesk integrati
 ### Configure Username and Password
 **Username**: Use the account username from which the application password was generated. (*Not* the key name)
 
-**Password**: Use the application password generated in step 6 of the "Setup TOPdesk's application password" procedure. 
+**Password**: Use the application password generated in step 6 of the **Setup TOPdesk's application password** procedure. 
 
 ### Troubleshooting
-Make sure the application password is not expired by logging in TOPdesk and viewing it as described in step 3 of the "Setup TOPdesk's application password" procedure. 
+Make sure the application password is not expired by logging in TOPdesk and viewing it as described in step 3 of the **Setup TOPdesk's application password** procedure. 
