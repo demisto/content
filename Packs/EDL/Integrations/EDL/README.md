@@ -1,5 +1,14 @@
 This integration provides External Dynamic List (EDL) as a service for the system indicators (Outbound feed). The feed content can then be sent to 3rd parties for improving their security alignment.
 
+## PAN-OS EDL Management to PAN-OS EDL Service migration steps
+This integration hosts the EDL on the Cortex XSOAR server. Please follow these steps to migrate your EDLs.
+1. Create IOCs in Cortex XSOAR from the EDLs data, which was previously hosted on an external web server. To do so automatically, extract your EDL as a text file from the web server, upload it as a file to the war-room and use the `ExtractIndicatorsFromTextFile` automation. e.g, `!ExtractIndicatorsFromTextFile entryID=<entry_id>` 
+2. Go to the `Indicators` and [filter](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html#idf15421df-a0e0-41fb-b8d4-07d0f610bbec) to find all of the Indicators you extracted from the text file.
+3. If needed, batch select the indicators and add a tag to indicators you which to host as a specific EDL. Use this tag in the `Indicator Query` integration parameter when configuring the integration. 
+4. Maintain your indicators by understanding the (expiration)[https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/understand-indicators/indicator-expiration.html] policy and the [exclusion](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/understand-indicators/exclusion-list.html) list.
+5. You can always edit a single or bulk of indicators from the Indicators screen.
+6. Follow the rest of this guide to make sure that the PAN-OS device has connection to the EDL service.
+7. Upon a configuration of 100s of FWs and a Panorama device, we recommend creating an EDL object in the Panorama device that will be populated from the `PAN-OS EDL Service`. the EDL object should be pushed to its respective FWs. 
 
 ## Use Cases
 ---
@@ -7,7 +16,7 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 2. Create External Dynamic Lists (EDLs) of the IP addresses, URLs and domains used by ransomware, known APT groups, and active malware campaigns for tracking in AutoFocus.
 3. Create External Dynamic Lists to track IPs and URLs commonly used by Microsoft Office365 or CDNs and cloud services, or used as tor exit nodes.
 
-## Configure EDL on Demisto
+## Configure Palo Alto Networks PAN-OS EDL Service on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for EDL.
@@ -55,7 +64,7 @@ You can execute these commands from the Cortex XSOAR CLI as part of an automatio
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### edl-update
 ***
-Updates values stored in the EDL (only avaialable On-Demand).
+Updates values stored in the EDL (only available On-Demand).
 
 ##### Base Command
 
