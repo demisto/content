@@ -129,7 +129,7 @@ args:
   predefined:
   - tokenizer
   - byWords
-  - byLette\rs
+  - byLetters
   required: false
   secret: false
 comment: Predict text label using a pre-trained machine learning phishing model, and
