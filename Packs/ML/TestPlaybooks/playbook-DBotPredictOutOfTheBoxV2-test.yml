@@ -71,11 +71,11 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 64b551fa-6c41-4856-89ba-04f168e0e782
+    taskid: 64b551fa-6c41-4856-89ba-04f168e0e783
     type: regular
     task:
       elasticcommonfields: {}
-      id: 64b551fa-6c41-4856-89ba-04f168e0e782
+      id: 64b551fa-6c41-4856-89ba-04f168e0e783
       version: -1
       name: Predict Using Out Of The Box Model
       scriptName: DBotPredictOutOfTheBoxV2
@@ -183,7 +183,7 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 8b49572a-0b69-4ea4-82cc-39a39235938f
+    taskid: 8b49572a-0b69-4ea4-82cc-39a39235938f3
     type: regular
     task:
       elasticcommonfields: {}
