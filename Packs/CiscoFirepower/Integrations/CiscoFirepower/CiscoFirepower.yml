@@ -2279,10 +2279,6 @@ script:
       task with the specified ID. Used for deploying.
     execution: false
     name: ciscofp-get-task-status
-    arguments:
-    - name: task_id
-      required: true
-      description: The ID of the task for which to check the status.
     outputs:
     - contextPath: CiscoFP.TaskStatus.Status
       description: task status
