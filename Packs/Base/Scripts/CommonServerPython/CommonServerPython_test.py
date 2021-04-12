@@ -4042,7 +4042,7 @@ class TestCommonTypes:
         assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com', 'Domain': 'example.com'}
 
 
-class TestSearchIndicatorsByVersion:
+class TestIndicatorsSearcher:
     def mock_search_after_output(self, fromDate, toDate, query, size, value, searchAfter):
         if not searchAfter:
             searchAfter = 0
@@ -4060,10 +4060,10 @@ class TestSearchIndicatorsByVersion:
           - The page number is rising
           - The searchAfter param is null
         """
-        from CommonServerPython import SearchIndicatorsByVersion
+        from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
 
-        search_indicators_obj_paging = SearchIndicatorsByVersion()
+        search_indicators_obj_paging = IndicatorsSearcher()
         search_indicators_obj_paging._can_use_search_after = False
 
         for n in range(5):
@@ -4083,10 +4083,10 @@ class TestSearchIndicatorsByVersion:
           - The search after param is rising
           - The page param is 0
         """
-        from CommonServerPython import SearchIndicatorsByVersion
+        from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
-        search_indicators_obj_search_after = SearchIndicatorsByVersion()
+        search_indicators_obj_search_after = IndicatorsSearcher()
         search_indicators_obj_search_after._can_use_search_after = True
 
         for n in range(5):

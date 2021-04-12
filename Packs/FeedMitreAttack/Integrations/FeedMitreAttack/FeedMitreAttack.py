@@ -358,7 +358,7 @@ def search_command(client, args):
     size = 1000
     # makes sure the loop runs at least ones
     ioc_data = 1
-    search_indicators = SearchIndicatorsByVersion()
+    search_indicators = IndicatorsSearcher()
 
     while len(ioc_data) > 0:
         raw_data = search_indicators.search_indicators_by_version(query=f'type:"{client.indicatorType}"', size=size)
