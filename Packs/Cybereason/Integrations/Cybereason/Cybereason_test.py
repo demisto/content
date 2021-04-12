@@ -1,4 +1,5 @@
 from CommonServerPython import *
+from Cybereason import malop_processes_command
 import json
 import io
 import demistomock as demisto
@@ -322,8 +323,7 @@ def test_malop_processes_command(mocker):
     raw_response = util_load_json('test_files/malop_processes_raw_response.json')
     mocker.patch('Cybereason.malop_processes', return_value=raw_response)
     mocker.patch.object(demisto, 'results')
-    import Cybereason
-    Cybereason.malop_processes_command()
+    malop_processes_command()
     result = demisto.results.call_args[0]
 
     assert result[0].get('ContentsFormat', '') == 'json'
