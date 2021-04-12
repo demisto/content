@@ -997,7 +997,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, modified_files_paths, pack_was_modified = pack.detect_modified(
+        task_status, modified_pack_files_paths, pack_was_modified = pack.detect_modified(
             content_repo, index_folder_path, current_commit_hash, previous_commit_hash)
 
         if not task_status:
