@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 import sys
 import jinja2
 
@@ -17,6 +16,7 @@ DEMISTO_INSTALLED_PATH = "/contentpacks/metadata/installed"
 DEMISTO_PLAYBOOKS_PATH = "/playbook/search"
 DEMISTO_AUTOMATIONS_PATH = "/automation/search"
 DEMISTO_CONFIG_PATH = "/system/config"
+DEMISTO_INCIDENTS_PATH = "/incidents/search"
 MAX_REQUEST_SIZE = demisto.args().get("size", 500)
 HTML_TABLE_TEMPLATE = """
 <h3>{{ name }}</h3>
@@ -49,6 +49,8 @@ HTML_TABLE_TEMPLATE = """
 """
 
 MD_DOCUMENT_TEMPLATE = """
+{{ open_incidents }}
+
 {{ integrations_table }}
 
 {{ installed_packs_table }}
@@ -113,7 +115,7 @@ HTML_DOCUMENT_TEMPLATE = """
 """
 
 
-class ReturnedAPIData:
+class TableData:
     def __init__(self, data, name):
         self.data = data
         self.name = name
@@ -137,6 +139,18 @@ class ReturnedAPIData:
         return len(self.data)
 
 
+class SingleFieldData:
+    def __init__(self, name, data):
+        self.data = data
+        self.name = name
+
+    def as_markdown(self):
+        return f"### {self.name}\n{self.data}"
+
+    def as_html(self):
+        return self.data
+
+
 class Document:
     def __init__(
             self,
@@ -145,7 +159,8 @@ class Document:
             installed_packs_table,
             playbooks_table,
             automations_table,
-            system_config
+            system_config,
+            open_incidents
     ):
         self.template = template
         self.integrations_table = integrations_table
@@ -153,6 +168,7 @@ class Document:
         self.playbooks_table = playbooks_table
         self.automations_table = automations_table
         self.system_config = system_config
+        self.open_incidents = open_incidents
 
     def html(self):
         template = jinja2.Template(HTML_DOCUMENT_TEMPLATE)
@@ -171,7 +187,8 @@ class Document:
             installed_packs_table=self.installed_packs_table.as_markdown(["name", "currentVersion"]),
             playbooks_table=self.playbooks_table.as_markdown(["name", "TotalTasks"]),
             automations_table=self.automations_table.as_markdown(["name", "comment"]),
-            system_config=self.system_config.as_markdown()
+            system_config=self.system_config.as_markdown(),
+            open_incidents=self.open_incidents.as_markdown()
         )
 
 
@@ -204,6 +221,8 @@ def post_api_request(url, body):
         return res
     except KeyError:
         return_error(f'API Request failed, no response from API call to {url}')
+    except TypeError:
+        return_error(f'API Request failed, failedto {raw_res}')
 
 
 def get_api_request(url):
@@ -218,10 +237,35 @@ def get_api_request(url):
         return_error(f'API Request failed, no response from API call to {url}')
 
 
+def get_open_incidents(days=7, size=1000):
+    body = {
+        "userFilter": False,
+        "filter": {
+            "page": 0,
+            "size": size,
+            "query": "-status:closed -category:job",
+            "sort": [
+                {
+                    "field": "id",
+                    "asc": False
+                }
+            ],
+            "period": {
+                "by": "day",
+                "fromValue": days
+            }
+        }
+    }
+    r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
+    total = r.get("total")
+    rd = SingleFieldData("Total Open Incidents", total)
+    return rd
+
+
 def get_enabled_integrations():
     """
     Retrieve all the running instances.
-    :return: ReturnedAPIData
+    :return: TableData
     """
     r = post_api_request(DEMISTO_INTEGRATIONS_PATH, {"size": MAX_REQUEST_SIZE})
     instances = r.get("instances")
@@ -230,7 +274,7 @@ def get_enabled_integrations():
         if instance.get("enabled"):
             enabled_instances.append(instance)
 
-    rd = ReturnedAPIData(enabled_instances, "Enabled Instances")
+    rd = TableData(enabled_instances, "Enabled Instances")
     # return_results(rd.as_markdown(headers=["name", "brand"]))
     return rd
 
@@ -238,38 +282,40 @@ def get_enabled_integrations():
 def get_installed_packs():
     """
     Get all the installed Content Packs
-    :return: ReturnedAPIData
+    :return: TableData
     """
     r = get_api_request(DEMISTO_INSTALLED_PATH)
-    rd = ReturnedAPIData(r, "Installed Content Packs")
+    rd = TableData(r, "Installed Content Packs")
     return rd
 
 
 def get_custom_playbooks():
     """
     Return all the custom playbooks installed in XSOAR>
-    :return: ReturnedAPIData
+    :return: TableData
     """
     r = post_api_request(DEMISTO_PLAYBOOKS_PATH, {"query": "system:F AND hidden:F"}).get("playbooks")
     for pb in r:
         pb["TotalTasks"] = len(pb.get("tasks", []))
-    rd = ReturnedAPIData(r, "Custom Playbooks")
+    rd = TableData(r, "Custom Playbooks")
     return rd
 
 
 def get_custom_automations():
     r = post_api_request(DEMISTO_AUTOMATIONS_PATH, {"query": "system:F AND hidden:F"}).get("scripts")
-    rd = ReturnedAPIData(r, "Custom Automations")
+    rd = TableData(r, "Custom Automations")
     return rd
 
 
 def get_system_config():
     r = get_api_request(DEMISTO_CONFIG_PATH).get("defaultMap")
-    rd = ReturnedAPIData(r, "System Configuration")
+    rd = TableData(r, "System Configuration")
     return rd
 
 
 def main():
+    incidents = get_open_incidents()
+
     system_config = get_system_config()
     integrations = get_enabled_integrations()
     installed_packs = get_installed_packs()
@@ -281,19 +327,15 @@ def main():
         integrations_table=integrations,
         installed_packs_table=installed_packs,
         playbooks_table=playbooks,
-        automations_table=automations
+        automations_table=automations,
+        open_incidents=incidents
     )
-    """
-            integrations.as_markdown(["name", "brand"]),
-        installed_packs.as_markdown(["name", "currentVersion"]),
-        playbooks.as_markdown(["name", "TotalTasks"]),
-        automations.as_markdown(["name", "comment"])
-    """
     fr = fileResult("asbuilt.html", d.html())
     return_results(CommandResults(
         readable_output=d.markdown(),
     ))
     return_results(fr)
+
 
 if __name__ in ('__builtin__', 'builtins'):
     main()
