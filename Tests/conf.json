@@ -3348,7 +3348,10 @@
         "EWS search-mailbox test": "Issue 27943",
         "EWS Public Folders Test": "Issue 27941",
         "Azure NSG - Test": "Issue 33217",
-        "TestTOPdeskPlaybook": "Issue 35412"
+        "TestTOPdeskPlaybook": "Issue 35412",
+        "PAN OS EDL Management - Test": "Issue 35652",
+        "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "Issue 31032",
+        "PAN-OS EDL Setup v3 Test": "Issue 35386"
     },
     "skipped_integrations": {
         
@@ -3429,7 +3432,7 @@
         "Akamai WAF": "Issue 32318",
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
