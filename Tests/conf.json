@@ -3264,6 +3264,13 @@
         },
         {
             "integrations": "AzureWAF",
+            "playbookID": "DbotPredictOufOfTheBoxTest",
+            "instance_names": [
+                "ml_dummy_prod"
+            ]
+        },
+        {
+            "integrations": "AzureWAF",
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
             "instance_names": [
                 "ml_dummy_prod"

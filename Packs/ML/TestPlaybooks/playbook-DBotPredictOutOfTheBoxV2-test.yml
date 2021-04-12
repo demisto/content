@@ -71,11 +71,11 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 64b551fa-6c41-4856-89ba-04f168e0e783
+    taskid: e7836897-a59e-4ec1-8a54-ea9528e23e7d
     type: regular
     task:
       elasticcommonfields: {}
-      id: 64b551fa-6c41-4856-89ba-04f168e0e783
+      id: e7836897-a59e-4ec1-8a54-ea9528e23e7d
       version: -1
       name: Predict Using Out Of The Box Model
       scriptName: DBotPredictOutOfTheBoxV2
@@ -135,7 +135,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: malicious
+              simple: Malicious
       - - operator: greaterThan
           left:
             value:
@@ -183,11 +183,11 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 8b49572a-0b69-4ea4-82cc-39a39235938f3
+    taskid: 5d116c67-5ca8-4ec0-8026-590fb5260179
     type: regular
     task:
       elasticcommonfields: {}
-      id: 8b49572a-0b69-4ea4-82cc-39a39235938f3
+      id: 5d116c67-5ca8-4ec0-8026-590fb5260179
       version: -1
       name: Load Automation's Docker
       description: Predict phishing incidents using the out-of-the-box pretrained model.
