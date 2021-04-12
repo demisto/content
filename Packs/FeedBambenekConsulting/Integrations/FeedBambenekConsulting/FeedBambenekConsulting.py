@@ -20,11 +20,12 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
-            'relation_name': 'indicator-of',
+            'relation_name': Relations.INDICATOR_OF,
             'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
+                'relation_object_b': ('description', r'.*used\s+by\s(.*?)\s', None),
             }
         },
 
@@ -33,11 +34,12 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'relation_name': 'indicator-of',
+            'relation_name': Relations.INDICATOR_OF,
             'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?),', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?),', None),
+                'relation_object_b': ('description', r'.*used\s+by\s(.*?),', None)
             }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt': {
@@ -45,11 +47,12 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
-            'relation_name': 'indicator-of',
+            'relation_name': Relations.INDICATOR_OF,
             'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
+                'relation_object_b': ('description', r'.*used\s+by\s(.*?)\s', None)
             }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt': {
@@ -57,11 +60,13 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'relation_name': 'indicator-of',
+            'relation_name': Relations.INDICATOR_OF,
             'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
+                'relation_object_b': ('description', r'.*used\s+by\s(.*?)\s', None),
+
             }
         },
         'https://faf.bambenekconsulting.com/feeds/dga-feed.gz': {
@@ -69,11 +74,12 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'relation_name': 'indicator-of',
+            'relation_name': Relations.INDICATOR_OF,
             'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)(\(|DGA)', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)(\(|DGA)', None),
+                'relation_object_b': ('description', r'.*used\s+by\s(.*?)(\(|DGA)', None),
             },
             'is_zipped_file': True
         },
@@ -82,11 +88,12 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'relation_name': 'indicator-of',
+            'relation_name': Relations.INDICATOR_OF,
             'object_type_b': 'Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
+                'relation_object_b': ('description', r'.*used\s+by\s(.*?)\s', None)
             },
             'is_zipped_file': True
         },
@@ -98,9 +105,11 @@ def main():
                            'description',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'object_type_b': FeedIndicatorType.IP,
+            'relation_object_type_b': FeedIndicatorType.IP,
+            'relation_name': Relations.RESOLVED_FROM,
             'mapping': {
-                'ipaddress': 'ip'
+                'ipaddress': 'ip',
+                'relation_object_b': 'ip'
             }
         },
         'https://faf.bambenekconsulting.com/feeds/dga/c2-masterlist-high.txt': {
@@ -111,9 +120,11 @@ def main():
                            'description',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'object_type_b': FeedIndicatorType.IP,
+            'relation_name': Relations.RESOLVED_FROM,
+            'relation_object_type_b': FeedIndicatorType.IP,
             'mapping': {
-                'ipaddress': 'ip'
+                'ipaddress': 'ip',
+                'relation_object_b': 'ip'
             }
         },
         'https://faf.bambenekconsulting.com/feeds/sinkhole/latest.csv': {

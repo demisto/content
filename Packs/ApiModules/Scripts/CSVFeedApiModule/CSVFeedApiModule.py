@@ -311,12 +311,13 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, auto_detect,
                                                               value)
                     raw_json['type'] = indicator_type
-                    if relations_types:
+                    # if relations param is True and also the url returns relations
+                    if relations_types and config.get('relation_name', ''):
                         relationships_lst = EntityRelation(
                             name=config.get(url, {}).get('relation_name'),
                             entity_a=value,
                             object_type_a=indicator_type,
-                            entity_b=fields_mapping.get('malwarefamily'),
+                            entity_b=fields_mapping.get('relation_object_b'),
                             object_type_b=config.get(url, {}).get('object_type_b'),
                         )
                         relationships_of_indicator = [relationships_lst.to_indicator()]
