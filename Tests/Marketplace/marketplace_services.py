@@ -1395,7 +1395,7 @@ class Pack(object):
             modified_files_paths: a list containing all modified files in the current pack, generated
             by comparing the old and the new commit hash.
         Returns:
-            The names of the modified release notes file out of the given list only,
+            The names of the modified release notes files out of the given list only,
             as in the names of the files that are under ReleaseNotes directory in the format of 'filename.md'.
 
         """
