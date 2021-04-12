@@ -2318,9 +2318,9 @@ name: ciscofp-get-url-groups-object
     - contextPath: CiscoFP.URLGroups.Objects.Type
       description: The object type.
       type: string
-    description: Retrieves the groups of url objects and addresses associated with
+      description: Retrieves the groups of url objects and addresses associated with
       the specified ID. If not supplied, retrieves a list of all url objects.
-- name: ciscofp-update-url-groups-objects
+  - name: ciscofp-update-url-groups-objects
     arguments:
     - name: id
       required: true
@@ -2342,7 +2342,7 @@ name: ciscofp-get-url-groups-object
     - name: name
       required: true
       description: The group name.
-    description: UpdateThe ID of the group to update.s a group of url objects.
+      description: UpdateThe ID of the group to update.s a group of url objects.
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
