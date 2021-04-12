@@ -1,6 +1,6 @@
-This script is granting a user the necessary permissions in order to create a Teams meeting.
-It's connecting to MS Teams, creating an application access policy to a chosen application and then granting a user permissions.
-For more information look at [Microsoft documentation - Allow applications to access online meetings on behalf of a user](https://docs.microsoft.com/en-us/graph/cloud-communication-online-meeting-application-access-policy)
+This script is grants a user the permissions needed to create a Teams meeting.
+It connects to MS Teams, creating an application access policy to a chosen application and then grants a user permissions.
+For more information, see [Microsoft documentation - Allow applications to access online meetings on behalf of a user](https://docs.microsoft.com/en-us/graph/cloud-communication-online-meeting-application-access-policy)
 
 ## Script Data
 ---
@@ -17,7 +17,7 @@ For more information look at [Microsoft documentation - Allow applications to ac
 | --- | --- |
 | username | The login admin's username. |
 | password | The login admin's password. |
-| identity | The email of the user that will get permissions to create a meeting. |
+| identity | The email of the user who will receive permissions to create a meeting. |
 | app_id | The relevant app's ID from the app studio. |
 
 ## Outputs
@@ -26,7 +26,7 @@ For more information look at [Microsoft documentation - Allow applications to ac
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | ConfigureAzureApplicationAccessPolicy.Status | Whether the access policy was given. | String |
-| ConfigureAzureApplicationAccessPolicy.Account | The email of the user that got permissions to create a meeting. | String |
+| ConfigureAzureApplicationAccessPolicy.Account | The email of the user who received permissions to create a meeting. | String |
 | ConfigureAzureApplicationAccessPolicy.AppID | The relevant app's ID from the app studio. | String |
 
 ## Script Example
