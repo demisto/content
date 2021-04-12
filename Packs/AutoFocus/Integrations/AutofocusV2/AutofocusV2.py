@@ -22,7 +22,7 @@ API_KEY = PARAMS.get('api_key')
 if not API_KEY:
     if not is_demisto_version_ge("6.2.0"):
         return_error('For versions earlier than 6.2.0, configure an API Key.')
-    if not PARAMS.get('override_default_credentials'):
+    if PARAMS.get('override_default_credentials'):
         return_error('If you wish to override the default credentials, please configure an API Key.')
     API_KEY = demisto.getAutoFocusApiKey()
 
