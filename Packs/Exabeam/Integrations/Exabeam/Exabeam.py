@@ -1839,6 +1839,11 @@ def get_notable_sequence_details(client: Client, args: Dict[str, str]) -> Tuple[
     parse_start_time = convert_date_to_unix(start_time)
     parse_end_time = convert_date_to_unix(end_time)
 
+    limit = int(args['limit'])
+    page = int(args['page'])
+    from_idx = page * limit
+    to_idx = (page + 1) * limit
+
     sequence_details_raw_data = client.get_notable_sequence_details_request(asset_id, parse_start_time, parse_end_time)
     if not sequence_details_raw_data:
         return f'The Asset {asset_id} has no sequence details in this time frame.', {}, {}
@@ -1847,6 +1852,8 @@ def get_notable_sequence_details(client: Client, args: Dict[str, str]) -> Tuple[
     for sequence in sequence_details_raw_data:
         sequence_info = sequence.get('sequenceInfo')
         contents = contents_append_notable_sequence_details(sequence, sequence_info, contents)
+
+    contents = contents[from_idx:to_idx]
 
     entry_context = {'Exabeam.Sequence(val.sequenceId && val.sequenceId === obj.sequenceId)': contents}
 
@@ -1865,6 +1872,12 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
     """
     asset_sequence_id = args.get('asset_sequence_id')
     search_str = args.get('search_str')
+
+    limit = int(args['limit'])
+    page = int(args['page'])
+    from_idx = page * limit
+    to_idx = (page + 1) * limit
+
     sequence_event_types_raw_data = client.get_notable_sequence_event_types_request(asset_sequence_id, search_str)
 
     if not sequence_event_types_raw_data:
@@ -1874,7 +1887,10 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
     for sequence in sequence_event_types_raw_data:
         contents = contents_append_notable_sequence_event_types(sequence, contents, asset_sequence_id)
 
+    contents = contents[from_idx:to_idx]
+
     entry_context = {'Exabeam.SequenceEventTypes(val.sequenceId && val.sequenceId === obj.sequenceId)': contents}
+    print(entry_context)
 
     human_readable = tableToMarkdown('Sequence event types:', contents, removeNull=True)
 

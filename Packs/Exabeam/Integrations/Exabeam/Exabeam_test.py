@@ -98,8 +98,10 @@ def test_contents_user_info():
     (get_rules_model_definition, {'model_name': 'dummmy'}, RESPONSE_MODEL_DATA, EXPECTED_MODEL_DATA),
     (get_notable_assets, {'limit': 1, 'time_period': '1 y'}, RESPONSE_NOTABLE_ASSET_DATA, EXPECTED_NOTABLE_ASSET_DATA),
     (get_notable_session_details, {'limit': 1}, RESPONSE_NOTABLE_SESSION_DETAILS, EXPECTED_NOTABLE_SESSION_DETAILS),
-    (get_notable_sequence_details, {'limit': 1}, RESPONSE_NOTABLE_SEQUENCE_DETAILS, EXPECTED_NOTABLE_SEQUENCE_DETAILS),
-    (get_notable_sequence_event_types, {}, RESPONSE_NOTABLE_SEQUENCE_EVENTS, EXPECTED_NOTABLE_SEQUENCE_EVENTS)
+    (get_notable_sequence_details, {'limit': 1, 'page': 0}, RESPONSE_NOTABLE_SEQUENCE_DETAILS,
+     EXPECTED_NOTABLE_SEQUENCE_DETAILS),
+    (get_notable_sequence_event_types, {'limit': 9, 'page': 0}, RESPONSE_NOTABLE_SEQUENCE_EVENTS,
+     EXPECTED_NOTABLE_SEQUENCE_EVENTS)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     import requests
