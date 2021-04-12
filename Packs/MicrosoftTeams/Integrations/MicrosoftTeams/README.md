@@ -1,4 +1,4 @@
-Use the Microsoft Teams integration to send messages and notifications to your team members.
+Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings.
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
 ## Integration Architecture
@@ -416,9 +416,9 @@ Creates a Teams meeting.
 
 ##### Required Permissions
 `OnlineMeetings.ReadWrite.All*`
-Besides setting up this permission, in order to create a meeting the Azure admin needs to configure application access policy
+Besides setting up this permission, in order to create a meeting, the Azure admin needs to configure application access policy
 and grant users permissions to create meetings.
-The script *ConfigureAzureApplicationAccessPolicy* was created to support the needed commands,
+The script *ConfigureAzureApplicationAccessPolicy* was created to support the needed commands.
 For more information:
 [Allow applications to access online meetings on behalf of a user](https://docs.microsoft.com/en-us/graph/cloud-communication-online-meeting-application-access-policy)
 
@@ -427,7 +427,7 @@ For more information:
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subject | The meeting subject. | Required | 
-| member | The user that created the meeting. | Required | 
+| member | The user who created the meeting. | Required | 
 | start_time | The meeting start time. For example, stare_time="2019-07-12T14:30:34.2444915-07:00". | Optional | 
 | end_time | The meeting end time. For example, end_time="2019-07-12T14:30:34.2444915-07:00". | Optional | 
 
@@ -437,13 +437,13 @@ For more information:
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftTeams.CreateMeeting.creationDateTime | String | Meeting creation time | 
-| MicrosoftTeams.CreateMeeting.threadId | String | Meeting thread ID | 
-| MicrosoftTeams.CreateMeeting.messageId | String | Meeting message ID | 
-| MicrosoftTeams.CreateMeeting.id | String | Meeting ID | 
-| MicrosoftTeams.CreateMeeting.joinWebUrl | String | The URL to join the meeting | 
-| MicrosoftTeams.CreateMeeting.participantId | String | The participant ID | 
-| MicrosoftTeams.CreateMeeting.participantDisplayName | String | The display name of the participant | 
+| MicrosoftTeams.CreateMeeting.creationDateTime | String | Meeting creation time. | 
+| MicrosoftTeams.CreateMeeting.threadId | String | Meeting thread ID. | 
+| MicrosoftTeams.CreateMeeting.messageId | String | Meeting message ID. | 
+| MicrosoftTeams.CreateMeeting.id | String | Meeting ID. | 
+| MicrosoftTeams.CreateMeeting.joinWebUrl | String | The URL to join the meeting. | 
+| MicrosoftTeams.CreateMeeting.participantId | String | The participant ID. | 
+| MicrosoftTeams.CreateMeeting.participantDisplayName | String | The display name of the participant. | 
 
 
 #### Command Example
