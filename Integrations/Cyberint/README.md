@@ -151,7 +151,7 @@ List alerts according to parameters
                 "created_by": {
                     "email": "avital@cyberint.com"
                 },
-                "created_date": "2021-04-08T00:00:33",
+                "created_date": "2021-04-12T00:01:12",
                 "csv_data": {
                     "csv_id": 1981,
                     "name": "Company Customer Credentials Exposed.csv"
@@ -168,7 +168,7 @@ List alerts according to parameters
                     "financial_penalties"
                 ],
                 "iocs": [],
-                "modification_date": "2021-04-08T00:00:33",
+                "modification_date": "2021-04-12T00:01:12",
                 "publish_date": "2020-11-23T17:44:42",
                 "recommendation": "1. CyberInt recommends enforcing password reset on the compromised accounts. \n2. In addition, CyberInt advises Chase to investigate internally whether any of the accounts have been involved in fraudulent transactions, at least up to the time of detection. In case the accounts were involved in any fraudulent activity, it is recommended to identify and extract relevant IOC\u2019s where possible and monitor them within the bank's systems.\n3. To reduce the chance of customer account takeovers by TAs, Cyberint recommends Chase implement MFA and CAPTCHA mechanisms. The former will help set another obstacle for a TA trying to abuse the account, and the latter can help blocking credentials-stuffing tools.",
                 "ref_id": "ARG-3",
@@ -190,15 +190,13 @@ List alerts according to parameters
                 "type": "compromised_customer_credentials"
             },
             {
-                "acknowledged_by": {
-                    "email": "yochai@cyberint.com"
-                },
-                "acknowledged_date": "2021-04-08T09:10:58",
+                "acknowledged_by": null,
+                "acknowledged_date": null,
                 "alert_data": {
                     "a_record": "129.146.184.83",
                     "detection_reasons": [
-                        "url_mentioned_assets_or_twists",
-                        "similar_logo_detected"
+                        "similar_logo_detected",
+                        "url_mentioned_assets_or_twists"
                     ],
                     "has_ssl_certificate": false,
                     "ip_reputation": "malicious",
@@ -239,7 +237,7 @@ List alerts according to parameters
                 "created_by": {
                     "email": "avital@cyberint.com"
                 },
-                "created_date": "2021-04-08T00:00:33",
+                "created_date": "2021-04-12T00:01:12",
                 "description": "CyberInt detected an active phishing website impersonating Barclays login page while abusing the brand\u2019s name, logo and photos.\nThe website contains login, registration and checkout forms, where unsuspecting victims could be lured to fill in their PII, credentials and payment details.\nPhishing websites such as the above are often used by attackers to obtain users' credentials and PII. This information can be utilized to take over customers' accounts, causing customer churn and damage to the brand's reputation.",
                 "environment": "Argos Demo",
                 "impacts": [
@@ -263,7 +261,7 @@ List alerts according to parameters
                         "value": "http://supportcenter-ee.com/banks/bank.barclays.co.uk"
                     }
                 ],
-                "modification_date": "2021-04-08T00:00:33",
+                "modification_date": "2021-04-12T00:01:12",
                 "publish_date": "2020-09-02T00:06:49",
                 "recommendation": "CyberInt recommends reporting the website to Google Safe Browsing, so that upon attempting to browse to the phishing website, a warning would be triggered on the victim's browser, informing them of the danger and suggesting they don't enter.\nBarclays is also advised to take down the site; upon request, Cyberint can carry out both the report and the take down request on behalf of Barclays.",
                 "ref_id": "ARG-4",
@@ -271,7 +269,7 @@ List alerts according to parameters
                 "severity": "very_high",
                 "source": "",
                 "source_category": "online_protection",
-                "status": "acknowledged",
+                "status": "open",
                 "tags": [
                     "Phishing Kit",
                     "Finance"
@@ -303,7 +301,7 @@ List alerts according to parameters
                 "created_by": {
                     "email": "avital@cyberint.com"
                 },
-                "created_date": "2021-04-08T00:00:33",
+                "created_date": "2021-04-12T00:01:12",
                 "description": "CyberInt discovered a misconfiguration on an HSBC subdomain which exposes it to takeover.\nCurrently, the domain names refer to the CNAME records listed above. However, those CNAME records are no longer owned by Target, and they may have expired. This situation allows others to obtain the record, and practically get access to the HSBC subdomain.\n\nTaking over HSBC subdomains could be used to conduct complex phishing attack on the organization's employees and customers, as well potentially hijack sessions of logged-in users in any service using the vulnerable domains.",
                 "environment": "Argos Demo",
                 "impacts": [
@@ -312,7 +310,7 @@ List alerts according to parameters
                     "account_takeover"
                 ],
                 "iocs": [],
-                "modification_date": "2021-04-08T00:00:33",
+                "modification_date": "2021-04-12T00:01:12",
                 "publish_date": "2020-11-24T20:28:00",
                 "recommendation": "CyberInt advises HSBC to choose either of the following courses of action:\n1. Update the CNAME record of the subdomains so that they no longer redirect traffic to the vulnerable subdomains.\n2. Re-purchase the record and thus avoid contradiction between the CNAME record and the Fastly interface.",
                 "ref_id": "ARG-8",
@@ -337,7 +335,7 @@ List alerts according to parameters
                 "acknowledged_by": {
                     "email": "avital@cyberint.com"
                 },
-                "acknowledged_date": "2021-04-05T15:46:33",
+                "acknowledged_date": "2021-04-09T15:47:12",
                 "alert_data": {
                     "author_email_address": null,
                     "code_leak_sample": "# Working credentials, no need to replace\nawesome_sauce:\n  login: 'test-api'\n  password: 'c271ee995dd79671dc19f3ba4bb435e26bee68b0e831b7e9e4ae858c1584e0a33bc93b8d9ca3cedc'\n\n# Working credentials, no need to replace\nbalanced:\n  login: 'e1c5ad38d1c711e1b36c026ba7e239a9'",
@@ -359,7 +357,7 @@ List alerts according to parameters
                 "created_by": {
                     "email": "avital@cyberint.com"
                 },
-                "created_date": "2021-04-04T00:00:33",
+                "created_date": "2021-04-08T00:01:12",
                 "description": "CyberInt detected exposed credentials and RSA private key of a developer working with a Barclays API, which were published on a Github repository.\nThese credentials can allow an attacker to gain access to sensitive internal information of Barclays.\n",
                 "environment": "Argos Demo",
                 "impacts": [
@@ -367,7 +365,7 @@ List alerts according to parameters
                     "competitive_advantage_loss"
                 ],
                 "iocs": [],
-                "modification_date": "2021-04-04T00:00:33",
+                "modification_date": "2021-04-08T00:01:12",
                 "publish_date": "2017-01-08T05:21:51",
                 "recommendation": "CyberInt recommends Barclays validate the authenticity of the credentials and key and in case they are relevant, reset them immediately.\nUpon request, CyberInt can take down the code on behalf of Barclays.",
                 "ref_id": "ARG-2",
@@ -390,7 +388,7 @@ List alerts according to parameters
                 "acknowledged_by": {
                     "email": "avital@cyberint.com"
                 },
-                "acknowledged_date": "2021-04-05T15:46:33",
+                "acknowledged_date": "2021-04-09T15:47:12",
                 "alert_data": {
                     "tool_name": null
                 },
@@ -408,14 +406,14 @@ List alerts according to parameters
                 "created_by": {
                     "email": "avital@cyberint.com"
                 },
-                "created_date": "2021-04-04T00:00:33",
+                "created_date": "2021-04-08T00:01:12",
                 "description": "Argos detected a thread published in a fraudsters' forum, concerning fraudulent refund services against various US retailers, including Nike and Costco. \nThe thread contains vouches from dozens of satisfied customers, who used the TA's refunding service.\n\nRefund fraud refers to the process of abusing a company\u2019s refund policy using social engineering techniques to receive a partial or complete refund on an order. Threat actors who offer this service are usually paid 7-20% of the order\u2019s value, and usually require a minimum of $15 per order to start the process. Given the commonness of the service, refund fraud may result in significant financial loss to organizations.",
                 "environment": "Argos Demo",
                 "impacts": [
                     "revenue_loss"
                 ],
                 "iocs": [],
-                "modification_date": "2021-04-04T00:00:33",
+                "modification_date": "2021-04-08T00:01:12",
                 "publish_date": "2020-11-16T09:09:44",
                 "recommendation": "CyberInt advises Costco to search their systems for refunds accepted in recent months, and try to cross-reference similarities and IOCs between the transactions. Such investigation can help identify potentially fraudulent patterns.\nAdditionally, as part of a full engagement, CyberInt can further investigate the TA in order to gain more information about their methods.",
                 "ref_id": "ARG-6",
@@ -442,7 +440,7 @@ List alerts according to parameters
                 "acknowledged_by": {
                     "email": "avital@cyberint.com"
                 },
-                "acknowledged_date": "2021-04-05T05:46:33",
+                "acknowledged_date": "2021-04-09T05:47:12",
                 "alert_data": {
                     "detection_reasons": [
                         "similar_logo_detected",
@@ -462,13 +460,13 @@ List alerts according to parameters
                 "closed_by": {
                     "email": "avital@cyberint.com"
                 },
-                "closure_date": "2021-04-07T10:18:33",
+                "closure_date": "2021-04-11T10:19:12",
                 "closure_reason": "resolved",
                 "confidence": 100,
                 "created_by": {
                     "email": "avital@cyberint.com"
                 },
-                "created_date": "2021-04-04T00:00:33",
+                "created_date": "2021-04-08T00:01:12",
                 "description": "CyberInt detected an active phishing website impersonating Barclays login page while abusing the brand\u2019s name, logo and photos.\nThe website contains login, registration and checkout forms, where unsuspecting victims could be lured to fill in their PII, credentials and payment details.\nPhishing websites such as the above are often used by attackers to obtain users' credentials and PII. This information can be utilized to take over customers' accounts, causing customer churn and damage to the brand's reputation.",
                 "environment": "Argos Demo",
                 "impacts": [
@@ -479,7 +477,7 @@ List alerts according to parameters
                     "unauthorized_access"
                 ],
                 "iocs": [],
-                "modification_date": "2021-04-04T00:00:33",
+                "modification_date": "2021-04-08T00:01:12",
                 "publish_date": "2020-11-29T05:00:38",
                 "recommendation": "CyberInt recommends Barclays take down the site; upon request, CyberInt can submit the take down request on behalf of the bank.",
                 "ref_id": "ARG-15",
@@ -504,7 +502,7 @@ List alerts according to parameters
                 "acknowledged_by": {
                     "email": "avital@cyberint.com"
                 },
-                "acknowledged_date": "2021-04-05T05:46:33",
+                "acknowledged_date": "2021-04-09T05:47:12",
                 "alert_data": {
                     "tool_name": null
                 },
@@ -514,20 +512,20 @@ List alerts according to parameters
                 "closed_by": {
                     "email": "avital@cyberint.com"
                 },
-                "closure_date": "2021-04-07T10:18:33",
+                "closure_date": "2021-04-11T10:19:12",
                 "closure_reason": "resolved",
                 "confidence": 100,
                 "created_by": {
                     "email": "avital@cyberint.com"
                 },
-                "created_date": "2021-04-04T00:00:33",
+                "created_date": "2021-04-08T00:01:12",
                 "description": "Argos detected a thread published in a fraudsters' forum, concerning fraudulent refund services against various US retailers, including Apple, Sam's Club and more.\nThe thread contains vouches from dozens of satisfied customers, who used the TA's refunding service.\n\nRefund fraud refers to the process of abusing a company\u2019s refund policy using social engineering techniques to receive a partial or complete refund on an order. Threat actors who offer this service are usually paid 7-20% of the order\u2019s value, and usually require a minimum of $15 per order to start the process. Given the commonness of the service, refund fraud may result in significant financial loss to organizations.",
                 "environment": "Argos Demo",
                 "impacts": [
                     "revenue_loss"
                 ],
                 "iocs": [],
-                "modification_date": "2021-04-04T00:00:33",
+                "modification_date": "2021-04-08T00:01:12",
                 "publish_date": "2020-11-29T20:42:29",
                 "recommendation": "CyberInt advises Apple to search their systems for refunds accepted in recent months, and try to cross-reference similarities and IOCs between the transactions. Such investigation can help identify potentially fraudulent patterns.\nAdditionally, as part of a full engagement, CyberInt can further investigate the TA in order to gain more information about their methods.",
                 "ref_id": "ARG-16",
@@ -552,7 +550,7 @@ List alerts according to parameters
                 "acknowledged_by": {
                     "email": "avital@cyberint.com"
                 },
-                "acknowledged_date": "2021-04-05T00:00:33",
+                "acknowledged_date": "2021-04-09T00:01:12",
                 "alert_data": {
                     "tool_name": null
                 },
@@ -572,7 +570,7 @@ List alerts according to parameters
                 "created_by": {
                     "email": "avital@cyberint.com"
                 },
-                "created_date": "2021-04-02T00:00:33",
+                "created_date": "2021-04-06T00:01:12",
                 "description": "Cyberint detected payment cards belonging to Wells Fargo customers being offered for sale online for 18$. The cards' information, published by a threat actors named Dolly, includes the BIN number of the card, expiration date and CVV digits as well as some PII of the card owner.\nCompromised payment card details, especially when combined with exposed PII, can be purchased and abused by threat actors for illegitimate and fraudulent activities. Those, in turn, will result in chargeback costs for the bank and potential customer churn.",
                 "environment": "Argos Demo",
                 "impacts": [
@@ -582,7 +580,7 @@ List alerts according to parameters
                     "financial_penalties"
                 ],
                 "iocs": [],
-                "modification_date": "2021-04-02T00:00:33",
+                "modification_date": "2021-04-06T00:01:12",
                 "publish_date": "2020-08-17T00:00:00",
                 "recommendation": "Cyberint recommends Wells Fargo purchase one of the payment cards in order to then verify validity. Upon confirmation, Cyberint recommends cancelling the payment cards in order to prevent their abuse, and informing the card holders of the cancellation.\nCyberint can make the test purchase on behalf of the bank.",
                 "ref_id": "ARG-1",
@@ -603,7 +601,7 @@ List alerts according to parameters
                 "acknowledged_by": {
                     "email": "avital@cyberint.com"
                 },
-                "acknowledged_date": "2021-04-05T00:00:33",
+                "acknowledged_date": "2021-04-09T00:01:12",
                 "alert_data": {
                     "tool_name": null
                 },
@@ -623,7 +621,7 @@ List alerts according to parameters
                 "created_by": {
                     "email": "avital@cyberint.com"
                 },
-                "created_date": "2021-04-02T00:00:33",
+                "created_date": "2021-04-06T00:01:12",
                 "description": "Cyberint identified 40 accounts of Gucci customers being offered for sale in a hacking forum. It is unclear where the threat actors had obtained the accounts, but the thread been commented on by 20 interested buyers.\nThose are later abused by the buyers for account takeovers, to make fraudulent purchases on the victims\u2019 behalf. Account takeovers result in financial loss to the organization and may cause customer churn.",
                 "environment": "Argos Demo",
                 "impacts": [
@@ -636,7 +634,7 @@ List alerts according to parameters
                     "financial_penalties"
                 ],
                 "iocs": [],
-                "modification_date": "2021-04-02T00:00:33",
+                "modification_date": "2021-04-06T00:01:12",
                 "publish_date": "2020-10-15T11:31:43",
                 "recommendation": "Cyberint can contact the threat actor on behalf of Gucci, using an Avatar, in order to lure them into sharing how they had obtained the accounts. If relevant, Cyberint recommends Gucci consider purchasing a sample of the compromised accounts, to verify their validity and whether the rest of the batch could be worth purchasing as well.",
                 "ref_id": "ARG-5",
@@ -669,15 +667,15 @@ List alerts according to parameters
 >### CyberInt alerts:
 >|ref_id|title|status|severity|created_date|type|environment|
 >|---|---|---|---|---|---|---|
->| ARG-3 | Company Customer Credentials Exposed | open | high | 2021-04-08T00:00:33 | compromised_customer_credentials | Argos Demo |
->| ARG-4 | Active Phishing Website Targeting Company | acknowledged | very_high | 2021-04-08T00:00:33 | phishing_website | Argos Demo |
->| ARG-8 | Company Subdomain Vulnerable to Hijacking | open | very_high | 2021-04-08T00:00:33 | hijackable_subdomains | Argos Demo |
->| ARG-2 | Company Source Code Exposed | acknowledged | very_high | 2021-04-04T00:00:33 | internal_information_disclosure | Argos Demo |
->| ARG-6 | Fraudulent Refund Services Targeting Company | acknowledged | medium | 2021-04-04T00:00:33 | refund_fraud | Argos Demo |
->| ARG-15 | Active Phishing Website Targeting Company | closed | very_high | 2021-04-04T00:00:33 | phishing_website | Argos Demo |
->| ARG-16 | Fraudulent Refund Services Targeting Company | closed | medium | 2021-04-04T00:00:33 | refund_fraud | Argos Demo |
->| ARG-1 | Company Customer Payment Cards Offered for Sale | acknowledged | medium | 2021-04-02T00:00:33 | compromised_payment_cards | Argos Demo |
->| ARG-5 | Company Customer Credentials Offered for Sale | acknowledged | medium | 2021-04-02T00:00:33 | compromised_customer_credentials | Argos Demo |
+>| ARG-3 | Company Customer Credentials Exposed | open | high | 2021-04-12T00:01:12 | compromised_customer_credentials | Argos Demo |
+>| ARG-4 | Active Phishing Website Targeting Company | open | very_high | 2021-04-12T00:01:12 | phishing_website | Argos Demo |
+>| ARG-8 | Company Subdomain Vulnerable to Hijacking | open | very_high | 2021-04-12T00:01:12 | hijackable_subdomains | Argos Demo |
+>| ARG-2 | Company Source Code Exposed | acknowledged | very_high | 2021-04-08T00:01:12 | internal_information_disclosure | Argos Demo |
+>| ARG-6 | Fraudulent Refund Services Targeting Company | acknowledged | medium | 2021-04-08T00:01:12 | refund_fraud | Argos Demo |
+>| ARG-15 | Active Phishing Website Targeting Company | closed | very_high | 2021-04-08T00:01:12 | phishing_website | Argos Demo |
+>| ARG-16 | Fraudulent Refund Services Targeting Company | closed | medium | 2021-04-08T00:01:12 | refund_fraud | Argos Demo |
+>| ARG-1 | Company Customer Payment Cards Offered for Sale | acknowledged | medium | 2021-04-06T00:01:12 | compromised_payment_cards | Argos Demo |
+>| ARG-5 | Company Customer Credentials Offered for Sale | acknowledged | medium | 2021-04-06T00:01:12 | compromised_customer_credentials | Argos Demo |
 
 
 ### cyberint-alerts-status-update
@@ -749,7 +747,19 @@ Get alert attachment.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
+
 
 #### Command Example
 ```!cyberint-alerts-get-attachment alert_ref_id="ARG-3" attachment_id="18" attachment_name="Compromised Account As Appears On Argos.png"```
@@ -758,7 +768,7 @@ There is no context output for this command.
 ```json
 {
     "File": {
-        "EntryID": "764@01674117-479d-4af5-89d6-cbf4584ae0e8",
+        "EntryID": "1071@01674117-479d-4af5-89d6-cbf4584ae0e8",
         "Extension": "png",
         "Info": "image/png",
         "MD5": "1bcab0883881e84802d859baea3810f5",
@@ -795,7 +805,19 @@ Get alert analysis report.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
+
 
 #### Command Example
 ```!cyberint-alerts-analysis-report alert_ref_id="ARG-4" report_name="Expert Analysis - Active Phishing Website Targeting Company.pdf"```
@@ -804,7 +826,7 @@ There is no context output for this command.
 ```json
 {
     "File": {
-        "EntryID": "768@01674117-479d-4af5-89d6-cbf4584ae0e8",
+        "EntryID": "1075@01674117-479d-4af5-89d6-cbf4584ae0e8",
         "Extension": "pdf",
         "Info": "application/pdf",
         "MD5": "6786164b6cfb00c54622b2f974dc53f4",
