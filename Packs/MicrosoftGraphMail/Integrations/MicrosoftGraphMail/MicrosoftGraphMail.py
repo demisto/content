@@ -1509,14 +1509,15 @@ def reply_email_command(client: MsGraphClient, args):
     email_from = args.get('from', client._mailbox_to_fetch)
     message_id = args.get('inReplyTo')
     email_body = args.get('body', "")
-    email_subject = 'Re: ' + args.get('subject', "")
+    email_subject = args.get('subject', "")
+    email_subject = f'Re: {email_subject}'
     attach_ids = argToList(args.get('attachIDs'))
     email_cc = argToList(args.get('cc'))
     email_bcc = argToList(args.get('bcc'))
     html_body = args.get('htmlBody')
     attach_names = argToList(args.get('attachNames'))
     attach_cids = argToList(args.get('attachCIDs'))
-    message_body = html_body if html_body else email_body
+    message_body = html_body or email_body
 
     suffix_endpoint = f'/users/{email_from}/messages/{message_id}/reply'
     reply = client.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body, attach_ids,
