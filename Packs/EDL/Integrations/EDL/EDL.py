@@ -308,7 +308,8 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
         # protocol stripping
         indicator = _PROTOCOL_REMOVAL.sub('', indicator)
 
-        if ioc_type not in ['IP', 'IPv6']:
+        if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,
+                            FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR]:
             # Port stripping
             indicator_with_port = indicator
             # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
@@ -332,10 +333,10 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
             if indicator.startswith('*.'):
                 formatted_indicators.append(indicator.lstrip('*.'))
 
-        if request_args.collapse_ips != DONT_COLLAPSE and ioc_type == 'IP':
+        if request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IP:
             ipv4_formatted_indicators.append(IPAddress(indicator))
 
-        elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == 'IPv6':
+        elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IPv6:
             ipv6_formatted_indicators.append(IPAddress(indicator))
 
         else:
