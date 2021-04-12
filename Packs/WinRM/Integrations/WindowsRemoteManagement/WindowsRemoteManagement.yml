@@ -225,7 +225,7 @@ script:
         set in the instance)
     outputs:
     - contextPath: WinRM.Process
-      description: ""
+      description: Process object of the WinRM command
     - contextPath: WinRM.Process.Output
       description: STDOUT of the WinRM command
     - contextPath: WinRM.Process.Error
