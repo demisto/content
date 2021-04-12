@@ -24,7 +24,7 @@ XSOAR_SUPPORT = "xsoar"
 PACK_METADATA_GITHUB_USER_FIELD = "githubUser"
 PR_COMMENT_PREFIX = "pack has been modified on files:\n"
 PACK_METADATA_SUPPORT_EMAIL_FIELD = "email"
-PACK_METADATA_DEV_EMAIL_FIELD = "developerEmail"
+PACK_METADATA_DEV_EMAIL_FIELD = "devEmail"
 GMAIL_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"
 TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
 EMAIL_FROM = 'dkoval@paloaltonetworks.com'
@@ -147,20 +147,21 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
 
         # Notify contributors if this is not new pack
         if pack_metadata.get('support') != XSOAR_SUPPORT and pack_metadata.get('currentVersion') != '1.0.0':
+            notified_by_email = False
             # Notify contributors by emailing them on dev email:
             if reviewers_emails := pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD):
-
                 reviewers_emails = ','.join(reviewers_emails) if isinstance(reviewers_emails,
                                                                             list) else reviewers_emails
-                send_email_to_reviewers(
+                notified_by_email = send_email_to_reviewers(
                     reviewers_emails=reviewers_emails,
                     refresh_token=email_refresh_token,
                     pack_name=pack,
                     pr_number=pr_number,
+                    modified_files=modified_files
                 )
 
             # Notify contributors by tagging them on github:
-            elif pack_metadata.get(PACK_METADATA_GITHUB_USER_FIELD):
+            if pack_metadata.get(PACK_METADATA_GITHUB_USER_FIELD):
                 pack_reviewers = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
                 pack_reviewers = pack_reviewers if isinstance(pack_reviewers, list) else pack_reviewers.split(",")
                 github_users = [u.lower() for u in pack_reviewers]
@@ -181,7 +182,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
 
                 # Notify contributors by emailing them on support email:
                 if (reviewers_emails := pack_metadata.get(
-                        PACK_METADATA_SUPPORT_EMAIL_FIELD)) and not notified_by_github:
+                        PACK_METADATA_SUPPORT_EMAIL_FIELD)) and not notified_by_github and not notified_by_email:
                     reviewers_emails = ','.join(reviewers_emails) if isinstance(reviewers_emails,
                                                                                 list) else reviewers_emails
                     send_email_to_reviewers(
@@ -189,6 +190,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                         refresh_token=email_refresh_token,
                         pack_name=pack,
                         pr_number=pr_number,
+                        modified_files=modified_files
                     )
 
         elif pack_metadata.get('support') == XSOAR_SUPPORT:
@@ -212,7 +214,7 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
         verify_ssl(bool): verify ssl
 
      Returns:
-         true if notified contributers by github else false
+         true if notified contributors by github else false
 
     """
     if reviewers:
@@ -236,23 +238,32 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
 
 
 def send_email_to_reviewers(reviewers_emails: str, refresh_token: str, pack_name: str,
-                            pr_number: str):
+                            pr_number: str, modified_files: list) -> bool:
     """ Compose mail and send it to the reviewers_emails, to review the changes in their pack
 
     Args:
+        modified_files(list): modified files on pr
         reviewers_emails(str): reviewers of the pack to send mail to them
         refresh_token(str): refresh token to send mails using gmail API
         pack_name(str): pack that was modified
         pr_number(str): github pr number
+
+    Return: true if mail was sent, else prints an error
 
     """
     access_token = get_access_token(refresh_token)
     credentials = AccessTokenCredentials(access_token, 'Demisto Github send mails to contributors')
     service = build('gmail', 'v1', credentials=credentials)
 
-    email_content = f"Changes were made to the {pack_name} content pack that you contributed. \nPlease review the " \
-                    "changes in the following files in the contribution " \
-                    f"<a href=\"https://github.com/demisto/content/pull/{pr_number}/files\">Pull Request</>."
+    pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
+                  and Path(file).parts[1] == pack_name}
+
+    modified_files_comment = ','.join([f'<li>{file}</li>' for file in pack_files])
+
+    email_content = f"Hi,<br><br>Your contributed <b>{pack_name}</b> pack has been modified on files:<br>" \
+                    f"<ul>{modified_files_comment}</ul><br>Please review the changes " \
+                    f"<a href=\"https://github.com/demisto/content/pull/{pr_number}/files\">here</a>." \
+                    "<br><br>Thank you, Content Team."
 
     email_subject = f'Changes made to {pack_name} content pack'
 
@@ -265,6 +276,7 @@ def send_email_to_reviewers(reviewers_emails: str, refresh_token: str, pack_name
     try:
         service.users().messages().send(userId=EMAIL_FROM, body=message_to_send).execute()
         print(f'Email sent to {reviewers_emails} contributors of pack {pack_name}')
+        return True
     except errors.HttpError as e:
         print(f'An error occurred during sending emails to contributors: {str(e)}')
         sys.exit(1)

@@ -106,7 +106,8 @@ def test_send_email_to_reviewers(mocker, capsys):
         reviewers_emails='reviewer1@mail.com, reviewer2@mail.com',  # disable-secrets-detection
         refresh_token='email_refresh_token',
         pack_name='TestPack',
-        pr_number='1'
+        pr_number='1',
+        modified_files=['file1', 'file2']
     )
     captured = capsys.readouterr()
     assert 'Email sent to' in captured.out
