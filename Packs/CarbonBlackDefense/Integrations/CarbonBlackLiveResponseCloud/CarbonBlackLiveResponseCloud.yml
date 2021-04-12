@@ -1,0 +1,259 @@
+commonfields:
+  id: CarbonBlackLiveResponseCloud
+  version: -1
+name: CarbonBlackLiveResponseCloud
+display: CarbonBlackLiveResponseCloud
+fromversion: 5.0.0
+category: Endpoint
+description: VMware Carbon Black Endpoint Standard Live Response is a feature that’s
+  allows security operators to collect information and take action on remote endpoints
+  in real time, These actions include the ability to upload, download, and remove
+  files, retrieve and remove registry entries, dump contents of physical memory, execute
+  and terminate processes.
+detaileddescription:
+configuration:
+- display: Your server URL
+  name: url
+  defaultvalue: https://example.com/
+  type: 0
+  required: true
+- display: Custom Key
+  name: custom_key
+  type: 4
+  required: true
+  additionalinfo: The Custom Key to use for connection
+- display: Custom Id
+  name: custom_id
+  type: 4
+  required: true
+  additionalinfo: The Custom Id to use for connection
+- display: Organization Key
+  name: org_key
+  type: 4
+  required: true
+  additionalinfo: The Organization Key to use for connection
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: cbd-lr-file-put
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: destination_path
+      required: true
+      description: File path to create on the remote endpoint
+    - name: file_id
+      required: true
+      description: The file entry id in the War Room
+    description: Create a new file on the remote machine with the specified data
+  - name: cbd-lr-file-get
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: source_path
+      required: true
+      description: Path of the file to be retrieved
+    - name: timeout
+      description: Timeout for the operation
+    - name: delay
+      description: Delay in seconds to wait before command complete
+    description: Retrieve contents of the specified file on the remote machine
+  - name: cbd-lr-file-delete
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: source_path
+      required: true
+      description: Path of the file to be deleted
+    outputs:
+    description: Delete the specified file name on the remote machine
+  - name: cbd-lr-directory-listing
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: directory_path
+      required: true
+      description: Directory to list. This parameter should end with the path separator
+    outputs:
+    - contextPath: CarbonBlackDefenseLR.Directory.content
+      description: list of dicts, each one describing a directory entry
+      type: Data
+    - contextPath: CarbonBlackDefenseLR.Directory.sensor_id
+      description: The sensor (endpoint) id
+      type: Number
+    description: List the contents of a directory on the remote machine
+  - name: cbd-lr-reg-sub-keys
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: reg_path
+      required: true
+      description: The registry key to enumerate
+    outputs:
+    - contextPath: CarbonBlackDefenseLR.RegistrySubKeys.key
+      description: The parent registry key
+      type: String
+    - contextPath: CarbonBlackDefenseLR.RegistrySubKeys.sub_keys
+      description: The sub keys
+      type: Data
+    - contextPath: CarbonBlackDefenseLR.RegistrySubKeys.sensor_id
+      description: The sensor (endpoint) id
+      type: Number
+    description: Enumerate subkeys of the specified registry key on the remote machine
+  - name: cbd-lr-reg-get-values
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: reg_path
+      required: true
+      description: The registry key to enumerate
+    outputs:
+    - contextPath: CarbonBlackDefenseLR.RegistryValues.key
+      description: The registry key
+      type: String
+    - contextPath: CarbonBlackDefenseLR.RegistryValues.values
+      description: The registry values of the given key
+      type: Data
+    - contextPath: CarbonBlackDefenseLR.RegistryValues.sensor_id
+      description: The sensor (endpoint) id
+      type: Number
+    description: Enumerate all registry values from the specified registry key on the remote machine
+  - name: cbd-lr-reg-key-create
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: reg_path
+      required: true
+      description: The registry key to create
+    outputs:
+    description: Create a new registry key on the remote machine
+  - name: cbd-lr-reg-key-delete
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: reg_path
+      required: true
+      description: The registry key to delete
+    outputs:
+    description: Delete a registry key on the remote machine
+  - name: cbd-lr-reg-value-delete
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: reg_path
+      required: true
+      description: The registry value to delete
+    outputs:
+    description: Delete a registry value on the remote machine
+  - name: cbd-lr-reg-value-set
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: reg_path
+      required: true
+      description: The registry key to set.
+    - name: value_data
+      required: true
+      description: The value data
+    - name: value_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - REG_BINARY
+      - REG_DWORD
+      - REG_QWORD
+      - REG_EXPAND_SZ
+      - REG_MULTI_SZ
+      - REG_SZ
+      - REG_SZ
+      description: 'The type of value. Examples: REG_DWORD, REG_MULTI_SZ, REG_SZ'
+    - name: overwrite
+      description: If True, any existing value will be overwritten.
+    description: Set a registry value on the specified registry key on the remote
+      machine
+  - name: cbd-lr-ps
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    outputs:
+    - contextPath: CarbonBlackDefenseLR.Processes.processes
+      description: A list of dicts describing the processes
+      type: String
+    - contextPath: CarbonBlackDefenseLR.Processes.sensor_id
+      description: The sensor (endpoint) id
+      type: Number
+    description: List currently running processes on the remote machine
+  - name: cbd-lr-kill
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: pid
+      required: true
+      description: Process ID to be terminated
+    outputs:
+    description: Terminate a process on the remote machine
+  - name: cbd-lr-execute
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: command_string
+      required: true
+      description: Command string used for the create process operation
+    - name: wait_for_output
+      description: ' True to block on output from the new process (execute in foreground).
+        This will also set wait_for_completion (below).'
+      defaultValue: "True"
+    - name: working_directory
+      description: The working directory of the create process operation
+    - name: remote_output_file_name
+      description: The remote output file name used for process output
+    - name: wait_timeout
+      description: Timeout used for this command
+      defaultValue: "30"
+    - name: wait_for_completion
+      description: True to wait until the process is completed before returning
+      defaultValue: "True"
+    outputs:
+    - contextPath: CarbonBlackDefenseLR.ExecuteProcess.return_value
+      description: The output of the process
+      type: String
+    - contextPath: CarbonBlackDefenseLR.ExecuteProcess.sensor_id
+      description: The sensor (endpoint) id
+      type: Number
+    description: Create a new process on the remote machine with the specified command
+      string
+  - name: cbd-lr-memdump
+    arguments:
+    - name: sensor_id
+      required: true
+      description: The sensor (endpoint) id
+    - name: target_path
+      required: true
+      description: Path of the file the memory dump will be stored in on the remote machine
+    description: Perform a memory dump operation on the remote machine
+    outputs:
+  dockerimage: devdemisto/carbon-black-cloud:1.0.0.18367
+  runonce: false
+  subtype: python3
