@@ -250,12 +250,12 @@ def send_email_to_reviewers(reviewers_emails: str, refresh_token: str, pack_name
     service = build('gmail', 'v1', credentials=credentials)
 
     email_content = f"Changes were made to the {pack_name} content pack that you contributed. \nPlease review the " \
-                    "changes in the following files in the contribution [Pull Request](" \
-                    f"https://github.com/demisto/content/pull/{pr_number}/files). "
+                    "changes in the following files in the contribution " \
+                    f"<a href=\"https://github.com/demisto/content/pull/{pr_number}/files\">Pull Request</> "
 
     email_subject = f'Changes made to {pack_name} content pack'
 
-    message = MIMEText(email_content, 'plain', 'utf-8')
+    message = MIMEText(email_content, 'html', 'utf-8')
     message['bcc'] = reviewers_emails  # send mails to all contributors in bcc
     message['from'] = EMAIL_FROM
     message['subject'] = email_subject
