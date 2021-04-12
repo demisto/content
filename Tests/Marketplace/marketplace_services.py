@@ -1426,7 +1426,7 @@ class Pack(object):
 
         try:
             # load changelog from downloaded index
-            logging.info("Loading changelog")
+            logging.info(f"Loading changelog for {self._pack_name)} pack")
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
             if os.path.exists(changelog_index_path):
                 changelog, changelog_latest_rn_version = self.get_changelog_latest_rn(changelog_index_path)
