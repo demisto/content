@@ -1,0 +1,13 @@
+comment: Generate an as built document, as HTML, based on the running XSOAR instance.
+  Requires an instance of the Demisto API integration configured.
+commonfields:
+  id: 839114f2-1efa-40b8-a141-db153297aa2a
+  version: -1
+enabled: false
+name: GenerateAsBuilt
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/teams:1.0.0.14902
