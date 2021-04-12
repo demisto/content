@@ -1,6 +1,6 @@
 {
     "name": "Azure Storage",
-    "description": "Deploy and manage storage accounts and blob service properties.",
+    "description": "Deploy and manage storage accounts and blob service properties. $$$ CASE 7: editing the version 1.0.0 - when it is the last version.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
