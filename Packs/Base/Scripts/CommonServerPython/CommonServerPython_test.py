@@ -4049,49 +4049,51 @@ class TestSearchIndicatorsByVersion:
 
         return {'searchAfter': searchAfter + 1}
 
-    def test_search_indocators_by_page(self, mocker):
+    def test_search_indicators_by_page(self, mocker):
         """
         Given:
           - Searching indicators couple of times
-          - Server version in less than 6.2.0
+          - Server version in less than 6.1.0
         When:
           - Mocking search indicators using paging
         Then:
           - The page number is rising
+          - The searchAfter param is null
         """
         from CommonServerPython import SearchIndicatorsByVersion
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
 
-        search_indicators_obj1 = SearchIndicatorsByVersion()
-        search_indicators_obj1._can_use_search_after = False
+        search_indicators_obj_paging = SearchIndicatorsByVersion()
+        search_indicators_obj_paging._can_use_search_after = False
 
         for n in range(5):
-            search_indicators_obj1.search_indicators_by_version()
+            search_indicators_obj_paging.search_indicators_by_version()
 
-        assert search_indicators_obj1._page == 5
-        assert not search_indicators_obj1._search_after_param
+        assert search_indicators_obj_paging._page == 5
+        assert not search_indicators_obj_paging._search_after_param
 
-    def test_search_indocators_by_search_after(self, mocker):
+    def test_search_indicators_by_search_after(self, mocker):
         """
         Given:
           - Searching indicators couple of times
-          - Server version in equal or higher than 6.2.0
+          - Server version in equal or higher than 6.1.0
         When:
           - Mocking search indicators using the searchAfter parameter
         Then:
           - The search after param is rising
+          - The page param is 0
         """
         from CommonServerPython import SearchIndicatorsByVersion
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
-        search_indicators_obj2 = SearchIndicatorsByVersion()
-        search_indicators_obj2._can_use_search_after = True
+        search_indicators_obj_search_after = SearchIndicatorsByVersion()
+        search_indicators_obj_search_after._can_use_search_after = True
 
         for n in range(5):
-            search_indicators_obj2.search_indicators_by_version()
+            search_indicators_obj_search_after.search_indicators_by_version()
 
-        assert search_indicators_obj2._search_after_param == 5
-        assert search_indicators_obj2._page == 0
+        assert search_indicators_obj_search_after._search_after_param == 5
+        assert search_indicators_obj_search_after._page == 0
 
 
 

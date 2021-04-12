@@ -6422,8 +6422,8 @@ class TableOrListWidget(BaseWidget):
 
 class SearchIndicatorsByVersion:
     def __init__(self, page=0):
-        # searchAfter is available in searchIndicators from version 6.2.0
-        self._can_use_search_after = is_demisto_version_ge('6.2.0')
+        # searchAfter is available in searchIndicators from version 6.1.0
+        self._can_use_search_after = is_demisto_version_ge('6.1.0')
         self._search_after_title = 'searchAfter'
         self._search_after_param = None
         self._page = page
