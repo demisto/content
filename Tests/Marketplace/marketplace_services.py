@@ -2882,6 +2882,6 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
             all_rn_versions.append(LooseVersion(current_version))
         lower_versions_all_versions = [item for item in all_rn_versions if item < version] + lowest_version
         lower_versions_in_changelog = [LooseVersion(item) for item in changelog.keys() if
-                                       LooseVersion(item) < version] + lowest_version
+                                       LooseVersion(item) < version]
         return max(lower_versions_all_versions) == max(lower_versions_in_changelog)
     return False
