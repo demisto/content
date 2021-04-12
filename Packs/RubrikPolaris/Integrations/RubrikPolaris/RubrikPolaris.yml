@@ -82,7 +82,7 @@ script:
     - contextPath: Rubrik.Radar.ActivitySeriesId
       description: The ID of the Rubrik Polaris Activity Series.
       type: String
-  dockerimage: demisto/python3:3.9.2.18414
+  dockerimage: demisto/python3:3.9.4.18682
   isfetch: true
   runonce: false
   script: ''
