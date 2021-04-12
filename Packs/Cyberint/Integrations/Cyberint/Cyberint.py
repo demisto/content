@@ -471,7 +471,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         last_fetch = last_fetch_date
     else:
         first_fetch_date = dateparser.parse(first_fetch_time)
-        last_fetch = first_fetch_date
+        last_fetch = first_fetch_date  # type: ignore
     incidents = []
     next_run = last_fetch
     #  Send the API request to fetch the alerts.
@@ -482,7 +482,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     for alert_object in alerts.get('alerts', []):
         alert = dict(alert_object)
         #  Create the XS0AR incident.
-        alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
+        alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S') # type: ignore
         alert_id = alert.get('ref_id')
         alert_title = alert.get('title')
         attachments = []
@@ -499,7 +499,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
                 current_incident_attachments = get_alert_attachments(client,
                                                                      attachment_list,
                                                                      attachment_type,
-                                                                     alert_id)
+                                                                     alert_id) # type: ignore
 
                 incident_attachments.extend(current_incident_attachments)
                 for tmp_attachment in attachment_list:
@@ -519,7 +519,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 
         alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
         if alert_csv_id:
-            extracted_csv_data = extract_data_from_csv_stream(client, alert_id,
+            extracted_csv_data = extract_data_from_csv_stream(client, alert_id, # type: ignore
                                                               alert_csv_id)
             alert['alert_data']['csv'] = extracted_csv_data
 

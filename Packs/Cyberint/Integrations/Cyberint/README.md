@@ -1,5 +1,5 @@
 Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.
-This integration was integrated and tested with version xx of cyberint
+This integration was integrated and tested with version v1 of cyberint
 ## Configure cyberint on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
