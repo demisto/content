@@ -43,8 +43,10 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
     github_user_info = response.json()
 
     if 'id' in github_user_info:
+        print(f"github user {github_user} ? \n")
         return True
     else:
+        print(f"github user not exist {github_user} ? \n")
         return False
 
 
@@ -180,7 +182,8 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                                                      verify_ssl=verify_ssl)
 
                 # Notify contributors by emailing them on support email:
-                if reviewers_emails := pack_metadata.get(PACK_METADATA_SUPPORT_EMAIL_FIELD) and not notified_by_github:
+                if (reviewers_emails := pack_metadata.get(
+                            PACK_METADATA_SUPPORT_EMAIL_FIELD)) and not notified_by_github:
                     reviewers_emails = ','.join(reviewers_emails) if isinstance(reviewers_emails,
                                                                                 list) else reviewers_emails
                     send_email_to_reviewers(
@@ -251,7 +254,7 @@ def send_email_to_reviewers(reviewers_emails: str, refresh_token: str, pack_name
 
     email_content = f"Changes were made to the {pack_name} content pack that you contributed. \nPlease review the " \
                     "changes in the following files in the contribution " \
-                    f"<a href=\"https://github.com/demisto/content/pull/{pr_number}/files\">Pull Request</> "
+                    f"<a href=\"https://github.com/demisto/content/pull/{pr_number}/files\">Pull Request</>."
 
     email_subject = f'Changes made to {pack_name} content pack'
 
