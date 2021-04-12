@@ -4471,7 +4471,7 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
 class RelationsTypes(object):
     """
     Relations Types objects.
-    
+
     :return: None
     :rtype: ``None``
     """

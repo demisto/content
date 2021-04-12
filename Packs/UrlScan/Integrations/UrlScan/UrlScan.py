@@ -10,7 +10,6 @@ import json as JSON
 from urlparse import urlparse
 from requests.utils import quote  # type: ignore
 
-
 """ POLLING FUNCTIONS"""
 try:
     from Queue import Queue
@@ -19,7 +18,6 @@ except ImportError:
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 '''GLOBAL VARS'''
 BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
@@ -80,7 +78,8 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
     if method == 'POST':
         headers.update({'Content-Type': 'application/json'})
     demisto.debug(
-        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_url + url_suffix, json))
+        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_url + url_suffix,
+                                                                             json))
     r = requests.request(
         method,
         client.base_url + url_suffix,
@@ -159,7 +158,6 @@ def is_truthy(val):
 def poll(target, step, args=(), kwargs=None, timeout=60,
          check_success=is_truthy, step_function=step_constant,
          ignore_exceptions=(), collect_values=None, **k):
-
     kwargs = kwargs or dict()
     values = collect_values or Queue()
 
@@ -226,16 +224,17 @@ def create_list_relationships(scans_dict, url):
     """
     relationships_list = []
     for scan_name, scan_dict in scans_dict.items():
-        fields = RELATIONSHIP_TYPE.get(scan_name).keys()
+        fields = RELATIONSHIP_TYPE.get(scan_name, {}).keys()
         for field in fields:
             indicators = scan_dict.get(field)
             if not isinstance(indicators, list):
                 indicators = [indicators]
-            relation_dict = RELATIONSHIP_TYPE.get(scan_name, {}).get(field)
-            indicator_type = relation_dict.get('indicator_type')
+            relation_dict = RELATIONSHIP_TYPE.get(scan_name, {}).get(field, {})
+            indicator_type = relation_dict.get('indicator_type', '')
             for indicator in indicators:
-                relation = create_relationship(scan_type=scan_name, field=field, entity_a=url, object_type_a='URL',
-                                               entity_b=indicator, object_type_b=indicator_type)
+                relation = create_relationship(scan_type=scan_name, field=field, entity_a=url,
+                                               object_type_a=FeedIndicatorType.URL, entity_b=indicator,
+                                               object_type_b=indicator_type)
                 relationships_list.append(relation)
     return relationships_list
 
@@ -412,7 +411,7 @@ def format_results(client, uuid):
         related_indicators = []
         for related_indicator in feed_related_indicators:
             related_indicators.append(Common.FeedRelatedIndicators(value=related_indicator['value'],
-                                                                  indicator_type=related_indicator['type']))
+                                                                   indicator_type=related_indicator['type']))
         url_cont['FeedRelatedIndicators'] = related_indicators
     if demisto.params().get('relationships') is True:
         relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query)
@@ -676,7 +675,6 @@ def format_http_transaction_list(client):
 
 
 def main():
-
     params = demisto.params()
 
     api_key = params.get('apikey')
