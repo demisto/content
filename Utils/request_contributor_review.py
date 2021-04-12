@@ -1,13 +1,10 @@
 import argparse
-from typing import Union
 import requests
 import os
 import sys
 from pathlib import Path
 from googleapiclient.discovery import build
 from apiclient import errors
-import httplib2
-from httplib2 import Http
 from email.mime.text import MIMEText
 import base64
 from oauth2client.client import AccessTokenCredentials
@@ -29,10 +26,6 @@ PR_COMMENT_PREFIX = "pack has been modified on files:\n"
 PACK_METADATA_SUPPORT_EMAIL_FIELD = "email"
 PACK_METADATA_DEV_EMAIL_FIELD = "developerEmail"
 GMAIL_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"
-TOKEN_FORM_HEADERS = {
-    "Content-Type": "application/x-www-form-urlencoded",
-    'Accept': 'application/json',
-}
 TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
 EMAIL_FROM = 'dkoval@paloaltonetworks.com'
 
@@ -134,7 +127,7 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl, pack):
     return result_tagged_reviewers
 
 
-def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True, email_refresh_token=''):
+def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True, email_refresh_token=None):
     modified_packs, modified_files = get_pr_modified_files_and_packs(pr_number=pr_number, github_token=github_token,
                                                                      verify_ssl=verify_ssl)
     pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
@@ -152,9 +145,22 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
         with open(pack_metadata_path, 'r') as pack_metadata_file:
             pack_metadata = json.load(pack_metadata_file)
 
-        if pack_metadata.get('support') != XSOAR_SUPPORT:
+        # Notify contributors if this is not new pack
+        if pack_metadata.get('support') != XSOAR_SUPPORT and pack_metadata.get('currentVersion') != '1.0.0':
+            # Notify contributors by emailing them on dev email:
+            if reviewers_emails := pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD):
+
+                reviewers_emails = ','.join(reviewers_emails) if isinstance(reviewers_emails,
+                                                                            list) else reviewers_emails
+                send_email_to_reviewers(
+                    reviewers_emails=reviewers_emails,
+                    refresh_token=email_refresh_token,
+                    pack_name=pack,
+                    pr_number=pr_number,
+                )
+
             # Notify contributors by tagging them on github:
-            if pack_metadata.get(PACK_METADATA_GITHUB_USER_FIELD):
+            elif pack_metadata.get(PACK_METADATA_GITHUB_USER_FIELD):
                 pack_reviewers = pack_metadata[PACK_METADATA_GITHUB_USER_FIELD]
                 pack_reviewers = pack_reviewers if isinstance(pack_reviewers, list) else pack_reviewers.split(",")
                 github_users = [u.lower() for u in pack_reviewers]
@@ -167,21 +173,22 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                         reviewers.add(github_user)
                         print(f"Found {github_user} default reviewer of pack {pack}")
 
-                check_reviewers(reviewers=reviewers, pr_author=pr_author, version=pack_metadata.get('currentVersion'),
-                                modified_files=modified_files, pack=pack, pr_number=pr_number,
-                                github_token=github_token,
-                                verify_ssl=verify_ssl)
+                notified_by_github = check_reviewers(reviewers=reviewers, pr_author=pr_author,
+                                                     version=pack_metadata.get('currentVersion'),
+                                                     modified_files=modified_files, pack=pack, pr_number=pr_number,
+                                                     github_token=github_token,
+                                                     verify_ssl=verify_ssl)
 
-            # Notify contributors by emailing them if this is not new pack:
-            if (pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD) or pack_metadata.get(
-                    PACK_METADATA_SUPPORT_EMAIL_FIELD)) and pack_metadata.get('currentVersion') != '1.0.0':
-                notify_contributors_by_email(
-                    dev_reviewers_emails=pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD, ''),
-                    support_reviewers_emails=pack_metadata.get(PACK_METADATA_SUPPORT_EMAIL_FIELD, ''),
-                    email_refresh_token=email_refresh_token,
-                    pack=pack,
-                    pr_number=pr_number,
-                )
+                # Notify contributors by emailing them on support email:
+                if reviewers_emails := pack_metadata.get(PACK_METADATA_SUPPORT_EMAIL_FIELD) and not notified_by_github:
+                    reviewers_emails = ','.join(reviewers_emails) if isinstance(reviewers_emails,
+                                                                                list) else reviewers_emails
+                    send_email_to_reviewers(
+                        reviewers_emails=reviewers_emails,
+                        refresh_token=email_refresh_token,
+                        pack_name=pack,
+                        pr_number=pr_number,
+                    )
 
         elif pack_metadata.get('support') == XSOAR_SUPPORT:
             print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
@@ -190,7 +197,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
 
 
 def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files: list, pack: str,
-                    pr_number: str, github_token: str, verify_ssl: bool):
+                    pr_number: str, github_token: str, verify_ssl: bool) -> bool:
     """ Tag user on pr and ask for review if there are reviewers, and this is not new pack.
 
     Args:
@@ -202,6 +209,9 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
         pr_number(str): pr number on github
         github_token(str): github token provided by the user
         verify_ssl(bool): verify ssl
+
+     Returns:
+         true if notified contributers by github else false
 
     """
     if reviewers:
@@ -216,37 +226,12 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
                 github_token=github_token,
                 verify_ssl=verify_ssl
             )
-
+            return True
+        else:
+            return False
     else:
         print(f'{pack} pack no reviewers were found.')
-
-
-def notify_contributors_by_email(dev_reviewers_emails: Union[str, list], support_reviewers_emails: Union[str, list],
-                                 email_refresh_token: str, pack: str, pr_number: str):
-    """ Checks arguments and finds emails of the reviewers. send mail to developers if there are dev-mails,
-    else send mail to pack support.
-
-    Args:
-        dev_reviewers_emails(Union[str, list]): mails of developers, if there are in pack_metadata
-        support_reviewers_emails(Union[str, list]): mails of support, if there are in pack_metadata
-        email_refresh_token(str): refresh token to send mails using gmail API
-        pack(str): pack that was modified
-        pr_number(str): github pr number
-
-    """
-    dev_emails = ','.join(dev_reviewers_emails) if isinstance(dev_reviewers_emails, list) else dev_reviewers_emails
-    support_emails = ','.join(support_reviewers_emails) if isinstance(support_reviewers_emails, list) \
-        else support_reviewers_emails
-
-    # send mail to developers if there are dev-mails, else send mail to pack support
-    reviewers_emails = dev_emails if dev_emails else support_emails
-    if reviewers_emails:
-        send_email_to_reviewers(
-            reviewers_emails=reviewers_emails,
-            refresh_token=email_refresh_token,
-            pack_name=pack,
-            pr_number=pr_number,
-        )
+        return False
 
 
 def send_email_to_reviewers(reviewers_emails: str, refresh_token: str, pack_name: str,
@@ -264,9 +249,9 @@ def send_email_to_reviewers(reviewers_emails: str, refresh_token: str, pack_name
     credentials = AccessTokenCredentials(access_token, 'Demisto Github send mails to contributors')
     service = build('gmail', 'v1', credentials=credentials)
 
-    email_content = f"Changes were made to the {pack_name} content pack that you contributed. \n"
-    email_content += f"Please review the changes in the following files in the contribution "
-    email_content += f"[Pull Request](https://github.com/demisto/content/pull/{pr_number}/files)."
+    email_content = f"Changes were made to the {pack_name} content pack that you contributed. \nPlease review the " \
+                    "changes in the following files in the contribution [Pull Request](" \
+                    f"https://github.com/demisto/content/pull/{pr_number}/files). "
 
     email_subject = f'Changes made to {pack_name} content pack'
 
@@ -307,19 +292,26 @@ def get_access_token(refresh_token: str):
         sys.exit(1)
 
     # else access token should be obtained from refresh token
-    http_client = httplib2.Http()
-    body = {
-        'refresh_token': refresh_token,
-        'client_id': GMAIL_CLIENT_ID,
-        'grant_type': 'refresh_token',
-    }
-    resp, content = http_client.request(TOKEN_URL, "POST", urllib.parse.urlencode(body), TOKEN_FORM_HEADERS)
-
-    if resp.status not in [200, 201]:
-        print(f"Failed to send emails: error obtaining access token\n{content}.")
+    try:
+        body = {
+            'refresh_token': refresh_token,
+            'client_id': GMAIL_CLIENT_ID,
+            'grant_type': 'refresh_token',
+        }
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            'Accept': 'application/json',
+        }
+        resp = requests.post(url=TOKEN_URL, data=urllib.parse.urlencode(body), headers=headers)
+    except Exception as e:
+        print(f"Failed to send emails: error obtaining access token\nError: {e}.")
         sys.exit(1)
 
-    parsed_response = json.loads(content)
+    if resp.status_code not in [200, 201]:
+        print(f"Failed to send emails: error obtaining access token\n{resp}.")
+        sys.exit(1)
+
+    parsed_response = resp.json()
     access_token = parsed_response.get('access_token')
     expires_in = parsed_response.get('expires_in', 3595)
 
