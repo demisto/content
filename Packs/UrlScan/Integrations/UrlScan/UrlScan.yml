@@ -42,7 +42,7 @@ configuration:
   type: 8
 - defaultvalue: 'true'
   display: Create Relationships
-  name: relationships
+  name: create_relationships
   required: false
   type: 8
 description: Urlscan.io reputation
@@ -283,6 +283,24 @@ script:
       type: string
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision.
+      type: string
+    - contextPath: URL.Relations.EntityA
+      description: The source of the relation.
+      type: string
+    - contextPath: URL.Relations.EntityB
+      description: The destination of the relation.
+      type: string
+    - contextPath: URL.Relations.Name
+      description: The name of the relation.
+      type: string
+    - contextPath: URL.Relations.ObjectTypeA
+      description: The type of the source of the relation.
+      type: string
+    - contextPath: URL.Relations.ObjectTypeB
+      description: The type of the destination of the relation.
+      type: string
+    - contextPath: URL.Relations.Type
+      description: The type of the relation.
       type: string
     - contextPath: URLScan.RelatedIPs
       description: The IP addresses related to the scanned URL.

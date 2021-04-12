@@ -22,6 +22,7 @@ requests.packages.urllib3.disable_warnings()
 '''GLOBAL VARS'''
 BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
                                 'For your own safety we did not perform this scan...'
+BRAND = 'urlscan.io'
 
 """ RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
@@ -208,14 +209,13 @@ def urlscan_submit_url(client):
 
 
 def create_relationship(scan_type, field, entity_a, object_type_a, entity_b, object_type_b):
-    brand = 'urlscan.io'
     return EntityRelation(name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('name', ''),
                           entity_a=entity_a,
                           object_type_a=object_type_a,
                           entity_b=entity_b,
                           object_type_b=object_type_b,
                           source_reliability='F - Reliability cannot be judged',
-                          brand=brand)
+                          brand=BRAND)
 
 
 def create_list_relationships(scans_dict, url):
@@ -413,7 +413,7 @@ def format_results(client, uuid):
             related_indicators.append(Common.FeedRelatedIndicators(value=related_indicator['value'],
                                                                    indicator_type=related_indicator['type']))
         url_cont['FeedRelatedIndicators'] = related_indicators
-    if demisto.params().get('relationships') is True:
+    if demisto.params().get('create_relationships') is True:
         relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query)
     outputs = {
         'URLScan(val.URL && val.URL == obj.URL)': cont,
@@ -427,7 +427,7 @@ def format_results(client, uuid):
         stored_img = fileResult('screenshot.png', response_img.content)
 
     dbot_score = Common.DBotScore(indicator=dbot_score.get('Indicator'), indicator_type=dbot_score.get('Type'),
-                                  integration_name=dbot_score.get('Vendor'), score=dbot_score.get('Score'),
+                                  integration_name=BRAND, score=dbot_score.get('Score'),
                                   reliability=dbot_score.get('Reliability'))
 
     url = Common.URL(url=url_cont.get('Data'), dbot_score=dbot_score, relations=relationships,
