@@ -22,7 +22,3 @@ There are no inputs for this playbook.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Cortex Data Lake - PAN-OS logging - action required](Insert the link to your image here)
