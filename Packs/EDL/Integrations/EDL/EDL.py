@@ -218,6 +218,7 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         last_found_len = PAGE_SIZE
     if not last_found_len:
         last_found_len = total_fetched
+    # last_found_len should be PAGE_SIZE (or PAGE_SIZE - 1, as observed for some users) for full pages
     while last_found_len in (PAGE_SIZE, PAGE_SIZE - 1) and limit and total_fetched < limit:
         fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
         # In case the result from searchIndicators includes the key `iocs` but it's value is None
