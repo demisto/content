@@ -818,6 +818,7 @@ def demistoUrls():
 def getAutoFocusApiKey():
     """Retrieves the AutoFocus API Key related to this Cortex XSOAR License.
     You can use this API Key in all AutoFocus integrations and Feeds.
+    This command is not available on tenants.
 
 
     Returns:

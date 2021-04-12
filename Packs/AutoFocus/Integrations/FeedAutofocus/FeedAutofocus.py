@@ -551,7 +551,7 @@ def main():
                 raise Exception('For versions earlier than 6.2.0, configure an API Key.')
             if not params.get('override_default_credentials'):
                 raise Exception('If you wish to override the default credentials, please configure an API Key.')
-            api_key = demisto.getAutoFocusApiKey()
+            api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
 
         client = Client(api_key=api_key,
                         insecure=params.get('insecure'),
