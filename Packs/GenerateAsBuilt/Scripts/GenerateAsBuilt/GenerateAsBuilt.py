@@ -1,5 +1,8 @@
-from CommonServerPython import *
 import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+
 import sys
 import jinja2
 
@@ -115,7 +118,7 @@ class ReturnedAPIData:
         self.data = data
         self.name = name
 
-    def as_markdown(self, headers):
+    def as_markdown(self, headers=None):
         if not headers:
             return tableToMarkdown(self.name, self.data, removeNull=True)
         else:
@@ -152,13 +155,23 @@ class Document:
         self.system_config = system_config
 
     def html(self):
-        template = jinja2.Template(self.template)
+        template = jinja2.Template(HTML_DOCUMENT_TEMPLATE)
         return template.render(
             integrations_table=self.integrations_table.as_html(["name", "brand"]),
             installed_packs_table=self.installed_packs_table.as_html(["name", "currentVersion"]),
             playbooks_table=self.playbooks_table.as_html(["name", "TotalTasks"]),
             automations_table=self.automations_table.as_html(["name", "comment"]),
             system_config=self.system_config.as_html()
+        )
+
+    def markdown(self):
+        template = jinja2.Template(MD_DOCUMENT_TEMPLATE)
+        return template.render(
+            integrations_table=self.integrations_table.as_markdown(["name", "brand"]),
+            installed_packs_table=self.installed_packs_table.as_markdown(["name", "currentVersion"]),
+            playbooks_table=self.playbooks_table.as_markdown(["name", "TotalTasks"]),
+            automations_table=self.automations_table.as_markdown(["name", "comment"]),
+            system_config=self.system_config.as_markdown()
         )
 
 
@@ -263,7 +276,7 @@ def main():
     playbooks = get_custom_playbooks()
     automations = get_custom_automations()
     d = Document(
-        HTML_DOCUMENT_TEMPLATE,
+        MD_DOCUMENT_TEMPLATE,
         system_config=system_config,
         integrations_table=integrations,
         installed_packs_table=installed_packs,
@@ -276,8 +289,11 @@ def main():
         playbooks.as_markdown(["name", "TotalTasks"]),
         automations.as_markdown(["name", "comment"])
     """
-    return_results(d.html())
-
+    fr = fileResult("asbuilt.html", d.html())
+    return_results(CommandResults(
+        readable_output=d.markdown(),
+    ))
+    return_results(fr)
 
 if __name__ in ('__builtin__', 'builtins'):
     main()
