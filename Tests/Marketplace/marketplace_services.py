@@ -2876,7 +2876,7 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
     if changelog.get(version):
         all_rn_versions = []
         lowest_version = [LooseVersion('1.0.0')]
-        for filename in sorted(os.listdir(release_notes_dir)):
+        for filename in os.listdir(release_notes_dir):
             _current_version = filename.replace('.md', '')
             current_version = _current_version.replace('_', '.')
             all_rn_versions.append(LooseVersion(current_version))
