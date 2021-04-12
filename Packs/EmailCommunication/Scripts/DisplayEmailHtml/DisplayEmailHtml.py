@@ -39,20 +39,6 @@ def get_entry_id_list(attachments, files):
     return entry_id_list
 
 
-def add_entries(single_reply, incident_id):
-    """Add the entries to the related incident
-    Args:
-        single_reply: The email reply.
-        email_related_incident: The related incident.
-    """
-    entries_str = json.dumps(
-        [{"Type": 1, "ContentsFormat": 'html', "Contents": single_reply, "tags": ['email-thread']}])
-    res = demisto.executeCommand("addEntries", {"entries": entries_str, 'id': incident_id})
-    if is_error(res):
-        demisto.error(f"ERROR: PreprocessEmail - addEntries: {res['Contents']}")
-        raise DemistoException(f"ERROR: PreprocessEmail - addEntries: {res['Contents']}")
-
-
 def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, attachments):
     """Set the email reply from the given details.
     Args:
