@@ -3342,13 +3342,13 @@
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
-        "test playbook - QRadarCorrelations For V2": "Issue 30876",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "pyEWS_Test": "Issue 27942",
         "EWS search-mailbox test": "Issue 27943",
         "EWS Public Folders Test": "Issue 27941",
-        "Azure NSG - Test": "Issue 33217"
+        "Azure NSG - Test": "Issue 33217",
+        "TestTOPdeskPlaybook": "Issue 35412"
     },
     "skipped_integrations": {
         
@@ -3429,7 +3429,7 @@
         "Akamai WAF": "Issue 32318",
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
