@@ -841,8 +841,7 @@ script:
         - 'true'
         - 'false'
     deprecated: false
-    description: Gets compliance search action from the Security & Compliance Center. An additional result will be
-      shown only for "Preview" action type.
+    description: Gets compliance search action from the Security & Compliance Center.
     execution: false
     name: o365-sc-get-search-action
     outputs:
