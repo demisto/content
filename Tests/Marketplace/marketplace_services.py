@@ -2860,8 +2860,18 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
     """
     Check if the given version is a key of an aggregated changelog block, as in its value in the changelog
     doesn't contains other release notes that have been aggregated in previous uploads.
+
     If that is the case, the adjacent previous release note in the changelog will be equal to the one in the
-    release notes directory, and this function asserts that.
+    release notes directory, and false otherwise (meaning there are versions in the release notes directory that are
+    missing in the changelog, therefore they have been aggregated) and this function asserts that.
+
+    Note: The comparison is done against the release notes directory to avoid cases where there are missing versions in
+    the changelog due to inconsistent versions numbering, such as major version bumps. (For example, if the versions
+    1.2.7 and 1.3.0 are two consecutive keys in the changelog, we need to determine if 1.3.0 has aggregated the versions
+    1.2.8-1.3.0, OR 1.3.0 is the consecutive version right after 1.2.7 but is a major bump. in order to check that, we
+    check it against the files in the release notes directory.)
+
+
     Args:
         release_notes_dir: the path to the release notes dir.
         version (str): the wanted version.
