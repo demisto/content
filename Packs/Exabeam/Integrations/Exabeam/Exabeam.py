@@ -1890,7 +1890,6 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
     contents = contents[from_idx:to_idx]
 
     entry_context = {'Exabeam.SequenceEventTypes(val.sequenceId && val.sequenceId === obj.sequenceId)': contents}
-    print(entry_context)
 
     human_readable = tableToMarkdown('Sequence event types:', contents, removeNull=True)
 
