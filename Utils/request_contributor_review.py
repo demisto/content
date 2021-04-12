@@ -181,7 +181,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
 
                 # Notify contributors by emailing them on support email:
                 if (reviewers_emails := pack_metadata.get(
-                            PACK_METADATA_SUPPORT_EMAIL_FIELD)) and not notified_by_github:
+                        PACK_METADATA_SUPPORT_EMAIL_FIELD)) and not notified_by_github:
                     reviewers_emails = ','.join(reviewers_emails) if isinstance(reviewers_emails,
                                                                                 list) else reviewers_emails
                     send_email_to_reviewers(
