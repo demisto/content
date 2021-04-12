@@ -278,7 +278,7 @@ def send_email_to_reviewers(reviewers_emails: str, refresh_token: str, pack_name
 
     try:
         service.users().messages().send(userId=EMAIL_FROM, body=message_to_send).execute()
-        print(f'Email sent to {reviewers_emails} reviewers of pack {pack_name}')
+        print(f'Email sent to {reviewers_emails} contributors of pack {pack_name}')
     except errors.HttpError as e:
         print(f'An error occurred during sending emails to contributors: {str(e)}')
         sys.exit(1)
@@ -303,7 +303,7 @@ def get_access_token(refresh_token: str):
             return access_token
 
     if not refresh_token:
-        print(f"Error obtaining access token. Failed sending mails.")
+        print("Failed to send emails: Error obtaining access token - refresh token wasn't received.")
         sys.exit(1)
 
     # else access token should be obtained from refresh token
@@ -316,7 +316,7 @@ def get_access_token(refresh_token: str):
     resp, content = http_client.request(TOKEN_URL, "POST", urllib.parse.urlencode(body), TOKEN_FORM_HEADERS)
 
     if resp.status not in [200, 201]:
-        print(f"Error obtaining access token. Failed sending mails.")
+        print(f"Failed to send emails: error obtaining access token\n{content}.")
         sys.exit(1)
 
     parsed_response = json.loads(content)
