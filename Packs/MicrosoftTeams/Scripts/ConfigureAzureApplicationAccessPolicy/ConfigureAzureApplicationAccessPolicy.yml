@@ -23,8 +23,8 @@ args:
   name: identity
   required: false
   secret: false
-comment: This script is granting a user the necessary permissions in order to create a Teams meeting.
-  It's connecting to MS Teams, creating an application access policy to a chosen application and then granting a user permissions.
+comment: This script grants a user the necessary permissions needed to create a Teams meeting.
+  It connects to MS Teams, creating an application access policy to a chosen application and then grants a user permissions.
 commonfields:
   id: ConfigureAzureApplicationAccessPolicy
   version: -1
@@ -35,7 +35,7 @@ outputs:
   description: Whether the access policy was given.
   type: String
 - contextPath: ConfigureAzureApplicationAccessPolicy.Account
-  description: The email of the user that got permissions to create a meeting.
+  description: The email of the user who received permissions to create a meeting.
   type: String
 - contextPath: ConfigureAzureApplicationAccessPolicy.AppID
   description: The relevant app's ID from the app studio.
