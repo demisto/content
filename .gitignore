@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.idea/
+
+CommonServerPython.py
+CommonServerUserPython.py
+demistomock.py
+Cyberint_unified.yml
+Integrations/Cyberint/Cyberint_unified.yml
