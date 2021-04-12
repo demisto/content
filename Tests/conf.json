@@ -3261,6 +3261,13 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "MLDummy",
+            "playbookID": "DbotPredictOufOfTheBoxTestV2",
+            "instance_names": [
+                "ml_dummy_prod"
+            ]
         }
     ],
     "skipped_tests": {
