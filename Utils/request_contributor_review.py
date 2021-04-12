@@ -43,10 +43,8 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
     github_user_info = response.json()
 
     if 'id' in github_user_info:
-        print(f"github user {github_user} ? \n")
         return True
     else:
-        print(f"github user not exist {github_user} ? \n")
         return False
 
 
