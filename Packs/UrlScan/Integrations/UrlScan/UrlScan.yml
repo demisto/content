@@ -41,7 +41,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Create Relationships
+  display: Create relationships
   name: create_relationships
   required: false
   type: 8

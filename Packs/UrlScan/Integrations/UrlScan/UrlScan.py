@@ -36,8 +36,8 @@ RELATIONSHIP_TYPE = {
             'name': Relations.RELATED_TO
         },
         'ips': {
-            'indicator_type': FeedIndicatorType.IP,
-            'name': Relations.RELATED_TO
+            'name': Relations.RELATED_TO,
+            'detect_type': True
         },
         'linkDomains': {
             'indicator_type': FeedIndicatorType.Domain,
@@ -71,6 +71,18 @@ class Client:
 
 
 '''HELPER FUNCTIONS'''
+
+
+def detect_ip_type(indicator):
+    """
+    Helper function which detects wheather an IP is a IP or IPv6 by string
+    """
+    indicator_type = ''
+    if '::' in indicator:
+        indicator_type = FeedIndicatorType.IPv6
+    else:
+        indicator_type = FeedIndicatorType.IP
+    return indicator_type
 
 
 def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
@@ -208,17 +220,17 @@ def urlscan_submit_url(client):
     return r
 
 
-def create_relationship(scan_type, field, entity_a, object_type_a, entity_b, object_type_b):
+def create_relationship(scan_type, field, entity_a, object_type_a, entity_b, object_type_b, reliability):
     return EntityRelation(name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('name', ''),
                           entity_a=entity_a,
                           object_type_a=object_type_a,
                           entity_b=entity_b,
                           object_type_b=object_type_b,
-                          source_reliability='F - Reliability cannot be judged',
+                          source_reliability=reliability,
                           brand=BRAND)
 
 
-def create_list_relationships(scans_dict, url):
+def create_list_relationships(scans_dict, url, reliability):
     """
     Creates a list of EntityRelations object from all of the lists in scans_dict according to RELATIONSHIP_TYPE dict.
     """
@@ -232,9 +244,12 @@ def create_list_relationships(scans_dict, url):
             relation_dict = RELATIONSHIP_TYPE.get(scan_name, {}).get(field, {})
             indicator_type = relation_dict.get('indicator_type', '')
             for indicator in indicators:
+                # For a case where the type of the IP indicator should be detected, whether its IPv6/IP
+                if not indicator_type and relation_dict.get('detect_type'):
+                    indicator_type = detect_ip_type(indicator)
                 relation = create_relationship(scan_type=scan_name, field=field, entity_a=url,
                                                object_type_a=FeedIndicatorType.URL, entity_b=indicator,
-                                               object_type_b=indicator_type)
+                                               object_type_b=indicator_type, reliability=reliability)
                 relationships_list.append(relation)
     return relationships_list
 
@@ -414,7 +429,8 @@ def format_results(client, uuid):
                                                                    indicator_type=related_indicator['type']))
         url_cont['FeedRelatedIndicators'] = related_indicators
     if demisto.params().get('create_relationships') is True:
-        relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query)
+        relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query,
+                                                  client.reliability)
     outputs = {
         'URLScan(val.URL && val.URL == obj.URL)': cont,
         outputPaths['file']: file_context

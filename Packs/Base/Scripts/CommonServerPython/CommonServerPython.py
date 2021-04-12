@@ -4721,9 +4721,6 @@ class EntityRelation:
         # Entity A - Source
         self._entity_a = str(entity_a)
 
-        # The type of the entity doesnt have to be a indicator type
-        if not FeedIndicatorType.is_valid_type(object_type_a):
-            raise ValueError("Invalid entity A type: " + object_type_a)
         self._object_type_a = str(object_type_a)
 
         if not RelationsFamily.is_valid_type(entity_a_family):
@@ -4733,9 +4730,6 @@ class EntityRelation:
         # Entity B - Destination
         self._entity_b = str(entity_b)
 
-        # The type of the entity doesnt have to be a indicator type
-        if not FeedIndicatorType.is_valid_type(object_type_b):
-            raise ValueError('Invalid entity B type: ' + object_type_b)
         self._object_type_b = str(object_type_b)
 
         if not RelationsFamily.is_valid_type(entity_b_family):
@@ -4806,7 +4800,7 @@ class EntityRelation:
         :return: XSOAR context representation.
         """
         indicator_relation_context = {
-            "Name": self._entity_a + " " + self._name + " " + self._entity_b,
+            "Name": self._name,
             "EntityA": self._entity_a,
             "ObjectTypeA": self._object_type_a,
             "EntityB": self._entity_b,

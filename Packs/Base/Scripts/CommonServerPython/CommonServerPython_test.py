@@ -4108,11 +4108,11 @@ class TestEntityRelation:
                                   brand='test')
 
         expected_context = {
-            "Name": 'test1 related-to test2',
+            "Name": 'related-to',
             "EntityA": 'test1',
             "ObjectTypeA": 'Domain',
             "EntityB": 'test2',
-            "ObjectTypeB":'Domain',
+            "ObjectTypeB": 'Domain',
             "Type": 'indicatorToIndicator'
         }
         assert relation.to_context() == expected_context
