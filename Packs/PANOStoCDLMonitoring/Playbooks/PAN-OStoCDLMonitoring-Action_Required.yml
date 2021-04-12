@@ -1,6 +1,6 @@
 id: PAN-OS logging to Cortex Data Lake - Action Required
 inputs: []
-name: PAN-OS logging to Cortex Data Lake - Action Required
+name: PAN-OS logging to Cortex Data Lake - Action Required1
 description: This Playbook initiates the steps needed to investigate the PAN-OS logging
   to Cortex Data Lake problems.
 outputs: []
