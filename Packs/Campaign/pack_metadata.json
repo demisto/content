@@ -1,5 +1,5 @@
 {
-    "name": "Campaign",
+    "name": "Phishing Campaign",
     "description": "This pack can help you find related phishing, spam or other types of email incidents and characterize campaigns.",
     "support": "xsoar",
     "currentVersion": "1.0.1",
