@@ -51,6 +51,8 @@ HTML_TABLE_TEMPLATE = """
 MD_DOCUMENT_TEMPLATE = """
 {{ open_incidents }}
 
+{{ closed_incidents }}
+
 {{ integrations_table }}
 
 {{ installed_packs_table }}
@@ -160,7 +162,8 @@ class Document:
             playbooks_table,
             automations_table,
             system_config,
-            open_incidents
+            open_incidents,
+            closed_incidents
     ):
         self.template = template
         self.integrations_table = integrations_table
@@ -169,6 +172,7 @@ class Document:
         self.automations_table = automations_table
         self.system_config = system_config
         self.open_incidents = open_incidents
+        self.closed_incidents = closed_incidents
 
     def html(self):
         template = jinja2.Template(HTML_DOCUMENT_TEMPLATE)
@@ -177,7 +181,8 @@ class Document:
             installed_packs_table=self.installed_packs_table.as_html(["name", "currentVersion"]),
             playbooks_table=self.playbooks_table.as_html(["name", "TotalTasks"]),
             automations_table=self.automations_table.as_html(["name", "comment"]),
-            system_config=self.system_config.as_html()
+            system_config=self.system_config.as_html(),
+            open_incidents=self.open_incidents.as_html()
         )
 
     def markdown(self):
@@ -188,7 +193,8 @@ class Document:
             playbooks_table=self.playbooks_table.as_markdown(["name", "TotalTasks"]),
             automations_table=self.automations_table.as_markdown(["name", "comment"]),
             system_config=self.system_config.as_markdown(),
-            open_incidents=self.open_incidents.as_markdown()
+            open_incidents=self.open_incidents.as_markdown(),
+            closed_incidents=self.closed_incidents.as_markdown(),
         )
 
 
@@ -258,7 +264,32 @@ def get_open_incidents(days=7, size=1000):
     }
     r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
     total = r.get("total")
-    rd = SingleFieldData("Total Open Incidents", total)
+    rd = SingleFieldData(f"Total Open Incidents - {days}", total)
+    return rd
+
+
+def get_closed_incidents(days=7, size=1000):
+    body = {
+        "userFilter": False,
+        "filter": {
+            "page": 0,
+            "size": size,
+            "query": "status:closed -category:job",
+            "sort": [
+                {
+                    "field": "id",
+                    "asc": False
+                }
+            ],
+            "period": {
+                "by": "day",
+                "fromValue": days
+            }
+        }
+    }
+    r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
+    total = r.get("total")
+    rd = SingleFieldData(f"Total Closed Incidents - {days}", total)
     return rd
 
 
@@ -314,7 +345,8 @@ def get_system_config():
 
 
 def main():
-    incidents = get_open_incidents()
+    open_incidents = get_open_incidents()
+    closed_incidents = get_closed_incidents()
 
     system_config = get_system_config()
     integrations = get_enabled_integrations()
@@ -328,7 +360,8 @@ def main():
         installed_packs_table=installed_packs,
         playbooks_table=playbooks,
         automations_table=automations,
-        open_incidents=incidents
+        open_incidents=open_incidents,
+        closed_incidents=closed_incidents
     )
     fr = fileResult("asbuilt.html", d.html())
     return_results(CommandResults(
