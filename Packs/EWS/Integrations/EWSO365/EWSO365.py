@@ -64,7 +64,9 @@ warnings.filterwarnings("ignore")
 APP_NAME = "ms-ews-o365"
 FOLDER_ID_LEN = 120
 MAX_INCIDENTS_PER_FETCH = 50
-
+FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
+TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
+                        'year': 365 * 24 * 60}
 # move results
 MOVED_TO_MAILBOX = "movedToMailbox"
 MOVED_TO_FOLDER = "movedToFolder"
@@ -2178,6 +2180,28 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
         return []
 
 
+def parse_fetch_time_to_minutes():
+    """
+    Calculate the time to fetch back in minutes
+    Returns (int): Time to fetch back in minutes
+    """
+    number_of_times, time_unit = FETCH_TIME.split(' ')
+    if str(number_of_times).isdigit():
+        number_of_times = int(number_of_times)
+    else:
+        return_error('Error: Invalid fetch time: {}, need to be a positive integer with the time unit '
+                     'afterwards e.g 2 months, 4 days.'.format(FETCH_TIME))
+    # If the user input contains a plural of a time unit, for example 'hours', we remove the 's' as it doesn't
+    # impact the minutes in that time unit
+    if time_unit[-1] == 's':
+        time_unit = time_unit[:-1]
+    time_unit_value_in_minutes = TIME_UNIT_TO_MINUTES.get(time_unit.lower())
+    if time_unit_value_in_minutes:
+        return number_of_times * time_unit_value_in_minutes
+
+    return_error('Error: Invalid time unit: {}'.format(FETCH_TIME))
+
+
 def fetch_last_emails(
         client: EWSClient, folder_name="Inbox", since_datetime=None, exclude_ids=None
 ):
@@ -2193,10 +2217,10 @@ def fetch_last_emails(
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
-        last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone("UTC")) - timedelta(
-            minutes=10
-        )
-        qs = qs.filter(last_modified_time__gte=last_10_min)
+        fetch_time_in_minutes = parse_fetch_time_to_minutes()
+        start_time_for_fetch = timedelta(minutes=fetch_time_in_minutes)
+        last_fetch_minutes = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - start_time_for_fetch
+        qs = qs.filter(last_modified_time__gte=last_fetch_minutes)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by("datetime_received")
 

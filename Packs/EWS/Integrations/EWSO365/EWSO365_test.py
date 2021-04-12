@@ -12,6 +12,10 @@ from EWSO365 import (
     handle_transient_files,
     handle_html,
 )
+import EWSO365
+
+RETURN_ERROR_TARGET = 'EWSO365.return_error'
+
 
 with open("test_data/commands_outputs.json", "r") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -258,3 +262,52 @@ def test_handle_html(mocker, html_input, expected_output):
     import EWSO365 as ewso365
     mocker.patch.object(ewso365, 'random_word_generator', return_value='abcd1234')
     assert handle_html(html_input) == expected_output
+
+
+def test_parse_fetch_time_to_minutes_no_error():
+    """
+    Given:
+       - First fetch timestamp
+    When
+       - parse fetch time into minutes
+    Then
+       - Get the fetch time in minutes as expected
+    """
+    EWSO365.FETCH_TIME = '3 hours'
+    fetch_time_in_minutes = EWSO365.parse_fetch_time_to_minutes()
+    assert fetch_time_in_minutes == 180
+
+
+def test_parse_fetch_time_to_minutes_invalid_time_integer(mocker):
+    """
+    Given:
+       - Invalid first fetch timestamp
+    When
+       - parse fetch time into minutes
+    Then
+       - Get an error message
+    """
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+
+    EWSO365.FETCH_TIME = 'abc hours'
+    EWSO365.parse_fetch_time_to_minutes()
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == 'Error: Invalid fetch time: abc hours, need to be a positive integer with the time unit ' \
+                      'afterwards e.g 2 months, 4 days.'
+
+
+def test_parse_fetch_time_to_minutes_invalid_time_unit(mocker):
+    """
+    Given:
+       - Invalid first fetch timestamp (Invalid time unit)
+    When
+       - parse fetch time into minutes
+    Then
+       - Get an error message
+    """
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+
+    EWSO365.FETCH_TIME = '3 hoursss'
+    EWSO365.parse_fetch_time_to_minutes()
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == 'Error: Invalid time unit: 3 hoursss'

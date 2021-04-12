@@ -105,7 +105,7 @@ AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
-FETCH_TIME = demisto.params().get('fetch_time', '10 minutes')
+FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
 
@@ -911,8 +911,8 @@ def parse_fetch_time_to_minutes():
     if str(number_of_times).isdigit():
         number_of_times = int(number_of_times)
     else:
-        return_error("Error: Invalid fetch time, need to be a positive integer with the time unit afterwards"
-                     " e.g '2 months, 4 days'.")
+        return_error('Error: Invalid fetch time: {}, need to be a positive integer with the time unit '
+                     'afterwards e.g 2 months, 4 days.'.format(FETCH_TIME))
     # If the user input contains a plural of a time unit, for example 'hours', we remove the 's' as it doesn't
     # impact the minutes in that time unit
     if time_unit[-1] == 's':
@@ -921,7 +921,7 @@ def parse_fetch_time_to_minutes():
     if time_unit_value_in_minutes:
         return number_of_times * time_unit_value_in_minutes
 
-    return_error('Error: Invalid time unit.')
+    return_error('Error: Invalid time unit: {}'.format(FETCH_TIME))
 
 
 def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude_ids=None):

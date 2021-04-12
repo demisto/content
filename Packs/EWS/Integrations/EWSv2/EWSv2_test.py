@@ -50,8 +50,8 @@ def test_parse_fetch_time_to_minutes_invalid_time_integer(mocker):
     EWSv2.FETCH_TIME = 'abc hours'
     EWSv2.parse_fetch_time_to_minutes()
     err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == "Error: Invalid fetch time, need to be a positive integer with the time unit afterwards " \
-                      "e.g '2 months, 4 days'."
+    assert err_msg == 'Error: Invalid fetch time: abc hours, need to be a positive integer with the time unit ' \
+                      'afterwards e.g 2 months, 4 days.'
 
 
 def test_parse_fetch_time_to_minutes_invalid_time_unit(mocker):
@@ -68,4 +68,4 @@ def test_parse_fetch_time_to_minutes_invalid_time_unit(mocker):
     EWSv2.FETCH_TIME = '3 hoursss'
     EWSv2.parse_fetch_time_to_minutes()
     err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Error: Invalid time unit.'
+    assert err_msg == 'Error: Invalid time unit: 3 hoursss'
