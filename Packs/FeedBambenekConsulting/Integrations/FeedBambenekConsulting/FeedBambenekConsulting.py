@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from demistomock import *
+
 name_to_url = {
     'C2 IP Feed': 'https://faf.bambenekconsulting.com/feeds/dga/c2-ipmasterlist.txt',
     'High-Confidence C2 IP Feed': 'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt',
