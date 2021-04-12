@@ -12,7 +12,7 @@ import shutil
 import yaml
 import google.auth
 from google.cloud import storage
-from google.cloud import bigquery
+# from google.cloud import bigquery
 import enum
 import base64
 import urllib.parse
@@ -1301,10 +1301,10 @@ class Pack(object):
             A dict of version, rn data for all corresponding versions, and the highest version among those keys as str
 
         """
+        lower_versions, higher_versions = [], []
         same_block_versions_dict: dict = dict()
-        versions = [LooseVersion(item) for item in changelog.keys()]
-        higher_versions = [item for item in versions if item > version]
-        lower_versions = [item for item in versions if item < version]
+        for item in changelog.keys():  # divide the versions into lists of lower and higher than given version
+            (lower_versions if LooseVersion(item) < version else higher_versions).append(LooseVersion(item))
         higher_nearest_version = min(higher_versions)
         lower_nearest_version = max(lower_versions)
         for rn_filename in os.listdir(release_notes_dir):
