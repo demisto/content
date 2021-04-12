@@ -92,7 +92,11 @@ TEST_REG_VALUES = [
     {'value_type': 'test_pbREG_SZ_2', 'value_name': 'test_val_2', 'value_data': 'test_value_2'}]
 
 TEST_DIR_LIST = [
-    {'size': 25600, 'attributes': ['TEST_ARCHIVE'], 'create_time': 123, 'last_access_time': 123, 'last_write_time': 123, 'filename': 'test.xls', 'alternate_name': 'test_$9EE1B~1.XLS'}]
+    {
+        'size': 25600, 'attributes': ['TEST_ARCHIVE'],
+        'create_time': 123, 'last_access_time': 123,
+        'last_write_time': 123, 'filename': 'test.xls',
+        'alternate_name': 'test_$9EE1B~1.XLS'}]
 
 TEST_PROCESSES_RESULT = [
     dict(path='test_path_1', pid=1, command_line='test_command_line_1', username='test_user_1'),
@@ -151,7 +155,6 @@ class TestCommands:
     EXPECTED_ARGS_JSON_FILE_PATH = 'test_data/expected_args.json'
     expected_commands_args = None
 
-
     # todo ask eli for the fileResult mock
 
     @pytest.mark.parametrize(
@@ -187,12 +190,10 @@ class TestCommands:
             assert mocked_obj.call_args[0] == expected_args
 
     @pytest.mark.parametrize(
-        'api_method_to_be_mocked, tested_command, '
-        'expected_result, expected_args, mocked_results', HAPPY_PATH_ARGS_FOR_COMMAND_RESULTS)
-    def test_readable_outputs(self, mocker,
-                     api_method_to_be_mocked, tested_command,
-                     expected_result, expected_args,
-                     mocked_results):
+        'api_method_to_be_mocked, tested_command, expected_result, expected_args, mocked_results',
+        HAPPY_PATH_ARGS_FOR_COMMAND_RESULTS)
+    def test_readable_outputs(self, mocker, api_method_to_be_mocked, tested_command, expected_result,
+                              expected_args, mocked_results):
         # Prepare
         mock_method_in_lr_session(
             mocker=mocker,

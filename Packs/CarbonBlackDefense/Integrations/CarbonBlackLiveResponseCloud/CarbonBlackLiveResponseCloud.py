@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from cbc_sdk.live_response_api import *
+from cbc_sdk.live_response_api import LiveResponseError
 from cbc_sdk import endpoint_standard
 from cbc_sdk import CBCloudAPI
 from cbc_sdk import errors
@@ -24,7 +25,7 @@ def put_file_command(credentials: Dict, sensor_id: int, destination_path: str, f
     api = CBCloudAPI(**credentials)
     try:
         session = api.select(endpoint_standard.Device, sensor_id).lr_session()
-        file_path = demisto.getFilePath(file_id)['path']
+        file_path = demisto.getFilePath(file_id).get('path')
         session.put_file(open(file_path, 'rb'), destination_path)
         return f'File: {file_id} is now exist in the remote destination {destination_path}'
     except LiveResponseError as e:
@@ -255,8 +256,7 @@ def create_process_command(
     api = CBCloudAPI(**credentials)
     try:
         session = api.select(endpoint_standard.Device, sensor_id).lr_session()
-        res = session.create_process(command_string=command_string, wait_timeout=int(wait_timeout),
-                                        **additional_params)
+        res = session.create_process(command_string=command_string, wait_timeout=int(wait_timeout), **additional_params)
         if res:
             return res
         return f'Command: {command_string} was executed'
@@ -322,9 +322,11 @@ def main():
     cb_custom_id = demisto.params().get('custom_id')
     cb_org_key = demisto.params().get('org_key')
     verify_certificate = not demisto.params().get('insecure', True)
-    proxy = demisto.params().get('proxy', False)
+    # proxy = demisto.params().get('proxy', False)
 
     command = demisto.command()
+    if command not in commands:
+        raise NotImplementedError(f'Command: {command} not implemented')
     demisto.debug(f'Command being called is {command}')
     try:
         credentials = dict(
