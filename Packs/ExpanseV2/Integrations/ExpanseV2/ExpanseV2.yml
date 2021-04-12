@@ -4864,6 +4864,32 @@ script:
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
+  - arguments:
+    - default: true
+      description: The certificate common name. Fuzzy matching is done on this name,
+        however query times can grow quite large when searching for short strings.
+        Ex. "*.myhost.com" is a better search term than "host"
+      isArray: false
+      name: common_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns all domains which have been seen with the specified certificate.
+    execution: false
+    name: expanse-get-domains-for-certificate
+    outputs:
+    - contextPath: Expanse.IPDomains.SearchTerm
+      description: The common name that was searched.
+      type: String
+    - contextPath: Expanse.IPDomains.TotalDomainCount
+      description: The number of domains found matching the specified certificate.
+      type: Number
+    - contextPath: Expanse.IPDomains.FlatDomainList
+      description: An array of all domain names found. This is truncated at 50.
+      type: Unknown
+    - contextPath: Expanse.IPDomains.DomainList
+      description: An array of domain objects. This is truncated at 50.
+      type: Unknown
   isfetch: true
   feed: false
   runonce: false
@@ -4873,7 +4899,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.2.18414
 defaultclassifier: ExpanseV2
 defaultmapperin: ExpanseV2-mapper
 fromversion: 6.0.0

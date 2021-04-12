@@ -1729,3 +1729,24 @@ def test_expanse_list_risk_rules(requests_mock):
     assert result.outputs_prefix == "Expanse.RiskRule"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_risk_rules["data"][:int(MOCK_LIMIT)]
+
+
+def test_domains_by_certificate(requests_mock):
+    from ExpanseV2 import Client, domains_for_certificate_command
+    domain_to_test = "base2.pets.com"
+
+    mock_domains_by_certificate = util_load_json("test_data/expanse_assets_for_certificate.json")
+    mock_domains_by_certificates = util_load_json("test_data/expanse_get_domains_for_certificates.json")
+    mock_ips = util_load_json("test_data/expanse_assets_ips.json")
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+    requests_mock.get("https://example.com/api/v2/assets/certificates/Jr8RiLR4OfFslz9VmELI9g==",
+                      json=mock_domains_by_certificate)
+    requests_mock.get("https://example.com/api/v2/assets/certificates", json=mock_domains_by_certificates)
+    requests_mock.get("https://example.com/api/v2/assets/ips", json=mock_ips)
+
+    results = domains_for_certificate_command(client, {'common_name': domain_to_test})
+
+    assert results.outputs_prefix == "Expanse.IPDomains"
+    assert results.outputs_key_field == "SearchTerm"
+    assert results.outputs['SearchTerm'] == domain_to_test
+    assert results.outputs['TotalDomainCount'] == 1
