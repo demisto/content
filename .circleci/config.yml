@@ -1237,7 +1237,7 @@ jobs:
       - *wait_until_server_ready
       - run:
           name: Unlock HelloWorld integration and playbook
-          command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
+          command: python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
       - run:
           name: Create and upload incident type, incident field, mapper and a layout to Cortex XSOAR
           command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
