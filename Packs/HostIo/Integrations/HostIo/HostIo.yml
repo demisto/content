@@ -112,9 +112,9 @@ script:
       description: Name of the server where the domain exist.
       type: String
     description: Returns Domain information.
-  dockerimage: demisto/python3:3.9.2.17246
+  dockerimage: demisto/python3:3.9.4.18682
   runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:
-- No tests
+- HostIo_Test
