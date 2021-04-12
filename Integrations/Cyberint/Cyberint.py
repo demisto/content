@@ -399,8 +399,7 @@ def create_fetch_incident_attachment(raw_response: Response, attachment_file_nam
     file_result = fileResult(filename=attachment_name, data=raw_response.content)
     # check for error
     if file_result["Type"] == EntryType.ERROR:
-        demisto.error(file_result["Contents"])
-        raise Exception(file_result["Contents"])
+        demisto.error(f'file result type error {file_result["Contents"]}')
 
     return {
         "path": file_result["FileID"],
