@@ -1,2 +1,2 @@
 !alphavantage-stock-data-get symbol=PANW
-!alphavantage-stock-hisgit tory-get symbol=PANW interval=5min output_size=compact
+!alphavantage-stock-history-get symbol=PANW interval=5min output_size=compact
