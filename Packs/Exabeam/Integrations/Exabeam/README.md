@@ -1310,6 +1310,7 @@ Returns sequence event types for the given asset sequence ID and time range.
 | Exabeam.SequenceEventTypes.eventType | String | The sequence event type. | 
 | Exabeam.SequenceEventTypes.displayName | String | The sequence display name. | 
 | Exabeam.SequenceEventTypes.count | Number | The number of the sequences. | 
+| Exabeam.SequenceEventTypes.sequenceId | String | The sequence ID. | 
 
 
 #### Command Example

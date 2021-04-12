@@ -175,13 +175,13 @@ EXPECTED_NOTABLE_SEQUENCE_DETAILS = {
 
 EXPECTED_NOTABLE_SEQUENCE_EVENTS = {
     'Exabeam.SequenceEventTypes(val.sequenceId && val.sequenceId === obj.sequenceId)':
-        [{'eventType': 'type1', 'displayName': 'dn1', 'count': 1},
-         {'eventType': 'type2', 'displayName': 'dn2', 'count': 1},
-         {'eventType': 'type3', 'displayName': 'dn3', 'count': 1},
-         {'eventType': 'type4', 'displayName': 'dn4', 'count': 1},
-         {'eventType': 'type5', 'displayName': 'dn5', 'count': 2},
-         {'eventType': 'type6', 'displayName': 'dn6', 'count': 2},
-         {'eventType': 'type7', 'displayName': 'dn7', 'count': 8},
-         {'eventType': 'type8', 'displayName': 'dn8', 'count': 1},
-         {'eventType': 'type9', 'displayName': 'dn9', 'count': 1}]
+        [{'eventType': 'type1', 'displayName': 'dn1', 'count': 1, 'sequenceId': None},
+         {'eventType': 'type2', 'displayName': 'dn2', 'count': 1, 'sequenceId': None},
+         {'eventType': 'type3', 'displayName': 'dn3', 'count': 1, 'sequenceId': None},
+         {'eventType': 'type4', 'displayName': 'dn4', 'count': 1, 'sequenceId': None},
+         {'eventType': 'type5', 'displayName': 'dn5', 'count': 2, 'sequenceId': None},
+         {'eventType': 'type6', 'displayName': 'dn6', 'count': 2, 'sequenceId': None},
+         {'eventType': 'type7', 'displayName': 'dn7', 'count': 8, 'sequenceId': None},
+         {'eventType': 'type8', 'displayName': 'dn8', 'count': 1, 'sequenceId': None},
+         {'eventType': 'type9', 'displayName': 'dn9', 'count': 1, 'sequenceId': None}]
 }
