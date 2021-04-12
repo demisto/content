@@ -103,7 +103,7 @@ def test_send_email_to_reviewers(mocker, capsys):
     mocker.patch('Utils.request_contributor_review.build', return_value=service_mock)
 
     send_email_to_reviewers(
-        reviewers_emails='reviewer1@mail.com, reviewer2@mail.com',
+        reviewers_emails='reviewer1@mail.com, reviewer2@mail.com',  # disable-secrets-detection
         refresh_token='email_refresh_token',
         pack_name='TestPack',
         pr_number='1'
