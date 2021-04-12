@@ -2316,7 +2316,7 @@ class Common(object):
         :param malware_family: The malware family associated with the IP.
 
         :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: Indicators that are associated with the IP.
+        :param feed_related_indicators: List of indicators that are associated with the IP.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
@@ -2389,7 +2389,10 @@ class Common(object):
                 ip_context['PositiveDetections'] = self.positive_engines
 
             if self.feed_related_indicators:
-                ip_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                ip_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.tags:
                 ip_context['Tags'] = self.tags
@@ -2537,7 +2540,7 @@ class Common(object):
         :param tags: Tags of the file.
 
         :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: Indicators that are associated with the file.
+        :param feed_related_indicators: List of indicators that are associated with the file.
 
         :type malware_family: ``str``
         :param malware_family: The malware family associated with the File.
@@ -2622,8 +2625,12 @@ class Common(object):
                 file_context['Actor'] = self.actor
             if self.tags:
                 file_context['Tags'] = self.tags
+
             if self.feed_related_indicators:
-                file_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                file_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.malware_family:
                 file_context['MalwareFamily'] = self.malware_family
@@ -2754,7 +2761,7 @@ class Common(object):
         :param category: The category associated with the indicator.
 
         :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: Indicators that are associated with the URL.
+        :param feed_related_indicators: List of indicators that are associated with the URL.
 
         :type malware_family: ``str``
         :param malware_family: The malware family associated with the URL.
@@ -2797,7 +2804,10 @@ class Common(object):
                 url_context['Category'] = self.category
 
             if self.feed_related_indicators:
-                url_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                url_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.tags:
                 url_context['Tags'] = self.tags
@@ -2935,7 +2945,10 @@ class Common(object):
                 domain_context['Tags'] = self.tags
 
             if self.feed_related_indicators:
-                domain_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                domain_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.malware_family:
                 domain_context['MalwareFamily'] = self.malware_family
@@ -4644,10 +4657,11 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
-    is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
-                                                                              'fetch-credentials',
-                                                                              'long-running-execution',
-                                                                              'fetch-indicators')
+    is_command = hasattr(demisto, 'command')
+    is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                             'fetch-credentials',
+                                                             'long-running-execution',
+                                                             'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
         message = "{}\n\n{}".format(message, traceback.format_exc())
 
@@ -4658,6 +4672,10 @@ def return_error(message, error='', outputs=None):
     LOG.print_log()
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+
+    if is_command and demisto.command() == 'get-modified-remote-data':
+        if (error and not isinstance(error, NotImplementedError)) or sys.exc_info()[0] != NotImplementedError:
+            message = 'skip update. error: ' + message
 
     if is_server_handled:
         raise Exception(message)
@@ -5637,7 +5655,8 @@ if 'requests' in sys.modules:
                 address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
-                self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                if retries:
+                    self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 # Execute
                 res = self._session.request(
                     method,

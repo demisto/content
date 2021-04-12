@@ -181,5 +181,5 @@ ignore=BA101
 [file:layoutscontainer-unifiedFile.json]
 ignore=BA101
 
-[file:layoutscontainer-url.json ]
+[file:layoutscontainer-url.json]
 ignore=BA101

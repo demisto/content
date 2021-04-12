@@ -21,7 +21,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "IP",
-        "IPv6"
+        "IPv6",
+        "URL"
     ],
     "caseInsensitive": true,
     "columns": null,
