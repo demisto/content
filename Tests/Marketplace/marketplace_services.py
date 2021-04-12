@@ -1310,7 +1310,7 @@ class Pack(object):
         lower_versions = [item for item in versions if item < version]
         higher_nearest_version = min(higher_versions)
         lower_nearest_version = max(lower_versions)
-        for rn_filename in sorted(os.listdir(release_notes_dir)):
+        for rn_filename in os.listdir(release_notes_dir):
             _current_version = rn_filename.replace('.md', '')
             current_version = _current_version.replace('_', '.')
             # Catch all versions that are in the same block
