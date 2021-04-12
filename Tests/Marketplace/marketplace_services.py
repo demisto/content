@@ -1240,7 +1240,7 @@ class Pack(object):
         """
         In the case where an rn file was changed, this function returns the new content
         of the release note in the format suitable for the changelog file.
-        In general, if two rn files are created before the pack is being uploaded to the Marketplace,
+        In general, if two rn files are created between two consecutive upload runs (i.e. pack was changed twice),
         the rn files are being aggregated and the latter version is the one that is being used as a key in the changelog
         file, and the aggregated rns as the value.
         Hence, in the case of changing an rn as such, this function re-aggregates all of the rns under the
