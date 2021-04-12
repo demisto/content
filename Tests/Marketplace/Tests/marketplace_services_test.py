@@ -755,7 +755,7 @@ class TestChangelogCreation:
         assert task_status is True
         assert not_updated_build is False
 
-    @pytest.mark.parametrize('version, boolean_value', [('1.0.1', True), ('1.0.2', False)])
+    @pytest.mark.parametrize('version, boolean_value', [('1.0.1', True), ('1.0.2', False), ('1.0.3', False)])
     def test_is_the_only_rn_in_block(self, mocker, dummy_pack, version, boolean_value):
         """
            Given:
