@@ -1,15 +1,15 @@
-id: Cyberint-Testplaybook
-version: 8
+id: Cyberint-TestPlaybook
+version: 4
 vcShouldKeepItemLegacyProdMachine: false
-name: Cyberint-Testplaybook
+name: Cyberint-TestPlaybook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 00b5df7f-2dc1-47cb-8cab-df18177daf68
+    taskid: c1e4c9ab-5143-450f-8e1d-0637199f9efa
     type: start
     task:
-      id: 00b5df7f-2dc1-47cb-8cab-df18177daf68
+      id: c1e4c9ab-5143-450f-8e1d-0637199f9efa
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: ed3740f0-63b9-4f15-8778-d79429e164b8
+    taskid: 22f375fe-ceb6-4320-8df3-7dc83c164ea6
     type: regular
     task:
-      id: ed3740f0-63b9-4f15-8778-d79429e164b8
+      id: 22f375fe-ceb6-4320-8df3-7dc83c164ea6
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -63,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 07f14a02-0ba2-4d66-8b07-e13c0a9998ad
+    taskid: 9df2d517-f207-411a-817b-66ce6a5e4278
     type: regular
     task:
-      id: 07f14a02-0ba2-4d66-8b07-e13c0a9998ad
+      id: 9df2d517-f207-411a-817b-66ce6a5e4278
       version: -1
       name: cyberint-alerts-fetch
       script: '|||cyberint-alerts-fetch'
@@ -91,10 +91,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 7c376c5a-d64c-4abb-8faf-ba26f6cbe732
+    taskid: 2cce27fe-75d9-4dc7-8c8c-3e2c52674daa
     type: condition
     task:
-      id: 7c376c5a-d64c-4abb-8faf-ba26f6cbe732
+      id: 2cce27fe-75d9-4dc7-8c8c-3e2c52674daa
       version: -1
       name: Verify Outputs
       type: condition
@@ -107,6 +107,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cyberint.Alert.ref_id
+            iscontext: true
       - - operator: isNotEmpty
           left:
             value:
@@ -125,32 +130,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Cyberint.Alert.created_by.email
+              simple: Cyberint.Alert.description
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Cyberint.Alert.created_date
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Cyberint.Alert.category
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Cyberint.Alert.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Cyberint.Alert.title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Cyberint.Alert.ref_id
+              simple: Cyberint.Alert.recommendation
             iscontext: true
     view: |-
       {
@@ -166,10 +151,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 544b5577-7223-4fab-81aa-c3b993cc8726
+    taskid: 96681f96-7cf8-4d86-8659-d8cadb577c8d
     type: regular
     task:
-      id: 544b5577-7223-4fab-81aa-c3b993cc8726
+      id: 96681f96-7cf8-4d86-8659-d8cadb577c8d
       version: -1
       name: cyberint-alerts-status-update
       script: '|||cyberint-alerts-status-update'
@@ -200,10 +185,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: a35a76ac-7aa7-4497-8711-0415f44d14ed
+    taskid: a531297c-47cd-47e8-8661-3d032d9813d3
     type: condition
     task:
-      id: a35a76ac-7aa7-4497-8711-0415f44d14ed
+      id: a531297c-47cd-47e8-8661-3d032d9813d3
       version: -1
       name: Verify Outputs
       type: condition
@@ -248,10 +233,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 7df0d897-9f77-4708-898e-7dc1c82cd103
+    taskid: 40cdf18e-703a-4d63-8c19-01d72c8deee7
     type: regular
     task:
-      id: 7df0d897-9f77-4708-898e-7dc1c82cd103
+      id: 40cdf18e-703a-4d63-8c19-01d72c8deee7
       version: -1
       name: cyberint-alerts-get-attachment
       script: '|||cyberint-alerts-get-attachment'
@@ -283,25 +268,72 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: ef6d73ce-83bd-42d8-83ac-8b1e1228c948
-    type: regular
+    taskid: 608fc821-1adf-4c07-88a8-3d0084c5a773
+    type: condition
     task:
-      id: ef6d73ce-83bd-42d8-83ac-8b1e1228c948
+      id: 608fc821-1adf-4c07-88a8-3d0084c5a773
       version: -1
-      name: cyberint-alerts-analysis-report
-      script: '|||cyberint-alerts-analysis-report'
-      type: regular
-      iscommand: true
+      name: Verify Outputs
+      type: condition
+      iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "8"
-    scriptarguments:
-      alert_ref_id:
-        simple: ARG-4
-      report_name:
-        simple: Expert Analysis - Active Phishing Website Targeting Company.pdf
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
     view: |-
       {
         "position": {
@@ -316,15 +348,24 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: e0d775bd-8950-41a8-8018-fb48883c7529
-    type: title
+    taskid: 9b4e0be7-2855-4b19-85a8-19194bf4d444
+    type: regular
     task:
-      id: e0d775bd-8950-41a8-8018-fb48883c7529
+      id: 9b4e0be7-2855-4b19-85a8-19194bf4d444
       version: -1
-      name: Test Done
-      type: title
-      iscommand: false
+      name: cyberint-alerts-analysis-report
+      script: '|||cyberint-alerts-analysis-report'
+      type: regular
+      iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert_ref_id:
+        simple: ARG-4
+      report_name:
+        simple: Expert Analysis - Active Phishing Website Targeting Company.pdf
     separatecontext: false
     view: |-
       {
@@ -338,12 +379,116 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2222181a-f3f7-4e8f-8507-8259170dd01a
+    type: condition
+    task:
+      id: 2222181a-f3f7-4e8f-8507-8259170dd01a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 25be78fb-ab14-45a3-8b54-bffba5386f3c
+    type: title
+    task:
+      id: 25be78fb-ab14-45a3-8b54-bffba5386f3c
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1615,
+        "height": 2015,
         "width": 380,
         "x": 50,
         "y": 50
