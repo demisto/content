@@ -342,6 +342,10 @@ references:
         rm $GCS_PATH
 
         python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
+        
+        zip -j $CIRCLE_ARTIFACTS/uploadable_packs.zip $CIRCLE_ARTIFACTS/uploadable_packs/* || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure" && exit 0)
+        rm -rf $CIRCLE_ARTIFACTS/uploadable_packs
+
 
   restore_cache: &restore_cache
     restore_cache:
@@ -1233,7 +1237,7 @@ jobs:
       - *wait_until_server_ready
       - run:
           name: Unlock HelloWorld integration and playbook
-          command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
+          command: python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
       - run:
           name: Create and upload incident type, incident field, mapper and a layout to Cortex XSOAR
           command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
