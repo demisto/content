@@ -1318,7 +1318,7 @@ class Pack(object):
                 with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
                     rn_lines = rn_file.read()
                 same_block_versions_dict[current_version] = self._clean_release_notes(rn_lines).strip()
-        return same_block_versions_dict, str(higher_nearest_version)
+        return same_block_versions_dict, higher_nearest_version.vstring
 
     def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion) -> \
             Tuple[str, str]:
