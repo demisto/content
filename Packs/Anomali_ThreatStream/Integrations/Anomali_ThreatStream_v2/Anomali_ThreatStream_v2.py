@@ -440,13 +440,16 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     dbot_context = get_dbot_context(indicator, threshold)
     ip_context = get_ip_context(indicator, threshold)
     threat_ip_context = get_threat_generic_context(indicator)
+    threat_ip_tags = threat_ip_context.pop('Tags', [])
+    tags_table = tableToMarkdown('Tags', threat_ip_tags) if threat_ip_tags else ""
 
     ec = {
         'DBotScore': dbot_context,
         'IP(val.Address == obj.Address)': ip_context,
         'ThreatStream.IP(val.Address == obj.Address)': threat_ip_context
     }
-    human_readable = tableToMarkdown(F"IP reputation for: {ip}", threat_ip_context)
+    human_readable = tableToMarkdown(F"IP reputation for: {ip}", threat_ip_context) + tags_table
+    threat_ip_context['Tags'] = threat_ip_tags
 
     return_outputs(human_readable, ec, indicator)
 
@@ -474,13 +477,16 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     dbot_context = get_dbot_context(indicator, threshold)
     domain_context = get_domain_context(indicator, threshold)
     threat_domain_context = get_threat_generic_context(indicator)
+    threat_domain_tags = threat_domain_context.pop('Tags', [])
+    tags_table = tableToMarkdown('Tags', threat_domain_tags) if threat_domain_tags else ""
 
     ec = {
         'DBotScore': dbot_context,
         'Domain(val.Name == obj.Name)': domain_context,
         'ThreatStream.Domain(val.Address == obj.Address)': threat_domain_context
     }
-    human_readable = tableToMarkdown(F"Domain reputation for: {domain}", threat_domain_context)
+    human_readable = tableToMarkdown(F"Domain reputation for: {domain}", threat_domain_context) + tags_table
+    threat_domain_context['Tags'] = threat_domain_tags
 
     return_outputs(human_readable, ec, indicator)
 
@@ -520,13 +526,16 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     threat_file_context.pop("ASN", None)
     threat_file_context.pop("Organization", None)
     threat_file_context.pop("Country", None)
+    threat_file_tags = threat_file_context.pop('Tags', [])
+    tags_table = tableToMarkdown('Tags', threat_file_tags) if threat_file_tags else ""
 
     ec = {
         'DBotScore': dbot_context,
         Common.File.CONTEXT_PATH: file_context,
         f'ThreatStream.{Common.File.CONTEXT_PATH}': threat_file_context
     }
-    human_readable = tableToMarkdown(F"{file_type} reputation for: {file}", threat_file_context)
+    human_readable = tableToMarkdown(F"{file_type} reputation for: {file}", threat_file_context) + tags_table
+    threat_file_context["Tags"] = threat_file_tags
 
     return_outputs(human_readable, ec, indicator)
 
@@ -555,13 +564,16 @@ def get_url_reputation(url, threshold=None, status="active,inactive"):
     domain_context = get_url_context(indicator, threshold)
     threat_url_context = get_threat_generic_context(indicator)
     del threat_url_context['ASN']
+    threat_url_tags = threat_url_context.pop('Tags', [])
+    tags_table = tableToMarkdown('Tags', threat_url_tags) if threat_url_tags else ""
 
     ec = {
         'DBotScore': dbot_context,
         'URL(val.Data == obj.Data)': domain_context,
         'ThreatStream.URL(val.Address == obj.Address)': threat_url_context
     }
-    human_readable = tableToMarkdown(F"URL reputation for: {url}", threat_url_context)
+    human_readable = tableToMarkdown(F"URL reputation for: {url}", threat_url_context) + tags_table
+    threat_url_context["Tags"] = threat_url_tags
 
     return_outputs(human_readable, ec, indicator)
 
@@ -583,12 +595,15 @@ def get_email_reputation(email, threshold=None, status="active,inactive"):
     threat_email_context.pop("ASN", None)
     threat_email_context.pop("Organization", None)
     threat_email_context.pop("Country", None)
+    threat_email_tags = threat_email_context.pop('Tags', [])
+    tags_table = tableToMarkdown('Tags', threat_email_tags) if threat_email_tags else ""
 
     ec = {
         'DBotScore': dbot_context,
         'ThreatStream.EmailReputation(val.Email == obj.Email)': threat_email_context
     }
-    human_readable = tableToMarkdown(F"Email reputation for: {email}", threat_email_context)
+    human_readable = tableToMarkdown(F"Email reputation for: {email}", threat_email_context) + tags_table
+    threat_email_context["Tags"] = threat_email_tags
 
     return_outputs(human_readable, ec, indicator)
 

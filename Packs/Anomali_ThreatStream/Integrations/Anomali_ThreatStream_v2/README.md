@@ -67,6 +67,7 @@ Checks the reputation of the given IP.
 | ThreatStream.IP.Status | String | Status assigned to the indicator. | 
 | ThreatStream.IP.Organization | String | Name of the business that owns the IP address associated with the indicator. | 
 | ThreatStream.IP.Source | String | The source of the indicator. | 
+| ThreatStream.IP.Tags | Unknown | Tags assigned to the IP. |
 | DBotScore.Score | Number | The actual score. | 
 | IP.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
 
@@ -152,6 +153,7 @@ Checks the reputation of the given domain name.
 | ThreatStream.Domain.Status | String | Status assigned to the indicator. | 
 | ThreatStream.Domain.Organization | String | Name of the business that owns the IP address associated with the indicator. | 
 | ThreatStream.Domain.Source | String | The source of the indicator. | 
+| ThreatStream.Domain.Tags | Unknown | Tags assigned to the domain. |
 | Domain.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -250,6 +252,7 @@ Checks the reputation of the given hash of the file.
 | ThreatStream.File.SHA512 | String | The SHA512 hash of the indicator. | 
 | ThreatStream.File.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.File.Source | String | The source of the indicator. | 
+| ThreatStream.File.Tags | Unknown | Tags assigned to the file. |
 
 
 #### Command Example
@@ -319,6 +322,7 @@ Checks the reputation of the given email address.
 | ThreatStream.EmailReputation.Email | String | The email address of the indicator. | 
 | ThreatStream.EmailReputation.Source | String | The source of the indicator. | 
 | ThreatStream.EmailReputation.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
+| ThreatStream.EmailReputation.Tags | Unknown | Tags assigned to the email. |
 
 
 #### Command Example
@@ -1689,7 +1693,7 @@ Checks the reputation of the given URL.
 | ThreatStream.URL.Type | String | The indicator type. | 
 | ThreatStream.URL.Source | String | The source of the indicator. | 
 | ThreatStream.URL.Severity | String | The indicator severity \("very-high", "high", "medium", or "low"\). | 
-
+| ThreatStream.URL.Tags | Unknown | Tags assigned to the url. |
 
 #### Command Example
     url url=http://194.147.35.172/mikey.mpsl using-brand="Anomali ThreatStream v2"
