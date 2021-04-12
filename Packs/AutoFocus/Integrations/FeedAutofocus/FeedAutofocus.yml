@@ -35,22 +35,20 @@ configuration:
   - global
   required: false
   type: 15
-- additionalinfo: JSON styled AutoFocus query, an example can be found in the description
-    (?) section. Only necessary in case a Samples Feed is fetched.
+- additionalinfo: JSON styled AutoFocus query, an example can be found in the description (?) section. Only necessary in case a Samples Feed is fetched.
   display: Samples Feed Query
   name: sample_query
   required: false
   type: 0
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
+    - None
+    - Good
+    - Suspicious
+    - Bad
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
@@ -66,8 +64,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -81,10 +78,10 @@ configuration:
   name: feedExpirationPolicy
   display: ""
   options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
+    - never
+    - interval
+    - indicatorType
+    - suddenDeath
   required: false
   type: 17
 - defaultvalue: '20160'
@@ -118,92 +115,6 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- name: feed
-  must_equal:
-    defaultvalue: 'true'
-    display: Fetch indicators
-    type: 8
-    required: false
-  must_contain: {}
-- name: feedReputation
-  must_equal:
-    display: Indicator Reputation
-    type: 18
-    required: false
-    options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
-  must_contain:
-    additionalinfo: Indicators from this integration instance will be marked with
-      this reputation
-- name: feedReliability
-  must_equal:
-    display: Source Reliability
-    type: 15
-    required: true
-    options:
-    - A - Completely reliable
-    - B - Usually reliable
-    - C - Fairly reliable
-    - D - Not usually reliable
-    - E - Unreliable
-    - F - Reliability cannot be judged
-  must_contain:
-    additionalinfo: Reliability of the source providing the intelligence data
-- name: feedExpirationPolicy
-  must_equal:
-    display: ''
-    type: 17
-    required: false
-    options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
-  must_contain: {}
-- name: feedExpirationInterval
-  must_equal:
-    display: ''
-    type: 1
-    required: false
-  must_contain: {}
-- name: feedFetchInterval
-  must_equal:
-    display: Feed Fetch Interval
-    type: 19
-    required: false
-  must_contain: {}
-- name: feedBypassExclusionList
-  must_equal:
-    display: Bypass exclusion list
-    type: 8
-    required: false
-  must_contain:
-    additionalinfo: When selected, the exclusion list is ignored for indicators from
-      this feed. This means that if an indicator from this feed is on the exclusion
-      list, the indicator might still be added to the system.
-- name: feedTags
-  must_equal:
-    display: Tags
-    required: false
-    type: 0
-  must_contain:
-    additionalinfo: Supports CSV values.
-- name: tlp_color
-  must_equal:
-    display: Traffic Light Protocol Color
-    options:
-    - RED
-    - AMBER
-    - GREEN
-    - WHITE
-    required: false
-    type: 15
-  must_contain:
-    additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-      fetched from the feed
 description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 display: AutoFocus Feed
 name: AutoFocus Feed
