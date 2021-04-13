@@ -1528,7 +1528,7 @@ class ExtFilter:
                     str(lhs).encode('utf-8')).decode('utf-8'))
 
         elif optype == "base64: decode":
-            return Value(base64.b64decode(lhs.encode('utf-8')).decode('utf-8'))
+            return Value(base64.b64decode(lhs.encode('utf-8')).decode('utf-8', errors='ignore'))
 
         elif optype == "digest":
             params = self.parse_conds_json(rhs)
