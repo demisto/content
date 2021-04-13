@@ -3,6 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import networkx as nx
 import math
+MINIMUM_SERVER_VERSION = '6.1.0'
+
 
 LAYOUT = demisto.args().get('layout')
 layout_to_functions = {
@@ -87,6 +89,8 @@ def generate_canvas(current_incident_id, incident_ids, indicators):
 
 
 def main():
+    if not is_demisto_version_ge(MINIMUM_SERVER_VERSION):
+        return_error('This script is supported only from version {}.'.format(MINIMUM_SERVER_VERSION))
     current_incident_id = demisto.args().get('incidentID')
     if current_incident_id is None:
         incident = demisto.incident()

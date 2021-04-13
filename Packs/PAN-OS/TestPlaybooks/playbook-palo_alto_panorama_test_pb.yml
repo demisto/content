@@ -665,16 +665,20 @@ tasks:
     task:
       id: 07f279e2-f534-4ca3-8ff8-478f6902ce58
       version: -1
-      name: Done
+      name: User-ID Interface and Agents
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+      - "107"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5730
+          "x": 740,
+          "y": 5780
         }
       }
     note: false
@@ -1959,7 +1963,99 @@ tasks:
     skipunavailable: false
     quietmode: 0
     isoversize: false
-system: true
+  "106":
+    id: "106"
+    taskid: 5d6f766b-b9f2-4292-81df-500777194857
+    type: regular
+    task:
+      id: 5d6f766b-b9f2-4292-81df-500777194857
+      version: -1
+      name: panorama-show-user-id-interfaces-config
+      description: Shows the user ID interface configuration
+      script: '|||panorama-show-user-id-interfaces-config'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      template: {}
+      template_stack: {}
+      vsys: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 5940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "107":
+    id: "107"
+    taskid: b19c6519-ffea-44c2-8589-14702361716c
+    type: regular
+    task:
+      id: b19c6519-ffea-44c2-8589-14702361716c
+      version: -1
+      name: panorama-list-configured-user-id-agents
+      description: Retrieves list of user-ID agents configured in the system.
+      script: '|||panorama-list-configured-user-id-agents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      template: {}
+      template_stack: {}
+      vsys: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "108":
+    id: "108"
+    taskid: 92da597f-8365-48eb-8b51-b795dcf221a6
+    type: title
+    task:
+      id: 92da597f-8365-48eb-8b51-b795dcf221a6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 6160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1967,7 +2063,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5745,
+        "height": 6175,
         "width": 1670,
         "x": 50,
         "y": 50

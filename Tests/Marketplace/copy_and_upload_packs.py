@@ -11,7 +11,7 @@ from google.cloud.storage import Blob, Bucket
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
     IGNORED_FILES, PACKS_FOLDER, BucketUploadFlow, load_json, store_successful_and_failed_packs_in_ci_artifacts, \
-    get_successful_and_failed_packs
+    get_upload_data
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_.]+/\d+\.\d+\.\d+/'
@@ -321,12 +321,13 @@ def main():
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
-    pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict = get_successful_and_failed_packs(
-        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
-    )
+    pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict, \
+        pc_uploaded_images = get_upload_data(packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+
     logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
     logging.debug(f"Failed packs from Prepare Content: {pc_failed_packs_dict}")
     logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
+    logging.debug(f"Images from Prepare Content: {pc_uploaded_images}")
 
     # Check if needs to upload or not
     check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict)
@@ -352,13 +353,13 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.copy_integration_images(production_bucket, build_bucket)
+        task_status = pack.copy_integration_images(production_bucket, build_bucket, pc_uploaded_images)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status = pack.copy_author_image(production_bucket, build_bucket)
+        task_status = pack.copy_author_image(production_bucket, build_bucket, pc_uploaded_images)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()

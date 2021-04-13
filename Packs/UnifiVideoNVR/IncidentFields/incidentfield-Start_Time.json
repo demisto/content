@@ -1,0 +1,30 @@
+{
+    "id": "incident_unifivideostarttime",
+    "version": -1,
+    "modified": "2021-03-02T10:41:18.468741946+01:00",
+    "name": "UnifiVideo Start Time",
+    "ownerOnly": false,
+    "cliName": "unifivideostarttime",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "CCTV"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

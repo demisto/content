@@ -62,7 +62,7 @@ def test_get_rest_api_instance_to_use(mocker, modules, expected_output, num_of_i
         assert contents['Contents'] == expected_output
 
 
-def mock_execute_command(command_name, args):
+def mock_execute_command(command_name, _):
     if command_name == 'getIncidents':
         return INCIDENTS_RESULT
     elif command_name == 'demisto-api-post':

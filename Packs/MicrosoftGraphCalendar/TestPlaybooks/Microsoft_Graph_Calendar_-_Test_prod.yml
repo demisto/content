@@ -1,0 +1,79 @@
+id: Microsoft Graph Calendar - Test prod
+version: -1
+name: Microsoft Graph Calendar - Test prod
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3a176510-589e-4973-b249-2b8ef24cdace
+    type: start
+    task:
+      id: 3a176510-589e-4973-b249-2b8ef24cdace
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: ac35be01-29d2-46c1-a235-72d2a35b9167
+    type: regular
+    task:
+      id: ac35be01-29d2-46c1-a235-72d2a35b9167
+      version: -1
+      name: set playbook to Microsoft Graph Calendar - Test
+      description: set playbook for current incident to Microsoft Graph Calendar - Test
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: Microsoft Graph Calendar - Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

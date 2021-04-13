@@ -57,9 +57,13 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.17163
+dockerimage: demisto/sklearn:1.0.0.17983
 runas: DBotWeakRole
 runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.1.0
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: 6.1.0
+

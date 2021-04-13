@@ -1,0 +1,21 @@
+{
+    "data": [
+        {
+            "description": "",
+            "enabled": true,
+            "id": "092748e8-c17d-4e53-99da-e84345f06a90",
+            "name": "Test_schedule",
+            "ownerTeam": {
+                "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+                "name": "Test"
+            },
+            "rotations": [],
+            "timezone": "Australia/Sydney"
+        }
+    ],
+    "expandable": [
+        "rotation"
+    ],
+    "requestId": "2a05d57c-1a42-46d7-8748-d51be6e3a459",
+    "took": 0.002
+}

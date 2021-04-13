@@ -2070,6 +2070,46 @@ Removes egress rule from a security group. To remove a rule, the values that you
 There is no context output for this command.
 
 
+### aws-ec2-revoke-security-group-egress-rule
+***
+(VPC only) Removes the specified egress rules from a security group for EC2-VPC. This action does not apply to security groups for use in EC2-Classic. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
+
+
+#### Base Command
+
+`aws-ec2-revoke-security-group-egress-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | The ID of the security group. | Required | 
+| IpPermissionsfromPort | The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes. | Optional | 
+| IpPermissionsToPort | The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all codes. | Optional | 
+| IpPermissionsIpProtocol | The IP protocol name (tcp, udp, icmp, icmpv6) or number. | Optional | 
+| IpRangesCidrIp | The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length. | Optional | 
+| IpRangesDescription | A description for the security group rule that references this IPv4 address range.Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$* | Optional | 
+| Ipv6RangesCidrIp | The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length. | Optional | 
+| Ipv6RangesDescription | A description for the security group rule that references this IPv6 address range. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$* | Optional | 
+| PrefixListId | The ID of the prefix. | Optional | 
+| PrefixListIdDescription | A description for the security group rule that references this prefix list ID. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$* | Optional | 
+| UserIdGroupPairsDescription | A description for the security group rule that references this prefix list ID. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$* | Optional | 
+| UserIdGroupPairsGroupId | The ID of the security group. | Optional | 
+| UserIdGroupPairsGroupName | The name of the security group. In a request, use this parameter for a security group in EC2-Classic or a default VPC only. For a security group in a nondefault VPC, use the security group ID. For a referenced security group in another VPC, this value is not returned if the referenced security group is deleted. | Optional | 
+| UserIdGroupPairsPeeringStatus | The status of a VPC peering connection, if applicable. | Optional | 
+| UserIdGroupPairsUserId | The ID of an AWS account. For a referenced security group in another VPC, the account ID of the referenced security group is returned in the response. If the referenced security group is deleted, this value is not returned. [EC2-Classic] Required when adding or removing rules that reference a security group in another AWS account. | Optional | 
+| UserIdGroupPairsVpcId | The ID of the VPC for the referenced security group, if applicable. | Optional | 
+| UserIdGroupPairsVpcPeeringConnectionId | The ID of the VPC peering connection, if applicable. | Optional | 
+| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
 ### aws-ec2-copy-image
 ***
 Initiates the copy of an AMI from the specified source region to the current region.
