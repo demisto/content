@@ -117,6 +117,9 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
+    - contextPath: GitHub.Issue.Owner
+      description: The repository owner.
+      type: String
   - arguments:
     - default: false
       description: The number of the issue to close.
@@ -161,6 +164,9 @@ script:
       type: Date
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
+      type: String
+    - contextPath: GitHub.Issue.Owner
+      description: The repository owner.
       type: String
   - arguments:
     - default: false
@@ -241,6 +247,9 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
+    - contextPath: GitHub.Issue.Owner
+      description: The repository owner.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -300,6 +309,9 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
+    - contextPath: GitHub.Issue.Owner
+      description: The repository owner.
+      type: String
   - arguments:
     - default: false
       description: The query line for the search. For more information see the GitHub
@@ -352,6 +364,9 @@ script:
       type: Date
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
+      type: String
+    - contextPath: GitHub.Issue.Owner
+      description: The repository owner.
       type: String
   - deprecated: false
     description: Returns the total number of downloads for all releases for the specified

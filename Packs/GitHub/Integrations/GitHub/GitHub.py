@@ -215,9 +215,16 @@ def issue_format(issue):
     if issue.get('closed_by') is not None and issue.get('state') == 'closed':
         closed_by = issue.get('closed_by').get('login')
 
+    owner = ''
+    repository_url = issue.get('repository_url').split('/')
+    repo = repository_url[-1]
+    if len(repository_url) > 1:
+        owner = repository_url[-2]
+
     form = {
         'ID': issue.get('number'),
-        'Repository': REPOSITORY,
+        'Repository': repo,
+        'Owner': owner,
         'Title': issue.get('title'),
         'Body': issue.get('body'),
         'State': issue.get('state'),
