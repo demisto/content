@@ -514,6 +514,13 @@ def main():
     """
     params = demisto.params()
     api_key = params.get('api_key')
+    if not api_key:
+        if not is_demisto_version_ge("6.2.0"):
+            return_error('For versions earlier than 6.2.0, configure an API Key.')
+        if api_key.get('override_default_credentials'):
+            return_error('If you wish to override the default credentials, please configure an API Key.')
+        api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
+
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
 
