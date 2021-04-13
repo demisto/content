@@ -765,8 +765,11 @@ def list_pr_reviews_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def list_pr_files(pull_number: Union[int, str]) -> list:
-    suffix = PULLS_SUFFIX + f'/{pull_number}/files'
+def list_pr_files(pull_number: Union[int, str], organization: str = None, repository: str = None) -> list:
+    if pull_number and organization and repository:
+        suffix = f'/repos/{organization}/{repository}/pulls/{pull_number}/files'
+    else:
+        suffix = PULLS_SUFFIX + f'/{pull_number}/files'
     response = http_request('GET', url_suffix=suffix)
     return response
 
@@ -774,7 +777,9 @@ def list_pr_files(pull_number: Union[int, str]) -> list:
 def list_pr_files_command():
     args = demisto.args()
     pull_number = args.get('pull_number')
-    response = list_pr_files(pull_number)
+    organization = args.get('organization')
+    repository = args.get('repository')
+    response = list_pr_files(pull_number, organization, repository)
 
     formatted_pr_files = [
         {

@@ -629,6 +629,17 @@ script:
       name: pull_number
       required: true
       secret: false
+    - default: false
+      description: The name of the organization.
+      isArray: false
+      name: organization
+      required: false
+    - default: false
+      description: The repository of the pull request.
+      isArray: false
+      name: repository
+      required: flase
+      secret: false
     deprecated: false
     description: Lists the pull request files.
     execution: false
