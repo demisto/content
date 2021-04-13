@@ -2084,10 +2084,10 @@ tasks:
     task:
       id: 664e0282-f996-408a-81d4-7e3958b125cc
       version: -1
-      name: Azure Hunting playbook
+      name: Office 365 and Azure Hunting
       description: 'This playbook helps you collect and investigate suspicious security
         events from the Azure AD environment. '
-      playbookName: Azure Hunting playbook
+      playbookName: Office 365 and Azure Hunting
       type: playbook
       iscommand: false
       brand: ""
@@ -2149,10 +2149,10 @@ tasks:
     task:
       id: 3db165c4-baa0-4aaa-88ba-3206e8797b7b
       version: -1
-      name: Azure Configuration Analysis
+      name: Office 365 and Azure Configuration Analysis
       description: This playbook helps you collect, review, and find misconfigurations
         with the Azure environment.
-      playbookName: Azure Configuration Analysis
+      playbookName: Office 365 and Azure Configuration Analysis
       type: playbook
       iscommand: false
       brand: ""

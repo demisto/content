@@ -1,7 +1,7 @@
-id: Azure Configuration Analysis
+id: Office 365 and Azure Configuration Analysis
 version: -1
-name: Azure Configuration Analysis
-description: Deprecated. We recommend using "Office 365 and Azure Configuration Analysis" playbook instead. This playbook helps you collect, review, and find misconfigurations with
+name: Office 365 and Azure Configuration Analysis
+description: This playbook helps you collect, review, and find misconfigurations with
   the Azure environment.
 starttaskid: "0"
 tasks:

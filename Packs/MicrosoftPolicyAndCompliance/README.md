@@ -1,3 +1,4 @@
+Deprecated. We recommend using "Office 365 and Azure (Audit Log)" pack instead.
 Need to find if a user viewed a specific document or purged an item from their mailbox? If so, use the MicrosoftPolicyAndComplianceAuditLog integration to search the unified audit log to view user and administrator activity in your organization. 
 
 The unified audit log contains events from 
