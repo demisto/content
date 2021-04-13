@@ -119,10 +119,9 @@ HAPPY_PATH_ARGS = [
 
     ('create_process', create_process_command, 'test_process_output',
      dict(command_string='test_cmd_line_path', wait_timeout=30, wait_for_output=True, wait_for_completion=True),
-     'test_process_output'),
+     'test_process_output')]
 
-    # ('start_memdump', memdump_command, 'Memory was dumped to test_target_path', (), None)
-    ]
+# ('start_memdump', memdump_command, 'Memory was dumped to test_target_path', (), None)
 
 HAPPY_PATH_ARGS_FOR_COMMAND_RESULTS = [
     ('list_registry_keys_and_values', list_reg_sub_keys_command, 'sub_1', (), {'sub_keys': ['sub_1', 'sub_2']}),
@@ -148,7 +147,8 @@ def mock_method_in_lr_session(mocker, method_name, mocked_results=None):
     mocked_lr_session = MockedLRObject()
     test_mocker = mocker.patch('cbc_sdk.CBCloudAPI.select', return_value=mocked_lr_session)
 
-    mock_method = lambda *args, **kwargs: None
+    def mock_method():
+        lambda *args, **kwargs: None
     setattr(mocked_lr_session, method_name, mock_method)  # Just add mocked method to the object
     test_mocker = mocker.patch.object(mocked_lr_session, method_name, return_value=mocked_results)
 
