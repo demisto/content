@@ -518,7 +518,7 @@ def get_incidents_batch_by_time_request(params):
         iteration_count = iteration_count + 1
 
     demisto.debug("End of fetch iteration. Number of incident gathered is {}."
-                  "Last fetch is {}. Ids of new incidents are {}".format(str(len(incidents_list)),last_fetch,str(new_fetched_incidents_ids)))
+                  "Last fetch is {}. Ids of new incidents are {}".format(str(len(incidents_list)), last_fetch, str(new_fetched_incidents_ids)))
     return incidents_list, last_fetch, new_fetched_incidents_ids
 
 
@@ -550,7 +550,7 @@ def fetch_incidents_command():
         }
 
         state_parsed_fetch = datetime.strptime(last_fetch[state], TIME_FORMAT)
-        incidents_list, last_fetch, new_fetched_ids = get_incidents_batch_by_time_request(request_params)
+        incidents_list, last_fetch_time, new_fetched_ids = get_incidents_batch_by_time_request(request_params)
         for incident in incidents_list:
             incident_creation_time = datetime.strptime(incident['created_at'], TIME_FORMAT)
             if incident_creation_time > state_parsed_fetch:
@@ -563,7 +563,6 @@ def fetch_incidents_command():
                 incidents.append(inc)
 
         if incidents:
-            last_fetch_time = last_fetch
             last_fetch[state] = last_fetch_time
 
     demisto.setLastRun({'last_fetch': last_fetch})
