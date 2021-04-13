@@ -297,7 +297,7 @@ script:
       description: The type of the source of the relation.
       type: string
     - contextPath: URL.Relations.ObjectTypeB
-      description: The type of the destination of the relation.
+      description: The type of the destination of the relationship.
       type: string
     - contextPath: URLScan.RelatedIPs
       description: The IP addresses related to the scanned URL.
