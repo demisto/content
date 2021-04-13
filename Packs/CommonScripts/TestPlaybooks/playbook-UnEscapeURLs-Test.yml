@@ -944,7 +944,7 @@ tasks:
         complex:
           root: lastCompletedTaskEntries
       substring:
-        simple: http:/www.nintendo.com
+        simple: http://www.nintendo.com
     separatecontext: false
     view: |-
       {
