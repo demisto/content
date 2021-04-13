@@ -71,18 +71,19 @@ HTML_DOCUMENT_TEMPLATE = """
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous"
-    media='all'>
+          media='all'>
 </head>
 <style>
     td {
         font-size: small;
     }
+
 </style>
 <body>
 <div class="container">
     <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
         <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"
-        style="min-width:500px;">
+             style="min-width:500px;">
             <span class="fs-4">XSOAR as built</span>
         </div>
         <div>
@@ -102,18 +103,10 @@ HTML_DOCUMENT_TEMPLATE = """
         </div>
     </div>
     <div class="row mb-2">
-        <div class="col text-center p-2 border-bottom">
-            {{ open_incidents }}
-        </div>
-        <div class="col text-center p-2 border-bottom">
-            {{ closed_incidents }}
-        </div>
-    </div>
-    <div class="row mb-2">
         <div class="col">
             <h1 class="text-primary">Purpose</h1>
             <p>This Document covers all of the custom configuration and content that has been deployed following
-            the engagement of Palo Alto professional services.<br>
+                the engagement of Palo Alto professional services.<br>
             </p>
             <h1 class="text-primary">Document Overview</h1>
             <p>
@@ -123,12 +116,39 @@ HTML_DOCUMENT_TEMPLATE = """
                 Project Details
             </h1>
             <textarea style="width:100%;border:none;"
-                  placeholder="Click here to complete this section with any relevant details, for example customer
+                      placeholder="Click here to complete this section with any relevant details, for example customer
 contat details, project scope, etc."></textarea>
+            <h1 class="text-primary">
+                Contact Details
+            </h1>
+            <p>
+                <b>Corporate Headquarters</b><br>
+                Palo Alto Networks<br>
+                3000 Tannery Way<br>
+                Santa Clara, CA 95054<br>
+            </p>
         </div>
     </div>
     <p style="page-break-after: always;"></p>
 
+    <h1 class="text-primary text-center">Project Statistics Summary</h1>
+    <div class="row mb-2">
+        <div class="col text-center p-2 border-bottom">
+            {{ open_incidents }}
+        </div>
+        <div class="col text-center p-2 border-bottom">
+            {{ closed_incidents }}
+        </div>
+    </div>
+
+    {{ playbook_stats }}
+    <p>
+        The playbook statistics represent how many incidents have been ingested and associated with
+        a given playbook.
+
+        <br>This is a good indicator of how each use case is being consumed.
+    </p>
+    <p style="page-break-after: always;"></p>
 
     {{ integrations_table }}
     <p>The system configuration above represents the server configuration of XSOAR, including advanced
@@ -138,7 +158,7 @@ contat details, project scope, etc."></textarea>
 
     {{ installed_packs_table }}
     <p>The installed packs are all the content packs currently installed on the server. Content packs
-    include playbooks, automations, and in some cases, integrations.</p>
+        include playbooks, automations, and in some cases, integrations.</p>
     <p style="page-break-after: always;"></p>
 
 
@@ -189,6 +209,12 @@ class TableData:
     def total(self):
         return len(self.data)
 
+    def search(self, search_key, search_value):
+        for row in self.data:
+            if search_key in row:
+                value = row.get(search_key)
+                if value == search_value:
+                    return row
 
 class SingleFieldData:
     def __init__(self, name, data):
@@ -241,7 +267,7 @@ class Document:
             author=self.author,
             date=self.date,
             customer=self.customer,
-            playbook_stats=self.playbook_stats.as_html()
+            playbook_stats=self.playbook_stats.as_html(headers=["playbook", "incidents"])
         )
 
     def markdown(self):
@@ -415,10 +441,12 @@ def get_custom_playbooks():
     return rd
 
 
-def get_playbook_stats():
+def get_playbook_stats(playbooks):
     """
     Pull all the incident types and assoociated playbooks,
     then join this with the incident stats to determine how often each playbook has been used.
+
+    :param playbooks (TableData): Table Data of Playbooks
     """
     # incident_types = get_api_request(DEMISTO_INCIDENT_TYPE_PATH)
     incidents = get_all_incidents()
@@ -432,10 +460,19 @@ def get_playbook_stats():
 
     table = []
     for playbook, count in playbook_stats.items():
-        table.append({
-            "playbook": playbook,
-            "incidents": count
-        })
+        # Try to join this with the playbooks we previously retrieved to populate
+        # more info.
+        playbook_data = playbooks.search("id", playbook)
+        if playbook_data:
+            table.append({
+                "playbook": playbook_data.get("name"),
+                "incidents": count
+            })
+        else:
+            table.append({
+                "playbook": playbook,
+                "incidents": count
+            })
     td = TableData(table, "Playbook Stats")
     return td
 
@@ -461,7 +498,7 @@ def main():
     installed_packs = get_installed_packs()
     playbooks = get_custom_playbooks()
     automations = get_custom_automations()
-    playbook_stats = get_playbook_stats()
+    playbook_stats = get_playbook_stats(playbooks)
     d = Document(
         MD_DOCUMENT_TEMPLATE,
         system_config=system_config,
