@@ -3272,7 +3272,7 @@
             "instance_names": [
                 "ml_dummy_prod"
             ],
-            "fromversion": "4.5.0",
+            "fromversion": "5.5.0",
             "timeout": 1000
         },
         {
