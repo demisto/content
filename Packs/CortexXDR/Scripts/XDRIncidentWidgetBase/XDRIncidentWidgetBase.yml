@@ -1,7 +1,6 @@
 commonfields:
   id: XDRIncidentWidgetBase
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: XDRIncidentWidgetBase
 script: ''
 type: python
@@ -11,7 +10,7 @@ comment: This script used to gets statistics on Cortex XDR open incidents and ge
 enabled: true
 args:
 - name: limit
-  description: The maximum number of incidents to fetch. The default value is 3000.
+  description: The maximum number of incidents to fetch. The default value is 300.
   defaultValue: "300"
 - name: reultType
   required: true
@@ -44,8 +43,9 @@ args:
     value in PaloAltoNetworksXDR.Incident.users.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.4.18682
 runas: DBotWeakRole
 fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

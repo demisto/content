@@ -1,5 +1,3 @@
-from dateutil import parser
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -64,7 +62,7 @@ def get_demisto_datetme_format(date_string):
             return None
 
 
-def main(): 
+def main():
     try:
         args = demisto.args()
         res_dict = {}  # type:dict
