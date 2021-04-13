@@ -10,7 +10,7 @@ import requests
 import logging
 from datetime import datetime
 from zipfile import ZipFile
-from typing import Any, Tuple, Union
+from typing import Any, Tuple, Union, Optional
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
     LANDING_PAGE_SECTIONS_PATH, get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, \
@@ -244,7 +244,9 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
 def upload_index_to_storage(index_folder_path: str, extract_destination_path: str, index_blob: Any,
                             build_number: str, private_packs: list, current_commit_hash: str,
                             index_generation: int, is_private: bool = False, force_upload: bool = False,
-                            previous_commit_hash: str = None, landing_page_sections: dict = None):
+                            previous_commit_hash: str = None, landing_page_sections: dict = None,
+                            artifacts_dir: str = Optional[None],
+                            ):
     """
     Upload updated index zip to cloud storage.
 
@@ -259,6 +261,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param force_upload: Indicates if force upload or not.
     :param previous_commit_hash: The previous commit hash to diff with.
     :param landing_page_sections: landingPage sections.
+    :param artifacts_dir: The CircleCI artifacts directory to upload the index.json to.
     :returns None.
 
     """
@@ -309,6 +312,12 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         logging.exception(f"Failed in uploading {GCPConfig.INDEX_NAME}.")
         sys.exit(1)
     finally:
+        if artifacts_dir:
+            # Store index.json in CircleCI artifacts
+            shutil.copyfile(
+                os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
+                artifacts_dir,
+            )
         shutil.rmtree(index_folder_path)
 
 
@@ -1094,7 +1103,8 @@ def main():
                             index_blob=index_blob, build_number=build_number, private_packs=private_packs,
                             current_commit_hash=current_commit_hash, index_generation=index_generation,
                             force_upload=force_upload, previous_commit_hash=previous_commit_hash,
-                            landing_page_sections=landing_page_sections)
+                            landing_page_sections=landing_page_sections,
+                            artifacts_dir=os.path.dirname(packs_artifacts_path))
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
@@ -1107,12 +1117,6 @@ def main():
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
         updated_private_packs_ids, images_data=get_images_data(packs_list)
-    )
-
-    # Store index.json in CircleCI artifacts
-    shutil.copyfile(
-        os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
-        os.path.dirname(packs_artifacts_path),
     )
 
     # summary of packs status
