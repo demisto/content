@@ -31,8 +31,9 @@ RELEASE_SUFFIX = USER_SUFFIX + '/releases'
 PULLS_SUFFIX = USER_SUFFIX + '/pulls'
 
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
-ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
+ISSUE_HEADERS = ['ID', 'Repository', 'Owner', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
                  'Assignees', 'Labels']
+FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'DownloadUrl']
 
 # Headers to be sent in requests
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
@@ -1312,7 +1313,7 @@ def list_files_command():
         })
 
     ec = {'GitHub.File(val.Name === obj.Name && val.Path === obj.Path)': ec_object}
-    human_readable = tableToMarkdown(f'files in path {path}', ec_object, removeNull=True)
+    human_readable = tableToMarkdown(f'Files in path: {path}', ec_object, removeNull=True, headers=FILE_HEADERS)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
 
 

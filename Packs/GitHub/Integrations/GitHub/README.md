@@ -1501,3 +1501,40 @@ Gets the content of a file from GitHub.
 |---|---|---|---|
 |branch-test|This is the content of the file|raw|file.json| 
 
+### Github-list-files
+***
+Get list of files from the given path in the repository.
+
+
+#### Base Command
+
+`Github-list-files`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| path | The path in the branch to get the files from. | Optional | 
+| organization | The name of the organization. | Optional | 
+| repository | The name of the repository. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.File.Name | String | The name of the file. | 
+| GitHub.File.Type | String | Whether the item is file or directory. | 
+| GitHub.File.Size | Number | The size of the file in bytes. | 
+| GitHub.File.Path | String | The file path inside the repository. | 
+| GitHub.File.DownloadUrl | String | Link to download the file content. | 
+
+
+#### Command Example
+```!Github-list-files path=Index```
+
+#### Human Readable Output
+## Files in path: Index
+|Name|Path|Type|Size|DownloadUrl|
+|--- |--- |--- |--- |--- |
+|README.md|Index/README.md|file|1500|https://raw.githubusercontent.com/demisto/hello-world/master/index/README.md|
+|images|Index/images|dir|0||
