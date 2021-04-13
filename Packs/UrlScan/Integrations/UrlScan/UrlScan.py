@@ -29,33 +29,40 @@ RELATIONSHIP_TYPE = {
     'lists': {
         'domains': {
             'indicator_type': FeedIndicatorType.Domain,
-            'name': Relations.RELATED_TO
+            'name': Relations.RELATED_TO,
+            'detect_type': False
         },
         'hashes': {
             'indicator_type': FeedIndicatorType.File,
-            'name': Relations.RELATED_TO
+            'name': Relations.RELATED_TO,
+            'detect_type': False
         },
         'ips': {
+            'indicator_type': '',
             'name': Relations.RELATED_TO,
             'detect_type': True
         },
         'linkDomains': {
             'indicator_type': FeedIndicatorType.Domain,
-            'name': Relations.RELATED_TO
+            'name': Relations.RELATED_TO,
+            'detect_type': False
         },
         'urls': {
             'indicator_type': FeedIndicatorType.URL,
-            'name': Relations.RELATED_TO
+            'name': Relations.RELATED_TO,
+            'detect_type': False
         }
     },
     'page': {
         'domain': {
             'indicator_type': FeedIndicatorType.Domain,
-            'name': Relations.HOSTED_ON
+            'name': Relations.HOSTED_ON,
+            'detect_type': False
         },
         'ip': {
             'indicator_type': FeedIndicatorType.IP,
-            'name': Relations.HOSTED_ON
+            'name': Relations.HOSTED_ON,
+            'detect_type': False
         }
     }
 }
@@ -221,6 +228,9 @@ def urlscan_submit_url(client):
 
 
 def create_relationship(scan_type, field, entity_a, object_type_a, entity_b, object_type_b, reliability):
+    """
+    Create a single relation with the given arguments.
+    """
     return EntityRelation(name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('name', ''),
                           entity_a=entity_a,
                           object_type_a=object_type_a,

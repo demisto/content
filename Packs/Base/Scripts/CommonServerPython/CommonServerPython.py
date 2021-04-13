@@ -4800,12 +4800,11 @@ class EntityRelation:
         :return: XSOAR context representation.
         """
         indicator_relation_context = {
-            "Name": self._name,
+            "Relationship": self._name,
             "EntityA": self._entity_a,
             "ObjectTypeA": self._object_type_a,
             "EntityB": self._entity_b,
             "ObjectTypeB": self._object_type_b,
-            "Type": self._relation_type,
         }
         return indicator_relation_context
 
@@ -4857,7 +4856,7 @@ class CommandResults:
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
                  mark_as_note=False, polling_command=None, polling_args=None, polling_timeout=None,
                  polling_next_run=None, relations=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool,str, dict, str, str, list) -> None
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool,str, dict, str, str, list) -> None # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
