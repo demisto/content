@@ -457,7 +457,8 @@ See `Filter Syntax` for the details of `transformers`.
     {
       "is filtered with": {
         "Name": {
-        "ends with": ".exe"
+          "ends with": ".exe"
+        }
       },
       "json: encode": {},
       "base64: encode": {}
