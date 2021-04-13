@@ -73,7 +73,7 @@ def preprocess_text(text, model_type, is_return_error):
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
                            word_threshold, top_word_limit, is_return_error, set_incidents_fields=False):
     model_data, model_type = get_model_data(model_name, model_store_type, is_return_error)
-    if model_type.strip() == '':
+    if model_type.strip() == '' or model_type.strip() == 'Phishing':
         model_type = FASTTEXT_MODEL_TYPE
     if model_type not in [FASTTEXT_MODEL_TYPE, TORCH_TYPE, UNKNOWN_MODEL_TYPE]:
         model_type = UNKNOWN_MODEL_TYPE
