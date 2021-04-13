@@ -342,7 +342,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "carbonblackendpointstandardalertseverity",
+                                "fieldId": "carbonblackesalertseverity",
                                 "height": 22,
                                 "id": "1d164e90-9c50-11eb-b01c-2f6d289c576f",
                                 "index": 4,
@@ -431,7 +431,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "firsteventtime",
+                                "fieldId": "carbonblackesfirsteventtime",
                                 "height": 22,
                                 "id": "6de0e710-9c4e-11eb-b01c-2f6d289c576f",
                                 "index": 1,

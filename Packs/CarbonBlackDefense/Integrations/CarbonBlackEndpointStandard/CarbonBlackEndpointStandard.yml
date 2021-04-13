@@ -2309,5 +2309,5 @@ script:
   subtype: python3
   type: python
 tests:
-- carbonBlackEndpointStandardV2TestPlaybook
+- carbonBlackEndpointStandardTestPlaybook
 fromversion: 5.5.0
