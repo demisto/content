@@ -175,4 +175,3 @@ def test_get_url_report_invalid_url(mocker, requests_mock):
     vt = importlib.import_module("VirusTotal-Private_API")
     output = vt.get_url_report_command()
     assert 'Invalid URL' in output[0]['HumanReadable']
-
