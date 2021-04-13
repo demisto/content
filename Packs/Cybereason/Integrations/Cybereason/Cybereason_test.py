@@ -1,5 +1,7 @@
+from CommonServerPython import *
+import json
+import io
 import demistomock as demisto
-
 
 """ API RAW RESULTS """
 
@@ -240,6 +242,11 @@ FILE_OUTPUTS = {
 }
 
 
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
 def test_login_failed(requests_mock, mocker):
     """
     Given:
@@ -307,3 +314,21 @@ def test_query_file(mocker):
     assert 'Cybereason file query results' in result[0]['HumanReadable']
     assert result[0]['EntryContext']['Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && '
                                      'val.SHA1===obj.SHA1)'][0]['Machine'] == 'desktop-p0m5vad'
+
+
+def test_malop_processes_command(mocker):
+    from Cybereason import malop_processes_command
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value={"malopGuids": ["11.-6236127207710541535"]})
+    raw_response = util_load_json('test_files/malop_processes_raw_response.json')
+    mocker.patch('Cybereason.malop_processes', return_value=raw_response)
+    mocker.patch.object(demisto, 'results')
+    malop_processes_command()
+    result = demisto.results.call_args[0]
+
+    assert result[0].get('ContentsFormat', '') == 'json'
+    assert 'Cybereason Malop Processes' in result[0].get('HumanReadable', '')
+    assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('Name', '') == 'bdata.bin'
+    assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('SHA1', '') ==\
+           'f56238da9fbfa3864d443a85bb80743bd2415682'
