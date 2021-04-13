@@ -1538,9 +1538,9 @@ class ExtFilter:
         elif optype == "email-header: decode":
             encoding_types = set(['utf-8', 'iso8859-1'])
             out = ''
-            lval = str(lhs)
+            lstr = str(lhs)
             try:
-                for decoded_s, encoding in decode_header(lval):
+                for decoded_s, encoding in decode_header(lstr):
                     if encoding:
                         out += decoded_s.decode(encoding)
                         encoding_types.add(encoding)
@@ -1551,7 +1551,7 @@ class ExtFilter:
             except Exception:
                 for encoding in encoding_types:
                     try:
-                        out = lval.decode(encoding)
+                        out = lstr.decode(encoding)
                         break
                     except: # noqa: E722
                         pass
