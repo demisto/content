@@ -1,2 +1,5 @@
 [file:playbook-NCSC_CAF_Assessment.yml]
 ignore=PB105
+
+[file:layoutscontainer-NCSC_CAF_Assessment.json]
+ignore=BA101

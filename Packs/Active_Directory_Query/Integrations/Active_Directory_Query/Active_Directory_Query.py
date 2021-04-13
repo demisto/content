@@ -92,7 +92,7 @@ def initialize_server(host, port, secure_connection, unsecure):
     return Server(host)
 
 
-def account_entry(person_object, custome_attributes):
+def account_entry(person_object, custom_attributes):
     # create an account entry from a person objects
     account = {
         'Type': 'AD',
@@ -109,7 +109,7 @@ def account_entry(person_object, custome_attributes):
         person_object_key.lower(): person_object_key for person_object_key in person_object.keys()
     }
 
-    for attr in custome_attributes:
+    for attr in custom_attributes:
         try:
             account[attr] = person_object[attr]
         except KeyError as e:
@@ -123,7 +123,7 @@ def account_entry(person_object, custome_attributes):
     return account
 
 
-def endpoint_entry(computer_object, custome_attributes):
+def endpoint_entry(computer_object, custom_attributes):
     # create an endpoint entry from a computer object
     endpoint = {
         'Type': 'AD',
@@ -136,7 +136,7 @@ def endpoint_entry(computer_object, custome_attributes):
         person_object_key.lower(): person_object_key for person_object_key in computer_object.keys()
     }
 
-    for attr in custome_attributes:
+    for attr in custom_attributes:
         if attr == '*':
             continue
         try:
@@ -153,7 +153,7 @@ def endpoint_entry(computer_object, custome_attributes):
 
 
 def base_dn_verified(base_dn):
-    # serch AD with a simple query to test base DN is configured correctly
+    # search AD with a simple query to test base DN is configured correctly
     try:
         search(
             "(objectClass=user)",
@@ -574,7 +574,7 @@ def search_computers(default_base_dn, page_size):
 
     args = demisto.args()
     attributes: List[str] = []
-    custome_attributes: List[str] = []
+    custom_attributes: List[str] = []
 
     # default query - list all users (computer category)
     query = "(&(objectClass=user)(objectCategory=computer))"
@@ -595,8 +595,8 @@ def search_computers(default_base_dn, page_size):
             args['custom-field-type'], args['custom-field-data'])
 
     if args.get('attributes'):
-        custome_attributes = args['attributes'].split(",")
-    attributes = list(set(custome_attributes + DEFAULT_COMPUTER_ATTRIBUTES))
+        custom_attributes = args['attributes'].split(",")
+    attributes = list(set(custom_attributes + DEFAULT_COMPUTER_ATTRIBUTES))
     entries = search_with_paging(
         query,
         default_base_dn,
@@ -604,7 +604,7 @@ def search_computers(default_base_dn, page_size):
         page_size=page_size
     )
 
-    endpoints = [endpoint_entry(entry, custome_attributes) for entry in entries['flat']]
+    endpoints = [endpoint_entry(entry, custom_attributes) for entry in entries['flat']]
 
     demisto_entry = {
         'ContentsFormat': formats['json'],
@@ -630,13 +630,13 @@ def search_group_members(default_base_dn, page_size):
     nested_search = '' if args.get('disable-nested-search') == 'true' else ':1.2.840.113556.1.4.1941:'
     time_limit = int(args.get('time_limit', 180))
 
-    custome_attributes: List[str] = []
+    custom_attributes: List[str] = []
     default_attributes = DEFAULT_PERSON_ATTRIBUTES if member_type == 'person' else DEFAULT_COMPUTER_ATTRIBUTES
 
     if args.get('attributes'):
-        custome_attributes = args['attributes'].split(",")
+        custom_attributes = args['attributes'].split(",")
 
-    attributes = list(set(custome_attributes + default_attributes))
+    attributes = list(set(custom_attributes + default_attributes))
 
     query = "(&(objectCategory={})(objectClass=user)(memberOf{}={}))".format(member_type, nested_search, group_dn)
 
@@ -667,11 +667,11 @@ def search_group_members(default_base_dn, page_size):
     if member_type == 'person':
         demisto_entry['EntryContext']['ActiveDirectory.Users(obj.dn == val.dn)'] = entries['flat']
         demisto_entry['EntryContext']['Account'] = [account_entry(
-            entry, custome_attributes) for entry in entries['flat']]
+            entry, custom_attributes) for entry in entries['flat']]
     else:
         demisto_entry['EntryContext']['ActiveDirectory.Computers(obj.dn == val.dn)'] = entries['flat']
         demisto_entry['EntryContext']['Endpoint'] = [endpoint_entry(
-            entry, custome_attributes) for entry in entries['flat']]
+            entry, custom_attributes) for entry in entries['flat']]
 
     demisto.results(demisto_entry)
 
@@ -689,7 +689,7 @@ def create_user():
     user_dn = args.get('user-dn')
     username = args.get("username")
     password = args.get("password")
-    custome_attributes = args.get('custom-attributes')
+    custom_attributes = args.get('custom-attributes')
     attributes = {
         "sAMAccountName": username
     }
@@ -706,17 +706,17 @@ def create_user():
     if args.get('title'):
         attributes['title'] = args['title']
 
-    # set user custome attributes
-    if custome_attributes:
+    # set user custom attributes
+    if custom_attributes:
         try:
-            custome_attributes = json.loads(custome_attributes)
+            custom_attributes = json.loads(custom_attributes)
         except Exception as e:
             demisto.info(str(e))
             raise Exception(
                 "Failed to parse custom attributes argument. Please see an example of this argument in the description."
             )
-        for attribute_name, attribute_value in custome_attributes.items():
-            # can run default attribute stting
+        for attribute_name, attribute_value in custom_attributes.items():
+            # can run default attribute setting
             attributes[attribute_name] = attribute_value
 
     # add user

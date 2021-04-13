@@ -7,7 +7,7 @@ configuration:
   name: APIKey
   required: true
   type: 4
-- display: Service Key (for triggering events only)
+- display: Service Key (for triggering, acknowledging and resolving events only)
   name: ServiceKey
   required: false
   type: 0
@@ -410,7 +410,7 @@ script:
       description: Service key for the integration
       isArray: false
       name: serviceKey
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Resolves an existing event in PagerDuty
@@ -434,7 +434,7 @@ script:
       description: Service key for the integration
       isArray: false
       name: serviceKey
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Acknowledges an existing event in PagerDuty

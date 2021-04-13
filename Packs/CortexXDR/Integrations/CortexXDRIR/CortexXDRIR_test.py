@@ -1,15 +1,14 @@
+import copy
 import json
 import os
 import zipfile
 
-import pytest
-import copy
 import demistomock as demisto
+import pytest
 from CommonServerPython import Common
 from freezegun import freeze_time
 
 XDR_URL = 'https://api.xdrurl.com'
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -914,13 +913,14 @@ def test_endpoint_scan_command(requests_mock):
 def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
     """
     Given:
-    -  no filters.
+    -  the filter all as true.
     When
         - A user desires to scan all endpoints.
     Then
         - returns markdown, context data and raw response.
     """
     from CortexXDRIR import endpoint_scan_command, Client
+    test_data = load_test_data('test_data/scan_all_endpoints.json')
     scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
@@ -928,9 +928,32 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = endpoint_scan_command(client, {})
+    markdown, context, raw = endpoint_scan_command(client, test_data['command_args'])
 
     assert scan_expected_tesult == context
+
+
+def test_endpoint_scan_command_scan_all_endpoints_no_filters_error(requests_mock):
+    """
+    Given:
+    -  No filters.
+    When
+        - A user desires to scan all endpoints but without the correct argumetns.
+    Then
+        - raise a descriptive error.
+    """
+    from CortexXDRIR import endpoint_scan_command, Client
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    client._headers = {}
+    err_msg = 'To scan all the endpoints run this command with the \'all\' argument as True ' \
+              'and without any other filters. This may cause performance issues.\n' \
+              'To scan some of the endpoints, please use the filter arguments.'
+    with pytest.raises(Exception, match=err_msg):
+        endpoint_scan_command(client, {})
 
 
 def test_sort_all_list_incident_fields():
@@ -1362,6 +1385,61 @@ def test_retrieve_files_command(requests_mock):
     assert hr == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
     assert context == retrieve_expected_result
     assert raw_response == {'action_id': 1773}
+
+
+def test_retrieve_files_command_using_general_file_path(requests_mock):
+    """
+    Given:
+        - endpoint_ids
+        - generic_file_path
+    When
+        - A user desires to retrieve a file.
+    Then
+        - Assert the returned markdown, context data and raw response are as expected.
+    """
+    from CortexXDRIR import retrieve_files_command, Client
+    from CommonServerPython import tableToMarkdown, string_to_table_header
+
+    retrieve_expected_result = {
+        'PaloAltoNetworksXDR.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
+    result = {'action_id': 1773}
+
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    hr, context, raw_response = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
+                                                                'generic_file_path': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
+
+    assert hr == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
+    assert context == retrieve_expected_result
+    assert raw_response == {'action_id': 1773}
+
+
+def test_retrieve_files_command_using_general_file_path_without_valid_endpint(requests_mock):
+    """
+    Given:
+        - endpoint_ids
+        - generic_file_path
+    When
+        - A user desires to retrieve a file.
+        - The endpoint is invalid
+    Then
+        - Assert the returned markdown, context data and raw response are as expected.
+    """
+    from CortexXDRIR import retrieve_files_command, Client
+    get_endpoints_response = {"reply": {"result_count": 1, "endpoints": []}}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    with pytest.raises(ValueError) as error:
+        retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
+                                        'generic_file_path': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
+    assert str(error.value) == "Error: Endpoint aeec6a2cc92e46fab3b6f621722e9916 was not found"
 
 
 def test_retrieve_file_details_command(requests_mock):

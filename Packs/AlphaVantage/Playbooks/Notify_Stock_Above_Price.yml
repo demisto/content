@@ -1,0 +1,306 @@
+id: Notify Stock Above Price
+version: -1
+name: Notify Stock Above Price
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fe0dbe2c-60ba-4f8e-80e0-1bb655bb5dee
+    type: start
+    task:
+      id: fe0dbe2c-60ba-4f8e-80e0-1bb655bb5dee
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 59d5d9dd-ff49-458d-8d82-ce5afe6d42d4
+    type: regular
+    task:
+      id: 59d5d9dd-ff49-458d-8d82-ce5afe6d42d4
+      version: -1
+      name: Check Stock Price
+      description: Gets data for a stock
+      script: '|||alphavantage-stock-data-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      symbol:
+        complex:
+          root: inputs.Stock
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 045bd029-a2b3-40fe-8c40-ba29a2cab6a0
+    type: condition
+    task:
+      id: 045bd029-a2b3-40fe-8c40-ba29a2cab6a0
+      version: -1
+      name: Compare to wanted high
+      description: Set a value in context under the key you entered.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: AlphaVantage.StockData
+                accessor: price
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.Price
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 061ce072-91a1-44e8-8fba-089da54437a4
+    type: regular
+    task:
+      id: 061ce072-91a1-44e8-8fba-089da54437a4
+      version: -1
+      name: Notify user about stocks
+      description: Sends a message
+      script: '|||telegram-send-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      message:
+        simple: "The Stock surpassed the wanted price of ${inputs.Price}. \nSymbol:\
+          \ : ${AlphaVantage.StockData.symbol}\nCurrent Price:  ${AlphaVantage.StockData.price}\n\
+          Last day change: ${AlphaVantage.StockData.change}(${AlphaVantage.StockData.change\
+          \ percent})\nLast Day Low/High:  ${AlphaVantage.StockData.low} / ${AlphaVantage.StockData.high}"
+      userID:
+        complex:
+          root: inputs.Telegram User Id
+      username:
+        complex:
+          root: inputs.Telegram Username
+    separatecontext: false
+    sla:
+      hours: 0
+      days: 1
+      weeks: 0
+    slareminder:
+      hours: 0
+      days: 0
+      weeks: 0
+    defaultassigneecomplex:
+      simple: admin
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c373f3f2-a7af-403c-8bfb-33ad62f815f5
+    type: title
+    task:
+      id: c373f3f2-a7af-403c-8bfb-33ad62f815f5
+      version: -1
+      name: Do Nothing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7a835666-a1e7-4673-86e1-cda41362159b
+    type: regular
+    task:
+      id: 7a835666-a1e7-4673-86e1-cda41362159b
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+      price: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b849d815-7e86-4450-8c0b-fcc987377049
+    type: condition
+    task:
+      id: b849d815-7e86-4450-8c0b-fcc987377049
+      version: -1
+      name: Manually Mark as Completed
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_yes": 0.45
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1215,
+        "width": 820,
+        "x": 240,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Stock
+  value:
+    complex:
+      root: incident
+      accessor: symbol
+  required: true
+  description: 'Symbol/Ticker of a stock. Ex: PANW, AAPL, MSFT'
+  playbookInputQuery:
+- key: Price
+  value:
+    complex:
+      root: incident
+      accessor: price
+  required: true
+  description: Price boundary to check. Notify when stock is higher than this price.
+  playbookInputQuery:
+- key: Telegram User Id
+  value:
+    complex:
+      root: incident
+      accessor: userid
+  required: true
+  description: The user id of the user you want to send a message to. To get this,
+    talk to @userinfobot on Telegram.
+  playbookInputQuery:
+- key: Telegram Username
+  value:
+    complex:
+      root: incident
+      accessor: username
+  required: true
+  description: The username of the telegram account to send a message to.
+  playbookInputQuery:
+outputs: []
+tests:
+- AlphaVantage Test Playbook
+fromversion: 6.0.0
+description: This playbook sends a message on Telegram when a stock price rises higher
+  than a predefined price
