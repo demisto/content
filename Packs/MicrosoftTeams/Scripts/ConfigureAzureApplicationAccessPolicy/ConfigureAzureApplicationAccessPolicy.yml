@@ -18,7 +18,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: The email of the user that will get permissions to create a meeting.
+  description: The email of the user who will get permissions to create a meeting.
   isArray: false
   name: identity
   required: false
