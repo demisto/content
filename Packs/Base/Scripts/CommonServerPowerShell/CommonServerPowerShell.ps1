@@ -289,6 +289,23 @@ class DemistoObject {
                 "primaryTerm" = -1
             } } })
     }
+
+    [Object[]] GetIntegrationContextVersioned ($Refresh) {
+        if ( -not $this.IsIntegration ) {
+            throw "Method not supported"
+        }
+        $integration_context = $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ refresh = $Refresh } })
+
+        return $integration_context.context
+    }
+
+    SetIntegrationContextVersioned ($Value, $Version, $Sync) {
+        if ( -not $this.IsIntegration ) {
+            throw "Method not supported"
+        }
+        $this.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{value = $Value; version = $Version; sync = $Sync} })
+    }
+
 }
 
 [DemistoObject]$demisto = [DemistoObject]::New()
@@ -694,4 +711,22 @@ function ParseDateRange{
     ParseDateRange("3 days") (current date it 04/01/21)
     Date(01/01/21)
     #>
+}
+
+function GetIntegrationContext {
+    [CmdletBinding()]
+    param (
+        [bool]$refresh = $true
+    )
+    if (DemistoVersionGreaterEqualThen -version "6.0.0") {
+        return $demisto.getIntegrationContextVersioned($refresh)
+    }
+    return $demisto.GetIntegrationContext()
+}
+
+function SetIntegrationContext ([object]$context, [bool]$sync = $true, [int]$version = -1) {
+    if (DemistoVersionGreaterEqualThen -version "6.0.0") {
+        return $demisto.setIntegrationContextVersioned($context, $version, $sync)
+    }
+    return $demisto.SetIntegrationContext($context)
 }

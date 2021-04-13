@@ -19,7 +19,7 @@ function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
         "AccessTokenCreationTime" = $client.access_token_creation_time
     }
 
-    $Demisto.setIntegrationContext($integration_context)
+    SetIntegrationContext $integration_context
     <#
         .DESCRIPTION
         Update integration context from OAuth2DeviceCodeClient client
@@ -455,7 +455,7 @@ class OAuth2DeviceCodeClient {
     }
 
     static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
-        $ic = $script:Demisto.getIntegrationContext()
+        $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
                                                 $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
 
