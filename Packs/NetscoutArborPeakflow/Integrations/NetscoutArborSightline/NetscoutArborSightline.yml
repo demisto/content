@@ -161,8 +161,26 @@ script:
     execution: false
     name: na-sightline-alert-annotation-list
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: NASightline.AlertAnnotations
+    - contextPath: NASightline.AlertAnnotation.AlertID
+      description: The alert ID of the annotation.
+      type: String
+    - contextPath: NASightline.AlertAnnotation.Annotations.added
+      description: Date and time the annotation was made.
+      type: Date
+    - contextPath: NASightline.AlertAnnotation.Annotations.author
+      description: User ID of the annotation author.
+      type: String
+    - contextPath: NASightline.AlertAnnotation.Annotations.id
+      description: The ID of the annotation.
+      type: String
+    - contextPath: NASightline.AlertAnnotation.Annotations.text
+      description: Annotation text.
+      type: String
+    - contextPath: NASightline.AlertAnnotation.Annotations.type
+      description: Type of the returned object.
+      type: String
+    - contextPath: NASightline.AlertAnnotation.Annotations.relationships
+      description: Relationships of the annotation (only visible when extending data).
       type: Unknown
   - arguments:
     - default: true
@@ -533,6 +551,34 @@ script:
         - 'false'
       required: false
       secret: false
+    outputs:
+    - contextPath: NASightline.MitigationTemplate.description
+      description: The description of the mitigation template.
+      type: String
+    - contextPath: NASightline.MitigationTemplate.id
+      description: The ID of the mitigation template.
+      type: String
+    - contextPath: NASightline.MitigationTemplate.ip_version
+      description: The IP version of the traffic that you want to mitigate with this mitigation template.
+      type: Number
+    - contextPath: NASightline.MitigationTemplate.name
+      description: The name of the mitigation template.
+      type: String
+    - contextPath: NASightline.MitigationTemplate.subtype
+      description: The type of mitigation this template can be applied to.
+      type: String
+    - contextPath: NASightline.MitigationTemplate.system
+      description: System or custom object.
+      type: Boolean
+    - contextPath: NASightline.MitigationTemplate.type
+      description: Type of the returned object.
+      type: String
+    - contextPath: NASightline.MitigationTemplate.subobject
+      description: Subobject data (only visible when extending data).
+      type: Unknown
+    - contextPath: NASightline.MitigationTemplate.relationships
+      description: Relationships of the mitigation template (only visible when extending data).
+      type: Unknown
     deprecated: false
     description: Get a list of available routers.
     execution: false

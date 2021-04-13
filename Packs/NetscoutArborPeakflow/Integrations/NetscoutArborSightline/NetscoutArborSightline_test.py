@@ -57,7 +57,7 @@ def test_fetch_incidents_command(mocker):
         ('list_alerts', list_alerts_command, {}, 'incidents', 'get_incidents'),
         ('get_alert', list_alerts_command, {'alert_id': 1}, 'incident', 'get_incident'),
         ('get_annotations', alert_annotation_list_command, {'alert_id': '2009'}, 'annotations', 'list_annotations'),
-        ('list_mitigations', mitigation_list_command, {'limit':'3'}, 'mitigations', 'list_mitigations'),
+        ('list_mitigations', mitigation_list_command, {'limit': '3'}, 'mitigations', 'list_mitigations'),
         ('create_mitigation', mitigation_create_command,
          {"description": "just desc", "ip_version": "IPv4", "name": "test_mit", "ongoing": "true",
           "sub_object": "{\"protection_prefixes\": [\"192.0.2.0/24\"]}", "sub_type": "flowspec"}, 'mitigation',
@@ -105,11 +105,7 @@ def test_commands(mocker, function_to_mock, function_to_test, args, http_respons
 
     mocker.patch.object(client, function_to_mock, return_value=mocked_http_response)
 
-    # tms_group_list_command is the only command that does not get args
-    if function_to_test in (tms_group_list_command, mitigation_template_list_command):
-        command_result: CommandResults = function_to_test(client)
-    else:
-        command_result: CommandResults = function_to_test(client, args)
+    command_result: CommandResults = function_to_test(client, args)
     assert command_result.outputs == expected_command_results
 
 
@@ -225,22 +221,22 @@ def test_validate_json_arg_raise_error():
 ])
 def test_build_human_readable(object_to_build, expected_result):
     """
-       Given:
-       - Case A: A dict with two keys: 'attributes' and 'key_2`.
-       - Case B: A dict with four keys: 'attributes', 'relationships', 'subobject' and 'key_2'.
+   Given:
+   - Case A: A dict with two keys: 'attributes' and 'key_2`.
+   - Case B: A dict with four keys: 'attributes', 'relationships', 'subobject' and 'key_2'.
 
-       When:
-        - Building the human readable from a response dict.
+   When:
+    - Building the human readable from a response dict.
 
-       Then:
-        - Case A:
-            1. Keys under the 'attributes' key are extracted to the root level.
-            2. The second key - 'key_2' still appears in the object.
-        - Case B: Ensure that:
-            1. Keys under the 'attributes' key are extracted to the root level.
-            2. The second key - 'key_2' still appears in the object.
-            3. That the 'relationships' and 'subobject' keys are missing from the object.
-       """
+   Then:
+    - Case A:
+        1. Keys under the 'attributes' key are extracted to the root level.
+        2. The second key - 'key_2' still appears in the object.
+    - Case B: Ensure that:
+        1. Keys under the 'attributes' key are extracted to the root level.
+        2. The second key - 'key_2' still appears in the object.
+        3. That the 'relationships' and 'subobject' keys are missing from the object.
+   """
     result = build_human_readable(object_to_build)
     assert result == expected_result
 
@@ -254,33 +250,39 @@ def test_build_human_readable(object_to_build, expected_result):
          "alert_type": "bgp_hijack",
          "classification": "Flash Crowd",
          "importance": "1",
-         "importance_operator": "=",
          "ongoing": "true",
          "start_time": "2021-01-11T13:15:00",
-         "start_time_operator": ">",
          "stop_time": "2021-01-12T13:15:00",
-         "stop_time_operator": "<"
      },
      '/data/attributes/limit=10 AND /data/attributes/page=2 AND /data/attributes/alert_id=123 AND '
      '/data/attributes/alert_class=bgp AND /data/attributes/alert_type=bgp_hijack AND '
      '/data/attributes/classification=Flash Crowd AND /data/attributes/importance=1 AND '
-     '/data/attributes/ongoing=true AND /data/attributes/start_time>2021-01-11T13:15:00 AND '
-     '/data/attributes/stop_time<2021-01-12T13:15:00'),
+     '/data/attributes/ongoing=true AND /data/attributes/start_time=2021-01-11T13:15:00 AND '
+     '/data/attributes/stop_time=2021-01-12T13:15:00'),
     ({
 
          "importance": "1",
          "importance_operator": "=",
-         "start_time": "2021-01-11T13:15:00 ",
+         "start_time": "2021-01-11T13:15:00",
          "start_time_operator": ">",
-         "stop_time": "2021-01-12T13:15:00 ",
+         "stop_time": "2021-01-12T13:15:00",
          "stop_time_operator": "<"
-     },
-     '/data/attributes/limit=10 AND /data/attributes/page=2 AND /data/attributes/alert_id=123 AND '
-     '/data/attributes/alert_class=bgp AND /data/attributes/alert_type=bgp_hijack AND '
-     '/data/attributes/classification=Flash Crowd AND /data/attributes/importance=1 AND '
-     '/data/attributes/ongoing=true AND /data/attributes/start_time>2021-01-11T13:15:00  AND '
-     '/data/attributes/stop_time<2021-01-12T13:15:00')
+     }, '/data/attributes/importance=1 AND /data/attributes/start_time>2021-01-11T13:15:00 AND '
+        '/data/attributes/stop_time<2021-01-12T13:15:00')
 ])
 def test_build_relationships(args_dict, expected_json_str):
+    """
+   Given:
+   - Case A: A dict of possible relationship filters`.
+   - Case B: A dict of possible relationship filters in addition to special allowed operators.
+
+   When:
+    - Building a relationship string representation to be sent in the url query.
+
+   Then:
+    - Case A: Assert that all filters are uses the `=` operator and are chained using the `AND` operator.
+    - Case B: Assert that start_time uses the '>' operator, stop_time uses the '<' operator and importance uses the '='
+        operator.
+   """
     result = client.build_data_attribute_filter(**args_dict)
     assert result == expected_json_str

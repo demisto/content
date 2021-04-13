@@ -433,12 +433,14 @@ def build_human_readable(data: dict) -> dict:
     return hr
 
 
-def build_output(data: dict, key_to_flat: str = 'attributes', keys_to_remove: list = ['relationships']) -> dict:
+def build_output(data: dict, extend_data: bool = False, key_to_flat: str = 'attributes',
+                 keys_to_remove: list = ['relationships']) -> dict:
     data_copy = deepcopy(data)
     clean_links(data_copy)
     if key_to_flat:
         flatten_key(data_copy, key_to_flat)
-    remove_keys(data_copy, keys_to_remove)
+    if not extend_data:
+        remove_keys(data_copy, keys_to_remove)
     return data_copy
 
 
@@ -457,8 +459,8 @@ def fetch_incidents_command(client: NetscoutClient):
 
 
 def list_alerts_command(client: NetscoutClient, args: dict):
-    limit = str(arg_to_number(args.get('limit')))
-    page = str(arg_to_number(args.get('page')))
+    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page'))
     alert_id = args.get('alert_id')
     alert_class = args.get('alert_class')
     alert_type = args.get('alert_type')
@@ -471,6 +473,7 @@ def list_alerts_command(client: NetscoutClient, args: dict):
     stop_time = args.get('stop_time')
     stop_time_operator = args.get('stop_time_operator')
     managed_object_id = args.get('managed_object_id')
+    extend_data = argToBoolean(args.get('extend_data', False))
     if alert_id:
         raw_result = client.get_alert(alert_id)
     else:
@@ -490,7 +493,7 @@ def list_alerts_command(client: NetscoutClient, args: dict):
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
     hr = [build_human_readable(data=alert) for alert in data]
-    outputs = [build_output(data=alert) for alert in data]
+    outputs = [build_output(data=alert, extend_data=extend_data) for alert in data]
 
     return CommandResults(outputs_prefix='NASightline.Alert',
                           outputs_key_field='id',
@@ -501,10 +504,11 @@ def list_alerts_command(client: NetscoutClient, args: dict):
 
 def alert_annotation_list_command(client: NetscoutClient, args: dict):
     alert_id = args.get('alert_id')
+    extend_data = argToBoolean(args.get('extend_data', False))
     raw_result = client.get_annotations(alert_id)
     data = raw_result.get('data')
     hr = [build_human_readable(data=annotation) for annotation in data]
-    annotations = [build_output(data=annotation) for annotation in data]
+    annotations = [build_output(data=annotation, extend_data=extend_data) for annotation in data]
     context = {'AlertID': alert_id, 'Annotations': annotations}
     return CommandResults(outputs_prefix='NASightline.AlertAnnotation',
                           outputs_key_field='AlertID',
@@ -517,11 +521,13 @@ def mitigation_list_command(client: NetscoutClient, args: dict):
     page = arg_to_number(args.get('page'))
     limit = arg_to_number(args.get('limit'))
     mitigation_id = args.get('mitigation_id')
-    raw_result = client.list_mitigations(mitigation_id, page=str(page), page_size=str(limit))
+    extend_data = argToBoolean(args.get('extend_data', False))
+    raw_result = client.list_mitigations(mitigation_id, page=page, page_size=limit)
     data = raw_result.get('data')
     data = data[:limit] if isinstance(data, list) else [data]
     hr = [build_human_readable(data=mitigation) for mitigation in data]
-    mitigations = [build_output(data=mitigation, keys_to_remove=['relationships', 'subobject']) for mitigation in data]
+    mitigations = [build_output(data=mitigation, keys_to_remove=['relationships', 'subobject'], extend_data=extend_data)
+                   for mitigation in data] if not extend_data else data
     return CommandResults(outputs_prefix='NASightline.Mitigation',
                           outputs_key_field='id',
                           outputs=mitigations,
@@ -544,6 +550,7 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
     mitigation_template_id = args.get('mitigation_template_id')
     router_ids = argToList(args.get('router_ids'))
     tms_group_id = args.get('tms_group_id')
+    extend_data = argToBoolean(args.get('extend_data', False))
 
     relationships = client.build_relationships(alert=alert_id, managed_object=managed_object_id,
                                                mitigation_template=mitigation_template_id, routers=router_ids,
@@ -554,7 +561,7 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
     raw_result = client.create_mitigation(data={'data': object_data})
     data = raw_result.get('data')
     hr = build_human_readable(data=data)
-    mitigation = build_output(data=data)
+    mitigation = build_output(data=data, extend_data=extend_data)
     return CommandResults(outputs_prefix='NASightline.Mitigation',
                           outputs_key_field='id',
                           outputs=mitigation,
@@ -562,15 +569,15 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
-def mitigation_template_list_command(client: NetscoutClient):
+def mitigation_template_list_command(client: NetscoutClient, args: dict):
+    extend_data = argToBoolean(args.get('extend_data', False))
     raw_result = client.mitigation_template_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
-    clean_data = deepcopy(data)
-    clean_links(clean_data)
     hr = [build_human_readable(data=mitigation_template) for mitigation_template in data]
-    mitigation_templates = [build_output(data=mitigation_template, keys_to_remove=['relationships', 'subobject']) for
-                            mitigation_template in data]
+    mitigation_templates = [
+        build_output(data=mitigation_template, extend_data=extend_data, keys_to_remove=['relationships', 'subobject'])
+        for mitigation_template in data]
 
     return CommandResults(outputs_prefix='NASightline.MitigationTemplate',
                           outputs_key_field='id',
@@ -580,11 +587,12 @@ def mitigation_template_list_command(client: NetscoutClient):
 
 
 def router_list_command(client: NetscoutClient, args: dict):
+    extend_data = argToBoolean(args.get('extend_data', False))
     raw_result = client.router_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
     hr = [build_human_readable(router) for router in data]
-    routers = [build_output(data=router) for router in data]
+    routers = [build_output(data=router, extend_data=extend_data) for router in data]
     return CommandResults(outputs_prefix='NASightline.Router',
                           outputs_key_field='id',
                           outputs=routers,
@@ -594,12 +602,13 @@ def router_list_command(client: NetscoutClient, args: dict):
 
 
 def managed_object_list_command(client: NetscoutClient, args: dict):
-    page = str(arg_to_number(args.get('page')))
-    limit = str(arg_to_number(args.get('limit')))
+    page = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
+    extend_data = argToBoolean(args.get('extend_data', False))
     raw_result = client.managed_object_list(page=page, page_size=limit)
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
-    objects = [build_output(data=managed_object) for managed_object in data]
+    objects = [build_output(data=managed_object, extend_data=extend_data) for managed_object in data]
     hr = [build_human_readable(data=managed_object) for managed_object in data]
     return CommandResults(outputs_prefix='NASightline.ManagedObject',
                           outputs_key_field='id',
@@ -609,14 +618,13 @@ def managed_object_list_command(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
-def tms_group_list_command(client: NetscoutClient):
+def tms_group_list_command(client: NetscoutClient, args: dict):
+    extend_data = argToBoolean(args.get('extend_data', False))
     raw_result = client.tms_group_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
-    clean_data = deepcopy(data)
-    clean_links(clean_data)
     hr = [build_human_readable(data=tms_group) for tms_group in data]
-    groups = [build_output(data=group) for group in data]
+    groups = [build_output(data=group, extend_data=extend_data) for group in data]
     return CommandResults(outputs_prefix='NASightline.TMSGroup',
                           outputs_key_field='id',
                           outputs=groups,
@@ -682,13 +690,13 @@ def main() -> None:
         elif command == 'na-sightline-mitigation-create':
             result = mitigation_create_command(client, args)
         elif command == 'na-sightline-mitigation-template-list':
-            result = mitigation_template_list_command(client)
+            result = mitigation_template_list_command(client, args)
         elif command == 'na-sightline-router-list':
             result = router_list_command(client, args)
         elif command == 'na-sightline-managed-object-list':
             result = managed_object_list_command(client, args)
         elif command == 'na-sightline-tms-group-list':
-            result = tms_group_list_command(client)
+            result = tms_group_list_command(client, args)
         else:
             result = f'Command: {command} is not implemented'
 
@@ -703,15 +711,3 @@ def main() -> None:
 ''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-{
-    "key_1": {
-        "sub_key1": "some_val",
-        "sub_key2": ["some_val"]
-    },
-    "key_2": {
-        "sub_key1": "some_val",
-        "sub_key2": ["some_val"]
-
-    }
-}
