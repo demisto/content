@@ -1536,25 +1536,17 @@ class ExtFilter:
                 hashdigest(str(lhs), str(params.get('algorithm', 'sha256'))))
 
         elif optype == "email-header: decode":
-            encoding_types = set(['utf-8', 'iso8859-1'])
             out = ''
-            lstr = str(lhs)
             try:
-                for decoded_s, encoding in decode_header(lstr):
+                for decoded_s, encoding in decode_header(str(lhs)):
                     if encoding:
                         out += decoded_s.decode(encoding)
-                        encoding_types.add(encoding)
                     elif isinstance(decoded_s, bytes):
                         out += decoded_s.decode('utf-8')
                     else:
                         out += decoded_s
             except Exception:
-                for encoding in encoding_types:
-                    try:
-                        out = lstr.decode(encoding)
-                        break
-                    except: # noqa: E722
-                        pass
+                out = str(lhs)
             return Value(out)
 
         """
