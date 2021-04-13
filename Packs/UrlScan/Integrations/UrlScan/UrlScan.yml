@@ -285,7 +285,7 @@ script:
       description: For malicious URLs, the reason that the vendor made the decision.
       type: string
     - contextPath: URL.Relations.EntityA
-      description: The source of the relation.
+      description: The source of the relationship.
       type: string
     - contextPath: URL.Relations.EntityB
       description: The destination of the relationship.
