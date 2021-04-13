@@ -1,3 +1,5 @@
+from dateutil import parser
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -44,24 +46,6 @@ def update_result_dict(val: str, res_dict: dict, query_type: str):
         res_dict[val] = 1
 
 
-def get_demisto_datetme_format(date_string):
-    if date_string:
-        date_object = None
-        # try to parse date string
-        try:
-            date_object = parser.parse(date_string)
-        except Exception:
-            pass
-        # try to parse relative time
-        if date_object is None and date_string.strip().endswith("ago"):
-            date_object = parse_relative_time(date_string)
-
-        if date_object:
-            return date_object.astimezone().isoformat('T')
-        else:
-            return None
-
-
 def main():
     try:
         args = demisto.args()
@@ -73,23 +57,13 @@ def main():
 
         incidents_args = {}
         incidents_args['type'] = 'Cortex XDR Incident'
-        incidents_args['size'] = int(args.get('limit'))
+        incidents_args['size'] = args.get('limit')
         incidents_args['status'] = 'Active or Pending'
 
         if from_date:
-            from_datetime = get_demisto_datetme_format(from_date)
-            if from_datetime:
-                incidents_args['fromdate'] = from_datetime
-            else:
-                demisto.results("did not set from date due to a wrong format: " + from_date)
-
+            incidents_args['fromdate'] = from_date
         if to_date:
-            to_datetime = get_demisto_datetme_format(to_date)
-            if to_datetime:
-                incidents_args['todate'] = to_datetime
-            else:
-                demisto.results("did not set to date due to a wrong format: " + from_date)
-
+            incidents_args['todate'] = to_date
         incidents_res = demisto.executeCommand("getIncidents", incidents_args)
 
         incidents = incidents_res[0]['Contents'].get('data') or []
