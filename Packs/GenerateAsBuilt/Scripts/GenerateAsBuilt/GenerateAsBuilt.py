@@ -87,6 +87,45 @@ HTML_DOCUMENT_TEMPLATE = """
                  height="35px">
         </div>
     </header>
+    <div class="row mb-2">
+        <div class="col">
+            <small class="text-secondary">Prepared by: {{ author }}</small>
+        </div>
+        <div class="col text-center">
+            <small class="text-secondary">Prepared For: {{ customer }}</small>
+        </div>
+        <div class="col text-end">
+            <small class="text-secondary">Prepared at: {{ date }}</small>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col text-center p-2 border-bottom">
+            {{ open_incidents }}
+        </div>
+        <div class="col text-center p-2 border-bottom">
+            {{ closed_incidents }}
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col">
+            <h1 class="text-primary">Purpose</h1>
+            <p>This Document covers all of the custom configuration and content that has been deployed following
+            the engagement of Palo Alto professional services.<br>
+            </p>
+            <h1 class="text-primary">Document Overview</h1>
+            <p>
+                This document has been auto-generated using the XSOAR Automation <i>!GenerateAsBuilt</i>.
+            </p>
+            <h1 class="text-primary">
+                Project Details
+            </h1>
+            <textarea style="width:100%;border:none;"
+                  placeholder="Click here to complete this section with any relevant details, for example customer
+contat details, project scope, etc."></textarea>
+        </div>
+    </div>
+    <p style="page-break-after: always;"></p>
+
 
     {{ integrations_table }}
     <p>The system configuration above represents the server configuration of XSOAR, including advanced
@@ -112,10 +151,16 @@ HTML_DOCUMENT_TEMPLATE = """
         Custom automations are used to add additional logic and support to playbooks and use cases.
     </p>
     <p style="page-break-after: always;"></p>
+
+    {{ system_config }}
+    <p>
+        The system configuration changes the behavior of the XSOAR server/application itself, including
+        keys and the published hostname.
+    </p>
+    <p style="page-break-after: always;"></p>
 </div>
 </body>
 """
-
 
 class TableData:
     def __init__(self, data, name):
@@ -150,7 +195,7 @@ class SingleFieldData:
         return f"### {self.name}\n{self.data}"
 
     def as_html(self):
-        return self.data
+        return f"""<h3>{self.name}</h3><span class="display-5">{self.data}</span>"""
 
 
 class Document:
@@ -173,6 +218,9 @@ class Document:
         self.system_config = system_config
         self.open_incidents = open_incidents
         self.closed_incidents = closed_incidents
+        self.author = demisto.args().get("author")
+        self.date = datetime.now().strftime("%m/%d/%Y")
+        self.customer = demisto.args().get("customer")
 
     def html(self):
         template = jinja2.Template(HTML_DOCUMENT_TEMPLATE)
@@ -182,7 +230,11 @@ class Document:
             playbooks_table=self.playbooks_table.as_html(["name", "TotalTasks"]),
             automations_table=self.automations_table.as_html(["name", "comment"]),
             system_config=self.system_config.as_html(),
-            open_incidents=self.open_incidents.as_html()
+            open_incidents=self.open_incidents.as_html(),
+            closed_incidents=self.closed_incidents.as_html(),
+            author=self.author,
+            date=self.date,
+            customer=self.customer
         )
 
     def markdown(self):
@@ -264,7 +316,7 @@ def get_open_incidents(days=7, size=1000):
     }
     r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
     total = r.get("total")
-    rd = SingleFieldData(f"Total Open Incidents - {days}", total)
+    rd = SingleFieldData(f"Open Incidents {days} days", total)
     return rd
 
 
@@ -289,7 +341,7 @@ def get_closed_incidents(days=7, size=1000):
     }
     r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
     total = r.get("total")
-    rd = SingleFieldData(f"Total Closed Incidents - {days}", total)
+    rd = SingleFieldData(f"Closed Incidents {days} days", total)
     return rd
 
 
