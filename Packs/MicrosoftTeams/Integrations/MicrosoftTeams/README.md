@@ -415,7 +415,7 @@ Creates a Teams meeting.
 `microsoft-teams-create-meeting`
 
 ##### Required Permissions
-`OnlineMeetings.ReadWrite.All*`
+`OnlineMeetings.ReadWrite.All`
 Besides setting up this permission, in order to create a meeting, the Azure admin needs to configure application access policy
 and grant users permissions to create meetings.
 The script *ConfigureAzureApplicationAccessPolicy* was created to support the needed commands.
