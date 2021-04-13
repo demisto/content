@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM102
+
+[file:layoutscontainer-details-MicrosoftCloudAppSecurity.json]
+ignore=BA101

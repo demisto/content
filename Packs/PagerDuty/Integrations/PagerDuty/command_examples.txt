@@ -1,0 +1,11 @@
+!PagerDuty-acknowledge-event incident_key=key serviceKey=servicekey
+!PagerDuty-get-all-schedules
+!PagerDuty-get-contact-methods UserID=id
+!PagerDuty-get-incident-data incident_id=id
+!PagerDuty-get-service-keys
+!PagerDuty-get-users-notification UserID=id
+!PagerDuty-get-users-on-call scheduleID=id
+!PagerDuty-get-users-on-call-now
+!PagerDuty-incidents
+!PagerDuty-resolve-event incident_key=key serviceKey=servicekey
+!PagerDuty-submit-event action=trigger severity=info source=demisto summary="my new event"

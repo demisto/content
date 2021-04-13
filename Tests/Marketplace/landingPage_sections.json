@@ -4,7 +4,8 @@
     "Featured",
     "New",
     "Threat Intelligence",
-    "Compliance"
+    "Compliance",
+    "Trending"
   ],
   "Featured": [
     "MajorBreachesInvestigationandResponse",
@@ -17,5 +18,5 @@
     "GenericWebhook",
     "GraphQL",
     "GenericSQL"
-  ]    
+  ]
 }

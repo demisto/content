@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-
 from email import message_from_string
 from email.header import decode_header
 import base64
@@ -193,7 +192,13 @@ class DataModel(object):
             try:
                 res = chardet.detect(data_value)
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
-                data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
+                if enc != 'ascii':
+                    data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
+                elif '\x00' not in data_value:
+                    data_value = data_value.decode("ascii", errors="ignore").replace('\x00', '')
+                else:
+                    data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
+
             except UnicodeDecodeError:
                 data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
 

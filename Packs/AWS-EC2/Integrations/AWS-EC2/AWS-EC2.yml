@@ -6474,10 +6474,82 @@ script:
       description: Unique, case-sensitive identifier that you provide to ensure the
         idempotency of the request.
       type: String
-  dockerimage: demisto/boto3:2.0.0.13188
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  - arguments:
+    - name: groupId
+      required: true
+      description: The ID of the security group.
+    - description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify
+        all ICMP/ICMPv6 types, you must specify all codes.
+      name: IpPermissionsfromPort
+    - description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6
+        types, you must specify all codes.
+      name: IpPermissionsToPort
+    - description: The IP protocol name (tcp, udp, icmp, icmpv6) or number.
+      name: IpPermissionsIpProtocol
+    - description: The IPv4 CIDR range. You can either specify a CIDR range or a source
+        security group, not both. To specify a single IPv4 address, use the /32 prefix
+        length.
+      name: IpRangesCidrIp
+    - description: 'A description for the security group rule that references this
+        IPv4 address range.Constraints: Up to 255 characters in length. Allowed characters
+        are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
+      name: IpRangesDescription
+    - description: The IPv6 CIDR range. You can either specify a CIDR range or a source
+        security group, not both. To specify a single IPv6 address, use the /128 prefix
+        length.
+      name: Ipv6RangesCidrIp
+    - description: 'A description for the security group rule that references this
+        IPv6 address range. Constraints: Up to 255 characters in length. Allowed characters
+        are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*'
+      name: Ipv6RangesDescription
+    - description: The ID of the prefix.
+      name: PrefixListId
+    - description: 'A description for the security group rule that references this
+        prefix list ID. Constraints: Up to 255 characters in length. Allowed characters
+        are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
+      name: PrefixListIdDescription
+    - description: 'A description for the security group rule that references this
+        user ID group pair. Constraints: Up to 255 characters in length. Allowed characters
+        are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
+      name: UserIdGroupPairsDescription
+    - description: The ID of the security group.
+      name: UserIdGroupPairsGroupId
+    - description: 'The name of the security group. In a request, use this parameter
+        for a security group in EC2-Classic or a default VPC only. For a security
+        group in a nondefault VPC, use the security group ID. For a referenced security
+        group in another VPC, this value is not returned if the referenced security
+        group is deleted.'
+      name: UserIdGroupPairsGroupName
+    - description: The status of a VPC peering connection, if applicable.
+      name: UserIdGroupPairsPeeringStatus
+    - description: 'The ID of an AWS account. For a referenced security group in another
+        VPC, the account ID of the referenced security group is returned in the response.
+        If the referenced security group is deleted, this value is not returned. [EC2-Classic]
+        Required when adding or removing rules that reference a security group in
+        another AWS account.'
+      name: UserIdGroupPairsUserId
+    - description: The ID of the VPC for the referenced security group, if applicable.
+      name: UserIdGroupPairsVpcId
+    - description: The ID of the VPC peering connection, if applicable.
+      name: UserIdGroupPairsVpcPeeringConnectionId
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Removes egress rule from a security group. To remove a rule, the
+      values that you specify (for example, ports) must match the existing rule's
+      values exactly.
+    execution: true
+    name: aws-ec2-revoke-security-group-egress-rule
+  dockerimage: demisto/boto3:2.0.0.18824
   runonce: false
   script: '-'
   type: python

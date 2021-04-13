@@ -39,7 +39,7 @@ class Client:
                  subscription_id, resource_group_name, workspace_name, verify, proxy):
 
         tenant_id = refresh_token if self_deployed else ''
-        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
             f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
             f'{workspace_name}/providers/Microsoft.SecurityInsights'
