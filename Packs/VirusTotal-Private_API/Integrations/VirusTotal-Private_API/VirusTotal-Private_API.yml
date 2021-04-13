@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: VirusTotal - Private API
+  id: VirusTotal - Private API - test
   version: -1
 configuration:
 - display: Virus Total private API key
@@ -60,8 +60,8 @@ configuration:
   required: false
   type: 8
 description: Analyze suspicious hashes, URLs, domains and IP addresses
-display: VirusTotal - Private API
-name: VirusTotal - Private API
+display: VirusTotal - Private API - test
+name: VirusTotal - Private API - test
 script:
   commands:
   - arguments:
