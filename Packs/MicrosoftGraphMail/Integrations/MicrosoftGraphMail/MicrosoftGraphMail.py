@@ -481,7 +481,6 @@ class MsGraphClient:
             'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
             'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
             'subject': subject,
-            'body': MsGraphClient._build_body_input(body=email_body, body_type='html'),
             'bodyPreview': email_body[:255],
             'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
         }
@@ -1522,7 +1521,8 @@ def reply_email_command(client: MsGraphClient, args):
     suffix_endpoint = f'/users/{email_from}/messages/{message_id}/reply'
     reply = client.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body, attach_ids,
                                           attach_names, attach_cids)
-    client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': reply}, resp_type="text")
+    client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': reply, 'comment': message_body},
+                                  resp_type="text")
 
     return prepare_outputs_for_reply_mail_command(reply, email_to, message_id)
 
