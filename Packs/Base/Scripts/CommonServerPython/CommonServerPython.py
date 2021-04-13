@@ -2886,9 +2886,9 @@ class Common(object):
                 file_context['MalwareFamily'] = self.malware_family
 
             if self.campaign:
-                file_context['MalwareFamily'] = self.campaign
+                file_context['Campaign'] = self.campaign
             if self.traffic_light_protocol:
-                file_context['MalwareFamily'] = self.traffic_light_protocol
+                file_context['TrafficLightProtocol'] = self.traffic_light_protocol
             if self.community_notes:
                 community_notes = []
                 for community_note in self.community_notes:
@@ -2900,17 +2900,15 @@ class Common(object):
                     publications.append(publication.to_context())
                 file_context['Publications'] = publications
             if self.threat_types:
-                file_context['MalwareFamily'] = self.threat_types
+                file_context['ThreatTypes'] = self.threat_types
             if self.imphash:
-                file_context['MalwareFamily'] = self.imphash
+                file_context['Imphash'] = self.imphash
             if self.quarantined:
-                file_context['MalwareFamily'] = self.quarantined
+                file_context['Quarantined'] = self.quarantined
             if self.organization:
-                file_context['MalwareFamily'] = self.organization
+                file_context['Organization'] = self.organization
             if self.associated_file_names:
-                file_context['MalwareFamily'] = self.associated_file_names
-            if self.behaviors:
-                file_context['MalwareFamily'] = self.behavior
+                file_context['AssociatedFileNames'] = self.associated_file_names
             if self.behaviors:
                 behaviors = []
                 for behavior in self.behaviors:
