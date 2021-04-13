@@ -3279,6 +3279,10 @@
             "integrations": "VirusTotal - Premium (API v3)",
             "playbookID": "VirusTotal Premium v3 TestPlaybook",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Carbon Black Endpoint Standard",
+            "playbookID": "carbonBlackEndpointStandardTestPlaybook"
         }
     ],
     "skipped_tests": {
