@@ -142,7 +142,7 @@ def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         read = f'No Domains associated with {field}'
     elif total > limit:
         # set it as len domains since in trial its always 5
-        pages = pages = ceil((total - len(domains)) / len(domains))
+        pages = ceil((total - len(domains)) / len(domains))
         page = 1
         while page <= pages:
             data = client.get_search_data(field, value, limit, page)
