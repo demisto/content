@@ -287,6 +287,7 @@ Available operators
 * `starts with caseless`
 * `doesn't start with`
 * `doesn't start with caseless`
+* `email-header: decode`
 * `ends with`
 * `ends with caseless`
 * `doesn't end with`
@@ -1932,6 +1933,57 @@ Returns a set of elements which doesn't start with a string given in a filter. I
         "xxx": "x"
       }
     ]
+
+</details>
+
+
+----
+### Operator: `email-header: decode`
+<details><summary>
+Returns an string which is decoded with the email header encoding manner.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?=
+
+##### Filter
+> **Operator**: email-header: decode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    あいうえお
+
+
+#### Example 2
+##### Input
+    ABC =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?= XYZ
+
+##### Filter
+> **Operator**: email-header: decode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    ABC あいうえお XYZ
+
 
 </details>
 

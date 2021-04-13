@@ -4,6 +4,7 @@ import fnmatch
 import hashlib
 import json
 import re
+from email.header import decode_header
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import demistomock as demisto  # noqa: F401
@@ -1533,6 +1534,28 @@ class ExtFilter:
             params = self.parse_conds_json(rhs)
             return Value(
                 hashdigest(str(lhs), str(params.get('algorithm', 'sha256'))))
+
+        elif optype == "email-header: decode":
+            encoding_types = set(['utf-8', 'iso8859-1'])
+            out = ''
+            lval = str(lhs)
+            try:
+                for decoded_s, encoding in decode_header(lval):
+                    if encoding:
+                        out += decoded_s.decode(encoding)
+                        encoding_types.add(encoding)
+                    elif isinstance(decoded_s, bytes):
+                        out += decoded_s.decode('utf-8')
+                    else:
+                        out += decoded_s
+            except Exception:
+                for encoding in encoding_types:
+                    try:
+                        out = lval.decode(encoding)
+                        break
+                    except: # noqa: E722
+                        pass
+            return Value(out)
 
         """
         Filter for single value (boolean evaluation)
