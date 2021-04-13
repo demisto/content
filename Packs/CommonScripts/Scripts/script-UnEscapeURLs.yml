@@ -75,7 +75,7 @@ script: >-
           return url;
       }
       // If proofpoint type v3
-      if (v === 3) {
+      if (v === 3 || v === 4) {
           var clean = input.substr(PROOFPOINT_PREFIXES[v - 1].length);
           var closeIndex = clean.indexOf('__');
           clean = clean.substr(0, closeIndex);
