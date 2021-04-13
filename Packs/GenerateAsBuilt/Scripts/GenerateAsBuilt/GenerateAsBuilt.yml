@@ -1,3 +1,16 @@
+args:
+- default: false
+  description: Who has prepared this as-built.
+  isArray: false
+  name: author
+  required: true
+  secret: false
+- default: false
+  description: Whom this as-built was prepared for.
+  isArray: false
+  name: customer
+  required: true
+  secret: false
 comment: Generate an as built document, as HTML, based on the running XSOAR instance.
   Requires an instance of the Demisto API integration configured.
 commonfields:

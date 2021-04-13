@@ -20,6 +20,45 @@
                  height="35px">
         </div>
     </header>
+    <div class="row mb-2">
+        <div class="col">
+            <small class="text-secondary">Prepared by: {{ author }}</small>
+        </div>
+        <div class="col text-center">
+            <small class="text-secondary">Prepared For: {{ customer }}</small>
+        </div>
+        <div class="col text-end">
+            <small class="text-secondary">Prepared at: {{ date }}</small>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col text-center p-2 border-bottom">
+            {{ open_incidents }}
+        </div>
+        <div class="col text-center p-2 border-bottom">
+            {{ closed_incidents }}
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col">
+            <h1 class="text-primary">Purpose</h1>
+            <p>This Document covers all of the custom configuration and content that has been deployed following
+            the engagement of Palo Alto professional services.<br>
+            </p>
+            <h1 class="text-primary">Document Overview</h1>
+            <p>
+                This document has been auto-generated using the XSOAR Automation <i>!GenerateAsBuilt</i>.
+            </p>
+            <h1 class="text-primary">
+                Project Details
+            </h1>
+            <textarea style="width:100%;border:none;"
+                  placeholder="Click here to complete this section with any relevant details, for example customer
+contat details, project scope, etc."></textarea>
+        </div>
+    </div>
+    <p style="page-break-after: always;"></p>
+
 
     {{ integrations_table }}
     <p>The system configuration above represents the server configuration of XSOAR, including advanced
@@ -43,6 +82,13 @@
     {{ automations_table }}
     <p>
         Custom automations are used to add additional logic and support to playbooks and use cases.
+    </p>
+    <p style="page-break-after: always;"></p>
+
+    {{ system_config }}
+    <p>
+        The system configuration changes the behavior of the XSOAR server/application itself, including
+        keys and the published hostname.
     </p>
     <p style="page-break-after: always;"></p>
 </div>
