@@ -4855,8 +4855,9 @@ class CommandResults:
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
-                 mark_as_note=False, relations=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, list) -> None
+                 mark_as_note=False, polling_command=None, polling_args=None, polling_timeout=None,
+                 polling_next_run=None, relations=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool,str, dict, str, str, list) -> None
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -4888,6 +4889,10 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
+        self.polling_command = polling_command
+        self.polling_args = polling_args
+        self.polling_timeout = polling_timeout
+        self.polling_next_run = polling_next_run
 
         self.relations = relations
 
@@ -4961,6 +4966,13 @@ class CommandResults:
             'Note': mark_as_note,
             'Relationships': relations,
         }
+        if self.polling_command and self.polling_next_run:
+            return_entry.update({
+                'PollingCommand': self.polling_command,
+                'PollingArgs': self.polling_args,
+                'Timeout': self.polling_timeout,
+                'NextRun': self.polling_next_run
+            })
         return return_entry
 
 
