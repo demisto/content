@@ -41,6 +41,8 @@ script: >-
           v = 2;
       } else if (input.indexOf(PROOFPOINT_PREFIXES[2]) === 0) {
           v = 3;
+      } else if (input.indexOf(PROOFPOINT_PREFIXES[3]) === 0) {
+          v = 4;
       }
       // Not Proofpoint so just un-escape
       if (v === 0) {
