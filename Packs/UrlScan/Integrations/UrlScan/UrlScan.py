@@ -204,6 +204,8 @@ def format_results(client, uuid):
     file_context = makehash()
     url_cont = makehash()
 
+    feed_related_indicators = []
+
     LIMIT = int(demisto.args().get('limit', 20))
     if 'certificates' in scan_lists:
         cert_md = []
@@ -219,6 +221,9 @@ def format_results(client, uuid):
     if 'urls' in scan_lists:
         url_cont['Data'] = demisto.args().get('url')
         cont['URL'] = demisto.args().get('url')
+        if isinstance(scan_lists.get('urls'), list):
+            for url in scan_lists['urls']:
+                feed_related_indicators.append({'value': url, 'type': 'URL'})
     # effective url of the submitted url
     human_readable['Effective URL'] = scan_page.get('url')
     cont['EffectiveURL'] = scan_page.get('url')
@@ -246,6 +251,9 @@ def format_results(client, uuid):
             ip_asn_MD.append(ip_info)
             i = i + 1
         cont['RelatedIPs'] = ip_ec_info
+        if isinstance(scan_lists.get('ips'), list):
+            for ip in scan_lists.get('ips'):
+                feed_related_indicators.append({'value': ip, 'type': 'IP'})
         IP_HEADERS = ['Count', 'IP', 'ASN']
     # add redirected URLs
     if 'requests' in scan_data:
@@ -264,12 +272,31 @@ def format_results(client, uuid):
         hashes = scan_lists.get('hashes', [])
         cont['RelatedHash'] = hashes
         human_readable['Related Hashes'] = hashes
+        for hashe in hashes:
+            feed_related_indicators.append({'value': hashe, 'type': 'File'})
     if 'domains' in scan_lists:
-        subdomains = scan_lists['domains']
+        subdomains = scan_lists.get('domains', [])
         cont['Subdomains'] = subdomains
         human_readable['Subdomains'] = subdomains
+        for domain in subdomains:
+            feed_related_indicators.append({'value': domain, 'type': 'Domain'})
+    if 'linkDomains' in scan_lists:
+        link_domains = scan_lists.get('domains', [])
+        for domain in link_domains:
+            feed_related_indicators.append({'value': domain, 'type': 'Domain'})
     if 'asn' in scan_page:
         cont['ASN'] = scan_page['asn']
+        url_cont['ASN'] = scan_page.get('asn')
+    if 'asnname' in scan_page:
+        url_cont['ASOwner'] = scan_page['asnname']
+    if 'country' in scan_page:
+        url_cont['Geo']['Country'] = scan_page['country']
+    if 'domain' in scan_page:
+        feed_related_indicators.append({'value': scan_page['domain'], 'type': 'Domain'})
+    if 'ip' in scan_page:
+        feed_related_indicators.append({'value': scan_page['ip'], 'type': 'IP'})
+    if 'url' in scan_page:
+        feed_related_indicators.append({'value': scan_page['url'], 'type': 'URL'})
     if 'overall' in scan_verdicts:
         human_readable['Malicious URLs Found'] = scan_stats['malicious']
         if scan_verdicts['overall'].get('malicious'):
@@ -291,6 +318,8 @@ def format_results(client, uuid):
             dbot_score['Type'] = 'url'
             human_readable['Malicious'] = 'Benign'
         dbot_score['Reliability'] = client.reliability
+    if 'urlscan' in scan_verdicts and 'tags' in scan_verdicts['urlscan']:
+        url_cont['Tags'] = scan_verdicts['urlscan']['tags']
     processors_data = scan_meta['processors']
     if 'download' in processors_data and len(scan_meta['processors']['download']['data']) > 0:
         meta_data = processors_data['download']['data'][0]
@@ -311,6 +340,8 @@ def format_results(client, uuid):
         cont['File']['FileType'] = filetype
         file_context['Type'] = filetype
         file_context['Hostname'] = demisto.args().get('url')
+    if feed_related_indicators:
+        url_cont['FeedRelatedIndicators'] = feed_related_indicators
 
     ec = {
         'URLScan(val.URL && val.URL == obj.URL)': cont,
@@ -341,6 +372,8 @@ def format_results(client, uuid):
             'HumanReadable': tableToMarkdown('Certificates', cert_md, CERT_HEADERS)
         })
     if 'ips' in scan_lists:
+        if isinstance(scan_lists.get('ips'), list):
+            feed_related_indicators += scan_lists.get('ips')
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],

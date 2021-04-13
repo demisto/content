@@ -97,7 +97,7 @@ class Client(BaseClient):
 
     def get_access_token_data(self):
         access_token_jwt = self.ms_client.get_access_token()
-        token_data = jwt.decode(access_token_jwt, verify=False)
+        token_data = jwt.decode(access_token_jwt, options={'verify_signature': False})
         return access_token_jwt, token_data
 
     def get_authentication_string(self):
@@ -524,7 +524,7 @@ def main():
         auth_id = params['auth_id']
         enc_key = params['enc_key']
 
-        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
 
         client = Client(
             base_url=base_url,
