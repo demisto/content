@@ -4,7 +4,7 @@ import os
 import re
 import requests
 import json
-from pancloud import QueryService, Credentials, exceptions
+from pan_cortex_data_lake import QueryService, Credentials, exceptions
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Any, List, Tuple, Callable
