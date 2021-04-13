@@ -1,17 +1,5 @@
 args:
 - default: false
-  description: The model name (or list name) in Demisto.
-  isArray: false
-  name: modelName
-  required: true
-  secret: false
-- default: false
-  description: Seed for the hash function, at the pre-process stage.
-  isArray: false
-  name: hashSeed
-  required: false
-  secret: false
-- default: false
   description: Subject of the email.
   isArray: false
   name: emailSubject
@@ -32,8 +20,8 @@ args:
   secret: false
 - default: false
   defaultValue: '20'
-  description: Maximum number of positive/negative words to return for the model decision.
-    Default is 20.
+  description: 'Maximum number of positive/negative words to return for the model
+    decision. '
   isArray: false
   name: topWordsLimit
   required: false
@@ -45,18 +33,6 @@ args:
   name: wordThreshold
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: list
-  description: How the model is stored in Demisto. Can be "list" or "mlModel". Default
-    is "list".
-  isArray: false
-  name: modelStoreType
-  predefined:
-  - list
-  - mlModel
-  required: false
-  secret: false
 - default: false
   defaultValue: '5'
   description: Minimum number of characters for the prediction.
@@ -65,12 +41,13 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '0.8'
-  description: The label probability threshold. Default is 0.8.
+  defaultValue: '0'
+  description: The label probability threshold. Default is 0.
   isArray: false
   name: labelProbabilityThreshold
   required: false
   secret: false
+  deprecated: true
 - default: false
   description: The confidence threshold. The model will provide predictions only if
     their confidence is above this threshold.
@@ -80,7 +57,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'false'
+  defaultValue: 'true'
   description: Whether to return an error when there is no prediction. Default is
     "true".
   isArray: false
@@ -93,7 +70,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to set Demisto out-of-the-box DBot fields.
+  description: Whether to set Cortex XSOAR out-of-the-box DBot fields.
   isArray: false
   name: setIncidentFields
   predefined:
@@ -101,44 +78,11 @@ args:
   - 'false'
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: English
-  description: The language of the input text. Default is "English". Can be "English",
-    "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other".
-  isArray: false
-  name: language
-  predefined:
-  - English
-  - German
-  - French
-  - Spanish
-  - Portuguese
-  - Italian
-  - Dutch
-  - Other
-  required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: tokenizer
-  description: Tokenization method for text. Only required when the language argument
-    is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
-  isArray: false
-  name: tokenizationMethod
-  predefined:
-  - tokenizer
-  - byWords
-  - byLetters
-  required: false
-  secret: false
-comment: Predict text label using a pre-trained machine learning phishing model, and
-  get the most important words used in the classification decision.
 commonfields:
-  id: DBotPredictPhishingWords
+  id: DBotPredictOutOfTheBoxV2
   version: -1
-enabled: false
-name: DBotPredictPhishingWords
+enabled: true
+name: DBotPredictOutOfTheBoxV2
 outputs:
 - contextPath: DBotPredictPhishingWords.Label
   description: The predicted label.
@@ -160,13 +104,14 @@ outputs:
 script: '-'
 subtype: python3
 system: false
-tags:
-- ml
-- phishing
-timeout: '0'
+timeout: 60µs
 type: python
 dockerimage: demisto/ml:1.0.0.18831
 runonce: true
 tests:
-- Create Phishing Classifier V2 ML Test
-fromversion: 5.0.0
+- DbotPredictOufOfTheBoxTestV2
+tags:
+- phishing
+- ml
+comment: Predict phishing incidents using the out-of-the-box pre-trained model.
+fromversion: 5.5.0
