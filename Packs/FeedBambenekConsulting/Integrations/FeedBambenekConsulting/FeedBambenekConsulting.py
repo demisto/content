@@ -21,7 +21,7 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
             'relation_name': Relations.INDICATOR_OF,
-            'object_type_b': 'Malware',
+            'object_type_b': 'STIX Malware',
             'mapping': {
                 'description': 'description',
                 'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
@@ -35,7 +35,7 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'relation_name': Relations.INDICATOR_OF,
-            'object_type_b': 'Malware',
+            'object_type_b': 'STIX Malware',
             'mapping': {
                 'description': 'description',
                 'malwarefamily': ('description', r'.*used\s+by\s(.*?),', None),
@@ -61,7 +61,7 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'relation_name': Relations.INDICATOR_OF,
-            'object_type_b': 'Malware',
+            'object_type_b': 'STIX Malware',
             'mapping': {
                 'description': 'description',
                 'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
@@ -75,7 +75,7 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'relation_name': Relations.INDICATOR_OF,
-            'object_type_b': 'Malware',
+            'object_type_b': 'STIX Malware',
             'mapping': {
                 'description': 'description',
                 'malwarefamily': ('description', r'.*used\s+by\s(.*?)(\(|DGA)', None),
@@ -89,7 +89,7 @@ def main():
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'relation_name': Relations.INDICATOR_OF,
-            'object_type_b': 'Malware',
+            'object_type_b': 'STIX Malware',
             'mapping': {
                 'description': 'description',
                 'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
