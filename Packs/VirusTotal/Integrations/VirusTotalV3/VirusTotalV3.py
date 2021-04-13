@@ -643,15 +643,14 @@ class ScoreCalculator:
             self.logs.append(
                 'Crowdsourced Yara Rules analyzing enabled. '
             )
-            if (total_yara_rules: = len(
+            if (total_yara_rules := len(
                     data.get('crowdsourced_yara_results', []))) >= self.crowdsourced_yara_rules_threshold:
                 self.logs.append(
                     'Found malicious by finding more Crowdsourced Yara Rules than threshold. \n'
                     f'{total_yara_rules=} >= {self.crowdsourced_yara_rules_threshold=}'
                 )
                 return True
-            if sigma_rules:
-                = data.get('sigma_analysis_stats'):
+            if sigma_rules := data.get('sigma_analysis_stats'):
                 self.logs.append(
                     'Found sigma rules, analyzing. '
                 )
@@ -669,8 +668,7 @@ class ScoreCalculator:
                 self.logs.append(
                     'Not found sigma analysis. Skipping. '
                 )
-            if crowdsourced_ids_stats:
-                = data.get('crowdsourced_ids_stats'):
+            if crowdsourced_ids_stats := data.get('crowdsourced_ids_stats'):
                 self.logs.append(
                     'Found crowdsourced IDS analysis, analyzing. '
                 )
