@@ -276,7 +276,8 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
 
     logging.debug(f'commit hash is: {commit}')
-    with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
+    index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    with open(index_json_path, "w+") as index_file:
         index = {
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
@@ -295,6 +296,8 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
         if is_private or current_index_generation == index_generation:
+            # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
+            index_blob.upload_from_filename(index_json_path)
             index_blob.upload_from_filename(index_zip_path)
             logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
@@ -1104,6 +1107,12 @@ def main():
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
         updated_private_packs_ids, images_data=get_images_data(packs_list)
+    )
+
+    # Store index.json in CircleCI artifacts
+    shutil.copyfile(
+        os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
+        os.path.dirname(packs_artifacts_path),
     )
 
     # summary of packs status
