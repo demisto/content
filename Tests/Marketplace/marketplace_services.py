@@ -1437,6 +1437,7 @@ class Pack(object):
 
                     # Handling modified old release notes files, if there are any
                     rn_files_names = self.get_rn_files_names(modified_files_paths)
+                    logging.info(f"$$$$$$$$$$$modified files for {self._pack_name} pack are {modified_files_paths}")
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version, changelog, rn_files_names)
 
