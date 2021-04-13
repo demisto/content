@@ -1,0 +1,227 @@
+{
+  "id": "string",
+  "status": "string",
+  "name": "string",
+  "specification": "string",
+  "clientReferenceNumber": "string",
+  "timeZone": "string",
+  "extraA": {
+    "id": "string",
+    "name": "string"
+  },
+  "extraB": {
+    "id": "string",
+    "name": "string"
+  },
+  "phone": "string",
+  "fax": "string",
+  "address": {
+    "country": {
+      "id": "string",
+      "name": "string"
+    },
+    "street": "Featherstone Street",
+    "number": "49",
+    "county": "Greater London",
+    "city": "London",
+    "postcode": "EC1Y 8SY",
+    "addressMemo": "49 Featherstone Street\nLONDON\nEC1Y 8SY\nUNITED KINGDOM",
+    "addressType": "GB"
+  },
+  "email": "string",
+  "website": "string",
+  "postalAddress": {
+    "country": {
+      "id": "string",
+      "name": "string"
+    },
+    "street": "Featherstone Street",
+    "number": "49",
+    "county": "Greater London",
+    "city": "London",
+    "postcode": "EC1Y 8SY",
+    "addressMemo": "49 Featherstone Street\nLONDON\nEC1Y 8SY\nUNITED KINGDOM",
+    "addressType": "GB"
+  },
+  "branchType": "string",
+  "headBranch": {
+    "id": "string",
+    "name": "string"
+  },
+  "membershipNumber": "string",
+  "accountManager": {
+    "id": "string",
+    "name": "string"
+  },
+  "contact": {
+    "id": "string",
+    "name": "string"
+  },
+  "vatNumber": "string",
+  "surfaceArea": 0,
+  "volume": 0,
+  "attention": {
+    "id": "string",
+    "name": "string"
+  },
+  "attentionComment": "string",
+  "additionalInfo": "string",
+  "serviceWindowOption": "string",
+  "serviceWindow": {
+    "id": "string",
+    "name": "string"
+  },
+  "realEstate": {
+    "registryReference": "string",
+    "ownerName": "string",
+    "ownerMobile": "string",
+    "ownerTelephone": "string",
+    "ownerEmail": "string",
+    "designatedUse": {
+      "id": "string",
+      "name": "string"
+    },
+    "listedBuilding": {
+      "id": "string",
+      "name": "string"
+    },
+    "constructionYear": 0,
+    "acquisitionYear": 0,
+    "acquisitionPrice": 0,
+    "energyPerformance": {
+      "id": "string",
+      "name": "string"
+    },
+    "energyPerformanceMeasurementDate": "2021-02-14T13:00:55.393Z",
+    "environmentalImpact": {
+      "id": "string",
+      "name": "string"
+    },
+    "environmentalImpactMeasurementDate": "2021-02-14T13:00:55.393Z",
+    "buildingLevelEPC": {
+      "id": "string",
+      "name": "string"
+    },
+    "totalAcquisitionCost": 0,
+    "propertyValuation": 0,
+    "residualValue": 0,
+    "annualDepreciation": 0,
+    "depreciationPeriod": 0,
+    "liquidationValue": 0,
+    "liquidationValueSurveyDate": "2021-02-14T13:00:55.393Z",
+    "landValue": 0,
+    "landValueSurveyDate": "2021-02-14T13:00:55.393Z",
+    "marketValue": 0,
+    "marketValueSurveyDate": "2021-02-14T13:00:55.393Z",
+    "rentalValue": 0,
+    "rentalValueSurveyDate": "2021-02-14T13:00:55.393Z",
+    "rebuildingValue": 0,
+    "rebuildingValueSurveyDate": "2021-02-14T13:00:55.393Z"
+  },
+  "optionalFields1": {
+    "boolean1": true,
+    "boolean2": true,
+    "boolean3": true,
+    "boolean4": true,
+    "boolean5": true,
+    "number1": 0,
+    "number2": 0,
+    "number3": 0,
+    "number4": 0,
+    "number5": 0,
+    "date1": "2021-02-14T13:00:55.393Z",
+    "date2": "2021-02-14T13:00:55.393Z",
+    "date3": "2021-02-14T13:00:55.393Z",
+    "date4": "2021-02-14T13:00:55.393Z",
+    "date5": "2021-02-14T13:00:55.393Z",
+    "text1": "string",
+    "text2": "string",
+    "text3": "string",
+    "text4": "string",
+    "text5": "string",
+    "memo1": "string",
+    "memo2": "string",
+    "memo3": "string",
+    "memo4": "string",
+    "memo5": "string",
+    "searchlist1": {
+      "id": "string",
+      "name": "string"
+    },
+    "searchlist2": {
+      "id": "string",
+      "name": "string"
+    },
+    "searchlist3": {
+      "id": "string",
+      "name": "string"
+    },
+    "searchlist4": {
+      "id": "string",
+      "name": "string"
+    },
+    "searchlist5": {
+      "id": "string",
+      "name": "string"
+    }
+  },
+  "optionalFields2": {
+    "boolean1": true,
+    "boolean2": true,
+    "boolean3": true,
+    "boolean4": true,
+    "boolean5": true,
+    "number1": 0,
+    "number2": 0,
+    "number3": 0,
+    "number4": 0,
+    "number5": 0,
+    "date1": "2021-02-14T13:00:55.393Z",
+    "date2": "2021-02-14T13:00:55.393Z",
+    "date3": "2021-02-14T13:00:55.393Z",
+    "date4": "2021-02-14T13:00:55.393Z",
+    "date5": "2021-02-14T13:00:55.393Z",
+    "text1": "string",
+    "text2": "string",
+    "text3": "string",
+    "text4": "string",
+    "text5": "string",
+    "memo1": "string",
+    "memo2": "string",
+    "memo3": "string",
+    "memo4": "string",
+    "memo5": "string",
+    "searchlist1": {
+      "id": "string",
+      "name": "string"
+    },
+    "searchlist2": {
+      "id": "string",
+      "name": "string"
+    },
+    "searchlist3": {
+      "id": "string",
+      "name": "string"
+    },
+    "searchlist4": {
+      "id": "string",
+      "name": "string"
+    },
+    "searchlist5": {
+      "id": "string",
+      "name": "string"
+    }
+  },
+  "notes": "string",
+  "creator": {
+    "id": "string",
+    "name": "string"
+  },
+  "creationDate": "2021-02-14T13:00:55.393Z",
+  "modifier": {
+    "id": "string",
+    "name": "string"
+  },
+  "modificationDate": "2021-02-14T13:00:55.393Z",
+  "hasAttention": true
+}
