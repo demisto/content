@@ -12,8 +12,6 @@ def main():
         limit = args.get('limit', '100')
 
         get_endpoints_args = {'limit': limit}
-
-        get_endpoints_args = {}
         if last_seen_gte:
             get_endpoints_args['last_seen_gte'] = last_seen_gte
         if last_seen_lte and last_seen_lte != '0001-01-01T00:00:00Z':
