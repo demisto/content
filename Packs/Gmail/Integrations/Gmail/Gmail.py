@@ -1,3 +1,4 @@
+from typing import *  # noqa: F401
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *

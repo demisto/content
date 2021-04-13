@@ -2956,11 +2956,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "DbotPredictOufOfTheBoxTest",
-            "fromversion": "4.5.0",
-            "timeout": 1000
-        },
-        {
             "integrations": "AlienVault OTX TAXII Feed",
             "playbookID": "playbook-feedalienvaultotx_test",
             "fromversion": "5.5.0"
@@ -3261,6 +3256,24 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "AzureWAF",
+            "playbookID": "DbotPredictOufOfTheBoxTest",
+            "instance_names": [
+                "ml_dummy_prod"
+            ],
+            "fromversion": "4.5.0",
+            "timeout": 1000
+        },
+        {
+            "integrations": "AzureWAF",
+            "playbookID": "DbotPredictOufOfTheBoxTestV2",
+            "instance_names": [
+                "ml_dummy_prod"
+            ],
+            "fromversion": "5.5.0",
+            "timeout": 1000
         },
         {
             "integrations": "VirusTotal - Premium (API v3)",

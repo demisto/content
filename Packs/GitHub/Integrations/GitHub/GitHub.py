@@ -97,14 +97,14 @@ def safe_get(obj_to_fetch_from: dict, what_to_fetch: str, default_val: Union[dic
     return val
 
 
-def http_request(method, url_suffix, params=None, data=None):
+def http_request(method, url_suffix, params=None, data=None, headers=None, is_raw_response=False):
     res = requests.request(
         method,
         BASE_URL + url_suffix,
         verify=USE_SSL,
         params=params,
         data=json.dumps(data),
-        headers=HEADERS
+        headers=headers or HEADERS
     )
     if res.status_code >= 400:
         try:
@@ -143,6 +143,8 @@ def http_request(method, url_suffix, params=None, data=None):
     try:
         if res.status_code == 204:
             return res
+        elif is_raw_response:
+            return res.content.decode('utf-8')
         else:
             return res.json()
 
@@ -1241,6 +1243,51 @@ def get_github_actions_usage():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=usage_result)
 
 
+def get_file_content_from_repo():
+    """Gets the content of a file from GitHub.
+    """
+    args = demisto.args()
+
+    file_path = args.get('file_path')
+    branch_name = args.get('branch_name')
+    media_type = args.get('media_type', 'raw')
+    create_file_from_content = argToBoolean(args.get('create_file_from_content', False))
+
+    url_suffix = f'/repos/{USER}/{REPOSITORY}/contents/{file_path}'
+    if branch_name:
+        url_suffix += f'?ref={branch_name}'
+
+    headers = {
+        'Authorization': "Bearer " + TOKEN,
+        'Accept': f'application/vnd.github.VERSION.{media_type}',
+    }
+
+    file_data = http_request(method="GET", url_suffix=url_suffix, headers=headers, is_raw_response=True)
+
+    if create_file_from_content:
+        file_name = file_path.split('/')[-1]
+        demisto.results(fileResult(filename=file_name, data=file_data, file_type=EntryType.ENTRY_INFO_FILE))
+        return
+
+    file_processed_data = {
+        'Path': file_path,
+        'Content': file_data,
+        'MediaType': media_type,
+    }
+    if branch_name:
+        file_processed_data['Branch'] = branch_name
+
+    results = CommandResults(
+        outputs_prefix='GitHub.FileContent',
+        outputs_key_field=['Path', 'Branch', 'MediaType'],
+        outputs=file_processed_data,
+        readable_output=f'File {file_path} successfully fetched.',
+        raw_response=file_data,
+    )
+
+    return_results(results)
+
+
 def list_files_command():
     args = demisto.args()
     path = args.get('path', '')
@@ -1331,6 +1378,7 @@ COMMANDS = {
     'GitHub-create-pull-request': create_pull_request_command,
     'Github-get-github-actions-usage': get_github_actions_usage,
     'Github-list-files': list_files_command,
+    'GitHub-get-file-content': get_file_content_from_repo,
 }
 
 '''EXECUTION'''
