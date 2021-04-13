@@ -1,10 +1,10 @@
 {
-    "id": "incident_alertseverity",
+    "id": "incident_carbonblackesthreatid",
     "version": -1,
-    "name": "Alert Severity",
+    "name": "Threat Id",
     "ownerOnly": false,
-    "description": "Alert Severity",
-    "cliName": "alertseverity",
+    "description": "Threat Id",
+    "cliName": "carbonblackesthreatid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -17,7 +17,10 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "Carbon Black Endpoint Standard"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,

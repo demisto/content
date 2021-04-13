@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Carbon Black Defense v2
+  id: Carbon Black Endpoint Standard
   version: -1
 configuration:
 - defaultvalue: https://defense.conferdeploy.net/
@@ -8,32 +8,42 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: This API key is required for all use cases except the policy use
-    cases.
-  display: API Key
+- display: Custom Api Key
   hidden: false
-  name: api_key
+  name: custom_credentials
   required: false
-  type: 0
-- additionalinfo: This API secret key is required for all use cases except the policy
-    use cases.
-  display: API Secret Key
+  type: 9
+#- additionalinfo: This API key is required for all use cases except the policy use
+#    cases.
+#  display: Custom API Key
+#  hidden: false
+#  name: api_key
+#  required: false
+#  type: 0
+#- additionalinfo: This API secret key is required for all use cases except the policy
+#    use cases.
+#  display: Custom API Secret Key
+#  hidden: false
+#  name: api_secret_key
+#  required: false
+#  type: 4
+- display: Live Response Api Key
   hidden: false
-  name: api_secret_key
+  name: live_response_credentials
   required: false
-  type: 4
-- additionalinfo: This custom API key is required only for the policy use cases.
-  display: Custom API Key
-  hidden: false
-  name: policy_api_key
-  required: false
-  type: 0
-- additionalinfo: This custom API secret key is required only for the policy use cases.
-  display: Custom API Secret Key
-  hidden: false
-  name: policy_api_secret_key
-  required: false
-  type: 4
+  type: 9
+#- additionalinfo: This custom API key is required only for the policy use cases.
+#  display: Live Response API Key
+#  hidden: false
+#  name: policy_api_key
+#  required: false
+#  type: 0
+#- additionalinfo: This custom API secret key is required only for the policy use cases.
+#  display: Live Response API Secret Key
+#  hidden: false
+#  name: policy_api_secret_key
+#  required: false
+#  type: 4
 - additionalinfo: The organization unique key. This is required for all use cases
     (and for fetching incidents) except the policy use cases.
   display: Organization Key
@@ -90,19 +100,31 @@ configuration:
   name: policy_id
   required: false
   type: 0
-- additionalinfo: The alerts related to a process, represented in SHA-256.
-  display: Process sha256
-  hidden: false
-  name: process_sha256
-  required: false
-  type: 0
 - additionalinfo: The alerts related to a specific device, represented by its username.
   display: Device username
   hidden: false
   name: device_username
   required: false
   type: 0
-- additionalinfo: Query in Lucene syntax and/or value searches.
+- additionalinfo: The minimum severity of the alerts to be fetched.
+  display: Minimum severity
+  hidden: false
+  name: min_severity
+  options:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '10'
+  required: false
+  type: 15
+- additionalinfo: Query in Lucene syntax and/or value searches. Do not use the query
+    parameter with additional parameters to fetch incidents
   display: Query
   hidden: false
   name: query
@@ -118,11 +140,12 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-description: VMware Carbon Black Endpoint Standard (formerly known as Carbon Black
-  Defense) is a next-generation antivirus + EDR in one cloud-delivered platform that
-  stops commodity malware, advanced malware, non-malware attacks, and ransomware.
-display: Carbon Black Defense v2
-name: Carbon Black Defense v2
+description: Endpoint Standard is an industry-leading next-generation antivirus (NGAV)
+  and behavioral endpoint detection and response (EDR) solution. Endpoint Standard
+  is delivered through the Carbon Black Cloud, an endpoint protection platform that
+  consolidates security in the cloud using a single agent, console and data set.
+display: Carbon Black Endpoint Standard
+name: Carbon Black Endpoint Standard
 script:
   commands:
   - arguments:
@@ -2276,7 +2299,7 @@ script:
     - contextPath: CarbonBlackDefense.Alert.policy_applied
       description: Whether a policy was applied. (APPLIED, NOT_APPLIED).
       type: String
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: true
   longRunning: false
@@ -2286,5 +2309,5 @@ script:
   subtype: python3
   type: python
 tests:
-- carbonBlackDefenseV2TestPlaybook
+- carbonBlackEndpointStandardV2TestPlaybook
 fromversion: 5.5.0

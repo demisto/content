@@ -1,6 +1,6 @@
 
 import pytest
-import CarbonBlackDefenseV2 as cbdv2
+import CarbonBlackEndpointStandard as cbdv2
 from test_data.test_constants import *
 
 

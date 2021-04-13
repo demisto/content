@@ -1,5 +1,10 @@
 VMware Carbon Black Endpoint Standard (formerly known as Carbon Black Defense) is a next-generation antivirus + EDR in one cloud-delivered platform that stops commodity malware, advanced malware, non-malware attacks, and ransomware.
-This integration was integrated and tested with version 1.1.2 of Carbon Black Defense v2
+This integration was integrated and tested with version 1.1.2 of Carbon Black Endpoint Standard
+
+## The changes v1
+The old integration is deprecated because Carbon Black have released a new version of their API.
+The new integration supports new commands, Also added a Mapper and a Layout.
+
 ## Configure Carbon Black Defense v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,10 +14,10 @@ This integration was integrated and tested with version 1.1.2 of Carbon Black De
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | URL |  | True |
-    | API Key | This API key is required for all use cases except the policy use cases. | False |
-    | API Secret Key | This API secret key is required for all use cases except the policy use cases. | False |
-    | Custom API Key | This custom API key is required only for the policy use cases. | False |
-    | Custom API Secret Key | This custom API secret key is required only for the policy use cases. | False |
+    | Custom API Key | This Custom API key is required for all use cases except the policy use cases. | False |
+    | Custom API Secret Key | This Custom API secret key is required for all use cases except the policy use cases. | False |
+    | Live Response API Key | This Live Response API key is required only for the policy use cases. | False |
+    | Live Response API Secret Key | This Live Response API secret key is required only for the policy use cases. | False |
     | Organization Key | The organization unique key. This is required for all use cases \(and for fetching incidents\) except the policy use cases. | False |
     | Incident type |  | False |
     | Fetch incidents |  | False |
@@ -22,7 +27,6 @@ This integration was integrated and tested with version 1.1.2 of Carbon Black De
     | The category of the alert. | Category of alert to be fetched \(THREAT, MONITORED\). If nothing is selected he is fetching from all categories. | False |
     | Device id | The alerts related to a specific device, represented by its ID. | False |
     | Policy id | The alerts related to a specific policy, represented by its ID. | False |
-    | Process sha256 | The alerts related to a process, represented in SHA-256. | False |
     | Device username | The alerts related to a specific device, represented by its username. | False |
     | Query | Query in Lucene syntax and/or value searches. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
@@ -36,6 +40,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Get details about the events that led to an alert by its ID. This includes retrieving metadata around the alert as well as a list of all the events associated with the alert. Only API keys of type “API” can call the alerts API.
 
+##### Required Permissions
+RBAC Permissions Required - org.alerts: READ
 
 #### Base Command
 
@@ -201,6 +207,8 @@ Get details about the events that led to an alert by its ID. This includes retri
 ***
 Searches devices in your organization.
 
+##### Required Permissions
+RBAC Permissions Required - device: READ
 
 #### Base Command
 
@@ -628,6 +636,8 @@ Searches devices in your organization.
 ***
 Creates a process search job. The results for the search job may be requested using the returned job ID. At least one of the arguments (not including: rows, start, and time_range) is required.
 
+##### Required Permissions
+RBAC Permissions Required - org.search.events: CREATE
 
 #### Base Command
 
@@ -699,6 +709,8 @@ Creates a process search job. The results for the search job may be requested us
 ***
 Creates an enriched events search job. The results for the search job may be requested using the returned job ID. At least one of the arguments (not including: rows, start, time_range) is required).
 
+##### Required Permissions
+RBAC Permissions Required - org.search.events: CREATE
 
 #### Base Command
 
@@ -769,6 +781,8 @@ Creates an enriched events search job. The results for the search job may be req
 ***
 Retrieves the results of a process search identified by the job ID.
 
+##### Required Permissions
+RBAC Permissions Required - org.search.events: READ
 
 #### Base Command
 
@@ -946,6 +960,8 @@ Retrieves the results of a process search identified by the job ID.
 ***
 Gets the list of policies available in your organization.
 
+##### Required Permissions
+Live Response Permissions Required
 
 #### Base Command
 
@@ -1750,6 +1766,8 @@ There are no input arguments for this command.
 ***
 Retrieves a policy object by ID.
 
+##### Required Permissions
+Live Response Permissions Required
 
 #### Base Command
 
@@ -1963,6 +1981,8 @@ Retrieves a policy object by ID.
 ***
 Resets policy fields.
 
+##### Required Permissions
+Live Response Permissions Required
 
 #### Base Command
 
@@ -1990,7 +2010,7 @@ Resets policy fields.
 
 
 #### Command Example
-```!cbd-set-policy policy=67584 keyValue=`{"policyInfo": {"description": "update example", "name": "demisto test1", "id": 67584, "policy": {"sensorSettings": [{"name": "SHOW_UI", "value": "true"}]}, "priorityLevel": "HIGH"}}````
+```!cbd-set-policy policy=123456 keyValue=`{"policyInfo": {"description": "update example", "name": "demisto test1", "id": 123456, "policy": {"sensorSettings": [{"name": "SHOW_UI", "value": "true"}]}, "priorityLevel": "HIGH"}}````
 
 #### Context Example
 ```json
@@ -1998,7 +2018,7 @@ Resets policy fields.
     "CarbonBlackDefense": {
         "Policy": {
             "description": "update example",
-            "id": 67584,
+            "id": 123456,
             "latestRevision": 1617542937951,
             "name": "demisto test1",
             "policy": {
@@ -2199,13 +2219,15 @@ Resets policy fields.
 >### Carbon Black Defense Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
->| 67584 | update example | demisto test1 | 2021-04-04T13:28:57.000Z | 2 | HIGH | false |
+>| 123456 | update example | demisto test1 | 2021-04-04T13:28:57.000Z | 2 | HIGH | false |
 
 
 ### cbd-create-policy
 ***
 Creates a new policy on the CB Defense backend.
 
+##### Required Permissions
+Live Response Permissions Required
 
 #### Base Command
 
@@ -2652,6 +2674,8 @@ Creates a new policy on the CB Defense backend.
 ***
 Deletes a policy from the CB Defense backend. This may return an error if devices are actively assigned to the policy ID requested for deletion. Note: System policies cannot be deleted.
 
+##### Required Permissions
+Live Response Permissions Required
 
 #### Base Command
 
@@ -2682,6 +2706,8 @@ There is no context output for this command.
 ***
 Updates an existing policy with a new policy. Note: System policies cannot be modified.
 
+##### Required Permissions
+Live Response Permissions Required
 
 #### Base Command
 
@@ -2712,7 +2738,7 @@ Updates an existing policy with a new policy. Note: System policies cannot be mo
 
 
 #### Command Example
-```!cbd-update-policy id=67584 description=`This is Demisto's test policy after an update` name=`demisto test1` priorityLevel=LOW policy=`{"sensorSettings": [{"name": "SHOW_UI", "value": "false"}]}````
+```!cbd-update-policy id=123456 description=`This is Demisto's test policy after an update` name=`demisto test1` priorityLevel=LOW policy=`{"sensorSettings": [{"name": "SHOW_UI", "value": "false"}]}````
 
 #### Context Example
 ```json
@@ -2720,7 +2746,7 @@ Updates an existing policy with a new policy. Note: System policies cannot be mo
     "CarbonBlackDefense": {
         "Policy": {
             "description": "This is Demisto's test policy after an update",
-            "id": 67584,
+            "id": 123456,
             "latestRevision": 1617542940381,
             "name": "demisto test1",
             "policy": {
@@ -2921,13 +2947,15 @@ Updates an existing policy with a new policy. Note: System policies cannot be mo
 >### Carbon Black Defense Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
->| 67584 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:00.000Z | 2 | LOW | false |
+>| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:00.000Z | 2 | LOW | false |
 
 
 ### cbd-add-rule-to-policy
 ***
 Adds a new rule to an existing policy. Note: System policies cannot be modified.
 
+##### Required Permissions
+Live Response Permissions Required
 
 #### Base Command
 
@@ -2949,7 +2977,7 @@ Adds a new rule to an existing policy. Note: System policies cannot be modified.
 There is no context output for this command.
 
 #### Command Example
-```!cbd-add-rule-to-policy action=ALLOW operation=RANSOM required=true type=REPUTATION value=COMPANY_BLACK_LIST policyId=67584```
+```!cbd-add-rule-to-policy action=ALLOW operation=RANSOM required=true type=REPUTATION value=COMPANY_BLACK_LIST policyId=123456```
 
 #### Context Example
 ```json
@@ -2957,7 +2985,7 @@ There is no context output for this command.
     "CarbonBlackDefense": {
         "Policy": {
             "description": "This is Demisto's test policy after an update",
-            "id": 67584,
+            "id": 123456,
             "latestRevision": 1617542944659,
             "name": "demisto test1",
             "policy": {
@@ -3169,13 +3197,15 @@ There is no context output for this command.
 >### Carbon Black Defense Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
->| 67584 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:04.000Z | 2 | LOW | false |
+>| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:04.000Z | 2 | LOW | false |
 
 
 ### cbd-update-rule-in-policy
 ***
 Updates an existing rule with a new rule. Note: System policies cannot be modified.
 
+##### Required Permissions
+Live Response Permissions Required
 
 #### Base Command
 
@@ -3198,7 +3228,7 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
 There is no context output for this command.
 
 #### Command Example
-```!cbd-update-rule-in-policy action=ALLOW operation=RANSOM required=false id=23 type=REPUTATION value=COMPANY_BLACK_LIST policyId=67584```
+```!cbd-update-rule-in-policy action=ALLOW operation=RANSOM required=false id=23 type=REPUTATION value=COMPANY_BLACK_LIST policyId=123456```
 
 #### Context Example
 ```json
@@ -3206,7 +3236,7 @@ There is no context output for this command.
     "CarbonBlackDefense": {
         "Policy": {
             "description": "This is Demisto's test policy after an update",
-            "id": 67584,
+            "id": 123456,
             "latestRevision": 1617542947344,
             "name": "demisto test1",
             "policy": {
@@ -3418,13 +3448,15 @@ There is no context output for this command.
 >### Carbon Black Defense Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
->| 67584 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:07.000Z | 2 | LOW | false |
+>| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:07.000Z | 2 | LOW | false |
 
 
 ### cbd-delete-rule-from-policy
 ***
 Removes a rule from an existing policy. Note: System policies cannot be modified.
 
+##### Required Permissions
+Live Response Permissions Required
 
 #### Base Command
 
@@ -3442,7 +3474,7 @@ Removes a rule from an existing policy. Note: System policies cannot be modified
 There is no context output for this command.
 
 #### Command Example
-```!cbd-delete-rule-from-policy policyId=67584 ruleId=23```
+```!cbd-delete-rule-from-policy policyId=123456 ruleId=23```
 
 #### Human Readable Output
 
@@ -3456,6 +3488,8 @@ There is no context output for this command.
 ***
 Retrieves the result for an enriched events search request for a given job ID. By default returns 10 rows.
 
+##### Required Permissions
+RBAC Permissions Required - org.search.events: READ
 
 #### Base Command
 
@@ -3622,6 +3656,8 @@ Retrieves the result for an enriched events search request for a given job ID. B
 ***
 Initiates a request to retrieve detail fields for enriched events.  the job_id that returns from this command can be used to get the results using the "cbd-find-events-details-results" command.
 
+##### Required Permissions
+RBAC Permissions Required - org.search.events: CREATE
 
 #### Base Command
 
@@ -3668,6 +3704,8 @@ Initiates a request to retrieve detail fields for enriched events.  the job_id t
 ***
 Retrieves the status for an enriched events detail request for a given job ID.
 
+##### Required Permissions
+RBAC Permissions Required - org.search.events: READ
 
 #### Base Command
 
@@ -3804,6 +3842,8 @@ Retrieves the status for an enriched events detail request for a given job ID.
 ***
 Quarantines the device. Not supported for devices in a Linux operating system.
 
+##### Required Permissions
+RBAC Permissions Required - device.quarantine: EXECUTE
 
 #### Base Command
 
@@ -3820,7 +3860,7 @@ Quarantines the device. Not supported for devices in a Linux operating system.
 There is no context output for this command.
 
 #### Command Example
-```!cbd-device-quarantine device_id=3925348```
+```!cbd-device-quarantine device_id=123456```
 
 #### Human Readable Output
 
@@ -3830,6 +3870,9 @@ There is no context output for this command.
 ***
 Unquarantines the device. Not supported for devices in a Linux operating system.
 
+
+##### Required Permissions
+RBAC Permissions Required - device.quarantine: EXECUTE
 
 #### Base Command
 
@@ -3846,7 +3889,7 @@ Unquarantines the device. Not supported for devices in a Linux operating system.
 There is no context output for this command.
 
 #### Command Example
-```!cbd-device-unquarantine device_id=3925348```
+```!cbd-device-unquarantine device_id=123456```
 
 #### Human Readable Output
 
@@ -3856,6 +3899,8 @@ There is no context output for this command.
 ***
 Starts a background scan on the device. Not supported for devices in a Linux operating system.
 
+##### Required Permissions
+RBAC Permissions Required - device.bg-scan: EXECUTE
 
 #### Base Command
 
@@ -3872,7 +3917,7 @@ Starts a background scan on the device. Not supported for devices in a Linux ope
 There is no context output for this command.
 
 #### Command Example
-```!cbd-device-background-scan device_id=3925348```
+```!cbd-device-background-scan device_id=123456```
 
 #### Human Readable Output
 
@@ -3882,6 +3927,8 @@ There is no context output for this command.
 ***
 Stops a background scan on the device. Not supported for devices in a Linux operating system.
 
+##### Required Permissions
+RBAC Permissions Required - device.bg-scan: EXECUTE
 
 #### Base Command
 
@@ -3898,7 +3945,7 @@ Stops a background scan on the device. Not supported for devices in a Linux oper
 There is no context output for this command.
 
 #### Command Example
-```!cbd-device-background-scan-stop device_id=3925348```
+```!cbd-device-background-scan-stop device_id=123456```
 
 #### Human Readable Output
 
@@ -3908,6 +3955,8 @@ There is no context output for this command.
 ***
 Bypasses a device.
 
+##### Required Permissions
+RBAC Permissions Required - device.bypass: EXECUTE
 
 #### Base Command
 
@@ -3924,7 +3973,7 @@ Bypasses a device.
 There is no context output for this command.
 
 #### Command Example
-```!cbd-device-bypass device_id=3925348```
+```!cbd-device-bypass device_id=123456```
 
 #### Human Readable Output
 
@@ -3934,6 +3983,8 @@ There is no context output for this command.
 ***
 Unbypasses a device.
 
+##### Required Permissions
+RBAC Permissions Required - device.bypass: EXECUTE
 
 #### Base Command
 
@@ -3950,7 +4001,7 @@ Unbypasses a device.
 There is no context output for this command.
 
 #### Command Example
-```!cbd-device-unbypass device_id=3925348```
+```!cbd-device-unbypass device_id=123456```
 
 #### Human Readable Output
 
@@ -3960,6 +4011,8 @@ There is no context output for this command.
 ***
 Updates the devices to the specified policy ID.
 
+##### Required Permissions
+RBAC Permissions Required - device.policy: UPDATE
 
 #### Base Command
 
@@ -3977,7 +4030,7 @@ Updates the devices to the specified policy ID.
 There is no context output for this command.
 
 #### Command Example
-```!cbd-device-policy-update device_id=3925348 policy_id=67584```
+```!cbd-device-policy-update device_id=123456 policy_id=123456```
 
 #### Human Readable Output
 
@@ -3987,6 +4040,8 @@ There is no context output for this command.
 ***
 Updates the version of a sensor.
 
+##### Required Permissions
+RBAC Permissions Required - device.kits: EXECUTE
 
 #### Base Command
 
@@ -4004,7 +4059,7 @@ Updates the version of a sensor.
 There is no context output for this command.
 
 #### Command Example
-```!cbd-device-update-sensor-version device_id=3925348 sensor_version={\"AMAZON_LINUX\":\"1.2.3.4\"}```
+```!cbd-device-update-sensor-version device_id=123456 sensor_version={\"AMAZON_LINUX\":\"1.2.3.4\"}```
 
 #### Human Readable Output
 
@@ -4014,6 +4069,8 @@ There is no context output for this command.
 ***
 Gets details on the events that led to an alert. This includes retrieving metadata around the alert as well as the event associated with the alert.
 
+##### Required Permissions
+RBAC Permissions Required - org.alerts: READ
 
 #### Base Command
 

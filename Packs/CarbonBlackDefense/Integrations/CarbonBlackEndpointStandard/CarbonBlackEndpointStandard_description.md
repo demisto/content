@@ -4,8 +4,7 @@
 
 ### Create Access Levels and API Keys
 
-There are two versions of the API - V3 and V6. V6 includes all the APIs except for the Policy APIs. Therefore, in addition to creating an API key and API secret key, you also need to create a custom API key and a custom API secret key for the policy related commands.
-Click [here](https://developer.carbonblack.com/reference/carbon-black-cloud/cb-defense/latest/rest-api) for more information about the versions.
+In this integration we use 2 rest API's with 2 different permissions. One for the policies commands and another for the rest all commands. Therefore, in addition to creating a Live Response API key and Live Response API secret key (for the policies commands), you also need to create a custom API key and a custom API secret key (for the rest all commands), with a custom access level.
 
 #### Create a Custom Access Level
 
@@ -27,6 +26,14 @@ Click [here](https://developer.carbonblack.com/reference/carbon-black-cloud/cb-d
  
    Click [here](https://developer.carbonblack.com/reference/carbon-black-cloud/authentication) for more information about authentication.
 
+### Set the API keys
+#### If you use credentials:
+   - Username => api key & password => secret api key
+   - The first credentials is for **Custom** api access level (all commands except the policies commands), the second credentials is for **Live Response** access level (the policies commands)
+
+#### If you don't use credentials:
+   - api key => api key & password => secret api key
+   
 ### Create a Carbon Black Query
 
 Carbon Black Cloud Endpoint Standard uses Advanced Search Queries to query for events and processes. Click [here](https://developer.carbonblack.com/resources/query_overview.pdf) for more information

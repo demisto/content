@@ -1,7 +1,7 @@
-id: Carbon Black Defense Find Event Details
+id: Carbon Black Endpoint Standard Find Event Details
 version: -1
 fromversion: 5.5.0
-name: Carbon Black Defense Find Event Details
+name: Carbon Black Endpoint Standard Find Event Details
 description: Receives event IDs and returns details about the event.
 starttaskid: "0"
 tasks:
@@ -219,4 +219,4 @@ outputs:
 - contextPath: CarbonBlackDefense.EventsDetails.Results.results
   description: The lists that contains the data of the results for this search.
 tests:
-- carbonBlackDefenseV2TestPlaybook
+- carbonBlackEndpointStandardTestPlaybook

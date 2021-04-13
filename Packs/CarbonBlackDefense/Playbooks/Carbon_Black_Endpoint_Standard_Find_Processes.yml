@@ -1,19 +1,17 @@
-id: Carbon Black Defense Find Events
+id: Carbon Black Endpoint Standard Find Processes
 version: -1
 fromversion: 5.5.0
-name: Carbon Black Defense Find Events
-description: Finds events using a search query (or device_id, etc.). One of the parameters
-  is required. It returns a list of events with general information. For detailed
-  information about an event, use the "find event details" playbook with an event
-  ID.
+name: Carbon Black Endpoint Standard Find Processes
+description: Find processes using a search query (or device_id, etc.). One of the
+  parameters is required. Returns a list of processes.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 79184a7b-d9d7-4f85-8a5a-3e595d062418
+    taskid: ba4845ad-8a51-4624-8cae-b2b25ec16e93
     type: start
     task:
-      id: 79184a7b-d9d7-4f85-8a5a-3e595d062418
+      id: ba4845ad-8a51-4624-8cae-b2b25ec16e93
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -35,23 +33,23 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 238cfb62-a54f-4413-8cb7-1e265bf564c4
+  "2":
+    id: "2"
+    taskid: 56624e03-8378-41a6-89ab-2558d2c8900b
     type: regular
     task:
-      id: 238cfb62-a54f-4413-8cb7-1e265bf564c4
+      id: 56624e03-8378-41a6-89ab-2558d2c8900b
       version: -1
-      name: cbd-find-events
-      description: Creates an enriched events search job. The results for the search
-        job may be requested using the returned job ID.
-      script: '|||cbd-find-events'
+      name: cbd-find-process
+      description: Creates a process search job. The results for the search job may
+        be requested using the returned job ID.
+      script: '|||cbd-find-processes'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "4"
     scriptarguments:
       alert_category:
         complex:
@@ -74,6 +72,9 @@ tasks:
       device_os:
         complex:
           root: inputs.device_os
+      device_timestamp:
+        complex:
+          root: inputs.device_timestamp
       event_type:
         complex:
           root: inputs.event_type
@@ -85,7 +86,7 @@ tasks:
           root: inputs.parent_name
       parent_reputation:
         complex:
-          root: inputs.parent_name
+          root: inputs.process_reputation
       process_cmdline:
         complex:
           root: inputs.process_cmdline
@@ -103,7 +104,7 @@ tasks:
           root: inputs.process_pid
       process_reputation:
         complex:
-          root: inputs.process_reputation
+          root: inputs.parent_reputation
       process_start_time:
         complex:
           root: inputs.process_start_time
@@ -133,7 +134,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 205
+          "y": 195
         }
       }
     note: false
@@ -141,12 +142,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: 3be9d080-cd35-4728-89e3-893763691205
+  "4":
+    id: "4"
+    taskid: 6dd362a0-d714-49bb-8d10-6e64dfe61472
     type: playbook
     task:
-      id: 3be9d080-cd35-4728-89e3-893763691205
+      id: 6dd362a0-d714-49bb-8d10-6e64dfe61472
       version: -1
       name: GenericPolling
       description: |-
@@ -163,24 +164,22 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "5"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
-        complex:
-          root: CarbonBlackDefense.Events.Search
-          accessor: job_id
+        simple: ${CarbonBlackDefense.Process.Search.job_id}
       Interval:
         simple: "1"
       PollingCommandArgName:
         simple: job_id
       PollingCommandName:
-        simple: cbd-find-events-results
+        simple: cbd-find-processes-results
       Timeout:
         simple: "10"
       dt:
-        simple: CarbonBlackDefense.Events.Results(val.completed !=  val.contacted)
+        simple: CarbonBlackDefense.Process(val.completed !=  val.contacted)
     separatecontext: true
     loop:
       iscommand: false
@@ -199,27 +198,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 9136d9a6-96fa-4622-864b-f68322761a7c
+  "5":
+    id: "5"
+    taskid: 822c5274-3b51-4fb9-8767-6072ff51a2e4
     type: regular
     task:
-      id: 9136d9a6-96fa-4622-864b-f68322761a7c
+      id: 822c5274-3b51-4fb9-8767-6072ff51a2e4
       version: -1
-      name: cbd-find-events-results
-      description: Retrieves the result for an enriched events search request for
-        a given job ID.
-      script: '|||cbd-find-events-results'
+      name: cbd-find-processes-results
+      description: Retrieves the results of a process search identified by a job ID.
+      script: '|||cbd-find-processes-results'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     scriptarguments:
       job_id:
         complex:
-          root: CarbonBlackDefense.Events.Search
+          root: CarbonBlackDefense.Process.Search
           accessor: job_id
     separatecontext: false
     view: |-
@@ -234,12 +232,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 67081304-363d-4293-8f96-08c65a2a7590
+  "7":
+    id: "7"
+    taskid: 6eeae2af-d47d-4e3c-8beb-844694f8de12
     type: title
     task:
-      id: 67081304-363d-4293-8f96-08c65a2a7590
+      id: 6eeae2af-d47d-4e3c-8beb-844694f8de12
       version: -1
       name: Done
       type: title
@@ -273,7 +271,8 @@ view: |-
   }
 inputs:
 - key: query
-  value: {}
+  value:
+    simple: chrome
   required: false
   description: |
     The query in Lucene syntax and/or value searches.
@@ -281,8 +280,8 @@ inputs:
 - key: alert_category
   value: {}
   required: false
-  description: The Carbon Black Cloud classification for events tagged to an alert
-    indicating whether the event is a “threat” or “observed”.
+  description: A Carbon Black Cloud classification for events tagged to an alert indicating
+    whether the event is a “threat” or “observed”.
   playbookInputQuery:
 - key: blocked_hash
   value: {}
@@ -298,11 +297,10 @@ inputs:
     Can be either IPv4 or IPv6 format.
   playbookInputQuery:
 - key: device_id
-  value:
-    simple: "3925348"
+  value: {}
   required: false
-  description: The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique
-    across all Carbon Black Cloud environments.
+  description: The ID assigned to the endpoint by Carbon Black Cloud; unique across
+    all Carbon Black Cloud environments.
   playbookInputQuery:
 - key: device_internal_ip
   value: {}
@@ -318,8 +316,7 @@ inputs:
 - key: device_os
   value: {}
   required: false
-  description: 'The operating system of the endpoint. Possible values: "WINDOWS",
-    "MAC", "LINUX".'
+  description: The operating system of the endpoint.
   playbookInputQuery:
 - key: device_timestamp
   value: {}
@@ -378,33 +375,31 @@ inputs:
   value: {}
   required: false
   description: |
-    The process identifier assigned by the operating system. This can be
-    multi-valued in case of fork() or exec() process operations on Linux and macOS.
+    The Process identifier assigned by the operating system; can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
   playbookInputQuery:
 - key: process_reputation
   value: {}
   required: false
   description: |
-    The reputation of the actor process applied when the event is processed by Carbon Black Cloud.
+    The Reputation of the actor process; applied when event is processed by the Carbon Black Cloud.
   playbookInputQuery:
 - key: process_start_time
   value: {}
   required: false
   description: |
-    The sensor reported timestamp of when the process started. This is not
-    available for processes running before the sensor starts.
+    The Sensor reported timestamp of when the process started; not available for processes running before the sensor starts.
   playbookInputQuery:
 - key: process_terminated
   value: {}
   required: false
   description: |
-    Whether the process has terminated. Always "false" for enriched events (process termination not recorded).
+    “True” indicates the process has terminated; always “false” for enriched events (process termination not recorded).
   playbookInputQuery:
 - key: process_username
   value: {}
   required: false
-  description: |-
-    The user context in which the actor process was executed.
+  description: |
+    The User context in which the actor process was executed.
     MacOS - all users for the PID for fork() and exec() transitions,
     Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid().
   playbookInputQuery:
@@ -412,7 +407,7 @@ inputs:
   value: {}
   required: false
   description: |
-    The number of rows to request. Can be paginated.
+    The Number of rows to request, can be paginated.
   playbookInputQuery:
 - key: sensor_action
   value: {}
@@ -430,25 +425,24 @@ inputs:
   value: {}
   required: false
   description: |
-    The time window in which to restrict the search to match using device_timestamp
-    as the reference. The window value will take priority over the start and end times if provided.
+    The time window to restrict the search to match using device_timestamp as the reference. Window will take priority over start and end if provided.
   playbookInputQuery:
 outputs:
-- contextPath: CarbonBlackDefense.EventsDetails.Results.approximate_unaggregated
+- contextPath: CarbonBlackDefense.Process.Results.approximate_unaggregated
   description: The approximate number of unaggregated results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.completed
+- contextPath: CarbonBlackDefense.Process.Results.completed
   description: The number of completed results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.contacted
+- contextPath: CarbonBlackDefense.Process.Results.contacted
   description: The number of contacted results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.num_aggregated
+- contextPath: CarbonBlackDefense.Process.Results.num_aggregated
   description: The number of aggregated results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.num_available
-  description: The number of events available in this search.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.num_found
-  description: The number of events found in this search.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.results
+- contextPath: CarbonBlackDefense.Process.Results.num_available
+  description: The number of processes available in this search.
+- contextPath: CarbonBlackDefense.Process.Results.num_found
+  description: The number of processes found in this search.
+- contextPath: CarbonBlackDefense.Process.Results.results
   description: The lists that contains the data of the results for this search.
-- contextPath: CarbonBlackDefense.Events.Search.job_id
-  description: The job ID of the event search.
+- contextPath: CarbonBlackDefense.Process.Search.job_id
+  description: The job ID of the process search.
 tests:
-- carbonBlackDefenseV2TestPlaybook
+- carbonBlackEndpointStandardTestPlaybook

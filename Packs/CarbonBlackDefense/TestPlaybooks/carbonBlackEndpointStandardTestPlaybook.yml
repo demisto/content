@@ -1,6 +1,6 @@
-id: carbonBlackDefenseV2TestPlaybook
+id: carbonBlackEndpointStandardTestPlaybook
 version: -1
-name: carbonBlackDefenseV2TestPlaybook
+name: carbonBlackEndpointStandardTestPlaybook
 starttaskid: "0"
 tasks:
   "0":
@@ -1533,4 +1533,4 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 5.5.0
-description: A test playbook of the Carbon Black v2 pack
+description: A test playbook of the Carbon Black Endpoint Standard pack

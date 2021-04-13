@@ -46,6 +46,14 @@
                     "complex": null,
                     "simple": "first_event_time"
                 },
+                "IOC Hit": {
+                    "complex": null,
+                    "simple": "ioc_hit"
+                },
+                "IOC Id": {
+                    "complex": null,
+                    "simple": "ioc_id"
+                },
                 "Last Event Time": {
                     "complex": null,
                     "simple": "last_event_time"
@@ -77,6 +85,10 @@
                 "Report Id": {
                     "complex": null,
                     "simple": "report_id"
+                },
+                "Report Name": {
+                    "complex": null,
+                    "simple": "report_name"
                 },
                 "Reputation": {
                     "complex": null,

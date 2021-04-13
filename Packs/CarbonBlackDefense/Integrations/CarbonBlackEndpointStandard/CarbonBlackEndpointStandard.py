@@ -64,8 +64,8 @@ class Client(BaseClient):
 
     def search_alerts_request(self, suffix_url_path: str = None, minimum_severity: int = None, create_time: Dict = None,
                               policy_id: List = None, device_username: List = None, device_id: List = None,
-                              process_sha256: List = None, query: str = None, alert_category: List = None,
-                              sort_field: str = "first_event_time", sort_order: str = "ASC", limit: int = 50) -> dict:
+                              query: str = None, alert_category: List = None, sort_field: str = "create_time",
+                              sort_order: str = "ASC", limit: int = 50) -> dict:
         """Searches for Carbon Black alerts using the '/appservices/v6/orgs/{org_key}/alerts/_search' API endpoint
 
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -91,9 +91,6 @@ class Client(BaseClient):
 
         :type device_id: ``Optional[list]``
         :param device_id: The identifier assigned by Carbon Black Cloud to the device associated with the alert.
-
-        :type process_sha256: ``Optional[list]``
-        :param process_sha256: The SHA256 Hash of the primary involved process.
 
         :type query: ``Optional[str]``
         :param query: Query in lucene syntax and/or including value searches.
@@ -125,7 +122,6 @@ class Client(BaseClient):
                 policy_id=policy_id,
                 device_username=device_username,
                 device_id=device_id,
-                process_sha256=process_sha256,
                 category=alert_category
             ),
             'sort': [
@@ -329,6 +325,9 @@ class Client(BaseClient):
 
         :type required: ``Optional[bool]``
         :param required: Is the rule required. Options are: 'true' or 'false'.
+
+        :type rule_id: ``Optional[int]``
+        :param rule_id: Is the rule id.
 
         :type type: ``Optional[dict]``
         :param type: A JSON object containing the policy details.
@@ -912,6 +911,27 @@ class Client(BaseClient):
                                   resp_type='text')
 
 
+def fetch_incident_filters(params: dict):
+    filters = {
+        'suffix_url_path': params.get('suffix_url_path', 'all'),
+        'min_severity': params.get('min_severity'),
+        'category': argToList(params.get('category')),
+        'device_id': argToList(params.get('device_id')),
+        'policy_id': argToList(params.get('policy_id')),
+        'device_username': argToList(params.get('device_username')),
+        'query': params.get('query')
+    }
+    if filters.get('query'):
+        filters_with_out_query = dict(filters)
+        del filters_with_out_query['suffix_url_path']
+        del filters_with_out_query['query']
+        if not any(filters_with_out_query.values()):
+            return filters
+        raise DemistoException("Do not use the query parameter with additional parameters to fetch incidents")
+    else:
+        return filters
+
+
 def test_module(client: Client, params: dict) -> str:
     """Tests API connectivity and authentication'
 
@@ -938,16 +958,43 @@ def test_module(client: Client, params: dict) -> str:
         Fetch uses the general api_key."""
         if (client.api_key and client.api_secret_key and client.organization_key) or \
                 (client.policy_api_key and client.policy_api_secret_key and not is_fetch):
-            if client.api_key and client.api_secret_key and client.organization_key:
-                client.test_module_request()
+            if client.api_key or client.api_secret_key or client.organization_key:
+                try:
+                    client.test_module_request()
+                except DemistoException as e:
+                    if 'Verify that the server URL parameter is correct' in str(e):
+                        return 'Url Error: make sure URL is correctly set'
+                    if e.res.status_code == 401:
+                        return 'Authorization Error: make sure Custom API Key & Secret Key is correctly set'
+                    if e.res.status_code == 404:
+                        return 'Authorization Error: make sure Organization key is correctly set'
+                    else:
+                        raise
                 if is_fetch:
-                    client.search_alerts_request(suffix_url_path='all')
-            if client.policy_api_key and client.policy_api_secret_key:
-                client.policy_test_module_request()
+                    filters = fetch_incident_filters(params)
+                    client.search_alerts_request(suffix_url_path=filters.get('suffix_url_path'),
+                                                 minimum_severity=filters.get('min_severity'),
+                                                 policy_id=filters.get('policy_id'),
+                                                 device_username=filters.get('device_username'),
+                                                 device_id=filters.get('device_id'),
+                                                 query=filters.get('query'),
+                                                 alert_category=filters.get('category'))
+            if client.policy_api_key or client.policy_api_secret_key:
+                try:
+                    client.policy_test_module_request()
+                except DemistoException as e:
+                    if 'Verify that the server URL parameter is correct' in str(e):
+                        return 'Url Error: make sure URL is correctly set'
+                    if e.res.status_code == 401:
+                        return 'Authorization Error: make sure Live Response API Key & Secret Key is correctly set'
+                    else:
+                        raise
             message = 'ok'
         else:
-            message = 'There is no perfect set (Api Key & Api Secret Key & Organization Key' \
-                      ' or Custom Api Key & Custom Api Secret Key) of keys.'
+            if is_fetch:
+                raise DemistoException('To fetch incidents you must complete the following arguments beforehand, '
+                                       'Custom API key & Custom API secret key & the Organization key')
+            message = 'Please set a complete set of API Keys & Secret Keys.'
 
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -955,6 +1002,33 @@ def test_module(client: Client, params: dict) -> str:
         else:
             raise e
     return message
+
+
+def convert_to_demisto_severity(severity: int) -> int:
+    """Maps Carbon Black severity to Cortex XSOAR severity
+
+    Converts the Carbon Black alert severity level (1 to 10) to Cortex XSOAR incident severity (1 to 4)
+    for mapping.
+
+    :type severity: ``int``
+    :param severity: severity as returned from the Carbon Black API (int: 1 to 10)
+
+    :return: Cortex XSOAR Severity (int: 1 to 4)
+    :rtype: ``int``
+    """
+
+    return {
+        1: IncidentSeverity.LOW,
+        2: IncidentSeverity.LOW,
+        3: IncidentSeverity.LOW,
+        4: IncidentSeverity.MEDIUM,
+        5: IncidentSeverity.MEDIUM,
+        6: IncidentSeverity.MEDIUM,
+        7: IncidentSeverity.HIGH,
+        8: IncidentSeverity.HIGH,
+        9: IncidentSeverity.CRITICAL,
+        10: IncidentSeverity.CRITICAL
+    }[severity]
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run: dict, filters: dict) -> \
@@ -977,7 +1051,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
         the timestamp in milliseconds on when to start fetching incidents
 
     :type fetch_limit: ``int``
-    :param fetch_limit: Maximum numbers of incidents per fetch.
+    :param fetch_limit: Maximum incidents per fetch.
 
     :type last_run: ``Optional[Dict[str, int]]``
     :param last_run:
@@ -999,6 +1073,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_fetched_alert_create_time:
         last_fetched_alert_create_time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.000Z')
+    # else:
+        # fetch_limit += 1  # We skip the first alert
     alert_create_date = last_fetched_alert_create_time
     alert_id = last_fetched_alert_id
 
@@ -1006,13 +1082,13 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 
     response = client.search_alerts_request(
         suffix_url_path=filters.get('suffix_url_path'),
+        minimum_severity=filters.get('min_severity'),
         alert_category=filters.get('category'),
         device_id=filters.get('device_id'),
         policy_id=filters.get('policy_id'),
-        process_sha256=filters.get('process_sha256'),
         device_username=filters.get('device_username'),
         query=filters.get('query'),
-        sort_field='first_event_time',
+        sort_field='create_time',
         sort_order='ASC',
         create_time=assign_params(
             start=last_fetched_alert_create_time,
@@ -1029,9 +1105,11 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
         alert_id = alert.get('id')
 
         incident = {
+            'type': 'Carbon Black Endpoint Standard',
             'name': f'Carbon Black Defense alert {alert_id}',
             'occurred': alert_create_date,
-            'rawJSON': json.dumps(alert)
+            'rawJSON': json.dumps(alert),
+            'severity': convert_to_demisto_severity(alert.get('severity', 1)),
         }
         incidents.append(incident)
 
@@ -1301,7 +1379,7 @@ def find_events_details_results_command(client: Client, args: dict):
 
 
 def find_processes_command(client: Client, args: dict):
-    res = client.get_processes(assign_params(**args))
+    res = client.get_processes(**assign_params(**args))
 
     # In case the request failed (for example if the query & all other required arguments is empty)
     if "job_id" not in res:
@@ -1337,7 +1415,7 @@ def find_processes_results_command(client: Client, args: dict):
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Process.Results',
-        outputs_key_field='id',
+        outputs_key_field='results.id',
         outputs=res,
         readable_output=readable_output,
         raw_response=res
@@ -1524,18 +1602,6 @@ def device_update_sensor_version_command(client: Client, args: dict):
     )
 
 
-def fetch_incident_filters(params: dict):
-    return {
-        'suffix_url_path': params.get('suffix_url_path', 'all'),
-        'category': argToList(params.get('category')),
-        'device_id': argToList(params.get('device_id')),
-        'policy_id': argToList(params.get('policy_id')),
-        'process_sha256': argToList(params.get('process_sha256')),
-        'device_username': argToList(params.get('device_username')),
-        'query': params.get('query'),
-    }
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -1545,10 +1611,10 @@ def main() -> None:
     # Get the parameters
     params = demisto.params()
     base_url = params.get('url')
-    api_key = params.get('api_key')
-    api_secret_key = params.get('api_secret_key')
-    policy_api_key = params.get('policy_api_key')
-    policy_api_secret_key = params.get('policy_api_secret_key')
+    api_key = params.get('custom_credentials').get('identifier')
+    api_secret_key = params.get('custom_credentials').get('password')
+    policy_api_key = params.get('live_response_credentials').get('identifier')
+    policy_api_secret_key = params.get('live_response_credentials').get('password')
     organization_key = params.get('organization_key')
 
     verify_certificate = not params.get('insecure', False)
