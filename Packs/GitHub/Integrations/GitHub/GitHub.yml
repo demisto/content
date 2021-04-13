@@ -2683,7 +2683,7 @@ script:
       type: String
     - contextPath: GitHub.File.Size
       description: The size of the file in bytes.
-      type: String
+      type: Number
     - contextPath: GitHub.File.Path
       description: The file path inside the repository.
       type: String
