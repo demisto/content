@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 """
 An integration module for the Virus Total v3 API.
 API Documentation:
@@ -7,8 +10,6 @@ from collections import defaultdict
 from typing import Callable
 
 from dateparser import parse
-
-from CommonServerPython import *
 
 INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"
@@ -26,12 +27,34 @@ class Client(BaseClient):
     def __init__(self, params: dict):
         self.is_premium = argToBoolean(params['is_premium_api'])
         self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params['feedReliability'])
+
+        separator = params.get('apikey_separator')
+        apikey = params['credentials']['password']
+        if separator:
+            self.__apikeys = [k.strip() for k in apikey.split(separator)]
+        else:
+            self.__apikeys = [apikey]
+
         super().__init__(
             'https://www.virustotal.com/api/v3/',
             verify=not argToBoolean(params.get('insecure')),
             proxy=argToBoolean(params.get('proxy')),
-            headers={'x-apikey': params['credentials']['password']}
+            headers=self.__next_apikey_header()
         )
+
+    def __next_apikey_header(self) -> dict:
+        index = 0
+        if len(self.__apikeys) > 1:
+            context = demisto.getIntegrationContext()
+            index = context.get('APIKEY_INDEX', 0)
+            index = (index + 1) % len(self.__apikeys)
+            context['APIKEY_INDEX'] = index
+            demisto.setIntegrationContext(context)
+
+        return {'x-apikey': self.__apikeys[index]}
+
+    def get_apikey_count(self) -> int:
+        return len(self.__apikeys)
 
     # region Reputation calls
 
@@ -42,7 +65,8 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'ip_addresses/{ip}'
+            f'ip_addresses/{ip}',
+            headers=self.__next_apikey_header()
         )
 
     def file(self, file: str) -> dict:
@@ -52,7 +76,8 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'files/{file}'
+            f'files/{file}',
+            headers=self.__next_apikey_header()
         )
 
     def url(self, url: str):
@@ -62,7 +87,8 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'urls/{encode_url_to_base64(url)}'
+            f'urls/{encode_url_to_base64(url)}',
+            headers=self.__next_apikey_header()
         )
 
     def domain(self, domain: str) -> dict:
@@ -72,7 +98,8 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'domains/{domain}'
+            f'domains/{domain}',
+            headers=self.__next_apikey_header()
         )
 
     # endregion
@@ -86,7 +113,8 @@ class Client(BaseClient):
         self._http_request(
             'DELETE',
             f'comments/{id_}',
-            resp_type='response'
+            resp_type='response',
+            headers=self.__next_apikey_header()
         )
 
     def get_ip_comments(self, ip: str, limit: int) -> dict:
@@ -97,7 +125,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'ip_addresses/{ip}/comments',
-            params={'limit': limit}
+            params={'limit': limit},
+            headers=self.__next_apikey_header()
         )
 
     def get_url_comments(self, url: str, limit: int) -> dict:
@@ -109,7 +138,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'urls/{encode_url_to_base64(url)}/comments',
-            params={'limit': limit}
+            params={'limit': limit},
+            headers=self.__next_apikey_header()
         )
 
     def get_hash_comments(self, file_hash: str, limit: int) -> dict:
@@ -120,7 +150,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'files/{file_hash}/comments',
-            params={'limit': limit}
+            params={'limit': limit},
+            headers=self.__next_apikey_header()
         )
 
     def get_domain_comments(self, domain: str, limit: int) -> dict:
@@ -131,7 +162,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'domains/{domain}/comments',
-            params={'limit': limit}
+            params={'limit': limit},
+            headers=self.__next_apikey_header()
         )
 
     def get_comment_by_id(self, comment_id: str) -> dict:
@@ -141,7 +173,8 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'comments/{comment_id}'
+            f'comments/{comment_id}',
+            headers=self.__next_apikey_header()
         )
 
     def add_comment(self, suffix: str, comment: str) -> dict:
@@ -157,7 +190,8 @@ class Client(BaseClient):
         return self._http_request(
             'POST',
             suffix,
-            json_data={'data': {'type': 'comment', 'attributes': {'text': comment}}}
+            json_data={'data': {'type': 'comment', 'attributes': {'text': comment}}},
+            headers=self.__next_apikey_header()
         )
 
     def add_comment_to_ip(self, ip: str, comment: str) -> dict:
@@ -198,7 +232,8 @@ class Client(BaseClient):
         """
         return self._http_request(
             'POST',
-            f'/files/{file_hash}/analyse'
+            f'/files/{file_hash}/analyse',
+            headers=self.__next_apikey_header()
         )
 
     def file_scan(self, file_path: str, /, upload_url: Optional[str]) -> dict:
@@ -213,14 +248,16 @@ class Client(BaseClient):
                     'POST',
                     full_url=upload_url,
                     files={'file': file},
-                    resp_type='response'
+                    resp_type='response',
+                    headers=self.__next_apikey_header()
                 )
             else:
                 response = self._http_request(
                     'POST',
                     url_suffix='/files',
                     files={'file': file},
-                    resp_type='response'
+                    resp_type='response',
+                    headers=self.__next_apikey_header()
                 )
         demisto.debug(
             f'scan_file response:\n'
@@ -235,7 +272,8 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            'files/upload_url'
+            'files/upload_url',
+            headers=self.__next_apikey_header()
         )
 
     def url_scan(self, url: str) -> dict:
@@ -246,7 +284,8 @@ class Client(BaseClient):
         return self._http_request(
             'POST',
             'urls',
-            data={'url': url}
+            data={'url': url},
+            headers=self.__next_apikey_header()
         )
 
     # endregion
@@ -259,7 +298,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'files/{file_hash}/behaviours',
-            params={'limit': limit}
+            params={'limit': limit},
+            headers=self.__next_apikey_header()
         )
 
     def passive_dns_data(self, ip: str, limit: int) -> dict:
@@ -270,7 +310,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'ip_addresses/{ip}/resolutions',
-            params={'limit': limit}
+            params={'limit': limit},
+            headers=self.__next_apikey_header()
         )
 
     def search(self, query: str, limit: int) -> dict:
@@ -281,7 +322,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             'search',
-            params={'query': query, 'limit': limit}
+            params={'query': query, 'limit': limit},
+            headers=self.__next_apikey_header()
         )
 
     def get_analysis(self, analysis_id: str) -> dict:
@@ -291,7 +333,8 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'/analyses/{analysis_id}'
+            f'/analyses/{analysis_id}',
+            headers=self.__next_apikey_header()
         )
 
     # region Premium commands
@@ -309,7 +352,8 @@ class Client(BaseClient):
 
         return self._http_request(
             'GET',
-            urljoin(urljoin(indicator_type, indicator), relationship)
+            urljoin(urljoin(indicator_type, indicator), relationship),
+            headers=self.__next_apikey_header()
         )
 
     def get_domain_relationships(self, domain: str, relationship: str) -> dict:
@@ -599,14 +643,15 @@ class ScoreCalculator:
             self.logs.append(
                 'Crowdsourced Yara Rules analyzing enabled. '
             )
-            if (total_yara_rules := len(
+            if (total_yara_rules: = len(
                     data.get('crowdsourced_yara_results', []))) >= self.crowdsourced_yara_rules_threshold:
                 self.logs.append(
                     'Found malicious by finding more Crowdsourced Yara Rules than threshold. \n'
                     f'{total_yara_rules=} >= {self.crowdsourced_yara_rules_threshold=}'
                 )
                 return True
-            if sigma_rules := data.get('sigma_analysis_stats'):
+            if sigma_rules:
+                = data.get('sigma_analysis_stats'):
                 self.logs.append(
                     'Found sigma rules, analyzing. '
                 )
@@ -624,7 +669,8 @@ class ScoreCalculator:
                 self.logs.append(
                     'Not found sigma analysis. Skipping. '
                 )
-            if crowdsourced_ids_stats := data.get('crowdsourced_ids_stats'):
+            if crowdsourced_ids_stats:
+                = data.get('crowdsourced_ids_stats'):
                 self.logs.append(
                     'Found crowdsourced IDS analysis, analyzing. '
                 )
@@ -852,7 +898,8 @@ class ScoreCalculator:
         files = relationship_files_response.get('data', [])[:lookback]  # lookback on recent 20 results. By design
         total_malicious = 0
         for file in files:
-            if file_hash := file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep')))):
+            if file_hash:
+                = file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep')))):
                 if self.file_score(file_hash, files) == Common.DBotScore.BAD:
                     total_malicious += 1
 
@@ -1302,6 +1349,8 @@ def get_whois(whois_string: str) -> defaultdict:
     """
     whois: defaultdict = defaultdict(lambda: None)
     for line in whois_string.splitlines():
+        if ':' not in line:
+            continue
         key: str
         value: str
         key, value = line.split(sep=':', maxsplit=1)
@@ -1651,7 +1700,8 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         required=True
     )
     resource = args['resource']
-    if before := args.get('before'):
+    if before:
+        = args.get('before'):
         before = parse(before)
         assert before is not None, f'Could not parse the before date "{before}"'
         before = before.replace(tzinfo=None)
@@ -1688,7 +1738,8 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         attributes = comment.get('attributes', {})
         votes = attributes.get('votes', {})
 
-        if date := parse(str(attributes.get('date'))):
+        if date:
+            = parse(str(attributes.get('date'))):
             date = date.replace(tzinfo=None)
 
         if date and before and date > before:
@@ -1917,7 +1968,8 @@ def check_module(client: Client) -> str:
     """
     1 API Call
     """
-    client.get_ip_comments('8.8.8.8', 1)
+    for _ in range(client.get_apikey_count()):
+        client.get_ip_comments('8.8.8.8', 1)
     return 'ok'
 
 
