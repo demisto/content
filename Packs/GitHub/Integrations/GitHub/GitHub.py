@@ -1241,6 +1241,34 @@ def get_github_actions_usage():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=usage_result)
 
 
+def list_files_command():
+    args = demisto.args()
+    path = args.get('path', '')
+    organization = args.get('organization')
+    repository = args.get('repository')
+
+    if organization and repository:
+        suffix = f'/repos/{organization}/{repository}/contents/{path}'
+    else:
+        suffix = f'{USER_SUFFIX}/contents/{path}'
+
+    res = http_request(method='GET', url_suffix=suffix)
+
+    ec_object = []
+    for file in res:
+        ec_object.append({
+            'Type': file.get('type'),
+            'Name': file.get('name'),
+            'Size': file.get('size'),
+            'Path': file.get('path'),
+            'DownloadUrl': file.get('download_url')
+        })
+
+    ec = {'GitHub.File(val.Name === obj.Name && val.Path === obj.Path)': ec_object}
+    human_readable = tableToMarkdown(f'files in path {path}', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1302,6 +1330,7 @@ COMMANDS = {
     'GitHub-is-pr-merged': is_pr_merged_command,
     'GitHub-create-pull-request': create_pull_request_command,
     'Github-get-github-actions-usage': get_github_actions_usage,
+    'Github-list-files': list_files_command,
 }
 
 '''EXECUTION'''
