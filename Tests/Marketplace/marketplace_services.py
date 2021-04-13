@@ -1262,17 +1262,26 @@ class Pack(object):
 
         modified_versions_dict = {}
 
-        # Found modified rn files
-        logging.info("Found modified rn files")
         for rn_filename in modified_rn_files:
             _version = rn_filename.replace('.md', '')
             version = _version.replace('_', '.')
             # Should only apply on modified files that are not the last rn file
             if LooseVersion(version) < changelog_latest_rn_version:
+                # checking the case of modifing 1.0.0 version rn and it is not being the latest one - the latest one case is already handled
+                if version == self.PACK_INITIAL_VERSION:
+                    # if the initial version is in the changelog as a key, it is surely not aggregated,
+                    # so only set new release notes lines as value
+                    if changelog.get(version):
+                        with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
+                            rn_lines = rn_file.read()
+                        modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
+                    else:  # version 1.0.0 is aggregated with a higher version
+
+
                 # The case where the version is a key in the changelog file,
                 # and the value is not an aggregated release note
                 if is_the_only_rn_in_block(release_notes_dir, version, changelog):
-                    logging.info("The version is a key in the changelog file and alone")
+                    logging.info("The version is a key in the changelog file and by itself in the changelog block")
                     with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
                         rn_lines = rn_file.read()
                     modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
@@ -1437,7 +1446,7 @@ class Pack(object):
 
                     # Handling modified old release notes files, if there are any
                     rn_files_names = self.get_rn_files_names(modified_files_paths)
-                    logging.info(f"$$$$$$$$$$$modified files for {self._pack_name} pack are {modified_files_paths}")
+                    logging.info(f"$$$$$$$$$$$modified files for {self._pack_name} pack are {modified_files_paths}") # check if 1.0.0 is recognized as modified
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version, changelog, rn_files_names)
 
