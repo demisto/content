@@ -1,0 +1,262 @@
+id: TestCymptomPlaybook
+inputs: []
+name: TestCymptomPlaybook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6d05c9d5-8d3d-424c-8c54-1021ab0e0228
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6d05c9d5-8d3d-424c-8c54-1021ab0e0228
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ff5c3891-5b12-4f7d-8abf-4f1942c6d693
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: ff5c3891-5b12-4f7d-8abf-4f1942c6d693
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1964286e-15f8-4dd9-8a88-083dee0537ee
+      iscommand: true
+      name: cymptom-get-mitigations
+      script: '|||cymptom-get-mitigations'
+      type: regular
+      version: -1
+    taskid: 1964286e-15f8-4dd9-8a88-083dee0537ee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Cymptom.Mitigations.SeverityType
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cymptom.Mitigations.Name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cymptom.Mitigations.AttackVectorsUsedPercentage
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cymptom.Mitigations.ID
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cymptom.Mitigations.AttackVectorsCount
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cymptom.Mitigations.Procedures
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cymptom.Mitigations.Techniques
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Cymptom.Mitigations.SubTechniques
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 82f4feca-7871-4ca6-8510-4b0e86446e83
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 82f4feca-7871-4ca6-8510-4b0e86446e83
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ac2e341f-0364-4a23-843b-e823208a1f75
+      iscommand: true
+      name: cymptom-get-users-with-cracked-passwords
+      script: '|||cymptom-get-users-with-cracked-passwords'
+      type: regular
+      version: -1
+    taskid: ac2e341f-0364-4a23-843b-e823208a1f75
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Cymptom.CrackedUsers.Username
+          operator: isNotEmpty
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ae5a7c55-a18b-4820-8307-c53f2fdacffc
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: ae5a7c55-a18b-4820-8307-c53f2fdacffc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e0344a2a-a59b-403a-8439-05823e4cd3d2
+      iscommand: false
+      name: Test Done
+      type: title
+      version: -1
+    taskid: e0344a2a-a59b-403a-8439-05823e4cd3d2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 200,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.0.0

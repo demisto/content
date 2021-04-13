@@ -1022,7 +1022,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/trustar:20.2.0.10973
+  dockerimage: demisto/trustar:20.2.0.13605
 fromversion: 5.0.0
 tests:
   - TruSTAR v2-Test

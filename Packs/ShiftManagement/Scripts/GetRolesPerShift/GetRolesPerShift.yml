@@ -1,4 +1,4 @@
-comment: Retrieves roles per shift.
+comment: Retrieves the roles that are available per shift.
 commonfields:
   id: GetRolesPerShift
   version: -1
@@ -12,5 +12,5 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.5.0

@@ -1,0 +1,95 @@
+id: Retrieve File from Endpoint - Generic V2 Test
+version: -1
+name: Retrieve File from Endpoint - Generic V2 Test
+description: This is a test playbook for Retrieve File from Endpoint - Generic V2.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4d3f75b9-0c20-4d9b-8e15-b66532a5d8d0
+    type: start
+    task:
+      id: 4d3f75b9-0c20-4d9b-8e15-b66532a5d8d0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a5312c08-243a-4402-863a-570e4d344b7a
+    type: playbook
+    task:
+      id: a5312c08-243a-4402-863a-570e4d344b7a
+      version: -1
+      name: Retrieve File from Endpoint - Generic V2
+      playbookName: Retrieve File from Endpoint - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    scriptarguments:
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      MD5:
+        simple: B10CB004D83B2347343FF5E3718BBDFE
+      Path:
+        simple: C:\\Windows\\system32\\drivers\\etc\\HOSTS
+      SHA256:
+        simple: 6bc2aa391b8ef260e79b99409e44011874630c2631e4487e82b76e5cb0a49307
+      Sensor ID:
+        simple: "24"
+      UseD2: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 265,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

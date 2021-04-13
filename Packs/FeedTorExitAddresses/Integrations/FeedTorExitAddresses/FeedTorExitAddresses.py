@@ -3,13 +3,13 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import requests
-from dateutil.parser import parse
 from typing import Dict, List, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 SOURCE_NAME = "Tor Exit Addresses"
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
@@ -33,9 +33,14 @@ class Client(BaseClient):
 
         return res.text
 
-    def datestring_to_millisecond_timestamp(self, date_string):
-        date = parse(str(date_string))
-        return int(date.timestamp() * 1000)
+    def datestring_to_server_format(self, date_string):
+        """
+        formats a datestring to the ISO-8601 format which the server expects to recieve
+        :param date_string: Date represented as a tring
+        :return: ISO-8601 date string
+        """
+        parsed_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
+        return parsed_date.strftime(DATE_FORMAT)
 
     def build_iterator(self, feedTags, limit):
         raw_res = self.http_request_indicators()
@@ -52,11 +57,11 @@ class Client(BaseClient):
 
             elif line.startswith('Published'):
                 date = line.split(' ', 1)[1]
-                indicator['firstseenbysource'] = self.datestring_to_millisecond_timestamp(date)
+                indicator['firstseenbysource'] = self.datestring_to_server_format(date)
 
             elif line.startswith('LastStatus'):
                 date = line.split(' ', 1)[1]
-                indicator['lastseenbysource'] = self.datestring_to_millisecond_timestamp(date)
+                indicator['lastseenbysource'] = self.datestring_to_server_format(date)
 
             elif line.startswith('ExitAddress'):
                 indicator['value'] = line.split()[1]
@@ -75,7 +80,7 @@ class Client(BaseClient):
                 indicator_list.append(indicator)
 
                 current_indicator_index = current_indicator_index + 1
-                if limit is not None and current_indicator_index == limit:
+                if limit is not None and current_indicator_index >= limit:
                     break
 
         return indicator_list
@@ -90,7 +95,7 @@ def get_indicators_command(client: Client, args: dict):
     limit = args.get('limit')
     if limit:
         limit = int(limit)
-    indicator_list = fetch_indicators_command(client, limit)
+    indicator_list = fetch_indicators_command(client, None, limit)
     human_readable = tableToMarkdown("Indicators from Tor Exit Addresses:", indicator_list,
                                      headers=['value', 'type', 'firstseenbysource', 'lastseenbysource', 'name'],
                                      removeNull=True)

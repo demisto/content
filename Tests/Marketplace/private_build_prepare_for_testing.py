@@ -56,7 +56,7 @@ def upload_premium_pack_to_private_testing_bucket(premium_pack, private_testing_
 
 
 def main():
-    install_logging('Prepare Content Packs For Testing.log')
+    install_logging('Prepare_Content_Packs_For_Testing.log')
     packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
     temp_dir = '/home/runner/work/content-private/content-private/content/temp-dir'
     if not os.path.exists(packs_dir):

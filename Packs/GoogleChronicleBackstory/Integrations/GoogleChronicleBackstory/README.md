@@ -3,6 +3,18 @@
 
 Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
 
+**Note:** The `gcb-list-alerts` command would fetch both Asset as well as User alerts depending upon the argument `alert_type`. In this case, the total number of alerts fetched might not match with the value of the page_size argument and this is a known behaviour with respect to the endpoint from which we are fetching the alerts.
+
+#### Troubleshoot
+
+##### Problem
+Demisto invokes data pull every minute and looks for alerts/events generated at the last minute. The alert/event has 2 timestamps; the time when the event was generated (event timestamp) on the source product(EDR, Firewall, etc) and the event hit Chronicle(ingestion timestamp).
+
+Considering the latency of the data pipeline usually, the ingestion timestamp can be significantly delayed compared to the event timestamp. Given the fact that Chronicle APIs fetches the alerts/events based on event timestamp, if queried in real-time there are high chances of the alerts getting missed. Considering Demisto queries for events in the last 1 minute and if the pipeline latency is greater than a minute, such events are missed in Demisto.
+
+##### Solution
+In order to fetch the missed events, the ingestion should query the historical time range. i.e. the time window to query needs to be increased from the current last minute to a larger window (15 mins, 30 mins, etc). The time window parameter in the integration configuration is provided to achieve the same. Select the time window to query Chronicle with a historical time range. While selecting the time window consider the time delay for an event to appear in Chronicle after generation.
+
 ## Configure Chronicle on Cortex XSOAR
 ---
 
@@ -22,8 +34,12 @@ Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as 
     * __Fetches incidents__
     * __First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g., 1 day, 7 days, 3 months, 1 year).__
     * __How many incidents to fetch each time__
-    * __Backstory Alert Type (Select the type of data to consider for fetch incidents).__
+    * __Chronicle Alert Type (Select the type of data to consider for fetch incidents)__
+    * __Time window (in minutes)__
     * __Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).__
+    * __Detections to fetch by Rule ID or Version ID__
+    * __Fetch all live rules detections__
+    * __Filter detections by alert state__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
@@ -32,21 +48,36 @@ Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as 
 ---
 Fetch-incidents feature can pull events from Google Chronicle which can be converted into actionable incidents for further investigation. It is the function that Demisto calls every minute to import new incidents and can be enabled by the "Fetches incidents" parameter in the integration configuration.
 
-The list of alerts (gcb-list-alerts) or IOC domain matches (gcb-list-iocs) are the two choices that can be configured.
 #### Configuration Parameters for Fetch-incidents
  - First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g. 1 day, 7 days, 3 months, 1 year): **Default** 3 days
  - How many incidents to fetch each time: **Default** 10
  - Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection). **Only applicable for asset alerts**.
- - Backstory Alert Type (Select the type of data to consider for fetch incidents):
+ - Chronicle Alert Type (Select the type of data to consider for fetch incidents):
    - IOC Domain matches **Default**
    - Assets with alerts
+   - Detection alerts
+   - User alerts
+ - Time window (in minutes): **Not applicable for IOC Domain matches**
+    - 15 **Default**
+    - 30
+    - 45
+    - 60
+ - Detections to fetch by Rule ID or Version ID **Only applicable for Detection alerts**
+ - Fetch all live rules detections **Only applicable for Detection alerts**
+ - Filter detections by alert state: **Only applicable for Detection alerts**
+   - ALERTING
+   - NOT ALERTING
  
 | **Name** | **Initial Value** |
 | --- | --- |
 | First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g. 1 day, 7 days, 3 months, 1 year). | 3 days |
 | How many incidents to fetch each time. | 10 |
 | Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection). *Only applicable for asset alerts.* | Default No Selection |
-| Backstory Alert Type (Select the type of data to consider for fetch incidents). | IOC Domain matches (Default), Assets with alerts | 
+| Chronicle Alert Type (Select the type of data to consider for fetch incidents). | IOC Domain matches (Default), Assets with alerts, Detection alerts and User alerts | 
+| Time window (in minutes) | 15 |
+| Detections to fetch by Rule ID or Version ID | empty |
+| Fetch all live rules detections | Not selected |
+| Filter detections by alert state | Not selected |
 
 #### Incident field mapping - Asset Alerts
 | **Name** | **Initial Value** |
@@ -63,6 +94,19 @@ The list of alerts (gcb-list-alerts) or IOC domain matches (gcb-list-iocs) are t
 | rawJSON | Single Raw JSON |
 | details | Single Raw JSON |
 
+#### Incident field mapping - Detection Alerts
+| **Name** | **Initial Value** |
+| --- | --- |
+| name | &lt;RuleName&gt; |
+| rawJSON | Single Raw JSON |
+| details | Single Raw JSON |
+
+#### Incident field mapping - User Alerts
+| **Name** | **Initial Value** |
+| --- | --- |
+| name | &lt;AlertName&gt; for &lt;User&gt; |
+| rawJSON | Single Raw JSON |
+| details | Single Raw JSON |
 
 ## Commands
 ---
@@ -75,6 +119,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 5. gcb-ioc-details
 6. gcb-list-alerts
 7. gcb-list-events
+8. gcb-list-detections
 ### 1. gcb-list-iocs
 ---
 Lists the IOC Domain matches within your enterprise for the specified time interval. The indicator of compromise (IOC) domain matches lists for which the domains that your security infrastructure has flagged as both suspicious and that have been seen recently within your enterprise.
@@ -87,7 +132,7 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | preset_time_range | Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument. | Optional | 
-| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. | Optional | 
+| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
 | page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
 
 
@@ -142,7 +187,7 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 ### IOC Domain Matches
 |Domain|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
 |---|---|---|---|---|---|---|---|
-| [anx.tb.ask.com]() | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
+| `anx.tb.ask.com` | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
 
 
 ### 2. gcb-assets
@@ -158,8 +203,8 @@ Returns a list of the assets that accessed the input artifact (IP, domain, MD5, 
 | --- | --- | --- |
 | artifact_value |  The artifact indicator associated with assets. The artifact type can be one of the following: IP, Domain, MD5, SHA1, or SHA256.  | Required | 
 | preset_time_range | Fetches assets that accessed the artifact during the interval specified. If configured, overrides the start_time and end_time arguments. | Optional | 
-| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. | Optional | 
-| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied,  the default is current UTC time. | Optional | 
+| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
 | page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
 
 
@@ -512,10 +557,11 @@ List all the alerts tracked within your enterprise for the specified time range.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | preset_time_range | Fetch alerts for the specified time range. If preset_time_range is configured, overrides the start_time and end_time arguments. | Optional | 
-| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. | Optional | 
-| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied,  the default is current UTC time. | Optional | 
+| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
 | page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
-| severity | The severity by which to filter the returned alerts. If not supplied, all alerts are fetched. The possible values are "High", "Medium", "Low", or "Unspecified". | Optional | 
+| severity | The severity by which to filter the returned alerts. If not supplied, all alerts are fetched. This is applicable for asset alerts only. The possible values are "High", "Medium", "Low", or "Unspecified". | Optional | 
+| alert_type | Specify which type of alerts you want. The possible values are "Asset Alerts" or "User Alerts". | Optional | 
 
 
 ##### Context Output
@@ -526,8 +572,14 @@ List all the alerts tracked within your enterprise for the specified time range.
 | GoogleChronicleBackstory.Alert.AlertInfo.Name | String | The name of the alert. | 
 | GoogleChronicleBackstory.Alert.AlertInfo.Severity | String | The severity of the alert. | 
 | GoogleChronicleBackstory.Alert.AlertInfo.SourceProduct | String | The source of the alert. | 
-| GoogleChronicleBackstory.Alert.AlertInfo.Timestamp | String | The time of the alert in Backstory. | 
+| GoogleChronicleBackstory.Alert.AlertInfo.Timestamp | String | The time of the alert in Chronicle. | 
 | GoogleChronicleBackstory.Alert.AlertCounts | Number | The total number of alerts. | 
+| GoogleChronicleBackstory.UserAlert.User | String | The user identifier. It can be username or email address. | 
+| GoogleChronicleBackstory.UserAlert.AlertInfo.Name | String | The name of the user alert. |  
+| GoogleChronicleBackstory.UserAlert.AlertInfo.SourceProduct | String | The source of the user alert. | 
+| GoogleChronicleBackstory.UserAlert.AlertInfo.Timestamp | String | The time of the user alert in Chronicle. | 
+| GoogleChronicleBackstory.UserAlert.AlertInfo.RawLog | String | The raw log of the user alert. | 
+| GoogleChronicleBackstory.UserAlert.AlertCounts | Number | The total number of user alerts. | 
 
 
 ##### Command Example
@@ -574,10 +626,10 @@ List all of the events discovered within your enterprise on a particular device 
 | asset_identifier_type | Specify the identifier type of the asset you are investigating. The possible values are Host Name, IP Address, MAC Address or Product ID. | Required | 
 | asset_identifier | Value of the asset identifier. | Required | 
 | preset_time_range | Get events that are discovered during the interval specified. If configured, overrides the start_time and end_time arguments. | Optional | 
-| start_time | The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied, the product considers UTC time corresponding to 2 hours earlier than current time. | Optional | 
-| end_time | The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied, the product considers current UTC time. | Optional | 
+| start_time | The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 2 hours earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| end_time | The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
 | page_size | Specify the maximum number of events to fetch. You can specify between 1 and 1000. The default is 100. | Optional | 
-| reference_time | Specify the reference time for the asset you are investigating, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the product considers start time as reference time. | Optional |
+| reference_time | Specify the reference time for the asset you are investigating, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional |
 
 ##### Context Output
 
@@ -1008,3 +1060,672 @@ List all of the events discovered within your enterprise on a particular device 
 >View events in Chronicle
 >
 >Maximum number of events specified in page_size has been returned. There might still be more events in your Chronicle account. >To fetch the next set of events, execute the command with the start time as 2020-01-01T23:59:38Z
+
+
+### 8. gcb-list-detections
+***
+Return the Detections for a specified Rule Version.
+
+
+##### Base Command
+
+`gcb-list-detections`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Unique identifier for a rule or specific version of a rule, defined and returned by the server. You can specify exactly one rule identifier.<br/>Use the following format to specify the id:<br/>ru_{UUID} or {ruleId}@v_{int64}_{int64} | Required | 
+| detection_start_time | Time to begin returning detections, filtering on a detection's detectionTime. If not specified, the start time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| detection_end_time | Time to stop returning detections, filtering on a detection's detectionTime. If not specified, the end time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| alert_state | Filter detections on if they are ALERTING or NOT_ALERTING.<br/>Avoid specifying to return all detections. | Optional | 
+| page_size | Specify the limit on the number of detections to display. You can specify between 1 and 1,000. | Optional | 
+| page_token | A page token received from a previous call. Provide this to retrieve the subsequent page. If the page token is configured, overrides the detection start and end time arguments. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.Detections.id | String | Identifier for the detection. | 
+| GoogleChronicleBackstory.Detections.ruleId | String | Identifier for the rule generating the detection. | 
+| GoogleChronicleBackstory.Detections.ruleVersion | String | Identifier for the rule version generating the detection. | 
+| GoogleChronicleBackstory.Detections.ruleName | String | Name of the rule generating the detection, as parsed from ruleText. | 
+| GoogleChronicleBackstory.Detections.timeWindowStartTime | Date | The start time of the window the detection was found in. | 
+| GoogleChronicleBackstory.Detections.timeWindowEndTime | Date | The end time of the window the detection was found in. | 
+| GoogleChronicleBackstory.Detections.alertState | String | Indicates whether the rule generating this detection currently has alerting enabled or disabled. | 
+| GoogleChronicleBackstory.Detections.urlBackToProduct | String | URL pointing to the Chronicle UI for this detection. | 
+| GoogleChronicleBackstory.Detections.type | String | Type of detection. | 
+| GoogleChronicleBackstory.Detections.createdTime | Date | Time the detection was created. | 
+| GoogleChronicleBackstory.Detections.detectionTime | Date | The time period the detection was found in. | 
+| GoogleChronicleBackstory.Detections.ruleType | String | Whether the rule generating this detection is a single event or multi-event rule. | 
+| GoogleChronicleBackstory.Detections.detectionFields.key | String | The key for a field specified in the rule, for MULTI_EVENT rules. | 
+| GoogleChronicleBackstory.Detections.detectionFields.value | String | The value for a field specified in the rule, for MULTI_EVENT rules. | 
+| GoogleChronicleBackstory.Detections.collectionElements.label | String | The variable a given set of UDM events belongs to. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principalAssetIdentifier | String | Specifies the principal asset identifier of the event. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.targetAssetIdentifier | String | Specifies the target asset identifier of the event. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.eventType | String | Specifies the type of the event. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.eventTimestamp | Date | The GMT timestamp when the event was generated. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.ingestedTimestamp | Date | The GMT timestamp when the event was ingested in the vendor's instance. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.description | String | Human-readable description of the event. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.productEventType | String | Short, descriptive, human-readable, and product-specific event name or type. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.productLogId | String | A vendor-specific event identifier to uniquely identify the event \(a GUID\). Users might use this identifier to search the vendor's proprietary console for the event in question. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.productName | String | Specifies the name of the product. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.productVersion | String | Specifies the version of the product. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.urlBackToProduct | String | URL linking to a relevant website where you can view more information about this specific event or the general event category. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.vendorName | String | Specifies the product vendor's name. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.email | String | Email address. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.mac | String | MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.email | String | Email address. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.mac | String | One or more MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.target.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.email | String | Email address. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.mac | String | One or more MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.email | String | Email address. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.mac | String | One or more MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.src.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.email | String | Email address. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.mac | String | One or more MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.email | String | Email address. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.mac | String | One or more MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.about.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.applicationProtocol | String | Indicates the network application protocol. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.direction | String | Indicates the direction of network traffic. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.email | String | Specifies the email address for the sender/recipient. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.ipProtocol | String | Indicates the IP protocol. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.receivedBytes | String | Specifies the number of bytes received. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.sentBytes | String | Specifies the number of bytes sent. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.clientHostname | String | Hostname for the client. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.clientIdentifier | String | Client identifier. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.file | String | Filename for the boot image. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.flags | String | Value for the DHCP flags field. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.hlen | String | Hardware address length. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.hops | String | DHCP hop count. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.htype | String | Hardware address type. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.leaseTimeSeconds | String | Client-requested lease time for an IP address in seconds. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.opcode | String | BOOTP op code. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.requestedAddress | String | Client identifier. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.seconds | String | Seconds elapsed since the client began the address acquisition/renewal process. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.sname | String | Name of the server which the client has requested to boot from. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.transactionId | String | Client transaction ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.type | String | DHCP message type. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.chaddr | String | IP address for the client hardware. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.ciaddr | String | IP address for the client. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.giaddr | String | IP address for the relay agent. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.siaddr | String | IP address for the next bootstrap server. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.yiaddr | String | Your IP address. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authoritative | String | Set to true for authoritative DNS servers. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.id | String | Stores the DNS query identifier. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.response | String | Set to true if the event is a DNS response. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.opcode | String | Stores the DNS OpCode used to specify the type of DNS query \(standard, inverse, server status, etc.\). | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.recursionAvailable | String | Set to true if a recursive DNS lookup is available. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.recursionDesired | String | Set to true if a recursive DNS lookup is requested. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.responseCode | String | Stores the DNS response code as defined by RFC 1035, Domain Names - Implementation and Specification. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.truncated | String | Set to true if this is a truncated DNS response. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.questions.name | String | Stores the domain name. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.questions.class | String | Stores the code specifying the class of the query. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.questions.type | String | Stores the code specifying the type of the query. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.binaryData | String | Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.class | String | Stores the code specifying the class of the resource record. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.data | String | Stores the payload or response to the DNS question for all responses encoded in UTF-8 format. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.name | String | Stores the name of the owner of the resource record. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.ttl | String | Stores the time interval for which the resource record can be cached before the source of the information should again be queried. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.type | String | Stores the code specifying the type of the resource record. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.binaryData | String | Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.class | String | Stores the code specifying the class of the resource record. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.data | String | Stores the payload or response to the DNS question for all responses encoded in UTF-8 format. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.name | String | Stores the name of the owner of the resource record. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.ttl | String | Stores the time interval for which the resource record can be cached before the source of the information should again be queried. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.type | String | Stores the code specifying the type of the resource record. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.binaryData | String | Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.class | String | Stores the code specifying the class of the resource record. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.data | String | Stores the payload or response to the DNS question for all responses encoded in UTF-8 format. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.name | String | Stores the name of the owner of the resource record. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.ttl | String | Stores the time interval for which the resource record can be cached before the source of the information should again be queried. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.type | String | Stores the code specifying the type of the resource record. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.email.from | String | Stores the from email address. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.email.replyTo | String | Stores the reply_to email address. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.email.to | String | Stores the to email addresses. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.email.cc | String | Stores the cc email addresses. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.email.bcc | String | Stores the bcc email addresses. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.email.mailId | String | Stores the mail \(or message\) ID. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.email.subject | String | Stores the email subject line. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.ftp.command | String | Stores the FTP command. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.http.method | String | Stores the HTTP request method. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.http.referralUrl | String | Stores the URL for the HTTP referer. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.http.responseCode | String | Stores the HTTP response status code, which indicates whether a specific HTTP request has been successfully completed. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.network.http.useragent | String | Stores the User-Agent request header which includes the application type, operating system, software vendor or software version of the requesting software user agent. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.authentication.authType | String | Type of system an authentication event is associated with \(Chronicle UDM\). | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.authentication.mechanism | String | Mechanism\(s\) used for authentication. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.about | String | Provide a description of the security result. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.action | String | Specify a security action. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.category | String | Specify a security category. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.confidence | String | Specify a confidence with regards to a security event as estimated by the product. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.confidenceDetails | String | Additional detail with regards to the confidence of a security event as estimated by the product vendor. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.priority | String | Specify a priority with regards to a security event as estimated by the product vendor. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.priorityDetails | String | Vendor-specific information about the security result priority. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.ruleId | String | Identifier for the security rule. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.ruleName | String | Name of the security rule. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.severity | String | Severity of a security event as estimated by the product vendor using values defined by the Chronicle UDM. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.severityDetails | String | Severity for a security event as estimated by the product vendor. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.threatName | String | Name of the security threat. | 
+| GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.urlBackToProduct | String | URL to direct you to the source product console for this security event. | 
+| GoogleChronicleBackstory.Token.name | String | The name of the command to which the value of the nextPageToken corresponds. | 
+| GoogleChronicleBackstory.Token.nextPageToken | String | A page token that can be provided to the next call to view the next page of detections. Absent if this is the last page. |
+
+
+##### Command Example
+```!gcb-list-detections id=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71 page_size=2```
+
+##### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "Detections": [
+            {
+                "alertState": "NOT_ALERTING",
+                "collectionElements": [
+                    {
+                        "label": "event",
+                        "references": [
+                            {
+                                "eventTimestamp": "2020-12-24T03:00:02.559Z",
+                                "eventType": "NETWORK_DNS",
+                                "ingestedTimestamp": "2020-12-24T03:03:17.129868Z",
+                                "network": {
+                                    "applicationProtocol": "DNS",
+                                    "dns": {
+                                        "questions": [
+                                            {
+                                                "name": "is5-ssl.mzstatic.com",
+                                                "type": 1
+                                            }
+                                        ]
+                                    }
+                                },
+                                "principal": {
+                                    "hostname": "ray-xxx-laptop",
+                                    "ip": [
+                                        "10.0.XX.XX"
+                                    ],
+                                    "mac": [
+                                        "88:a6:XX:XX:XX:XX"
+                                    ]
+                                },
+                                "principalAssetIdentifier": "ray-xxx-laptop",
+                                "productName": "ExtraHop",
+                                "securityResult": [
+                                    {
+                                        "action": [
+                                            "UNKNOWN_ACTION"
+                                        ]
+                                    }
+                                ],
+                                "target": {
+                                    "ip": [
+                                        "10.0.XX.XX"
+                                    ]
+                                },
+                                "targetAssetIdentifier": "10.0.XX.XX"
+                            },
+                            {
+                                "eventTimestamp": "2020-12-24T03:00:40.566Z",
+                                "eventType": "NETWORK_DNS",
+                                "ingestedTimestamp": "2020-12-24T03:03:17.129868Z",
+                                "network": {
+                                    "applicationProtocol": "DNS",
+                                    "dns": {
+                                        "questions": [
+                                            {
+                                                "name": "is5-ssl.mzstatic.com",
+                                                "type": 1
+                                            }
+                                        ]
+                                    }
+                                },
+                                "principal": {
+                                    "hostname": "ray-xxx-laptop",
+                                    "ip": [
+                                        "10.0.XX.XX"
+                                    ],
+                                    "mac": [
+                                        "88:a6:XX:XX:XX:XX"
+                                    ]
+                                },
+                                "principalAssetIdentifier": "ray-xxx-laptop",
+                                "productName": "ExtraHop",
+                                "securityResult": [
+                                    {
+                                        "action": [
+                                            "UNKNOWN_ACTION"
+                                        ]
+                                    }
+                                ],
+                                "target": {
+                                    "ip": [
+                                        "10.0.XX.XX"
+                                    ]
+                                },
+                                "targetAssetIdentifier": "10.0.XX.XX"
+                            }
+                        ]
+                    }
+                ],
+                "createdTime": "2020-12-24T03:13:46.116199Z",
+                "detectionFields": [
+                    {
+                        "key": "client_ip",
+                        "value": "10.0.XX.XX"
+                    }
+                ],
+                "detectionTime": "2020-12-24T04:00:00Z",
+                "id": "de_bea17243-d3b3-14bf-6b57-74e1a2422c68",
+                "ruleId": "ru_746bd6d6-6b84-4007-b74c-ec90c7306a71",
+                "ruleName": "SampleRule",
+                "ruleType": "MULTI_EVENT",
+                "ruleVersion": "ru_746bd6d6-6b84-4007-b74c-ec90c7306a71@v_1604081489_593503000",
+                "timeWindowEndTime": "2020-12-24T04:00:00Z",
+                "timeWindowStartTime": "2020-12-24T03:00:00Z",
+                "type": "RULE_DETECTION",
+                "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_bea17243-d3b3-14bf-6b57-74e1a2422c68&selectedTimestamp=2020-12-21T03:54:00Z"
+            },
+            {
+                "alertState": "NOT_ALERTING",
+                "collectionElements": [
+                   {
+                        "label": "event",
+                        "references": [
+                            {
+                                "eventTimestamp": "2020-12-24T03:00:11.959Z",
+                                "eventType": "NETWORK_DNS",
+                                "ingestedTimestamp": "2020-12-24T03:03:17.200062Z",
+                                "network": {
+                                    "applicationProtocol": "DNS",
+                                    "dns": {
+                                        "answers": [
+                                            {
+                                                "data": "10.0.XX.XX",
+                                                "name": "is5-ssl.mzstatic.com",
+                                                "ttl": 11111,
+                                                "type": 1
+                                            }
+                                        ],
+                                        "questions": [
+                                            {
+                                                "name": "is5-ssl.mzstatic.com",
+                                                "type": 1
+                                            }
+                                        ],
+                                        "response": true
+                                    }
+                                },
+                                "principal": {
+                                    "hostname": "ray-xxx-laptop",
+                                    "ip": [
+                                        "10.0.XX.XX"
+                                    ],
+                                    "mac": [
+                                        "88:a6:XX:XX:XX:XX"
+                                    ]
+                                },
+                                "principalAssetIdentifier": "ray-xxx-laptop",
+                                "productName": "ExtraHop",
+                                "securityResult": [
+                                    {
+                                        "action": [
+                                            "UNKNOWN_ACTION"
+                                        ]
+                                    }
+                                ],
+                                "target": {
+                                    "ip": [
+                                        "10.0.XX.XX"
+                                    ]
+                                },
+                                "targetAssetIdentifier": "10.0.XX.XX"
+                            },
+                            {
+                                "eventTimestamp": "2020-12-24T03:01:43.953Z",
+                                "eventType": "NETWORK_DNS",
+                                "ingestedTimestamp": "2020-12-24T03:03:17.200062Z",
+                                "network": {
+                                    "applicationProtocol": "DNS",
+                                    "dns": {
+                                        "answers": [
+                                            {
+                                                "data": "10.0.XX.XX",
+                                                "name": "is5-ssl.mzstatic.com",
+                                                "ttl": 11111,
+                                                "type": 1
+                                            }
+                                        ],
+                                        "questions": [
+                                            {
+                                                "name": "is5-ssl.mzstatic.com",
+                                                "type": 1
+                                            }
+                                        ],
+                                        "response": true
+                                    }
+                                },
+                                "principal": {
+                                    "hostname": "ray-xxx-laptop",
+                                    "ip": [
+                                        "10.0.XX.XX"
+                                    ],
+                                    "mac": [
+                                        "88:a6:XX:XX:XX:XX"
+                                    ]
+                                },
+                                "principalAssetIdentifier": "ray-xxx-laptop",
+                                "productName": "ExtraHop",
+                                "securityResult": [
+                                    {
+                                        "action": [
+                                            "UNKNOWN_ACTION"
+                                        ]
+                                    }
+                                ],
+                                "target": {
+                                    "ip": [
+                                        "10.0.XX.XX"
+                                    ]
+                                },
+                                "targetAssetIdentifier": "10.0.XX.XX"
+                            }
+                        ]
+                   }
+                ],
+                "createdTime": "2020-12-24T03:13:46.449491Z",
+                "detectionFields": [
+                    {
+                        "key": "client_ip",
+                        "value": "10.0.XX.XX"
+                    }
+                ],
+                "detectionTime": "2020-12-24T04:00:00Z",
+                "id": "de_d6194710-acd4-c1de-e440-d1c6a7a50fc1",
+                "ruleId": "ru_746bd6d6-6b84-4007-b74c-ec90c7306a71",
+                "ruleName": "SampleRule",
+                "ruleType": "MULTI_EVENT",
+                "ruleVersion": "ru_746bd6d6-6b84-4007-b74c-ec90c7306a71@v_1604081489_593503000",
+                "timeWindowEndTime": "2020-12-24T04:00:00Z",
+                "timeWindowStartTime": "2020-12-24T03:00:00Z",
+                "type": "RULE_DETECTION",
+                "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_d6194710-acd4-c1de-e440-d1c6a7a50fc1&selectedTimestamp=2020-12-21T03:54:00Z"
+            }
+        ],
+        "Token": {
+            "name": "gcb-list-detections",
+            "nextPageToken": "foobar_page_token"
+        }
+    }
+}
+```
+
+##### Human Readable Output
+
+>### Detection(s) Details For Rule: [SampleRule](https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71&selectedList=RuleDetectionsViewTimeline)
+>|Detection ID|Detection Type|Detection Time|Events|Alert State|
+>|---|---|---|---|---|
+>| [de_bea17243-d3b3-14bf-6b57-74e1a2422c68](https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_bea17243-d3b3-14bf-6b57-74e1a2422c68&selectedTimestamp=2020-12-21T03:54:00Z) | RULE_DETECTION | 2020-12-24T04:00:00Z | **Event Timestamp:** 2020-12-24T03:00:02.559Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com<br/><br/>**Event Timestamp:** 2020-12-24T03:00:40.566Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com | NOT_ALERTING |
+>| [de_d6194710-acd4-c1de-e440-d1c6a7a50fc1](https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_d6194710-acd4-c1de-e440-d1c6a7a50fc1&selectedTimestamp=2020-12-21T03:54:00Z) | RULE_DETECTION | 2020-12-24T04:00:00Z | **Event Timestamp:** 2020-12-24T03:00:11.959Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com<br/><br/>**Event Timestamp:** 2020-12-24T03:01:43.953Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com | NOT_ALERTING |
+>
+>View all detections for this rule in Chronicle by clicking on SampleRule and to view individual detection in Chronicle click on its respective Detection ID.
+>
+>Note: If a specific version of the rule is provided then detections for that specific version will be fetched.
+>Maximum number of detections specified in page_size has been returned. To fetch the next set of detections, execute the command with the page token as foobar_page_token.

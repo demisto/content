@@ -197,3 +197,38 @@ EXTRACT_INDICATORS_PACK = [
 def test_extract_indicators(regions_list, services_list, values_group_section, expected_result):
     client = Client(regions_list, services_list)
     assert (client.extract_indicators_from_values_dict(values_group_section) == expected_result)
+
+
+indicator_objects = [
+    (
+        [{'value': 1}, {'value': 1, 'some_key': 2, 'another_key': 3}, {'value': 2, 'some_key': 2}],
+        [{'value': 1, 'some_key': 2, 'another_key': 3}, {'value': 2, 'some_key': 2}]
+    ),
+    (
+        [{'value': 1, 'another_key': 3}, {'value': 1, 'some_key': 2}, {'value': 2, 'some_key': 2}],
+        [{'value': 1, 'another_key': 3, 'some_key': 2}, {'value': 2, 'some_key': 2}]
+    ),
+    (
+        [{'value': 2}, {'value': 1, 'some_key': 2}, {'value': 2, 'some_key': 2}, {'value': 1}],
+        [{'value': 2, 'some_key': 2}, {'value': 1, 'some_key': 2}]
+    ),
+    (
+        [{'value': 1, 'some_key': 2}, {'value': 2, 'some_key': 2}],
+        [{'value': 1, 'some_key': 2}, {'value': 2, 'some_key': 2}]
+    ),
+]
+
+
+@pytest.mark.parametrize('list_to_filter, expected_result', indicator_objects)
+def test_filter_duplicate_addresses(list_to_filter, expected_result):
+    """
+    Given:
+        - A list of objects, where some of the objects has the same value. (The 4 cases are just different permutations
+        and ordering).
+    When:
+        - Removing duplicate objects from the given list.
+    Then:
+        - Ensure the resulted list contains the object with the maximal number of keys for each value.
+    """
+    client = Client([], [])
+    assert expected_result == client.filter_and_aggregate_values(list_to_filter)

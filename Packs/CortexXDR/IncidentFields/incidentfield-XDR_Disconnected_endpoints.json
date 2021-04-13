@@ -1,0 +1,102 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Cortex XDR Disconnected endpoints"
+    ],
+    "caseInsensitive": true,
+    "cliName": "xdrdisconnectedendpoints",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Endpoint Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "endpointname",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Endpoint Status",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "endpointstatus",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Endpoint OS",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "endpointos",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Endpoint ID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "endpointid",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Endpoint Last Seen",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "endpointlastseen",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 125
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {
+
+        },
+        {
+
+        },
+        {
+
+        }
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_xdrdisconnectedendpoints",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "XDR Disconnected endpoints",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

@@ -2,12 +2,7 @@
     "id": "indicator_mitretype",
     "version": -1,
     "modified": "2020-05-06T12:29:08.320428307Z",
-    "sortValues": null,
-    "vcShouldIgnore": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "name": "MITRE Type",
-    "prevName": "MITRE Type",
     "ownerOnly": false,
     "placeholder": "",
     "description": "",
@@ -27,7 +22,6 @@
     "system": false,
     "content": true,
     "group": 2,
-    "mergeStrategy": "",
     "hidden": false,
     "associatedTypes": [
         "MITRE ATT&CK"
@@ -42,6 +36,5 @@
     "sla": 0,
     "threshold": 72,
     "breachScript": "",
-    "validatedError": "",
     "fromVersion": "5.5.0"
 }

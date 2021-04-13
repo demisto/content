@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Rubrik Radar"
+    ],
+    "caseInsensitive": true,
+    "cliName": "rubrikpolariseventid",
+    "closeForm": false,
+    "content": true,
+    "description": "The unique Polaris ID.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_rubrikpolariseventid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Rubrik Polaris Event ID",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

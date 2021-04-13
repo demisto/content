@@ -1,0 +1,58 @@
+{
+  "GoogleChronicleBackstory.UserAlert(val.User && val.User == obj.User)": [
+    {
+      "User": "svetla",
+      "AlertCounts": 3,
+      "AlertInfo": [
+        {
+          "Name": "Command Shell Launched by Office Applications",
+          "SourceProduct": "Tanium",
+          "Timestamp": "2019-08-12T20:25:57Z",
+          "RawLog": "dummy data 1"
+        },
+        {
+          "Name": "Suspicious PowerShell Process Ancestry",
+          "SourceProduct": "Tanium",
+          "Timestamp": "2019-08-12T20:24:31Z",
+          "RawLog": "dummy data 2"
+        },
+        {
+          "Name": "Suspicious PowerShell Process Ancestry",
+          "SourceProduct": "Tanium",
+          "Timestamp": "2019-08-12T21:24:31Z",
+          "RawLog": "dummy data 3"
+        }
+      ]
+    },
+    {
+      "User": "dc12",
+      "AlertCounts": 4,
+      "AlertInfo": [
+        {
+          "Name": "Possible Bitsadmin Exfiltration",
+          "SourceProduct": "Tanium",
+          "Timestamp": "2019-12-30T18:49:33.923249Z",
+          "RawLog": "dummy data 4"
+        },
+        {
+          "Name": "Possible Bitsadmin Exfiltration",
+          "SourceProduct": "Tanium",
+          "Timestamp": "2020-01-16T18:49:33.923249Z",
+          "RawLog": "dummy data 5"
+        },
+        {
+          "Name": "Possible Bitsadmin Exfiltration",
+          "SourceProduct": "Tanium",
+          "Timestamp": "2020-02-16T18:49:33Z",
+          "RawLog": ""
+        },
+        {
+          "Name": "Suspicious PowerShell Process Ancestry",
+          "SourceProduct": "Tanium",
+          "Timestamp": "2019-08-12T21:24:31Z",
+          "RawLog": ""
+        }
+      ]
+    }
+  ]
+}

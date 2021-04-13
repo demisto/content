@@ -10,6 +10,8 @@ The content included in this pack allows you to view all your failed integration
 - Optionally re-run the playbook.
 - Send report
 
+_For more information about the pack, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/articles/integrations-and-incident-health-check)
+
 ![Incidents_Health_Check_layout](https://raw.githubusercontent.com/demisto/content/745fcf63b37b76437ba03b6ca407ec92c93107b4/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/Incidents_Health_Check_Layout.png)
 
 ![Intigrations_Health_Check_layout](https://raw.githubusercontent.com/demisto/content/745fcf63b37b76437ba03b6ca407ec92c93107b4/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/Integrations_Health_Check_Layout.png)

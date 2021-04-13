@@ -1,0 +1,799 @@
+id: Handle Darktrace Model Breach
+version: -1
+name: Handle Darktrace Model Breach
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 25d266d8-f022-44ac-8f93-9e4babbc1844
+    type: start
+    task:
+      id: 25d266d8-f022-44ac-8f93-9e4babbc1844
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 517.5,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0e2abde6-4c43-41dc-8b14-8c46ceb0f0b5
+    type: regular
+    task:
+      id: 0e2abde6-4c43-41dc-8b14-8c46ceb0f0b5
+      version: -1
+      name: Get Model Breach Details
+      description: Darktrace-get-breach returns a model breach based on its model
+        breach id (pbid)
+      script: '|||darktrace-get-breach'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 0cd5572d-33d0-4ce0-8309-e39cd702bbaa
+    type: condition
+    task:
+      id: 0cd5572d-33d0-4ce0-8309-e39cd702bbaa
+      version: -1
+      name: Acknowledge Model Breach?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: "Conditional"
+    nexttasks:
+      "No":
+      - "7"
+      "Yes":
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 2485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Would you like to Acknowledge this Model Breach in Darktrace?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 21482081-6f72-469f-88c4-b3d6a52632c6
+    type: regular
+    task:
+      id: 21482081-6f72-469f-88c4-b3d6a52632c6
+      version: -1
+      name: Acknowledge Model Breach
+      description: Acknowledge a model breach as specified by Model Breach ID
+      script: '|||darktrace-acknowledge'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: f79f10c0-95ce-4d56-8784-8c35ecce4186
+    type: regular
+    task:
+      id: f79f10c0-95ce-4d56-8784-8c35ecce4186
+      version: -1
+      name: Print Not Acknowledged
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      value:
+        simple: Model breach not acknowledged.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 03753539-091f-4c2b-8d41-4ce4cb4b9245
+    type: title
+    task:
+      id: 03753539-091f-4c2b-8d41-4ce4cb4b9245
+      version: -1
+      name: Get Device Info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 6be25a24-6323-42cf-8c1f-624f277ed89b
+    type: title
+    task:
+      id: 6be25a24-6323-42cf-8c1f-624f277ed89b
+      version: -1
+      name: Get Entity Info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 7f4322cf-46ff-406d-85af-ca4022c43c3e
+    type: playbook
+    task:
+      id: 7f4322cf-46ff-406d-85af-ca4022c43c3e
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      CVE: {}
+      Domain: {}
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Darktrace.ModelBreach.device
+          accessor: hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: Darktrace.ModelBreach.device
+          accessor: ip
+      InternalDomains: {}
+      InternalRange: {}
+      MD5: {}
+      ResolveIP:
+        simple: "False"
+      SHA1: {}
+      SHA256: {}
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      Username: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: fd416118-9383-44e9-8fcc-93db438d6537
+    type: title
+    task:
+      id: fd416118-9383-44e9-8fcc-93db438d6537
+      version: -1
+      name: Find and Link Similar Incidents
+      description: |-
+        Finds similar incidents by common incident keys, labels, custom fields or context keys.
+        It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
+        For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 9eaa894d-2c9c-4cd0-8947-1721bd971d79
+    type: title
+    task:
+      id: 9eaa894d-2c9c-4cd0-8947-1721bd971d79
+      version: -1
+      name: Acknowledge & Resolve Incident
+      description: Link incidents together or mark them as duplicate and close them
+      type: title
+      iscommand: false
+      brand: builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 67abc5cf-14f8-4de7-8501-c86b5c4382ca
+    type: regular
+    task:
+      id: 67abc5cf-14f8-4de7-8501-c86b5c4382ca
+      version: -1
+      name: closeInvestigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 2955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 26c44e4c-6b83-4cef-8d84-ff8663334bb2
+    type: regular
+    task:
+      id: 26c44e4c-6b83-4cef-8d84-ff8663334bb2
+      version: -1
+      name: Get Device Detail
+      description: Gets device identity information based on label, tag, type, hostname,
+        ip, mac, vendor and os. It is recommended to run the command to check the
+        relevant fields in context.
+      script: '|||darktrace-get-device-identity-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      max_results:
+        simple: "5"
+      order:
+        simple: desc
+      order_by:
+        simple: lastSeen
+      query:
+        simple: ${incident.darktracedevicehostname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 8a65911a-5b0c-4265-8234-c873dfb36976
+    type: regular
+    task:
+      id: 8a65911a-5b0c-4265-8234-c873dfb36976
+      version: -1
+      name: List Similar Devices
+      description: Returns a list of similar devices to a device specified by Darktrace
+        DID
+      script: '|||darktrace-list-similar-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      did:
+        simple: ${incident.darktracedeviceid}
+      max_results:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: c30e463f-c93a-469f-8781-727c983afd12
+    type: title
+    task:
+      id: c30e463f-c93a-469f-8781-727c983afd12
+      version: -1
+      name: Get Model Breach Info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: cb340629-110b-460f-8cb5-a02686292c98
+    type: condition
+    task:
+      id: cb340629-110b-460f-8cb5-a02686292c98
+      version: -1
+      name: Link Similar Incidents?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: "Conditional"
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: isSimilarIncidentFound
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: e3bcc446-b57a-4f7c-8c3f-15727b9a35a4
+    type: regular
+    task:
+      id: e3bcc446-b57a-4f7c-8c3f-15727b9a35a4
+      version: -1
+      name: linkIncidents
+      description: Link incidents together or mark them as duplicate and close them
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      action:
+        simple: link
+      incidentId: {}
+      linkedIncidentIDs:
+        simple: ${similarIncident.rawId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 2165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 4276f614-41cc-44f0-866e-eddc09da5474
+    type: title
+    task:
+      id: 4276f614-41cc-44f0-866e-eddc09da5474
+      version: -1
+      name: Investigation Closed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: a8dfcd45-5eb6-4dd4-87b9-527b9775bcd7
+    type: regular
+    task:
+      id: a8dfcd45-5eb6-4dd4-87b9-527b9775bcd7
+      version: -1
+      name: FindSimilarIncidents
+      description: |-
+        Finds similar incidents by common incident keys, labels, custom fields or context keys.
+        It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
+        For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      filterQuery: {}
+      hoursBack:
+        simple: "1000"
+      ignoreClosedIncidents: {}
+      incidentFieldsAppliedCondition: {}
+      maxNumberOfIncidents: {}
+      maxResults:
+        simple: "10"
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentFields: {}
+      similarIncidentKeys:
+        simple: incident.darktracedeviceid
+      similarLabelsKeys: {}
+      skipMissingValues: {}
+      timeField: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 1835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 1e62210a-141d-42a4-8983-20891943e3b6
+    type: title
+    task:
+      id: 1e62210a-141d-42a4-8983-20891943e3b6
+      version: -1
+      name: Check Integration Enabled
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 517.5,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 46e1f2e4-12bc-40df-8e6d-2b446d26928d
+    type: condition
+    task:
+      id: 46e1f2e4-12bc-40df-8e6d-2b446d26928d
+      version: -1
+      name: Does device exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: "Conditional"
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${incident.darktracedevicehostname}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 6ee98514-519f-47db-8f09-3d5ef80d24c3
+    type: condition
+    task:
+      id: 6ee98514-519f-47db-8f09-3d5ef80d24c3
+      version: -1
+      name: Check Integration is enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "24"
+      "yes":
+      - "20"
+    scriptarguments:
+      brandname:
+        simple: Darktrace
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 517.5,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 56f60ba9-07d9-439b-818a-4db8eb402957
+    type: regular
+    task:
+      id: 56f60ba9-07d9-439b-818a-4db8eb402957
+      version: -1
+      name: Analyst Manual Investigation
+      description: This task is open as the Darktrace model breach is unacknowledged.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3105,
+        "width": 1037.5,
+        "x": -140,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- Darktrace Test Playbook
+fromversion: 6.0.0
+description: Handles each fetched Darktrace model breach by gathering additional detail
+  about the activity and device, providing enrichment data from Darktrace and XSOAR,
+  linking similar incidents, and giving the ability to acknowledge the model breach
+  and close the incident.

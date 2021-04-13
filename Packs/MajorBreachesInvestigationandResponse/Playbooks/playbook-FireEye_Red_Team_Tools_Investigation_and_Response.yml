@@ -1,0 +1,1204 @@
+id: FireEye Red Team Tools Investigation and Response
+version: -1
+name: FireEye Red Team Tools Investigation and Response
+description: |-
+  This playbook does the following:
+
+  Collect indicators to aid in your threat hunting process.
+  - Retrieve IOCs of FireEye red team tools.
+  - Discover IOCs of associated activity related to the infection.
+  - Generate an indicator list to block indicators with SUNBURST tags.
+
+  Hunt for the indicators
+  - Search endpoints with the FireEye red team tools CVEs.
+  - Search endpoint logs for FireEye red team tools hashes.
+  - Search and link previous incidents with the FireEye hashes.
+
+  If compromised hosts are found, fire off sub-playbooks to isolate/quarantine infected hosts/endpoints and await further actions from the security team.
+
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9276769d-1bf3-4561-8644-ab81dcf1e280
+    type: start
+    task:
+      id: 9276769d-1bf3-4561-8644-ab81dcf1e280
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 162bc6c7-5645-4605-8cbb-7dfd2a606898
+    type: condition
+    task:
+      id: 162bc6c7-5645-4605-8cbb-7dfd2a606898
+      version: -1
+      name: Are there CVEs?
+      description: Check if there are CVEs in the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: 'inputs.FireEyeToolsCVE '
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 45cbc029-69ba-4945-8e90-382efc7072a9
+    type: title
+    task:
+      id: 45cbc029-69ba-4945-8e90-382efc7072a9
+      version: -1
+      name: CVE Enrichments
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4a5a2aa6-5de9-4164-83d4-63b2185c317f
+    type: title
+    task:
+      id: 4a5a2aa6-5de9-4164-83d4-63b2185c317f
+      version: -1
+      name: Hunt IOC's
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: a0e945ba-77a0-4c73-8550-049a7aebc605
+    type: regular
+    task:
+      id: a0e945ba-77a0-4c73-8550-049a7aebc605
+      version: -1
+      name: Create indicators
+      description: Create indicators for the FireEye red team tools CVEs.
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      certificatenames: {}
+      certificatesignature: {}
+      certificatevalidationchecks: {}
+      city: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription:
+        complex:
+          root: CVE
+          accessor: Description
+      cvemodified:
+        complex:
+          root: CVE
+          accessor: Modified
+      cvss:
+        complex:
+          root: CVE
+          accessor: CVSS
+      department: {}
+      description:
+        simple: FireEye Red Team Tools CVEs
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expanseassettype: {}
+      expansebusinessunits: {}
+      expansecertificateadvertisementstatus: {}
+      expansedateadded: {}
+      expansednsresolutionstatus: {}
+      expansedomain: {}
+      expansefirstobserved: {}
+      expanselastobserved: {}
+      expanseproperties: {}
+      expanseprovidername: {}
+      expanseservicestatus: {}
+      expansesourcedomain: {}
+      expansetags: {}
+      expansetenantname: {}
+      expansetype: {}
+      expirationdate: {}
+      extension: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource:
+        complex:
+          root: CVE
+          accessor: Published
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      issuerdn: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      malwaretypes: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      pem: {}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      primarymotivation: {}
+      processor: {}
+      processors: {}
+      publickey: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      serialnumber: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      spkisha256: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      subjectalternativenames: {}
+      subjectdn: {}
+      surname: {}
+      tags: {}
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type:
+        simple: CVE
+      updateddate: {}
+      username: {}
+      validitynotafter: {}
+      validitynotbefore: {}
+      value:
+        complex:
+          root: CVE
+          accessor: ID
+      workphone: {}
+      xdrstatus: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 47b437f5-2ce3-4750-8278-81c5778e6048
+    type: regular
+    task:
+      id: 47b437f5-2ce3-4750-8278-81c5778e6048
+      version: -1
+      name: Enrich indicators
+      description: Enrich the FireEye red team tools CVEs indicators.
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: CVE
+          accessor: ID
+      using-brand: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 0328b1be-7619-4416-8da4-4f3c7fe0b789
+    type: title
+    task:
+      id: 0328b1be-7619-4416-8da4-4f3c7fe0b789
+      version: -1
+      name: Search CVE's
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 759f3b17-9d21-4d35-8f03-8c5f4bc8dad3
+    type: playbook
+    task:
+      id: 759f3b17-9d21-4d35-8f03-8c5f4bc8dad3
+      version: -1
+      name: Search Endpoint by CVE - Generic
+      description: Hunt for assets with a given CVE using available tools.
+      playbookName: Search Endpoint by CVE - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      CVE_ID:
+        complex:
+          root: 'inputs.FireEyeToolsCVE '
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9d0f587c-e8e2-4c6e-8f41-06ea7f64cf6b
+    type: title
+    task:
+      id: 9d0f587c-e8e2-4c6e-8f41-06ea7f64cf6b
+      version: -1
+      name: Red team tools hashes
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: d52123f4-4fe0-4aaf-8fe7-a2f0246b8511
+    type: regular
+    task:
+      id: d52123f4-4fe0-4aaf-8fe7-a2f0246b8511
+      version: -1
+      name: Collect Hashes from FireEye for red team tools
+      description: Use an HTTP request to get the hash related to FireEye for the red team tools.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: all-hashes.csv
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile: {}
+      unsecure: {}
+      url:
+        complex:
+          root: inputs.FireEyeRedTeamToolsCVEsURL
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 05c06fe1-2148-4887-8028-94568fb43df5
+    type: regular
+    task:
+      id: 05c06fe1-2148-4887-8028-94568fb43df5
+      version: -1
+      name: Create red team tools hash indicators
+      description: Extract and create FireEye red team tools hash indicators.
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        complex:
+          root: HttpRequest
+          accessor: Response
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: ec32410b-bd2d-4b71-8419-a31a7b7b9037
+    type: regular
+    task:
+      id: ec32410b-bd2d-4b71-8419-a31a7b7b9037
+      version: -1
+      name: Add red team tools tag
+      description: Add the tag "FireEye Red Team Tools" for the FireEye red team tools hashes.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: FireEye Red Team Tools
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExtractedIndicators
+                iscontext: true
+          accessor: File
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 9f8ff0aa-a2af-42f8-8ff2-4e7f3c40c4e5
+    type: title
+    task:
+      id: 9f8ff0aa-a2af-42f8-8ff2-4e7f3c40c4e5
+      version: -1
+      name: Search red team tools hashes
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 7548454a-bd21-4be4-81a4-f55d0619fe2e
+    type: playbook
+    task:
+      id: 7548454a-bd21-4be4-81a4-f55d0619fe2e
+      version: -1
+      name: Search Endpoints By Hash - Generic V2
+      description: Hunt using available tools.
+      playbookName: Search Endpoints By Hash - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      MD5Hash:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1Hash:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256Hash:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 872990d4-a542-44b5-8961-2ae376d7c8c1
+    type: title
+    task:
+      id: 872990d4-a542-44b5-8961-2ae376d7c8c1
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 3bf08ec5-416b-47fd-89db-d0e5c2042a40
+    type: condition
+    task:
+      id: 3bf08ec5-416b-47fd-89db-d0e5c2042a40
+      version: -1
+      name: Any compromised hosts found?
+      description: |
+        Check whether compromised hosts were found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Endpoint
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 14bb0783-da07-4cd4-88a8-cb0cf5831974
+    type: condition
+    task:
+      id: 14bb0783-da07-4cd4-88a8-cb0cf5831974
+      version: -1
+      name: Should isolate automatically compromised hosts?
+      description: |
+        Check whether files associated with the incident can be blocked automatically using various EDR integrations.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.IsolateEndpointAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 9d270ed1-773b-43a0-8bab-3a8821895516
+    type: playbook
+    task:
+      id: 9d270ed1-773b-43a0-8bab-3a8821895516
+      version: -1
+      name: Isolate Endpoint - Generic
+      playbookName: Isolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      EndpointId: {}
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: HostName
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+      xdr_endpoint_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Endpoint.endpoint_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 2315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 42595549-64b9-4850-878a-f12047f0f264
+    type: title
+    task:
+      id: 42595549-64b9-4850-878a-f12047f0f264
+      version: -1
+      name: Investigate
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: dd67ba41-5a3d-48f9-8039-7c8c60386478
+    type: regular
+    task:
+      id: dd67ba41-5a3d-48f9-8039-7c8c60386478
+      version: -1
+      name: Manually isolate endpoints
+      description: Manually isolate the compromised hosts.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 2315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 1b3be322-7b30-4ce5-8e7c-3c87eefe170f
+    type: regular
+    task:
+      id: 1b3be322-7b30-4ce5-8e7c-3c87eefe170f
+      version: -1
+      name: Investigate further
+      description: Further investigate the incident (endpoints, the entry point, etc.).
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: c8f2f7ad-774c-427f-8f18-57204609b146
+    type: regular
+    task:
+      id: c8f2f7ad-774c-427f-8f18-57204609b146
+      version: -1
+      name: Close investigation
+      description: Close the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: c72f7b03-9d64-4898-821c-6ec51309f5b6
+    type: title
+    task:
+      id: c72f7b03-9d64-4898-821c-6ec51309f5b6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 22aa5735-fd45-4f63-82e3-9a18a5ca66ce
+    type: regular
+    task:
+      id: 22aa5735-fd45-4f63-82e3-9a18a5ca66ce
+      version: -1
+      name: Find incidents with indicators
+      description: Find existing incidents with the FireEye red team tools indicators.
+      scriptName: findIncidentsWithIndicator
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      indicator:
+        complex:
+          root: ExtractedIndicators
+          accessor: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: d8962d7d-dd1b-4650-8864-1e26aaa8940b
+    type: condition
+    task:
+      id: d8962d7d-dd1b-4650-8864-1e26aaa8940b
+      version: -1
+      name: Found incident with indicators?
+      description: Check if incidents were found with the FireEye red team tools indicators.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IncidentsWithIndicator
+                accessor: incidentIDs
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 4376bcab-c688-49e7-8a20-076ece1222b2
+    type: regular
+    task:
+      id: 4376bcab-c688-49e7-8a20-076ece1222b2
+      version: -1
+      name: Link incidents
+      description: Link existing incidents with the FireEye red team tools indicators to this incident.
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      action:
+        simple: link
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      linkedIncidentIDs:
+        complex:
+          root: IncidentsWithIndicator
+          accessor: incidentIDs
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: ee194d26-05e6-468b-8312-f6f4416936bf
+    type: regular
+    task:
+      id: ee194d26-05e6-468b-8312-f6f4416936bf
+      version: -1
+      name: Enrich FireEye red team tools CVEs
+      description: Returns CVE information by the CVE ID.
+      script: '|||cve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      cve_id:
+        complex:
+          root: 'inputs.FireEyeToolsCVE '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_17_yes": 0.37,
+      "16_19_#default#": 0.31,
+      "1_3_yes": 0.68,
+      "1_4_#default#": 0.1,
+      "25_15_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3125,
+        "width": 1870,
+        "x": 130,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: 'FireEyeToolsCVE '
+  value:
+    simple: "CVE-2018-15961,CVE-2019-19781\t,CVE-2019-3398,CVE-2019-11580\t,CVE-2018-13379,CVE-2020-0688\t\
+      ,CVE-2019-11510,CVE-2019-0604\t,CVE-2020-10189,CVE-2019-8394\t,CVE-2020-1472,CVE-2018-8581\t\
+      ,CVE-2016-0167,CVE-2014-1812"
+  required: false
+  description: "CVE-2019-0708\t,CVE-2017-11774"
+  playbookInputQuery:
+- key: FireEyeRedTeamToolsCVEsURL
+  value:
+    simple: https://github.com/fireeye/red_team_tool_countermeasures/blob/master/all-hashes.csv
+  required: false
+  description: The URL of FireEye red team tools CVEs
+  playbookInputQuery:
+- key: IsolateEndpointAutomatically
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically isolate endpoints, or opt for manual user
+    approval. True means isolation will be done automatically.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests
+fromversion: 5.5.0

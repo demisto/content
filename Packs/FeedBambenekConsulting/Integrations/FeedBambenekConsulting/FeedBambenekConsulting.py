@@ -1,9 +1,9 @@
 from CommonServerPython import *
 
 name_to_url = {
-    'C2 IP Feed': 'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt',
+    'C2 IP Feed': 'https://faf.bambenekconsulting.com/feeds/dga/c2-ipmasterlist.txt',
     'High-Confidence C2 IP Feed': 'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt',
-    'C2 Domain Feed': 'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt',
+    'C2 Domain Feed': 'https://faf.bambenekconsulting.com/feeds/dga/c2-dommasterlist.txt',
     'High-Confidence C2 Domain Feed': 'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt',
     'DGA Domain Feed': 'https://faf.bambenekconsulting.com/feeds/dga-feed.gz',
     'High-Confidence DGA Domain Feed': 'https://faf.bambenekconsulting.com/feeds/dga-feed-high.gz',
@@ -15,7 +15,7 @@ name_to_url = {
 
 def main():
     feed_url_to_config = {
-        'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt': {
+        'https://faf.bambenekconsulting.com/feeds/dga/c2-ipmasterlist.txt': {
             'fieldnames': ['value', 'description',
                            'date_created',
                            'info'],
@@ -26,7 +26,7 @@ def main():
             }
         },
 
-        'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt': {
+        'https://faf.bambenekconsulting.com/feeds/dga/c2-dommasterlist.txt': {
             'fieldnames': ['value', 'description',
                            'date_created',
                            'info'],

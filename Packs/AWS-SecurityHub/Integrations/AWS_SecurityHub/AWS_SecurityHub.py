@@ -706,8 +706,9 @@ def get_findings_command(client, args):
     response = client.get_findings(**kwargs)
     next_token = response.get('NextToken')
     while next_token:
+        kwargs['NextToken'] = next_token
         findings.extend(response.get('Findings'))
-        response = client.get_findings(NextToken=next_token)
+        response = client.get_findings(**kwargs)
         next_token = response.get('NextToken')
     outputs = {'AWS-SecurityHub.Findings(val.Id === obj.Id)': findings}
     table_header = 'AWS SecurityHub GetFindings'

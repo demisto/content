@@ -199,7 +199,7 @@ INCIDENTS_RESULTS = [
      'IndicatorTimeline': None}]
 
 INCIDENTS_RESULTS_EXPECTED = {'Contents': {'params': {'layout': 'horizontal'},
-                                           'stats': [{'color': '#3e8',
+                                           'stats': [{'color': '#0003e8',
                                                       'data': [1],
                                                       'groups': None,
                                                       'label': '0',
@@ -401,7 +401,7 @@ INCIDENTS_RESULTS_NO_FAILED = [
      'IndicatorTimeline': None}]
 
 INCIDENTS_RESULTS_NO_FAILED_EXPECTED = {'Contents': {'params': {'layout': 'horizontal'},
-                                           'stats': [{'color': '#3e8',
+                                           'stats': [{'color': '#0003e8',
                                                       'data': [1],
                                                       'groups': None,
                                                       'label': '0',

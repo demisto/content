@@ -26,8 +26,7 @@ def test_queryai_run_query(requests_mock):
         verify=False,
         headers={},
         proxy=False,
-        email='abc@xyz.com',
-        license_key='ABCD12345',
+        api_token='ABCD12345',
         alias='my_default_alias',
         connection_params={}
     )

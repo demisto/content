@@ -41,8 +41,7 @@ This playbook does not use any scripts.
 | Illusive.Incident.sourceIp | The compromised host's IP address | string |
 | Illusive.Incident.sourceOperatingSystem | The compromised host's operating system | string |
 | Illusive.Incident.lastSeenUser | The user who last reviewed the incident | string |
-| Illusive.Incident.deceptionFamilies | The deception families of the
-deceptions used to trigger
+| Illusive.Incident.deceptionFamilies | The deception families of the deceptions used to trigger
 the incident | string |
 | Illusive.Incident.riskInsights.stepsToCrownJewel | The compromised host's lateral distance from Crown Jewels | number |
 | Illusive.Incident.riskInsights.stepsToDomainAdmin | The compromised host's lateral distance from domain admin accounts | number |

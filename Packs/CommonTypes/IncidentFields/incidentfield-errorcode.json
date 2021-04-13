@@ -1,0 +1,31 @@
+{
+    "id": "incident_errorcode",
+    "version": -1,
+    "modified": "2020-12-01T15:13:21.1087267Z",
+    "name": "Error Code",
+    "ownerOnly": false,
+    "cliName": "errorcode",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": true,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "IAM - App Add",
+        "IAM - App Remove"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

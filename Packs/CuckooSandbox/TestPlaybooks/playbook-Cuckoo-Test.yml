@@ -1,14 +1,15 @@
 id: CuckooTest
 version: -1
 name: CuckooTest
+description: '-'
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 72626119-b97c-4141-82ef-370fb9ed3b11
+    taskid: 561ffa9d-52d5-4347-8f87-7ee2af21bf7c
     type: start
     task:
-      id: 72626119-b97c-4141-82ef-370fb9ed3b11
+      id: 561ffa9d-52d5-4347-8f87-7ee2af21bf7c
       version: -1
       name: ""
       description: '-'
@@ -28,12 +29,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 4a4101e9-b07d-4186-8686-c71d8ccbbb3a
+    taskid: d7ceae7e-c3c3-49e0-8732-4bba92b898a1
     type: regular
     task:
-      id: 4a4101e9-b07d-4186-8686-c71d8ccbbb3a
+      id: d7ceae7e-c3c3-49e0-8732-4bba92b898a1
       version: -1
       name: Get file
       description: getting file using get
@@ -69,12 +72,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 08d587b8-ddf0-4212-85c5-af9491110886
+    taskid: 75939497-5b75-4c8f-8b16-bf477fef1cf8
     type: regular
     task:
-      id: 08d587b8-ddf0-4212-85c5-af9491110886
+      id: 75939497-5b75-4c8f-8b16-bf477fef1cf8
       version: -1
       name: Delete Context
       description: delete context
@@ -104,15 +109,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 73d4c5e5-b609-49e8-8b60-ba8e395e7b8b
+    taskid: cbdc7b57-0b41-4899-8052-b213497c8ba2
     type: playbook
     task:
-      id: 73d4c5e5-b609-49e8-8b60-ba8e395e7b8b
+      id: cbdc7b57-0b41-4899-8052-b213497c8ba2
       version: -1
       name: Detonate File - Cuckoo
-      description: start detonation playbook file
+      description: Detonating file with Cuckoo
       playbookName: Detonate File - Cuckoo
       type: playbook
       iscommand: false
@@ -123,27 +130,34 @@ tasks:
     scriptarguments:
       File:
         simple: ${File}
+      interval:
+        simple: "1"
+      timeout:
+        simple: "10"
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 545
+          "x": 250,
+          "y": 570
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 44a55722-69e1-4453-8dce-7ba793b00045
+    taskid: 3c3292df-928f-4f76-8420-7e807943d127
     type: title
     task:
-      id: 44a55722-69e1-4453-8dce-7ba793b00045
+      id: 3c3292df-928f-4f76-8420-7e807943d127
       version: -1
       name: Done
       description: done file
@@ -154,19 +168,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1215
+          "x": 250,
+          "y": 1680
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 4ec9088d-1ec0-4831-84b6-7f8c2d267263
+    taskid: 524dea14-df28-4eb1-80c8-b7942750e31f
     type: playbook
     task:
-      id: 4ec9088d-1ec0-4831-84b6-7f8c2d267263
+      id: 524dea14-df28-4eb1-80c8-b7942750e31f
       version: -1
       name: Detonate URL - Cuckoo
       description: url detonation playbook
@@ -185,22 +201,25 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1040
+          "x": 250,
+          "y": 1500
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 9195d534-6cd8-4d62-8eba-aea963b1770c
+    taskid: 1b03ea0c-f492-46e4-8826-9461c12653af
     type: title
     task:
-      id: 9195d534-6cd8-4d62-8eba-aea963b1770c
+      id: 1b03ea0c-f492-46e4-8826-9461c12653af
       version: -1
       name: FileDetonate Done
       description: done file detonate
@@ -209,24 +228,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
+          "x": 250,
+          "y": 740
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: bcb8b1fd-eaad-4e8e-858a-1e3af6fb620c
+    taskid: 4841607b-bff5-4e59-8fcd-7c3f33b8ad7a
     type: regular
     task:
-      id: bcb8b1fd-eaad-4e8e-858a-1e3af6fb620c
+      id: 4841607b-bff5-4e59-8fcd-7c3f33b8ad7a
       version: -1
       name: Delete Context
       description: delete context
@@ -248,19 +269,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 865
+          "x": 250,
+          "y": 1330
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 6a88f674-9d86-478a-8b8c-2e95b4bdaf6f
+    taskid: 80667489-737c-472c-8bb3-d833cdd69f29
     type: regular
     task:
-      id: 6a88f674-9d86-478a-8b8c-2e95b4bdaf6f
+      id: 80667489-737c-472c-8bb3-d833cdd69f29
       version: -1
       name: Get file
       description: getting file using get
@@ -297,12 +320,113 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 4036a882-386c-47e5-864f-d47ca59a9638
+    type: regular
+    task:
+      id: 4036a882-386c-47e5-864f-d47ca59a9638
+      version: -1
+      name: cuckoo-get-task-report
+      description: Retrieve report
+      script: Cuckoo Sandbox|||cuckoo-get-task-report
+      type: regular
+      iscommand: true
+      brand: Cuckoo Sandbox
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id:
+        complex:
+          root: Cuckoo.Task
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 055ac125-4241-4e63-86ae-51de87ff3a77
+    type: condition
+    task:
+      id: 055ac125-4241-4e63-86ae-51de87ff3a77
+      version: -1
+      name: Check if file's data is in output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cuckoo.Task.FileInfo.sha1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 4696d91b-9baa-491c-872e-e58842ce7d10
+    type: title
+    task:
+      id: 4696d91b-9baa-491c-872e-e58842ce7d10
+      version: -1
+      name: File data output check done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1230,
+        "height": 1695,
         "width": 810,
         "x": 50,
         "y": 50
@@ -311,5 +435,4 @@ view: |-
   }
 inputs: []
 outputs: []
-description: "-"
 fromversion: 5.0.0

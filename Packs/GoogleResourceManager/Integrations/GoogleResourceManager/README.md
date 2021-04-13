@@ -1,5 +1,4 @@
 <!-- HTML_DOC -->
-<p>This integration was integrated and tested with version xx of Google Resource Manager</p>
 <h2>Configure Google Resource Manager on Demisto</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

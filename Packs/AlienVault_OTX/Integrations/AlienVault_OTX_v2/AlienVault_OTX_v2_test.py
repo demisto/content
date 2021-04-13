@@ -5,6 +5,7 @@ import pytest
 
 # Import local packages
 from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command
+from CommonServerPython import DBotScoreReliability
 
 INTEGRATION_NAME = 'AlienVault OTX v2'
 
@@ -53,7 +54,7 @@ EC_WITH_ANALYSIS = {
          'Type': 'PE32 executable (GUI) Intel 80386 Mono/.Net assembly, for MS Windows',
          'Malicious': {'PulseIDs': []}}], 'DBotScore': [
         {'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Score': 0, 'Type': 'file',
-         'Vendor': 'AlienVault OTX v2'}]}
+         'Vendor': 'AlienVault OTX v2', 'Reliability': 'C - Fairly reliable'}]}
 
 EC_WITHOUT_ANALYSIS = {
     'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256'
@@ -62,19 +63,21 @@ EC_WITHOUT_ANALYSIS = {
         {'MD5': None, 'SHA1': None, 'SHA256': None, 'SSDeep': None, 'Size': None, 'Type': None,
          'Malicious': {'PulseIDs': []}}], 'DBotScore': [
         {'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Score': 0, 'Type': 'file',
-         'Vendor': 'AlienVault OTX v2'}]}
+         'Vendor': 'AlienVault OTX v2', 'Reliability': 'C - Fairly reliable'}]}
 
 client = Client(
     base_url="base_url",
     headers={'X-OTX-API-KEY': "TOKEN"},
     verify=False,
-    proxy=False
+    proxy=False,
+    default_threshold='2',
+    reliability=DBotScoreReliability.C
 )
 
 
 @pytest.mark.parametrize(argnames=arg_names_dbot, argvalues=arg_values_dbot)
 def test_dbot_score(pulse: dict, score: int):
-    assert calculate_dbot_score(pulse) == score, f"Error calculate DBot Score {pulse.get('count')}"
+    assert calculate_dbot_score(client, pulse) == score, f"Error calculate DBot Score {pulse.get('count')}"
 
 
 @pytest.mark.parametrize('raw_response_general,raw_response_analysis,expected', [

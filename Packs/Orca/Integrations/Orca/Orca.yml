@@ -1,0 +1,113 @@
+category: Utilities
+commonfields:
+  id: Orca
+  version: -1
+configuration:
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: '200'
+  display: Max fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Also Fetch informational alerts
+  hidden: false
+  name: fetch_informational
+  required: false
+  type: 8
+- additionalinfo: If this checked, all existing alerts will be fetched
+  display: Pull Existing Alerts
+  hidden: false
+  name: pull_existing_alerts
+  required: false
+  type: 8
+- additionalinfo: "Orca-Push: Orca will push Alerts on realtime \nXSOAR-Pull: XOSAR\
+    \ will periodically query for Orca Alerts"
+  defaultvalue: XSOAR-Pull
+  display: Fetch Type
+  hidden: false
+  name: fetch_type
+  options:
+  - Orca-Push
+  - XSOAR-Pull
+  required: false
+  type: 15
+description: Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS,
+  Azure, and GCP.
+display: Orca
+name: Orca
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Type of alert to get
+      isArray: false
+      name: alert_type
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Get alerts of a specific asset
+      isArray: false
+      name: asset_unique_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the alerts on cloud assets
+    execution: false
+    name: orca-get-alerts
+    outputs:
+    - contextPath: Orca.Manager.Alerts
+      description: All alerts
+      type: String
+  - arguments:
+    - default: false
+      description: Asset unique id
+      isArray: false
+      name: asset_unique_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Description of An asset
+    execution: false
+    name: orca-get-asset
+    outputs:
+    - contextPath: Orca.Manager.Asset
+      description: Asset description
+      type: String
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 6.0.0

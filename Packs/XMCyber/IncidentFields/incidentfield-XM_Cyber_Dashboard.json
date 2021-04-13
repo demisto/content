@@ -1,0 +1,30 @@
+{
+ "id": "incident_xmcyberdashboard",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2020-10-25T16:17:56.419560765Z",
+ "name": "XM Cyber Dashboard",
+ "ownerOnly": false,
+ "cliName": "xmcyberdashboard",
+ "type": "url",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "XM Cyber Security Score"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72
+}

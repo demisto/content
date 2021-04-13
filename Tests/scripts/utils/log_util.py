@@ -1,9 +1,10 @@
 import logging
-import sys
-import coloredlogs
 import os
+import sys
 
-ARTIFACTS_PATH = os.environ.get('CIRCLE_ARTIFACTS', '.')
+import coloredlogs
+
+from demisto_sdk.commands.test_content.ParallelLoggingManager import LOGGING_FORMAT, LEVEL_STYLES, ARTIFACTS_PATH
 
 
 def _add_logging_level(level_name: str, level_num: int, method_name: str = None) -> None:
@@ -74,17 +75,11 @@ def install_logging(log_file_name: str, include_process_name=False) -> str:
     """
     if not hasattr(logging, 'success'):
         _add_logging_level('SUCCESS', 25)
-    logging_format = '[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s'
+    logging_format = LOGGING_FORMAT
     if include_process_name:
         logging_format = '[%(asctime)s] - [%(processName)s] - [%(threadName)s] - [%(levelname)s] - %(message)s'
     formatter = coloredlogs.ColoredFormatter(fmt=logging_format,
-                                             level_styles={
-                                                 'critical': {'bold': True, 'color': 'red'},
-                                                 'debug': {'color': 'cyan'},
-                                                 'error': {'color': 'red'},
-                                                 'info': {},
-                                                 'warning': {'color': 'yellow'},
-                                                 'success': {'color': 'green'}})
+                                             level_styles=LEVEL_STYLES)
     ch = logging.StreamHandler(sys.stdout)
     ch.setFormatter(formatter)
     log_file_path = os.path.join(ARTIFACTS_PATH, 'logs', log_file_name) if os.path.exists(
@@ -93,10 +88,24 @@ def install_logging(log_file_name: str, include_process_name=False) -> str:
     fh.setFormatter(formatter)
     ch.setLevel(logging.INFO)
     fh.setLevel(logging.DEBUG)
-    logging.basicConfig(level=logging.DEBUG,
-                        handlers=[ch, fh],
-                        force=True)
+    configure_root_logger(ch, fh)
     return log_file_path
+
+
+def configure_root_logger(ch: logging.StreamHandler, fh: logging.FileHandler) -> None:
+    """
+    - Configures the root logger with DEBUG level
+    - Removes existing handlers from the root logger and adds the console handler and the file handler.
+    Args:
+        ch: StreamHandler to add to the root logger
+        fh: FileHandler to add to the root logger
+    """
+    logging.root.setLevel(logging.DEBUG)
+    for h in logging.root.handlers[:]:
+        logging.root.removeHandler(h)
+        h.close()
+    logging.root.addHandler(ch)
+    logging.root.addHandler(fh)
 
 
 def install_simple_logging():
@@ -108,10 +117,4 @@ def install_simple_logging():
     if not hasattr(logging, 'success'):
         _add_logging_level('SUCCESS', 25)
     coloredlogs.install(fmt='%(message)s',
-                        level_styles={
-                            'critical': {'bold': True, 'color': 'red'},
-                            'debug': {'color': 'cyan'},
-                            'error': {'color': 'red'},
-                            'info': {},
-                            'warning': {'color': 'yellow'},
-                            'success': {'color': 'green'}})
+                        level_styles=LEVEL_STYLES)

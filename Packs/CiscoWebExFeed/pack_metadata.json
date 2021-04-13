@@ -2,7 +2,7 @@
     "name": "Cisco WebEx Feed",
     "description": "Whitelist feed for Cisco WebEx using a screen scrape of the website.",
     "support": "community",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "scottbrumley",
     "url": "",
     "email": "",

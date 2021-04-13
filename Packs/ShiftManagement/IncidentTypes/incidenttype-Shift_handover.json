@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#418ae6",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Shift handover",
+    "layout": "Shift handover",
+    "locked": false,
+    "name": "Shift handover",
+    "playbookId": "Shift handover",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

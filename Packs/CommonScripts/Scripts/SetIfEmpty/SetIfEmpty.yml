@@ -39,3 +39,5 @@ tags:
 timeout: '0'
 type: python
 fromversion: 5.0.0
+tests:
+- SetIfEmpty - non-ascii chars - Test

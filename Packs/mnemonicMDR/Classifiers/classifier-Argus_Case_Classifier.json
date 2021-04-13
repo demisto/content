@@ -1,0 +1,119 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "ArgusCaseClassifier",
+    "keyTypeMap": {
+        "argus_case": "Argus Case"
+    },
+    "name": "Argus Case Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+                [
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "service.shortName"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "ids"
+                            }
+                        }
+                    },
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "service.shortName"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "support"
+                            }
+                        }
+                    },
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "service.shortName"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "administrative"
+                            }
+                        }
+                    },
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "service.shortName"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "vulnscan"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "service.shortName",
+            "transformers": [
+                {
+                    "args": {
+                        "regex": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": ".*"
+                            }
+                        },
+                        "replaceWith": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "argus_case"
+                            }
+                        }
+                    },
+                    "operator": "replaceMatch"
+                }
+            ]
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

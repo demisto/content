@@ -24,14 +24,16 @@ args:
   required: false
   secret: false
 - default: false
-  description: HTML body of the email. Only use this field if the emailBody argument is empty.
+  description: HTML body of the email. Only use this field if the emailBody argument
+    is empty.
   isArray: false
   name: emailBodyHTML
   required: false
   secret: false
 - default: false
   defaultValue: '20'
-  description: 'Maximum number of positive/negative words to return for the model decision. Default is 20.'
+  description: 'Maximum number of positive/negative words to return for the model
+    decision. Default is 20.'
   isArray: false
   name: topWordsLimit
   required: false
@@ -46,7 +48,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: list
-  description: How the model is stored in Demisto. Can be "list" or "mlModel". Default is "list".
+  description: How the model is stored in Demisto. Can be "list" or "mlModel". Default
+    is "list".
   isArray: false
   name: modelStoreType
   predefined:
@@ -70,7 +73,8 @@ args:
   secret: false
   deprecated: true
 - default: false
-  description: The confidence threshold. The model will provide predictions only if their confidence is above this threshold.
+  description: The confidence threshold. The model will provide predictions only if
+    their confidence is above this threshold.
   isArray: false
   name: confidenceThreshold
   required: false
@@ -78,7 +82,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to return an error when there is no prediction. Default is "true".
+  description: Whether to return an error when there is no prediction. Default is
+    "true".
   isArray: false
   name: returnError
   predefined:
@@ -100,30 +105,32 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: English
-  description: The language of the input text. Default is "English". Can be "English", "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other".
+  description: The language of the input text. Default is "English". Can be "English",
+    "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other".
   isArray: false
   name: language
   predefined:
-    - English
-    - German
-    - French
-    - Spanish
-    - Portuguese
-    - Italian
-    - Dutch
-    - Other
+  - English
+  - German
+  - French
+  - Spanish
+  - Portuguese
+  - Italian
+  - Dutch
+  - Other
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
   defaultValue: tokenizer
-  description: Tokenization method for text. Only required when the language argument is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
+  description: Tokenization method for text. Only required when the language argument
+    is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
   isArray: false
   name: tokenizationMethod
   predefined:
-    - tokenizer
-    - byWords
-    - byLetters
+  - tokenizer
+  - byWords
+  - byLetters
   required: false
   secret: false
 comment: Predict text label using a pre-trained machine learning phishing model, and
@@ -144,10 +151,12 @@ outputs:
   description: A list of words in the input text that supports the model decision.
   type: Unknown
 - contextPath: DBotPredictPhishingWords.NegativeWords
-  description: A list of words in the input text that do not support the model decision. These words better support a different classification class.
+  description: A list of words in the input text that do not support the model decision.
+    These words better support a different classification class.
   type: Unknown
 - contextPath: DBotPredictPhishingWords.TextTokensHighlighted
-  description: The input text (after pre-processing) with the positive words that support the model decision.
+  description: The input text (after pre-processing) with the positive words that
+    support the model decision.
   type: String
 script: '-'
 subtype: python3
@@ -157,7 +166,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.12701
+dockerimage: demisto/ml:1.0.0.16162
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test

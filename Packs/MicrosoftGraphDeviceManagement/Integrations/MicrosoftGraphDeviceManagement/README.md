@@ -35,6 +35,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Get managed devices
 
+##### Required Permissions
+DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Read.All
 
 #### Base Command
 
@@ -174,6 +176,8 @@ Get managed devices
 ***
 Check the device with Intune, immediately receive pending actions and policies
 
+##### Required Permissions
+DeviceManagementManagedDevices.PrivilegedOperations.All
 
 #### Base Command
 
@@ -202,6 +206,8 @@ There is no context output for this command.
 ***
 Disable the lost mode of the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -231,6 +237,8 @@ There is no context output for this command.
 ***
 Gets the GPS location of a device (iOS only)
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -260,6 +268,8 @@ There is no context output for this command.
 ***
 Immediately reboots the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PrivilegedOperations.All
 
 #### Base Command
 
@@ -289,6 +299,8 @@ There is no context output for this command.
 ***
 Immideately shuts down the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -318,6 +330,8 @@ There is no context output for this command.
 ***
 Removes the activation lock (iOS devices only)
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -347,6 +361,8 @@ There is no context output for this command.
 ***
 Remove the device from intune management
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -376,6 +392,8 @@ There is no context output for this command.
 ***
 Resets the passcode for the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -405,6 +423,8 @@ There is no context output for this command.
 ***
 Lock the device, to unlock the user will have to use the passcode
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -434,6 +454,8 @@ There is no context output for this command.
 ***
 Request a remote access via TeamViewer
 
+##### Required Permissions
+DeviceManagementManagedDevices.ReadWrite.All
 
 #### Base Command
 
@@ -463,6 +485,8 @@ There is no context output for this command.
 ***
 Recovers the passcode from the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -492,6 +516,8 @@ There is no context output for this command.
 ***
 logs out the current user on a shared iPad device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -521,6 +547,8 @@ There is no context output for this command.
 ***
 deletes a user that you select from the local cache on a shared iPad device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -550,6 +578,8 @@ There is no context output for this command.
 ***
 Forece update windows defender signatures
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -579,6 +609,8 @@ There is no context output for this command.
 ***
 removes any apps that are installed on a PC running Windows 10. it helps remove pre-installed (OEM) apps that are typically installed with a new PC
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -609,6 +641,8 @@ There is no context output for this command.
 ***
 Scans the device with windows defender (windows devices only)
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -637,6 +671,8 @@ There is no context output for this command.
 ***
 restores a device to its factory default settings
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All, DeviceManagementManagedDevices.ReadWrite.All
 
 #### Base Command
 
@@ -669,6 +705,8 @@ There is no context output for this command.
 ***
 Updates the windows account of the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -704,6 +742,8 @@ There is no context output for this command.
 ***
 List of managed devices
 
+##### Required Permissions
+DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Read.All
 
 #### Base Command
 

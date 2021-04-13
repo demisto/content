@@ -171,7 +171,7 @@ tasks:
           accessor: Incident.file_artifacts.file_sha256
       host_ip:
         complex:
-          root: PaloAltoNetworksXDR
+          root: PaloAltoNetworksXDR.Incident.alerts
           filters:
           - - operator: isEqualString
               left:
@@ -182,7 +182,9 @@ tasks:
                 value:
                   simple: inputs.alert_id
                 iscontext: true
-          accessor: Incident.alerts.host_ip
+          accessor: host_ip_list
+          transformers:
+          - operator: uniq
       xdr_alert_id:
         complex:
           root: inputs.alert_id

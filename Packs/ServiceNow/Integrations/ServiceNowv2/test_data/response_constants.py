@@ -274,9 +274,9 @@ RESPONSE_CREATE_TICKET = {
         "resolved_at": "",
         "resolved_by": "",
         "rfc": "",
-        "severity": "2",
+        "severity": "3",
         "short_description": "",
-        "sla_due": "",
+        "sla_due": "2020-10-10 10:10:11",
         "state": "1",
         "subcategory": "",
         "sys_class_name": "incident",
@@ -479,7 +479,7 @@ RESPONSE_UPDATE_TICKET_ADDITIONAL = {
         "resolved_at": "",
         "resolved_by": "",
         "rfc": "",
-        "severity": "2",
+        "severity": "3",
         "short_description": "Trouble getting to Oregon mail server",
         "sla_due": "2019-09-26 00:41:01",
         "state": "1",
@@ -3084,3 +3084,15 @@ MIRROR_ENTRIES = [
      'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'},
     {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
      'tags': ['comments', 'work_notes'], 'note': True}]
+
+OAUTH_PARAMS = {
+    'insecure': False,
+    'credentials': {
+        'identifier': 'user1',
+        'password:': '12345'
+    },
+    'proxy': False,
+    'client_id': 'client_id',
+    'client_secret': 'client_secret',
+    'use_oauth': True
+}

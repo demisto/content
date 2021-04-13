@@ -1,0 +1,2692 @@
+id: 3da36d51-3cdf-4120-882a-cee03b038b89
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Test-Fortimanager
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c76f809b-5add-4425-807d-9e5e4fc52cd2
+    type: start
+    task:
+      id: c76f809b-5add-4425-807d-9e5e4fc52cd2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1f913140-bcdb-462a-8d9e-4e3da04d2e31
+    type: regular
+    task:
+      id: 1f913140-bcdb-462a-8d9e-4e3da04d2e31
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "4"
+      - "3"
+      - "2"
+      - "7"
+      - "8"
+      - "5"
+      - "53"
+      - "54"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c1de97d8-f216-43fa-87db-83dc311e5537
+    type: title
+    task:
+      id: c1de97d8-f216-43fa-87db-83dc311e5537
+      version: -1
+      name: Devices
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 2eb4bfa7-4eec-4d36-84df-4be712ce50cb
+    type: title
+    task:
+      id: 2eb4bfa7-4eec-4d36-84df-4be712ce50cb
+      version: -1
+      name: Device Groups
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 55fd800f-fadc-452a-8f7b-f0ec1e0f8760
+    type: title
+    task:
+      id: 55fd800f-fadc-452a-8f7b-f0ec1e0f8760
+      version: -1
+      name: Address
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 44cc6dd0-e24b-4a80-856b-862f12b4b124
+    type: title
+    task:
+      id: 44cc6dd0-e24b-4a80-856b-862f12b4b124
+      version: -1
+      name: Address-Groups
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 19bfaf82-ad53-4725-81f5-3ceb49420d13
+    type: title
+    task:
+      id: 19bfaf82-ad53-4725-81f5-3ceb49420d13
+      version: -1
+      name: Service-Category
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: c0439bfe-27dd-4d81-8d53-937771f35f3d
+    type: title
+    task:
+      id: c0439bfe-27dd-4d81-8d53-937771f35f3d
+      version: -1
+      name: Custom-Service
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: ab511ad7-005c-4cc8-8a99-acfa317f1df3
+    type: title
+    task:
+      id: ab511ad7-005c-4cc8-8a99-acfa317f1df3
+      version: -1
+      name: Service-Group
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 8dfb9786-9466-4a0a-8f7f-f0920707a3a8
+    type: regular
+    task:
+      id: 8dfb9786-9466-4a0a-8f7f-f0920707a3a8
+      version: -1
+      name: fortimanager-service-categories-list
+      description: List ADOM service categories
+      script: '|||fortimanager-service-categories-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      adom: {}
+      offset: {}
+      service_category: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 2a0ce9aa-57d8-4e5a-8e05-3223974c916d
+    type: condition
+    task:
+      id: 2a0ce9aa-57d8-4e5a-8e05-3223974c916d
+      version: -1
+      name: Check service category
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.ServiceCategory.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 69c6792b-5e67-4fb7-8e14-f9ccbcef005a
+    type: regular
+    task:
+      id: 69c6792b-5e67-4fb7-8e14-f9ccbcef005a
+      version: -1
+      name: fortimanager-address-group-list
+      description: List ADOM IPv4 address groups
+      script: FortiManager|||fortimanager-address-group-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      address_group: {}
+      adom: {}
+      offset: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: db1164f3-e1d1-455b-89d1-707074bcd42e
+    type: regular
+    task:
+      id: db1164f3-e1d1-455b-89d1-707074bcd42e
+      version: -1
+      name: fortimanager-address-list
+      description: List ADOM firewall IPv4 addresses
+      script: FortiManager|||fortimanager-address-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      address: {}
+      adom: {}
+      offset: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: e6e97220-edbc-4cd7-82fb-121950af8a3b
+    type: condition
+    task:
+      id: e6e97220-edbc-4cd7-82fb-121950af8a3b
+      version: -1
+      name: check-address-list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.Address.name
+            iscontext: true
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: FortiManager.Address.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_address
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: fe5f944d-031c-4291-8d67-23d3db61d9ff
+    type: regular
+    task:
+      id: fe5f944d-031c-4291-8d67-23d3db61d9ff
+      version: -1
+      name: fortimanager-address-create
+      description: Add a new IPv4 address to the
+      script: FortiManager|||fortimanager-address-create
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      adom: {}
+      associated_interface: {}
+      comment: {}
+      end_ip:
+        simple: 2.3.4.5
+      fqdn: {}
+      name:
+        simple: my_temp_address
+      policy_group: {}
+      sdn: {}
+      start_ip:
+        simple: 1.2.3.4
+      subnet: {}
+      subnet_name: {}
+      type:
+        simple: iprange
+      wildcard: {}
+      wildcard_fqdn: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 905cb9b0-466b-4129-8ff7-e741aa72cfc4
+    type: regular
+    task:
+      id: 905cb9b0-466b-4129-8ff7-e741aa72cfc4
+      version: -1
+      name: fortimanager-address-list
+      description: List ADOM firewall IPv4 addresses
+      script: FortiManager|||fortimanager-address-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      address:
+        simple: my_temp_address
+      adom: {}
+      offset: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 21958464-5cb8-46fa-82e4-af1ab6dd3cbe
+    type: condition
+    task:
+      id: 21958464-5cb8-46fa-82e4-af1ab6dd3cbe
+      version: -1
+      name: check address creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FortiManager.Address.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_address
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FortiManager.Address
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FortiManager.Address.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: my_temp_address
+                accessor: start-ip
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 33163b9c-b028-423c-8309-0b8751e1e9c9
+    type: regular
+    task:
+      id: 33163b9c-b028-423c-8309-0b8751e1e9c9
+      version: -1
+      name: fortimanager-address-update
+      description: Add a new IPv4 address to the
+      script: FortiManager|||fortimanager-address-update
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      adom: {}
+      associated_interface: {}
+      comment: {}
+      end_ip:
+        simple: 3.3.3.3
+      fqdn: {}
+      name:
+        simple: my_temp_address
+      policy_group: {}
+      sdn: {}
+      start_ip: {}
+      subnet:
+        simple: 2.3.4.5/0.0.0.0
+      subnet_name: {}
+      type:
+        simple: iprange
+      wildcard: {}
+      wildcard_fqdn: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 3784b1b0-a908-4b2c-86de-c5c0032953a2
+    type: regular
+    task:
+      id: 3784b1b0-a908-4b2c-86de-c5c0032953a2
+      version: -1
+      name: fortimanager-address-list
+      description: List ADOM firewall IPv4 addresses
+      script: FortiManager|||fortimanager-address-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      address:
+        simple: my_temp_address
+      adom: {}
+      offset: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 2e0a6797-bf44-4bb8-82d1-0f75e051a2e2
+    type: condition
+    task:
+      id: 2e0a6797-bf44-4bb8-82d1-0f75e051a2e2
+      version: -1
+      name: check address update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FortiManager.Address
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FortiManager.Address.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: my_temp_address
+                accessor: end-ip
+            iscontext: true
+          right:
+            value:
+              simple: 3.3.3.3
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 0a6f9be0-c552-4a46-82d2-3f4b71a0025c
+    type: condition
+    task:
+      id: 0a6f9be0-c552-4a46-82d2-3f4b71a0025c
+      version: -1
+      name: check address group list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.AddressGroup.name
+            iscontext: true
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: FortiManager.AddressGroup.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_address_group
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 939a7bcc-5ac3-4954-8a83-0f66c50b5e4c
+    type: regular
+    task:
+      id: 939a7bcc-5ac3-4954-8a83-0f66c50b5e4c
+      version: -1
+      name: fortimanager-address-group-create
+      description: Create a new Address Group
+      script: FortiManager|||fortimanager-address-group-create
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      adom: {}
+      comment: {}
+      member:
+        simple: my_temp_address
+      name:
+        simple: my_temp_address_group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 0c962ef8-c659-4759-898d-8f7ecdeb3409
+    type: regular
+    task:
+      id: 0c962ef8-c659-4759-898d-8f7ecdeb3409
+      version: -1
+      name: fortimanager-address-group-list
+      description: List ADOM IPv4 address groups
+      script: FortiManager|||fortimanager-address-group-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      address_group:
+        simple: my_temp_address_group
+      adom: {}
+      offset: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 9544b69e-1b92-4f80-8090-f02134b6a4c7
+    type: condition
+    task:
+      id: 9544b69e-1b92-4f80-8090-f02134b6a4c7
+      version: -1
+      name: check address group creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FortiManager.AddressGroup.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_address_group
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FortiManager.AddressGroup
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FortiManager.AddressGroup.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: my_temp_address_group
+                accessor: member
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_address
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 8dbe9ad9-9b6c-4f3c-830c-ef5241b3c40e
+    type: regular
+    task:
+      id: 8dbe9ad9-9b6c-4f3c-830c-ef5241b3c40e
+      version: -1
+      name: fortimanager-address-group-update
+      description: Create a new Address Group
+      script: FortiManager|||fortimanager-address-group-update
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      adom: {}
+      comment: {}
+      member:
+        simple: my_address2
+      name:
+        simple: my_temp_address_group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 1fd7ac4b-f789-4b08-87f6-d0d3f3417761
+    type: regular
+    task:
+      id: 1fd7ac4b-f789-4b08-87f6-d0d3f3417761
+      version: -1
+      name: fortimanager-address-group-list
+      description: List ADOM IPv4 address groups
+      script: FortiManager|||fortimanager-address-group-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      address_group:
+        simple: my_temp_address_group
+      adom: {}
+      offset: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 2670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 6b4ae2e2-3e9e-4849-8011-e25863c6ffee
+    type: condition
+    task:
+      id: 6b4ae2e2-3e9e-4849-8011-e25863c6ffee
+      version: -1
+      name: check address group update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FortiManager.AddressGroup
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FortiManager.AddressGroup.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: my_temp_address_group
+                accessor: member
+            iscontext: true
+          right:
+            value:
+              simple: my_address2
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 2850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 6028d9b6-68b6-4653-83a2-3721fdb70239
+    type: regular
+    task:
+      id: 6028d9b6-68b6-4653-83a2-3721fdb70239
+      version: -1
+      name: fortimanager-address-group-delete
+      description: Delete an address group.
+      script: FortiManager|||fortimanager-address-group-delete
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    scriptarguments:
+      address_group:
+        simple: my_temp_address_group
+      adom: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 3030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: b39abdad-3235-4e02-8a89-181b19fbcfaf
+    type: regular
+    task:
+      id: b39abdad-3235-4e02-8a89-181b19fbcfaf
+      version: -1
+      name: fortimanager-address-delete
+      description: Delete an address
+      script: FortiManager|||fortimanager-address-delete
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    scriptarguments:
+      address:
+        simple: my_temp_address
+      adom: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 3030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: df4a232d-33fd-4a52-82b2-63a017dfc5d4
+    type: regular
+    task:
+      id: df4a232d-33fd-4a52-82b2-63a017dfc5d4
+      version: -1
+      name: fortimanager-devices-list
+      description: List all devices in the instance ADOM
+      script: FortiManager|||fortimanager-devices-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      adom: {}
+      device: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 3366e53c-f264-4bbd-8973-fe24334fec0c
+    type: condition
+    task:
+      id: 3366e53c-f264-4bbd-8973-fe24334fec0c
+      version: -1
+      name: check device list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.Device.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: c3d686c6-090e-407c-808d-ddbcf387d0dc
+    type: regular
+    task:
+      id: c3d686c6-090e-407c-808d-ddbcf387d0dc
+      version: -1
+      name: fortimanager-device-groups-list
+      description: List ADOM device groups.
+      script: FortiManager|||fortimanager-device-groups-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      adom: {}
+      group: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 60c03405-06d8-4a24-80b5-cc3b0ffa64f2
+    type: condition
+    task:
+      id: 60c03405-06d8-4a24-80b5-cc3b0ffa64f2
+      version: -1
+      name: check device group list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.DeviceGroup.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 89f31293-ef76-476d-8cfb-38421cd1bc66
+    type: regular
+    task:
+      id: 89f31293-ef76-476d-8cfb-38421cd1bc66
+      version: -1
+      name: fortimanager-custom-service-list
+      description: List the custom services.
+      script: FortiManager|||fortimanager-custom-service-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      adom: {}
+      custom_service: {}
+      offset: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 9d3b48bb-b5eb-421f-8337-632c1ed43112
+    type: condition
+    task:
+      id: 9d3b48bb-b5eb-421f-8337-632c1ed43112
+      version: -1
+      name: check custom service list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.CustomService.name
+            iscontext: true
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: FortiManager.CustomService.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_service
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 73d94565-88d1-4e93-8933-909c7460c4b5
+    type: regular
+    task:
+      id: 73d94565-88d1-4e93-8933-909c7460c4b5
+      version: -1
+      name: fortimanager-custom-service-create
+      description: Create a new custom service.
+      script: FortiManager|||fortimanager-custom-service-create
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      adom: {}
+      app_category: {}
+      app_service_type: {}
+      application: {}
+      category: {}
+      check_reset_range: {}
+      comment: {}
+      fqdn: {}
+      helper: {}
+      icmpcode: {}
+      icmptype: {}
+      iprange: {}
+      name:
+        simple: my_temp_service
+      protocol: {}
+      proxy: {}
+      sctp_portrange: {}
+      session_ttl: {}
+      tcp_halfclose_timer: {}
+      tcp_halfopen_timer: {}
+      tcp_portrange: {}
+      tcp_timewait_timer: {}
+      udp_idle_timer: {}
+      udp_portrange: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: ec310fc1-ac11-41e5-8570-80f9a3bb1274
+    type: regular
+    task:
+      id: ec310fc1-ac11-41e5-8570-80f9a3bb1274
+      version: -1
+      name: fortimanager-custom-service-list
+      description: List the custom services.
+      script: FortiManager|||fortimanager-custom-service-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      adom: {}
+      custom_service:
+        simple: my_temp_service
+      offset: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 956e2c47-3c05-4384-8d21-acd620fdac68
+    type: condition
+    task:
+      id: 956e2c47-3c05-4384-8d21-acd620fdac68
+      version: -1
+      name: check service creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FortiManager.CustomService.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_service
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 5145eea8-0027-43d8-8d71-3b45195f51b8
+    type: regular
+    task:
+      id: 5145eea8-0027-43d8-8d71-3b45195f51b8
+      version: -1
+      name: fortimanager-custom-service-update
+      description: Update a custom service.
+      script: FortiManager|||fortimanager-custom-service-update
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      adom: {}
+      app_category: {}
+      app_service_type: {}
+      application: {}
+      category: {}
+      check_reset_range: {}
+      comment: {}
+      fqdn: {}
+      helper: {}
+      icmpcode: {}
+      icmptype: {}
+      iprange:
+        simple: 2.2.2.2
+      name:
+        simple: my_temp_service
+      protocol: {}
+      proxy: {}
+      sctp_portrange: {}
+      session_ttl: {}
+      tcp_halfclose_timer: {}
+      tcp_halfopen_timer: {}
+      tcp_portrange: {}
+      tcp_timewait_timer: {}
+      udp_idle_timer: {}
+      udp_portrange: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 9cb68a9e-87aa-4cce-895c-5969a1a288c3
+    type: regular
+    task:
+      id: 9cb68a9e-87aa-4cce-895c-5969a1a288c3
+      version: -1
+      name: fortimanager-custom-service-list
+      description: List the custom services.
+      script: FortiManager|||fortimanager-custom-service-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      adom: {}
+      custom_service:
+        simple: my_temp_service
+      offset: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 25ee6487-5a58-4f00-8bc1-43e8287cf7cd
+    type: condition
+    task:
+      id: 25ee6487-5a58-4f00-8bc1-43e8287cf7cd
+      version: -1
+      name: check service update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FortiManager.CustomService
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FortiManager.CustomService.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: my_temp_service
+                accessor: iprange
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 60525793-4852-42ee-8390-53f209b63db5
+    type: regular
+    task:
+      id: 60525793-4852-42ee-8390-53f209b63db5
+      version: -1
+      name: fortimanager-service-group-list
+      description: List ADOM service groups
+      script: FortiManager|||fortimanager-service-group-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      adom: {}
+      offset: {}
+      service_group: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: cc30a04b-1080-40f7-8afc-d7c73f73dc88
+    type: condition
+    task:
+      id: cc30a04b-1080-40f7-8afc-d7c73f73dc88
+      version: -1
+      name: check service group list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.ServiceGroup.name
+            iscontext: true
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: FortiManager.ServiceGroup.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_service_group
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: e78e1efd-4298-480d-8304-8d35df3f42b9
+    type: regular
+    task:
+      id: e78e1efd-4298-480d-8304-8d35df3f42b9
+      version: -1
+      name: fortimanager-service-group-create
+      description: Create a new Service Group
+      script: FortiManager|||fortimanager-service-group-create
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      adom: {}
+      comment: {}
+      member:
+        simple: my_temp_service
+      name:
+        simple: my_temp_service_group
+      proxy: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: ba0856a1-a204-4d4f-8218-66fa4d1e8bd3
+    type: regular
+    task:
+      id: ba0856a1-a204-4d4f-8218-66fa4d1e8bd3
+      version: -1
+      name: fortimanager-service-group-list
+      description: List ADOM service groups
+      script: FortiManager|||fortimanager-service-group-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      adom: {}
+      offset: {}
+      service_group:
+        simple: my_temp_service_group
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: e03201b6-53db-4186-891b-6a29530b7dc2
+    type: condition
+    task:
+      id: e03201b6-53db-4186-891b-6a29530b7dc2
+      version: -1
+      name: check service group creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FortiManager.ServiceGroup.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_service_group
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FortiManager.ServiceGroup
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FortiManager.ServiceGroup.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: my_temp_service_group
+                accessor: member
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_service
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 6205d3ef-e37b-4ca3-8b08-1227c4d21905
+    type: regular
+    task:
+      id: 6205d3ef-e37b-4ca3-8b08-1227c4d21905
+      version: -1
+      name: fortimanager-service-group-update
+      description: Create a new Service Group
+      script: FortiManager|||fortimanager-service-group-update
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      adom: {}
+      comment: {}
+      member:
+        simple: GRE
+      name:
+        simple: my_temp_service_group
+      proxy: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 1781667e-dd1e-4969-8ba7-f8a823b5a167
+    type: regular
+    task:
+      id: 1781667e-dd1e-4969-8ba7-f8a823b5a167
+      version: -1
+      name: fortimanager-service-group-list
+      description: List ADOM service groups
+      script: FortiManager|||fortimanager-service-group-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      adom: {}
+      offset: {}
+      service_group:
+        simple: my_temp_service_group
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 9a3d020a-1f22-4c3a-84ec-2729d69f81fa
+    type: condition
+    task:
+      id: 9a3d020a-1f22-4c3a-84ec-2729d69f81fa
+      version: -1
+      name: check service group update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FortiManager.ServiceGroup
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FortiManager.ServiceGroup.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: my_temp_service_group
+                accessor: member
+            iscontext: true
+          right:
+            value:
+              simple: GRE
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 07bc5ba8-8d67-4f4f-80f3-ec894673c6c4
+    type: regular
+    task:
+      id: 07bc5ba8-8d67-4f4f-80f3-ec894673c6c4
+      version: -1
+      name: fortimanager-service-group-delete
+      description: Delete a service group
+      script: FortiManager|||fortimanager-service-group-delete
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    scriptarguments:
+      adom: {}
+      service_group:
+        simple: my_temp_service_group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2470,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: ad73904f-154f-4d83-8513-b79347c85110
+    type: regular
+    task:
+      id: ad73904f-154f-4d83-8513-b79347c85110
+      version: -1
+      name: fortimanager-custom-service-delete
+      description: Delete a custom service.
+      script: FortiManager|||fortimanager-custom-service-delete
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    scriptarguments:
+      adom: {}
+      custom:
+        simple: my_temp_service
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2030,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 2cfabeef-39a0-4b3e-8fd5-f99f57827100
+    type: title
+    task:
+      id: 2cfabeef-39a0-4b3e-8fd5-f99f57827100
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 0f63fb48-aac3-43eb-8570-6319d66f7979
+    type: title
+    task:
+      id: 0f63fb48-aac3-43eb-8570-6319d66f7979
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 73dd2094-c40a-49c4-8404-96456f4abcff
+    type: title
+    task:
+      id: 73dd2094-c40a-49c4-8404-96456f4abcff
+      version: -1
+      name: Policy Package
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: a7935c31-e6e1-46e9-8bc7-39cbd72cc366
+    type: title
+    task:
+      id: a7935c31-e6e1-46e9-8bc7-39cbd72cc366
+      version: -1
+      name: Policy
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: bff1e313-6279-4f43-8f4b-947ea1b67056
+    type: regular
+    task:
+      id: bff1e313-6279-4f43-8f4b-947ea1b67056
+      version: -1
+      name: fortimanager-firewall-policy-package-list
+      description: List ADOM policy packages
+      script: FortiManager|||fortimanager-firewall-policy-package-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      adom: {}
+      offset: {}
+      policy_package: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 8242cdbd-81a0-4aaf-880a-3f9e87606a2b
+    type: condition
+    task:
+      id: 8242cdbd-81a0-4aaf-880a-3f9e87606a2b
+      version: -1
+      name: Check policy package list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.PolicyPackage.name
+            iscontext: true
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: FortiManager.PolicyPackage.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_package
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 6914d3c6-174f-443d-8bc9-4b3de2d6f4fe
+    type: regular
+    task:
+      id: 6914d3c6-174f-443d-8bc9-4b3de2d6f4fe
+      version: -1
+      name: fortimanager-firewall-policy-package-create
+      description: Create a new firewall policy package.
+      script: FortiManager|||fortimanager-firewall-policy-package-create
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      adom: {}
+      central_nat:
+        simple: disable
+      consolidated_firewall_mode: {}
+      fwpolicy_implicit_log: {}
+      fwpolicy6_implicit_log: {}
+      inspection_mode: {}
+      name:
+        simple: my_temp_package
+      ngfw_mode: {}
+      ssl_ssh_profile: {}
+      type:
+        simple: pkg
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: cc02e260-9647-43b2-8d13-68765cbc6158
+    type: regular
+    task:
+      id: cc02e260-9647-43b2-8d13-68765cbc6158
+      version: -1
+      name: fortimanager-firewall-policy-package-list
+      description: List ADOM policy packages
+      script: FortiManager|||fortimanager-firewall-policy-package-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      adom: {}
+      offset: {}
+      policy_package:
+        simple: my_temp_package
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: c492fca1-e6e4-473f-8adb-2a7912555e64
+    type: condition
+    task:
+      id: c492fca1-e6e4-473f-8adb-2a7912555e64
+      version: -1
+      name: Check policy package creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FortiManager.PolicyPackage.name
+            iscontext: true
+          right:
+            value:
+              simple: my_temp_package
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 6f82ced7-2d6e-400c-8cb4-67f1002d60a6
+    type: regular
+    task:
+      id: 6f82ced7-2d6e-400c-8cb4-67f1002d60a6
+      version: -1
+      name: fortimanager-firewall-policy-package-update
+      description: Create a new firewall policy package.
+      script: FortiManager|||fortimanager-firewall-policy-package-update
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      adom: {}
+      central_nat:
+        simple: enable
+      consolidated_firewall_mode: {}
+      fwpolicy_implicit_log: {}
+      fwpolicy6_implicit_log: {}
+      inspection_mode: {}
+      name:
+        simple: my_temp_package
+      ngfw_mode: {}
+      ssl_ssh_profile: {}
+      type:
+        simple: pkg
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: 744bfa15-ca09-47a6-8a12-3d1e96e1f97f
+    type: regular
+    task:
+      id: 744bfa15-ca09-47a6-8a12-3d1e96e1f97f
+      version: -1
+      name: fortimanager-firewall-policy-list
+      description: List specific firewall policies from a policy package
+      script: FortiManager|||fortimanager-firewall-policy-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      adom: {}
+      offset: {}
+      package:
+        simple: FG600E-LAB_test1
+      policy_id: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: f71cf539-f80f-432e-8bec-0e789befd11f
+    type: condition
+    task:
+      id: f71cf539-f80f-432e-8bec-0e789befd11f
+      version: -1
+      name: Check policy list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiManager.PolicyPackage.Policy.policyid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 03d8c518-ae4c-4981-80d5-169e2dd10575
+    type: regular
+    task:
+      id: 03d8c518-ae4c-4981-80d5-169e2dd10575
+      version: -1
+      name: fortimanager-firewall-policy-create
+      description: Create a firewall policy.
+      script: FortiManager|||fortimanager-firewall-policy-create
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      action:
+        simple: accept
+      additional_params: {}
+      adom: {}
+      comments: {}
+      dstaddr:
+        simple: all
+      dstaddr_negate: {}
+      dstaddr6: {}
+      dstintf: {}
+      logtraffic: {}
+      name:
+        simple: my_temp_policy
+      package:
+        simple: my_temp_package
+      policyid:
+        simple: "10"
+      schedule: {}
+      service: {}
+      srcaddr:
+        simple: all
+      srcaddr_negate: {}
+      srcaddr6: {}
+      srcintf: {}
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: c665b67a-8f18-4058-8216-6fb1889312ea
+    type: regular
+    task:
+      id: c665b67a-8f18-4058-8216-6fb1889312ea
+      version: -1
+      name: fortimanager-firewall-policy-list
+      description: List specific firewall policies from a policy package
+      script: FortiManager|||fortimanager-firewall-policy-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      adom: {}
+      offset: {}
+      package:
+        simple: my_temp_package
+      policy_id:
+        simple: "10"
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: ea22cb80-8f85-44d3-8f54-1022b3ea0c53
+    type: condition
+    task:
+      id: ea22cb80-8f85-44d3-8f54-1022b3ea0c53
+      version: -1
+      name: Check policy creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FortiManager.PolicyPackage.Policy.policyid
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: e5151979-27af-4de1-8ca3-703a5cd351e8
+    type: regular
+    task:
+      id: e5151979-27af-4de1-8ca3-703a5cd351e8
+      version: -1
+      name: fortimanager-firewall-policy-update
+      description: Update a firewall policy.
+      script: FortiManager|||fortimanager-firewall-policy-update
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      action: {}
+      additional_params: {}
+      adom: {}
+      comments: {}
+      dstaddr: {}
+      dstaddr_negate: {}
+      dstaddr6: {}
+      dstintf: {}
+      logtraffic: {}
+      name: {}
+      package:
+        simple: my_temp_package
+      policyid:
+        simple: "10"
+      schedule: {}
+      service:
+        simple: AH
+      srcaddr: {}
+      srcaddr_negate: {}
+      srcaddr6: {}
+      srcintf: {}
+      status:
+        simple: disable
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 8ed70f1d-62e8-463b-80df-c5fad64a64de
+    type: regular
+    task:
+      id: 8ed70f1d-62e8-463b-80df-c5fad64a64de
+      version: -1
+      name: fortimanager-firewall-policy-list
+      description: List specific firewall policies from a policy package
+      script: FortiManager|||fortimanager-firewall-policy-list
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      adom: {}
+      offset: {}
+      package:
+        simple: my_temp_package
+      policy_id:
+        simple: "10"
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: aaf97632-4b91-4791-8291-7bd5b1f2a8f7
+    type: condition
+    task:
+      id: aaf97632-4b91-4791-8291-7bd5b1f2a8f7
+      version: -1
+      name: Check policy update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FortiManager.PolicyPackage.Policy
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FortiManager.PolicyPackage.Policy.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: my_temp_policy
+                accessor: service
+            iscontext: true
+          right:
+            value:
+              simple: AH
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: eb085284-3630-4a66-8a8e-705643807058
+    type: regular
+    task:
+      id: eb085284-3630-4a66-8a8e-705643807058
+      version: -1
+      name: fortimanager-firewall-policy-delete
+      description: Delete a firewall policy.
+      script: FortiManager|||fortimanager-firewall-policy-delete
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      adom: {}
+      package:
+        simple: my_temp_package
+      policy:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 5c5cdbbb-d2c9-487b-853b-53d6cd7585b2
+    type: regular
+    task:
+      id: 5c5cdbbb-d2c9-487b-853b-53d6cd7585b2
+      version: -1
+      name: fortimanager-firewall-policy-package-delete
+      description: Delete a firewall policy package.
+      script: FortiManager|||fortimanager-firewall-policy-package-delete
+      type: regular
+      iscommand: true
+      brand: FortiManager
+    scriptarguments:
+      adom: {}
+      pkg_path:
+        simple: my_temp_package
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3275,
+        "width": 4240,
+        "x": -1390,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

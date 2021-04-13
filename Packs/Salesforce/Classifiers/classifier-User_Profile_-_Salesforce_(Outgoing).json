@@ -1,0 +1,107 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "User Profile - Salesforce (Outgoing)",
+ "mapping": {
+  "User Profile": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "username": {
+     "complex": null,
+     "simple": "username"
+    },
+    "name": {
+     "complex": null,
+     "simple": "displayname"
+    },
+    "city": {
+     "complex": null,
+     "simple": "city"
+    },
+    "country": {
+     "complex": null,
+     "simple": "countryname"
+    },
+    "email": {
+     "complex": null,
+     "simple": "email"
+    },
+    "firstname": {
+     "complex": null,
+     "simple": "givenname"
+    },
+    "lastname": {
+     "complex": null,
+     "simple": "surname"
+    },
+    "mobilephone": {
+     "complex": null,
+     "simple": "mobilephone"
+    },
+    "state": {
+     "complex": null,
+     "simple": "state"
+    },
+    "street address": {
+     "complex": null,
+     "simple": "streetaddress"
+    },
+    "title": {
+     "complex": null,
+     "simple": "title"
+    },
+    "postalcode": {
+     "complex": null,
+     "simple": "zipcode"
+    },
+    "profileid": {
+     "complex": null,
+     "simple": "profileid"
+    },
+    "timezonesidkey": {
+     "complex": null,
+     "simple": "timezonesidkey"
+    },
+    "localesidkey": {
+     "complex": null,
+     "simple": "localesidkey"
+    },
+    "alias": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "email",
+      "transformers": [
+       {
+        "args": {
+         "from": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0"
+          }
+         },
+         "to": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "8"
+          }
+         }
+        },
+        "operator": "substring"
+       }
+      ]
+     },
+     "simple": ""
+    }
+   }
+  }
+ },
+ "name": "User Profile - Salesforce (Outgoing)",
+ "type": "mapping-outgoing",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

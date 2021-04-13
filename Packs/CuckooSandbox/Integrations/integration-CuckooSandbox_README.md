@@ -254,6 +254,50 @@
 <td style="width: 302.703125px;">Cuckoo.Task.Monitor</td>
 <td style="width: 417.296875px;">Monitor of the reported task</td>
 </tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.sha1</td>
+<td style="width: 417.296875px;">The SHA1 hash of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.name</td>
+<td style="width: 417.296875px;">The file name.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.type</td>
+<td style="width: 417.296875px;">The file type.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.sha256</td>
+<td style="width: 417.296875px;">The SHA256 hash of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.urls</td>
+<td style="width: 417.296875px;">Related URLs of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.crc32</td>
+<td style="width: 417.296875px;">The CRC32 of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.path</td>
+<td style="width: 417.296875px;">The file path.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.ssdeep</td>
+<td style="width: 417.296875px;">The ssdeep of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.size</td>
+<td style="width: 417.296875px;">The size of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.sha512</td>
+<td style="width: 417.296875px;">The SHA512 hash of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.md5</td>
+<td style="width: 417.296875px;">The MD5 hash of the file.</td>
+</tr>
 </tbody>
 </table>
 <h5> </h5>

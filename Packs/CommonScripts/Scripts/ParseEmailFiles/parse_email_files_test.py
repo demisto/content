@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import print_function
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
-    data_to_md, create_headers_map
+    data_to_md, create_headers_map, DataModel
 from CommonServerPython import entryTypes
 import demistomock as demisto
 import pytest
@@ -581,6 +581,12 @@ def test_msg_headers_map():
     assert 'text/plain' in email_data['Format']
 
 
+def test_parse_body_with_russian_language():
+    email_data, ignore = handle_msg('test_data/Phishing_TEST.msg', 'Phishing_TEST.msg')
+    assert str(email_data['Text']).startswith('\xd0\xa3')
+    assert str(email_data['HTML']).startswith('\xd0\xa3')
+
+
 def test_unknown_file_type(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smtp_email_type.eml', info="bad"))
@@ -899,3 +905,36 @@ def test_only_parts_of_object_email_saved(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['logo5.png', 'logo2.png']
+
+
+def test_pkcs7_mime(mocker):
+    """
+    Given: An email file smime2.p7m of type application/pkcs7-mime and info -
+    MIME entity text, ISO-8859 text, with very long lines, with CRLF line terminators
+    When: Parsing the email.
+    Then: The email is parsed correctly.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('smime2.p7m',
+                                                          info='MIME entity text, ISO-8859 text, with very long lines,'
+                                                               ' with CRLF line terminators'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Testing signed multipart email'
+
+
+def test_PtypString():
+    data_value = DataModel.PtypString('IPM.Note')
+    assert data_value == u'IPM.Note'
+
+    data_value = DataModel.PtypString('I\x00P\x00M\x00.\x00N\x00o\x00t\x00e\x00')
+    assert data_value == u'IPM.Note'

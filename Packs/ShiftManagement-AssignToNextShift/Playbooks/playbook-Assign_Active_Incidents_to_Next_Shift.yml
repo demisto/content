@@ -175,7 +175,7 @@ tasks:
       id: d9cfc9cb-513d-4f1b-803d-98f9e396d93a
       iscommand: false
       name: Assign Incidents to next shift
-      script: 4e1acfca-4242-43a2-865b-e03739997720
+      script: AssignToNextShift
       type: regular
       version: -1
     taskid: d9cfc9cb-513d-4f1b-803d-98f9e396d93a

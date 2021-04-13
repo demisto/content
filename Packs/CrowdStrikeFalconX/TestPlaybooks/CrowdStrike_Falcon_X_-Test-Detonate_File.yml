@@ -115,7 +115,7 @@ tasks:
     taskid: 7043a945-5200-40c5-8f48-b62e4b1c7573
     type: playbook
     task:
-      id: Detonate File - CrowdStrike Falcon X
+      id: 7043a945-5200-40c5-8f48-b62e4b1c7573
       version: -1
       name: Detonate File - CrowsStrike Falcon X
       playbookName: Detonate File - CrowsStrike Falcon X

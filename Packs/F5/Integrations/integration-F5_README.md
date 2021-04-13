@@ -1,5 +1,5 @@
 Use the F5 Firewall integration to manage your F5 firewall rules.
-This integration was integrated and tested with version xx of F5 firewall
+
 ## Configure F5 Firewall on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

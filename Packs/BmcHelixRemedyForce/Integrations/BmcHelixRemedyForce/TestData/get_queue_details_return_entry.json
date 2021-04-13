@@ -40,5 +40,6 @@
     ]
   },
   "IndicatorTimeline": [],
-  "IgnoreAutoExtract": false
+  "IgnoreAutoExtract": false,
+  "Note": false
 }

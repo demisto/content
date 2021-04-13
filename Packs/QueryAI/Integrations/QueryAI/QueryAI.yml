@@ -7,12 +7,8 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Email
-  name: email
-  required: true
-  type: 0
-- display: API Key
-  name: license_key
+- display: API Token
+  name: api_token
   required: true
   type: 4
 - display: Default Platform Alias
@@ -84,7 +80,7 @@ script:
     - contextPath: QueryAI.query.markdown_string
       description: Readable Response after running query
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
   longRunning: false

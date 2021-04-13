@@ -73,8 +73,16 @@ script:
       - HIPAA
       - ISO_2700
       - NIST_800-53_Rev4
+      - NIST_800-171_Rev2
       - PCI
       - SOC
+      required: false
+      secret: false
+    - default: false
+      description: Setting the 'rec_id' will filter compliance results for the specified
+        Recommendation ID.
+      isArray: false
+      name: rec_id
       required: false
       secret: false
     deprecated: false
@@ -221,6 +229,13 @@ script:
       - AZURE_SOC
       required: false
       secret: false
+    - default: false
+      description: Setting the 'rec_id' will filter compliance results for the specified
+        Recommendation ID.
+      isArray: false
+      name: rec_id
+      required: false
+      secret: false
     deprecated: false
     description: Fetch the latest Azure compliance data from Lacework.
     execution: false
@@ -363,6 +378,13 @@ script:
       - GCP_CIS
       - GCP_PCI
       - GCP_SOC
+      required: false
+      secret: false
+    - default: false
+      description: Setting the 'rec_id' will filter compliance results for the specified
+        Recommendation ID.
+      isArray: false
+      name: rec_id
       required: false
       secret: false
     deprecated: false
@@ -1136,7 +1158,7 @@ script:
     - contextPath: Lacework.Vulnerability.Host.summary.last_evaluation_time
       description: The time of the last vulnerability evaluation.
       type: String
-  dockerimage: demisto/lacework:1.0.0.12410
+  dockerimage: demisto/lacework:1.0.0.14553
   feed: false
   isfetch: true
   longRunning: false

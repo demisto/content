@@ -1,6 +1,6 @@
 id: JOB - Integrations and Playbooks Health Check - Lists handling
 version: -1
-name: JOB - Integrations and Playbooks Health Check - Lists handling
+name: JOB - Integrations and Incidents Health Check - Lists handling
 description: This playbook is triggered by a 'JOB - Integrations and Playbooks Health'
   playbook and is responsible for creating or updating related XSOAR lists.
 starttaskid: "0"

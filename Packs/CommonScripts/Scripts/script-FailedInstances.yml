@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: FailedInstances
 script: >
-  var INTERNAL_MODULES_BRANDS = ['Scripts', 'Builtin'];
+  var INTERNAL_MODULES_BRANDS = ['Scripts', 'Builtin', 'testmodule'];
 
 
   var failedInstances = [{}];

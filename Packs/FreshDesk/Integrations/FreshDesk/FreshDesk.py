@@ -9,12 +9,7 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 # Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
+handle_proxy(proxy_param_name='proxy')
 ''' GLOBALS/PARAMS '''
 
 PARAMS = demisto.params()

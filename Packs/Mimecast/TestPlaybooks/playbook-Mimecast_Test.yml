@@ -1044,7 +1044,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://urltest.com/malware.bin
+              simple: You have new held messages
     view: |-
       {
         "position": {

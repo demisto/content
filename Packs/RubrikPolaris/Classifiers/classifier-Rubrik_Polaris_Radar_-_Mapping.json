@@ -1,0 +1,137 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "97b3f7dc-5bdb-40c8-819b-8c1beb95cb09",
+    "mapping": {
+        "Rubrik Radar": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Rubrik Polaris Activity Series ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "activitySeriesId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Rubrik Polaris Analysis Progress": {
+                    "complex": null,
+                    "simple": "progress"
+                },
+                "Rubrik Polaris CDM Cluster ID": {
+                    "complex": null,
+                    "simple": "cluster.id"
+                },
+                "Rubrik Polaris CDM Cluster Name": {
+                    "complex": null,
+                    "simple": "cluster.name"
+                },
+                "Rubrik Polaris Event Completed": {
+                    "complex": null,
+                    "simple": "eventCompleted"
+                },
+                "Rubrik Polaris Event ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Rubrik Polaris Last Activity Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "lastActivityStatus",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Rubrik Polaris Last Updated": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "lastUpdated",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Rubrik Polaris Message": {
+                    "complex": null,
+                    "simple": "message"
+                },
+                "Rubrik Polaris Object ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "objectId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Rubrik Polaris Object Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "objectName",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Rubrik Polaris Object Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "objectType",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "severity",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+
+            }
+        }
+    },
+    "name": "Rubrik Polaris Radar - Mapping",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -56,18 +56,19 @@ Gets the properties of returned emails.
 ##### Base Command
 
 `msgraph-mail-list-emails`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID from which to pull emails (can be principal ID (email address)). | Required | 
-| folder_id |  The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).  | Optional | 
-| odata | An OData query. | Optional | 
-| search | The term for which to search. This argument cannot contain reserved characters such as "!, $, #, @, etc". Click [here](https://tools.ietf.org/html/rfc3986#section-2.2) for further information. | Optional | 
-| pages_to_pull | The number of pages of emails to return. The maximum is 10 emails per page. | Optional | 
+| user_id | User ID from which to pull mails (can be principal ID (email address)). | Required | 
+| folder_id |  A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). . | Optional | 
+| odata | An OData query. See REDAME for OData usage examples. | Optional | 
+| search | The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2. | Optional | 
+| page_size | Limit emails to fetch in one request. Default is 20. | Optional | 
+| pages_to_pull | The number of pages of emails to return (maximum is 10 emails per page). Default is 1. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -78,9 +79,9 @@ Gets the properties of returned emails.
 | MSGraphMail.SendTime | Date | The time the email was sent. | 
 | MSGraphMail.Categories | String | Categories of the email. | 
 | MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
-| MSGraphMail.Subject | String | The subject of the email. | 
+| MSGraphMail.Subject | String | The subject of email. | 
 | MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
-| MSGraphMail.Body | String | The content (body) of the email. | 
+| MSGraphMail.Body | String | The content \(body\) of the email. | 
 | MSGraphMail.Sender.Name | String | The name of the sender. | 
 | MSGraphMail.Sender.Address | String | The email address of the sender. | 
 | MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
@@ -92,6 +93,7 @@ Gets the properties of returned emails.
 | MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. | 
 | MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
 | MSGraphMail.UserID | String | The ID of the user. | 
+| MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results. | 
 
 
 ##### Command Example
@@ -102,6 +104,7 @@ Gets the properties of returned emails.
 {
     "MSGraphMail": [
         {
+            "NextPage": "link_to_next_page"
             "BCCRecipients": null,
             "CCRecipients": null,
             "Categories": [],

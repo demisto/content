@@ -8,12 +8,19 @@ args:
   required: false
   secret: false
 - default: false
+  defaultValue: '300'
+  description: Maximum number of incidents to query. Maximum is 1000.
+  isArray: false
+  name: max_incidents
+  required: false
+  secret: false
+- default: false
   description: Rest API instance to use.
   isArray: false
   name: rest_api_instance
   required: false
   secret: false
-comment: Gets failed tasks details for incidents based on a query.
+comment: Gets failed tasks details for incidents based on a query. Limited to 1000 incidents.
 commonfields:
   id: GetFailedTasks
   version: -1
@@ -24,7 +31,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.9.2.17246
 runas: DBotWeakRole
 runonce: false
 tests:

@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
-<p>Use the RSA Archer integration to manage policies, controls, risk, assessments, and deficiencies across lines of business.</p>
+<p>Deprecated. Use the RSA Archer v2 integration instead.</p>
 <hr>
 <h2>Configure the RSA Archer integration on Demisto</h2>
 <ol>

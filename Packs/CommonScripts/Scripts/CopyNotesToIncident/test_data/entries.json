@@ -1,0 +1,100 @@
+[
+    {
+        "ContentsFormat": "text",
+        "Tags": null,
+        "Brand": "Builtin",
+        "HumanReadable": "Test Note 1",
+        "ID": "588@11",
+        "FileID": "",
+        "IgnoreAutoExtract": false,
+        "Evidence": false,
+        "EntryContext": null,
+        "Contents": "Test Note 1",
+        "EvidenceID": "",
+        "ImportantEntryContext": null,
+        "Note": true
+    },
+    {
+        "ContentsFormat": "text",
+        "Tags": [
+            "Tag1"
+        ],
+        "Brand": "Builtin",
+        "HumanReadable": "Tagged Test Note with Tag 1",
+        "ID": "638@11",
+        "FileID": "",
+        "IgnoreAutoExtract": false,
+        "Evidence": false,
+        "EntryContext": null,
+        "Contents": "Tagged Test Note with Tag 1",
+        "EvidenceID": "",
+        "ImportantEntryContext": null,
+        "Note": true
+    },
+    {
+        "ContentsFormat": "text",
+        "Tags": [
+            "Tag2"
+        ],
+        "Brand": "Builtin",
+        "HumanReadable": "Tagged Test Note with Tag 2",
+        "ID": "638@11",
+        "FileID": "",
+        "IgnoreAutoExtract": false,
+        "Evidence": false,
+        "EntryContext": null,
+        "Contents": "Tagged Test Note with Tag 2",
+        "EvidenceID": "",
+        "ImportantEntryContext": null,
+        "Note": true
+    },
+    {
+        "ContentsFormat": "text",
+        "Tags": [
+            "Tag2"
+        ],
+        "Brand": "Builtin",
+        "HumanReadable": "Tagged Test not-Note with Tag 2",
+        "ID": "638@11",
+        "FileID": "",
+        "IgnoreAutoExtract": false,
+        "Evidence": false,
+        "EntryContext": null,
+        "Contents": "Tagged Test not-Note with Tag 2",
+        "EvidenceID": "",
+        "ImportantEntryContext": null,
+        "Note": false
+    },
+    {
+        "ContentsFormat": "text",
+        "Tags": [
+            "Tag2"
+        ],
+        "Brand": "Builtin",
+        "HumanReadable": "Tagged Test not-Note with Tag 1",
+        "ID": "638@11",
+        "FileID": "",
+        "IgnoreAutoExtract": false,
+        "Evidence": false,
+        "EntryContext": null,
+        "Contents": "Tagged Test not-Note with Tag 1",
+        "EvidenceID": "",
+        "ImportantEntryContext": null,
+        "Note": false
+    },
+    {
+        "ContentsFormat": "text",
+        "Tags": null,
+        "Brand": "Builtin",
+        "HumanReadable": "Tagged Test not-Note with no tags",
+        "ID": "638@11",
+        "FileID": "",
+        "IgnoreAutoExtract": false,
+        "Evidence": false,
+        "EntryContext": null,
+        "Contents": "Tagged Test not-Note with no tags",
+        "EvidenceID": "",
+        "ImportantEntryContext": null,
+        "Note": false
+    }
+]

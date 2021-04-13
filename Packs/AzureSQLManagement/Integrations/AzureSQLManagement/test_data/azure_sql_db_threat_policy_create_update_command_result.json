@@ -1,0 +1,19 @@
+{
+    "properties": {
+        "state": "Enabled",
+        "disabledAlerts": [
+            "Brute_Force",
+            "Access_Anomaly"
+        ],
+        "emailAddresses": [
+            "test1@test.com"
+        ],
+        "emailAccountAdmins": true,
+        "storageAccountAccessKey": "",
+        "retentionDays": 5,
+        "creationTime": "0001-01-01T00:00:00Z"
+    },
+    "id": "/subscriptions/123456789/resourceGroups/integration/providers/Microsoft.Sql/servers/integration/databases/integration-db/securityAlertPolicies/Default",
+    "name": "Default",
+    "type": "Microsoft.Sql/servers/databases/securityAlertPolicies"
+}

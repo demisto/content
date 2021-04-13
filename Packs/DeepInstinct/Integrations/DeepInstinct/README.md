@@ -16,7 +16,7 @@ This integration was integrated and tested with version 2.3.1.17 of Deep Instinc
     * __API Key__
     * __Fetch incidents__
     * __Incident type__
-    * __first event ID to fetch from__
+    * __First event ID to fetch from__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---

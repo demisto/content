@@ -1,0 +1,52 @@
+commonfields:
+  id: ScheduleGenericPolling
+  version: -1
+name: ScheduleGenericPolling
+fromversion: 5.0.0
+script: ''
+type: python
+subtype: python2
+tags: []
+comment: Called by the GenericPolling playbook, schedules the polling task.
+enabled: true
+args:
+- name: ids
+  required: true
+  description: List of IDs to poll
+  isArray: true
+- name: pollingCommand
+  required: true
+  description: Name of the polling command to run
+- name: pollingCommandArgName
+  required: true
+  description: Name of the argument of the polling command
+  defaultValue: ids
+- name: dt
+  required: true
+  description: DT filter for polling IDs
+- name: playbookId
+  description: The ID of the playbook that contains the manual task which will be
+    completed once the polling is done.
+- name: interval
+  required: true
+  description: Polling frequency - how often the polling command should run (minutes)
+  defaultValue: "1"
+- name: timeout
+  required: true
+  description: How much time to poll before declaring a timeout and resuming the playbook
+    (minutes)
+  defaultValue: "60"
+- name: tag
+  required: true
+  description: The tag of the blocking manual task ("Wait For Polling Task To Finish")
+  defaultValue: polling
+- name: additionalPollingCommandArgNames
+  description: Names of additional arguments for the polling command (e.g. arg1,arg2,...)
+  isArray: true
+- name: additionalPollingCommandArgValues
+  description: Values of the additional arguments for the polling command (e.g. value1,value2,...)
+  isArray: true
+scripttarget: 0
+runonce: false
+tests:
+- No test

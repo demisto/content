@@ -1767,7 +1767,7 @@ RBAC Permissions Required - org.search.events: READ
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| process_guid | The process GUID to search. | Optional | 
+| process_guid | The process GUID to search. Must be focused on a single process. | Optional | 
 | event_type | The event type to search. | Optional | 
 | limit | The maximum number of rows to return. Default is 20. | Optional | 
 | query | A free-style query. For example, "process_name:svchost.exe". | Optional | 

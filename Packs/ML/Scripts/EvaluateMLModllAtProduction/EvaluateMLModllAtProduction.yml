@@ -75,7 +75,7 @@ script: '-'
 subtype: python3
 system: false
 type: python
-dockerimage: demisto/dl:languages1.0
+dockerimage: demisto/ml:1.0.0.15569
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0

@@ -1,0 +1,62 @@
+category: Utilities
+commonfields:
+  id: Generic Webhook
+  version: -1
+configuration:
+- display: Long running instance
+  defaultvalue: 'true'
+  name: longRunning
+  type: 8
+  required: false
+  hidden: true
+- additionalinfo: Runs the web server on this port from within Cortex XSOAR. Requires
+    a unique port for each long-running integration instance. Do not use the same
+    port for multiple instances.
+  display: Listen Port
+  name: longRunningPort
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- display: Certificate (Required for HTTPS)
+  additionalinfo: Required for HTTPS, if not using server rerouting
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  additionalinfo: Required for HTTPS, if not using server rerouting
+  name: key
+  required: false
+  type: 14
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- additionalinfo: Because this is a push-based integration, it cannot fetch sample events in
+    the mapping wizard. After you finish mapping, it is recommended to turn off the sample
+    events storage to reduce performance overhead.
+  display: Store sample events for mapping
+  hidden: false
+  name: store_samples
+  required: false
+  type: 8
+description: The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
+display: Generic Webhook
+name: Generic Webhook
+script:
+  commands: []
+  dockerimage: demisto/fastapi:1.0.0.12812
+  feed: false
+  isfetch: false
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  isFetchSamples: true
+fromversion: 5.5.0
+tests:
+  - Generic Webhook - Test

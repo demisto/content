@@ -49,7 +49,7 @@ tasks:
       description: This playbook pushes to your SIEM indicators that have
         the tag processed_black. These indicators have been either received by a reliable
         Threat Intel feed or approved by an analyst manually.
-      playbookName: TIM - Add IP Indicators to SIEM
+      playbookName: TIM - Add IP Indicators To SIEM
       type: playbook
       iscommand: false
       brand: ""

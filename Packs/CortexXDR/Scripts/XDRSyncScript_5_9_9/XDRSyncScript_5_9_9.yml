@@ -96,7 +96,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: xdrmedseverityalertcount
+  defaultValue: xdrmediumseverityalertcount
   description: The med_severity_alert_count field name in Demisto.
   isArray: false
   name: med_severity_alert_count
@@ -175,11 +175,26 @@ args:
   name: xdr_network_artifacts
   required: false
   secret: false
-comment: Syncs a single incident between Demisto and XDR. This script always uses the xdr-get-incident-extra-data command and
-  outputs to the context the entire incident JSON. When the incident is updated in XDR, the
-  Demisto incident will be updated accordingly and the default playbook will rerun. When an incident
-  is updated in Demisto, the script will execute the xdr-update-incident command and update the
-  incident in XDR.
+- default: false
+  defaultValue: xdrmodificationtime
+  description: The modification_time field name in Demisto.
+  isArray: false
+  name: modification_time
+  required: false
+  secret: false
+- default: false
+  defaultValue: xdrmanualseverity
+  description: The manual_severity field name in Demisto.
+  isArray: false
+  name: manual_severity
+  required: false
+  secret: false
+comment: Syncs a single incident between Demisto and XDR. This script
+  always uses the xdr-get-incident-extra-data command and outputs to the context the
+  entire incident JSON. When the incident is updated in XDR, the Demisto incident
+  will be updated accordingly and the default playbook will rerun. When an incident
+  is updated in Demisto, the script will execute the xdr-update-incident command and
+  update the incident in XDR.
 commonfields:
   id: XDRSyncScript
   version: -1
@@ -456,7 +471,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.8.5.11789
+dockerimage: demisto/python3:3.8.6.13358
 toversion: 5.9.9
 fromversion: 5.0.0
 tests:

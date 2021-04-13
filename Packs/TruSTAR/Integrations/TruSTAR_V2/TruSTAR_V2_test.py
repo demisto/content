@@ -247,7 +247,7 @@ def test_related_indicators(client, related_indicators, monkeypatch):
     response = client.get_related_indicators(indicators)
 
     expected = [i.to_dict(remove_nones=True) for i in related_indicators.items]
-    assert response.get('Contents') == expected
+    assert response[0].get('Contents') == expected
 
 
 def test_trending_indicators(client, trending_indicators, monkeypatch):
@@ -259,7 +259,7 @@ def test_trending_indicators(client, trending_indicators, monkeypatch):
     response = client.get_trending_indicators()
     expected = [i.to_dict(remove_nones=True) for i in trending_indicators]
 
-    assert response.get('Contents') == expected
+    assert response[0].get('Contents') == expected
 
 
 def test_get_indicators_metadata(client, indicators_metadata, monkeypatch):
@@ -273,7 +273,7 @@ def test_get_indicators_metadata(client, indicators_metadata, monkeypatch):
     expected["firstSeen"] = Utils.normalize_time(expected.get('firstSeen'))
     expected["lastSeen"] = Utils.normalize_time(expected.get('lastSeen'))
 
-    assert response.get('Contents')[0] == expected
+    assert response[0].get('Contents')[0] == expected
 
 
 def test_get_indicator_summaries(client, indicator_summaries, monkeypatch):
@@ -286,7 +286,7 @@ def test_get_indicator_summaries(client, indicator_summaries, monkeypatch):
     expected = indicator_summaries.items[0].to_dict(remove_nones=True)
     expected['indicatorType'] = expected.pop('type')
 
-    assert response.get('Contents')[0] == expected
+    assert response[0].get('Contents')[0] == expected
 
 
 def test_get_whitelisted_indicators(client, whitelisted_indicators, monkeypatch):
@@ -298,7 +298,7 @@ def test_get_whitelisted_indicators(client, whitelisted_indicators, monkeypatch)
     response = client.get_whitelist()
     expected = [i.to_dict(remove_nones=True) for i in whitelisted_indicators.items]
 
-    assert response.get('Contents') == expected
+    assert response[0].get('Contents') == expected
 
 
 def test_get_indicators_for_report(client, whitelisted_indicators, monkeypatch):
@@ -310,7 +310,7 @@ def test_get_indicators_for_report(client, whitelisted_indicators, monkeypatch):
     response = client.get_indicators_for_report("76cc1321-f630-test-b82b-eb00a9022445")
     expected = [i.to_dict(remove_nones=True) for i in whitelisted_indicators.items]
 
-    assert response.get('Contents') == expected
+    assert response[0].get('Contents') == expected
 
 
 def test_move_report(client, monkeypatch):
@@ -455,7 +455,7 @@ def test_get_all_phishing_indicators(client, phishing_indicators, monkeypatch):
     response = client.get_all_phishing_indicators()
     expected = phishing_indicators.items[0].to_dict(remove_nones=True)
 
-    assert response.get('Contents')[0] == expected
+    assert response[0].get('Contents')[0] == expected
 
 
 def test_get_phishing_submissions(client, phishing_submissions, monkeypatch):
@@ -489,4 +489,4 @@ def test_search_indicators(client, whitelisted_indicators, monkeypatch):
     response = client.search_indicators()
     expected = [i.to_dict(remove_nones=True) for i in whitelisted_indicators.items]
 
-    assert response.get('Contents') == expected
+    assert response[0].get('Contents') == expected

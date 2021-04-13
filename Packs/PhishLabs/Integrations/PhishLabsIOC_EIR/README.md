@@ -30,6 +30,7 @@
             <li><strong>Name</strong>: a textual name for the integration instance.</li>
             <li><strong>Server URL (e.g. https://example.net)</strong></li>
             <li><strong>User</strong></li>
+            <li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is B - Usually reliable)</li>
             <li><strong>Fetch incidents</strong></li>
             <li><strong>First fetch timestamp ( e.g., 12 hours, 7 days)</strong></li>
             <li><strong>Fetch limit</strong></li>

@@ -1001,7 +1001,7 @@ def test():
 def get_client():
     opts_dict = {
         'host': SERVER,
-        'cafile': 'true' if USE_SSL else 'false',
+        'cafile': os.environ.get('SSL_CERT_FILE') if USE_SSL else 'false',
         'org': ORG_NAME
     }
     if USERNAME and PASSWORD:

@@ -1,0 +1,762 @@
+commonfields:
+  id: Gurucul-GRA
+  version: -1
+name: Gurucul-GRA
+display: Gurucul-GRA
+category: Data Enrichment & Threat Intelligence
+description: Gurucul Risk Analytics (GRA) is a Unified Security and Risk Analytics
+  platform.
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  defaultvalue: https://example.net
+  type: 0
+  required: true
+- display: Authorization Key
+  name: apikey
+  type: 4
+  required: true
+- display: Fetch Incident Command
+  name: fetch_incident_command
+  defaultvalue: GraCases
+  type: 15
+  required: false
+  options:
+  - GraHighRiskUser
+  - GraCases
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: "25"
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: gra-fetch-users
+    arguments:
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Users.firstName
+      description: First Name
+      type: string
+    - contextPath: Gra.Users.middleName
+      description: Middle Name
+      type: string
+    - contextPath: Gra.Users.lastName
+      description: Last Name
+      type: string
+    - contextPath: Gra.Users.employeeId
+      description: Employee Id
+      type: string
+    - contextPath: Gra.Users.riskScore
+      description: Risk Score
+      type: string
+    - contextPath: Gra.Users.userRisk
+      description: User Risk
+      type: number
+    - contextPath: Gra.Users.department
+      description: Department
+      type: string
+    - contextPath: Gra.Users.email
+      description: Email
+      type: string
+    - contextPath: Gra.Users.phone
+      description: Phone
+      type: string
+    - contextPath: Gra.Users.location
+      description: Location
+      type: string
+    - contextPath: Gra.Users.manager
+      description: Manager
+      type: string
+    - contextPath: Gra.Users.title
+      description: Title
+      type: string
+    - contextPath: Gra.Users.joiningDate
+      description: Joining Date
+      type: date
+    - contextPath: Gra.Users.exitDate
+      description: Exit Date
+      type: date
+    description: Retrieve List of All Users (Identities)
+  - name: gra-fetch-accounts
+    arguments:
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Accounts.id
+      description: Id
+      type: number
+    - contextPath: Gra.Accounts.name
+      description: Name
+      type: string
+    - contextPath: Gra.Accounts.type
+      description: Type
+      type: string
+    - contextPath: Gra.Accounts.created_on
+      description: Created On
+      type: date
+    - contextPath: Gra.Accounts.department
+      description: Department
+      type: string
+    - contextPath: Gra.Accounts.description
+      description: Description
+      type: string
+    - contextPath: Gra.Accounts.resource
+      description: Resource
+      type: string
+    - contextPath: Gra.Accounts.domain
+      description: Domain
+      type: string
+    - contextPath: Gra.Accounts.high_risk
+      description: High Risk
+      type: string
+    - contextPath: Gra.Accounts.is_orphan
+      description: Is Orphan
+      type: string
+    - contextPath: Gra.Accounts.is_reassigned
+      description: Is Reassigned
+      type: string
+    - contextPath: Gra.Accounts.risk_score
+      description: Risk Score
+      type: number
+    - contextPath: Gra.Accounts.updated_on
+      description: Updated On
+      type: date
+    description: Retrieve all Accounts Information
+  - name: gra-fetch-active-resource-accounts
+    arguments:
+    - name: resource_name
+      required: true
+      description: 'Resource Name '
+      defaultValue: Windows Security
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Active.Resource.Accounts.id
+      description: ID
+      type: number
+    - contextPath: Gra.Active.Resource.Accounts.name
+      description: Name
+      type: string
+    - contextPath: Gra.Active.Resource.Accounts.type
+      description: Type
+      type: string
+    - contextPath: Gra.Active.Resource.Accounts.created_on
+      description: Created On
+      type: date
+    - contextPath: Gra.Active.Resource.Accounts.department
+      description: Department
+      type: string
+    - contextPath: Gra.Active.Resource.Accounts.description
+      description: Description
+      type: string
+    - contextPath: Gra.Active.Resource.Accounts.resource
+      description: Resource
+      type: string
+    - contextPath: Gra.Active.Resource.Accounts.domain
+      description: Domain
+      type: string
+    - contextPath: Gra.Active.Resource.Accounts.high_risk
+      description: High Risk
+      type: string
+    - contextPath: Gra.Active.Resource.Accounts.is_orphan
+      description: Is Orphan
+      type: string
+    - contextPath: Gra.Active.Resource.Accounts.is_reassigned
+      description: Is Reassigned
+      type: string
+    - contextPath: Gra.Active.Resource.Accounts.risk_score
+      description: Risk Score
+      type: number
+    - contextPath: Gra.Active.Resource.Accounts.updated_on
+      description: Updated On
+      type: date
+    description: Retrieve List of All Active Accounts for a Given Resource
+  - name: gra-fetch-user-accounts
+    arguments:
+    - name: employee_id
+      required: true
+      description: Employee ID
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.User.Accounts.id
+      description: Id
+      type: number
+    - contextPath: Gra.User.Accounts.name
+      description: Name
+      type: string
+    - contextPath: Gra.User.Accounts.type
+      description: Type
+      type: string
+    - contextPath: Gra.User.Accounts.created_on
+      description: Created On
+      type: date
+    - contextPath: Gra.User.Accounts.department
+      description: Department
+      type: string
+    - contextPath: Gra.User.Accounts.description
+      description: Description
+      type: string
+    - contextPath: Gra.User.Accounts.resource
+      description: Resource
+      type: string
+    - contextPath: Gra.User.Accounts.domain
+      description: Domain
+      type: string
+    - contextPath: Gra.User.Accounts.high_risk
+      description: High Risk
+      type: string
+    - contextPath: Gra.User.Accounts.is_orphan
+      description: Is Orphan
+      type: string
+    - contextPath: Gra.User.Accounts.is_reassigned
+      description: Is Reassigned
+      type: string
+    - contextPath: Gra.User.Accounts.risk_score
+      description: Risk Score
+      type: number
+    description: Retrieve List of All Active Accounts and Details for a Given User
+      / Identity
+  - name: gra-fetch-resource-highrisk-accounts
+    arguments:
+    - name: resource_name
+      required: true
+      description: Resource Name
+      defaultValue: Windows Security
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Resource.Highrisk.Accounts.id
+      description: Id
+      type: number
+    - contextPath: Gra.Resource.Highrisk.Accounts.name
+      description: Name
+      type: string
+    - contextPath: Gra.Resource.Highrisk.Accounts.type
+      description: Type
+      type: string
+    - contextPath: Gra.Resource.Highrisk.Accounts.created_on
+      description: Created On
+      type: date
+    - contextPath: Gra.Resource.Highrisk.Accounts.department
+      description: Department
+      type: string
+    - contextPath: Gra.Resource.Highrisk.Accounts.description
+      description: Description
+      type: string
+    - contextPath: Gra.Resource.Highrisk.Accounts.resource
+      description: Resource
+      type: string
+    - contextPath: Gra.Resource.Highrisk.Accounts.domain
+      description: Domain
+      type: string
+    - contextPath: Gra.Resource.Highrisk.Accounts.high_risk
+      description: High Risk
+      type: string
+    - contextPath: Gra.Resource.Highrisk.Accounts.is_orphan
+      description: Is Orphan
+      type: string
+    - contextPath: Gra.Resource.Highrisk.Accounts.is_reassigned
+      description: Is Reassigned
+      type: string
+    - contextPath: Gra.Resource.Highrisk.Accounts.risk_score
+      description: Risk Score
+      type: number
+    - contextPath: Gra.Resource.Highrisk.Accounts.updated_on
+      description: Updated On
+      type: date
+    description: Retrieve High Risk Accounts for a Given Resource
+  - name: gra-fetch-hpa
+    arguments:
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Hpa.id
+      description: Id
+      type: number
+    - contextPath: Gra.Hpa.name
+      description: Name
+      type: string
+    - contextPath: Gra.Hpa.type
+      description: Type
+      type: string
+    - contextPath: Gra.Hpa.created_on
+      description: Created On
+      type: date
+    - contextPath: Gra.Hpa.department
+      description: Department
+      type: string
+    - contextPath: Gra.Hpa.description
+      description: Description
+      type: string
+    - contextPath: Gra.Hpa.resource
+      description: Resource
+      type: string
+    - contextPath: Gra.Hpa.domain
+      description: Domain
+      type: string
+    - contextPath: Gra.Hpa.high_risk
+      description: High Risk
+      type: string
+    - contextPath: Gra.Hpa.is_orphan
+      description: Is Orphan
+      type: string
+    - contextPath: Gra.Hpa.is_reassigned
+      description: Is Reassigned
+      type: string
+    - contextPath: Gra.Hpa.risk_score
+      description: Risk Score
+      type: number
+    - contextPath: Gra.Hpa.updated_on
+      description: Updated On
+      type: date
+    description: Retrieve List of All High Risk Privileged Accounts
+  - name: gra-fetch-resource-hpa
+    arguments:
+    - name: resource_name
+      required: true
+      description: Resource Name
+      defaultValue: Windows Security
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Resource.Hpa.id
+      description: Id
+      type: number
+    - contextPath: Gra.Resource.Hpa.name
+      description: Name
+      type: string
+    - contextPath: Gra.Resource.Hpa.type
+      description: Type
+      type: string
+    - contextPath: Gra.Resource.Hpa.created_on
+      description: Created On
+      type: date
+    - contextPath: Gra.Resource.Hpa.department
+      description: Department
+      type: string
+    - contextPath: Gra.Resource.Hpa.description
+      description: Description
+      type: string
+    - contextPath: Gra.Resource.Hpa.resource
+      description: Resource
+      type: string
+    - contextPath: Gra.Resource.Hpa.domain
+      description: Domain
+      type: string
+    - contextPath: Gra.Resource.Hpa.high_risk
+      description: High Risk
+      type: string
+    - contextPath: Gra.Resource.Hpa.is_orphan
+      description: Is Orphan
+      type: string
+    - contextPath: Gra.Resource.Hpa.is_reassigned
+      description: Is Reassigned
+      type: string
+    - contextPath: Gra.Resource.Hpa.risk_score
+      description: Risk Score
+      type: number
+    - contextPath: Gra.Resource.Hpa.updated_on
+      description: Updated On
+      type: date
+    description: Retrieve all High Privileged Accounts for a Given Resource
+  - name: gra-fetch-orphan-accounts
+    arguments:
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Orphan.Accounts.id
+      description: Id
+      type: number
+    - contextPath: Gra.Orphan.Accounts.name
+      description: Name
+      type: string
+    - contextPath: Gra.Orphan.Accounts.type
+      description: Type
+      type: string
+    - contextPath: Gra.Orphan.Accounts.created_on
+      description: Created_on
+      type: date
+    - contextPath: Gra.Orphan.Accounts.department
+      description: Department
+      type: string
+    - contextPath: Gra.Orphan.Accounts.description
+      description: Description
+      type: string
+    - contextPath: Gra.Orphan.Accounts.resource
+      description: Resource
+      type: string
+    - contextPath: Gra.Orphan.Accounts.domain
+      description: Domain
+      type: string
+    - contextPath: Gra.Orphan.Accounts.high_risk
+      description: High Risk
+      type: string
+    - contextPath: Gra.Orphan.Accounts.is_orphan
+      description: Is Orphan
+      type: string
+    - contextPath: Gra.Orphan.Accounts.is_reassigned
+      description: Is Reassigned
+      type: string
+    - contextPath: Gra.Orphan.Accounts.risk_score
+      description: Risk Score
+      type: number
+    - contextPath: Gra.Orphan.Accounts.updated_on
+      description: Updated On
+      type: date
+    description: Retrieve List of All Orphan / Rogue Accounts
+  - name: gra-fetch-resource-orphan-accounts
+    arguments:
+    - name: resource_name
+      required: true
+      description: Resource Name
+      defaultValue: Windows Security
+    - name: page
+      required: true
+      default: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Resource.Orphan.Accounts.id
+      description: Id
+      type: number
+    - contextPath: Gra.Resource.Orphan.Accounts.name
+      description: Name
+      type: string
+    - contextPath: Gra.Resource.Orphan.Accounts.type
+      description: Type
+      type: string
+    - contextPath: Gra.Resource.Orphan.Accounts.created_on
+      description: Created On
+      type: date
+    - contextPath: Gra.Resource.Orphan.Accounts.department
+      description: Department
+      type: string
+    - contextPath: Gra.Resource.Orphan.Accounts.description
+      description: Description
+      type: string
+    - contextPath: Gra.Resource.Orphan.Accounts.resource
+      description: Resource
+      type: string
+    - contextPath: Gra.Resource.Orphan.Accounts.domain
+      description: Domain
+      type: string
+    - contextPath: Gra.Resource.Orphan.Accounts.high_risk
+      description: High Risk
+      type: string
+    - contextPath: Gra.Resource.Orphan.Accounts.is_orphan
+      description: Is Orphan
+      type: string
+    - contextPath: Gra.Resource.Orphan.Accounts.is_reassigned
+      description: Is Reassigned
+      type: string
+    - contextPath: Gra.Resource.Orphan.Accounts.risk_score
+      description: Risk Score
+      type: number
+    - contextPath: Gra.Resource.Orphan.Accounts.updated_on
+      description: Updated On
+      type: date
+    description: Retrieve All Orphan / Rogue Accounts for a Given Resource
+  - name: gra-user-activities
+    arguments:
+    - name: employee_id
+      required: true
+      description: EMployee ID
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.User.Activity.employee_id
+      description: Employee Id
+      type: string
+    - contextPath: Gra.User.Activity.account_name
+      description: Account Name
+      type: string
+    - contextPath: Gra.User.Activity.resource_name
+      description: Resource Name
+      type: string
+    - contextPath: Gra.User.Activity.event_desc
+      description: Event Desc
+      type: string
+    - contextPath: Gra.User.Activity.event_date
+      description: Event Date
+      type: date
+    - contextPath: Gra.User.Activity.risk_score
+      description: Risk Score
+      type: number
+    description: Retrieve User Activity for a Given User
+  - name: gra-fetch-users-details
+    arguments:
+    - name: employee_id
+      required: true
+      description: Employee ID
+    outputs:
+    - contextPath: Gra.User.firstName
+      description: First Name
+      type: string
+    - contextPath: Gra.User.middleName
+      description: Middle Name
+      type: string
+    - contextPath: Gra.User.lastName
+      description: Last Name
+      type: string
+    - contextPath: Gra.User.employeeId
+      description: Employee Id
+      type: string
+    - contextPath: Gra.User.riskScore
+      description: Risk Score
+      type: number
+    - contextPath: Gra.User.userRisk
+      description: User Risk
+      type: number
+    - contextPath: Gra.User.department
+      description: Department
+      type: string
+    - contextPath: Gra.User.email
+      description: Email
+      type: string
+    - contextPath: Gra.User.phone
+      description: Phone
+      type: string
+    - contextPath: Gra.User.location
+      description: Location
+      type: string
+    - contextPath: Gra.User.manager
+      description: Manager
+      type: string
+    - contextPath: Gra.User.title
+      description: Title
+      type: string
+    - contextPath: Gra.User.joingDate
+      description: Joining Date
+      type: date
+    - contextPath: Gra.User.exitDate
+      description: Exit Date
+      type: date
+    description: Get details of the user
+  - name: gra-highRisk-users
+    arguments:
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: params
+      defaultValue: Per page record count
+    outputs:
+    - contextPath: Gra.Highrisk.Users.firstName
+      description: First Name
+      type: string
+    - contextPath: Gra.Highrisk.Users.middleName
+      description: Middle Name
+      type: string
+    - contextPath: Gra.Highrisk.Users.lastName
+      description: Last Name
+      type: string
+    - contextPath: Gra.Highrisk.Users.employeeId
+      description: Employee Id
+      type: string
+    - contextPath: Gra.Highrisk.Users.riskScore
+      description: Risk Score
+      type: string
+    - contextPath: Gra.Highrisk.Users.userRisk
+      description: User Risk
+      type: string
+    - contextPath: Gra.Highrisk.Users.department
+      description: Department
+      type: string
+    - contextPath: Gra.Highrisk.Users.email
+      description: Email
+      type: string
+    - contextPath: Gra.Highrisk.Users.phone
+      description: Phone
+      type: string
+    - contextPath: Gra.Highrisk.Users.location
+      description: Location
+      type: string
+    - contextPath: Gra.Highrisk.Users.manager
+      description: Manager
+      type: string
+    - contextPath: Gra.Highrisk.Users.title
+      description: Title
+      type: string
+    - contextPath: Gra.Highrisk.Users.joiningDate
+      description: Joining Date
+      type: date
+    - contextPath: Gra.Highrisk.Users.exitDate
+      description: Exit Date
+      type: date
+    description: Retrieve All High Risk User Information
+  - name: gra-cases
+    arguments:
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - CLOSED
+      - RISK ACCEPTED
+      - REOPENED
+      - ALL
+      description: Status
+      defaultValue: OPEN
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Cases.entityId
+      description: EntityId
+      type: number
+    - contextPath: Gra.Cases.entityTypeId
+      description: Entity Type Id
+      type: number
+    - contextPath: Gra.Cases.entity
+      description: Entity
+      type: string
+    - contextPath: Gra.Cases.caseId
+      description: Case Id
+      type: number
+    - contextPath: Gra.Cases.openDate
+      description: Open Date
+      type: date
+    - contextPath: Gra.Cases.ownerId
+      description: Owner Id
+      type: number
+    - contextPath: Gra.Cases.ownerType
+      description: Owner Type
+      type: string
+    - contextPath: Gra.Cases.ownerName
+      description: Owner Name
+      type: string
+    - contextPath: Gra.Cases.riskDate
+      description: Risk Date
+      type: date
+    - contextPath: Gra.Cases.status
+      description: satus
+      type: string
+    description: Retrieve List of All Cases for a Given Status
+  - name: gra-user-anomalies
+    arguments:
+    - name: employee_id
+      required: true
+      description: employee Id
+    - name: page
+      required: true
+      description: Page No
+      defaultValue: "1"
+    - name: max
+      required: true
+      description: Per page record count
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.User.Anomalies.anomaly_name
+      description: Anomaly Name
+      type: string
+    description: Retrieve Detailed Information for a Given User
+  dockerimage: demisto/python3:3.9.1.14969
+  isfetch: true
+  runonce: false
+  subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

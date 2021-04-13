@@ -1,4 +1,14 @@
-This playbook leverages all of the PCAP miner and PCAP file extractor sub playbook capabilities, including: * Search for specific values in a PCAP file * Parse and enrich detected indicators such as IP addresses, URLs, email addresses and domains found by the search . * Carve (extract) files found in the http, smb and other protocols and perform enrichment and detonation.
+This playbook leverages all of the PCAP miner and PCAP file extractor sub playbook capabilities, including: 
+* Search for specific values in a PCAP file 
+* Parse and enrich detected indicators such as IP addresses, URLs, email addresses and domains found by the search . 
+* Carve (extract) files found in the http, smb and other protocols and perform enrichment and detonation.
+
+The playbooks is meant to be a demonstration of all the PCAP analysis capabilities however it is more likely to use each of the subplaybooks seperatly. In order to demonstrate the entire flow make sure that at least on of the following playbook inputs is configured in order for search results to exist.
+* IPAddressToSearch
+* TCPPortsToSearch
+* UDPPortsToSearch
+* ProtocolToSearch
+* AdvancedSearchFilter
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

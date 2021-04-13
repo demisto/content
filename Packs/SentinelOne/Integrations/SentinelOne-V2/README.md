@@ -1,5 +1,5 @@
 End point protection
-This integration was integrated and tested with version xx of SentinelOne V2
+
 ## Configure SentinelOne V2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -14,7 +14,7 @@ This integration was integrated and tested with version xx of SentinelOne V2
 | proxy | Use system proxy settings | False |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
-| fetch_time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+| fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
 | fetch_threat_rank | Minimum risk score for importing incidents \(0-10\), where 0 is low risk and 10 is high risk | False |
 | fetch_limit | Fetch limit: the maximum number of incidents to fetch | False |
 

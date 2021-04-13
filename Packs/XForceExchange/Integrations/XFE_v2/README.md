@@ -1,5 +1,5 @@
 IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
-This integration was integrated and tested with version xx of XFE_v2
+
 ## Configure XFE_v2 on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -10,6 +10,7 @@ This integration was integrated and tested with version xx of XFE_v2
 | --- | --- | --- |
 | url | Server URL (e.g. https://api.xforce.ibmcloud.com) | True |
 | credentials | API Key | True |
+| Source Reliability | Reliability of the source providing the intelligence data. The default value is C - Fairly reliable. | True |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
 | ip_threshold | IP Threshold. Minimum risk score for the IP to be consodered malicious (ranges from 1 to 10). | False |
@@ -34,7 +35,6 @@ IP to check
 | --- | --- | --- |
 | ip | IP to check | Required | 
 | threshold | score treshold  | Optional | 
-| long | Should we return full response | Optional | 
 
 
 ##### Context Output
@@ -160,7 +160,6 @@ Check the given URL reputation
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | threshold | If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used. | Optional | 
-| long | Should we return full response with detected malware on the URLs | Optional | 
 | url | The URL to check | Required | 
 
 
@@ -215,7 +214,6 @@ Check file reputation
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file | The file hash md5/sha1/sha256 to check | Required | 
-| long | Should we return full response | Optional | 
 
 
 ##### Context Output
@@ -336,7 +334,6 @@ Check domain reputation
 | --- | --- | --- |
 | domain | The domain to check | Required | 
 | threshold | If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used. | Optional | 
-| long | Should we return full response | Optional | 
 
 
 ##### Context Output

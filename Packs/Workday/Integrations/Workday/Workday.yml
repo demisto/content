@@ -41,21 +41,21 @@ script:
       name: employee_id
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: "50"
       description: The maximum number of results to return. Default is 50.
       isArray: false
       name: count
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: "1"
       description: The page from which to get the employees' data.
       isArray: false
       name: page
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: "3"
       description: The number of managers to display.
       isArray: false
@@ -272,7 +272,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.0.0
 tests:
 - Workday - Test

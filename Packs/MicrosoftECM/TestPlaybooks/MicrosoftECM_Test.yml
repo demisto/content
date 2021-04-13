@@ -1,14 +1,16 @@
 id: Microsoft ECM - Test
 version: -1
 name: Microsoft ECM - Test
+description: This is a test playbook for the Microsoft Endpoint Configuration Manager
+  integration
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 14bf2f56-dbf2-455e-8141-1700a1ce2aa7
+    taskid: aa60fe49-91fb-460f-8e4f-5bf1dbcc5378
     type: start
     task:
-      id: 14bf2f56-dbf2-455e-8141-1700a1ce2aa7
+      id: aa60fe49-91fb-460f-8e4f-5bf1dbcc5378
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 5bf46b0b-f7a0-4f0c-8400-26711bda70b1
+    taskid: b02ffca3-60e0-4e97-8181-cc358e19a5ca
     type: regular
     task:
-      id: 5bf46b0b-f7a0-4f0c-8400-26711bda70b1
+      id: b02ffca3-60e0-4e97-8181-cc358e19a5ca
       version: -1
       name: Get Collections
       description: Gets a Configuration Manager collection
@@ -67,13 +69,13 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 9b306d21-d111-4059-8131-e2b7b7a8b179
+    taskid: 0aade5f2-ea4f-4346-82a3-88975e784691
     type: regular
     task:
-      id: 9b306d21-d111-4059-8131-e2b7b7a8b179
+      id: 0aade5f2-ea4f-4346-82a3-88975e784691
       version: -1
-      name: Get Devices
-      description: Gets a Configuration Manager device
+      name: List Devices
+      description: Lists a Configuration Manager device
       script: Microsoft Endpoint Configuration Manager|||ms-ecm-device-list
       type: regular
       iscommand: true
@@ -84,9 +86,8 @@ tasks:
     scriptarguments:
       collection_id: {}
       collection_name: {}
-      device_name:
-        simple: EC2AMAZ-2AKQ815
-      resource_id: {}
+      limit:
+        simple: "1"
     separatecontext: false
     view: |-
       {
@@ -102,10 +103,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 9aba1d00-80e7-4b61-8d89-90d62a20b530
+    taskid: 0a603cee-71f4-4d28-8954-3a1bd94bd286
     type: regular
     task:
-      id: 9aba1d00-80e7-4b61-8d89-90d62a20b530
+      id: 0a603cee-71f4-4d28-8954-3a1bd94bd286
       version: -1
       name: Generate Randon name
       description: Generates random string
@@ -146,30 +147,28 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: efe445eb-6360-4084-810c-f708465e04c9
-    type: condition
+    taskid: 4505d37f-e2ef-4025-89dc-f92b270df690
+    type: regular
     task:
-      id: efe445eb-6360-4084-810c-f708465e04c9
+      id: 4505d37f-e2ef-4025-89dc-f92b270df690
       version: -1
-      name: Validate Device
-      type: condition
-      iscommand: false
-      brand: ""
+      name: 'Get Device As resource '
+      description: Gets a Configuration Manager device By querying the SMS_R_System
+        class. You can use the `ms-ecm-device-get-resource` or `ms-ecm-device-get-collection-member`
+        commands to change the query class. Depending upon your role-based access
+        in the site, you may need to use one of these other commands.
+      script: Microsoft Endpoint Configuration Manager|||ms-ecm-device-get-resource
+      type: regular
+      iscommand: true
+      brand: Microsoft Endpoint Configuration Manager
     nexttasks:
-      "yes":
-      - "37"
+      '#none#':
+      - "45"
+    scriptarguments:
+      device_names:
+        simple: ${MicrosoftECM.Devices.DeviceName}
+      resource_ids: {}
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: MicrosoftECM.Devices.ResourceID
-            iscontext: true
-          right:
-            value:
-              simple: "16777220"
     view: |-
       {
         "position": {
@@ -184,10 +183,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 4b6d5649-a7f1-4317-8231-9a27c3652f76
+    taskid: aad59c40-4310-4f96-8f58-7293984bf865
     type: regular
     task:
-      id: 4b6d5649-a7f1-4317-8231-9a27c3652f76
+      id: aad59c40-4310-4f96-8f58-7293984bf865
       version: -1
       name: Get Script
       description: Gets Configuration Manager PowerShell scripts
@@ -217,10 +216,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 2d12fcef-2f5a-4bbc-8ec7-fa2be0d40a2f
+    taskid: 6c6cc710-0a49-4b73-8f24-9b950a6aeea3
     type: condition
     task:
-      id: 2d12fcef-2f5a-4bbc-8ec7-fa2be0d40a2f
+      id: 6c6cc710-0a49-4b73-8f24-9b950a6aeea3
       version: -1
       name: Is script exist and approved
       type: condition
@@ -260,10 +259,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: a264e968-69ed-485b-8605-1d089dbc4a55
+    taskid: 1112ccec-ca77-4a4d-86d4-794d46fedab5
     type: regular
     task:
-      id: a264e968-69ed-485b-8605-1d089dbc4a55
+      id: 1112ccec-ca77-4a4d-86d4-794d46fedab5
       version: -1
       name: Invoke-script
       description: Invokes a script in Configuration Manager
@@ -273,14 +272,17 @@ tasks:
       brand: Microsoft Endpoint Configuration Manager
     nexttasks:
       '#none#':
-      - "11"
+      - "48"
     scriptarguments:
       collection_id: {}
       collection_name:
         simple: All Systems
       device_name: {}
+      poll_results:
+        simple: "true"
       script_guid:
         simple: ${MicrosoftECM.Scripts.ScriptGuid}
+      timeout: {}
     separatecontext: false
     view: |-
       {
@@ -296,10 +298,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 01183f98-22c1-4d6c-80b8-9a8b1ede78f7
+    taskid: b17472ed-e4d0-41df-88bd-e01bb186127c
     type: regular
     task:
-      id: 01183f98-22c1-4d6c-80b8-9a8b1ede78f7
+      id: b17472ed-e4d0-41df-88bd-e01bb186127c
       version: -1
       name: Create script
       description: create new powershell script
@@ -331,10 +333,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 075d06da-139e-4110-830f-bb04df18931e
+    taskid: 71dad8ec-f9e2-4a90-83a6-f8279613093b
     type: regular
     task:
-      id: 075d06da-139e-4110-830f-bb04df18931e
+      id: 71dad8ec-f9e2-4a90-83a6-f8279613093b
       version: -1
       name: Approve script
       description: Approves a Configuration Manager PowerShell script
@@ -363,44 +365,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: 8092a49a-4dfc-4db3-8b1e-7eddcffdea4e
-    type: regular
-    task:
-      id: 8092a49a-4dfc-4db3-8b1e-7eddcffdea4e
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      seconds:
-        simple: "20"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1565
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
     id: "12"
-    taskid: d11b5055-abc6-4274-8bf7-c6dfbf2f2be2
+    taskid: 3445f0e5-daea-4384-8c34-3268a29478ef
     type: regular
     task:
-      id: d11b5055-abc6-4274-8bf7-c6dfbf2f2be2
+      id: 3445f0e5-daea-4384-8c34-3268a29478ef
       version: -1
       name: Get script invocation results
       description: Gets a script invocation results
@@ -429,10 +399,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 06607f11-4705-4720-8019-405214450f36
+    taskid: 2a78e305-0316-4eb0-84f5-a7fae32ff163
     type: condition
     task:
-      id: 06607f11-4705-4720-8019-405214450f36
+      id: 2a78e305-0316-4eb0-84f5-a7fae32ff163
       version: -1
       name: Validate script invocation results
       type: condition
@@ -445,14 +415,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: MicrosoftECM.ScriptsInvocationResults.ScriptExitCode
-            iscontext: true
-          right:
-            value:
-              simple: "0"
       - - operator: isEqualString
           left:
             value:
@@ -476,14 +438,14 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 3e68b388-7ba3-420c-88ed-33979bd77a19
+    taskid: 84c8eae1-7d13-4495-8173-fbeb382f4594
     type: regular
     task:
-      id: 3e68b388-7ba3-420c-88ed-33979bd77a19
+      id: 84c8eae1-7d13-4495-8173-fbeb382f4594
       version: -1
-      name: Get Primary User
-      description: Get the primary user of a given computer name
-      script: Microsoft Endpoint Configuration Manager|||ms-ecm-user-get-primary
+      name: Get User Device Affinity By device
+      description: Get the relationships between a device and its primary users.
+      script: Microsoft Endpoint Configuration Manager|||ms-ecm-get-user-device-affinity
       type: regular
       iscommand: true
       brand: Microsoft Endpoint Configuration Manager
@@ -491,8 +453,10 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      device_name:
+      device_names:
         simple: EC2AMAZ-2AKQ815
+      resource_ids: {}
+      user_names: {}
     separatecontext: false
     view: |-
       {
@@ -508,10 +472,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 1bb72cc5-ea6c-4649-8aaf-b38351ed7f2b
+    taskid: 5e2461a0-d7bd-4d7b-8986-cc500463ab91
     type: condition
     task:
-      id: 1bb72cc5-ea6c-4649-8aaf-b38351ed7f2b
+      id: 5e2461a0-d7bd-4d7b-8986-cc500463ab91
       version: -1
       name: Validate Primary User
       type: condition
@@ -527,19 +491,26 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: MicrosoftECM.PrimaryUsers.MachineName
+              simple: MicrosoftECM.UserDeviceAffinity.DeviceName
             iscontext: true
           right:
             value:
               simple: EC2AMAZ-2AKQ815
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
-              simple: MicrosoftECM.PrimaryUsers.UserName
+              complex:
+                root: MicrosoftECM.UserDeviceAffinity.UserName
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MicrosoftECM.UserDeviceAffinity.UserName
+                      iscontext: true
+                    right:
+                      value:
+                        simple: demisto\sccmadmin
             iscontext: true
-          right:
-            value:
-              simple: demisto\sccmadmin
     view: |-
       {
         "position": {
@@ -554,10 +525,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: b1d5e156-b2c7-4473-8b1d-b546c86a5acf
+    taskid: 39100d14-35f2-4fb4-8449-aef3f690e2c8
     type: regular
     task:
-      id: b1d5e156-b2c7-4473-8b1d-b546c86a5acf
+      id: 39100d14-35f2-4fb4-8449-aef3f690e2c8
       version: -1
       name: Get Last Log On User
       description: Gets the last user that logged on to a given computer name
@@ -586,10 +557,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 2b908293-b251-4a99-80ef-4aded1d12872
+    taskid: 1dde1cc8-6f7a-4898-841d-8f4f3014414f
     type: condition
     task:
-      id: 2b908293-b251-4a99-80ef-4aded1d12872
+      id: 1dde1cc8-6f7a-4898-841d-8f4f3014414f
       version: -1
       name: Validate Last Log On User
       type: condition
@@ -605,7 +576,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: MicrosoftECM.LastLogOnUser.Name
+              simple: MicrosoftECM.LastLogOnUser.DeviceName
             iscontext: true
           right:
             value:
@@ -624,10 +595,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 559661c1-fd6a-40f8-8d3b-4b313041348c
+    taskid: 76b3f171-5ccf-4ed9-86c6-4d61947db19c
     type: title
     task:
-      id: 559661c1-fd6a-40f8-8d3b-4b313041348c
+      id: 76b3f171-5ccf-4ed9-86c6-4d61947db19c
       version: -1
       name: Users testing successful
       type: title
@@ -649,10 +620,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 9290ee2d-dc3f-43a6-8680-57141c452b19
+    taskid: d650c769-46c7-42de-84b2-7752f13c3722
     type: title
     task:
-      id: 9290ee2d-dc3f-43a6-8680-57141c452b19
+      id: d650c769-46c7-42de-84b2-7752f13c3722
       version: -1
       name: Collections
       type: title
@@ -677,10 +648,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: e08ed512-34b5-4429-8df3-0bb9e3f0c859
+    taskid: 71d4e2d8-d764-4d74-87b0-f403c3c43175
     type: title
     task:
-      id: e08ed512-34b5-4429-8df3-0bb9e3f0c859
+      id: 71d4e2d8-d764-4d74-87b0-f403c3c43175
       version: -1
       name: Devices
       type: title
@@ -705,10 +676,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 7fb80942-aefe-41b6-8b93-6a4ac1355896
+    taskid: be3df395-a22b-4339-8bff-19ed16516303
     type: title
     task:
-      id: 7fb80942-aefe-41b6-8b93-6a4ac1355896
+      id: be3df395-a22b-4339-8bff-19ed16516303
       version: -1
       name: Scripts
       type: title
@@ -733,10 +704,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 965c6a22-81b3-4de9-8766-0ba07026c75f
+    taskid: b67ec6de-0400-45c2-8f10-727c749c3c56
     type: title
     task:
-      id: 965c6a22-81b3-4de9-8766-0ba07026c75f
+      id: b67ec6de-0400-45c2-8f10-727c749c3c56
       version: -1
       name: Users
       type: title
@@ -761,10 +732,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: ec898e7e-4fa9-4fcd-86a2-6907e5489d6d
+    taskid: 77e7dfb5-acee-4977-84db-d82389d15dd7
     type: title
     task:
-      id: ec898e7e-4fa9-4fcd-86a2-6907e5489d6d
+      id: 77e7dfb5-acee-4977-84db-d82389d15dd7
       version: -1
       name: Services
       type: title
@@ -789,10 +760,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 9944d268-9d6f-44e2-887b-9afc1ab0a4e3
+    taskid: bf0de0d9-0a8e-448b-8250-dc120d3f8f97
     type: regular
     task:
-      id: 9944d268-9d6f-44e2-887b-9afc1ab0a4e3
+      id: bf0de0d9-0a8e-448b-8250-dc120d3f8f97
       version: -1
       name: Delete context
       description: Delete field from context
@@ -825,10 +796,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: f5beaaa7-3232-4416-87fd-db3fc42e7256
+    taskid: 1bf1ffc9-001e-4bb7-84c0-5a75a737c98b
     type: regular
     task:
-      id: f5beaaa7-3232-4416-87fd-db3fc42e7256
+      id: 1bf1ffc9-001e-4bb7-84c0-5a75a737c98b
       version: -1
       name: Create a collection
       description: Creates a Configuration Manager collection
@@ -861,10 +832,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 258b6382-bc66-4a4e-8a8f-fe51b23b9c42
+    taskid: dde28a53-dbb0-42d6-82d7-6a2cee61498a
     type: regular
     task:
-      id: 258b6382-bc66-4a4e-8a8f-fe51b23b9c42
+      id: dde28a53-dbb0-42d6-82d7-6a2cee61498a
       version: -1
       name: Add Exclude collection Rule
       description: Adds an exclude membership rule to one or more Configuration Manager
@@ -898,10 +869,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 0d8f78f0-3969-4f39-8f62-6c7b7099c0df
+    taskid: e59ea96e-23f1-4053-8dbb-f34dc50c4166
     type: condition
     task:
-      id: 0d8f78f0-3969-4f39-8f62-6c7b7099c0df
+      id: e59ea96e-23f1-4053-8dbb-f34dc50c4166
       version: -1
       name: Validate collection
       type: condition
@@ -944,10 +915,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 38568089-958e-4f25-8e6f-1fdf98eb4d9e
+    taskid: 465ee7f5-948b-4b3a-84e8-41399585a2c9
     type: condition
     task:
-      id: 38568089-958e-4f25-8e6f-1fdf98eb4d9e
+      id: 465ee7f5-948b-4b3a-84e8-41399585a2c9
       version: -1
       name: Validate exclusion rule
       type: condition
@@ -982,10 +953,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 6da1048b-e1fe-4b08-859c-f7181e4c2c7d
+    taskid: b2b0ddc5-0ff1-4061-88dd-b59ba586365d
     type: regular
     task:
-      id: 6da1048b-e1fe-4b08-859c-f7181e4c2c7d
+      id: b2b0ddc5-0ff1-4061-88dd-b59ba586365d
       version: -1
       name: Add include collection rule
       description: Adds an Include Collections membership rule to a device collection
@@ -1018,10 +989,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: d43aa39a-6b70-4285-8563-092a88969a1d
+    taskid: f93ff6f6-07c6-4b3f-84ce-f62598e65f9b
     type: condition
     task:
-      id: d43aa39a-6b70-4285-8563-092a88969a1d
+      id: f93ff6f6-07c6-4b3f-84ce-f62598e65f9b
       version: -1
       name: Validate inclusion rule
       type: condition
@@ -1056,10 +1027,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: b84ba79e-8858-47e4-80a0-6c10dd22d17b
+    taskid: 02446f3d-160d-47c4-889d-c57f2039231a
     type: regular
     task:
-      id: b84ba79e-8858-47e4-80a0-6c10dd22d17b
+      id: 02446f3d-160d-47c4-889d-c57f2039231a
       version: -1
       name: Add members to collection
       description: Adds a Direct Rule membership to a device collection
@@ -1091,10 +1062,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: acc5176e-9bba-4b78-8e6d-78212d1e9bbe
+    taskid: d89f752a-f3cc-422b-831a-c417c5878141
     type: condition
     task:
-      id: acc5176e-9bba-4b78-8e6d-78212d1e9bbe
+      id: d89f752a-f3cc-422b-831a-c417c5878141
       version: -1
       name: Validate Membership rule
       type: condition
@@ -1129,10 +1100,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: a39e1589-16d4-47f6-81b5-73003c978385
+    taskid: f69d04a0-c87d-4f87-84de-a5a2daa22788
     type: regular
     task:
-      id: a39e1589-16d4-47f6-81b5-73003c978385
+      id: f69d04a0-c87d-4f87-84de-a5a2daa22788
       version: -1
       name: Add members to collections by query
       description: Adds a query membership rule to one or more Configuration Manager
@@ -1167,10 +1138,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 65f0709b-72c7-41ab-8813-ea92ac8e5262
+    taskid: 23a6aa80-2826-4509-8a12-1abc7265832a
     type: condition
     task:
-      id: 65f0709b-72c7-41ab-8813-ea92ac8e5262
+      id: 23a6aa80-2826-4509-8a12-1abc7265832a
       version: -1
       name: Validate query rule
       type: condition
@@ -1205,10 +1176,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 56580de9-67b6-4e10-87a7-fb310db66cef
+    taskid: 5559a69c-bb5e-4a66-864d-2896417f41a9
     type: title
     task:
-      id: 56580de9-67b6-4e10-87a7-fb310db66cef
+      id: 5559a69c-bb5e-4a66-864d-2896417f41a9
       version: -1
       name: Collection testing successful
       type: title
@@ -1230,10 +1201,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 6288608a-9851-473a-8514-93502eac2c2a
+    taskid: 188157c9-c939-410a-8968-774956ac7b4d
     type: title
     task:
-      id: 6288608a-9851-473a-8514-93502eac2c2a
+      id: 188157c9-c939-410a-8968-774956ac7b4d
       version: -1
       name: Script testing successful
       type: title
@@ -1255,10 +1226,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: cddcd70e-0879-46c6-8550-64c4ec276294
+    taskid: acb63c27-7c20-4702-829b-ffbec25918d6
     type: title
     task:
-      id: cddcd70e-0879-46c6-8550-64c4ec276294
+      id: acb63c27-7c20-4702-829b-ffbec25918d6
       version: -1
       name: Device testing successful
       type: title
@@ -1270,7 +1241,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1055
+          "y": 1565
         }
       }
     note: false
@@ -1280,10 +1251,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: f66e659f-9d37-4d35-8801-7f6f8e364b39
+    taskid: 5ee68dc5-b49e-4066-8d68-28794617e48b
     type: regular
     task:
-      id: f66e659f-9d37-4d35-8801-7f6f8e364b39
+      id: 5ee68dc5-b49e-4066-8d68-28794617e48b
       version: -1
       name: Restart service
       description: Restarts a service on a device or collection (Implemented by creating
@@ -1307,7 +1278,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1040
+          "y": 1050
         }
       }
     note: false
@@ -1317,10 +1288,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: c788c937-18f5-4705-8a3b-952f5c37d29b
+    taskid: c5854fec-25bb-4ac5-88ca-6a623d508ec8
     type: regular
     task:
-      id: c788c937-18f5-4705-8a3b-952f5c37d29b
+      id: c5854fec-25bb-4ac5-88ca-6a623d508ec8
       version: -1
       name: Stop Service
       description: Stops a service on a device or collection (Implemented by creating
@@ -1337,8 +1308,11 @@ tasks:
       collection_name:
         simple: All Systems
       device_name: {}
+      poll_results:
+        simple: "true"
       service_name:
         simple: dnscache
+      timeout: {}
     separatecontext: false
     view: |-
       {
@@ -1354,10 +1328,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: dd285b34-4691-4916-8689-b64b48aa3a62
+    taskid: 02e875e7-53af-4934-8c55-3a71dc00573a
     type: regular
     task:
-      id: dd285b34-4691-4916-8689-b64b48aa3a62
+      id: 02e875e7-53af-4934-8c55-3a71dc00573a
       version: -1
       name: Start Service
       description: Starts a service on a device or collection (Implemented by creating
@@ -1391,10 +1365,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 854fefd4-3f57-404e-8e5e-32c51260e21c
+    taskid: 8d343a05-0e42-4915-8843-f1d3e63d3021
     type: title
     task:
-      id: 854fefd4-3f57-404e-8e5e-32c51260e21c
+      id: 8d343a05-0e42-4915-8843-f1d3e63d3021
       version: -1
       name: Services testing successful
       type: title
@@ -1406,7 +1380,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1230
+          "y": 1245
         }
       }
     note: false
@@ -1416,10 +1390,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 726a7284-c0b7-4e5d-8383-2ab68112b141
+    taskid: 52f156dd-678c-45c1-8ad9-c19f53d99a1a
     type: regular
     task:
-      id: 726a7284-c0b7-4e5d-8383-2ab68112b141
+      id: 52f156dd-678c-45c1-8ad9-c19f53d99a1a
       version: -1
       name: Get Collections
       description: Gets a Configuration Manager collection
@@ -1451,10 +1425,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: e7ed6bfe-d956-4a00-80cf-69738b56a067
+    taskid: 0e3d9a7f-ef1c-49ff-84a9-6761698475a1
     type: regular
     task:
-      id: e7ed6bfe-d956-4a00-80cf-69738b56a067
+      id: 0e3d9a7f-ef1c-49ff-84a9-6761698475a1
       version: -1
       name: Get Collections
       description: Gets a Configuration Manager collection
@@ -1486,10 +1460,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: edaf722a-d25d-42c9-8c27-6014d891feec
+    taskid: c5c9508d-6113-4269-8f5f-1061aebf192e
     type: regular
     task:
-      id: edaf722a-d25d-42c9-8c27-6014d891feec
+      id: c5c9508d-6113-4269-8f5f-1061aebf192e
       version: -1
       name: Get Collections
       description: Gets a Configuration Manager collection
@@ -1519,6 +1493,163 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "45":
+    id: "45"
+    taskid: 0002b130-cc11-4823-87ba-4f857e2ce1ec
+    type: condition
+    task:
+      id: 0002b130-cc11-4823-87ba-4f857e2ce1ec
+      version: -1
+      name: 'Validate Device As resource '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftECM.Devices.ResourceDetails
+                accessor: FullDomainName
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: DEMISTO.LOCAL
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: fcfde248-e715-4976-8f02-3714137063ea
+    type: regular
+    task:
+      id: fcfde248-e715-4976-8f02-3714137063ea
+      version: -1
+      name: Get Device As Collection Member
+      description: Gets a Configuration Manager device By querying the SMS_CM_RES_COLL_SMS00001
+        class. You can use the `ms-ecm-device-get-resource` or `ms-ecm-device-get-collection-member`
+        commands to change the query class. Depending upon your role-based access
+        in the site, you may need to use one of these other commands.
+      script: Microsoft Endpoint Configuration Manager|||ms-ecm-device-get-collection-member
+      type: regular
+      iscommand: true
+      brand: Microsoft Endpoint Configuration Manager
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      device_names:
+        simple: ${MicrosoftECM.Devices.DeviceName}
+      resource_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 0edce3a6-69d4-400b-849f-91983685adb6
+    type: condition
+    task:
+      id: 0edce3a6-69d4-400b-849f-91983685adb6
+      version: -1
+      name: Validate Device As Collection Member
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftECM.Devices.CollectionMemberDetails
+                accessor: Domain
+            iscontext: true
+          right:
+            value:
+              simple: DEMISTO
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: cb489300-f5e9-4f7e-83af-62d5a1e16a74
+    type: condition
+    task:
+      id: cb489300-f5e9-4f7e-83af-62d5a1e16a74
+      version: -1
+      name: Validate script invocation results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MicrosoftECM.ScriptsInvocationResults.ScriptGuid
+            iscontext: true
+          right:
+            value:
+              simple: MicrosoftECM.Scripts.ScriptGuid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1534,5 +1665,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
-description: This is a test playbook for the Microsoft Endpoint Configuration Manager
-  integration

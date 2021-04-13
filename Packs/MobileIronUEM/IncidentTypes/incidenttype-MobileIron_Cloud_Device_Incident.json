@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#3172B3",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "MobileIron Cloud Device Incident",
+ "layout": "MobileIron Incident Layout",
+ "locked": false,
+ "name": "MobileIron Cloud Device Incident",
+ "playbookId": "MobileIron Cloud Incident Action Playbook",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "6.0.0"
+}

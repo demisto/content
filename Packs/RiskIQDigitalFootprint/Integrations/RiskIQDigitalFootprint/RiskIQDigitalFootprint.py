@@ -395,7 +395,7 @@ def get_asset_connections_hr(asset_details: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_asset_connections_outputs(resp: Dict[str, Any],
-                                  total_elements: Dict[str, Any]) -> Tuple[str, List[Any], List[Dict[str, Any]]]:
+                                  total_elements: Dict[str, Any]) -> Tuple[str, List[CommandResults]]:
     """
     Generates all outputs for asset_connections_command
 
@@ -409,27 +409,33 @@ def get_asset_connections_outputs(resp: Dict[str, Any],
         'IP_ADDRESS': get_standard_context_ip,
         'PAGE': get_standard_context_url
     }
-    asset_connections_custom_context: List[Dict[str, Any]] = []
-    asset_connections_standard_context = []
+    command_results: List[CommandResults] = []
 
     hr += '### CONNECTED ASSETS\n'
     for asset_type in total_elements:
         if total_elements.get(asset_type) and total_elements.get(asset_type) != 0:
-            asset_connections_hr: List[Dict[str, Any]] = []
             for asset_details in resp.get(asset_type, {}).get('content', []):
-                asset_connections_custom_context.append(asset_details)
+                asset_connections_standard_context = None
+                asset_connections_custom_context = asset_details
                 if asset_type in asset_type_standard_context_map:
-                    asset_connections_standard_context.append(asset_type_standard_context_map[asset_type]
-                                                              (asset_details))
-                asset_connections_hr.append(get_asset_connections_hr(asset_details))
+                    asset_connections_standard_context = asset_type_standard_context_map[asset_type](asset_details)
+                asset_connections_hr = tableToMarkdown(f'{asset_type.replace("_", " ").capitalize()} Details',
+                                                       get_asset_connections_hr(asset_details),
+                                                       ['Name', 'State', 'First Seen (GMT)', 'Last Seen (GMT)',
+                                                        'Tag(s)'], removeNull=True)
+                custom_ec = createContext(remove_empty_entities(asset_connections_custom_context), removeNull=True)
+                command_results.append(CommandResults(
+                    outputs_prefix='RiskIQDigitalFootprint.Asset',
+                    outputs_key_field='uuid',
+                    outputs=custom_ec,
+                    indicator=asset_connections_standard_context,
+                    readable_output=asset_connections_hr,
+                    raw_response=resp
+                ))
             hr += f'### Total {ASSET_TYPE_PLURAL_HR.get(asset_type)}:' \
                   f' {resp.get(asset_type, {}).get("totalElements")}\n'
-            hr += tableToMarkdown(f'Fetched {ASSET_TYPE_PLURAL_HR.get(asset_type)}:'
-                                  f' {len(asset_connections_hr)}', asset_connections_hr,
-                                  ['Name', 'State', 'First Seen (GMT)', 'Last Seen (GMT)', 'Tag(s)'], removeNull=True)
-    standard_ec = asset_connections_standard_context
-    custom_ec = createContext(remove_empty_entities(asset_connections_custom_context), removeNull=True)
-    return hr, standard_ec, custom_ec
+            hr += f'### Fetched {ASSET_TYPE_PLURAL_HR.get(asset_type)}: {len(asset_connections_hr)}\n'
+    return hr, command_results
 
 
 def validate_asset_changes_summary_args(date_arg: str, range_arg: str) -> Tuple[str, Any]:
@@ -747,14 +753,14 @@ def get_standard_context_file(record: Dict[str, Any]) -> Common.File:
 
 
 def get_asset_changes_context_data(asset_changes_records: List[Dict[str, Any]], asset_type: str) \
-        -> Tuple[List[Any], List[Dict[str, Any]]]:
+        -> Tuple[List[CommandResults], List[Dict[str, Any]]]:
     """
     Prepare context data for asset changes command
     :param asset_changes_records: Asset changes response
     :param asset_type: The type of asset for which changes are fetched
     :return: Standard entry context and Custom entry context
     """
-    standard_ec = []
+    ioc_command_results: List[CommandResults] = []
     asset_type_standard_context_map = {
         'DOMAIN': get_standard_context_domain,
         'IP_ADDRESS': get_standard_context_ip,
@@ -766,10 +772,13 @@ def get_asset_changes_context_data(asset_changes_records: List[Dict[str, Any]], 
 
         # Create standard context
         if asset_type in asset_type_standard_context_map:
-            standard_ec.append(asset_type_standard_context_map[asset_type](record))
+            indicator = asset_type_standard_context_map[asset_type](record)
+            ioc_command_results.append(CommandResults(
+                indicator=indicator
+            ))
 
     custom_ec = createContext(data=remove_empty_entities(asset_changes_records), removeNull=True)
-    return standard_ec, custom_ec
+    return ioc_command_results, custom_ec
 
 
 def prepare_deep_link_for_asset_changes(last_run_date: str, asset_type: str, measure: str,
@@ -1809,7 +1818,7 @@ def get_asset_basic_hr(resp: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def get_asset_outputs(resp: Dict[str, Any]) -> Tuple[str, list, Dict[str, Any]]:
+def get_asset_outputs(resp: Dict[str, Any]) -> List[CommandResults]:
     """
     Generates all outputs for df-get-asset command
 
@@ -1819,6 +1828,8 @@ def get_asset_outputs(resp: Dict[str, Any]) -> Tuple[str, list, Dict[str, Any]]:
     hr = ''
     custom_ec = {}
     standard_ec: list = []
+    command_results: List[CommandResults] = []
+
     asset_type_hr_map = {
         'DOMAIN': get_asset_domain_hr,
         'HOST': get_asset_host_hr,
@@ -1854,7 +1865,21 @@ def get_asset_outputs(resp: Dict[str, Any]) -> Tuple[str, list, Dict[str, Any]]:
             standard_ec = asset_type_standard_context_map[asset_type](resp)
         custom_ec = createContext(custom_ec, removeNull=True)
 
-    return hr, standard_ec, custom_ec
+    if custom_ec:
+        command_results.append(CommandResults(
+            outputs_prefix='RiskIQDigitalFootprint.Asset',
+            outputs_key_field='uuid',
+            readable_output=hr,
+            outputs=custom_ec,
+            raw_response=resp
+        ))
+    if standard_ec:
+        for indicator in standard_ec:
+            command_results.append(CommandResults(
+                indicator=indicator
+            ))
+
+    return command_results
 
 
 def get_add_and_update_assets_params(args: Dict[str, Any]) -> Dict[str, Any]:
@@ -2157,7 +2182,7 @@ def test_function(client: Client) -> str:
 
 
 @logger
-def asset_connections_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def asset_connections_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
     """
     Retrieve the set of assets that are connected to the requested asset.
 
@@ -2181,15 +2206,10 @@ def asset_connections_command(client: Client, args: Dict[str, Any]) -> Union[str
         return f'{MESSAGES["NO_RECORDS_FOUND"].format("connected assets")} If the page argument is specified,' \
                f' try decreasing its value.'
 
-    hr, standard_ec, custom_ec = get_asset_connections_outputs(resp, total_elements)
-    return CommandResults(
-        outputs_prefix='RiskIQDigitalFootprint.Asset',
-        outputs_key_field='uuid',
-        outputs=custom_ec,
-        indicators=standard_ec,
-        readable_output=hr,
-        raw_response=resp
-    )
+    hr, command_results = get_asset_connections_outputs(resp, total_elements)
+    # add general hr to the begining of result
+    command_results.insert(0, CommandResults(readable_output=hr))
+    return command_results
 
 
 @logger
@@ -2231,7 +2251,7 @@ def asset_changes_summary_command(client: Client, args: Dict[str, Any]) -> Union
 
 
 @logger
-def asset_changes_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def asset_changes_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
     """
     Retrieve the list of confirmed assets that have been added,
     removed or changes in asset properties in the inventory over the given time period.
@@ -2252,7 +2272,7 @@ def asset_changes_command(client: Client, args: Dict[str, Any]) -> Union[str, Co
     asset_changes_records = resp.get('content', [])
 
     # Prepare entry context
-    standard_ec, custom_ec = get_asset_changes_context_data(asset_changes_records, params['type'])
+    ioc_command_results, custom_ec = get_asset_changes_context_data(asset_changes_records, params['type'])
 
     # Prepare human readable
     deep_link = encode_string_results(prepare_deep_link_for_asset_changes(asset_changes_records[0].get('runDate', ''),
@@ -2274,18 +2294,20 @@ def asset_changes_command(client: Client, args: Dict[str, Any]) -> Union[str, Co
          f'### Total: {resp.get("totalElements")}\n'
     hr += get_asset_changes_hr(asset_changes_records, asset_type, measure)
 
-    return CommandResults(
+    # add general hr and output to the begining of result
+    ioc_command_results.insert(0, CommandResults(
         outputs_prefix="RiskIQDigitalFootprint.AssetChanges",
         outputs_key_field=output_key_fields,
         outputs=custom_ec,
-        indicators=standard_ec,
         readable_output=hr,
         raw_response=resp
-    )
+    ))
+
+    return ioc_command_results
 
 
 @logger
-def get_asset_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def get_asset_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
     """
     Retrieve the asset of the specified UUID from Global Inventory.
 
@@ -2305,15 +2327,8 @@ def get_asset_command(client: Client, args: Dict[str, Any]) -> Union[str, Comman
         resp = client.http_request(method='GET', url_suffix=COMMAND_URL_SUFFIX['GET_ASSET_BY_NAME_AND_TYPE']
                                    .format(asset_type), params=params)
 
-    hr, standard_ec, custom_ec = get_asset_outputs(resp)
-    return CommandResults(
-        outputs_prefix='RiskIQDigitalFootprint.Asset',
-        outputs_key_field='uuid',
-        outputs=custom_ec,
-        indicators=standard_ec,
-        readable_output=hr,
-        raw_response=resp
-    )
+    command_results = get_asset_outputs(resp)
+    return command_results
 
 
 @logger

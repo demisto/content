@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 26ea8a78-103c-49d7-8034-25638309261f
+    taskid: cc28c8ab-311a-4824-8d23-835302ba4979
     type: start
     task:
-      id: 26ea8a78-103c-49d7-8034-25638309261f
+      id: cc28c8ab-311a-4824-8d23-835302ba4979
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: a511ca8b-a267-4ab1-87c6-ffd93bbf8207
+    taskid: b709b6d5-b43e-4655-8bb8-0b5ab953670c
     type: regular
     task:
-      id: a511ca8b-a267-4ab1-87c6-ffd93bbf8207
+      id: b709b6d5-b43e-4655-8bb8-0b5ab953670c
       version: -1
       name: Start fresh
       scriptName: DeleteContext
@@ -63,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 99dd7269-b1b8-4b4c-841d-77379a02fab6
+    taskid: 96067934-a6d0-4db6-8fa1-2bbee7042f7e
     type: regular
     task:
-      id: 99dd7269-b1b8-4b4c-841d-77379a02fab6
+      id: 96067934-a6d0-4db6-8fa1-2bbee7042f7e
       version: -1
       name: Validate instance is working
       script: '|||joe-is-online'
@@ -91,10 +91,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 74c1e9f0-e8f8-43c8-8a5c-563bf10c1fef
+    taskid: b8c719f0-cdb2-4d73-874d-df30d8d7b0d1
     type: regular
     task:
-      id: 74c1e9f0-e8f8-43c8-8a5c-563bf10c1fef
+      id: b8c719f0-cdb2-4d73-874d-df30d8d7b0d1
       version: -1
       name: Analyse a file using a url without waiting
       script: Joe Security|||joe-analysis-submit-sample
@@ -127,10 +127,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 96d71934-7869-4547-8807-c95ab3e36f1e
+    taskid: 7df24a5c-11d1-4580-8a36-4754a917ad42
     type: regular
     task:
-      id: 96d71934-7869-4547-8807-c95ab3e36f1e
+      id: 7df24a5c-11d1-4580-8a36-4754a917ad42
       version: -1
       name: Analyse a url without waiting
       script: Joe Security|||joe-analysis-submit-url
@@ -163,10 +163,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 14aa4fcd-e9e7-4cb8-828f-2fedf2cca3d5
+    taskid: 158e112c-947a-47a0-8c55-734079399005
     type: regular
     task:
-      id: 14aa4fcd-e9e7-4cb8-828f-2fedf2cca3d5
+      id: 158e112c-947a-47a0-8c55-734079399005
       version: -1
       name: Get info on the file analysis
       script: Joe Security|||joe-analysis-info
@@ -194,10 +194,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 1462577b-a8b5-4c3c-8b08-eed1b8ad61cb
+    taskid: 27281436-1ef6-4f01-85f5-7280b83af45b
     type: regular
     task:
-      id: 1462577b-a8b5-4c3c-8b08-eed1b8ad61cb
+      id: 27281436-1ef6-4f01-85f5-7280b83af45b
       version: -1
       name: Get info on the URL analysis
       script: Joe Security|||joe-analysis-info
@@ -225,22 +225,25 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: cd1182f2-a2f4-4212-8e0b-f1e56e1795da
+    taskid: 490fc5b1-6a84-4b30-8372-a061547eb72f
     type: regular
     task:
-      id: cd1182f2-a2f4-4212-8e0b-f1e56e1795da
+      id: 490fc5b1-6a84-4b30-8372-a061547eb72f
       version: -1
       name: Create sample file
       scriptName: FileCreateAndUpload
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
     scriptarguments:
       data:
         simple: qwerty
       entryId: {}
       filename:
-        simple: zaq.txt
+        simple: zaq\ma.txt
     separatecontext: false
     view: |-
       {
@@ -256,10 +259,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: e88619e0-d356-40ec-8c3c-d0c59c56b961
+    taskid: 2226ad58-a862-44a3-8c65-dc035a5c290f
     type: regular
     task:
-      id: e88619e0-d356-40ec-8c3c-d0c59c56b961
+      id: 2226ad58-a862-44a3-8c65-dc035a5c290f
       version: -1
       name: Search command
       script: Joe Security|||joe-search
@@ -289,10 +292,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: b067f7de-4967-4793-8570-c8f6b0b8a6bc
+    taskid: 91ecae03-c0c0-4891-869a-0f03d886f9e3
     type: regular
     task:
-      id: b067f7de-4967-4793-8570-c8f6b0b8a6bc
+      id: 91ecae03-c0c0-4891-869a-0f03d886f9e3
       version: -1
       name: Download url Report - XML
       script: Joe Security|||joe-download-report
@@ -335,10 +338,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 2a3255d2-9b09-4f30-8b96-a417ec6705ff
+    taskid: 838cae49-6cbb-4faa-8388-5ab8dc292ae2
     type: regular
     task:
-      id: 2a3255d2-9b09-4f30-8b96-a417ec6705ff
+      id: 838cae49-6cbb-4faa-8388-5ab8dc292ae2
       version: -1
       name: Download url Report - JSON
       script: Joe Security|||joe-download-report
@@ -378,10 +381,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: ebf685a2-5055-4e9d-8ec7-121780feb044
+    taskid: 0bf0941a-9cbf-4039-8f6e-d31ca56f0c4a
     type: regular
     task:
-      id: ebf685a2-5055-4e9d-8ec7-121780feb044
+      id: 0bf0941a-9cbf-4039-8f6e-d31ca56f0c4a
       version: -1
       name: Download url Report - HTML
       script: Joe Security|||joe-download-report
@@ -421,10 +424,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 5f79523d-a8a1-4b00-8d7c-58d05a312129
+    taskid: b0e413db-9656-4234-887a-3dc1106dd7bd
     type: condition
     task:
-      id: 5f79523d-a8a1-4b00-8d7c-58d05a312129
+      id: b0e413db-9656-4234-887a-3dc1106dd7bd
       version: -1
       name: verify output DBotScore.Indicator
       type: condition
@@ -454,12 +457,46 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "19":
+    id: "19"
+    taskid: 95a141e0-bed5-4076-8434-be7ae638955a
+    type: regular
+    task:
+      id: 95a141e0-bed5-4076-8434-be7ae638955a
+      version: -1
+      name: submit file sample with backslash in its name
+      description: Submit a sample for analysis.
+      script: '|||joe-analysis-submit-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      comments: {}
+      file_id:
+        simple: ${File.EntryID}
+      internet-access: {}
+      sample_url: {}
+      should_wait: {}
+      systems: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1790,
+        "height": 1965,
         "width": 1280,
         "x": 50,
         "y": 50

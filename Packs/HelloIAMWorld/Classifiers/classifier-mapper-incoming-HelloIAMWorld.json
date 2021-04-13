@@ -1,0 +1,76 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a user data to a User Profile data.",
+	"id": "User Profile - HelloIAMWorld (Incoming)",
+	"mapping": {
+		"User Profile": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"City": {
+					"complex": null,
+					"simple": "city"
+				},
+				"Cost Center": {
+					"complex": null,
+					"simple": "cost_center"
+				},
+				"Country Name": {
+					"complex": null,
+					"simple": "country"
+				},
+				"Department": {
+					"complex": null,
+					"simple": "department"
+				},
+				"Display Name": {
+					"complex": null,
+					"simple": "name"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"Employee ID": {
+					"complex": null,
+					"simple": "employee_number"
+				},
+				"Given Name": {
+					"complex": null,
+					"simple": "first_name"
+				},
+				"Surname": {
+					"complex": null,
+					"simple": "last_name"
+				},
+				"Manager Name": {
+					"complex": null,
+					"simple": "manager"
+				},
+				"Mobile Phone": {
+					"complex": null,
+					"simple": "mobile_phone"
+				},
+				"State": {
+					"complex": null,
+					"simple": "state"
+				},
+				"Street Address": {
+					"complex": null,
+					"simple": "street"
+				},
+				"Title": {
+					"complex": null,
+					"simple": "title"
+				},
+				"Zip Code": {
+					"complex": null,
+					"simple": "zip"
+				}
+			}
+		}
+	},
+	"name": "User Profile - HelloIAMWorld (Incoming)",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

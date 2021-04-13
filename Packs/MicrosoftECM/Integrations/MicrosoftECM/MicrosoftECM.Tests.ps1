@@ -32,26 +32,7 @@ Describe "ValidateGetCollectionListParams" {
 		ValidateGetCollectionListParams $null $null | Should -Be ""
 	}
 }
-Describe "ValidateGetDeviceListParams" {
-	It "Validating Collection ID only" {
-		ValidateGetDeviceListParams "collection_id" $null $null $null | Should -Be "collection_id"
-	}
-	It "Validating with collection name only" {
-		ValidateGetDeviceListParams $null "collection_name" $null $null | Should -Be "collection_name"
-	}
-	It "Validating with device name only"{
-		ValidateGetDeviceListParams $null $null "device name" $null | Should -Be "device_name"
-	}
-	It "Validating with resource ID only"{
-		ValidateGetDeviceListParams $null $null $null "resource_id" | Should -Be "resource_id"
-	}
-	It "Validating collection ID and Collection name throws exception" {
-		{ ValidateGetDeviceListParams "collection_id" "collection_name" $null $null } | Should -Throw "*collection_id parameter can be resolved only with device_name"
-	}
-	It "Validating devica name and resource ID throws exception" {
-		{ ValidateGetDeviceListParams $null $null "device name" "resource_id" } | Should -Throw "*device_name parameter can be resolved only with collection_name or collection_id"
-	}
-}
+
 Describe "ValidateCreateScriptParams" {
 	It "Validate with both script_file_entry_id and script_text throws exception" {
 		{ValidateCreateScriptParams "script_file_entry_id" "script_text"} | Should -Throw "*script_file_entry_id cannot be resolved with script_text"
@@ -88,3 +69,35 @@ Describe "ValidateIncludeOrExcludeDeviceCollectionParameters"{
 	}
 }
 
+Describe "Validating ArgToBool" {
+	It "Validating with null value"{
+		ArgToBool $null | Should -Be $false
+	}
+	It "Validating with empty string" {
+		ArgToBool "" | Should -Be $false
+	}
+	It "Validating with 'false' string"{
+		ArgToBool "False" | Should -Be $false
+	}
+	It "Validating with UpperCase 'true' string"{
+		ArgToBool "TRUE" | Should -Be $true
+	}
+	It "Validating with lowercase 'true' string"{
+		ArgToBool "true" | Should -Be $true
+	}
+	It "Validating with CamelCase 'true' string"{
+		ArgToBool "True" | Should -Be $true
+	}
+}
+
+Describe "Validating ArgToInteger" {
+	It "Validating with null value"{
+		ArgToInteger $null 5 | Should -Be 5
+	}
+	It "Validating with '0' " {
+		ArgToInteger "0" | Should -Be 0
+	}
+	It "Validating with '5'"{
+		ArgToInteger "5" | Should -Be 5
+	}
+}

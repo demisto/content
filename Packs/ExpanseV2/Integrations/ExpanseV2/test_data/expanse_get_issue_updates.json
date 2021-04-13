@@ -1,0 +1,101 @@
+{
+    "data": [
+        {
+            "created": "2020-09-28T17:59:39.602191Z",
+            "id": "e1d65689-7e59-423e-a0ff-88ca06af46a2",
+            "previousValue": null,
+            "updateType": "ProgressStatus",
+            "user": {
+                "username": "Expanse Bot"
+            },
+            "value": "New"
+        },
+        {
+            "created": "2020-09-28T17:59:39.602191Z",
+            "id": "1cc2f30b-1e0a-4d68-8500-8f319a9ccb83",
+            "previousValue": null,
+            "updateType": "Priority",
+            "user": {
+                "username": "Expanse Bot"
+            },
+            "value": "High"
+        },
+        {
+            "created": "2020-11-10T09:11:33.604199Z",
+            "id": "ef1908e8-2ccc-4440-bdc6-6c82146bbbc7",
+            "previousValue": "High",
+            "updateType": "Priority",
+            "user": {
+                "username": "user1@xsoar.local"
+            },
+            "value": "Critical"
+        },
+        {
+            "created": "2020-11-10T09:46:51.223247Z",
+            "id": "e92d61e7-4757-4a5e-b76b-a665b6c04828",
+            "previousValue": "New",
+            "updateType": "ProgressStatus",
+            "user": {
+                "username": "Expanse Bot"
+            },
+            "value": "Investigating"
+        },
+        {
+            "created": "2020-11-10T09:47:13.574869Z",
+            "id": "97b6a928-254b-41d4-a4b8-cc20ca0c5aa5",
+            "previousValue": null,
+            "updateType": "Comment",
+            "user": {
+                "username": "Expanse Bot"
+            },
+            "value": "This Issue is being investigated by the SOC through Cortex XSOAR"
+        },
+        {
+            "created": "2020-11-10T16:14:46.573556Z",
+            "id": "325fd726-0cde-4eca-abba-440c6464a44c",
+            "previousValue": null,
+            "updateType": "Comment",
+            "user": {
+                "username": "Expanse Bot"
+            },
+            "value": "Issue closed in XSOAR with reason: \nNotes: "
+        },
+        {
+            "created": "2020-11-10T16:14:46.754804Z",
+            "id": "ef09680e-3134-4c2d-ab35-a35bdbb62bd9",
+            "previousValue": "Investigating",
+            "updateType": "ProgressStatus",
+            "user": {
+                "username": "Expanse Bot"
+            },
+            "value": "Resolved"
+        },
+        {
+            "created": "2020-11-10T16:15:46.573556Z",
+            "id": "aaaad726-0cde-4eca-abba-440c6464dddc",
+            "previousValue": null,
+            "updateType": "Comment",
+            "user": {
+                "username": "Some User"
+            },
+            "value": "New Comment"
+        },
+        {
+            "created": "2020-11-10T16:18:12.336769Z",
+            "id": "1a7e474d-a030-442e-9625-b7fe82956981",
+            "previousValue": "Resolved",
+            "updateType": "ProgressStatus",
+            "user": {
+                "username": "user1@xsoar.local"
+            },
+            "value": "Investigating"
+        }
+    ],
+    "pagination": {
+        "next": null,
+        "pref": null
+    },
+    "meta": {
+        "totalCount": 9
+    }
+}

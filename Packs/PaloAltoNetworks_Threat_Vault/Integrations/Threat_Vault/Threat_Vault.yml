@@ -206,8 +206,22 @@ script:
     outputs:
     - contextPath: IP.Address
       description: The IP address.
+      type: String
     - contextPath: IP.Geo.Country
       description: The country of the IP address.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
   - arguments:
     - default: false
       description: The signature name to search.
@@ -357,7 +371,7 @@ script:
     - contextPath: ThreatVault.Searchf.signatures
       description: A list of all the signatures found for this specific search.
       type: Unknown
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: false
   longRunning: false
   longRunningPort: false

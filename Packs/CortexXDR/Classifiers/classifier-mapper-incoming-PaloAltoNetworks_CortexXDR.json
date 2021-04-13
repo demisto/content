@@ -13,6 +13,34 @@
 					"complex": null,
 					"simple": "alert_count"
 				},
+				"LastMirroredInTime": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "last_mirrored_in",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"XDR Modification Time": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "modification_time",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
 				"XDR Alerts": {
 					"complex": null,
 					"simple": "alerts"
@@ -78,10 +106,6 @@
 				"XDR Resolve Comment": {
 					"complex": null,
 					"simple": "resolve_comment"
-				},
-				"XDR Severity": {
-					"complex": null,
-					"simple": "severity"
 				},
 				"XDR Status v2": {
 					"complex": null,
@@ -393,10 +417,6 @@
 		"CortextXDRIncident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"XDR Severity": {
-					"complex": null,
-					"simple": "severity"
-				}
 			}
 		}
 	},

@@ -2,7 +2,7 @@
     "name": "Barracuda",
     "description": "Barracuda Reputation Block List (BRBL)",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Harri Ruuttila",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

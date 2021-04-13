@@ -9,23 +9,23 @@
 		"Code42 Security Alert": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Code42 Alert Description": {
+				"Code42 SecurityAlert Description": {
 					"complex": null,
 					"simple": "description"
 				},
-				"Code42 Alert ID": {
+				"Code42 SecurityAlert ID": {
 					"complex": null,
 					"simple": "id"
 				},
-				"Code42 Alert Name": {
+				"Code42 SecurityAlert Name": {
 					"complex": null,
 					"simple": "name"
 				},
-				"Code42 Alert State": {
+				"Code42 SecurityAlert State": {
 					"complex": null,
 					"simple": "state"
 				},
-				"Code42 Alert Timestamp": {
+				"Code42 SecurityAlert Timestamp": {
 					"complex": null,
 					"simple": "createdAt"
 				},
