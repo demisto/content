@@ -78,7 +78,9 @@ commands_with_args = {
     create_process_command: {
         'credentials': CREDENTIALS,
         'sensor_id': 'test_sensor_id',
-        'command_string': 'test_cmd_line_path'
+        'command_string': 'test_cmd_line_path',
+        'wait_for_output': 'True',
+        'wait_for_completion': True
     },
     memdump_command: {
         'credentials': CREDENTIALS,
@@ -105,14 +107,20 @@ TEST_PROCESSES_RESULT = [
 
 HAPPY_PATH_ARGS = [
     # 'api_method_to_be_mocked': str, tested_command: function, expected_results: Any, expected_args: tuple, mocked_results: Any
-    ('put_file', put_file_command, 'File: test_file_id is now exist in the remote destination test_destination_path', (), None),
-    ('delete_file', delete_file_command, 'The file: test_source_path was deleted', ('test_source_path',), None),
-    ('create_registry_key', create_reg_key_command, 'Reg key: test_reg_path, was created', (), None),
-    ('set_registry_value', set_reg_value_command, 'Value was set to the reg key: test_reg_path', (), None),
-    ('delete_registry_key', delete_reg_key_command, 'Registry key: test_reg_path was deleted', (), None),
-    ('delete_registry_value', delete_reg_value_command, 'Registry value: test_reg_path was deleted', (), None),
-    ('kill_process', kill_process_command, 'The process: test_pid was killed', (), 'The process: test_pid was killed'),
-    ('create_process', create_process_command, 'test_process_output', (), 'test_process_output'),
+    ('put_file', put_file_command, 'File: test_file_id is now exist in the remote destination test_destination_path',
+     {}, None),
+    ('delete_file', delete_file_command, 'The file: test_source_path was deleted',
+     dict(filename='test_source_path'), None),
+    ('create_registry_key', create_reg_key_command, 'Reg key: test_reg_path, was created', {}, None),
+    ('set_registry_value', set_reg_value_command, 'Value was set to the reg key: test_reg_path', {}, None),
+    ('delete_registry_key', delete_reg_key_command, 'Registry key: test_reg_path was deleted', {}, None),
+    ('delete_registry_value', delete_reg_value_command, 'Registry value: test_reg_path was deleted', {}, None),
+    ('kill_process', kill_process_command, 'The process: test_pid was killed', {}, 'The process: test_pid was killed'),
+
+    ('create_process', create_process_command, 'test_process_output',
+     dict(command_string='test_cmd_line_path', wait_timeout=30, wait_for_output=True, wait_for_completion=True),
+     'test_process_output'),
+
     # ('start_memdump', memdump_command, 'Memory was dumped to test_target_path', (), None)
     ]
 
@@ -152,8 +160,6 @@ def mock_method_in_lr_session(mocker, method_name, mocked_results=None):
 
 
 class TestCommands:
-    EXPECTED_ARGS_JSON_FILE_PATH = 'test_data/expected_args.json'
-    expected_commands_args = None
 
     # todo ask eli for the fileResult mock
 
@@ -187,7 +193,7 @@ class TestCommands:
         assert res == expected_result
 
         if expected_args:
-            assert mocked_obj.call_args[0] == expected_args
+            assert mocked_obj.call_args[1] == expected_args
 
     @pytest.mark.parametrize(
         'api_method_to_be_mocked, tested_command, expected_result, expected_args, mocked_results',

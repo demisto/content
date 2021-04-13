@@ -55,7 +55,7 @@ def delete_file_command(credentials: Dict, sensor_id: int, source_path: str):
 
     try:
         session = api.select(endpoint_standard.Device, sensor_id).lr_session()
-        session.delete_file(source_path)
+        session.delete_file(filename=source_path)
         return f'The file: {source_path} was deleted'
     except LiveResponseError as e:
         return_error(e.message)
@@ -250,13 +250,19 @@ def create_process_command(
         credentials: Dict, sensor_id: int,
         command_string: str,
         wait_timeout: int = 30,
+        wait_for_output: bool = True,
+        wait_for_completion: bool = True,
         **additional_params):
-    # additional_param may include: wait_for_output: bool, remote_output_file_name: str, working_directory: str,
-    # wait_for_completion: bool
+    # additional_param may include: remote_output_file_name: str, working_directory: str
     api = CBCloudAPI(**credentials)
     try:
         session = api.select(endpoint_standard.Device, sensor_id).lr_session()
-        res = session.create_process(command_string=command_string, wait_timeout=int(wait_timeout), **additional_params)
+        res = session.create_process(
+            command_string=command_string,
+            wait_timeout=int(wait_timeout),
+            wait_for_output=str(wait_for_output) == 'True',
+            wait_for_completion=str(wait_for_completion) == 'True',
+            **additional_params)
         if res:
             return res
         return f'Command: {command_string} was executed'
