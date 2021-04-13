@@ -17,6 +17,7 @@ DEMISTO_PLAYBOOKS_PATH = "/playbook/search"
 DEMISTO_AUTOMATIONS_PATH = "/automation/search"
 DEMISTO_CONFIG_PATH = "/system/config"
 DEMISTO_INCIDENTS_PATH = "/incidents/search"
+DEMISTO_INCIDENT_TYPE_PATH = "/incidenttype"
 MAX_REQUEST_SIZE = demisto.args().get("size", 500)
 HTML_TABLE_TEMPLATE = """
 <h3>{{ name }}</h3>
@@ -52,6 +53,8 @@ MD_DOCUMENT_TEMPLATE = """
 {{ open_incidents }}
 
 {{ closed_incidents }}
+
+{{ playbook_stats }}
 
 {{ integrations_table }}
 
@@ -162,6 +165,7 @@ contat details, project scope, etc."></textarea>
 </body>
 """
 
+
 class TableData:
     def __init__(self, data, name):
         self.data = data
@@ -208,7 +212,8 @@ class Document:
             automations_table,
             system_config,
             open_incidents,
-            closed_incidents
+            closed_incidents,
+            playbook_stats
     ):
         self.template = template
         self.integrations_table = integrations_table
@@ -218,6 +223,7 @@ class Document:
         self.system_config = system_config
         self.open_incidents = open_incidents
         self.closed_incidents = closed_incidents
+        self.playbook_stats = playbook_stats
         self.author = demisto.args().get("author")
         self.date = datetime.now().strftime("%m/%d/%Y")
         self.customer = demisto.args().get("customer")
@@ -234,7 +240,8 @@ class Document:
             closed_incidents=self.closed_incidents.as_html(),
             author=self.author,
             date=self.date,
-            customer=self.customer
+            customer=self.customer,
+            playbook_stats=self.playbook_stats.as_html()
         )
 
     def markdown(self):
@@ -247,6 +254,7 @@ class Document:
             system_config=self.system_config.as_markdown(),
             open_incidents=self.open_incidents.as_markdown(),
             closed_incidents=self.closed_incidents.as_markdown(),
+            playbook_stats=self.playbook_stats.as_markdown(headers=["playbook", "incidents"])
         )
 
 
@@ -293,6 +301,29 @@ def get_api_request(url):
         return res
     except KeyError:
         return_error(f'API Request failed, no response from API call to {url}')
+
+
+def get_all_incidents(days=7, size=1000):
+    body = {
+        "userFilter": False,
+        "filter": {
+            "page": 0,
+            "size": size,
+            "query": "-category:job",
+            "sort": [
+                {
+                    "field": "id",
+                    "asc": False
+                }
+            ],
+            "period": {
+                "by": "day",
+                "fromValue": days
+            }
+        }
+    }
+    r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
+    return r.get("data")
 
 
 def get_open_incidents(days=7, size=1000):
@@ -384,6 +415,31 @@ def get_custom_playbooks():
     return rd
 
 
+def get_playbook_stats():
+    """
+    Pull all the incident types and assoociated playbooks,
+    then join this with the incident stats to determine how often each playbook has been used.
+    """
+    # incident_types = get_api_request(DEMISTO_INCIDENT_TYPE_PATH)
+    incidents = get_all_incidents()
+    playbook_stats = {}
+    for incident in incidents:
+        playbook = incident.get("playbookId")
+        if playbook not in playbook_stats:
+            playbook_stats[playbook] = 0
+
+        playbook_stats[playbook] = playbook_stats[playbook] + 1
+
+    table = []
+    for playbook, count in playbook_stats.items():
+        table.append({
+            "playbook": playbook,
+            "incidents": count
+        })
+    td = TableData(table, "Playbook Stats")
+    return td
+
+
 def get_custom_automations():
     r = post_api_request(DEMISTO_AUTOMATIONS_PATH, {"query": "system:F AND hidden:F"}).get("scripts")
     rd = TableData(r, "Custom Automations")
@@ -405,6 +461,7 @@ def main():
     installed_packs = get_installed_packs()
     playbooks = get_custom_playbooks()
     automations = get_custom_automations()
+    playbook_stats = get_playbook_stats()
     d = Document(
         MD_DOCUMENT_TEMPLATE,
         system_config=system_config,
@@ -413,7 +470,8 @@ def main():
         playbooks_table=playbooks,
         automations_table=automations,
         open_incidents=open_incidents,
-        closed_incidents=closed_incidents
+        closed_incidents=closed_incidents,
+        playbook_stats=playbook_stats
     )
     fr = fileResult("asbuilt.html", d.html())
     return_results(CommandResults(
