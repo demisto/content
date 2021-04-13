@@ -1546,7 +1546,7 @@ class ExtFilter:
                     else:
                         out += decoded_s
             except Exception:
-                demisto.debug('Failed to decode by `email-header: decode`: {lhs}')
+                demisto.debug(f'Failed to decode by `email-header: decode`: {lhs}')
                 out = str(lhs)
             return Value(out)
 
