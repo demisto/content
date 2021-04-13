@@ -22,7 +22,7 @@ def get_model_data(model_name, store_type, is_return_error):
         try:
             model_type = res_model['Contents']['model']["type"]["type"]
             return model_data, model_type
-        except:
+        except Exception:
             return model_data, UNKNOWN_MODEL_TYPE
     elif not is_error(res_model_list) and is_error(res_model):
         return res_model_list["Contents"], UNKNOWN_MODEL_TYPE
