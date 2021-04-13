@@ -896,8 +896,7 @@ class ScoreCalculator:
         files = relationship_files_response.get('data', [])[:lookback]  # lookback on recent 20 results. By design
         total_malicious = 0
         for file in files:
-            if file_hash:
-                = file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep')))):
+            if file_hash := file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep')))):
                 if self.file_score(file_hash, files) == Common.DBotScore.BAD:
                     total_malicious += 1
 
@@ -1698,8 +1697,7 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         required=True
     )
     resource = args['resource']
-    if before:
-        = args.get('before'):
+    if before := args.get('before'):
         before = parse(before)
         assert before is not None, f'Could not parse the before date "{before}"'
         before = before.replace(tzinfo=None)
@@ -1736,8 +1734,7 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         attributes = comment.get('attributes', {})
         votes = attributes.get('votes', {})
 
-        if date:
-            = parse(str(attributes.get('date'))):
+        if date := parse(str(attributes.get('date'))):
             date = date.replace(tzinfo=None)
 
         if date and before and date > before:
