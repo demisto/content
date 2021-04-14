@@ -18,6 +18,7 @@ DEMISTO_AUTOMATIONS_PATH = "/automation/search"
 DEMISTO_CONFIG_PATH = "/system/config"
 DEMISTO_INCIDENTS_PATH = "/incidents/search"
 DEMISTO_INCIDENT_TYPE_PATH = "/incidenttype"
+DEMISTO_DEPENDENCIES_PATH = "/itemsdependencies"
 MAX_REQUEST_SIZE = demisto.args().get("size", 1000)
 MAX_DAYS = demisto.args().get("days", 7)
 HTML_TABLE_TEMPLATE = """
@@ -221,6 +222,7 @@ class TableData:
                 value = row.get(search_key)
                 if value == search_value:
                     return row
+
 
 class SingleFieldData:
     def __init__(self, name, data):
@@ -447,6 +449,18 @@ def get_custom_playbooks():
     return rd
 
 
+def get_all_playbooks():
+    """
+    Return all the custom playbooks installed in XSOAR>
+    :return: TableData
+    """
+    r = post_api_request(DEMISTO_PLAYBOOKS_PATH, {"query": "hidden:F"}).get("playbooks")
+    for pb in r:
+        pb["TotalTasks"] = len(pb.get("tasks", []))
+    rd = TableData(r, "All Playbooks")
+    return rd
+
+
 def get_playbook_stats(playbooks, days=7, size=1000):
     """
     Pull all the incident types and assoociated playbooks,
@@ -483,6 +497,49 @@ def get_playbook_stats(playbooks, days=7, size=1000):
     return td
 
 
+def get_playbook_dependencies(playbook_name):
+    """
+    Given a playbook name, searches for all dependencies.
+    """
+    playbooks = get_all_playbooks()
+    playbook = playbooks.search("name", playbook_name)
+    playbook_id = playbook.get("id")
+    body = {
+        "items": [
+            {
+                "id": f"{playbook_id}",
+                "type": "playbook"
+            }
+        ],
+        "dependencyLevel": "optional"
+    }
+    dependencies = post_api_request(DEMISTO_DEPENDENCIES_PATH, body).get("existing").get("playbook").get(playbook_id)
+    if not dependencies:
+        return_error(f"Failed to retrieve dependencies for {playbook_id}")
+
+    types = {
+        "automation": [],
+        "playbook": [],
+        "integration": [],
+    }
+    for dependency in dependencies:
+        d_type = dependency.get("type")
+        if d_type in types:
+            types[d_type].append({
+                "type": d_type,
+                "name": dependency.get("name"),
+                "pack": dependency.get("packID", "Custom")
+            })
+
+    result_table_datas = []
+    for k, v in types.items():
+        if v:
+            td = TableData(v, f"{k}s")
+            result_table_datas.append(td)
+
+    return result_table_datas
+
+
 def get_custom_automations():
     r = post_api_request(DEMISTO_AUTOMATIONS_PATH, {"query": "system:F AND hidden:F"}).get("scripts")
     rd = TableData(r, "Custom Automations")
@@ -496,6 +553,13 @@ def get_system_config():
 
 
 def main():
+    if demisto.args().get("playbook"):
+        # If we get a playbook, we generate a use case document, instead of teh platform as build
+        r = get_playbook_dependencies(demisto.args().get("playbook"))
+        return_results(r[0].as_markdown())
+        return
+
+    # If no playbook is passed, we generate a platform as built.
     open_incidents = get_open_incidents(MAX_DAYS, MAX_REQUEST_SIZE)
     closed_incidents = get_closed_incidents(MAX_DAYS, MAX_REQUEST_SIZE)
 
