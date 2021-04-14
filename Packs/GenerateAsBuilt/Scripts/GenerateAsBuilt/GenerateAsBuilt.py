@@ -18,7 +18,8 @@ DEMISTO_AUTOMATIONS_PATH = "/automation/search"
 DEMISTO_CONFIG_PATH = "/system/config"
 DEMISTO_INCIDENTS_PATH = "/incidents/search"
 DEMISTO_INCIDENT_TYPE_PATH = "/incidenttype"
-MAX_REQUEST_SIZE = demisto.args().get("size", 500)
+MAX_REQUEST_SIZE = demisto.args().get("size", 1000)
+MAX_DAYS = demisto.args().get("days", 7)
 HTML_TABLE_TEMPLATE = """
 <h3>{{ name }}</h3>
 <table class="table">
@@ -150,6 +151,8 @@ contat details, project scope, etc."></textarea>
     </p>
     <p style="page-break-after: always;"></p>
 
+    <h1 class="text-primary text-center">All Installed Content</h1>
+    
     {{ integrations_table }}
     <p>The system configuration above represents the server configuration of XSOAR, including advanced
         server config parameters such as HTTP proxy. This configuration is accessible via
@@ -161,19 +164,22 @@ contat details, project scope, etc."></textarea>
         include playbooks, automations, and in some cases, integrations.</p>
     <p style="page-break-after: always;"></p>
 
+    {% if playbooks_table %}
+        {{ playbooks_table }}
+        <p>
+            Custom playbooks are written specifically for this deployment, or adapted from existing OOTB playbooks.
+            The tasks in each playbook represent the overall size and complexity of each developed playbook.
+        </p>
+        <p style="page-break-after: always;"></p>
+    {% endif %}
 
-    {{ playbooks_table }}
-    <p>
-        Custom playbooks are written specifically for this deployment, or adapted from existing OOTB playbooks.
-        The tasks in each playbook represent the overall size and complexity of each developed playbook.
-    </p>
-    <p style="page-break-after: always;"></p>
-
-    {{ automations_table }}
-    <p>
-        Custom automations are used to add additional logic and support to playbooks and use cases.
-    </p>
-    <p style="page-break-after: always;"></p>
+    {% if automations_table %}
+        {{ automations_table }}
+        <p>
+            Custom automations are used to add additional logic and support to playbooks and use cases.
+        </p>
+        <p style="page-break-after: always;"></p>
+    {% endif %}
 
     {{ system_config }}
     <p>
@@ -334,7 +340,7 @@ def get_all_incidents(days=7, size=1000):
         "userFilter": False,
         "filter": {
             "page": 0,
-            "size": size,
+            "size": int(size),
             "query": "-category:job",
             "sort": [
                 {
@@ -344,7 +350,7 @@ def get_all_incidents(days=7, size=1000):
             ],
             "period": {
                 "by": "day",
-                "fromValue": days
+                "fromValue": int(days)
             }
         }
     }
@@ -357,7 +363,7 @@ def get_open_incidents(days=7, size=1000):
         "userFilter": False,
         "filter": {
             "page": 0,
-            "size": size,
+            "size": int(size),
             "query": "-status:closed -category:job",
             "sort": [
                 {
@@ -367,7 +373,7 @@ def get_open_incidents(days=7, size=1000):
             ],
             "period": {
                 "by": "day",
-                "fromValue": days
+                "fromValue": int(days)
             }
         }
     }
@@ -382,7 +388,7 @@ def get_closed_incidents(days=7, size=1000):
         "userFilter": False,
         "filter": {
             "page": 0,
-            "size": size,
+            "size": int(size),
             "query": "status:closed -category:job",
             "sort": [
                 {
@@ -392,7 +398,7 @@ def get_closed_incidents(days=7, size=1000):
             ],
             "period": {
                 "by": "day",
-                "fromValue": days
+                "fromValue": int(days)
             }
         }
     }
@@ -441,7 +447,7 @@ def get_custom_playbooks():
     return rd
 
 
-def get_playbook_stats(playbooks):
+def get_playbook_stats(playbooks, days=7, size=1000):
     """
     Pull all the incident types and assoociated playbooks,
     then join this with the incident stats to determine how often each playbook has been used.
@@ -449,7 +455,7 @@ def get_playbook_stats(playbooks):
     :param playbooks (TableData): Table Data of Playbooks
     """
     # incident_types = get_api_request(DEMISTO_INCIDENT_TYPE_PATH)
-    incidents = get_all_incidents()
+    incidents = get_all_incidents(days, size)
     playbook_stats = {}
     for incident in incidents:
         playbook = incident.get("playbookId")
@@ -490,15 +496,15 @@ def get_system_config():
 
 
 def main():
-    open_incidents = get_open_incidents()
-    closed_incidents = get_closed_incidents()
+    open_incidents = get_open_incidents(MAX_DAYS, MAX_REQUEST_SIZE)
+    closed_incidents = get_closed_incidents(MAX_DAYS, MAX_REQUEST_SIZE)
 
     system_config = get_system_config()
     integrations = get_enabled_integrations()
     installed_packs = get_installed_packs()
     playbooks = get_custom_playbooks()
     automations = get_custom_automations()
-    playbook_stats = get_playbook_stats(playbooks)
+    playbook_stats = get_playbook_stats(playbooks, MAX_DAYS, MAX_REQUEST_SIZE)
     d = Document(
         MD_DOCUMENT_TEMPLATE,
         system_config=system_config,
