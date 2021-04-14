@@ -51,6 +51,18 @@ HTML_TABLE_TEMPLATE = """
 </table>
 """
 
+USECASE_MD_DOCUMENT_TEMPLATE = """
+# {{ playbook_name }}
+
+{{ data.playbooks.as_markdown() }}
+
+{{ data.integrations.as_markdown() }}
+
+{{ data.incidentfields.as_markdown() }} 
+
+{{ data.automations.as_markdown() }}
+"""
+
 MD_DOCUMENT_TEMPLATE = """
 {{ open_incidents }}
 
@@ -235,6 +247,29 @@ class SingleFieldData:
     def as_html(self):
         return f"""<h3>{self.name}</h3><span class="display-5">{self.data}</span>"""
 
+class NoneTableData:
+    def as_markdown(self):
+        return ""
+
+class UseCaseDocument:
+    def __init__(
+            self,
+            playbook_name,
+            dependencies
+                 ):
+        self.playbook_name = playbook_name
+        self.automations = dependencies.get("automation", NoneTableData())
+        self.integrations = dependencies.get("integration", NoneTableData())
+        self.playbooks = dependencies.get("playbook", NoneTableData())
+        self.incidentfields = dependencies.get("incidentfield", NoneTableData())
+        self.incidenttypes = dependencies.get("incidenttypes", NoneTableData())
+
+    def markdown(self):
+        template = jinja2.Template(USECASE_MD_DOCUMENT_TEMPLATE)
+        return template.render(
+            playbook_name=self.playbook_name,
+            data=self
+        )
 
 class Document:
     def __init__(
@@ -517,25 +552,24 @@ def get_playbook_dependencies(playbook_name):
     if not dependencies:
         return_error(f"Failed to retrieve dependencies for {playbook_id}")
 
-    types = {
-        "automation": [],
-        "playbook": [],
-        "integration": [],
-    }
+    types = {}
     for dependency in dependencies:
         d_type = dependency.get("type")
-        if d_type in types:
-            types[d_type].append({
-                "type": d_type,
-                "name": dependency.get("name"),
-                "pack": dependency.get("packID", "Custom")
-            })
+        if d_type not in types:
+            types[d_type] = []
 
-    result_table_datas = []
+        types[d_type].append({
+            "type": d_type,
+            "name": dependency.get("name"),
+            "pack": dependency.get("packID", "Custom")
+        })
+
+
+    result_table_datas = {}
     for k, v in types.items():
         if v:
             td = TableData(v, f"{k}s")
-            result_table_datas.append(td)
+            result_table_datas[k] = td
 
     return result_table_datas
 
@@ -556,7 +590,13 @@ def main():
     if demisto.args().get("playbook"):
         # If we get a playbook, we generate a use case document, instead of teh platform as build
         r = get_playbook_dependencies(demisto.args().get("playbook"))
-        return_results(r[0].as_markdown())
+        doc = UseCaseDocument(
+            playbook_name=demisto.args().get("playbook"),
+            dependencies=r
+        )
+        return_results(CommandResults(
+            readable_output=doc.markdown(),
+        ))
         return
 
     # If no playbook is passed, we generate a platform as built.
