@@ -8436,7 +8436,7 @@ Returns the data given in "matched" if matched, "unmatch" otherwise.
     XYZ
 
 ##### Filter
-> **Operator**: email-header: decode
+> **Operator**: regex: replace
 
 > **Path**: 
 
@@ -8456,7 +8456,7 @@ Returns the data given in "matched" if matched, "unmatch" otherwise.
     XYZ
 
 ##### Filter
-> **Operator**: email-header: decode
+> **Operator**: regex: replace
 
 > **Path**: 
 
