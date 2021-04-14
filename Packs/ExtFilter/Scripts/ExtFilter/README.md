@@ -287,7 +287,6 @@ Available operators
 * `starts with caseless`
 * `doesn't start with`
 * `doesn't start with caseless`
-* `email-header: decode`
 * `ends with`
 * `ends with caseless`
 * `doesn't end with`
@@ -380,6 +379,8 @@ Available operators
 * `flattens with values`
 * `flattens with keys`
 * `abort`
+* `email-header: decode`
+* `regex: replace`
 
 
 ----
@@ -1933,93 +1934,6 @@ Returns a set of elements which doesn't start with a string given in a filter. I
       {
         "xxx": "x"
       }
-    ]
-
-</details>
-
-
-----
-### Operator: `email-header: decode`
-<details><summary>
-Returns an string which is decoded with the email header encoding manner.
-</summary><p/>
-
-> **Filter Format**: `dict[str,Any]`
-
-| *Parameter* | *Data Type* | *Description* |
-| - | - | - |
-(parameter is currently not required)
-
-#### Example 1
-##### Input
-    =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?=
-
-##### Filter
-> **Operator**: email-header: decode
-
-> **Path**: 
-
-> **Filter**:
-
-    {
-    }
-
-##### Output
-    あいうえお
-
-
-#### Example 2
-##### Input
-    ABC =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?= XYZ
-
-##### Filter
-> **Operator**: email-header: decode
-
-> **Path**: 
-
-> **Filter**:
-
-    {
-    }
-
-##### Output
-    ABC あいうえお XYZ
-
-
-</details>
-
-
-----
-### Operator: `ends with`
-<details><summary>
-Returns a set of elements which ends with a string given in a filter.
-</summary><p/>
-
-> **Filter Format**: `string`
-
-#### Example 1
-##### Input
-    [
-      10,
-      "xxx.exe",
-      "yyy.pdf",
-      {
-        "xxx": "x"
-      }
-    ]
-
-##### Filter
-> **Operator**: ends with
-
-> **Path**: 
-
-> **Filter**:
-
-    .exe
-
-##### Output
-    [
-      "xxx.exe"
     ]
 
 </details>
@@ -8425,5 +8339,136 @@ Raises an exception and exit with the value filtered at the operator. This opera
 
     {
     }
+
+</details>
+
+
+----
+### Operator: `email-header: decode`
+<details><summary>
+Returns an string which is decoded with the email header encoding manner.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?=
+
+##### Filter
+> **Operator**: email-header: decode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    あいうえお
+
+
+#### Example 2
+##### Input
+    ABC =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?= XYZ
+
+##### Filter
+> **Operator**: email-header: decode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    ABC あいうえお XYZ
+
+
+</details>
+
+
+----
+### Operator: `regex: replace`
+<details><summary>
+Evaluates the pattern matching, and returns the data given in "matched" or "unmatched" according to the result.
+Returns the data given in "matched" if matched, "unmatch" otherwise.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+| pattern | str | A pattern text in regex. |
+| matched | Any | The data to return when matched. capture groups such as \1 are supported. |
+| unmatched | Any | (Optional) The data to return when unmatched. If not specified, the value given will return. |
+| caseless | bool | (Optional) true if the matching performs in case-insensitive, false means case-sensitive. The default value is false. |
+| dotall | bool | (Optional) . (single dot) matches any of charactors excluding new line charactors by default. true if it matches any of the charactors including them. The default value is false. See re.DOTALL |
+| multiline | bool | (Optional) true if the matching performs in multi-line mode, false otherwise. The default value is false. See re.MULTILINE |
+
+#### Example 1
+##### Input
+    Re: Re: Fw: Hello!
+
+##### Filter
+> **Operator**: regex: replace
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "pattern": "( *(Re: *|Fw: *)*)(.*)",
+      "matched": "\\3"
+    }
+
+##### Output
+    Hello!
+
+#### Example 2
+##### Input
+    XYZ
+
+##### Filter
+> **Operator**: email-header: decode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "pattern": ".*(abc).*",
+      "matched": "\\1",
+      "unmatched": "unmatched"
+    }
+
+##### Output
+    unmatched
+
+#### Example 3
+##### Input
+    XYZ
+
+##### Filter
+> **Operator**: email-header: decode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "pattern": ".*(abc).*",
+      "matched": "\\1"
+    }
+
+##### Output
+    XYZ
+
 
 </details>
