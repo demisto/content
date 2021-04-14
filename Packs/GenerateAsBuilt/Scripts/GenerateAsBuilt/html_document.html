@@ -80,6 +80,8 @@ contat details, project scope, etc."></textarea>
     </p>
     <p style="page-break-after: always;"></p>
 
+    <h1 class="text-primary text-center">All Installed Content</h1>
+
     {{ integrations_table }}
     <p>The system configuration above represents the server configuration of XSOAR, including advanced
         server config parameters such as HTTP proxy. This configuration is accessible via
@@ -91,19 +93,22 @@ contat details, project scope, etc."></textarea>
         include playbooks, automations, and in some cases, integrations.</p>
     <p style="page-break-after: always;"></p>
 
+    {% if playbooks_table %}
+        {{ playbooks_table }}
+        <p>
+            Custom playbooks are written specifically for this deployment, or adapted from existing OOTB playbooks.
+            The tasks in each playbook represent the overall size and complexity of each developed playbook.
+        </p>
+        <p style="page-break-after: always;"></p>
+    {% endif %}
 
-    {{ playbooks_table }}
-    <p>
-        Custom playbooks are written specifically for this deployment, or adapted from existing OOTB playbooks.
-        The tasks in each playbook represent the overall size and complexity of each developed playbook.
-    </p>
-    <p style="page-break-after: always;"></p>
-
-    {{ automations_table }}
-    <p>
-        Custom automations are used to add additional logic and support to playbooks and use cases.
-    </p>
-    <p style="page-break-after: always;"></p>
+    {% if automations_table %}
+        {{ automations_table }}
+        <p>
+            Custom automations are used to add additional logic and support to playbooks and use cases.
+        </p>
+        <p style="page-break-after: always;"></p>
+    {% endif %}
 
     {{ system_config }}
     <p>
