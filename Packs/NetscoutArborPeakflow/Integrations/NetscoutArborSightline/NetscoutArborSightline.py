@@ -527,7 +527,7 @@ def mitigation_list_command(client: NetscoutClient, args: dict):
     data = data[:limit] if isinstance(data, list) else [data]
     hr = [build_human_readable(data=mitigation) for mitigation in data]
     mitigations = [build_output(data=mitigation, keys_to_remove=['relationships', 'subobject'], extend_data=extend_data)
-                   for mitigation in data] if not extend_data else data
+                   for mitigation in data]
     return CommandResults(outputs_prefix='NASightline.Mitigation',
                           outputs_key_field='id',
                           outputs=mitigations,
