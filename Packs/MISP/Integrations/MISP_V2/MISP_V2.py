@@ -445,7 +445,7 @@ def check_file(file_hash):
             dbot_obj = {
                 'Indicator': file_hash,
                 'Type': 'hash',
-                'Vendor': misp_organisation,
+                'Vendor': 'MISP V2',
                 'Score': dbot_score
             }
 
@@ -455,7 +455,7 @@ def check_file(file_hash):
             # if malicious, find file with given hash
             if dbot_score == 3:
                 file_obj['Malicious'] = {
-                    'Vendor': misp_organisation,
+                    'Vendor': 'MISP V2',
                     'Description': f'file hash found in MISP event with ID: {event.get("id")}'
                 }
 
@@ -518,14 +518,14 @@ def check_ip(ip):
             dbot_obj = {
                 'Indicator': ip,
                 'Type': 'ip',
-                'Vendor': misp_organisation,
+                'Vendor': 'MISP V2',
                 'Score': dbot_score
             }
             ip_obj = {'Address': ip}
             # if malicious
             if dbot_score == 3:
                 ip_obj['Malicious'] = {
-                    'Vendor': misp_organisation,
+                    'Vendor': 'MISP V2',
                     'Description': f'IP Found in MISP event: {event.get("id")}'
                 }
             md_obj = {
@@ -753,7 +753,7 @@ def download_file():
         else:
             file_buffer = response[1][0][2].getbuffer()
             filename = response[1][0][1]
-        demisto.results(fileResult(filename, file_buffer))  # type: ignore
+            demisto.results(fileResult(filename, file_buffer))  # type: ignore
 
 
 def get_urls_events():
@@ -779,7 +779,7 @@ def check_url(url):
             dbot_obj = {
                 'Indicator': url,
                 'Type': 'url',
-                'Vendor': misp_organisation,
+                'Vendor': 'MISP V2',
                 'Score': dbot_score
             }
 
@@ -788,7 +788,7 @@ def check_url(url):
             }
             if dbot_score == 3:
                 url_obj['Malicious'] = {
-                    'Vendor': misp_organisation,
+                    'Vendor': 'MISP V2',
                     'Description': f'IP Found in MISP event: {event.get("id")}'
                 }
             md_obj = {
