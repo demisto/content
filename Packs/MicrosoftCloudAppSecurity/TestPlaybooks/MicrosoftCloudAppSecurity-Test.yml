@@ -1,5 +1,6 @@
 id: MicrosoftCloudAppSecurity-Test
-version: -1
+version: 13
+vcShouldKeepItemLegacyProdMachine: false
 name: MicrosoftCloudAppSecurity-Test
 starttaskid: "0"
 tasks:
@@ -16,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "16"
     separatecontext: false
     view: |-
       {
@@ -30,6 +31,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 75f83c5e-4bab-4296-8eb2-0f2201c8de54
@@ -61,6 +64,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 1a092eb4-a4fa-447a-8b9f-1d2f5b34e491
@@ -98,6 +103,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 37288e94-1fd5-4bf7-8c8f-df2cc992e20f
@@ -113,12 +120,22 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
+    scriptarguments:
+      custom_filter: {}
+      extension: {}
+      file_id: {}
+      file_type: {}
+      limit:
+        simple: "1"
+      quarantined: {}
+      sharing: {}
+      skip: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 760
+          "y": 865
         }
       }
     note: false
@@ -126,6 +143,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: e7ec2f8b-ccfd-4a57-8040-2758677995ad
@@ -140,13 +159,22 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
+    scriptarguments:
+      custom_filter: {}
+      group_id: {}
+      is_admin: {}
+      is_external: {}
+      limit: {}
+      skip: {}
+      status: {}
+      type: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 940
+          "y": 1040
         }
       }
     note: false
@@ -154,6 +182,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 14193eaf-f52d-421e-8d0e-16096891348b
@@ -171,7 +201,255 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1170
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ab68f862-2ac3-47b4-8a0d-cd9394f4e13a
+    type: title
+    task:
+      id: ab68f862-2ac3-47b4-8a0d-cd9394f4e13a
+      version: -1
+      name: Close Alerts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e660e426-c4e7-43f1-8b1c-4075bc1e626a
+    type: title
+    task:
+      id: e660e426-c4e7-43f1-8b1c-4075bc1e626a
+      version: -1
+      name: List Alerts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: fff36f2d-8a92-419c-889b-fa23bf607d80
+    type: regular
+    task:
+      id: fff36f2d-8a92-419c-889b-fa23bf607d80
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 0055b8b2-7776-4721-8be2-fc3fb9042cf6
+    type: regular
+    task:
+      id: 0055b8b2-7776-4721-8be2-fc3fb9042cf6
+      version: -1
+      name: microsoft-cas-alert-close-benign
+      description: An alert on a suspicious but not malicious activity, such as a
+        penetration test or other authorized suspicious action
+      script: MicrosoftCloudAppSecurity|||microsoft-cas-alert-close-benign
+      type: regular
+      iscommand: true
+      brand: MicrosoftCloudAppSecurity
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      alert_ids: {}
+      allowContact: {}
+      comment:
+        simple: 'Test close-benign-command: close a single open alert'
+      contactEmail: {}
+      custom_filter:
+        simple: |-
+          {
+          "filters": {
+              "resolutionStatus": {
+                "eq": 0
+              }
+             },
+          "limit": 1
+          }
+      feedbackText: {}
+      reasonId: {}
+      sendFeedback: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 0fd58b4e-ec17-4813-886d-d428b5503aab
+    type: regular
+    task:
+      id: 0fd58b4e-ec17-4813-886d-d428b5503aab
+      version: -1
+      name: microsoft-cas-alert-close-true-positive
+      description: Cֹlose multiple alerts matching the specified filters as true positive
+        (an alert on a confirmed malicious activity.
+      script: MicrosoftCloudAppSecurity|||microsoft-cas-alert-close-true-positive
+      type: regular
+      iscommand: true
+      brand: MicrosoftCloudAppSecurity
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      alert_ids: {}
+      allowContact: {}
+      comment:
+        simple: 'Test close-true-positive: close a single open alert'
+      contactEmail: {}
+      custom_filter:
+        simple: |-
+          {
+          "filters": {
+              "resolutionStatus": {
+                "eq": 0
+              }
+             },
+          "limit": 1
+          }
+      feedbackText: {}
+      sendFeedback: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 09a63e5d-1bd8-4194-83c4-6a4cced17f60
+    type: regular
+    task:
+      id: 09a63e5d-1bd8-4194-83c4-6a4cced17f60
+      version: -1
+      name: microsoft-cas-alert-close-false-positive
+      description: Close multiple alerts matching the specified filters as false positive
+        (an alert on a non-malicious activity).
+      script: MicrosoftCloudAppSecurity|||microsoft-cas-alert-close-false-positive
+      type: regular
+      iscommand: true
+      brand: MicrosoftCloudAppSecurity
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      alert_ids: {}
+      allowContact: {}
+      comment:
+        simple: 'Test close false positive: close a single open alert'
+      contactEmail: {}
+      custom_filter:
+        simple: |-
+          {
+          "filters": {
+              "resolutionStatus": {
+                "eq": 0
+              }
+             },
+          "limit": 1
+          }
+      feedbackText: {}
+      reasonId: {}
+      sendFeedback: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
         }
       }
     note: false
