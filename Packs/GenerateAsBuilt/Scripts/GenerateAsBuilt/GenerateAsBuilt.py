@@ -81,6 +81,125 @@ MD_DOCUMENT_TEMPLATE = """
 {{ system_config }} 
 """
 
+USECASE_HTML_DOCUMENT_TEMPLATE = """
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous"
+          media='all'>
+</head>
+<style>
+    td {
+        font-size: small;
+    }
+
+
+</style>
+<body>
+<div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"
+             style="min-width:500px;">
+            <span class="fs-4">{{ playbook_name }}</span>
+        </div>
+        <div>
+            <img src="https://www.paloaltonetworks.com/content/dam/pan/en_US/images/logos/brand/primary-company-logo/PANW_Parent_Brand_Primary_Logo_RGB.png?imbypass=on"
+                 height="35px">
+        </div>
+    </header>
+    <div class="row mb-2">
+        <div class="col">
+            <small class="text-secondary">Prepared by: {{ data.author }}</small>
+        </div>
+        <div class="col text-center">
+            <small class="text-secondary">Prepared For: {{ data.customer }}</small>
+        </div>
+        <div class="col text-end">
+            <small class="text-secondary">Prepared at: {{ data.date }}</small>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col">
+            <h1 class="text-primary">Purpose</h1>
+            <p>This Document covers all of the custom configuration and content that has been deployed following
+                the engagement of Palo Alto professional services.<br><br>
+                This document specifically covers the implementation of the provided use case/playbook, and collates
+                the dependencies and artefacts implemented to complete it.
+                <br><br>
+                This document only includes the dependencies used by the playbook, which may not include other configurations
+                such as:
+            </p>
+            <ul>
+                <li>Incident Classifiers</li>
+                <li>Incident Mappers</li>
+            </ul>
+            <h1 class="text-primary">Document Overview</h1>
+            <p>
+                This document has been auto-generated using the XSOAR Automation <i>!GenerateAsBuilt</i>, with a
+                specific
+                playbook ({{ playbook_name }}) provided.
+            </p>
+            <h1 class="text-primary">
+                Project Details
+            </h1>
+            <textarea style="width:100%;border:none;"
+                      placeholder="Click here to complete this section with any relevant details, for example customer
+contat details, project scope, etc."></textarea>
+            <h1 class="text-primary">
+                Contact Details
+            </h1>
+            <p>
+                <b>Corporate Headquarters</b><br>
+                Palo Alto Networks<br>
+                3000 Tannery Way<br>
+                Santa Clara, CA 95054<br>
+            </p>
+        </div>
+    </div>
+    <p style="page-break-after: always;"></p>
+
+    {{ data.playbooks.as_html(["name","pack"]) }}
+    <p>
+        Playbook dependencies are subplaybooks consumed by the parent use case.
+    </p>
+    <p style="page-break-after: always;"></p>
+
+    {% if data.integrations %}
+    {{ data.integrations.as_html(["name","pack"]) }}
+    <p>
+        Integration dependencies are those that implement commands required by this use case.
+        <br><br>
+        The above integrations may not all be configured in this environment, but are referenced by the use case.
+    </p>
+    <p style="page-break-after: always;"></p>
+    {% endif %}
+
+    {% if data.incidenttypes %}
+    {{ data.incidenttypes.as_html(["name","pack"]) }}
+    <p>
+        Incident types are the types of incidents generated or used by this use-case.
+    </p>
+    <p style="page-break-after: always;"></p>
+    {% endif %}
+    
+    {% if data.automations %}
+    {{ data.automations.as_html(["name","pack"]) }}
+    <p>
+        Automations are scripts used to perform tasks. They may be custom, or OOTB.
+    </p>
+    <p style="page-break-after: always;"></p>
+    {% endif %}
+
+    {% if data.incidentfields %}
+    {{ data.incidentfields.as_html(["name","pack"]) }}
+    <p>
+        Incident fields are the fields that this use case relies on to populate or consume information.
+    </p>
+    <p style="page-break-after: always;"></p>
+    {% endif %}
+</div>
+</body>
+"""
+
 HTML_DOCUMENT_TEMPLATE = """
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -241,28 +360,51 @@ class SingleFieldData:
         self.data = data
         self.name = name
 
+    def __bool__(self):
+        return True
+
     def as_markdown(self):
         return f"### {self.name}\n{self.data}"
 
     def as_html(self):
         return f"""<h3>{self.name}</h3><span class="display-5">{self.data}</span>"""
 
+
 class NoneTableData:
-    def as_markdown(self):
+    """
+    Empty data type, returns e
+    """
+
+    def __bool__(self):
+        return False
+
+    def as_markdown(self, *args, **kwargs):
         return ""
 
+    def as_html(self, *args, **kwargs):
+        return ""
+
+
 class UseCaseDocument:
+    """
+    Generates a "use case" document, that is, a document that collates the dependencies and requiremnts of a
+    given playbook ("use case") within a running XSOAR environment.
+    """
+
     def __init__(
             self,
             playbook_name,
             dependencies
-                 ):
+    ):
         self.playbook_name = playbook_name
         self.automations = dependencies.get("automation", NoneTableData())
         self.integrations = dependencies.get("integration", NoneTableData())
         self.playbooks = dependencies.get("playbook", NoneTableData())
         self.incidentfields = dependencies.get("incidentfield", NoneTableData())
-        self.incidenttypes = dependencies.get("incidenttypes", NoneTableData())
+        self.incidenttypes = dependencies.get("incidenttype", NoneTableData())
+        self.author = demisto.args().get("author")
+        self.date = datetime.now().strftime("%m/%d/%Y")
+        self.customer = demisto.args().get("customer")
 
     def markdown(self):
         template = jinja2.Template(USECASE_MD_DOCUMENT_TEMPLATE)
@@ -271,7 +413,20 @@ class UseCaseDocument:
             data=self
         )
 
+    def html(self):
+        template = jinja2.Template(USECASE_HTML_DOCUMENT_TEMPLATE)
+        return template.render(
+            playbook_name=self.playbook_name,
+            data=self
+        )
+
+
 class Document:
+    """
+    General Platform as-built document - designed to collate all of the configuration and settings of a running XSOAR
+    instance and is not Specific t any given use case.
+    """
+
     def __init__(
             self,
             template,
@@ -558,12 +713,15 @@ def get_playbook_dependencies(playbook_name):
         if d_type not in types:
             types[d_type] = []
 
+        pack = dependency.get("packID", "Custom")
+        if not pack:
+            pack = "Custom"
+
         types[d_type].append({
             "type": d_type,
             "name": dependency.get("name"),
-            "pack": dependency.get("packID", "Custom")
+            "pack": pack
         })
-
 
     result_table_datas = {}
     for k, v in types.items():
@@ -594,6 +752,8 @@ def main():
             playbook_name=demisto.args().get("playbook"),
             dependencies=r
         )
+        fr = fileResult("usecase.html", doc.html())
+        return_results(fr)
         return_results(CommandResults(
             readable_output=doc.markdown(),
         ))
