@@ -925,6 +925,11 @@
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
+            "playbookID": "panorama_content_update_test"
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "PAN-OS URL Filtering enrichment - Test"
         },
         {
