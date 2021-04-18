@@ -4568,7 +4568,7 @@ script:
     arguments:
     - name: entryID
       required: true
-      description: Entry id of the file to upload
+      description: Entry ID of the file to upload.
     - name: category
       required: true
       auto: PREDEFINED
