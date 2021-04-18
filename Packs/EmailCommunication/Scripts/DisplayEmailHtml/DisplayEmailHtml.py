@@ -1,4 +1,3 @@
-import json
 import re
 
 import demistomock as demisto  # noqa: F401
