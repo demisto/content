@@ -127,7 +127,7 @@ class TidyClient:
         Args:
             apps: List of homebrew packages (https://formulae.brew.sh/)
             cask_apps: List of homebrew cask packages (https://formulae.brew.sh/cask/)
-            homebrew_taps: List of hombrew taps to install.
+            homebrew_taps: List of homebrew taps to install.
 
         Returns:
             Runner: ansible-runner Runner object.
