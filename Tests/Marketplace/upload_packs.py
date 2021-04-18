@@ -306,7 +306,8 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         if is_private or current_index_generation == index_generation:
             # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
             if storage_bucket:
-                storage_blob = storage_bucket.blob(index_json_path)
+                index_json_path_storage = os.path.join(GCPConfig.STORAGE_BASE_PATH, f'{GCPConfig.INDEX_NAME}.json')
+                storage_blob = storage_bucket.blob(index_json_path_storage)
                 storage_blob.upload_from_filename(index_json_path)
             index_blob.upload_from_filename(index_zip_path)
             logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
