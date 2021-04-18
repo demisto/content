@@ -2508,3 +2508,122 @@ Initiates a new endpoint script execution kill process.
 >|action_id|endpoints_count|
 >|---|---|
 >| 3658 | 1 |
+
+
+
+### xdr-endpoint-scan
+***
+Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+
+
+#### Base Command
+
+`xdr-endpoint-scan`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_id_list | List of endpoint IDs. | Optional | 
+| dist_name | Name of the distribution list. | Optional | 
+| gte_first_seen | Epoch timestamp in milliseconds. | Optional | 
+| gte_last_seen | Epoch timestamp in milliseconds. | Optional | 
+| lte_first_seen | Epoch timestamp in milliseconds. | Optional | 
+| lte_last_seen | Epoch timestamp in milliseconds. | Optional | 
+| ip_list | List of IP addresses. | Optional | 
+| group_name | Name of the endpoint group. | Optional | 
+| platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
+| alias | Endpoint alias name. | Optional | 
+| isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
+| hostname | Name of the host. | Optional | 
+| all | Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.endpointScan.actionId | Number | The action ID of the scan request. | 
+| PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Check if the scan aborted or not. | 
+
+
+#### Command Example
+```!xdr-endpoint-scan endpoint_id_list=12386310665d413a958926fce5b794b3```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "endpointScan": {
+            "aborted": true,
+            "actionId": 4205
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Endpoint scan
+>|Action Id|
+>|---|
+>| 4205 |
+
+
+### xdr-endpoint-scan-abort
+***
+Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
+
+
+#### Base Command
+
+`xdr-endpoint-scan-abort`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_id_list | List of endpoint IDs. | Optional | 
+| dist_name | Name of the distribution list. | Optional | 
+| gte_first_seen | Epoch timestamp in milliseconds. | Optional | 
+| gte_last_seen | Epoch timestamp in milliseconds. | Optional | 
+| lte_first_seen | Epoch timestamp in milliseconds. | Optional | 
+| lte_last_seen | Epoch timestamp in milliseconds. | Optional | 
+| ip_list | List of IP addresses. | Optional | 
+| group_name | Name of the endpoint group. | Optional | 
+| platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
+| alias | Endpoint alias name. | Optional | 
+| isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
+| hostname | Name of the host. | Optional | 
+| all | Whether to scan all of the endpoints or not. Default is false. Note that scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.endpointScan.actionId | Unknown | The action id of the abort scan request. | 
+| PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Check if the scan aborted or not. | 
+
+
+#### Command Example
+```!xdr-endpoint-scan-abort endpoint_id_list=12386310665d413a958926fce5b794b3```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "endpointScan": {
+            "aborted": true,
+            "actionId": 4227
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Endpoint abort scan
+>|Action Id|
+>|---|
+>| 4227 |
+
+

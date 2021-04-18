@@ -212,24 +212,42 @@ function ParseSuccessResults([string]$success_results, [int]$limit, [bool]$all_r
 
 
 
-function ParseResults([string]$results, [int]$limit = -1) {
-    $results_matches = (Select-String -AllMatches "\{?Location: (.*); Sender: (.*); Subject: (.*); Type: (.*); Size: (.*); Received Time: (.*); Data Link: (.*)[},]"  -InputObject $results).Matches
-    $parsed_results = New-Object System.Collections.Generic.List[System.Object]
-    foreach ($match in $results_matches)
-    {
-        if ($parsed_results.Count -ge $limit -and $limit -ne -1){
-            break
+function ParseResults([string]$results, [int]$limit = -1, [string]$type = "Preview") {
+   if ($type -eq "Preview"){
+        $results_matches_preview = (Select-String -AllMatches "\{?Location: (.*); Sender: (.*); Subject: (.*); Type: (.*); Size: (.*); Received Time: (.*); Data Link: (.*)[},]"  -InputObject $results).Matches
+        $parsed_results = New-Object System.Collections.Generic.List[System.Object]
+        foreach ($match in $results_matches_preview)
+        {
+            if ($parsed_results.Count -ge $limit -and $limit -ne -1){
+                break
+            }
+
+            $parsed_results.Add(@{
+                "Location" = $match.Groups[1].Value
+                "Sender" = $match.Groups[2].Value
+                "Subject" = $match.Groups[3].Value
+                "Type" = $match.Groups[4].Value
+                "Size" = $match.Groups[5].Value
+                "ReceivedTime" = $match.Groups[6].Value
+                "DataLink" = $match.Groups[7].Value
+            })
         }
-        $parsed_results.Add(@{
-            "Location" = $match.Groups[1].Value
-            "Sender" = $match.Groups[2].Value
-            "Subject" = $match.Groups[3].Value
-            "Type" = $match.Groups[4].Value
-            "Size" = $match.Groups[5].Value
-            "ReceivedTime" = $match.Groups[6].Value
-            "DataLink" = $match.Groups[7].Value
-        })
+   }
+    if ($type -eq "Purge"){
+        $results_matches_purge = (Select-String -AllMatches "\{?Location: (.*); Item count: (.*); Total size: (.*); Failed count: (.*)[},]"  -InputObject $results).Matches
+        $parsed_results = New-Object System.Collections.Generic.List[System.Object]
+        foreach ($match in $results_matches_purge)
+        {
+            if ($parsed_results.Count -ge $limit -and $limit -ne -1){
+                break
+            }
+
+            $parsed_results.Add(@{
+                "Location" = $match.Groups[1].Value
+            })
+        }
     }
+
 
     return $parsed_results
     <#
@@ -341,7 +359,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
         "SearchName" = $search_action.SearchName
         "Status" = $search_action.Status
         "TenantId" = $search_action.TenantId
-        "Results" = ParseResults -results $search_action.Results -limit $limit
+        "Results" = ParseResults -results $search_action.Results -limit $limit -type $search_action.Action
     }
     <#
         .DESCRIPTION
@@ -1052,6 +1070,9 @@ class SecurityAndComplianceClient {
                 throw "New action must include valid action - Preview/Purge"
             }
             $response = New-ComplianceSearchAction @cmd_params
+            if (-not $response){
+                throw "The search action didn't return any results. Please check the search_name and consider running the o365-sc-start-search command before."
+            }
 
             return $response
         }
