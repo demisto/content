@@ -138,7 +138,7 @@ def refresh_edl_context(request_args: RequestArguments, save_integration_context
 
     while actual_indicator_amount < request_args.limit:
         # from where to start the new poll and how many results should be fetched
-        new_offset = len(iocs) + request_args.offset + actual_indicator_amount - 1
+        new_offset = len(iocs) + request_args.offset
         new_limit = request_args.limit - actual_indicator_amount
 
         # poll additional indicators into list from demisto
@@ -187,7 +187,8 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) 
         next_page = 0
         offset_in_page = 0
 
-    iocs = find_indicators_to_limit_loop(indicator_query, limit, next_page=next_page)
+    # the second returned variable is the next page - it is implemented for a future use of repolling
+    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit, next_page=next_page)
 
     # if offset in page is bigger than the amount of results returned return empty list
     if len(iocs) <= offset_in_page:
@@ -213,11 +214,10 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         (tuple): The iocs and the last page
     """
     iocs: List[dict] = []
-    search_indicators = IndicatorsSearcher(page=next_page)
     if not last_found_len:
         last_found_len = total_fetched
     while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
         # In case the result from searchIndicators includes the key `iocs` but it's value is None
         fetched_iocs = fetched_iocs or []
 
@@ -226,7 +226,8 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
                     for ioc in fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
-    return iocs
+        next_page += 1
+    return iocs, next_page
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
