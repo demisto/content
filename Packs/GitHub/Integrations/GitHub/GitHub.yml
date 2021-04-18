@@ -2613,6 +2613,58 @@ script:
     - contextPath: GitHub.ActionsUsage.WorkflowUsage
       description: GitHub action worflow usage on different OS.
       type: Unknown
+  - arguments:
+    - default: true
+      description: The path of the file.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: The branch name from which to get the file.
+      isArray: false
+      name: branch_name
+      required: false
+      secret: false
+    - default: false
+      description: 'The media type in which the file contents will be fetched. Possible
+        values are: "raw" and "html". Default value is "raw".'
+      isArray: false
+      defaultValue: 'raw'
+      name: media_type
+      predefined:
+        - raw
+        - html
+      required: false
+      secret: false
+    - default: false
+      description: 'Whether to create a file entry in the War Room with the file contents.
+        Possible values are: "true" and "false". Default value is "false".'
+      isArray: false
+      defaultValue: 'false'
+      name: create_file_from_content
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the content of a file from GitHub.
+    execution: false
+    name: GitHub-get-file-content
+    outputs:
+    - contextPath: GitHub.FileContent.Path
+      description: The path of the file.
+      type: String
+    - contextPath: GitHub.FileContent.Content
+      description: The content of the file.
+      type: Number
+    - contextPath: GitHub.FileContent.MediaType
+      description: The media type in which the file was fetched.
+      type: String
+    - contextPath: GitHub.FileContent.Branch
+      description: The branch from which the file was fetched.
+      type: Unknown
   dockerimage: demisto/pyjwt3:1.0.0.16907
   feed: false
   isfetch: true

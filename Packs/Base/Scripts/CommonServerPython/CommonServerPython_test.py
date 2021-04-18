@@ -1099,6 +1099,29 @@ def test_exception_in_return_error(mocker):
     assert IntegrationLogger.__call__.call_count == 2
 
 
+def test_return_error_get_modified_remote_data(mocker):
+    from CommonServerPython import return_error
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'results')
+    err_msg = 'Test Error'
+    with raises(SystemExit):
+        return_error(err_msg)
+    assert demisto.results.call_args[0][0]['Contents'] == 'skip update. error: ' + err_msg
+
+
+def test_return_error_get_modified_remote_data_not_implemented(mocker):
+    from CommonServerPython import return_error
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'results')
+    err_msg = 'Test Error'
+    with raises(SystemExit):
+        try:
+            raise NotImplementedError('Command not implemented')
+        except:
+            return_error(err_msg)
+    assert demisto.results.call_args[0][0]['Contents'] == err_msg
+
+
 def test_get_demisto_version(mocker, clear_version_cache):
     # verify expected server version and build returned in case Demisto class has attribute demistoVersion
     mocker.patch.object(
