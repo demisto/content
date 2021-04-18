@@ -385,7 +385,10 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
     if '@status' in result and result['@status'] == 'error':
         raise Exception(f'Operation Failed with: {str(result)}')
 
-    result = result['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
+    try:
+        result = result['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
+    except KeyError:
+        raise Exception(f'Dynamic Address Group: {dag} was not found.')
 
     return CommandResults(
         outputs_prefix='PanOS.PolicyOptimizer.DAG',
