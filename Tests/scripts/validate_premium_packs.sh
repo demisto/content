@@ -10,9 +10,8 @@ SECRET_CONF_PATH="./conf_secret.json"
 
 # ====== BUCKET CONFIGURATION ======
 
-CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
 if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-  STORAGE_BASE_PATH="upload-flow/builds/$BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
+  STORAGE_BASE_PATH="upload-flow/builds/$BRANCH/$CI_PIPELINE_ID/content/packs"
 fi
 
 # ====== RUN VALIDATIONS ======

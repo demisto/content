@@ -35,17 +35,17 @@ default:
        echo "found venv"
      else
       echo "installing venv"
-      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
+      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
      fi
-     venv/bin/pip3 install -r .circleci/build-requirements.txt
-     venv/bin/pip2 install -r dev-requirements-py2.txt
+     venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+     venv/bin/pip2 install -r dev-requirements-py2.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
      source ./venv/bin/activate
     - git config diff.renameLimit 6000
     - export PATH="${PWD}/node_modules/.bin:${PATH}"
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-        echo "Installing SDK"
-        pip3 install git+https://github.com/demisto/demisto-sdk@master
+        echo "Installing SDK" >> $ARTIFACTS_FOLDER/logs/installations.log
+        pip3 install git+https://github.com/demisto/demisto-sdk@master >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
       fi
     - echo "========= Installing SSH keys ========"
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -56,7 +56,7 @@ default:
     - chmod 700 ~/.ssh
 
     - echo "======= Download configuration ========"
-    - ./Tests/scripts/download_demisto_conf.sh
+    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
 
     - echo "========== Build Parameters =========="
     - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
@@ -91,10 +91,10 @@ stages:
 create-instances:
   stage: create-instances
   script:
-    - |
-      demisto-sdk create-id-set -o ./Tests/id_set.json
-      cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+    - demisto-sdk create-id-set -o ./Tests/id_set.json
+    - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+    - cp content-descriptor.json $ARTIFACTS_FOLDER
     - ./Documentation/commonServerDocs.sh
     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
@@ -161,3 +161,60 @@ create-instances:
           fi
           python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
       fi
+
+
+.test_content_on_server_instances_base:
+  needs: ["create-instances"]
+  stage: run-instances
+  dependencies:
+    - create-instances
+  script:
+    - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
+# If instance was not created
+    - |
+      if [[ "$TEMP" != "true" && -z "${NIGHTLY}" ]];
+        then
+          echo "Instance with role $INSTANCE_ROLE was not created"
+          exit 0
+      fi
+    - mv $SSH_CONFIGURATION ~/.ssh/config
+    - chmod 700 ~/.ssh/config
+    - Tests/scripts/open_ssh_tunnel.sh
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
+    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+    - |
+      if [ -f ./Tests/failed_tests.txt ];
+        then
+          cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+      fi
+    - |
+      if [ $INSTANCE_ROLE == "Server Master" ];
+        then
+          ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ARTIFACTS_FOLDER/env_results.json
+      fi
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    - export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+    - zip -P $PSWD -j $ARTIFACTS_FOLDER/Logs.zip $ARTIFACTS_FOLDER/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
+    - rm -f $ARTIFACTS_FOLDER/server*.log
+
+
+server_5_0:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 5.0"
+
+server_5_5:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 5.5"
+
+server_6_0:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 6.0"
+
+server_master:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server Master"
