@@ -566,7 +566,9 @@ def fetch_incidents_command():
             last_fetch[state] = last_fetch_time
 
     demisto.setLastRun({'last_fetch': last_fetch})
-    demisto.setLastRun({'already_fetched': already_fetched.extend(new_fetched_ids)})
+    # extend the already fetched list
+    already_fetched.extend(new_fetched_ids)
+    demisto.setLastRun({'already_fetched': already_fetched})
     demisto.info('extracted {} incidents'.format(len(incidents)))
 
     demisto.incidents(incidents)
