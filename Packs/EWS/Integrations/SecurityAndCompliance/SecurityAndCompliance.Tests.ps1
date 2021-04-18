@@ -117,7 +117,7 @@ Describe 'StringRegexParse' {
         }
         # for Purge result
         It "Single Results Purge" {
-            $string = "{Location: testp@demistodev.onmicrosoft.com; Item count: 10; Total size: 2890210; Failed count: 0;}"
+            $string = "{Location: testp@demistodev.onmicrosoft.com; Item count: 10; Total size: 2890210; Failed count: 0; }"
             $expected_object = @{
                 "Location" = "testp@demistodev.onmicrosoft.com"
                 "ItemCount" = 10
@@ -131,9 +131,10 @@ Describe 'StringRegexParse' {
         }
 
         It "Multiple Results Purge" {
-            $string = "Details:{Location: testp@demistodev.onmicrosoft.com; Item count: 10; Total size: 2890210; Failed count: 0;,
-                        Location: aaaaa@demistodev.onmicrosoft.com; Item count: 10; Total size: 2814884; Failed count: 0;,
-                        Location: FileTestTeam@demistodev.onmicrosoft.com; Item count: 10; Total size: 2791289; Failed count: 0;}"
+            $string = "Details:{Location: testp@demistodev.onmicrosoft.com; Item count: 10; Total size: 2890210; Failed count: 0; ,
+                        Location: aaaaa@demistodev.onmicrosoft.com; Item count: 10; Total size: 2814884; Failed count: 0; ,
+                        Location: FileTestTeam@demistodev.onmicrosoft.com; Item count: 10; Total size: 2791289; Failed count: 0; }"
+                        ""
             $expected_objects = @(@{
                 "Location" = "testp@demistodev.onmicrosoft.com"
                 "ItemCount" = 10
