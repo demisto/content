@@ -1177,7 +1177,7 @@ def get_test_list_and_content_packs_to_install(files_string,
     packs_to_install = filter_installed_packs(packs_to_install)
 
     # All filtering out of tests should be done here
-    # tests = filter_tests(tests, id_set)
+    tests = filter_tests(tests, id_set)
 
     if not tests:
         logging.info("No tests found running sanity check only")
