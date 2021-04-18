@@ -51,7 +51,7 @@ echo "Finished copying successfully."
 
 if [ ! -n "${BUCKET_UPLOAD}" ]; then
     echo "Updating modified content packs in the bucket ..."
-    CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
+    CONTENT_PACKS_TO_INSTALL_FILE="./artifacts/content_packs_to_install.txt"
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
     echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
   else
