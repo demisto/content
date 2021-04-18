@@ -6451,6 +6451,17 @@ class TableOrListWidget(BaseWidget):
         })
 
 class AutoFocusKeyRetriever:
+    """AutoFocus API Key management class
+    :type api_key: ``str``
+    :param api_key: Auto Focus API key coming from the integration parameters
+
+    :type override_default_credentials: ``bool``
+    :param override_default_credentials: Whether to override the default credentials and use the
+     Cortex XSOAR given AutoFocus API Key
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     def __init__(self, api_key, override_default_credentials):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
