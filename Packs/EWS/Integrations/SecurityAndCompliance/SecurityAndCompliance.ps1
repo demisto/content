@@ -244,6 +244,9 @@ function ParseResults([string]$results, [int]$limit = -1, [string]$type = "Previ
 
             $parsed_results.Add(@{
                 "Location" = $match.Groups[1].Value
+                "ItemCount" = $match.Groups[2].Value
+                "TotalSize" = $match.Groups[3].Value
+                "FailedCount" = $match.Groups[4].Value
             })
         }
     }
