@@ -306,7 +306,8 @@ run-validations:
     - echo "====Validate landingPageSections.json===="
     - echo "Download index.zip"
     - INDEX_PATH=$(mktemp)
-    - gsutil cp gs://marketplace-dist/content/packs/index.zip $INDEX_PATH
+    - |
+      gsutil cp gs://marketplace-dist/content/packs/index.zip $INDEX_PATH
     - echo "successfully downloaded index.zip into $INDEX_PATH"
 
     - UNZIP_PATH=$(mktemp -d)
