@@ -56,10 +56,15 @@ def get_vms():
     children = containerView.view
     for child in children:
         summary = child.summary
-        for dev in child.config.hardware.device:
-            if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
-                macAddress = dev.macAddress
-                break
+
+        try:
+            for dev in child.config.hardware.device:
+                if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
+                    macAddress = dev.macAddress
+                    break
+        except:  # noqa
+            pass
+
         data.append({
             'Name': summary.config.name,
             'Template': summary.config.template,
