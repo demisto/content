@@ -4117,7 +4117,3 @@ class TestIndicatorsSearcher:
 
         assert search_indicators_obj_search_after._search_after_param == 5
         assert search_indicators_obj_search_after._page == 0
-
-
-
-
