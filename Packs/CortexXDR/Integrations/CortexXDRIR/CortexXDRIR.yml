@@ -1772,25 +1772,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds.
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: gte_first_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds.
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: gte_last_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: lte_first_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: lte_last_seen
       required: false
@@ -1845,7 +1845,7 @@ script:
       default: false
       defaultValue: 'false'
       description: Whether to scan all of the endpoints or not. Default is false.
-        Do note that scanning all the endpoints may cause performance issues and latency.
+        Note that scanning all of the endpoints may cause performance issues and latency.
       isArray: false
       name: all
       predefined:
@@ -1855,9 +1855,9 @@ script:
       secret: false
     deprecated: false
     description: Cancel the scan of selected endpoints. A scan can only be aborted
-      if the selected endpoints are in Pending or in Progress status. To scan all
-      endpoints, run this command with argument all=true. Do note that scanning all
-      the endpoints may cause performance issues and latency.
+      if the selected endpoints are Pending or In Progress. To scan all
+      endpoints, run the command with the argument all=true. Note that scanning all
+      of the endpoints may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan-abort
     outputs:

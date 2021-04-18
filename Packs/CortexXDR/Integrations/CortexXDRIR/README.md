@@ -2583,10 +2583,10 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 | --- | --- | --- |
 | endpoint_id_list | List of endpoint IDs. | Optional | 
 | dist_name | Name of the distribution list. | Optional | 
-| gte_first_seen | Integer in timestamp epoch milliseconds. | Optional | 
-| gte_last_seen | Integer in timestamp epoch milliseconds. | Optional | 
-| lte_first_seen | Integer in timestamp epoch milliseconds. | Optional | 
-| lte_last_seen | Integer in timestamp epoch milliseconds. | Optional | 
+| gte_first_seen | Epoch timestamp in milliseconds. | Optional | 
+| gte_last_seen | Epoch timestamp in milliseconds. | Optional | 
+| lte_first_seen | Epoch timestamp in milliseconds. | Optional | 
+| lte_last_seen | Epoch timestamp in milliseconds. | Optional | 
 | ip_list | List of IP addresses. | Optional | 
 | group_name | Name of the endpoint group. | Optional | 
 | platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
