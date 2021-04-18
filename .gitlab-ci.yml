@@ -9,6 +9,11 @@ default:
       - venv/
       - node_modules/
     when: always
+  artifacts:
+    expire_in: 3 months
+    paths:
+      - /builds/xsoar/content/artifacts/*
+    when: always
   before_script:
     - echo "=== Running before script ==="
     - git checkout $CI_COMMIT_BRANCH
@@ -63,9 +68,9 @@ default:
 
 
 variables:
-  CONTENT_VERSION: "21.3.2"
+  CONTENT_VERSION: "21.4.0"
   SERVER_VERSION: "6.0.0"
-  GIT_SHA1: "6fee942518c6b2275a6cb61c1824574171cf58f9" # guardrails-disable-line disable-secrets-detection
+  GIT_SHA1: "897996537cbf42ce361ed608816f93729a1be127" # guardrails-disable-line disable-secrets-detection
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
   SLACK_CHANNEL: "dmst-content-team"
@@ -89,10 +94,10 @@ stages:
 create-instances:
   stage: create-instances
   script:
-    - |
-      demisto-sdk create-id-set -o ./Tests/id_set.json
-      cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+    - demisto-sdk create-id-set -o ./Tests/id_set.json
+    - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+    - cp content-descriptor.json $ARTIFACTS_FOLDER
     - ./Documentation/commonServerDocs.sh
     -  demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION
     - |
@@ -151,8 +156,60 @@ create-instances:
           fi
         python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
       fi
-  artifacts:
-    expire_in: 48 hrs
-    paths:
-      - /builds/xsoar/content/artifacts/*
-    when: always
+
+
+.test_content_on_server_instances_base:
+  needs: ["create-instances"]
+  stage: run-instances
+  dependencies:
+    - create-instances
+  script:
+    - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
+# If instance was not created
+    - |
+      if [[ "$TEMP" != "true" && -z "${NIGHTLY}" ]];
+        then
+          echo "Instance with role $INSTANCE_ROLE was not created"
+          exit 0
+      fi
+    - mv $SSH_CONFIGURATION ~/.ssh/config
+    - chmod 700 ~/.ssh/config
+    - Tests/scripts/open_ssh_tunnel.sh
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
+    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+    - |
+      if [ -f ./Tests/failed_tests.txt ];
+        then
+          cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+      fi
+    - |
+      if [ $INSTANCE_ROLE == "Server Master" ];
+        then
+          ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ARTIFACTS_FOLDER/env_results.json
+      fi
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    - export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+    - zip -P $PSWD -j $ARTIFACTS_FOLDER/Logs.zip $ARTIFACTS_FOLDER/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
+    - rm -f $ARTIFACTS_FOLDER/server*.log
+
+
+server_5_0:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 5.0"
+
+server_5_5:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 5.5"
+
+server_6_0:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 6.0"
+
+server_master:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server Master"
