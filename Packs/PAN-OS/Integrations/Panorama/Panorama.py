@@ -6952,7 +6952,7 @@ def panorama_upload_content_update_file_command(args: dict):
                                  readable_output=human_readble,
                                  outputs_prefix="Panorama.Content.Upload",
                                  outputs_key_field="Status",
-                                 outputs= content_upload_info)
+                                 outputs=content_upload_info)
 
     shutil.rmtree(file_name, ignore_errors=True)
     return results
@@ -6965,13 +6965,15 @@ def panorama_install_file_content_update(version: str, category: str, validity: 
             'type': 'op',
             'cmd': (
                 f'<request><{category}><upgrade><install><skip-content-validity-check>{validity}'
-                f'</skip-content-validity-check><file>{version}</file></install></upgrade></{category}></request>'), 'key': API_KEY
+                f'</skip-content-validity-check><file>{version}</file></install></upgrade></{category}></request>'),
+            'key': API_KEY
         }
     else:
         params = {
             'type': 'op',
             'cmd': (
-                f'<request><{category}><upgrade><install><file>{version}</file></install></upgrade></{category}></request>'), 'key': API_KEY
+                f'<request><{category}><upgrade><install><file>{version}'
+                f'</file></install></upgrade></{category}></request>'), 'key': API_KEY
         }
     result = http_request(
         URL,
@@ -7007,6 +7009,7 @@ def panorama_install_file_content_update_command(args: dict):
     else:
         # no content install took place
         return_results(result['response']['msg'])
+
 
 def main():
     try:
