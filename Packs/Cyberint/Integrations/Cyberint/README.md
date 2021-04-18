@@ -783,7 +783,6 @@ Get alert attachment.
 }
 ```
 
-#### Human Readable Output
 
 
 
@@ -841,6 +840,5 @@ Get alert analysis report.
 }
 ```
 
-#### Human Readable Output
 
 
