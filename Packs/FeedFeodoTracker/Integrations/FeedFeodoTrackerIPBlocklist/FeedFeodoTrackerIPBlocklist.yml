@@ -41,7 +41,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -108,7 +109,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: feodotracker-ipblocklist-get-indicators
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.9.1.15759
   feed: true
   isfetch: false
   longRunning: false
@@ -117,4 +118,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- playbook-feodotrackeripblock_test
 fromversion: 5.5.0

@@ -53,6 +53,20 @@ def add_domain(client: Client, **args) -> str:
     return f'Domain {", ".join(destinations)} successfully added to list {r["data"]["name"]}'
 
 
+def remove_domain(client: Client, **args) -> str:
+    # https://docs.umbrella.com/umbrella-api/reference#delete_v1-organizations-organizationid-destinationlists-destinationlistid-destinations-remove
+    organizationId = args.get('orgId')
+    destinationListId = args.get('destId')
+    uri = f'{organizationId}/destinationlists/{destinationListId}/destinations/remove'
+
+    destinations = argToList(args.get('domainIds'))
+    payload = "[" + ", ".join(destinations) + "]"
+
+    r = client._http_request('DELETE', uri, data=payload)
+
+    return f'Domain {", ".join(destinations)} successfully removed from list {r["data"]["name"]}'
+
+
 def get_destination_domains(client: Client, **args) -> CommandResults:
     organizationId = args.get('orgId')
     destinationListId = args.get('destId')
@@ -94,6 +108,7 @@ def main():
     commands = {
         'umbrella-get-destination-lists': get_destination_lists,
         'umbrella-add-domain': add_domain,
+        'umbrella-remove-domain': remove_domain,
         'umbrella-get-destination-domains': get_destination_domains,
         'test-module': test_module
     }

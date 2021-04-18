@@ -1,0 +1,2310 @@
+category: IT Services
+commonfields:
+  id: AzureComputeV3
+  version: -1
+configuration:
+- additionalinfo: Your Azure subscription Id.
+  display: Subscription ID
+  name: subscription_id
+  required: true
+  type: 0
+- additionalinfo: Azure client secret
+  display: Access Secret
+  name: secret
+  required: true
+  type: 4
+- additionalinfo: Azure client ID
+  display: Client ID
+  name: client_id
+  required: true
+  type: 0
+- additionalinfo: Azure tenant ID
+  display: Tenant ID
+  name: tenant
+  required: true
+  type: 0
+- additionalinfo: For cloud environments other than the US public cloud, the environment
+    name (as defined by Azure Python SDK, eg, `AzureChinaCloud`, `AzureUSGovernment`),
+    or a metadata discovery endpoint URL (required for Azure Stack).
+  defaultvalue: AzureCloud
+  display: Azure Cloud Environment
+  name: cloud_environment
+  required: true
+  type: 0
+- additionalinfo: Controls the certificate validation behavior for Azure endpoints.
+    By default, all modules will validate the server certificate, but when an HTTPS
+    proxy is in use, or against Azure Stack, it may be necessary to disable this behavior
+    by passing `ignore`.
+  defaultvalue: validate
+  display: Certificate Validation Mode
+  name: cert_validation_mode
+  options:
+  - ignore
+  - validate
+  required: true
+  type: 15
+- additionalinfo: Selects an API profile to use when communicating with Azure services.
+    Default value of `latest` is appropriate for public clouds; future values will
+    allow use with Azure Stack.
+  defaultvalue: latest
+  display: API Profile
+  name: api_profile
+  required: true
+  type: 0
+description: Manage Azure Compute resources
+display: Azure Compute v3
+name: AzureComputeV3
+script:
+  commands:
+  - arguments:
+    - description: |-
+        The identifier of the resource to apply autoscale setting.
+        It could be the resource id string.
+        It also could be a dict contains the `name`, `subscription_id`, `namespace`, `types`, `resource_group` of the resource.
+      name: target
+    - description: Resource group of the resource.
+      name: resource_group
+      required: true
+    - defaultValue: "True"
+      description: Specifies whether automatic scaling is enabled for the resource.
+      name: enabled
+    - description: |-
+        The collection of automatic scaling profiles that specify different scaling parameters for different time periods.
+        A maximum of 20 profiles can be specified.
+      name: profiles
+    - description: The collection of notifications.
+      name: notifications
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Assert the state of the virtual network. Use `present` to create
+        or update and `absent` to delete.
+      name: state
+      predefined:
+      - present
+      - absent
+    - description: location of the resource.
+      name: location
+    - description: name of the resource.
+      name: name
+      required: true
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure autoscale setting
+    name: azure-rm-autoscale
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the Auto Scale Setting.
+      name: name
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Auto Scale Setting facts
+    name: azure-rm-autoscale-info
+  - arguments:
+    - description: Name of a resource group where the availability set exists or will
+        be created.
+      name: resource_group
+      required: true
+    - description: Name of the availability set.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        Assert the state of the availability set.
+        Use `present` to create or update a availability set and `absent` to delete a availability set.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - defaultValue: "5"
+      description: Update domains indicate groups of virtual machines and underlying
+        physical hardware that can be rebooted at the same time.
+      name: platform_update_domain_count
+    - defaultValue: "3"
+      description: |-
+        Fault domains define the group of virtual machines that share a common power source and network switch.
+        Should be between `1` and `3`.
+      name: platform_fault_domain_count
+    - auto: PREDEFINED
+      defaultValue: Classic
+      description: Define if the availability set supports managed disks.
+      name: sku
+      predefined:
+      - Classic
+      - Aligned
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure Availability Set
+    name: azure-rm-availabilityset
+    outputs:
+    - contextPath: AzureComputeV3.state.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureComputeV3.state.location
+      description: '[''Location where the resource lives.'']'
+      type: string
+    - contextPath: AzureComputeV3.state.name
+      description: '[''Resource name.'']'
+      type: string
+    - contextPath: AzureComputeV3.state.platform_fault_domain_count
+      description: '[''Fault domains values.'']'
+      type: number
+    - contextPath: AzureComputeV3.state.platform_update_domain_count
+      description: '[''Update domains values.'']'
+      type: number
+    - contextPath: AzureComputeV3.state.sku
+      description: '[''The availability set supports managed disks.'']'
+      type: string
+    - contextPath: AzureComputeV3.state.tags
+      description: '[''Resource tags.'']'
+  - arguments:
+    - description: Limit results to a specific availability set.
+      name: name
+    - description: The resource group to search for the desired availability set.
+      name: resource_group
+    - description: List of tags to be matched.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Availability Set facts
+    name: azure-rm-availabilityset-info
+    outputs:
+    - contextPath: AzureComputeV3.azure_availabilityset.location
+      description: '[''Location where the resource lives.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_availabilityset.name
+      description: '[''Resource name.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_availabilityset.properties
+      description: '[''The properties of the resource.'']'
+    - contextPath: AzureComputeV3.azure_availabilityset.sku
+      description: '[''Location where the resource lives.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_availabilityset.type
+      description: '[''Resource type.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_availabilityset.tags
+      description: '[''Resource tags.'']'
+  - arguments:
+    - description: The resource group name to use or create to host the deployed template.
+      name: resource_group
+      required: true
+    - defaultValue: ansible-arm
+      description: |-
+        The name of the deployment to be tracked in the resource group deployment history.
+        Re-using a deployment name will overwrite the previous value in the resource group's deployment history.
+      name: name
+    - defaultValue: westus
+      description: The geo-locations in which the resource group will be located.
+      name: location
+    - auto: PREDEFINED
+      defaultValue: incremental
+      description: |-
+        In incremental mode, resources are deployed without deleting existing resources that are not included in the template.
+        In complete mode resources are deployed and existing resources in the resource group not included in the template are deleted.
+      name: deployment_mode
+      predefined:
+      - complete
+      - incremental
+    - description: |-
+        A hash containing the templates inline. This parameter is mutually exclusive with `template_link`.
+        Either `template` or `template_link` is required if `state=present`.
+      isArray: true
+      name: template
+    - description: |-
+        Uri of file containing the template body. This parameter is mutually exclusive with `template`.
+        Either `template` or `template_link` is required if `state=present`.
+      name: template_link
+    - description: |-
+        A hash of all the required template variables for the deployment template. This parameter is mutually exclusive with `parameters_link`.
+        Either `parameters_link` or `parameters` is required if `state=present`.
+      isArray: true
+      name: parameters
+    - description: |-
+        Uri of file containing the parameters body. This parameter is mutually exclusive with `parameters`.
+        Either `parameters_link` or `parameters` is required if `state=present`.
+      name: parameters_link
+    - defaultValue: "yes"
+      description: Whether or not to block until the deployment has completed.
+      name: wait_for_deployment_completion
+    - defaultValue: "10"
+      description: Time (in seconds) to wait between polls when waiting for deployment
+        completion.
+      name: wait_for_deployment_polling_period
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        If `state=present`, template will be created.
+        If `state=present` and deployment exists, it will be updated.
+        If `state=absent`, stack will be removed.
+      name: state
+      predefined:
+      - present
+      - absent
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Create or destroy Azure Resource Manager template deployments
+    name: azure-rm-deployment
+    outputs:
+    - contextPath: AzureComputeV3.deployment.group_name
+      description: '[''Name of the resource group.'']'
+      type: string
+    - contextPath: AzureComputeV3.deployment.id
+      description: '[''The Azure ID of the deployment.'']'
+      type: string
+    - contextPath: AzureComputeV3.deployment.instances
+      description: '[''Provides the public IP addresses for each VM instance.'']'
+    - contextPath: AzureComputeV3.deployment.name
+      description: '[''Name of the deployment.'']'
+      type: string
+    - contextPath: AzureComputeV3.deployment.outputs
+      description: '[''Dictionary of outputs received from the deployment.'']'
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the deployment.
+      name: name
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Deployment facts
+    name: azure-rm-deployment-info
+    outputs:
+    - contextPath: AzureComputeV3.deployments.id
+      description: '[''The identifier of the resource.'']'
+      type: string
+    - contextPath: AzureComputeV3.deployments.resource_group
+      description: '[''Resource group name.'']'
+    - contextPath: AzureComputeV3.deployments.name
+      description: '[''Deployment name.'']'
+    - contextPath: AzureComputeV3.deployments.provisioning_state
+      description: '[''Provisioning state of the deployment.'']'
+    - contextPath: AzureComputeV3.deployments.template_link
+      description: '[''Link to the template.'']'
+    - contextPath: AzureComputeV3.deployments.parameters
+      description: '[''Dictionary containing deployment parameters.'']'
+    - contextPath: AzureComputeV3.deployments.outputs
+      description: '[''Dictionary containing deployment outputs.'']'
+    - contextPath: AzureComputeV3.deployments.output_resources
+      description: '[''List of resources.'']'
+  - arguments:
+    - description: Name of resource group.
+      name: resource_group
+      required: true
+    - description: Name of the Azure Function App.
+      name: name
+      required: true
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - description: |-
+        App service plan.
+        It can be name of existing app service plan in same resource group as function app.
+        It can be resource id of existing app service plan.
+        Resource id. For example /subscriptions/<subs_id>/resourceGroups/<resource_group>/providers/Microsoft.Web/serverFarms/<plan_name>.
+        It can be a dict which contains `name`, `resource_group`.
+        `name`. Name of app service plan.
+        `resource_group`. Resource group name of app service plan.
+      name: plan
+    - description: Web app container settings.
+      name: container_settings
+    - description: Name of the storage account to use.
+      name: storage_account
+      required: true
+    - description: Dictionary containing application settings.
+      name: app_settings
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Assert the state of the Function App. Use `present` to create or
+        update a Function App and `absent` to delete.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure Function Apps
+    name: azure-rm-functionapp
+  - arguments:
+    - description: Only show results for a specific Function App.
+      name: name
+    - description: Limit results to a resource group. Required when filtering by name.
+      name: resource_group
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Function App facts
+    name: azure-rm-functionapp-info
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the Shared Image Gallery. Valid names consist of less
+        than 80 alphanumeric characters, underscores and periods.
+      name: name
+      required: true
+    - description: Resource location
+      name: location
+    - description: The description of this Shared Image Gallery resource. This property
+        is updatable.
+      name: description
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        Assert the state of the Gallery.
+        Use `present` to create or update an Gallery and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure Shared Image Gallery instance.
+    name: azure-rm-gallery
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+    - description: Resource name
+      name: name
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Shared Image Gallery info.
+    name: azure-rm-gallery-info
+    outputs:
+    - contextPath: AzureComputeV3.galleries.id
+      description: '[''Resource Id'']'
+      type: string
+    - contextPath: AzureComputeV3.galleries.name
+      description: '[''Resource name'']'
+      type: string
+    - contextPath: AzureComputeV3.galleries.location
+      description: '[''Resource location'']'
+      type: string
+    - contextPath: AzureComputeV3.galleries.tags
+      description: '[''Resource tags'']'
+    - contextPath: AzureComputeV3.galleries.description
+      description: '[''This is the gallery description.'']'
+      type: string
+    - contextPath: AzureComputeV3.galleries.provisioning_state
+      description: '[''The current state of the gallery.'']'
+      type: string
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the Shared Image Gallery in which the Image Definition
+        is to be created.
+      name: gallery_name
+      required: true
+    - description: The name of the gallery Image Definition to be created or updated.
+        The allowed characters are alphabets and numbers with dots, dashes, and periods
+        allowed in the middle. The maximum length is 80 characters.
+      name: name
+      required: true
+    - description: Resource location
+      name: location
+    - description: The description of this gallery Image Definition resource. This
+        property is updatable.
+      name: description
+    - description: The Eula agreement for the gallery Image Definition.
+      name: eula
+    - description: The privacy statement uri.
+      name: privacy_statement_uri
+    - description: The release note uri.
+      name: release_note_uri
+    - auto: PREDEFINED
+      description: This property allows you to specify the type of the OS that is
+        included in the disk when creating a VM from a managed image.
+      name: os_type
+      predefined:
+      - windows
+      - linux
+      required: true
+    - auto: PREDEFINED
+      description: The allowed values for OS State are 'Generalized'.
+      name: os_state
+      predefined:
+      - generalized
+      - specialized
+      required: true
+    - description: The end of life date of the gallery Image Definition. This property
+        can be used for decommissioning purposes. This property is updatable. Format
+        should be according to ISO-8601, for instance "2019-06-26".
+      name: end_of_life_date
+    - description: Image identifier.
+      isArray: true
+      name: identifier
+      required: true
+    - description: Recommended parameter values.
+      isArray: true
+      name: recommended
+    - description: Disallowed parameter values.
+      isArray: true
+      name: disallowed
+    - description: Purchase plan.
+      isArray: true
+      name: purchase_plan
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        Assert the state of the GalleryImage.
+        Use `present` to create or update an GalleryImage and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure SIG Image instance.
+    name: azure-rm-galleryimage
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the shared image gallery from which the image definitions
+        are to be retrieved.
+      name: gallery_name
+      required: true
+    - description: Resource name
+      name: name
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure SIG Image info.
+    name: azure-rm-galleryimage-info
+    outputs:
+    - contextPath: AzureComputeV3.images.id
+      description: '[''Resource Id'']'
+      type: string
+    - contextPath: AzureComputeV3.images.name
+      description: '[''Resource name'']'
+      type: string
+    - contextPath: AzureComputeV3.images.location
+      description: '[''Resource location'']'
+      type: string
+    - contextPath: AzureComputeV3.images.tags
+      description: '[''Resource tags'']'
+    - contextPath: AzureComputeV3.images.os_state
+      description: '["The allowed values for OS State are ''Generalized''."]'
+    - contextPath: AzureComputeV3.images.os_type
+      description: This property allows you to specify the type of the OS that is
+        included in the disk when creating a VM from a managed image.
+    - contextPath: AzureComputeV3.images.identifier
+      description: '[''This is the gallery image definition identifier.'']'
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the Shared Image Gallery in which the Image Definition
+        resides.
+      name: gallery_name
+      required: true
+    - description: The name of the gallery Image Definition in which the Image Version
+        is to be created.
+      name: gallery_image_name
+      required: true
+    - description: 'The name of the gallery Image Version to be created. Needs to
+        follow semantic version name pattern: The allowed characters are digit and
+        period. Digits must be within the range of a 32-bit integer. Format: <MajorVersion>.<MinorVersion>.<Patch>'
+      name: name
+      required: true
+    - description: Resource location
+      name: location
+    - description: Publishing profile.
+      isArray: true
+      name: publishing_profile
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        Assert the state of the GalleryImageVersion.
+        Use `present` to create or update an GalleryImageVersion and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure SIG Image Version instance.
+    name: azure-rm-galleryimageversion
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the Shared Image Gallery in which the Image Definition
+        resides.
+      name: gallery_name
+      required: true
+    - description: The name of the gallery Image Definition in which the Image Version
+        resides.
+      name: gallery_image_name
+      required: true
+    - description: Resource name
+      name: name
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure SIG Image Version info.
+    name: azure-rm-galleryimageversion-info
+    outputs:
+    - contextPath: AzureComputeV3.versions.id
+      description: '[''Resource Id'']'
+      type: string
+    - contextPath: AzureComputeV3.versions.name
+      description: '[''Resource name'']'
+      type: string
+    - contextPath: AzureComputeV3.versions.location
+      description: '[''Resource location'']'
+      type: string
+    - contextPath: AzureComputeV3.versions.tags
+      description: '[''Resource tags'']'
+    - contextPath: AzureComputeV3.versions.publishing_profile
+      description: '[''The publishing profile of a gallery image version.'']'
+    - contextPath: AzureComputeV3.versions.provisioning_state
+      description: '[''The current state of the gallery.'']'
+      type: string
+  - arguments:
+    - description: Name of resource group.
+      name: resource_group
+      required: true
+    - description: Name of the image.
+      name: name
+      required: true
+    - description: |-
+        OS disk source from the same region.
+        It can be a virtual machine, OS disk blob URI, managed OS disk, or OS snapshot.
+        Each type of source except for blob URI can be given as resource id, name or a dict contains `resource_group`, `name` and `type`.
+        If source type is blob URI, the source should be the full URI of the blob in string type.
+        If you specify the `type` in a dict, acceptable value contains `disks`, `virtual_machines` and `snapshots`.
+      name: source
+      required: true
+    - description: List of data disk sources, including unmanaged blob URI, managed
+        disk id or name, or snapshot id or name.
+      isArray: true
+      name: data_disk_sources
+    - description: Location of the image. Derived from `resource_group` if not specified.
+      name: location
+    - auto: PREDEFINED
+      description: The OS type of image.
+      name: os_type
+      predefined:
+      - Windows
+      - Linux
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Assert the state of the image. Use `present` to create or update
+        a image and `absent` to delete an image.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure image
+    name: azure-rm-image
+  - arguments:
+    - description: Name of resource group.
+      name: resource_group
+    - description: Name of the image to filter from existing images.
+      name: name
+    - description: List of tags to be matched.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get facts about azure custom images
+    name: azure-rm-image-info
+    outputs:
+    - contextPath: AzureComputeV3.images.id
+      description: '[''Id of the image.'']'
+      type: string
+    - contextPath: AzureComputeV3.images.name
+      description: '[''Name of the image.'']'
+      type: string
+    - contextPath: AzureComputeV3.images.resource_group
+      description: '[''Resource group of the image.'']'
+      type: string
+    - contextPath: AzureComputeV3.images.location
+      description: '[''Location of the image.'']'
+      type: string
+    - contextPath: AzureComputeV3.images.os_disk
+      description: '[''Id of os disk for image.'']'
+      type: string
+    - contextPath: AzureComputeV3.images.os_disk_caching
+      description: '[''Specifies caching requirements for the image.'']'
+      type: string
+    - contextPath: AzureComputeV3.images.os_state
+      description: '[''Specifies image operating system state. Possible values are
+        C(Generalized) or C(Specialized).'']'
+      type: string
+    - contextPath: AzureComputeV3.images.os_storage_account_type
+      description: '[''Specifies the storage account type for the managed disk.'']'
+      type: string
+    - contextPath: AzureComputeV3.images.os_type
+      description: '[''Type of OS for image.'']'
+      type: string
+    - contextPath: AzureComputeV3.images.provisioning_state
+      description: '[''State of image.'']'
+      type: string
+    - contextPath: AzureComputeV3.images.source
+      description: '[''Resource id of source VM from which the image is created.'']'
+      type: string
+    - contextPath: AzureComputeV3.images.tags
+      description: '[''Dictionary of tags associated with the image.'']'
+    - contextPath: AzureComputeV3.images.data_disks
+      description: '[''List of data disks associated with the image.'']'
+  - arguments:
+    - description: Name of a resource group where the load balancer exists or will
+        be created.
+      name: resource_group
+      required: true
+    - description: Name of the load balancer.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Assert the state of the load balancer. Use `present` to create/update
+        a load balancer, or `absent` to delete one.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - auto: PREDEFINED
+      description: The load balancer SKU.
+      name: sku
+      predefined:
+      - Basic
+      - Standard
+    - description: List of frontend IPs to be used.
+      name: frontend_ip_configurations
+    - description: List of backend address pools.
+      name: backend_address_pools
+    - description: List of probe definitions used to check endpoint health.
+      name: probes
+    - description: |-
+        Defines an external port range for inbound NAT to a single backend port on NICs associated with a load balancer.
+        Inbound NAT rules are created automatically for each NIC associated with the Load Balancer using an external port from this range.
+        Defining an Inbound NAT pool on your Load Balancer is mutually exclusive with defining inbound Nat rules.
+        Inbound NAT pools are referenced from virtual machine scale sets.
+        NICs that are associated with individual virtual machines cannot reference an inbound NAT pool.
+        They have to reference individual inbound NAT rules.
+      name: inbound_nat_pools
+    - description: Object collection representing the load balancing rules Gets the
+        provisioning.
+      name: load_balancing_rules
+    - description: |-
+        Collection of inbound NAT Rules used by a load balancer.
+        Defining inbound NAT rules on your load balancer is mutually exclusive with defining an inbound NAT pool.
+        Inbound NAT pools are referenced from virtual machine scale sets.
+        NICs that are associated with individual virtual machines cannot reference an Inbound NAT pool.
+        They have to reference individual inbound NAT rules.
+      name: inbound_nat_rules
+    - description: |-
+        (deprecated) Name of an existing public IP address object to associate with the security group.
+        This option has been deprecated, and will be removed in 2.9. Use `frontend_ip_configurations` instead.
+      name: public_ip_address_name
+    - description: |-
+        (deprecated) The port that the health probe will use.
+        This option has been deprecated, and will be removed in 2.9. Use `probes` instead.
+      name: probe_port
+    - auto: PREDEFINED
+      description: |-
+        (deprecated) The protocol to use for the health probe.
+        This option has been deprecated, and will be removed in 2.9. Use `probes` instead.
+      name: probe_protocol
+      predefined:
+      - Tcp
+      - Http
+      - Https
+    - defaultValue: "15"
+      description: |-
+        (deprecated) Time (in seconds) between endpoint health probes.
+        This option has been deprecated, and will be removed in 2.9. Use `probes` instead.
+      name: probe_interval
+    - defaultValue: "3"
+      description: |-
+        (deprecated) The amount of probe failures for the load balancer to make a health determination.
+        This option has been deprecated, and will be removed in 2.9. Use `probes` instead.
+      name: probe_fail_count
+    - description: |-
+        (deprecated) The URL that an HTTP probe or HTTPS probe will use (only relevant if `probe_protocol=Http` or `probe_protocol=Https`).
+        This option has been deprecated, and will be removed in 2.9. Use `probes` instead.
+      name: probe_request_path
+    - auto: PREDEFINED
+      description: |-
+        (deprecated) The protocol (TCP or UDP) that the load balancer will use.
+        This option has been deprecated, and will be removed in 2.9. Use `load_balancing_rules` instead.
+      name: protocol
+      predefined:
+      - Tcp
+      - Udp
+    - auto: PREDEFINED
+      description: |-
+        (deprecated) The type of load distribution that the load balancer will employ.
+        This option has been deprecated, and will be removed in 2.9. Use `load_balancing_rules` instead.
+      name: load_distribution
+      predefined:
+      - Default
+      - SourceIP
+      - SourceIPProtocol
+    - description: |-
+        (deprecated) Frontend port that will be exposed for the load balancer.
+        This option has been deprecated, and will be removed in 2.9. Use `load_balancing_rules` instead.
+      name: frontend_port
+    - description: |-
+        (deprecated) Backend port that will be exposed for the load balancer.
+        This option has been deprecated, and will be removed in 2.9. Use `load_balancing_rules` instead.
+      name: backend_port
+    - defaultValue: "4"
+      description: |-
+        (deprecated) Timeout for TCP idle connection in minutes.
+        This option has been deprecated, and will be removed in 2.9. Use `load_balancing_rules` instead.
+      name: idle_timeout
+    - description: |-
+        (deprecated) Start of the port range for a NAT pool.
+        This option has been deprecated, and will be removed in 2.9. Use `inbound_nat_pools` instead.
+      name: natpool_frontend_port_start
+    - description: |-
+        (deprecated) End of the port range for a NAT pool.
+        This option has been deprecated, and will be removed in 2.9. Use `inbound_nat_pools` instead.
+      name: natpool_frontend_port_end
+    - description: |-
+        (deprecated) Backend port used by the NAT pool.
+        This option has been deprecated, and will be removed in 2.9. Use `inbound_nat_pools` instead.
+      name: natpool_backend_port
+    - description: |-
+        (deprecated) The protocol for the NAT pool.
+        This option has been deprecated, and will be removed in 2.9. Use `inbound_nat_pools` instead.
+      name: natpool_protocol
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure load balancers
+    name: azure-rm-loadbalancer
+  - arguments:
+    - description: Limit results to a specific resource group.
+      name: name
+    - description: The resource group to search for the desired load balancer.
+      name: resource_group
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get load balancer facts
+    name: azure-rm-loadbalancer-info
+  - arguments:
+    - description: Name of a resource group where the managed disk exists or will
+        be created.
+      name: resource_group
+      required: true
+    - description: Name of the managed disk.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Assert the state of the managed disk. Use `present` to create or
+        update a managed disk and `absent` to delete a managed disk.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - auto: PREDEFINED
+      description: |-
+        Type of storage for the managed disk.
+        If not specified, the disk is created as `Standard_LRS`.
+        `Standard_LRS` is for Standard HDD.
+        `StandardSSD_LRS` (added in 2.8) is for Standard SSD.
+        `Premium_LRS` is for Premium SSD.
+        `UltraSSD_LRS` (added in 2.8) is for Ultra SSD, which is in preview mode, and only available on select instance types.
+        See `https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types` for more information about disk types.
+      name: storage_account_type
+      predefined:
+      - Standard_LRS
+      - StandardSSD_LRS
+      - Premium_LRS
+      - UltraSSD_LRS
+    - auto: PREDEFINED
+      description: '`import` from a VHD file in `source_uri` and `copy` from previous
+        managed disk `source_uri`.'
+      name: create_option
+      predefined:
+      - empty
+      - import
+      - copy
+    - description: URI to a valid VHD file to be used or the resource ID of the managed
+        disk to copy.
+      name: source_uri
+    - auto: PREDEFINED
+      description: |-
+        Type of Operating System.
+        Used when `create_option=copy` or `create_option=import` and the source is an OS disk.
+        If omitted during creation, no value is set.
+        If omitted during an update, no change is made.
+        Once set, this value cannot be cleared.
+      name: os_type
+      predefined:
+      - linux
+      - windows
+    - description: |-
+        Size in GB of the managed disk to be created.
+        If `create_option=copy` then the value must be greater than or equal to the source's size.
+      name: disk_size_gb
+    - description: |-
+        Name of an existing virtual machine with which the disk is or will be associated, this VM should be in the same resource group.
+        To detach a disk from a vm, explicitly set to ''.
+        If this option is unset, the value will not be changed.
+      name: managed_by
+    - auto: PREDEFINED
+      description: |-
+        Disk caching policy controlled by VM. Will be used when attached to the VM defined by `managed_by`.
+        If this option is different from the current caching policy, the managed disk will be deattached and attached with current caching option again.
+      name: attach_caching
+      predefined:
+      - ""
+      - read_only
+      - read_write
+    - description: |-
+        Tags to assign to the managed disk.
+        Format tags as 'key' or 'key:value'.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      description: |-
+        The Azure managed disk's zone.
+        Allowed values are `1`, `2`, `3` and `' '`.
+      name: zone
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      - ""
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure Manage Disks
+    name: azure-rm-manageddisk
+  - arguments:
+    - description: Limit results to a specific managed disk.
+      name: name
+    - description: Limit results to a specific resource group.
+      name: resource_group
+    - description: |-
+        Limit results by providing a list of tags.
+        Format tags as 'key' or 'key:value'.
+      isArray: true
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Get managed disk facts
+    name: azure-rm-manageddisk-info
+    outputs:
+    - contextPath: AzureComputeV3.azure_managed_disk.id
+      description: '[''Resource id.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_managed_disk.name
+      description: '[''Name of the managed disk.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_managed_disk.location
+      description: '[''Valid Azure location.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_managed_disk.storage_account_type
+      description: '[''Type of storage for the managed disk.'', ''See U(https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types)
+        for more information about this type.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_managed_disk.create_option
+      description: '[''Create option of the disk.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_managed_disk.source_uri
+      description: '[''URI to a valid VHD file to be used or the resource ID of the
+        managed disk to copy.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_managed_disk.os_type
+      description: '[''Type of Operating System.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_managed_disk.disk_size_gb
+      description: '[''Size in GB of the managed disk to be created.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_managed_disk.managed_by
+      description: '[''Name of an existing virtual machine with which the disk is
+        or will be associated, this VM should be in the same resource group.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_managed_disk.tags
+      description: '[''Tags to assign to the managed disk.'']'
+  - arguments:
+    - description: Azure RM Resource URL.
+      name: url
+    - description: Specific API version to be used.
+      name: api_version
+    - description: |-
+        Provider type.
+        Required if URL is not specified.
+      name: provider
+    - description: |-
+        Resource group to be used.
+        Required if URL is not specified.
+      name: resource_group
+    - description: |-
+        Resource type.
+        Required if URL is not specified.
+      name: resource_type
+    - description: |-
+        Resource name.
+        Required if URL Is not specified.
+      name: resource_name
+    - description: List of subresources.
+      name: subresource
+    - description: The body of the HTTP request/response to the web service.
+      name: body
+    - auto: PREDEFINED
+      defaultValue: PUT
+      description: The HTTP method of the request or response. It must be uppercase.
+      name: method
+      predefined:
+      - GET
+      - PUT
+      - POST
+      - HEAD
+      - PATCH
+      - DELETE
+      - MERGE
+    - defaultValue: '[200, 201, 202]'
+      description: A valid, numeric, HTTP status code that signifies success of the
+        request. Can also be comma separated list of status codes.
+      isArray: true
+      name: status_code
+    - defaultValue: "False"
+      description: If enabled, idempotency check will be done by using `method=GET`
+        first and then comparing with `body`.
+      name: idempotency
+    - defaultValue: "0"
+      description: If enabled, idempotency check will be done by using `method=GET`
+        first and then comparing with `body`.
+      name: polling_timeout
+    - defaultValue: "60"
+      description: If enabled, idempotency check will be done by using `method=GET`
+        first and then comparing with `body`.
+      name: polling_interval
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Assert the state of the resource. Use `present` to create or update
+        resource or `absent` to delete resource.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Create any Azure resource
+    name: azure-rm-resource
+    outputs:
+    - contextPath: AzureComputeV3.response.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureComputeV3.response.kind
+      description: '[''The kind of storage.'']'
+      type: string
+    - contextPath: AzureComputeV3.response.location
+      description: '[''The resource location, defaults to location of the resource
+        group.'']'
+      type: string
+    - contextPath: AzureComputeV3.response.name
+      description: The storage account name.
+      type: string
+    - contextPath: AzureComputeV3.response.properties
+      description: '["The storage account''s related properties."]'
+    - contextPath: AzureComputeV3.response.sku
+      description: '[''The storage account SKU.'']'
+    - contextPath: AzureComputeV3.response.tags
+      description: '[''Resource tags.'']'
+    - contextPath: AzureComputeV3.response.type
+      description: '[''The resource type.'']'
+      type: string
+  - arguments:
+    - description: Azure RM Resource URL.
+      name: url
+    - description: Specific API version to be used.
+      name: api_version
+    - description: Provider type, should be specified in no URL is given.
+      name: provider
+    - description: |-
+        Resource group to be used.
+        Required if URL is not specified.
+      name: resource_group
+    - description: Resource type.
+      name: resource_type
+    - description: Resource name.
+      name: resource_name
+    - description: List of subresources.
+      name: subresource
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Generic facts of Azure resources
+    name: azure-rm-resource-info
+    outputs:
+    - contextPath: AzureComputeV3.response.id
+      description: '[''Id of the Azure resource.'']'
+      type: string
+    - contextPath: AzureComputeV3.response.location
+      description: '[''Resource location.'']'
+      type: string
+    - contextPath: AzureComputeV3.response.name
+      description: '[''Resource name.'']'
+      type: string
+    - contextPath: AzureComputeV3.response.properties
+      description: '["Specifies the virtual machine''s property."]'
+    - contextPath: AzureComputeV3.response.type
+      description: '[''The type of identity used for the virtual machine.'']'
+      type: string
+  - arguments:
+    - defaultValue: "no"
+      description: |-
+        Remove a resource group and all associated resources.
+        Use with `state=absent` to delete a resource group that contains resources.
+      name: force_delete_nonempty
+    - description: |-
+        Azure location for the resource group. Required when creating a new resource group.
+        Cannot be changed once resource group is created.
+      name: location
+    - description: Name of the resource group.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        Assert the state of the resource group. Use `present` to create or update and `absent` to delete.
+        When `absent` a resource group containing resources will not be removed unless the `force` option is used.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure resource groups
+    name: azure-rm-resourcegroup
+    outputs:
+    - contextPath: AzureComputeV3.state.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureComputeV3.state.location
+      description: '[''Azure location for the resource group.'']'
+      type: string
+    - contextPath: AzureComputeV3.state.name
+      description: '[''The resource group name.'']'
+      type: string
+    - contextPath: AzureComputeV3.state.provisioning_state
+      description: '[''Provisioning state of the resource group.'']'
+      type: string
+    - contextPath: AzureComputeV3.state.tags
+      description: '["The resource group''s tags."]'
+  - arguments:
+    - description: Limit results to a specific resource group.
+      name: name
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: |-
+        List all resources under the resource group.
+        Note this will cost network overhead for each resource group. Suggest use this when `name` set.
+      name: list_resources
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get resource group facts
+    name: azure-rm-resourcegroup-info
+    outputs:
+    - contextPath: AzureComputeV3.azure_resourcegroups.id
+      description: '[''Resource id.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_resourcegroups.name
+      description: '[''Resource group name.'']'
+      type: string
+    - contextPath: AzureComputeV3.azure_resourcegroups.tags
+      description: '[''Tags assigned to resource group.'']'
+    - contextPath: AzureComputeV3.azure_resourcegroups.resources
+      description: '[''List of resources under the resource group.'']'
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: Resource name
+      name: name
+    - description: Resource location
+      name: location
+    - description: SKU
+      isArray: true
+      name: sku
+    - auto: PREDEFINED
+      description: The Operating System type.
+      name: os_type
+      predefined:
+      - Linux
+      - Windows
+    - description: Disk source information. CreationData information cannot be changed
+        after the disk has been created.
+      isArray: true
+      name: creation_data
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        Assert the state of the Snapshot.
+        Use `present` to create or update an Snapshot and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure Snapshot instance.
+    name: azure-rm-snapshot
+  - arguments:
+    - description: Name of the resource group containing the VM.
+      name: resource_group
+      required: true
+    - description: Name of the VM.
+      name: name
+      required: true
+    - description: |-
+        Data made available to the VM and used by `cloud-init`.
+        Only used on Linux images with `cloud-init` enabled.
+        Consult `https://docs.microsoft.com/en-us/azure/virtual-machines/linux/using-cloud-init#cloud-init-overview` for cloud-init ready images.
+        To enable cloud-init on a Linux image, follow `https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cloudinit-prepare-custom-image`.
+      name: custom_data
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        State of the VM.
+        Set to `present` to create a VM with the configuration specified by other options, or to update the configuration of an existing VM.
+        Set to `absent` to remove a VM.
+        Does not affect power state. Use `started`/`allocated`/`restarted` parameters to change the power state of a VM.
+      name: state
+      predefined:
+      - absent
+      - present
+    - defaultValue: "True"
+      description: |-
+        Whether the VM is started or stopped.
+        Set to (true) with `state=present` to start the VM.
+        Set to `false` to stop the VM.
+      name: started
+    - defaultValue: "True"
+      description: Whether the VM is allocated or deallocated, only useful with `state=present`.
+      name: allocated
+    - description: |-
+        Whether the VM is generalized or not.
+        Set to `true` with `state=present` to generalize the VM.
+        Generalizing a VM is irreversible.
+      name: generalized
+    - description: Set to `true` with `state=present` to restart a running VM.
+      name: restarted
+    - description: Valid Azure location for the VM. Defaults to location of the resource
+        group.
+      name: location
+    - description: |-
+        Name assigned internally to the host. On a Linux VM this is the name returned by the `hostname` command.
+        When creating a VM, short_hostname defaults to `name`.
+      name: short_hostname
+    - description: |-
+        A valid Azure VM size value. For example, `Standard_D4`.
+        Choices vary depending on the subscription and location. Check your subscription for available choices.
+        Required when creating a VM.
+      name: vm_size
+    - description: |-
+        Admin username used to access the VM after it is created.
+        Required when creating a VM.
+      name: admin_username
+    - description: |-
+        Password for the admin username.
+        Not required if the `os_type=Linux` and SSH password authentication is disabled by setting `ssh_password_enabled=false`.
+      name: admin_password
+    - defaultValue: "True"
+      description: |-
+        Whether to enable or disable SSH passwords.
+        When `os_type=Linux`, set to `false` to disable SSH password authentication and require use of SSH keys.
+      name: ssh_password_enabled
+    - description: |-
+        For `os_type=Linux` provide a list of SSH keys.
+        Accepts a list of dicts where each dictionary contains two keys, `path` and `key_data`.
+        Set `path` to the default location of the authorized_keys files. For example, `path=/home/<admin username>/.ssh/authorized_keys`.
+        Set `key_data` to the actual value of the public key.
+      name: ssh_public_keys
+    - description: |-
+        The image used to build the VM.
+        For custom images, the name of the image. To narrow the search to a specific resource group, a dict with the keys `name` and `resource_group`.
+        For Marketplace images, a dict with the keys `publisher`, `offer`, `sku`, and `version`.
+        Set `version=latest` to get the most recent version of a given image.
+      name: image
+      required: true
+    - description: Name or ID of an existing availability set to add the VM to. The
+        `availability_set` should be in the same resource group as VM.
+      name: availability_set
+    - description: |-
+        Name of a storage account that supports creation of VHD blobs.
+        If not specified for a new VM, a new storage account named <vm name>01 will be created using storage type `Standard_LRS`.
+      name: storage_account_name
+    - defaultValue: vhds
+      description: |-
+        Name of the container to use within the storage account to store VHD blobs.
+        If not specified, a default container will be created.
+      name: storage_container_name
+    - description: |-
+        Name of the storage blob used to hold the OS disk image of the VM.
+        Must end with '.vhd'.
+        If not specified, defaults to the VM name + '.vhd'.
+      name: storage_blob_name
+    - auto: PREDEFINED
+      description: |-
+        Managed OS disk type.
+        Create OS disk with managed disk if defined.
+        If not defined, the OS disk will be created with virtual hard disk (VHD).
+      name: managed_disk_type
+      predefined:
+      - Standard_LRS
+      - StandardSSD_LRS
+      - Premium_LRS
+    - description: OS disk name.
+      name: os_disk_name
+    - auto: PREDEFINED
+      defaultValue: ReadOnly
+      description: Type of OS disk caching.
+      name: os_disk_caching
+      predefined:
+      - ReadOnly
+      - ReadWrite
+    - description: Type of OS disk size in GB.
+      name: os_disk_size_gb
+    - auto: PREDEFINED
+      defaultValue: Linux
+      description: Base type of operating system.
+      name: os_type
+      predefined:
+      - Windows
+      - Linux
+    - description: |-
+        Describes list of data disks.
+        Use `azure_rm_mangeddisk` to manage the specific disk.
+      name: data_disks
+    - auto: PREDEFINED
+      defaultValue: Static
+      description: |-
+        Allocation method for the public IP of the VM.
+        Used only if a network interface is not specified.
+        When set to `Dynamic`, the public IP address may change any time the VM is rebooted or power cycled.
+        The `Disabled` choice was added in Ansible 2.6.
+      name: public_ip_allocation_method
+      predefined:
+      - Dynamic
+      - Static
+      - Disabled
+    - description: |-
+        List of ports to open in the security group for the VM, when a security group and network interface are created with a VM.
+        For Linux hosts, defaults to allowing inbound TCP connections to port 22.
+        For Windows hosts, defaults to opening ports 3389 and 5986.
+      name: open_ports
+    - description: |-
+        Network interface names to add to the VM.
+        Can be a string of name or resource ID of the network interface.
+        Can be a dict containing `resource_group` and `name` of the network interface.
+        If a network interface name is not provided when the VM is created, a default network interface will be created.
+        To create a new network interface, at least one Virtual Network with one Subnet must exist.
+      isArray: true
+      name: network_interface_names
+    - description: The resource group to use when creating a VM with another resource
+        group's virtual network.
+      name: virtual_network_resource_group
+    - description: |-
+        The virtual network to use when creating a VM.
+        If not specified, a new network interface will be created and assigned to the first virtual network found in the resource group.
+        Use with `virtual_network_resource_group` to place the virtual network in another resource group.
+      name: virtual_network_name
+    - description: |-
+        Subnet for the VM.
+        Defaults to the first subnet found in the virtual network or the subnet of the `network_interface_name`, if provided.
+        If the subnet is in another resource group, specify the resource group with `virtual_network_resource_group`.
+      name: subnet_name
+    - defaultValue: '[''all'']'
+      description: |-
+        Associated resources to remove when removing a VM using `state=absent`.
+        To remove all resources related to the VM being removed, including auto-created resources, set to `all`.
+        To remove only resources that were automatically created while provisioning the VM being removed, set to `all_autocreated`.
+        To remove only specific resources, set to `network_interfaces`, `virtual_storage` or `public_ips`.
+        Any other input will be ignored.
+      isArray: true
+      name: remove_on_absent
+    - description: Third-party billing plan for the VM.
+      isArray: true
+      name: plan
+    - defaultValue: "False"
+      description: |-
+        Accept terms for Marketplace images that require it.
+        Only Azure service admin/account admin users can purchase images from the Marketplace.
+        Only valid when a `plan` is specified.
+      name: accept_terms
+    - description: A list of Availability Zones for your VM.
+      isArray: true
+      name: zones
+    - auto: PREDEFINED
+      description: |-
+        On-premise license for the image or disk.
+        Only used for images that contain the Windows Server operating system.
+        To remove all license type settings, set to the string `None`.
+      name: license_type
+      predefined:
+      - Windows_Server
+      - Windows_Client
+    - auto: PREDEFINED
+      description: Identity for the VM.
+      name: vm_identity
+      predefined:
+      - SystemAssigned
+    - description: List of Windows Remote Management configurations of the VM.
+      name: winrm
+    - description: |-
+        Manage boot diagnostics settings for a VM.
+        Boot diagnostics includes a serial console and remote console screenshots.
+      name: boot_diagnostics
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure virtual machines
+    name: azure-rm-virtualmachine
+  - arguments:
+    - description: Name of the resource group containing the virtual machines (required
+        when filtering by vm name).
+      name: resource_group
+    - description: Name of the virtual machine.
+      name: name
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get virtual machine facts
+    name: azure-rm-virtualmachine-info
+    outputs:
+    - contextPath: AzureComputeV3.vms.admin_username
+      description: '[''Administrator user name.'']'
+      type: string
+    - contextPath: AzureComputeV3.vms.boot_diagnostics
+      description: '[''Information about the boot diagnostics settings.'']'
+    - contextPath: AzureComputeV3.vms.data_disks
+      description: '[''List of attached data disks.'']'
+    - contextPath: AzureComputeV3.vms.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureComputeV3.vms.image
+      description: '[''Image specification.'']'
+    - contextPath: AzureComputeV3.vms.location
+      description: '[''Resource location.'']'
+      type: string
+    - contextPath: AzureComputeV3.vms.name
+      description: '[''Resource name.'']'
+      type: string
+    - contextPath: AzureComputeV3.vms.network_interface_names
+      description: '[''List of attached network interfaces.'']'
+    - contextPath: AzureComputeV3.vms.os_disk_caching
+      description: '[''Type of OS disk caching.'']'
+      type: string
+    - contextPath: AzureComputeV3.vms.os_type
+      description: '[''Base type of operating system.'']'
+      type: string
+    - contextPath: AzureComputeV3.vms.resource_group
+      description: '[''Resource group.'']'
+      type: string
+    - contextPath: AzureComputeV3.vms.state
+      description: '[''State of the resource.'']'
+      type: string
+    - contextPath: AzureComputeV3.vms.tags
+      description: '[''Resource tags.'']'
+    - contextPath: AzureComputeV3.vms.vm_size
+      description: '[''Virtual machine size.'']'
+      type: string
+    - contextPath: AzureComputeV3.vms.power_state
+      description: '[''Power state of the virtual machine.'']'
+      type: string
+  - arguments:
+    - description: Name of a resource group where the vm extension exists or will
+        be created.
+      name: resource_group
+      required: true
+    - description: Name of the vm extension.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the vm extension. Use `present` to create or update a
+        vm extension and `absent` to delete a vm extension.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - description: The name of the virtual machine where the extension should be create
+        or updated.
+      name: virtual_machine_name
+    - description: The name of the extension handler publisher.
+      name: publisher
+    - description: The type of the extension handler.
+      name: virtual_machine_extension_type
+    - description: The type version of the extension handler.
+      name: type_handler_version
+    - description: Json formatted public settings for the extension.
+      name: settings
+    - description: Json formatted protected settings for the extension.
+      name: protected_settings
+    - description: Whether the extension handler should be automatically upgraded
+        across minor versions.
+      name: auto_upgrade_minor_version
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Managed Azure Virtual Machine extension
+    name: azure-rm-virtualmachineextension
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the virtual machine containing the extension.
+      name: virtual_machine_name
+      required: true
+    - description: The name of the virtual machine extension.
+      name: name
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Virtual Machine Extension facts
+    name: azure-rm-virtualmachineextension-info
+    outputs:
+    - contextPath: AzureComputeV3.extensions.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.resource_group
+      description: '[''Resource group name.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.virtual_machine_name
+      description: '[''Virtual machine name.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.name
+      description: '[''Virtual machine name.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.location
+      description: '[''The resource location.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.publisher
+      description: '[''Extension publisher.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.type
+      description: '[''Extension type.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.settings
+      description: '[''Extension specific settings dictionary.'']'
+    - contextPath: AzureComputeV3.extensions.auto_upgrade_minor_version
+      description: '[''Autoupgrade minor version flag.'']'
+      type: boolean
+    - contextPath: AzureComputeV3.extensions.tags
+      description: '[''Resource tags.'']'
+    - contextPath: AzureComputeV3.extensions.provisioning_state
+      description: '[''Provisioning state of the extension.'']'
+      type: string
+  - arguments:
+    - description: |-
+        Azure location value, for example `westus`, `eastus`, `eastus2`, `northcentralus`, etc.
+        Supplying only a location value will yield a list of available publishers for the location.
+      name: location
+      required: true
+    - description: Name of an image publisher. List image offerings associated with
+        a particular publisher.
+      name: publisher
+    - description: Name of an image offering. Combine with SKU to see a list of available
+        image versions.
+      name: offer
+    - description: Image offering SKU. Combine with offer to see a list of available
+        versions.
+      name: sku
+    - description: Specific version number of an image.
+      name: version
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get virtual machine image facts
+    name: azure-rm-virtualmachineimage-info
+  - arguments:
+    - description: Name of the resource group containing the virtual machine scale
+        set.
+      name: resource_group
+      required: true
+    - description: Name of the virtual machine.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        Assert the state of the virtual machine scale set.
+        State `present` will check that the machine exists with the requested configuration. If the configuration of the existing machine does not match, the machine will be updated.
+        State `absent` will remove the virtual machine scale set.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - description: Short host name.
+      name: short_hostname
+    - description: |-
+        A valid Azure VM size value. For example, `Standard_D4`.
+        The list of choices varies depending on the subscription and location. Check your subscription for available choices.
+      name: vm_size
+    - defaultValue: "1"
+      description: Capacity of VMSS.
+      name: capacity
+    - auto: PREDEFINED
+      description: SKU Tier.
+      name: tier
+      predefined:
+      - Basic
+      - Standard
+    - auto: PREDEFINED
+      description: |-
+        Upgrade policy.
+        Required when creating the Azure virtual machine scale sets.
+      name: upgrade_policy
+      predefined:
+      - Manual
+      - Automatic
+    - description: Admin username used to access the host after it is created. Required
+        when creating a VM.
+      name: admin_username
+    - description: |-
+        Password for the admin username.
+        Not required if the os_type is Linux and SSH password authentication is disabled by setting `ssh_password_enabled=false`.
+      name: admin_password
+    - defaultValue: "True"
+      description: When the os_type is Linux, setting `ssh_password_enabled=false`
+        will disable SSH password authentication and require use of SSH keys.
+      name: ssh_password_enabled
+    - description: |-
+        For `os_type=Linux` provide a list of SSH keys.
+        Each item in the list should be a dictionary where the dictionary contains two keys, `path` and `key_data`.
+        Set the `path` to the default location of the authorized_keys files.
+        On an Enterprise Linux host, for example, the `path=/home/<admin username>/.ssh/authorized_keys`. Set `key_data` to the actual value of the public key.
+      name: ssh_public_keys
+    - description: |-
+        Specifies the image used to build the VM.
+        If a string, the image is sourced from a custom image based on the name.
+        If a dict with the keys `publisher`, `offer`, `sku`, and `version`, the image is sourced from a Marketplace image. Note that set `version=latest` to get the most recent version of a given image.
+        If a dict with the keys `name` and `resource_group`, the image is sourced from a custom image based on the `name` and `resource_group` set. Note that the key `resource_group` is optional and if omitted, all images in the subscription will be searched for by `name`.
+        Custom image support was added in Ansible 2.5.
+      name: image
+      required: true
+    - auto: PREDEFINED
+      defaultValue: ReadOnly
+      description: Type of OS disk caching.
+      name: os_disk_caching
+      predefined:
+      - ReadOnly
+      - ReadWrite
+    - auto: PREDEFINED
+      defaultValue: Linux
+      description: Base type of operating system.
+      name: os_type
+      predefined:
+      - Windows
+      - Linux
+    - auto: PREDEFINED
+      description: Managed disk type.
+      name: managed_disk_type
+      predefined:
+      - Standard_LRS
+      - Premium_LRS
+    - description: Describes list of data disks.
+      name: data_disks
+    - description: |-
+        When creating a virtual machine, if a specific virtual network from another resource group should be used.
+        Use this parameter to specify the resource group to use.
+      name: virtual_network_resource_group
+    - description: Virtual Network name.
+      name: virtual_network_name
+    - description: Subnet name.
+      name: subnet_name
+    - description: Load balancer name.
+      name: load_balancer
+    - description: Application gateway name.
+      name: application_gateway
+    - defaultValue: '[''all'']'
+      description: |-
+        When removing a VM using `state=absent`, also remove associated resources.
+        It can be `all` or a list with any of the following ['network_interfaces', 'virtual_storage', 'public_ips'].
+        Any other input will be ignored.
+      name: remove_on_absent
+    - description: Indicates whether user wants to allow accelerated networking for
+        virtual machines in scaleset being created.
+      name: enable_accelerated_networking
+    - description: |-
+        Existing security group with which to associate the subnet.
+        It can be the security group name which is in the same resource group.
+        It can be the resource ID.
+        It can be a dict which contains `name` and `resource_group` of the security group.
+      name: security_group
+    - defaultValue: "True"
+      description: Specifies whether the Virtual Machine Scale Set should be overprovisioned.
+      name: overprovision
+    - defaultValue: "True"
+      description: When true this limits the scale set to a single placement group,
+        of max size 100 virtual machines.
+      name: single_placement_group
+    - description: A list of Availability Zones for your virtual machine scale set.
+      isArray: true
+      name: zones
+    - description: |-
+        Data which is made available to the virtual machine and used by e.g., `cloud-init`.
+        Many images in the marketplace are not cloud-init ready. Thus, data sent to `custom_data` would be ignored.
+        If the image you are attempting to use is not listed in `https://docs.microsoft.com/en-us/azure/virtual-machines/linux/using-cloud-init#cloud-init-overview`, follow these steps `https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cloudinit-prepare-custom-image`.
+      name: custom_data
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure virtual machine scale sets
+    name: azure-rm-virtualmachinescaleset
+  - arguments:
+    - description: Limit results to a specific virtual machine scale set.
+      name: name
+    - description: The resource group to search for the desired virtual machine scale
+        set.
+      name: resource_group
+    - description: List of tags to be matched.
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: raw
+      description: |-
+        Format of the data returned.
+        If `raw` is selected information will be returned in raw format from Azure Python SDK.
+        If `curated` is selected the structure will be identical to input parameters of `azure_rm_virtualmachinescaleset` module.
+        In Ansible 2.5 and lower facts are always returned in raw format.
+        Please note that this option will be deprecated in 2.10 when curated format will become the only supported format.
+      name: format
+      predefined:
+      - curated
+      - raw
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Virtual Machine Scale Set facts
+    name: azure-rm-virtualmachinescaleset-info
+    outputs:
+    - contextPath: AzureComputeV3.vmss.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.admin_username
+      description: '[''Admin username used to access the host after it is created.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.capacity
+      description: '[''Capacity of VMSS.'']'
+      type: number
+    - contextPath: AzureComputeV3.vmss.data_disks
+      description: '[''List of attached data disks.'']'
+    - contextPath: AzureComputeV3.vmss.image
+      description: '[''Image specification.'']'
+    - contextPath: AzureComputeV3.vmss.load_balancer
+      description: '[''Load balancer name.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.location
+      description: '[''Resource location.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.managed_disk_type
+      description: '[''Managed data disk type.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.name
+      description: '[''Resource name.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.os_disk_caching
+      description: '[''Type of OS disk caching.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.os_type
+      description: '[''Base type of operating system.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.overprovision
+      description: '[''Specifies whether the Virtual Machine Scale Set should be overprovisioned.'']'
+      type: boolean
+    - contextPath: AzureComputeV3.vmss.resource_group
+      description: '[''Resource group.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.ssh_password_enabled
+      description: '[''Is SSH password authentication enabled. Valid only for Linux.'']'
+      type: boolean
+    - contextPath: AzureComputeV3.vmss.subnet_name
+      description: '[''Subnet name.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.tier
+      description: '[''SKU Tier.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.upgrade_policy
+      description: '[''Upgrade policy.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.virtual_network_name
+      description: '[''Associated virtual network name.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.vm_size
+      description: '[''Virtual machine size.'']'
+      type: string
+    - contextPath: AzureComputeV3.vmss.tags
+      description: '[''Tags assigned to the resource. Dictionary of string:string
+        pairs.'']'
+  - arguments:
+    - description: Name of a resource group where the VMSS extension exists or will
+        be created.
+      name: resource_group
+      required: true
+    - description: The name of the virtual machine where the extension should be create
+        or updated.
+      name: vmss_name
+      required: true
+    - description: Name of the VMSS extension.
+      name: name
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - description: The name of the extension handler publisher.
+      name: publisher
+    - description: The type of the extension handler.
+      name: type
+    - description: The type version of the extension handler.
+      name: type_handler_version
+    - description: |-
+        A dictionary containing extension settings.
+        Settings depend on extension type.
+        Refer to `https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview` for more information.
+      name: settings
+    - description: |-
+        A dictionary containing protected extension settings.
+        Settings depend on extension type.
+        Refer to `https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview` for more information.
+      name: protected_settings
+    - description: Whether the extension handler should be automatically upgraded
+        across minor versions.
+      name: auto_upgrade_minor_version
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        Assert the state of the extension.
+        Use `present` to create or update an extension and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Manage Azure Virtual Machine Scale Set (VMSS) extensions
+    name: azure-rm-virtualmachinescalesetextension
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of VMSS containing the extension.
+      name: vmss_name
+      required: true
+    - description: The name of the virtual machine extension.
+      name: name
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Virtual Machine Scale Set Extension facts
+    name: azure-rm-virtualmachinescalesetextension-info
+    outputs:
+    - contextPath: AzureComputeV3.extensions.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.resource_group
+      description: '[''Resource group name.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.vmss_name
+      description: '[''Virtual machine scale set name.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.name
+      description: '[''Virtual machine extension name.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.publisher
+      description: '[''Extension publisher.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.type
+      description: '[''Extension type.'']'
+      type: string
+    - contextPath: AzureComputeV3.extensions.settings
+      description: '[''Extension specific settings dictionary.'']'
+    - contextPath: AzureComputeV3.extensions.auto_upgrade_minor_version
+      description: '[''Autoupgrade minor version flag.'']'
+      type: boolean
+    - contextPath: AzureComputeV3.extensions.provisioning_state
+      description: '[''Provisioning state of the extension.'']'
+      type: string
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the VM scale set.
+      name: vmss_name
+      required: true
+    - description: The instance ID of the virtual machine.
+      name: instance_id
+      required: true
+    - description: Set to `yes` to upgrade to the latest model.
+      name: latest_model
+    - auto: PREDEFINED
+      description: Use this option to change power state of the instance.
+      name: power_state
+      predefined:
+      - running
+      - stopped
+      - deallocated
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the VMSS instance. Use `present` to update an instance
+        and `absent` to delete an instance.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Virtual Machine Scale Set Instance facts
+    name: azure-rm-virtualmachinescalesetinstance
+    outputs:
+    - contextPath: AzureComputeV3.instances.id
+      description: '[''Instance resource ID.'']'
+      type: string
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the VM scale set.
+      name: vmss_name
+      required: true
+    - description: The instance ID of the virtual machine.
+      name: instance_id
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Virtual Machine Scale Set Instance facts
+    name: azure-rm-virtualmachinescalesetinstance-info
+    outputs:
+    - contextPath: AzureComputeV3.instances.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureComputeV3.instances.tags
+      description: '[''Resource tags.'']'
+    - contextPath: AzureComputeV3.instances.instance_id
+      description: '[''Virtual Machine instance ID.'']'
+      type: string
+    - contextPath: AzureComputeV3.instances.name
+      description: '[''Virtual Machine name.'']'
+      type: string
+    - contextPath: AzureComputeV3.instances.latest_model
+      description: '[''Whether applied latest model.'']'
+      type: boolean
+    - contextPath: AzureComputeV3.instances.provisioning_state
+      description: '[''Provisioning state of the Virtual Machine.'']'
+      type: string
+    - contextPath: AzureComputeV3.instances.power_state
+      description: '["Provisioning state of the Virtual Machine''s power."]'
+      type: string
+    - contextPath: AzureComputeV3.instances.vm_id
+      description: '[''Virtual Machine ID'']'
+      type: string
+  - arguments:
+    - description: Name of the resource group to which the resource belongs.
+      name: resource_group
+      required: true
+    - description: Unique name of the app to create or update. To create or update
+        a deployment slot, use the {slot} parameter.
+      name: name
+      required: true
+    - description: Resource location. If not set, location from the resource group
+        will be used as default.
+      name: location
+    - description: |-
+        App service plan. Required for creation.
+        Can be name of existing app service plan in same resource group as web app.
+        Can be the resource ID of an existing app service plan. For example /subscriptions/<subs_id>/resourceGroups/<resource_group>/providers/Microsoft.Web/serverFarms/<plan_name>.
+        Can be a dict containing five parameters, defined below.
+        `name`, name of app service plan.
+        `resource_group`, resource group of the app service plan.
+        `sku`, SKU of app service plan, allowed values listed on `https://azure.microsoft.com/en-us/pricing/details/app-service/linux/`.
+        `is_linux`, whether or not the app service plan is Linux. defaults to `False`.
+        `number_of_workers`, number of workers for app service plan.
+      name: plan
+    - description: |-
+        Set of run time framework settings. Each setting is a dictionary.
+        See `https://docs.microsoft.com/en-us/azure/app-service/app-service-web-overview` for more info.
+      name: frameworks
+    - description: Web app container settings.
+      name: container_settings
+    - description: |-
+        Repository type of deployment source, for example `LocalGit`, `GitHub`.
+        List of supported values maintained at `https://docs.microsoft.com/en-us/rest/api/appservice/webapps/createorupdate#scmtype`.
+      name: scm_type
+    - description: Deployment source for git.
+      name: deployment_source
+    - description: |-
+        The web's startup file.
+        Used only for Linux web apps.
+      name: startup_file
+    - defaultValue: "True"
+      description: Whether or not to send session affinity cookies, which route client
+        requests in the same session to the same instance.
+      name: client_affinity_enabled
+    - description: Configures web site to accept only https requests.
+      name: https_only
+    - description: Whether or not the web app hostname is registered with DNS on creation.
+        Set to `false` to register.
+      name: dns_registration
+    - description: Whether or not to skip verification of custom (non *.azurewebsites.net)
+        domains associated with web app. Set to `true` to skip.
+      name: skip_custom_domain_verification
+    - description: Time to live in seconds for web app default domain name.
+      name: ttl_in_seconds
+    - description: Configure web app application settings. Suboptions are in key value
+        pair format.
+      name: app_settings
+    - description: Purge any existing application settings. Replace web app application
+        settings with app_settings.
+      name: purge_app_settings
+    - auto: PREDEFINED
+      defaultValue: started
+      description: Start/Stop/Restart the web app.
+      name: app_state
+      predefined:
+      - started
+      - stopped
+      - restarted
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        State of the Web App.
+        Use `present` to create or update a Web App and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Web App instances
+    name: azure-rm-webapp
+  - arguments:
+    - description: Only show results for a specific web app.
+      name: name
+    - description: Limit results by resource group.
+      name: resource_group
+    - defaultValue: "False"
+      description: Indicate whether to return publishing profile of the web app.
+      name: return_publish_profile
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure web app facts
+    name: azure-rm-webapp-info
+    outputs:
+    - contextPath: AzureComputeV3.webapps.id
+      description: '[''ID of the web app.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.name
+      description: '[''Name of the web app.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.resource_group
+      description: '[''Resource group of the web app.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.location
+      description: '[''Location of the web app.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.plan
+      description: '[''ID of app service plan used by the web app.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.app_settings
+      description: '[''App settings of the application. Only returned when web app
+        has app settings.'']'
+    - contextPath: AzureComputeV3.webapps.frameworks
+      description: '[''Frameworks of the application. Only returned when web app has
+        frameworks.'']'
+    - contextPath: AzureComputeV3.webapps.availability_state
+      description: '[''Availability of this web app.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.default_host_name
+      description: '[''Host name of the web app.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.enabled
+      description: '[''Indicates the web app enabled or not.'']'
+      type: boolean
+    - contextPath: AzureComputeV3.webapps.enabled_host_names
+      description: '[''Enabled host names of the web app.'']'
+    - contextPath: AzureComputeV3.webapps.host_name_ssl_states
+      description: '[''SSL state per host names of the web app.'']'
+    - contextPath: AzureComputeV3.webapps.host_names
+      description: '[''Host names of the web app.'']'
+    - contextPath: AzureComputeV3.webapps.outbound_ip_addresses
+      description: '[''Outbound IP address of the web app.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.ftp_publish_url
+      description: '[''Publishing URL of the web app when deployment type is FTP.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.state
+      description: '[''State of the web app.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.publishing_username
+      description: '[''Publishing profile user name.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.publishing_password
+      description: '[''Publishing profile password.'']'
+      type: string
+    - contextPath: AzureComputeV3.webapps.tags
+      description: '[''Tags assigned to the resource. Dictionary of string:string
+        pairs.'']'
+  - arguments:
+    - description: Name of the resource group to which the resource belongs.
+      name: resource_group
+      required: true
+    - description: Unique name of the deployment slot to create or update.
+      name: name
+      required: true
+    - description: Web app name which this deployment slot belongs to.
+      name: webapp_name
+      required: true
+    - description: Resource location. If not set, location from the resource group
+        will be used as default.
+      name: location
+    - description: Source slot to clone configurations from when creating slot. Use
+        webapp's name to refer to the production slot.
+      name: configuration_source
+    - description: |-
+        Used to configure target slot name to auto swap, or disable auto swap.
+        Set it target slot name to auto swap.
+        Set it to False to disable auto slot swap.
+      name: auto_swap_slot_name
+    - description: Swap deployment slots of a web app.
+      name: swap
+    - description: |-
+        Set of run time framework settings. Each setting is a dictionary.
+        See `https://docs.microsoft.com/en-us/azure/app-service/app-service-web-overview` for more info.
+      name: frameworks
+    - description: Web app slot container settings.
+      name: container_settings
+    - description: |-
+        The slot startup file.
+        This only applies for Linux web app slot.
+      name: startup_file
+    - description: Configure web app slot application settings. Suboptions are in
+        key value pair format.
+      name: app_settings
+    - description: Purge any existing application settings. Replace slot application
+        settings with app_settings.
+      name: purge_app_settings
+    - description: Deployment source for git.
+      name: deployment_source
+    - auto: PREDEFINED
+      defaultValue: started
+      description: Start/Stop/Restart the slot.
+      name: app_state
+      predefined:
+      - started
+      - stopped
+      - restarted
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        State of the Web App deployment slot.
+        Use `present` to create or update a  slot and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure Web App slot
+    name: azure-rm-webappslot
+  dockerimage: demisto/ansible-runner:1.0.0.16542
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

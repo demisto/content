@@ -1,0 +1,40 @@
+[
+    {
+        "@id": "NCCIC:Indicator-1f251bf3-6836-4a12-980f-799046a25503",
+        "@timestamp": "2020-10-30T14:33:06Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-5158090d-c295-494f-9941-ae7d53912236",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-a3cf15e2-ee00-40fd-ad05-ded2f120e5ae",
+                "cybox:Properties": {
+                    "@xsi:type": "EmailMessageObj:EmailMessageObjectType",
+                    "EmailMessageObj:Header": {
+                        "EmailMessageObj:From": {
+                            "@category": "e-mail",
+                            "AddressObj:Address_Value": {
+                                "#text": "test@test.com",
+                                "@condition": "Equals"
+                            }
+                        },
+                        "EmailMessageObj:Subject": {
+                            "#text": "320339814 CD and Payoff Clear to Close",
+                            "@condition": "Equals"
+                        }
+                    }
+                }
+            }
+        },
+        "indicator:Sightings": {
+            "@sightings_count": "1",
+            "indicator:Sighting": {
+                "@timestamp": "2020-10-26T00:00:00+00:00"
+            }
+        },
+        "indicator:Type": {
+            "#text": "Malicious E-mail",
+            "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0"
+        }
+    }
+]

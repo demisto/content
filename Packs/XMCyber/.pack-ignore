@@ -1,0 +1,14 @@
+[file:XMCyberIntegration.yml]
+ignore=IN136
+
+[file:README.md]
+ignore=RM102
+
+[file:layoutscontainer-XM_Cyber_Layout.json]
+ignore=BA101
+
+[file:layoutscontainer-XM_Cyber_Technique.json]
+ignore=BA101
+
+[file:layoutscontainer-XM_Cyber_Security_Score.json]
+ignore=BA101

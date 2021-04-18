@@ -47,7 +47,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉‎                                                                                  Fetch query to retrieve new incidents. This field is mandatory when 'Fetches incidents' is set to true.
+- display: Fetch query to retrieve new incidents. This field is mandatory when 'Fetches incidents' is set to true.
   name: fetch_query
   required: false
   type: 0

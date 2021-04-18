@@ -1,0 +1,480 @@
+id: FireEye-Detection-on-Demand-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: FireEye-Detection-on-Demand-Test
+fromversion: 6.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a40c5cf6-3273-414f-8655-f025134df0e9
+    type: start
+    task:
+      id: a40c5cf6-3273-414f-8655-f025134df0e9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0eb9b6f7-573d-4cff-89ef-e57c0ed107d3
+    type: regular
+    task:
+      id: 0eb9b6f7-573d-4cff-89ef-e57c0ed107d3
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e12afbf3-e8bb-427e-8d95-01c955476e28
+    type: regular
+    task:
+      id: e12afbf3-e8bb-427e-8d95-01c955476e28
+      version: -1
+      name: fireeye-dod-get-hashes
+      script: '|||fireeye-dod-get-hashes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      md5_hashes:
+        simple: 47f9fdc617f8c98a6732be534d8dbe9c
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b90abd29-3ea4-4469-8b08-02c4c6a5fbca
+    type: condition
+    task:
+      id: b90abd29-3ea4-4469-8b08-02c4c6a5fbca
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.engine_results.cache_lookup.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.engine_results.cache_lookup.signature_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.engine_results.cache_lookup.is_malicious
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.engine_results.cache_lookup.verdict
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.engine_results.cache_lookup.file_extension
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.engine_results.cache_lookup.weight
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.engine_results.dynamic_analysis.verdict
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.engine_results.av_lookup.verdict
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.engine_results.avs_lookup.verdict
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.engine_results.dti_lookup.verdict
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.is_malicious
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: ee40f1cb-ac52-4bc0-8d34-6df1be5cd0a3
+    type: regular
+    task:
+      id: ee40f1cb-ac52-4bc0-8d34-6df1be5cd0a3
+      version: -1
+      name: fireeye-dod-submit-urls
+      script: '|||fireeye-dod-submit-urls'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      urls:
+        simple: https://www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 31a094bf-1093-4bcf-8753-e07826dd23e7
+    type: condition
+    task:
+      id: 31a094bf-1093-4bcf-8753-e07826dd23e7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.report_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3504d4aa-c4b5-4ee7-89ea-a5a3216be1ea
+    type: regular
+    task:
+      id: 3504d4aa-c4b5-4ee7-89ea-a5a3216be1ea
+      version: -1
+      name: fireeye-dod-get-reports
+      script: '|||fireeye-dod-get-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      extended_report: {}
+      get_artifact: {}
+      get_screenshot: {}
+      report_ids:
+        simple: 128a94b3-5698-442b-9dc3-fcc8b891cb59
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: d44763bf-6dac-4c2a-8f6a-59a860bdef94
+    type: condition
+    task:
+      id: d44763bf-6dac-4c2a-8f6a-59a860bdef94
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.report_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.overall_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.is_malicious
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.started_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.completed_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.duration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.file_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.file_size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.file_extension
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeDoD.Scan.signature_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 69b4a637-3fad-4e84-878c-30fcde2d73af
+    type: regular
+    task:
+      id: 69b4a637-3fad-4e84-878c-30fcde2d73af
+      version: -1
+      name: fireeye-dod-get-report-url
+      script: '|||fireeye-dod-get-report-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      expiration: {}
+      report_id:
+        simple: 68fc493d-16b5-4b36-bb9e-6c0a69473d55
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 4458e140-4142-4af7-83be-6fc3ac4c94b0
+    type: title
+    task:
+      id: 4458e140-4142-4af7-83be-6fc3ac4c94b0
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2045,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

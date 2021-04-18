@@ -21,7 +21,7 @@ Add a new one by typing: **config apikeys add --name <key_name>**
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| SafeBreach Managment URL | For example, https://yourorg.safebreach.com | True |
+| SafeBreach Managment URL | For example, `https://yourorg.safebreach.com` | True |
 | Account ID | Obtained with "config accounts" SafeBreach command | True |
 | API Key | Generated with "config apikeys add" SafeBreach command | True |
 | Insight Category | Network Access,Network Inspection,Endpoint,Email,Web,Data Leak | False |

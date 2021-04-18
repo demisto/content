@@ -432,3 +432,22 @@ def test_whole_preprocessing_incdient_without_label(mocker):
     # check labels order kept as original excluding the short label
     assert Counter(x['closeReason'] for x in data['X']) == Counter(
         [inc['closeReason'] for i, inc in enumerate(incidents) if i != no_label_idx])
+
+
+def test_find_forwarded_features():
+    assert find_forwarded_features('RE- Are you free to discuss?', '')['response']
+    assert not find_forwarded_features('Are you free to discuss?', '')['response']
+    assert not find_forwarded_features('reminder', '')['response']
+    assert find_forwarded_features('FW - money transfer', '')['forwarded']
+    assert not find_forwarded_features('money transfer', '')['forwarded']
+    assert find_forwarded_features('FWD - money transfer', '')['forwarded']
+    assert not find_forwarded_features('FYI', '')['forwarded']
+    assert not find_forwarded_features('FWD1', '')['forwarded']
+    assert find_forwarded_features('', '---------- Forwarded message ---------')['forwarded']
+
+
+def test_clean_email_subject():
+    res = clean_email_subject('[POTENTIAL PHISH] [External] someone sent you a file')
+    assert res == 'someone sent you a file'
+    res = clean_email_subject('[POTENTIAL PHISH] [External] someone sent you a file [End]')
+    assert res == 'someone sent you a file'

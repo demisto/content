@@ -35,7 +35,7 @@ From the General Settings menu, you may also obtain your *User ID* for the servi
     | search_user_id | Auto-detect user IDs based on their email address. | False |
     | incidentType | Incident type | False |
     | isFetch | Fetch incidents | False |
-    | first_fetch | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+    | first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
     | max_fetch |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -151,8 +151,8 @@ Searches for files, folders, web links, and shared files across the users conten
             "created_at": "2020-11-30T03:53:45-08:00",
             "created_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "description": "",
@@ -163,15 +163,15 @@ Searches for files, folders, web links, and shared files across the users conten
             "modified_at": "2020-11-30T03:53:45-08:00",
             "modified_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "name": "test-demo name",
             "owned_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "parent": {
@@ -209,7 +209,7 @@ Searches for files, folders, web links, and shared files across the users conten
 >### Search results
 >|Content Created At|Content Modified At|Created At|Created By|Etag|Id|Item Status|Modified At|Modified By|Name|Owned By|Parent|Path Collection|Sequence Id|Size|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2020-11-30T03:53:45-08:00 | 2020-11-30T03:53:45-08:00 | 2020-11-30T03:53:45-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 0 | 127109452066 | active | 2020-11-30T03:53:45-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | test-demo name | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | type: folder<br/>id: 0<br/>sequence_id: null<br/>etag: null<br/>name: All Files | total_count: 1<br/>entries: {'type': 'folder', 'id': '0', 'sequence_id': None, 'etag': None, 'name': 'All Files'} | 0 | 0 | folder |
+>| 2020-11-30T03:53:45-08:00 | 2020-11-30T03:53:45-08:00 | 2020-11-30T03:53:45-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 0 | 127109452066 | active | 2020-11-30T03:53:45-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | test-demo name | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | type: folder<br/>id: 0<br/>sequence_id: null<br/>etag: null<br/>name: All Files | total_count: 1<br/>entries: {'type': 'folder', 'id': '0', 'sequence_id': None, 'etag': None, 'name': 'All Files'} | 0 | 0 | folder |
 
 
 ### box-find-file-folder-by-share-link
@@ -301,8 +301,8 @@ Return the file represented by a shared link.
             "created_at": "2020-11-25T05:20:56-08:00",
             "created_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "description": "",
@@ -317,15 +317,15 @@ Return the file represented by a shared link.
             "modified_at": "2020-12-01T06:28:21-08:00",
             "modified_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "name": "55555.gif",
             "owned_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "parent": null,
@@ -347,10 +347,10 @@ Return the file represented by a shared link.
 
 #### Human Readable Output
 
->### File/Folder Share Link for https://app.box.com/s/oyujr5qpxy1nbky394slw7n98v8pnpmy
+>### File/Folder Share Link for `https://app.box.com/s/oyujr5qpxy1nbky394slw7n98v8pnpmy`
 >|Content Created At|Content Modified At|Created At|Created By|Etag|File Version|Id|Item Status|Modified At|Modified By|Name|Owned By|Path Collection|Sequence Id|Sha1|Size|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2020-11-25T05:20:55-08:00 | 2020-11-25T05:20:55-08:00 | 2020-11-25T05:20:56-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 2 | type: file_version<br/>id: 794731944502<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f | 745868717302 | active | 2020-12-01T06:28:21-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 55555.gif | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | total_count: 0<br/>entries:  | 2 | 1ff8be1766d9e16b0b651f89001e8e7375c9e71f | 26891788 | file |
+>| 2020-11-25T05:20:55-08:00 | 2020-11-25T05:20:55-08:00 | 2020-11-25T05:20:56-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 2 | type: file_version<br/>id: 794731944502<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f | 745868717302 | active | 2020-12-01T06:28:21-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 55555.gif | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 2 | 1ff8be1766d9e16b0b651f89001e8e7375c9e71f | 26891788 | file |
 
 
 ### box-get-shared-link-by-file
@@ -429,7 +429,7 @@ Gets the information for a shared link on a file.
 >### Shared link information for the file 742246263170
 >|Access|Download Count|Download Url|Effective Access|Effective Permission|Is Password Enabled|Permissions|Preview Count|Url|
 >|---|---|---|---|---|---|---|---|---|
->| open | 0 | https://app.box.com/shared/static/khro4bw4g6ay68ye70gsnisqsp9c9r23.jpeg | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | https://app.box.com/s/khro4bw4g6ay68ye70gsnisqsp9c9r23 |
+>| open | 0 | `https://app.box.com/shared/static/khro4bw4g6ay68ye70gsnisqsp9c9r23.jpeg` | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | `https://app.box.com/s/khro4bw4g6ay68ye70gsnisqsp9c9r23` |
 
 
 ### box-create-file-share-link
@@ -512,7 +512,7 @@ Adds a shared link to a file.
 >### File Share Link was created/updated for file_id: 742246263170
 >|Access|Download Count|Download Url|Effective Access|Effective Permission|Is Password Enabled|Permissions|Preview Count|Url|
 >|---|---|---|---|---|---|---|---|---|
->| open | 0 | https://app.box.com/shared/static/khro4bw4g6ay68ye70gsnisqsp9c9r23.jpeg | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | https://app.box.com/s/khro4bw4g6ay68ye70gsnisqsp9c9r23 |
+>| open | 0 | `https://app.box.com/shared/static/khro4bw4g6ay68ye70gsnisqsp9c9r23.jpeg` | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | `https://app.box.com/s/khro4bw4g6ay68ye70gsnisqsp9c9r23` |
 
 
 ### box-update-file-share-link
@@ -595,7 +595,7 @@ Updates a shared link on a file.
 >### File Share Link was created/updated for file_id: 742246263170
 >|Access|Download Count|Download Url|Effective Access|Effective Permission|Is Password Enabled|Permissions|Preview Count|Url|
 >|---|---|---|---|---|---|---|---|---|
->| open | 0 | https://app.box.com/shared/static/g3xy2he56jd2hfakjv5ptik08de8v15f.jpeg | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | https://app.box.com/s/g3xy2he56jd2hfakjv5ptik08de8v15f |
+>| open | 0 | `https://app.box.com/shared/static/g3xy2he56jd2hfakjv5ptik08de8v15f.jpeg` | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | `https://app.box.com/s/g3xy2he56jd2hfakjv5ptik08de8v15f` |
 
 
 ### box-remove-file-share-link
@@ -624,7 +624,7 @@ Removes a shared link from a file.
 
 
 #### Command Example
-```!box-remove-file-share-link file_id="742246263170" as_user="ashamah@paloaltonetworks.com"```
+```!box-remove-file-share-link file_id="742246263170" as_user="test@test.com"```
 
 #### Context Example
 ```json
@@ -720,7 +720,7 @@ Gets the information for a shared link on a folder.
 >### Shared link information for the folder 125959916474
 >|Etag|Id|Shared Link|Type|
 >|---|---|---|---|
->| 0 | 125959916474 | url: https://app.box.com/s/qmfynlq5bpaq5cn7nnbet8vh9nnsswqi<br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
+>| 0 | 125959916474 | url: `https://app.box.com/s/qmfynlq5bpaq5cn7nnbet8vh9nnsswqi` <br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
 
 
 ### box-create-folder-share-link
@@ -803,7 +803,7 @@ Adds a shared link to a folder.
 >### Folder Share Link for 125959916474
 >|Etag|Id|Shared Link|Type|
 >|---|---|---|---|
->| 0 | 125959916474 | url: https://app.box.com/s/qmfynlq5bpaq5cn7nnbet8vh9nnsswqi<br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
+>| 0 | 125959916474 | url: `https://app.box.com/s/qmfynlq5bpaq5cn7nnbet8vh9nnsswqi` <br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
 
 
 ### box-update-folder-share-link
@@ -886,7 +886,7 @@ Updates a shared link on a folder.
 >### Folder Share Link for 125959916474
 >|Etag|Id|Shared Link|Type|
 >|---|---|---|---|
->| 0 | 125959916474 | url: https://app.box.com/s/uaigc08phyoxnx59nlllecax7mfsrfb1<br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
+>| 0 | 125959916474 | url: `https://app.box.com/s/uaigc08phyoxnx59nlllecax7mfsrfb1` <br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
 
 
 ### box-remove-folder-share-link
@@ -915,7 +915,7 @@ Removes a shared link from a folder.
 
 
 #### Command Example
-```!box-remove-folder-share-link folder_id="125959916474" as_user="ashamah@paloaltonetworks.com"```
+```!box-remove-folder-share-link folder_id="125959916474" as_user="test@test.com"```
 
 #### Context Example
 ```json
@@ -1249,15 +1249,15 @@ Retrieves details for a folder, including the first 100 entries in the folder.
             "modified_at": null,
             "modified_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "name": "All Files",
             "owned_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "parent": null,
@@ -1281,7 +1281,7 @@ Retrieves details for a folder, including the first 100 entries in the folder.
 >### Folder overview for 0.
 >|Created By|Id|Item Status|Modified By|Name|Owned By|Path Collection|Size|Type|
 >|---|---|---|---|---|---|---|---|---|
->| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | All Files | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | total_count: 0<br/>entries:  | 212311360 | folder |
+>| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | All Files | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 212311360 | folder |
 >### File contents for the folder 0
 >|Etag|Id|Name|Sequence Id|Type|
 >|---|---|---|---|---|
@@ -1340,7 +1340,7 @@ Retrieves a page of items in a folder.
 
 
 #### Command Example
-```!box-list-folder-items folder_id="0" as_user="ashamah@paloaltonetworks.com"```
+```!box-list-folder-items folder_id="0" as_user="test@test.com"```
 
 #### Context Example
 ```json
@@ -1573,15 +1573,15 @@ Retrieves a page of items in a folder.
             "modified_at": null,
             "modified_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "name": "All Files",
             "owned_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "parent": null,
@@ -1605,7 +1605,7 @@ Retrieves a page of items in a folder.
 >### Folder overview for 0.
 >|Created By|Id|Item Status|Modified By|Name|Owned By|Path Collection|Size|Type|
 >|---|---|---|---|---|---|---|---|---|
->| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | All Files | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | total_count: 0<br/>entries:  | 212311360 | folder |
+>| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | All Files | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 212311360 | folder |
 >### File contents for the folder 0
 >|Etag|Id|Name|Sequence Id|Type|
 >|---|---|---|---|---|
@@ -1810,7 +1810,7 @@ Returns a list of all users for the Enterprise along with their user_id, public_
     "Box": {
         "Users": {
             "id": "14342567114",
-            "name": "Andrew Shamah",
+            "name": "Jane Doe",
             "type": "user"
         }
     }
@@ -1822,7 +1822,7 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 >### The following users were found.
 >|Id|Name|Type|
 >|---|---|---|
->| 14342567114 | Andrew Shamah | user |
+>| 14342567114 | Jane Doe | user |
 
 
 ### box-upload-file
@@ -2069,8 +2069,8 @@ Restores a file or folder that has been moved to the trash.
             "created_at": "2020-12-09T09:16:32-08:00",
             "created_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "description": "",
@@ -2085,15 +2085,15 @@ Restores a file or folder that has been moved to the trash.
             "modified_at": "2020-12-09T09:16:32-08:00",
             "modified_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "name": "list.json",
             "owned_by": {
                 "id": "14342567114",
-                "login": "ashamah@paloaltonetworks.com",
-                "name": "Andrew Shamah",
+                "login": "test@test.com",
+                "name": "Jane Doe",
                 "type": "user"
             },
             "parent": {
@@ -2212,10 +2212,10 @@ Retrieves information about the user who is currently authenticated.
             "id": "14342567114",
             "job_title": "",
             "language": "en",
-            "login": "ashamah@paloaltonetworks.com",
+            "login": "test@test.com",
             "max_upload_size": 2147483648,
             "modified_at": "2020-12-15T03:58:34-08:00",
-            "name": "Andrew Shamah",
+            "name": "Jane Doe",
             "notification_email": [],
             "phone": "4808675309",
             "space_amount": 10737418240,
@@ -2230,10 +2230,10 @@ Retrieves information about the user who is currently authenticated.
 
 #### Human Readable Output
 
->### The current user is ashamah@paloaltonetworks.com.
+>### The current user is test@test.com.
 >|Avatar Url|Created At|Id|Language|Login|Max Upload Size|Modified At|Name|Phone|Space Amount|Space Used|Status|Timezone|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| https://app.box.com/api/avatar/large/14342567114 | 2020-11-11T04:34:53-08:00 | 14342567114 | en | ashamah@paloaltonetworks.com | 2147483648 | 2020-12-15T03:58:34-08:00 | Andrew Shamah | 4808675309 | 10737418240 | 212311360 | active | America/Los_Angeles | user |
+>| https://app.box.com/api/avatar/large/14342567114 | 2020-11-11T04:34:53-08:00 | 14342567114 | en | test@test.com | 2147483648 | 2020-12-15T03:58:34-08:00 | Jane Doe | 4808675309 | 10737418240 | 212311360 | active | America/Los_Angeles | user |
 
 
 ### box-update-user
@@ -2306,10 +2306,10 @@ Updates a managed user in an enterprise. This endpoint is only available to user
             "id": "14342567114",
             "job_title": "",
             "language": "en",
-            "login": "ashamah@paloaltonetworks.com",
+            "login": "test@test.com",
             "max_upload_size": 2147483648,
             "modified_at": "2020-12-15T03:59:04-08:00",
-            "name": "Andrew Shamah",
+            "name": "Jane Doe",
             "notification_email": [],
             "phone": "4808675309",
             "space_amount": 10737418240,
@@ -2324,10 +2324,10 @@ Updates a managed user in an enterprise. This endpoint is only available to user
 
 #### Human Readable Output
 
->### The user ashamah@paloaltonetworks.com has been updated.
+>### The user test@test.com has been updated.
 >|Avatar Url|Created At|Id|Language|Login|Max Upload Size|Modified At|Name|Phone|Space Amount|Space Used|Status|Timezone|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| https://app.box.com/api/avatar/large/14342567114 | 2020-11-11T04:34:53-08:00 | 14342567114 | en | ashamah@paloaltonetworks.com | 2147483648 | 2020-12-15T03:59:04-08:00 | Andrew Shamah | 4808675309 | 10737418240 | 212312495 | active | America/Los_Angeles | user |
+>| https://app.box.com/api/avatar/large/14342567114 | 2020-11-11T04:34:53-08:00 | 14342567114 | en | test@test.com | 2147483648 | 2020-12-15T03:59:04-08:00 | Jane Doe | 4808675309 | 10737418240 | 212312495 | active | America/Los_Angeles | user |
 
 
 ### box-create-user
@@ -2502,8 +2502,8 @@ Returns up to a year of past events for a given user.
                 "created_at": "2020-11-25T04:12:23-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "821c82f3cf438bf0d206aa80aac526ea1700a46b",
@@ -2516,8 +2516,8 @@ Returns up to a year of past events for a given user.
                     "created_at": "2020-11-25T04:12:23-08:00",
                     "created_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "description": "",
@@ -2532,15 +2532,15 @@ Returns up to a year of past events for a given user.
                     "modified_at": "2020-11-25T04:12:23-08:00",
                     "modified_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "name": "image.gif",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -2577,8 +2577,8 @@ Returns up to a year of past events for a given user.
                 "created_at": "2020-11-25T04:24:37-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "0fcb31e458fd14483cf760e1895ee69980eaff62",
@@ -2591,8 +2591,8 @@ Returns up to a year of past events for a given user.
                     "created_at": "2020-11-25T04:24:36-08:00",
                     "created_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "description": "",
@@ -2607,15 +2607,15 @@ Returns up to a year of past events for a given user.
                     "modified_at": "2020-11-25T04:24:36-08:00",
                     "modified_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "name": "image1.gif",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -2652,8 +2652,8 @@ Returns up to a year of past events for a given user.
                 "created_at": "2020-11-25T04:34:17-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "3d89043e5c46897ac77702f553622204666120a4",
@@ -2666,8 +2666,8 @@ Returns up to a year of past events for a given user.
                     "created_at": "2020-11-25T04:34:16-08:00",
                     "created_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "description": "",
@@ -2682,15 +2682,15 @@ Returns up to a year of past events for a given user.
                     "modified_at": "2020-11-25T04:34:16-08:00",
                     "modified_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "name": "image2.gif",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -2727,8 +2727,8 @@ Returns up to a year of past events for a given user.
                 "created_at": "2020-11-25T04:36:04-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "40b93bf6eb12fb167a51cdf03e3c3444a6a265b0",
@@ -2741,8 +2741,8 @@ Returns up to a year of past events for a given user.
                     "created_at": "2020-11-25T04:36:04-08:00",
                     "created_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "description": "",
@@ -2757,15 +2757,15 @@ Returns up to a year of past events for a given user.
                     "modified_at": "2020-11-25T04:36:04-08:00",
                     "modified_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "name": "image3.gif",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -2802,8 +2802,8 @@ Returns up to a year of past events for a given user.
                 "created_at": "2020-11-25T05:18:44-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "6a9dee69e8f0fdc81e75fa63b1e9c35b80200481",
@@ -2816,8 +2816,8 @@ Returns up to a year of past events for a given user.
                     "created_at": "2020-11-25T05:18:44-08:00",
                     "created_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "description": "",
@@ -2832,15 +2832,15 @@ Returns up to a year of past events for a given user.
                     "modified_at": "2020-11-25T05:18:44-08:00",
                     "modified_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "name": "image4.gif",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -2877,8 +2877,8 @@ Returns up to a year of past events for a given user.
                 "created_at": "2020-11-25T05:20:56-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "ba2a5d3dca51a7edefbdf06543295a74bc773cb4",
@@ -2891,8 +2891,8 @@ Returns up to a year of past events for a given user.
                     "created_at": "2020-11-25T05:20:56-08:00",
                     "created_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "description": "",
@@ -2907,15 +2907,15 @@ Returns up to a year of past events for a given user.
                     "modified_at": "2020-11-25T05:20:56-08:00",
                     "modified_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "name": "image5.gif",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -2952,8 +2952,8 @@ Returns up to a year of past events for a given user.
                 "created_at": "2020-11-25T05:25:44-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "a56e6d1020c8cfb7ce22a990e6da5192001b1c1e",
@@ -2966,8 +2966,8 @@ Returns up to a year of past events for a given user.
                     "created_at": "2020-11-25T05:25:44-08:00",
                     "created_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "description": "",
@@ -2982,15 +2982,15 @@ Returns up to a year of past events for a given user.
                     "modified_at": "2020-11-25T05:25:44-08:00",
                     "modified_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "name": "image6_please_work.gif",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3027,8 +3027,8 @@ Returns up to a year of past events for a given user.
                 "created_at": "2020-11-25T06:47:49-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "e9bbd0c85123ebbb1074664c4176f75e6da8cd7f",
@@ -3041,8 +3041,8 @@ Returns up to a year of past events for a given user.
                     "created_at": "2020-11-25T06:47:49-08:00",
                     "created_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "description": "",
@@ -3057,15 +3057,15 @@ Returns up to a year of past events for a given user.
                     "modified_at": "2020-11-25T06:47:49-08:00",
                     "modified_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "name": "image7_please_work.gif",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3102,8 +3102,8 @@ Returns up to a year of past events for a given user.
                 "created_at": "2020-11-25T06:48:49-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "be9d499190f23542227cad001c02d8c2bb22c65c",
@@ -3116,8 +3116,8 @@ Returns up to a year of past events for a given user.
                     "created_at": "2020-11-25T06:48:49-08:00",
                     "created_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "description": "",
@@ -3132,15 +3132,15 @@ Returns up to a year of past events for a given user.
                     "modified_at": "2020-11-25T06:48:49-08:00",
                     "modified_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "name": "image8_please_work.gif",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3177,8 +3177,8 @@ Returns up to a year of past events for a given user.
                 "created_at": "2020-11-25T06:50:31-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "4ce8a9d707a286ea1c62eb2fcccc399bccc68278",
@@ -3191,8 +3191,8 @@ Returns up to a year of past events for a given user.
                     "created_at": "2020-11-25T06:50:31-08:00",
                     "created_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "description": "",
@@ -3207,15 +3207,15 @@ Returns up to a year of past events for a given user.
                     "modified_at": "2020-11-25T06:50:31-08:00",
                     "modified_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "name": "image9_please_work.gif",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3258,16 +3258,16 @@ Returns up to a year of past events for a given user.
 >### Events found for the user: 14342567114
 >|Created At|Created By|Event Id|Event Type|Recorded At|Session Id|Source|Type|
 >|---|---|---|---|---|---|---|---|
->| 2020-11-25T04:12:23-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 821c82f3cf438bf0d206aa80aac526ea1700a46b | ITEM_UPLOAD | 2020-11-25T04:12:24-08:00 | stw7zogl1ohiczrp | type: file<br/>id: 745851995250<br/>file_version: {"type": "file_version", "id": "794713426050", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T04:12:23-08:00<br/>modified_at: 2020-11-25T04:12:23-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T04:12:23-08:00<br/>content_modified_at: 2020-11-25T04:12:23-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
->| 2020-11-25T04:24:37-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 0fcb31e458fd14483cf760e1895ee69980eaff62 | ITEM_UPLOAD | 2020-11-25T04:24:37-08:00 | ifhnscgl1ou83ihz | type: file<br/>id: 745854929853<br/>file_version: {"type": "file_version", "id": "794716642653", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image1.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T04:24:36-08:00<br/>modified_at: 2020-11-25T04:24:36-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T04:24:36-08:00<br/>content_modified_at: 2020-11-25T04:24:36-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
->| 2020-11-25T04:34:17-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 3d89043e5c46897ac77702f553622204666120a4 | ITEM_UPLOAD | 2020-11-25T04:34:18-08:00 | rn9j4egl1p4a7lts | type: file<br/>id: 745857164822<br/>file_version: {"type": "file_version", "id": "794719141622", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image2.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T04:34:16-08:00<br/>modified_at: 2020-11-25T04:34:16-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T04:34:16-08:00<br/>content_modified_at: 2020-11-25T04:34:16-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
->| 2020-11-25T04:36:04-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 40b93bf6eb12fb167a51cdf03e3c3444a6a265b0 | ITEM_UPLOAD | 2020-11-25T04:36:05-08:00 | amo218gl1p65hgdk | type: file<br/>id: 745859107884<br/>file_version: {"type": "file_version", "id": "794721102684", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image3.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T04:36:04-08:00<br/>modified_at: 2020-11-25T04:36:04-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T04:36:04-08:00<br/>content_modified_at: 2020-11-25T04:36:04-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
->| 2020-11-25T05:18:44-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 6a9dee69e8f0fdc81e75fa63b1e9c35b80200481 | ITEM_UPLOAD | 2020-11-25T05:18:45-08:00 | e2axvxgl1qejl0ar | type: file<br/>id: 745870218112<br/>file_version: {"type": "file_version", "id": "794733314512", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image4.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T05:18:44-08:00<br/>modified_at: 2020-11-25T05:18:44-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T05:18:44-08:00<br/>content_modified_at: 2020-11-25T05:18:44-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
->| 2020-11-25T05:20:56-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | ba2a5d3dca51a7edefbdf06543295a74bc773cb4 | ITEM_UPLOAD | 2020-11-25T05:20:56-08:00 | khuqgfgl1qgtmk0w | type: file<br/>id: 745868717302<br/>file_version: {"type": "file_version", "id": "794731944502", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image5.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T05:20:56-08:00<br/>modified_at: 2020-11-25T05:20:56-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T05:20:55-08:00<br/>content_modified_at: 2020-11-25T05:20:55-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
->| 2020-11-25T05:25:44-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | a56e6d1020c8cfb7ce22a990e6da5192001b1c1e | ITEM_UPLOAD | 2020-11-25T05:25:45-08:00 | yoajnqgl1qltqhfl | type: file<br/>id: 745873525854<br/>file_version: {"type": "file_version", "id": "794736891054", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image6_please_work.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T05:25:44-08:00<br/>modified_at: 2020-11-25T05:25:44-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T05:25:44-08:00<br/>content_modified_at: 2020-11-25T05:25:44-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
->| 2020-11-25T06:47:49-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | e9bbd0c85123ebbb1074664c4176f75e6da8cd7f | ITEM_UPLOAD | 2020-11-25T06:47:50-08:00 | qhq59lgl1sz8a1k3 | type: file<br/>id: 745897019112<br/>file_version: {"type": "file_version", "id": "794763039912", "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: bd992f78f1f50b4b424b0633870aca5eed3bedce<br/>name: image7_please_work.gif<br/>description: <br/>size: 3653705<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T06:47:49-08:00<br/>modified_at: 2020-11-25T06:47:49-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T06:47:49-08:00<br/>content_modified_at: 2020-11-25T06:47:49-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
->| 2020-11-25T06:48:49-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | be9d499190f23542227cad001c02d8c2bb22c65c | ITEM_UPLOAD | 2020-11-25T06:49:05-08:00 | w1pn5lgl1t09vsfa | type: file<br/>id: 745898101397<br/>file_version: {"type": "file_version", "id": "794764186997", "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: bd992f78f1f50b4b424b0633870aca5eed3bedce<br/>name: image8_please_work.gif<br/>description: <br/>size: 3653705<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T06:48:49-08:00<br/>modified_at: 2020-11-25T06:48:49-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T06:48:49-08:00<br/>content_modified_at: 2020-11-25T06:48:49-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
->| 2020-11-25T06:50:31-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 4ce8a9d707a286ea1c62eb2fcccc399bccc68278 | ITEM_UPLOAD | 2020-11-25T06:50:32-08:00 | zlecagl1t21rmdp | type: file<br/>id: 745898898314<br/>file_version: {"type": "file_version", "id": "794764999514", "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: bd992f78f1f50b4b424b0633870aca5eed3bedce<br/>name: image9_please_work.gif<br/>description: <br/>size: 3653705<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T06:50:31-08:00<br/>modified_at: 2020-11-25T06:50:31-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T06:50:31-08:00<br/>content_modified_at: 2020-11-25T06:50:31-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
+>| 2020-11-25T04:12:23-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 821c82f3cf438bf0d206aa80aac526ea1700a46b | ITEM_UPLOAD | 2020-11-25T04:12:24-08:00 | stw7zogl1ohiczrp | type: file<br/>id: 745851995250<br/>file_version: {"type": "file_version", "id": "794713426050", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T04:12:23-08:00<br/>modified_at: 2020-11-25T04:12:23-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T04:12:23-08:00<br/>content_modified_at: 2020-11-25T04:12:23-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
+>| 2020-11-25T04:24:37-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 0fcb31e458fd14483cf760e1895ee69980eaff62 | ITEM_UPLOAD | 2020-11-25T04:24:37-08:00 | ifhnscgl1ou83ihz | type: file<br/>id: 745854929853<br/>file_version: {"type": "file_version", "id": "794716642653", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image1.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T04:24:36-08:00<br/>modified_at: 2020-11-25T04:24:36-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T04:24:36-08:00<br/>content_modified_at: 2020-11-25T04:24:36-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
+>| 2020-11-25T04:34:17-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 3d89043e5c46897ac77702f553622204666120a4 | ITEM_UPLOAD | 2020-11-25T04:34:18-08:00 | rn9j4egl1p4a7lts | type: file<br/>id: 745857164822<br/>file_version: {"type": "file_version", "id": "794719141622", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image2.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T04:34:16-08:00<br/>modified_at: 2020-11-25T04:34:16-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T04:34:16-08:00<br/>content_modified_at: 2020-11-25T04:34:16-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
+>| 2020-11-25T04:36:04-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 40b93bf6eb12fb167a51cdf03e3c3444a6a265b0 | ITEM_UPLOAD | 2020-11-25T04:36:05-08:00 | amo218gl1p65hgdk | type: file<br/>id: 745859107884<br/>file_version: {"type": "file_version", "id": "794721102684", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image3.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T04:36:04-08:00<br/>modified_at: 2020-11-25T04:36:04-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T04:36:04-08:00<br/>content_modified_at: 2020-11-25T04:36:04-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
+>| 2020-11-25T05:18:44-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 6a9dee69e8f0fdc81e75fa63b1e9c35b80200481 | ITEM_UPLOAD | 2020-11-25T05:18:45-08:00 | e2axvxgl1qejl0ar | type: file<br/>id: 745870218112<br/>file_version: {"type": "file_version", "id": "794733314512", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image4.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T05:18:44-08:00<br/>modified_at: 2020-11-25T05:18:44-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T05:18:44-08:00<br/>content_modified_at: 2020-11-25T05:18:44-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
+>| 2020-11-25T05:20:56-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | ba2a5d3dca51a7edefbdf06543295a74bc773cb4 | ITEM_UPLOAD | 2020-11-25T05:20:56-08:00 | khuqgfgl1qgtmk0w | type: file<br/>id: 745868717302<br/>file_version: {"type": "file_version", "id": "794731944502", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image5.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T05:20:56-08:00<br/>modified_at: 2020-11-25T05:20:56-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T05:20:55-08:00<br/>content_modified_at: 2020-11-25T05:20:55-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
+>| 2020-11-25T05:25:44-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | a56e6d1020c8cfb7ce22a990e6da5192001b1c1e | ITEM_UPLOAD | 2020-11-25T05:25:45-08:00 | yoajnqgl1qltqhfl | type: file<br/>id: 745873525854<br/>file_version: {"type": "file_version", "id": "794736891054", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image6_please_work.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T05:25:44-08:00<br/>modified_at: 2020-11-25T05:25:44-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T05:25:44-08:00<br/>content_modified_at: 2020-11-25T05:25:44-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
+>| 2020-11-25T06:47:49-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | e9bbd0c85123ebbb1074664c4176f75e6da8cd7f | ITEM_UPLOAD | 2020-11-25T06:47:50-08:00 | qhq59lgl1sz8a1k3 | type: file<br/>id: 745897019112<br/>file_version: {"type": "file_version", "id": "794763039912", "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: bd992f78f1f50b4b424b0633870aca5eed3bedce<br/>name: image7_please_work.gif<br/>description: <br/>size: 3653705<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T06:47:49-08:00<br/>modified_at: 2020-11-25T06:47:49-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T06:47:49-08:00<br/>content_modified_at: 2020-11-25T06:47:49-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
+>| 2020-11-25T06:48:49-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | be9d499190f23542227cad001c02d8c2bb22c65c | ITEM_UPLOAD | 2020-11-25T06:49:05-08:00 | w1pn5lgl1t09vsfa | type: file<br/>id: 745898101397<br/>file_version: {"type": "file_version", "id": "794764186997", "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: bd992f78f1f50b4b424b0633870aca5eed3bedce<br/>name: image8_please_work.gif<br/>description: <br/>size: 3653705<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T06:48:49-08:00<br/>modified_at: 2020-11-25T06:48:49-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T06:48:49-08:00<br/>content_modified_at: 2020-11-25T06:48:49-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
+>| 2020-11-25T06:50:31-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 4ce8a9d707a286ea1c62eb2fcccc399bccc68278 | ITEM_UPLOAD | 2020-11-25T06:50:32-08:00 | zlecagl1t21rmdp | type: file<br/>id: 745898898314<br/>file_version: {"type": "file_version", "id": "794764999514", "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: bd992f78f1f50b4b424b0633870aca5eed3bedce<br/>name: image9_please_work.gif<br/>description: <br/>size: 3653705<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T06:50:31-08:00<br/>modified_at: 2020-11-25T06:50:31-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T06:50:31-08:00<br/>content_modified_at: 2020-11-25T06:50:31-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
 
 
 ### box-list-enterprise-events
@@ -3329,8 +3329,8 @@ Returns up to a year of past events for the entire enterprise.
                 "created_at": "2020-12-15T00:44:58-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "451677f7-9c7c-497d-a272-69903c1f6c29",
@@ -3343,8 +3343,8 @@ Returns up to a year of past events for the entire enterprise.
                     "item_type": "file",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3364,8 +3364,8 @@ Returns up to a year of past events for the entire enterprise.
                 "created_at": "2020-12-15T00:50:37-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "457eebd9-5b26-4333-a3f9-44f040de7220",
@@ -3378,8 +3378,8 @@ Returns up to a year of past events for the entire enterprise.
                     "item_type": "file",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3399,8 +3399,8 @@ Returns up to a year of past events for the entire enterprise.
                 "created_at": "2020-12-15T00:53:33-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "e6b91f7a-3eb3-4968-8aef-7ea90ed46f21",
@@ -3413,8 +3413,8 @@ Returns up to a year of past events for the entire enterprise.
                     "item_type": "file",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3437,8 +3437,8 @@ Returns up to a year of past events for the entire enterprise.
                 "created_at": "2020-12-15T03:07:44-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "16b5dbef-3175-41c1-8486-dc6d279f4c63",
@@ -3451,8 +3451,8 @@ Returns up to a year of past events for the entire enterprise.
                     "item_type": "file",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3474,8 +3474,8 @@ Returns up to a year of past events for the entire enterprise.
                 "created_at": "2020-12-15T03:07:54-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "3a30d7f7-ce0d-4a4b-a9f8-c8cbccead2dc",
@@ -3488,8 +3488,8 @@ Returns up to a year of past events for the entire enterprise.
                     "item_type": "file",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3511,8 +3511,8 @@ Returns up to a year of past events for the entire enterprise.
                 "created_at": "2020-12-15T03:08:15-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "a71b25af-df2c-4693-8026-e7b1ecd30af9",
@@ -3525,8 +3525,8 @@ Returns up to a year of past events for the entire enterprise.
                     "item_type": "file",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3549,8 +3549,8 @@ Returns up to a year of past events for the entire enterprise.
                 "created_at": "2020-12-15T03:11:22-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "dba908b8-3813-4117-bbec-763cdd320748",
@@ -3563,8 +3563,8 @@ Returns up to a year of past events for the entire enterprise.
                     "item_type": "file",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3586,8 +3586,8 @@ Returns up to a year of past events for the entire enterprise.
                 "created_at": "2020-12-15T03:11:50-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "fe379c6f-a85c-452a-8e7a-2c6e24397a75",
@@ -3600,8 +3600,8 @@ Returns up to a year of past events for the entire enterprise.
                     "item_type": "file",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3621,8 +3621,8 @@ Returns up to a year of past events for the entire enterprise.
                 "created_at": "2020-12-15T03:11:52-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "b6b320af-5a8a-4352-9d78-44620ccbc2f7",
@@ -3635,8 +3635,8 @@ Returns up to a year of past events for the entire enterprise.
                     "item_type": "folder",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3658,8 +3658,8 @@ Returns up to a year of past events for the entire enterprise.
                 "created_at": "2020-12-15T03:11:59-08:00",
                 "created_by": {
                     "id": "14342567114",
-                    "login": "ashamah@paloaltonetworks.com",
-                    "name": "Andrew Shamah",
+                    "login": "test@test.com",
+                    "name": "Jane Doe",
                     "type": "user"
                 },
                 "event_id": "cdc29617-5e30-477f-8a56-0497457c61fb",
@@ -3672,8 +3672,8 @@ Returns up to a year of past events for the entire enterprise.
                     "item_type": "file",
                     "owned_by": {
                         "id": "14342567114",
-                        "login": "ashamah@paloaltonetworks.com",
-                        "name": "Andrew Shamah",
+                        "login": "test@test.com",
+                        "name": "Jane Doe",
                         "type": "user"
                     },
                     "parent": {
@@ -3694,16 +3694,16 @@ Returns up to a year of past events for the entire enterprise.
 >### Enterprise Events found.
 >|Additional Details|Created At|Created By|Event Id|Event Type|Ip Address|Source|Type|
 >|---|---|---|---|---|---|---|---|
->| size: 18860439<br/>version_id: 803108695891 | 2020-12-15T00:44:58-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 451677f7-9c7c-497d-a272-69903c1f6c29 | RENAME | 37.142.10.140 | item_type: file<br/>item_id: 753421883491<br/>item_name: vandijk3.gif<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
->| size: 18860439<br/>version_id: 803108695891 | 2020-12-15T00:50:37-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 457eebd9-5b26-4333-a3f9-44f040de7220 | RENAME | 37.142.10.140 | item_type: file<br/>item_id: 753421883491<br/>item_name: vandijk4.gif<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
->| size: 18860439<br/>version_id: 803108695891 | 2020-12-15T00:53:33-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | e6b91f7a-3eb3-4968-8aef-7ea90ed46f21 | RENAME | 37.142.10.140 | item_type: file<br/>item_id: 753421883491<br/>item_name: vandijk5.gif<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
->| shared_link_id: 2hvls15bpbmrjuo4vks6znrvye6gm6g1<br/>size: 92934<br/>version_id: 790694844770<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:07:44-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 16b5dbef-3175-41c1-8486-dc6d279f4c63 | ITEM_SHARED_UPDATE | 176.34.214.130 | item_type: file<br/>item_id: 742246263170<br/>item_name: download.jpeg<br/>parent: {"type": "folder", "name": "My Box Notes", "id": "125959916474"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
->| size: 1135<br/>version_id: 801011020694<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:07:54-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | 3a30d7f7-ce0d-4a4b-a9f8-c8cbccead2dc | DELETE | 176.34.214.130 | item_type: file<br/>item_id: 751526132294<br/>item_name: list.json<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
->| size: 92934<br/>version_id: 790694844770<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:08:15-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | a71b25af-df2c-4693-8026-e7b1ecd30af9 | UNSHARE | 176.34.214.130 | item_type: file<br/>item_id: 742246263170<br/>item_name: download.jpeg<br/>parent: {"type": "folder", "name": "My Box Notes", "id": "125959916474"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
->| shared_link_id: tkaz5qjy0hmkr5pvnvhoszcjbtx74j3y<br/>size: 92934<br/>version_id: 790694844770<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:22-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | dba908b8-3813-4117-bbec-763cdd320748 | SHARE | 176.34.214.130 | item_type: file<br/>item_id: 742246263170<br/>item_name: download.jpeg<br/>parent: {"type": "folder", "name": "My Box Notes", "id": "125959916474"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
->| size: 92934<br/>version_id: 790694844770<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:50-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | fe379c6f-a85c-452a-8e7a-2c6e24397a75 | UNSHARE | 176.34.214.130 | item_type: file<br/>item_id: 742246263170<br/>item_name: download.jpeg<br/>parent: {"type": "folder", "name": "My Box Notes", "id": "125959916474"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
->| service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:52-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | b6b320af-5a8a-4352-9d78-44620ccbc2f7 | UNSHARE | 176.34.214.130 | item_type: folder<br/>item_id: 125959916474<br/>item_name: My Box Notes<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
->| size: 1135<br/>version_id: 801011020694<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:59-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | cdc29617-5e30-477f-8a56-0497457c61fb | UNDELETE | 176.34.214.130 | item_type: file<br/>item_id: 751526132294<br/>item_name: list.json<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
+>| size: 18860439<br/>version_id: 803108695891 | 2020-12-15T00:44:58-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 451677f7-9c7c-497d-a272-69903c1f6c29 | RENAME | 37.142.10.140 | item_type: file<br/>item_id: 753421883491<br/>item_name: vandijk3.gif<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
+>| size: 18860439<br/>version_id: 803108695891 | 2020-12-15T00:50:37-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 457eebd9-5b26-4333-a3f9-44f040de7220 | RENAME | 37.142.10.140 | item_type: file<br/>item_id: 753421883491<br/>item_name: vandijk4.gif<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
+>| size: 18860439<br/>version_id: 803108695891 | 2020-12-15T00:53:33-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | e6b91f7a-3eb3-4968-8aef-7ea90ed46f21 | RENAME | 37.142.10.140 | item_type: file<br/>item_id: 753421883491<br/>item_name: vandijk5.gif<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
+>| shared_link_id: 2hvls15bpbmrjuo4vks6znrvye6gm6g1<br/>size: 92934<br/>version_id: 790694844770<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:07:44-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 16b5dbef-3175-41c1-8486-dc6d279f4c63 | ITEM_SHARED_UPDATE | 176.34.214.130 | item_type: file<br/>item_id: 742246263170<br/>item_name: download.jpeg<br/>parent: {"type": "folder", "name": "My Box Notes", "id": "125959916474"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
+>| size: 1135<br/>version_id: 801011020694<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:07:54-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 3a30d7f7-ce0d-4a4b-a9f8-c8cbccead2dc | DELETE | 176.34.214.130 | item_type: file<br/>item_id: 751526132294<br/>item_name: list.json<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
+>| size: 92934<br/>version_id: 790694844770<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:08:15-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | a71b25af-df2c-4693-8026-e7b1ecd30af9 | UNSHARE | 176.34.214.130 | item_type: file<br/>item_id: 742246263170<br/>item_name: download.jpeg<br/>parent: {"type": "folder", "name": "My Box Notes", "id": "125959916474"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
+>| shared_link_id: tkaz5qjy0hmkr5pvnvhoszcjbtx74j3y<br/>size: 92934<br/>version_id: 790694844770<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:22-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | dba908b8-3813-4117-bbec-763cdd320748 | SHARE | 176.34.214.130 | item_type: file<br/>item_id: 742246263170<br/>item_name: download.jpeg<br/>parent: {"type": "folder", "name": "My Box Notes", "id": "125959916474"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
+>| size: 92934<br/>version_id: 790694844770<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:50-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | fe379c6f-a85c-452a-8e7a-2c6e24397a75 | UNSHARE | 176.34.214.130 | item_type: file<br/>item_id: 742246263170<br/>item_name: download.jpeg<br/>parent: {"type": "folder", "name": "My Box Notes", "id": "125959916474"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
+>| service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:52-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | b6b320af-5a8a-4352-9d78-44620ccbc2f7 | UNSHARE | 176.34.214.130 | item_type: folder<br/>item_id: 125959916474<br/>item_name: My Box Notes<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
+>| size: 1135<br/>version_id: 801011020694<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:59-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | cdc29617-5e30-477f-8a56-0497457c61fb | UNDELETE | 176.34.214.130 | item_type: file<br/>item_id: 751526132294<br/>item_name: list.json<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
 
 ### box-download-file
 ***
@@ -3735,3 +3735,143 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Uploaded file: TestFile.gif
+
+### box-move-folder
+***
+Moves all of the items (files, folders and workflows) owned by a user into another user's account. Only the root folder `0` will be transferred.
+
+Folders can only be moved across users by users with administrative permissions.
+
+This command is performed synchronously which might lead to a slow response when the source user has a large number of items in all of its folders.
+
+
+#### Base Command
+
+`box-move-folder`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to_user_id | The ID of the user who will receive the folders. | Required | 
+| from_user_id | The ID of the user who currently owns the folder. | Required | 
+| notify | Determines if users should receive email notification for the action performed. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Box.Folder.id | Number | The ID of the folder created. | 
+| Box.Folder.etag | Number | The entry tag for the folder created. | 
+| Box.Folder.type | String | The type of folder. | 
+| Box.Folder.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the folder. | 
+| Box.Folder.name | String | The name of the folder. | 
+| Box.Folder.sha1 | String | The SHA1 hash of the folder. | 
+| Box.Folder.file_version.id | Number | The unique identifier that represents a file version. | 
+| Box.Folder.file_version.type | String | Value is always file_version. | 
+| Box.Folder.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
+| Box.Folder.description | String | The description of the item. | 
+| Box.Folder.size | Number | The folder size in bytes. | 
+| Box.Folder.path_collection.total_count | Number | The number of folders in the list. | 
+| Box.Folder.path_collection.entries.id | Number | The ID of the item found. | 
+| Box.Folder.path_collection.entries.etag | Number | The entry tag for the item found. | 
+| Box.Folder.path_collection.entries.type | String | The type of the item found. | 
+| Box.Folder.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
+| Box.Folder.path_collection.entries.name | String | The name of the item. | 
+| Box.Folder.created_at | Date | The date and time when the item was created on Box. | 
+| Box.Folder.modified_at | Date | The date and time when the item was last updated on Box. | 
+| Box.Folder.trashed_at | Date | The time at which the item was put in the trash. | 
+| Box.Folder.purged_at | Date | The time at which the item is expected to be purged from the trash. | 
+| Box.Folder.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. | 
+| Box.Folder.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. | 
+| Box.Folder.created_by.id | Number | The unique identifier for the user who created the item. | 
+| Box.Folder.created_by.type | String | Value is always user. | 
+| Box.Folder.created_by.name | String | The display name of the user who created the item. | 
+| Box.Folder.created_by.login | String | The primary email address of the user who created the item. | 
+| Box.Folder.modified_by.id | Number | The unique identifier for the user who modified the item. | 
+| Box.Folder.modified_by.type | String | Value is always user. | 
+| Box.Folder.modified_by.name | String | The display name of the user who modified the item. | 
+| Box.Folder.modified_by.login | String | The primary email address of the user who modified the item. | 
+| Box.Folder.owned_by.id | Number | The unique identifier for the user who owns the item. | 
+| Box.Folder.owned_by.type | String | Value is always user. | 
+| Box.Folder.owned_by.name | String | The display name of the user who owns the item. | 
+| Box.Folder.owned_by.login | String | The primary email address of the user who owns the item. | 
+| Box.Folder.shared_link.url | String | The URL that can be used to access the item on Box. | 
+| Box.Folder.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
+| Box.Folder.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
+| Box.Folder.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
+| Box.Folder.shared_link.access | String | The access level for the shared link. | 
+| Box.Folder.shared_link.effective_access | String | The effective access level for the shared link.  | 
+| Box.Folder.shared_link.effective_permission | String | The effective permissions for this shared link. | 
+| Box.Folder.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
+| Box.Folder.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
+| Box.Folder.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
+| Box.Folder.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
+| Box.Folder.shared_link.download_count | Number | The number of times the item has been downloaded. | 
+| Box.Folder.shared_link.preview_count | Number | The number of times the item has been previewed. | 
+| Box.Folder.parent.id | Number | The ID of the parent for the item found | 
+| Box.Folder.parent.etag | Number | The entry tag for the parent of the item found. | 
+| Box.Folder.parent.type | String | The type for the parent of the item found. | 
+| Box.Folder.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. | 
+| Box.Folder.parent.name | String | The name of the parent of the item. | 
+| Box.Folder.item_status | String | The status of the parent of the item. | 
+
+
+#### Command Example
+```!box-move-folder to_user_id="123456" from_user_id="654321" notify="true"```
+
+#### Context Example
+```json
+{
+    "Box": {
+        "Folder": {
+            "content_created_at": null,
+            "content_modified_at": null,
+            "created_at": null,
+            "created_by": {
+                "id": "",
+                "login": "",
+                "name": "",
+                "type": "user"
+            },
+            "description": "",
+            "etag": null,
+            "folder_upload_email": null,
+            "id": "0",
+            "item_status": "active",
+            "modified_at": null,
+            "modified_by": {
+                "id": "14342567114",
+                "login": "test@test.com",
+                "name": "Jane Doe",
+                "type": "user"
+            },
+            "name": "All Files",
+            "owned_by": {
+                "id": "14342567114",
+                "login": "test@test.com",
+                "name": "Jane Doe",
+                "type": "user"
+            },
+            "parent": null,
+            "path_collection": {
+                "entries": [],
+                "total_count": 0
+            },
+            "purged_at": null,
+            "sequence_id": null,
+            "shared_link": null,
+            "size": 212311360,
+            "trashed_at": null,
+            "type": "folder"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Folder overview for transferred folder.
+>|Created By|Id|Item Status|Modified By|Name|Owned By|Path Collection|Size|Type|
+>|---|---|---|---|---|---|---|---|---|
+>| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | All Files | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 212311360 | folder |

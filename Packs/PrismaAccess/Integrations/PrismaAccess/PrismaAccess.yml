@@ -95,4 +95,4 @@ script:
   dockerimage: demisto/netmiko:1.0.0.11159
   runonce: false
   subtype: python3
-fromversion: 5.5.0
+fromversion: 5.0.0

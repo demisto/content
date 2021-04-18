@@ -826,7 +826,7 @@ get details of the user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gra.Anomalies.anomaly_name | String | Anomaly Name . | 
+| Gra.User.Anomalies.anomaly_name | String | Anomaly Name . | 
 
 
 #### Command Example

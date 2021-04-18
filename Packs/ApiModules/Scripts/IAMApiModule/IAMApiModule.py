@@ -289,7 +289,7 @@ class IAMCommand:
     :rtype: ``None``
     """
     def __init__(self, is_create_enabled=True, is_disable_enabled=True, is_update_enabled=True,
-                 create_if_not_exists=True, mapper_in=None, mapper_out=None):
+                 create_if_not_exists=True, mapper_in=None, mapper_out=None, attr='email'):
         """ The IAMCommand c'tor
 
         :param is_create_enabled: (bool) Whether or not the `iam-create-user` command is enabled in the instance
@@ -298,6 +298,7 @@ class IAMCommand:
         :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application
         :param mapper_in: (str) Incoming mapper from the application to Cortex XSOAR
         :param mapper_out: (str) Outgoing mapper from the Cortex XSOAR to the application
+        :param attr: (str) The name of the identifier attribute of users in the application.
         """
         self.is_create_enabled = is_create_enabled
         self.is_disable_enabled = is_disable_enabled
@@ -305,19 +306,19 @@ class IAMCommand:
         self.create_if_not_exists = create_if_not_exists
         self.mapper_in = mapper_in
         self.mapper_out = mapper_out
+        self.attr = attr
 
     def get_user(self, client, args):
         """ Searches a user in the application and updates the user profile object with the data.
             If not found, the error details will be resulted instead.
-
         :param client: (Client) The integration Client object that implements a get_user() method
         :param args: (dict) The `iam-get-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         try:
-            email = user_profile.get_attribute('email')
-            user_app_data = client.get_user(email)
+            identifier = user_profile.get_attribute(self.attr)
+            user_app_data = client.get_user(identifier)
             if not user_app_data:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 user_profile.set_result(action=IAMActions.GET_USER,
@@ -330,7 +331,7 @@ class IAMCommand:
                     action=IAMActions.GET_USER,
                     active=user_app_data.is_active,
                     iden=user_app_data.id,
-                    email=email,
+                    email=user_profile.get_attribute('email'),
                     username=user_app_data.username,
                     details=user_app_data.full_data
                 )
@@ -356,8 +357,8 @@ class IAMCommand:
                                     skip_reason='Command is disabled.')
         else:
             try:
-                email = user_profile.get_attribute('email')
-                user_app_data = client.get_user(email)
+                identifier = user_profile.get_attribute(self.attr)
+                user_app_data = client.get_user(identifier)
                 if not user_app_data:
                     _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                     user_profile.set_result(action=IAMActions.DISABLE_USER,
@@ -370,7 +371,7 @@ class IAMCommand:
                         action=IAMActions.DISABLE_USER,
                         active=False,
                         iden=user_app_data.id,
-                        email=email,
+                        email=user_profile.get_attribute('email'),
                         username=user_app_data.username,
                         details=user_app_data.full_data
                     )
@@ -398,8 +399,8 @@ class IAMCommand:
                                     skip_reason='Command is disabled.')
         else:
             try:
-                email = user_profile.get_attribute('email')
-                user_app_data = client.get_user(email)
+                identifier = user_profile.get_attribute(self.attr)
+                user_app_data = client.get_user(identifier)
                 if user_app_data:
                     # if user exists, update it
                     user_profile = self.update_user(client, args)
@@ -411,7 +412,7 @@ class IAMCommand:
                         action=IAMActions.CREATE_USER,
                         active=created_user.is_active,
                         iden=created_user.id,
-                        email=email,
+                        email=user_profile.get_attribute('email'),
                         username=created_user.username,
                         details=created_user.full_data
                     )
@@ -439,8 +440,8 @@ class IAMCommand:
                                     skip_reason='Command is disabled.')
         else:
             try:
-                email = user_profile.get_attribute('email')
-                user_app_data = client.get_user(email)
+                identifier = user_profile.get_attribute(self.attr)
+                user_app_data = client.get_user(identifier)
                 if user_app_data:
                     app_profile = user_profile.map_object(self.mapper_out)
 
@@ -452,7 +453,7 @@ class IAMCommand:
                         action=IAMActions.UPDATE_USER,
                         active=updated_user.is_active,
                         iden=updated_user.id,
-                        email=email,
+                        email=user_profile.get_attribute('email'),
                         username=updated_user.username,
                         details=updated_user.full_data
                     )

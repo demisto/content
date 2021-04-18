@@ -29,9 +29,23 @@ TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 CONTENT_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
-# ====== PRODUCTION CONFIGURATION ======
-GCS_MARKET_BUCKET="marketplace-dist"
-SOURCE_PATH="content"
+# ====== BUCKET CONFIGURATION  ======
+if [[ -z "$1" ]]; then
+  GCS_MARKET_BUCKET='marketplace-dist'
+else
+  GCS_MARKET_BUCKET=$1
+fi
+
+if [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
+  SOURCE_PATH="content"
+else
+  # ====== UPDATING TESTING BUCKET ======
+  SOURCE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM/content"
+  echo "Copying production bucket files at: gs://marketplace-dist/content to testing bucket at path: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH ..."
+  gsutil -m cp -r "gs://marketplace-dist/content" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
+  echo "Finished copying successfully."
+  # ====== UPDATING TESTING BUCKET ======
+fi
 
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$CONTENT_FULL_TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$CONTENT_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1

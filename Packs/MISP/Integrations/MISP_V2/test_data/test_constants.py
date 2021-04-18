@@ -326,3 +326,8 @@ response_after_filtering_category_eventid_uuid = [
         "UUID": "57174526-23d8-4895-8c08-4ed1950d210f"
     }
 ]
+
+filtered_recent_attributes = [{'EventID': '2193', 'Timestamp': '1461152936'},
+                              {'EventID': '2193', 'Timestamp': '1461153063'},
+                              {'EventID': '2193', 'Timestamp': '1461153134'}]
+

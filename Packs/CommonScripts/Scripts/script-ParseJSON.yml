@@ -20,7 +20,7 @@ comment: 'Parse a given JSON string "value" to a representative object. Example:
 enabled: true
 args:
 - name: value
-  description: the string value to convert to JSON.
+  description: The string value to convert to JSON.
   required: true
   default: true
 scripttarget: 0

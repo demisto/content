@@ -13,7 +13,7 @@
 <h2>Configure ServiceNow on Demisto</h2>
 <p>To use ServiceNow on Demisto, ensure your user account has the rest_api_explorer and web_service_admin roles. These roles are required to make API calls. However, they may not suffice for viewing records in some tables. Please make sure you have the correct role so you have permissions to work with the relevant table.</p>
 <ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
+<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers `&` Services</strong>.</li>
 <li>Search for ServiceNow.</li>
 <li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
 <ul>

@@ -26,7 +26,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
@@ -51,8 +51,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1215
+          "x": 370,
+          "y": 1400
         }
       }
     note: false
@@ -79,7 +79,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1125,
           "y": 545
         }
       }
@@ -117,7 +117,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 370
         }
       }
@@ -141,7 +141,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "46"
+      - "48"
     scriptarguments:
       ip:
         complex:
@@ -164,7 +164,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1125,
           "y": 690
         }
       }
@@ -224,7 +224,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1055
+          "y": 1230
         }
       }
     note: false
@@ -260,7 +260,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 195
         }
       }
@@ -288,8 +288,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1055
+          "x": 370,
+          "y": 680
         }
       }
     note: false
@@ -323,7 +323,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 865
+          "y": 1040
         }
       }
     note: false
@@ -361,7 +361,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1040
+          "y": 1215
         }
       }
     note: false
@@ -373,6 +373,72 @@ tasks:
     - incidentfield: Affected Entities List
       output:
         simple: ${XMCyber.Entity.entitiesAtRiskList}
+  "48":
+    id: "48"
+    taskid: a2472bc6-e28c-41df-89b6-c148bfd847be
+    type: condition
+    task:
+      id: a2472bc6-e28c-41df-89b6-c148bfd847be
+      version: -1
+      name: Entity Found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Entity Found?
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.Entity.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: a8050408-95b0-4688-84d2-2d46f324c861
+    type: title
+    task:
+      id: a8050408-95b0-4688-84d2-2d46f324c861
+      version: -1
+      name: No Match Found for IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: No Match Found for IP
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -380,9 +446,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1230,
-        "width": 1240,
-        "x": 50,
+        "height": 1415,
+        "width": 1350,
+        "x": 370,
         "y": 50
       }
     }

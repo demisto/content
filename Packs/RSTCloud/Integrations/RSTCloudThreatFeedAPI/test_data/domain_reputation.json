@@ -1,0 +1,52 @@
+{
+   "ioc_value":"thec0de-22249.portmap.io",
+   "fseen":1603584000,
+   "lseen":1604966400,
+   "collect":1605052800,
+   "tags":{
+      "str":[
+         "c2"
+      ],
+      "codes":[
+         8
+      ]
+   },
+   "resolved":{
+      "ip":{
+         "a":[
+            "193.161.193.99"
+         ],
+         "alias":[
+
+         ],
+         "cname":[
+
+         ]
+      },
+      "whois":{
+         "created":"2016-12-28 05:12:55",
+         "updated":"2019-12-26 16:26:24",
+         "expires":"2020-12-28 05:12:55",
+         "age":1414,
+         "registrar":"NameCheap Inc",
+         "registrant":"unknown",
+         "havedata":"true"
+      }
+   },
+   "score":{
+      "total":48,
+      "src":71.3,
+      "tags":0.89,
+      "frequency":0.76
+   },
+   "fp":{
+      "alarm":"false",
+      "descr":""
+   },
+   "threat":[
+      "njrat_rat"
+   ],
+   "id":"a0966302-16b5-3f0d-a6b0-c77e6cba8164",
+   "title":"RST Threat feed. IOC: thec0de-22249.portmap.io",
+   "description":"IOC with tags: c2. Related threats: njrat_rat"
+}

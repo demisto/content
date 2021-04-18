@@ -23,7 +23,7 @@ configuration:
 - display: API Key
   name: apiKey
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: Fetch incidents
   name: isFetch
@@ -517,4 +517,5 @@ script:
       description: Cursor of last retrieved activity for pagination
     description: Get the alerts generated according to given arguments
   isfetch: true
+  dockerimage: demisto/python:2.7.18.15765
 fromversion: 5.0.0

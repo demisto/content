@@ -1,15 +1,16 @@
 id: Google Chronicle Backstory List Alerts - Test
 version: -1
 name: Google Chronicle Backstory List Alerts - Test
-description: This playbook uses the Google Chronicle Backstory integration and tests the various scenarios of the "gcb-list-alerts" command.
+description: This playbook uses the Google Chronicle Backstory integration and tests
+  the various scenarios of the "gcb-list-alerts" command.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ffd315ca-1056-48bf-8dd3-dcb69440e516
+    taskid: 00060997-6032-48da-881e-b1b4f3312e83
     type: start
     task:
-      id: ffd315ca-1056-48bf-8dd3-dcb69440e516
+      id: 00060997-6032-48da-881e-b1b4f3312e83
       version: -1
       name: ""
       iscommand: false
@@ -22,19 +23,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 807.5,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 34f048a0-1324-4714-861e-6ef92d19b341
+    taskid: 02d55739-13b9-40d8-8551-dd32de18db9a
     type: regular
     task:
-      id: 34f048a0-1324-4714-861e-6ef92d19b341
+      id: 02d55739-13b9-40d8-8551-dd32de18db9a
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -59,30 +62,35 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 807.5,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 36a0c0d0-8a93-475a-8292-0a160c8c994b
+    taskid: bc733760-292e-4bd8-8a17-dc990a87b7ef
     type: regular
     task:
-      id: 36a0c0d0-8a93-475a-8292-0a160c8c994b
+      id: bc733760-292e-4bd8-8a17-dc990a87b7ef
       version: -1
       name: Get list of alerts
-      description: List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
-      script: Google Chronicle Backstory|||gcb-list-alerts
+      description: List all the alerts tracked within your enterprise for the specified
+        time range. Both the parsed alerts and their corresponding raw alert logs
+        are returned.
+      script: '|||gcb-list-alerts'
       type: regular
       iscommand: true
-      brand: Google Chronicle Backstory
+      brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "14"
     scriptarguments:
+      alert_type: {}
       end_time: {}
       page_size: {}
       preset_time_range: {}
@@ -99,12 +107,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 2dcb9543-7584-4487-876a-94f55a318d22
+    taskid: ff2abb5b-7e0f-4394-801e-3752de28276f
     type: condition
     task:
-      id: 2dcb9543-7584-4487-876a-94f55a318d22
+      id: ff2abb5b-7e0f-4394-801e-3752de28276f
       version: -1
       name: Verify Result
       type: condition
@@ -174,57 +184,66 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 67031e93-c874-4bb5-8d00-cec33668218f
+    type: regular
+    task:
+      id: 67031e93-c874-4bb5-8d00-cec33668218f
+      version: -1
+      name: Invalid start time argument
+      description: List all the alerts tracked within your enterprise for the specified
+        time range. Both the parsed alerts and their corresponding raw alert logs
+        are returned.
+      script: '|||gcb-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      alert_type: {}
+      end_time: {}
+      page_size: {}
+      preset_time_range: {}
+      severity: {}
+      start_time:
+        simple: "2020"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
           "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: b245ebdf-bb92-40a8-8efa-a237081ba23c
-    type: regular
-    task:
-      id: b245ebdf-bb92-40a8-8efa-a237081ba23c
-      version: -1
-      name: Invalid start time argument
-      description: List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
-      script: Google Chronicle Backstory|||gcb-list-alerts
-      type: regular
-      iscommand: true
-      brand: Google Chronicle Backstory
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      end_time: {}
-      page_size: {}
-      preset_time_range: {}
-      severity: {}
-      start_time:
-        simple: 2020-01-01T00:00:00
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: c536235a-73d7-40d3-8d4d-ceb6750e1ffe
+    taskid: 4ca3474c-7df2-49ed-8cb4-ce91ebd1c97e
     type: condition
     task:
-      id: c536235a-73d7-40d3-8d4d-ceb6750e1ffe
+      id: 4ca3474c-7df2-49ed-8cb4-ce91ebd1c97e
       version: -1
       name: Is Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -239,30 +258,35 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 592.5,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 50fa9767-adc9-4c2c-827c-624aa8781bf8
+    taskid: 150f985f-6f79-49a9-8bb1-94593dbcc63d
     type: regular
     task:
-      id: 50fa9767-adc9-4c2c-827c-624aa8781bf8
+      id: 150f985f-6f79-49a9-8bb1-94593dbcc63d
       version: -1
       name: Invalid page size argument
-      description: List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
-      script: Google Chronicle Backstory|||gcb-list-alerts
+      description: List all the alerts tracked within your enterprise for the specified
+        time range. Both the parsed alerts and their corresponding raw alert logs
+        are returned.
+      script: '|||gcb-list-alerts'
       type: regular
       iscommand: true
-      brand: Google Chronicle Backstory
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
+      alert_type: {}
       end_time: {}
       page_size:
         simple: 1a
@@ -274,22 +298,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
+          "x": 1022.5,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 1476195e-6f4b-4e6c-89c2-e554458e2839
+    taskid: e6a03639-fb52-4d22-87b6-7099a98b83de
     type: condition
     task:
-      id: 1476195e-6f4b-4e6c-89c2-e554458e2839
+      id: e6a03639-fb52-4d22-87b6-7099a98b83de
       version: -1
       name: Is Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -304,30 +332,35 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 545
+          "x": 1022.5,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 7e681bd6-fc02-4c64-8cc3-a136bddbac12
+    taskid: 21c43fb9-64da-4d7e-8745-bc5ac25cb8be
     type: regular
     task:
-      id: 7e681bd6-fc02-4c64-8cc3-a136bddbac12
+      id: 21c43fb9-64da-4d7e-8745-bc5ac25cb8be
       version: -1
       name: Invalid preset time range argument
-      description: List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
-      script: Google Chronicle Backstory|||gcb-list-alerts
+      description: List all the alerts tracked within your enterprise for the specified
+        time range. Both the parsed alerts and their corresponding raw alert logs
+        are returned.
+      script: '|||gcb-list-alerts'
       type: regular
       iscommand: true
-      brand: Google Chronicle Backstory
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
+      alert_type: {}
       end_time: {}
       page_size: {}
       preset_time_range:
@@ -339,22 +372,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 370
+          "x": 1452.5,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 1727fb71-c5d8-4a6b-83b9-752e5c22c348
+    taskid: b6d473b3-1017-4121-8303-e85a1383ecd7
     type: condition
     task:
-      id: 1727fb71-c5d8-4a6b-83b9-752e5c22c348
+      id: b6d473b3-1017-4121-8303-e85a1383ecd7
       version: -1
       name: Is Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -369,19 +406,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 545
+          "x": 1452.5,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: d40ca4b9-0936-4650-83ce-a53ca8af148e
+    taskid: 2292796a-95eb-43c5-8aa9-58a1e588e319
     type: regular
     task:
-      id: d40ca4b9-0936-4650-83ce-a53ca8af148e
+      id: 2292796a-95eb-43c5-8aa9-58a1e588e319
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -403,19 +442,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 720
+          "x": 592.5,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: f3c994bc-2065-421c-87f1-0e776fe2da63
+    taskid: 12db3d9d-d533-4813-88ec-ad2c3b583fae
     type: regular
     task:
-      id: f3c994bc-2065-421c-87f1-0e776fe2da63
+      id: 12db3d9d-d533-4813-88ec-ad2c3b583fae
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -437,19 +478,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 895
+          "x": 592.5,
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 11e71dbb-7013-43f4-89fa-a33d869a3301
+    taskid: a29f0662-3c78-4a0c-8eef-5696c558ea27
     type: title
     task:
-      id: 11e71dbb-7013-43f4-89fa-a33d869a3301
+      id: a29f0662-3c78-4a0c-8eef-5696c558ea27
       version: -1
       name: Done
       type: title
@@ -460,13 +503,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1070
+          "x": 592.5,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 94e38697-4abe-40fa-8a9a-a4bf219a68ed
+    type: condition
+    task:
+      id: 94e38697-4abe-40fa-8a9a-a4bf219a68ed
+      version: -1
+      name: Is response received from chronicle?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Alert
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -477,8 +559,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 1670,
+        "height": 1260,
+        "width": 1782.5,
         "x": 50,
         "y": 50
       }

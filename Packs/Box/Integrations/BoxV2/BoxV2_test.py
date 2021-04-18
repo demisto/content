@@ -20,6 +20,7 @@ class TestBox:
     """
     Test class to handle the client.
     """
+
     def __init__(self, mocker):
         test_params = {'credentials_json': str('{"boxAppSettings": {"clientID": '
                                                '"1234", '
@@ -556,7 +557,7 @@ def test_list_users_command(requests_mock, mocker):
     assert response.outputs == mock_response.get('entries')
 
 
-def test_upload_file_command(requests_mock, mocker):
+def test_upload_file_command_with_chunks(requests_mock, mocker):
     """
     Tests the box-upload function and command.
 
@@ -634,7 +635,8 @@ def test_upload_file_command(requests_mock, mocker):
 
     # Validate request to open a session
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
-    assert requests_mock.request_history[0].text == '{"file_name": "test_user.png", "file_size": 105000000, "folder_id": "100"}'
+    assert requests_mock.request_history[0].text == '{"file_name": "test_user.png", "file_size": 105000000, ' \
+                                                    '"folder_id": "100"}'
 
     # Validate first PUT request
     assert requests_mock.request_history[1].headers.get('Authorization') == "Bearer JWT_TOKEN"
@@ -659,6 +661,56 @@ def test_upload_file_command(requests_mock, mocker):
     assert response.outputs_prefix == 'Box.File'
     assert response.outputs_key_field == 'id'
     assert response.outputs == session_commit_response.get('entities')
+
+
+def test_test_upload_file_command_small_file(requests_mock, mocker):
+    """
+    Tests the box-upload function and command for a small file (i.e with size_size < maximum_chunk_size) .
+
+    Configures multiple requests_mock instances to generate the appropriate
+    file API responses which are loaded from local JSON files. Checks
+    the output of the command function with the expected output.
+
+    Given: A file entry ID, file name and destination folder.
+    When: Executing the box-upload-file command.
+    Then: Return the result where the outputs match the mocked response.
+
+    """
+    from BoxV2 import upload_file_command
+    from unittest import mock
+
+    # First need to mock the getFilePath object so we can replace with a test file.
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/test_image.jpg'})
+
+    mock_obj = mock.Mock()
+    mock_obj.st_size = 10000000  # i.e smaller than 20000000
+    mocker.patch('os.stat', return_value=mock_obj)
+
+    session_response = {'entities': {"name": "test_user.png", "parent": {"id": "100"}}}
+
+    # Mock for the request to open an upload session.
+    requests_mock.post('https://upload.box.com/api/2.0/files/content', json=session_response)
+
+    client = TestBox(mocker).client
+
+    args = {
+        'entry_id': '123@123',
+        'file_name': 'test_user.png',
+        'folder_id': '100',
+        'as_user': '0'
+    }
+
+    response = upload_file_command(client, args)
+
+    # Validate request to open a session
+    assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
+    assert b'"parent": {"id": "100"}' in requests_mock.request_history[0]._request.body
+
+    assert len(requests_mock.request_history) == 1
+
+    assert response.outputs_prefix == 'Box.File'
+    assert response.outputs_key_field == 'id'
+    assert response.outputs == session_response.get('entities')
 
 
 def test_get_current_user_command(requests_mock, mocker):
@@ -1003,5 +1055,48 @@ def test_list_enterprise_events_command(requests_mock, mocker):
     assert requests_mock.request_history[0].headers.get('As-User') == "sample_current_user"
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
     assert requests_mock.request_history[0].qs.get('created_after')[0] > '2020-12-12t09:51:28'
+
+    assert len(response.outputs) > 0
+
+
+def test_move_folder_command(requests_mock, mocker):
+    """
+     Tests the box-move-folder function and command.
+
+     Configures a requests_mock instance to generate the appropriate
+     user API response which is loaded from a local JSON file. Checks
+     the output of the command function with the expected output.
+     Verifies:
+      - The request is being made with the correct owned_by body.
+      - The response is a folder response object.
+      - Length of returned events are greater than 0.
+
+     Given: A valid to user ID and a valid from user id.
+     When: Executing the box-move-folder command.
+     Then: Return the result where the outputs match the mocked response.
+
+     """
+    from BoxV2 import move_folder_command
+
+    client = TestBox(mocker).client
+
+    args = {
+        'from_user_id': '123456',
+        'to_user_id': '7890',
+        'notify': 'true'
+    }
+    mock_response = util_load_json('test_data/get_folder.json')
+    requests_mock.put(
+        'https://api.box.com/2.0/users/123456/folders/0/',
+        json=mock_response
+    )
+
+    response = move_folder_command(client, args)
+
+    assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
+    assert requests_mock.request_history[0].json().get('owned_by').get('id') == '7890'
+    assert response.outputs_prefix == 'Box.Folder'
+    assert response.outputs_key_field == 'id'
+    assert response.outputs == mock_response
 
     assert len(response.outputs) > 0

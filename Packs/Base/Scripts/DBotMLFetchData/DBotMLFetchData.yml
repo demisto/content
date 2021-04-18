@@ -158,3 +158,4 @@ tests:
 - No tests
 deprecated: true
 fromversion: 5.0.0
+runonce: true

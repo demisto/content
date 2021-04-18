@@ -45,7 +45,7 @@ def main():
     if users_list:
         hr = 'Out of office Team members\n' + tableToMarkdown('', users_list)
     else:
-        hr = 'Out of office Team members\nNo analysts is out of office today.'
+        hr = 'Out of office Team members\nNo team members are out of office today.'
 
     return_results({
         'Type': entryTypes['note'],

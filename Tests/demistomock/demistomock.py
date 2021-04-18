@@ -1044,3 +1044,60 @@ def getModules():
 
 def get_incidents():
     return {}
+
+
+def internalHttpRequest(method, uri, body=None):
+    """Run an internal HTTP request to the XSOAR server. The request runs with the permissions of the
+    executing user, when a command is being executed manually (such as via the War Room or when browsing a widget).
+    When run via a playbook, will run with a readonly user with limited permissions isolated to the current incident only.
+    Available for both Integrations and Scripts starting from Server version 6.1.
+
+    Args:
+        method (str): HTTP method such as: GET or POST
+        uri (str): Server uri to request. For example: "/contentpacks/marketplace/HelloWorld".
+        body Optional[str]: Optional body for a POST request. Defaults to None.
+
+    Returns:
+        dict: dict cotainnig the following fields:
+        * statusCode (int): HTTP status code such as 200
+        * status (str): HTTP status line such as: "200 OK"
+        * body (str): response body
+        * headers (dict): dict of headers. Each key is a header name with an array of values.
+          For example: `"headers": {"Content-Type": ["text/plain; charset=utf-8"]}`
+    """
+    return {
+        "statusCode": 404,
+        "status": "404 Not Found",
+        "body": "This is a mock. Your request was not found.",
+        "headers": {
+            "X-Xss-Protection": [
+                "1; mode=block"
+            ],
+            "X-Content-Type-Options": [
+                "nosniff"
+            ],
+            "Strict-Transport-Security": [
+                "max-age=10886400000000000; includeSubDomains"
+            ],
+            "Date": [
+                "Wed, 27 Jan 2021 17:11:16 GMT"
+            ],
+            "X-Frame-Options": [
+                "DENY"
+            ],
+            "Content-Type": [
+                "text/plain; charset=utf-8"
+            ]
+        },
+    }
+
+
+def parentEntry():
+    """
+    Retrieves information regarding the war room entry from which the method runs
+
+    Returns:
+      dict: information regarding the current war room entry
+
+    """
+    return {}

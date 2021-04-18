@@ -167,8 +167,8 @@ Match the IP address to the assigned Tufin Zone
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tufin.Zones.ID | string | Tufin Zone ID | 
-| Tufin.Zones.Name | unknown | Tufin Zone Name | 
+| Tufin.Zone.ID | string | Tufin Zone ID | 
+| Tufin.Zone.Name | unknown | Tufin Zone Name | 
 
 
 ##### Command Example
@@ -233,11 +233,11 @@ Search SecureTrack devices
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tufin.Devices.ID | unknown | Device ID | 
-| Tufin.Devices.Name | unknown | Device name | 
-| Tufin.Devices.Vendor | unknown | Device vendor | 
-| Tufin.Devices.Model | unknown | Device model | 
-| Tufin.Devices.IP | unknown | Device IP | 
+| Tufin.Device.ID | unknown | Device ID | 
+| Tufin.Device.Name | unknown | Device name | 
+| Tufin.Device.Vendor | unknown | Device vendor | 
+| Tufin.Device.Model | unknown | Device model | 
+| Tufin.Device.IP | unknown | Device IP | 
 
 
 ##### Command Example
@@ -264,14 +264,14 @@ Get information on a SecureChange Ticket (Ticket ID retrieved from Tufin UI)
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tufin.Tickets.ID | unknown | Ticket ID | 
-| Tufin.Tickets.Subject | unknown | Ticket subject | 
-| Tufin.Tickets.Priority | unknown | Ticket priority | 
-| Tufin.Tickets.Status | unknown | Ticket status | 
-| Tufin.Tickets.Requester | unknown | Ticket requester | 
-| Tufin.Tickets.Workflow.ID | unknown | Ticket workflow ID | 
-| Tufin.Tickets.Workflow.Name | unknown | Ticket workflow name | 
-| Tufin.Tickets.CurrentStep | unknown | Ticket current step | 
+| Tufin.Ticket.ID | unknown | Ticket ID | 
+| Tufin.Ticket.Subject | unknown | Ticket subject | 
+| Tufin.Ticket.Priority | unknown | Ticket priority | 
+| Tufin.Ticket.Status | unknown | Ticket status | 
+| Tufin.Ticket.Requester | unknown | Ticket requester | 
+| Tufin.Ticket.WorkflowID | unknown | Ticket workflow ID | 
+| Tufin.Ticket.WorkflowName | unknown | Ticket workflow name | 
+| Tufin.Ticket.CurrentStep | unknown | Ticket current step | 
 
 
 ##### Command Example
@@ -298,13 +298,13 @@ Search SecureApp applications
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tufin.Apps.ID | unknown | Application ID | 
-| Tufin.Apps.Name | unknown | Application name | 
-| Tufin.Apps.Status | unknown | Application status | 
-| Tufin.Apps.Decommissioned | unknown | Is the application decommissioned | 
-| Tufin.Apps.OwnerID | unknown | Application owner ID | 
-| Tufin.Apps.OwnerName | unknown | Application owner name | 
-| Tufin.Apps.Comments | unknown | Application comments | 
+| Tufin.App.ID | unknown | Application ID | 
+| Tufin.App.Name | unknown | Application name | 
+| Tufin.App.Status | unknown | Application status | 
+| Tufin.App.Decommissioned | unknown | Is the application decommissioned | 
+| Tufin.App.OwnerID | unknown | Application owner ID | 
+| Tufin.App.OwnerName | unknown | Application owner name | 
+| Tufin.App.Comments | unknown | Application comments | 
 
 
 ##### Command Example
@@ -331,19 +331,19 @@ Get SecureApp application connections
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tufin.Apps.Connections.ID | unknown | Connection ID | 
-| Tufin.Apps.Connections.Name | unknown | Connection name | 
-| Tufin.Apps.Connections.Status | unknown | Connection status | 
-| Tufin.Apps.Connections.Source.ID | unknown | Connection source ID | 
-| Tufin.Apps.Connections.Source.Type | unknown | Connection source type | 
-| Tufin.Apps.Connections.Source.Name | unknown | Connection source name | 
-| Tufin.Apps.Connections.Destination.ID | unknown | Connection destination ID | 
-| Tufin.Apps.Connections.Destination.Type | unknown | Connection destination type | 
-| Tufin.Apps.Connections.Destination.Name | unknown | Connection destination name | 
-| Tufin.Apps.Connections.Service.ID | unknown | Connection service ID | 
-| Tufin.Apps.Connections.Service.Name | unknown | Connection service name | 
-| Tufin.Apps.Connections.Comment | unknown | Connection comment | 
-| Tufin.Apps.Connections.ApplicationID | unknown | Application ID | 
+| Tufin.AppConnections.ID | unknown | Connection ID | 
+| Tufin.AppConnections.Name | unknown | Connection name | 
+| Tufin.AppConnections.Status | unknown | Connection status | 
+| Tufin.AppConnections.Source.ID | unknown | Connection source ID | 
+| Tufin.AppConnections.Source.Type | unknown | Connection source type | 
+| Tufin.AppConnections.Source.Name | unknown | Connection source name | 
+| Tufin.AppConnections.Destination.ID | unknown | Connection destination ID | 
+| Tufin.AppConnections.Destination.Type | unknown | Connection destination type | 
+| Tufin.AppConnections.Destination.Name | unknown | Connection destination name | 
+| Tufin.AppConnections.Service.ID | unknown | Connection service ID | 
+| Tufin.AppConnections.Service.Name | unknown | Connection service name | 
+| Tufin.AppConnections.Comment | unknown | Connection comment | 
+| Tufin.AppConnections.ApplicationID | unknown | Application ID | 
 
 
 ##### Command Example

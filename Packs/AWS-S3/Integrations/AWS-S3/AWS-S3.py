@@ -298,16 +298,18 @@ def list_objects_command(args):
     )
     data = []
     response = client.list_objects(Bucket=args.get('bucket'))
-    for key in response['Contents']:
-        data.append({
-            'Key': key['Key'],
-            'Size': convert_size(key['Size']),
-            'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
-        })
-
-    ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
-    human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
-    return_outputs(human_readable, ec)
+    if response.get('Contents', None):
+        for key in response['Contents']:
+            data.append({
+                'Key': key['Key'],
+                'Size': convert_size(key['Size']),
+                'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
+            })
+        ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
+        human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
+        return_outputs(human_readable, ec)
+    else:
+        return_outputs("The {} bucket contains no objects.".format(args.get('bucket')))
 
 
 def get_file_path(file_id):

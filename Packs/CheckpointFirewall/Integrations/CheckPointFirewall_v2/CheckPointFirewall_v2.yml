@@ -16,7 +16,7 @@ configuration:
   name: domain
   required: false
   type: 0
-- display: username
+- display: Username
   name: username
   required: true
   type: 9
@@ -2142,7 +2142,7 @@ script:
       description: The UID of the revision.
       type: String
     description: Retrieve the details of Checkpoint packages.
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
   longRunning: false

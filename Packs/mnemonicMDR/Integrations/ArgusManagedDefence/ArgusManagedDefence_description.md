@@ -16,6 +16,10 @@ At the bottom of this page you may generate API keys. You will need to know the 
 Argus' API is quite flexible in regards to parsing time. For a comprehensive, up-to-date guide, please have a look here: 
 https://docs.mnemonic.no/display/public/API/Using+Argus+Search+APIs+-+Time+fields
 
+#### Sort By
+In same cases you may want to sort the results to some sort of criteria. This could be tags such as `sortBy=timestamp` and may be nested. 
+For full documentation, have a look here: https://docs.mnemonic.no/display/public/API/General+integration+guide#Generalintegrationguide-Limit,offsetandsorting
+
 
 ### Parsing arguments
 #### Lists

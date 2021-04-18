@@ -6,8 +6,10 @@ display: VirusTotal
 fromversion: 5.5.0
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAYCAYAAAAxkDmIAAAH2ElEQVR42u1aaYxTVRRG3ABRdBTXURRRIChBJjPttPPazsgiCLLERpa277WdGWAksqiAuEFUMi4xBqLRgIhAJCCSoIxKDEgUoYJLWJREfxhj0CBCEAiME+T4fW9u67PzynQ6ncVJX3LT9r77zj3nfPd+95zz2snnl+5uQ2KeCpGScMs0LWJ+HvME5ZZOuav1L6chNwOAr5NB9pSjVTSzlecAbhdXQUhucodltwkyATHkJNoa9K0CQKszbXj+cy2aA7hdXO4Jcj3oeqcXIAOUOoCzqNnsoMt92MUE+M8cwO1hJwfkOndEthNkBcxrBZVyYabyig3x5wBuZ5crKFe7wrLN8y/IbxDklgLYZUghGKOmRJcNZJGUDGPIk94KjDNknnpuNn+jf3xb+Kk4LMOh9ybok7JBt/XFUclrPa3kPJcuz9MvWkiKUg7TwtITFL01sZMNeXPECLm4JQAuNORayD/qmyqCOafYjvHXjymdJgIDKtmHz3eHzjBlP9EWAEPX6WUPilBvtrivvJWqD7pq+O0ol/x0ZWKRP+SJyEvOoPTPFGD4KUa9NEPGnhscv+RhBW627OS3fYZ0aQmKJkuYABuyhUo2uG9IBA6knN8cE+Ua08G6DMAzoxAU9m4LgItgD2wbTwYB490PwH9UOn7APne52T+mKT5DYLqnbBr8EJSRmQKMuT/zTTE35ejGV9QkuQKK13hV2sPIGnTdLdsAa7rcDbo7C+Y4iWf6JSuN5z/mAgCoS+O9lOcFvTvKATivBdLZGZDBMFDD4uzqMOQ26D4LbSFpkqyE5uXuaEBrk2QQGMFDe639GOvgrsJzTwGsAGX6/XJ+ikUao2Mx/ws2fujHRcpjBkfLXNh77wDUIBL3A9KHeqMdoL9cIXOMW9mSl7A5LDdC1j1kMezQ+YiXokxzMwaYl2OyXIaH3ifAKldeOzAol2QT4ILR0g1zfEd6AyCPWO/BiL4EHqv7rDskpZazeyUMSYzvgyME3/dhrrOQtQLfj5dW1VOnD06AQwxSPO69Z5UPR1+Evl3Uk85Tc17q1pkiknLr7Va61RWV29gB0HFvl9LnZWs/9FwAOSe9uKdFlSz6MSrfQleHYqNl1K0kYqlBqDmLQzLK55MLeJ7j/inKUccAPzn+IOOYjAFOGByWDXGQ+Z192QJYnT/PqnM4Zg3qoPCjSuG93JnnAhjz7FV5N4H8lM6G8xZSV+6glADrstsKMMbMpC6UVxKSccVgGMxn4Pdy7qI0AaaOFQCTwJ2gHc6wDAYLDOXRp2zab24gpJMAvBrjfjX1R3yBMc/hdzVZgxuKdQr83sSYA3KDjAHw/Wel5/JmAcyLzsXD6+gIKk3qpnJZBLgABtSx0RHsI9BQ9Eul8NPsawxgzGcbrGlwdro7GHLeKTWPBPtaQDoAY9d1wfdv2AcGmmMdjl15A+4dUXQ8xhLcxuhb+HXYf8RD/iBDLm+QgUSkUsUuH8X7MgY4nwDrspZKseH7Eq6sbAFMI6DUdnNFItRXyjpBb2cA+mlXVO5gX2MUzR3gDojWHIB5VlI25j0KmUtwNIxgcNcUgHHu94Hdf0FGbZLuuDAeRSXaCtnzLQDvIsCk5VRTcXEgRXORWYgBGRWfHzYLYHUmmRRNB8K51aSDbBc6XAho1LnyvaLOF9UK3cz50gWYZ3VzAGYtADavJ5twfhV7HGQA5auS7ukAjBRpIHXBvH8giOuVHNihf4tazM80BjDHQ6cgFvsO6HEcTdBq2aA3barJGGB1Rmyk4zVSikWhbAPMAMaNsXDM36SuEgCmghud91sCYAYwPAYSAFsuHhW4NxftCwZcar7H0gEY8voz4EM7DXCSd3DnBFuFZEZjAGPMEGYZ0OEYCzy0D323Q0ZQxUSZ7WCmDazI0Mlq5y5o6VIllN0IpTnXXg30ht+HSI9ZBHidTQC5LwFw6kraWzyX6Y80KToPdv9iAqbLxORqIe79nqwr+nab44My3DoeTPIwixcsHSenlxkCrAodumxOgKvL461Ri8ackz2ktoiK2OFY9mcB4KmsLnGMAwEd7LkV3x9g/sq54ETrGTwe94cRCAaXpFjMt00tkMVNiKJfUVHufkdISgr80gPxQV/IWK1y5p3Fs6SrBeCt9DcjfzBnPnbyXUMqpQd0n6BA+4p5L2Mfp5kn871BBhSt+aUnq0oWcOe01ssGFiSg3CHLkTAsBcBryqpMQ+ZZougf+BzTGruaNymOxqszrE6t/gOQccpDxxoyUjl6gwLmBNphtFrI5SLYY1s5qw8Q91AfBmWJ/H6iXMXdRRDir03RzngJbkT2JVM30ypSMfViYAmZZ5grq1pETOlUi3tHKAuyP6Fe/LQAHKMe8OMY+0BnHOgDq1WBe5opR2u/TWJeCCNms2LDHWQ3hjTmAXUxvYpH4aw2wXEzCyeoXNUGZNIcjK+B/JXMJ+/kMaRLiFUvRLu94pUnd1Smo+91vtdmnsk8mrSbssiPXUZ9WBFLDuJYsoReiykLn8tgX7QoJFfayWF0jHmXYv5VzIVZqYsvfObAwGQNdH+VjMCIWoPe0HesxS9+6oHjtbft60Ie/lxhZmoSkgD7c68LO8oL/7DsUDv3sBMcnnvh30GuQpTfGCSQ+xlw4PtP2PorSCm5v+x0hD/dGdY/3cUj2Nyf7v73l/m3WV125v422zGvfwBqKBTHeNI1tAAAAABJRU5ErkJggg==
-description: Analyze suspicious hashes, URLs, domains and IP addresses
+description: VirusTotal has been updated to VirusTotal (API v3). Please use the updated
+  version instead. Analyze suspicious hashes, URLs, domains and IP addresses.
 detaileddescription: |-
+  VirusTotal has been updated to VirusTotal (API v3). Please use the updated version instead.
   ## Get a VirusTotal API Key
   To use this integration, you need a VirusTotal API key.
   1. Log in to your VirusTotal console.
@@ -1040,6 +1042,7 @@ script:
       default: true
       description: A CSV list of hashes of the file to query. Supports MD5, SHA1,
         and SHA256.
+      isArray: false
     - name: long
       auto: PREDEFINED
       predefined:
@@ -1183,7 +1186,8 @@ script:
     - name: url
       required: true
       default: true
-      description: A comma-seperated list of URLs to check. This command will not work properly on URLs containing commas.
+      description: A comma-seperated list of URLs to check. This command will not
+        work properly on URLs containing commas.
       isArray: true
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,
@@ -1400,4 +1404,4 @@ script:
     description: Private API. Retrieves comments for a given resource.
   runonce: false
 tests:
- -  virusTotal-test-playbook
+- virusTotal-test-playbook

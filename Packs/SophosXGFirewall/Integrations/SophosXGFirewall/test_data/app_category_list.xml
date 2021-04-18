@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Conferencing</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Conferencing</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Desktop Mail</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Desktop Mail</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Download Applications</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Database Applications</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>E-commerce</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>E-commerce</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>File Transfer</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>File Transfer</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Gaming</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Gaming Sites and Applications</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>General Business</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>General Business</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>General Internet</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>General Internet</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Industrial Control System</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Industrial Control System</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Infrastructure</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Infrastructure</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Instant Messenger</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Instant Messenger</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Mobile Applications</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Mobile Applications</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Network Services</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Network Services</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>P2P</Name>
+    <QoSPolicy>policy</QoSPolicy>
+    <BandwidthUsageType>Individual</BandwidthUsageType>
+    <Description>P2P Applications</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Proxy and Tunnel</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Proxy and Tunnel</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Remote Access</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Remote Access</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Social Networking</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Social Networking</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Software Update</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Software Update</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Sophos Applications</Name>
+    <QoSPolicy>policy</QoSPolicy>
+    <BandwidthUsageType>Individual</BandwidthUsageType>
+    <Description>Sophos Applications</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Storage and Backup</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Storage and Backup</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Streaming Media</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Streaming Media</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>SyncAppCtl Discovered</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>SyncAppCtl Discovered</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>System Applications</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>System Applications</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>VoIP</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>VOIP</Description>
+  </ApplicationFilterCategory>
+  <ApplicationFilterCategory transactionid="">
+    <Name>Web Mail</Name>
+    <QoSPolicy>None</QoSPolicy>
+    <BandwidthUsageType/>
+    <Description>Web Mail</Description>
+  </ApplicationFilterCategory>
+</Response>

@@ -1,4 +1,5 @@
 {
+    "description": "This template contains layouts and widgets to be used in Indicator Quick Views and Summaries. Besides general information Cyren Threat InDepth provides detailed information and relationship information on each indicator.",
     "group": "indicator",
     "id": "Cyren Threat InDepth Indicator Template",
     "indicatorsDetails": {
@@ -121,6 +122,17 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "cyrencountrycode",
+                                "height": 53,
+                                "id": "fd2cca60-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "listId": "iufi8jtdew-41025c50-4f6f-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "cyrenipclass",
                                 "height": 53,
@@ -131,12 +143,23 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "cyrenipintensity",
                                 "height": 53,
                                 "id": "1053e5b0-4f6f-11eb-9734-39b78acb9fd7",
                                 "index": 1,
                                 "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyrencountryname",
+                                "height": 53,
+                                "id": "3a379770-66ce-11eb-964b-b5485262f529",
+                                "index": 3,
+                                "listId": "iufi8jtdew-41025c50-4f6f-11eb-9734-39b78acb9fd7",
                                 "sectionItemType": "field",
                                 "startCol": 1
                             },
@@ -154,11 +177,11 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 3,
-                                "fieldId": "cyrencountrycode",
+                                "fieldId": "cyrencityname",
                                 "height": 53,
-                                "id": "fd2cca60-4f6e-11eb-9734-39b78acb9fd7",
-                                "index": 1,
-                                "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "id": "327e6f20-8629-11eb-b221-111177b1f67f",
+                                "index": 3,
+                                "listId": "iufi8jtdew-41025c50-4f6f-11eb-9734-39b78acb9fd7",
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -170,6 +193,15 @@
                                 "id": "f1eb5220-4f6e-11eb-9734-39b78acb9fd7",
                                 "index": 0,
                                 "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "cyrengeolocation",
+                                "height": 53,
+                                "id": "3f26a350-8629-11eb-b221-111177b1f67f",
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 3
                             }
@@ -479,9 +511,9 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "malwarefamily",
-                                "height": 22,
-                                "id": "55ea76a0-4f71-11eb-9734-39b78acb9fd7",
+                                "fieldId": "cyrenmalwarefamily",
+                                "height": 53,
+                                "id": "1fa56040-66ce-11eb-964b-b5485262f529",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -610,7 +642,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
                         "items": [
@@ -628,7 +660,7 @@
                                 "fieldId": "cyrenobjecttype",
                                 "height": 22,
                                 "id": "301b65a0-4f72-11eb-9734-39b78acb9fd7",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -637,7 +669,7 @@
                                 "fieldId": "cyrenprotocol",
                                 "height": 22,
                                 "id": "350a0fd0-4f72-11eb-9734-39b78acb9fd7",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -646,7 +678,7 @@
                                 "fieldId": "cyrenport",
                                 "height": 22,
                                 "id": "36882450-4f72-11eb-9734-39b78acb9fd7",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -655,7 +687,18 @@
                                 "fieldId": "cyrenipclass",
                                 "height": 22,
                                 "id": "3330bbf0-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyrencountryname",
+                                "height": 22,
+                                "id": "4489a6a0-66ce-11eb-964b-b5485262f529",
                                 "index": 5,
+                                "listId": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -678,6 +721,24 @@
                                 "listId": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrencityname",
+                                "height": 22,
+                                "id": "8be16e00-8629-11eb-b221-111177b1f67f",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrengeolocation",
+                                "height": 22,
+                                "id": "8e9c6f50-8629-11eb-b221-111177b1f67f",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -689,6 +750,25 @@
                         "w": 1,
                         "x": 0,
                         "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "i9sfyzkmx9-9922ac60-67b5-11eb-9ff8-ff9166c6bf9f",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren Indicator Relationships",
+                        "query": "CyrenThreatInDepthRelatedWidgetQuick",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
                     }
                 ],
                 "type": "custom"
@@ -830,6 +910,25 @@
                         "w": 1,
                         "x": 0,
                         "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "mnedsjopmn-b1320940-67b5-11eb-9ff8-ff9166c6bf9f",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren Indicator Relationships",
+                        "query": "CyrenThreatInDepthRelatedWidgetQuick",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
                     }
                 ],
                 "type": "custom"
@@ -927,9 +1026,9 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "malwarefamily",
+                                "fieldId": "cyrenmalwarefamily",
                                 "height": 22,
-                                "id": "6b138700-4f72-11eb-9734-39b78acb9fd7",
+                                "id": "2635faa0-66ce-11eb-964b-b5485262f529",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -944,6 +1043,25 @@
                         "w": 1,
                         "x": 0,
                         "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "4hotcwypyz-cde0dee0-67b5-11eb-9ff8-ff9166c6bf9f",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren Indicator Relationships",
+                        "query": "CyrenThreatInDepthRelatedWidgetQuick",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
                     }
                 ],
                 "type": "custom"
@@ -953,6 +1071,5 @@
     "name": "Cyren Threat InDepth Indicator Template",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": "This template contains layouts and widgets to be used in Indicator Quick Views and Summaries. Besides general information Cyren Threat InDepth provides detailed information and relationship information on each indicator."
+    "fromVersion": "6.0.0"
 }

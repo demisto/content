@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <IPHostGroup transactionid="">
+    <Name>ip_hosts</Name>
+    <Description/>
+    <HostList>
+      <Host>iphost1</Host>
+    </HostList>
+    <IPFamily>IPv4</IPFamily>
+  </IPHostGroup>
+  <IPHostGroup transactionid="">
+    <Name>forunitest2</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+  </IPHostGroup>
+</Response>

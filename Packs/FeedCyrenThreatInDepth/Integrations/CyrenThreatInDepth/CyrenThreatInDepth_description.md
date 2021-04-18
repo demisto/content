@@ -2,7 +2,6 @@
 
 To configure your instance of a Cyren Threat InDepth indicator feed, please provide the following:
 
-* API URL: Should be pre-filled out for you, but in case you are being told to use a different one
 * API Token: Supply your API JWT token that has been issued to you
 * Feed name: Choose from the available options to ingest the type of data you are interested in
   * Keep in mind that the API token issued to you only corresponds to one of the data types each
@@ -19,5 +18,7 @@ is being stored and updated for you in the integration instance context. The int
 "Maximum number of indicators" parameter as the count in each request. It is recommended to set it to
 a high enough value so that you get all the feed indicators for maximum product value, to handle bursts
 etc.(the value cannot be higher than 100.000 and it will be capped at that value if you set a higher one).
+
+In case you want to want to reset the offset value, use the `cyren-threat-indepth-reset-client-offset` command.
 
 Please head over to [https://www.cyren.com/threat-indepth-demo](https://www.cyren.com/threat-indepth-demo) to get started!

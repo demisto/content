@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IP"
+    ],
+    "caseInsensitive": true,
+    "cliName": "cyrencityname",
+    "closeForm": false,
+    "content": true,
+    "description": "Associated city name by Cyren Threat InDepth Intelligence",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_cyrencityname",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren City Name",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

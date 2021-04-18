@@ -120,3 +120,6 @@ ignore=IN126
 
 [file:integration-ProtectWise_3_1_0.yml]
 ignore=IN126
+
+[file:integration-VirusTotal.yml]
+ignore=IN135

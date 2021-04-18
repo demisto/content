@@ -1,0 +1,6 @@
+!smb-directory-create path=Shared/Tests
+!smb-directory-list path=Shared
+!smb-upload file_path=Shared/Tests/Test.txt content="This is a test"
+!smb-download file_path=Shared/Tests/Test.txt
+!smb-file-remove file_path=Shared/Tests/Test.txt
+!smb-directory-remove path=Shared/Tests

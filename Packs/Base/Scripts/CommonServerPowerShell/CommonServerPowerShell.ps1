@@ -545,14 +545,20 @@ End {
                 foreach ($raw_value in $raw_values)
                 {
                     if ($null -ne $raw_value)
-                    {
-                        if ($raw_value -Is [System.Array] -Or $raw_value -Is [Collections.IDictionary] -Or $raw_value -Is [PSCustomObject])
+                    {   try{
+                            <# PWSH Type Code of numbers are 5 to 15. So we will handle them with ToString
+                            and the rest are Json Serializble #>
+                            $typeValue = $raw_value.getTypeCode().value__
+                            $is_number = ($typeValue -ge 5 -and $typeValue -le 15)
+                        } catch { $is_number = $false}
+
+                        if ($raw_value -is [string] -or $is_number)
                         {
-                            $value = $raw_value | ConvertTo-Json -Compress -Depth 5
+                            $value = $raw_value.ToString()
                         }
                         else
                         {
-                            $value = $raw_value.ToString()
+                            $value = $raw_value | ConvertTo-Json -Compress -Depth 5
                         }
                     }
                     else
@@ -595,9 +601,26 @@ function ConvertTo-Boolean
   }
 }
 
-function FileResult([string]$file_name, [string]$data, [string]$file_type) {
-    if (!$file_type) {
-        $file_type = [EntryTypes]::file
+<#
+.DESCRIPTION
+Creates a file from the given string data.
+
+.PARAMETER file_name
+The file name to use for the file in then entry result
+
+.PARAMETER data
+String data to use for the file
+
+.PARAMETER is_file_info
+If true will return an entry of  type: [EntryTypes]::entryInfoFile
+
+.OUTPUTS
+Entry object to return to the server. Use $demisto.Results(obj) to actually send the entry to the server.
+#>
+function FileResult([string]$file_name, [string]$data, [bool]$is_file_info) {
+    $file_type = [EntryTypes]::file
+    if ($is_file_info) {
+        $file_type = [EntryTypes]::entryInfoFile
     }
     $temp = $demisto.UniqueFile()
     Out-File -FilePath "$($demisto.Investigation().id)_$temp" -Encoding "utf8" -InputObject $data
@@ -605,7 +628,7 @@ function FileResult([string]$file_name, [string]$data, [string]$file_type) {
     return @{
         "Contents" = ''
         "ContentsFormat" = [EntryFormats]::text.ToString()
-        "Type" = 3
+        "Type" = $file_type
         "File" = $file_name
         "FileID" = $temp
     }
@@ -618,4 +641,57 @@ function DemistoVersionGreaterEqualThen([string]$version) {
     $version = (Select-string -Pattern $version_pattern -InputObject $version).Matches[0].Value
 
     return [version]::Parse($demisto_version) -ge  [version]::Parse($version)
+}
+
+function ParseDateRange{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    Param (
+        [parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $date_str
+    )
+    $now = $date = Get-Date
+    $number, $unit_name = $date_str.Split()
+    try{
+        $number = -([int]$number)
+    } catch [System.Management.Automation.RuntimeException]{
+        throw "No number given in '$date_str'"
+    }
+    if ($null -eq $unit_name){
+        throw "Time unit not given in '$date_str'"
+    }
+    if (!($unit_name.GetType() -eq [String])) {
+        throw "Too many arguemnts in '$date_str'"
+    }
+    if ($unit_name.Contains("minute")){
+        $date = $date.AddMinutes($number)
+    } elseif ($unit_name.Contains("hour")) {
+        $date = $date.AddHours($number)
+    } elseif ($unit_name.Contains("day")){
+        $date = $date.AddDays($number)
+    } elseif ($unit_name.Contains("week")) {
+        $date = $date.AddDays($number * 7)
+    } elseif ($unit_name.Contains("month")) {
+        $date = $date.AddMonths($number)
+    } elseif ($unit_name.Contains("year")) {
+        $date = $date.AddYears($number)
+    } else {
+        throw "Could not process time unit '$unit_name'. Available are: minute, hour, day, week, month, year."
+    }
+    return $date, $now
+    <#
+    .DESCRIPTION
+    Gets a string represents a date range ("3 day", "2 years" etc) and return the time on the past according to
+    the date range.
+
+    .PARAMETER date_str
+     a date string in a human readable format as "3 days", "5 years".
+     Available units: minute, hour, day, week, month, year.
+
+    .EXAMPLE
+    ParseDateRange("3 days") (current date it 04/01/21)
+    Date(01/01/21)
+    #>
 }

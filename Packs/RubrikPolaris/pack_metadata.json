@@ -1,0 +1,19 @@
+{
+    "name": "RubrikPolaris",
+    "description": "Integration for Rubrik Polaris",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Rubrik",
+    "url": "https://www.rubrik.com/support/",
+    "email": "support@rubrik.com",
+    "created": "2020-12-20T10:47:58Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "drew-russell"
+    ]
+}

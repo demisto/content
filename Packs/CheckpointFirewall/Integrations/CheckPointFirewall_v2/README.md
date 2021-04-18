@@ -23,7 +23,7 @@ Enable sftp on your server Check Point guide to walk you through: https://suppor
 | server | Server URL \(e.g. example.net or 8.8.8.8\) | True |
 | port | Server Port \(e.g. 4434\) | True |
 | domain | Domain (used in Multi Domain Server) | False |
-| username | username | True |
+| username | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 

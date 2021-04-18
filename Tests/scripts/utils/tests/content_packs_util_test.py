@@ -1,13 +1,15 @@
 import json
 import os
+
 import pytest
+
+from Tests.scripts.collect_tests_and_content_packs import get_packs_from_landing_page
+from Tests.scripts.utils.content_packs_util import (is_pack_xsoar_supported,
+                                                    is_pack_deprecated,
+                                                    should_test_content_pack, should_install_content_pack)
 from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT,
                                                    PACKS_DIR,
                                                    PACKS_PACK_META_FILE_NAME)
-
-from Tests.scripts.utils.content_packs_util import (is_pack_xsoar_supported,
-                                                    is_pack_deprecated,
-                                                    should_test_content_pack)
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
@@ -104,3 +106,85 @@ def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_
     # Mocking os.path.join to return the temp path created instead the path in content
     mocker.patch.object(os.path, 'join', return_value=str(pack_metadata_file))
     assert should_test_content_pack(pack_name) == expected
+
+
+@pytest.mark.parametrize("pack_metadata_content, pack_name, expected", [
+    ({PACK_METADATA_SUPPORT: 'partner'}, 'Partner', (True, '')),
+    ({PACK_METADATA_SUPPORT: 'community'}, 'Community', (True, '')),
+    ({PACK_METADATA_SUPPORT: 'xsoar'}, 'NonSupported', (False, 'Pack is either the "NonSupported" pack or the '
+                                                               '"DeprecatedContent" pack.')),
+    ({'hidden': True, PACK_METADATA_SUPPORT: 'xsoar'}, 'CortexXDR', (False, 'Pack is Deprecated')),
+
+    ({PACK_METADATA_SUPPORT: 'xsoar'}, 'ApiModules',
+     (False, "Pack should be ignored as it one of the files to ignore: ['__init__.py', "
+             "'ApiModules', 'NonSupported']"))
+])
+def test_should_install_content_pack(mocker, tmp_path, pack_metadata_content, pack_name, expected):
+    """
+    Given:
+        - Case A: Partner content pack
+        - Case B: Community content pack
+        - Case C: NonSupported content pack
+        - Case D: Deprecated CortexXDR content pack
+        - Case E: ApiModules content pack
+
+    When:
+        - Checking if pack should be installed
+
+    Then:
+        - Case A: Verify pack should be installed
+        - Case B: Verify pack should be installed
+        - Case C: Verify pack should not be installed
+        - Case D: Verify pack should not be installed
+        - Case E: Verify pack should not be installed
+    """
+    # Creating temp dirs
+    pack = tmp_path / PACKS_DIR / pack_name
+    pack.mkdir(parents=True)
+    pack_metadata_file = pack / PACKS_PACK_META_FILE_NAME
+    pack_metadata_file.write_text(json.dumps(pack_metadata_content))
+
+    # Mocking os.path.join to return the temp path created instead the path in content
+    mocker.patch.object(os.path, 'join', return_value=str(pack_metadata_file))
+    assert should_install_content_pack(pack_name) == expected
+
+
+def test_get_packs_from_landing_page(mocker, tmp_path):
+    """
+    Given:
+        The diff output for the landing page sections file
+
+    When:
+        - A pack is modified (added or removed)
+
+    Then:
+        - Ensure that pack is returned by the 'get_packs_from_landing_page' method.
+    """
+    git_diff = '''
+    diff --git a/Tests/Marketplace/landingPage_sections.json b/Tests/Marketplace/landingPage_sections.json
+    index 953a91ed0f..eb96c36117 100644
+    --- a/Tests/Marketplace/landingPage_sections.json
+    +++ b/Tests/Marketplace/landingPage_sections.json
+    @@ -17,7 +17,8 @@
+         "NIST",
+         "GenericWebhook",
+         "GraphQL",
+    -    "GenericSQL"
+    +    "GenericSQL",
+    +    "my test pack"
+       ]'''
+    landing_page_sections_mock = {"description": "description",
+                                  "sections": ["Featured"],
+                                  "Featured": [
+                                      "NIST",
+                                      "GenericWebhook",
+                                      "GraphQL",
+                                      "GenericSQL",
+                                      "my test pack"
+                                  ]}
+    landing_page_sections_file = tmp_path / 'landing_page.json'
+    landing_page_sections_file.write_text(json.dumps(landing_page_sections_mock))
+    mocker.patch('Tests.scripts.collect_tests_and_content_packs.LANDING_PAGE_SECTIONS_JSON_PATH',
+                 landing_page_sections_file)
+    mocker.patch('Tests.scripts.collect_tests_and_content_packs.tools.run_command', return_value=git_diff)
+    assert 'my test pack' in get_packs_from_landing_page('branch_name')

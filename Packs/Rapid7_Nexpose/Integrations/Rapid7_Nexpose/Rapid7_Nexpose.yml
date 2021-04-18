@@ -19,7 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: 2FA token
+- display: The 2FA token
   name: token
   required: false
   type: 0
@@ -601,28 +601,47 @@ script:
       - text
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
+      name: download_immediately
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Generates a new report on given assets according to a template and arguments.
     execution: false
     name: nexpose-create-assets-report
     outputs:
     - contextPath: InfoFile.EntryId
-      description: Entry Id of the report file
+      description: Entry Id of the report file.
       type: string
     - contextPath: InfoFile.Name
-      description: Name of the report file
+      description: Name of the report file.
       type: string
     - contextPath: InfoFile.Extension
-      description: File extension of the report file
+      description: File extension of the report file.
       type: string
     - contextPath: InfoFile.Info
-      description: Info about the report file
+      description: Informatiom about the report file.
       type: string
     - contextPath: InfoFile.Size
-      description: Size of the report file
+      description: Size of the report file (in bytes).
       type: number
     - contextPath: InfoFile.Type
-      description: Type of the report file
+      description: Type of the report file.
+      type: string
+    - contextPath: Nexpose.Report.ID
+      description: The identifier of the report.
+      type: string
+    - contextPath: Nexpose.Report.InstanceID
+      description: The identifier of the report instance.
+      type: string
+    - contextPath: Nexpose.Report.Name
+      description: The report name.
+      type: string
+    - contextPath: Nexpose.Report.Format
+      description: The report format.
       type: string
   - arguments:
     - default: false
@@ -656,6 +675,13 @@ script:
       - text
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
+      name: download_immediately
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Generates a new report on given sites according to a template and arguments.
     execution: false
@@ -678,6 +704,18 @@ script:
       type: number
     - contextPath: InfoFile.Type
       description: Type of the report file
+      type: string
+    - contextPath: Nexpose.Report.ID
+      description: The identifier of the report.
+      type: string
+    - contextPath: Nexpose.Report.InstanceID
+      description: The identifier of the report instance.
+      type: string
+    - contextPath: Nexpose.Report.Name
+      description: The report name.
+      type: string
+    - contextPath: Nexpose.Report.Format
+      description: The report format.
       type: string
   - arguments:
     - default: false
@@ -711,6 +749,13 @@ script:
       - text
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
+      name: download_immediately
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Generates a new report for a specified scan.
     execution: false
@@ -733,6 +778,18 @@ script:
       type: number
     - contextPath: InfoFile.Type
       description: Type of the report file
+      type: string
+    - contextPath: Nexpose.Report.ID
+      description: The identifier of the report.
+      type: string
+    - contextPath: Nexpose.Report.InstanceID
+      description: The identifier of the report instance.
+      type: string
+    - contextPath: Nexpose.Report.Name
+      description: The report name.
+      type: string
+    - contextPath: Nexpose.Report.Format
+      description: The report format.
       type: string
   - arguments:
     - default: false
@@ -932,6 +989,68 @@ script:
     - contextPath: Nexpose.Scan.Status
       description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating
       type: string
+  - name: nexpose-download-report
+    arguments:
+    - name: report_id
+      required: true
+      description: The identifier of the report.
+    - name: instance_id
+      required: true
+      description: The identifier of the report instance. Also supports the "latest"
+        keyword.
+    - name: name
+      description: The report name.
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - rtf
+      - xml
+      - html
+      - text
+      description: The report format, default is pdf.
+      defaultValue: pdf
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry ID of the report file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: Information about the report file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file (in bytes).
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file.
+      type: string
+    description: Returns the generated report.
+  - name: nexpose-get-report-status
+    arguments:
+    - name: report_id
+      required: true
+      description: The identifier of the report.
+    - name: instance_id
+      required: true
+      description: The identifier of the report instance. Also supports the "latest"
+        keyword.
+    outputs:
+    - contextPath: Nexpose.Report.ID
+      description: The identifier of the report.
+      type: string
+    - contextPath: Nexpose.Report.InstanceID
+      description: The identifier of the report instance.
+      type: string
+    - contextPath: Nexpose.Report.Status
+      description: 'The status of the report generation process. Valid values: "aborted",
+        "failed", "complete", "running", "unknown"'
+      type: string
+    description: Returns the status of a report generation process.
   isfetch: false
   runonce: false
   script: '-'

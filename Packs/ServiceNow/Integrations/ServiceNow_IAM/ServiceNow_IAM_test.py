@@ -314,7 +314,7 @@ def test_get_mapping_fields_command(mocker):
     mocker.patch.object(client, 'get_service_now_fields', return_value={'field1': 'desc1', 'field2': 'desc2'})
 
     mapping_response = get_mapping_fields_command(client)
-    mapping = mapping_response.extract_mapping()[0]
+    mapping = mapping_response.extract_mapping()
 
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field1') == 'desc1'
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'desc2'

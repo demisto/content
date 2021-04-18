@@ -1,6 +1,9 @@
 Proofpoint email security appliance.
 
-This integration was integrated and tested with version 8.16.2 of Proofpoint Protection Server.
+This integration was integrated and tested with the following versions of Proofpoint Protection Server:
+- Cloud 8.16.2
+- On-promise 8.14.2
+
 ## Authentication
 An administrator must have a role that includes access to a specific REST API. 
 
@@ -26,7 +29,7 @@ The operations are accessed through port 10000.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | Server URL \(e.g., https://xxxxxxxx.pphosted.com:10000\) | True |
+    | url | Server URL (e.g., `https://xxxxxxxx.pphosted.com:10000`) | True |
     | credentials | Username | True |
     | unsecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |

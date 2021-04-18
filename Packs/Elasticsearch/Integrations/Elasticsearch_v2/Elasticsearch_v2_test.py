@@ -655,3 +655,52 @@ class GetMappingFields(unittest.TestCase):
         gmf = GetMapping()
         server_response = gmf.fetch_json('http://someurl.com/' + 'index' + '/_mapping')
         self.assertEqual(server_response, MOC_ES7_SERVER_RESPONSE)
+
+
+class TestIncidentLabelMaker(unittest.TestCase):
+    def test_sanity(self):
+        from Elasticsearch_v2 import incident_label_maker
+
+        sources = {
+            'first_name': 'John',
+            'sur_name': 'Snow',
+        }
+        expected_labels = [
+            {
+                'type': 'first_name',
+                'value': 'John'
+            },
+            {
+                'type': 'sur_name',
+                'value': 'Snow'
+            },
+        ]
+
+        labels = incident_label_maker(sources)
+        self.assertEquals(labels, expected_labels)
+
+    def test_complex_value(self):
+        from Elasticsearch_v2 import incident_label_maker
+
+        sources = {
+            'name': 'Ash',
+            'action': 'catch',
+            'targets': ['Pikachu', 'Charmander', 'Squirtle', 'Bulbasaur'],
+        }
+        expected_labels = [
+            {
+                'type': 'name',
+                'value': 'Ash',
+            },
+            {
+                'type': 'action',
+                'value': 'catch',
+            },
+            {
+                'type': 'targets',
+                'value': '["Pikachu", "Charmander", "Squirtle", "Bulbasaur"]',
+            },
+        ]
+
+        labels = incident_label_maker(sources)
+        self.assertEquals(labels, expected_labels)

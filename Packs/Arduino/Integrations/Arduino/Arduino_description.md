@@ -1,7 +1,3 @@
-### Community Contributed Integration
- #### Integration Author: Adam Burt
- Limited support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
-***
 ## Arduino
 - To configure the integration, simply provide the IP / hostname and port number of the Arduino device that is listening. The code below is an example of what should be running on the Arduino to receive requests from XSOAR.
 
@@ -11,6 +7,7 @@
 
 ---
 
+```c
 #include <SPI.h>
 #include <WiFi.h>
 #include "arduino_secrets.h"
@@ -132,5 +129,6 @@ void handle_text(WiFiClient *client, String *received){
    */
    client->print(*received);
 }
+```
 
 ---

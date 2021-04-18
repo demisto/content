@@ -105,7 +105,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Select Chronicle alert type to create actionable incident. Available
-    options are Assets with alerts and IOC Domain matches (Default).
+    options are IOC Domain matches(Default), Assets with alerts, Detection alerts and User alerts.
   defaultvalue: IOC Domain matches
   display: Chronicle Alert Type (Select the type of data to consider for fetch incidents).
   hidden: false
@@ -113,6 +113,8 @@ configuration:
   options:
   - IOC Domain matches
   - Assets with alerts
+  - Detection alerts
+  - User alerts
   required: false
   type: 15
 - display: Select the severity of asset alerts to be filtered for Fetch Incidents.
@@ -123,6 +125,44 @@ configuration:
   - Medium
   - Low
   - Unspecified
+  required: false
+  type: 15
+- additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version
+    ID (format: {ruleId}@v_{int64}_{int64}. Enter in comma separated format to add multiple.'
+  display: Detections to fetch by Rule ID or Version ID
+  hidden: false
+  name: fetch_detection_by_ids
+  required: false
+  type: 0
+- additionalinfo: Fetches all detections for the latest versions of all the live rules. At max 50
+    live rules will be fetched.
+  display: Fetch all live rules detections
+  hidden: false
+  name: fetch_all_live_detections
+  required: false
+  type: 8
+- additionalinfo: Select the alert state to filter the detections to be fetched using fetch incidents.
+    Available options are 'ALERTING' and 'NOT_ALERTING' (Default-No Selection).
+  display: Filter detections by alert state
+  name: fetch_detection_by_alert_state
+  options:
+  - ALERTING
+  - NOT_ALERTING
+  required: false
+  type: 15
+- additionalinfo: Select the time window to query Chronicle. While selecting the time
+    window consider the time delay for an event to appear in Chronicle after generation.
+    Available options are 15 (Default), 30, 45 and 60. This parameter is not applied
+    when "IOC Domain matches" Chronicle Alert Type is selected. Don't touch unless you're missing alerts.
+  defaultvalue: '15'
+  display: Time window (in minutes)
+  hidden: false
+  name: time_window
+  options:
+  - '15'
+  - '30'
+  - '45'
+  - '60'
   required: false
   type: 15
 - display: Trust any certificate (not secure)
@@ -156,9 +196,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time
-        corresponding to 3 days earlier than current time.
+      description: "The value of the start time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time
+        corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd,
+        N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours."
       isArray: false
       name: start_time
       required: false
@@ -231,17 +272,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time
-        corresponding to 3 days earlier than current time.
+      description: 'The value of the start time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time
+        corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd,
+        N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The value of the end time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z). If not supplied,  the default is current UTC
-        time.
+      description: 'The value of the end time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC
+        time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: end_time
       required: false
@@ -491,17 +534,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time
-        corresponding to 3 days earlier than current time.
+      description: 'The value of the start time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time
+        corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd,
+        N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The value of the end time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z). If not supplied,  the default is current UTC
-        time.
+      description: 'The value of the end time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC
+        time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: end_time
       required: false
@@ -517,8 +562,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: The severity by which to filter the returned alerts. If not supplied,
-        all alerts are fetched. The possible values are "High", "Medium", "Low", or
-        "Unspecified".
+        all alerts are fetched. This is applicable for asset alerts only. The possible values
+        are "High", "Medium", "Low", or "Unspecified".
       isArray: false
       name: severity
       predefined:
@@ -526,6 +571,17 @@ script:
       - Medium
       - Low
       - Unspecified
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'Asset Alerts'
+      description: Specify which type of alerts you want. The possible values are "Asset Alerts" or "User Alerts".
+      isArray: false
+      name: alert_type
+      predefined:
+      - 'Asset Alerts'
+      - 'User Alerts'
       required: false
       secret: false
     deprecated: false
@@ -553,6 +609,24 @@ script:
       type: String
     - contextPath: GoogleChronicleBackstory.Alert.AlertCounts
       description: The total number of alerts.
+      type: Number
+    - contextPath: GoogleChronicleBackstory.UserAlert.User
+      description: The user identifier. It can be username or email address.
+      type: String
+    - contextPath: GoogleChronicleBackstory.UserAlert.AlertInfo.Name
+      description: The name of the user alert.
+      type: String
+    - contextPath: GoogleChronicleBackstory.UserAlert.AlertInfo.SourceProduct
+      description: The source of the user alert.
+      type: String
+    - contextPath: GoogleChronicleBackstory.UserAlert.AlertInfo.Timestamp
+      description: The time of the user alert in Chronicle.
+      type: String
+    - contextPath: GoogleChronicleBackstory.UserAlert.AlertInfo.RawLog
+      description: The raw log of the user alert.
+      type: String
+    - contextPath: GoogleChronicleBackstory.UserAlert.AlertCounts
+      description: The total number of user alerts.
       type: Number
   - arguments:
     - auto: PREDEFINED
@@ -588,18 +662,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request. The format of Date
-        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied,
+      description: '
+        The value of the start time for your request. The format of Date
+        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,
         the product considers UTC time corresponding to 2 hours earlier than current
-        time.
+        time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The value of the end time for your request. The format of Date
-        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied,
-        the product considers current UTC time.
+      description: 'The value of the end time for your request. The format of Date
+        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,
+        the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: end_time
       required: false
@@ -613,9 +690,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify the reference time for the asset you are investigating,
-        in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the product
-        considers start time as reference time.
+      description: 'Specify the reference time for the asset you are investigating,
+        in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product
+        considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: reference_time
       required: false
@@ -1765,7 +1843,1259 @@ script:
       description: URL to direct you to the source product console for this security
         event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.12698
+  - arguments:
+    - default: true
+      description: |-
+        Unique identifier for a rule or specific version of a rule, defined and returned by the server. You can specify exactly one rule identifier.
+        Use the following format to specify the id:
+        ru_{UUID} or {ruleId}@v_{int64}_{int64}
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: "Time to begin returning detections, filtering on a detection's detectionTime.
+        If not specified, the start time is treated as open-ended. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd,
+        N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours."
+      isArray: false
+      name: detection_start_time
+      required: false
+      secret: false
+    - default: false
+      description: "Time to stop returning detections, filtering on a detection's detectionTime.
+        If not specified, the end time is treated as open-ended. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd,
+        N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours."
+      isArray: false
+      name: detection_end_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Filter detections on if they are ALERTING or NOT_ALERTING.
+        Avoid specifying to return all detections.
+      isArray: false
+      name: alert_state
+      predefined:
+      - ALERTING
+      - NOT_ALERTING
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Specify the limit on the number of detections to display. You can
+        specify between 1 and 1,000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: A page token received from a previous call. Provide this to retrieve
+        the subsequent page. If the page token is configured, overrides the detection
+        start and end time arguments.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    deprecated: false
+    description: Return the detections for the specified version of a rule.
+    execution: false
+    name: gcb-list-detections
+    outputs:
+    - contextPath: GoogleChronicleBackstory.Detections.id
+      description: Identifier for the detection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.ruleId
+      description: Identifier for the rule generating the detection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.ruleVersion
+      description: Identifier for the rule version generating the detection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.ruleName
+      description: Name of the rule generating the detection, as parsed from ruleText.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.timeWindowStartTime
+      description: The start time of the window the detection was found in.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.Detections.timeWindowEndTime
+      description: The end time of the window the detection was found in.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.Detections.alertState
+      description: Indicates whether the rule generating this detection currently
+        has alerting enabled or disabled.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.urlBackToProduct
+      description: URL pointing to the Chronicle UI for this detection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.type
+      description: Type of detection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.createdTime
+      description: Time the detection was created.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.Detections.detectionTime
+      description: The time period the detection was found in.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.Detections.ruleType
+      description: Whether the rule generating this detection is a single event or
+        multi-event rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.detectionFields.key
+      description: The key for a field specified in the rule, for MULTI_EVENT rules.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.detectionFields.value
+      description: The value for a field specified in the rule, for MULTI_EVENT rules.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.label
+      description: The variable a given set of UDM events belongs to.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principalAssetIdentifier
+      description: Specifies the principal asset identifier of the event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.targetAssetIdentifier
+      description: Specifies the target asset identifier of the event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.eventType
+      description: Specifies the type of the event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.eventTimestamp
+      description: The GMT timestamp when the event was generated.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.ingestedTimestamp
+      description: The GMT timestamp when the event was ingested in the vendor's instance.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.description
+      description: Human-readable description of the event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.productEventType
+      description: Short, descriptive, human-readable, and product-specific event
+        name or type.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.productLogId
+      description: A vendor-specific event identifier to uniquely identify the event
+        (a GUID). Users might use this identifier to search the vendor's proprietary
+        console for the event in question.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.productName
+      description: Specifies the name of the product.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.productVersion
+      description: Specifies the version of the product.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.urlBackToProduct
+      description: URL linking to a relevant website where you can view more information
+        about this specific event or the general event category.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.vendorName
+      description: Specifies the product vendor's name.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.assetId
+      description: Vendor-specific unique device identifier.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.email
+      description: Email address.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.hostname
+      description: Client hostname or domain name field.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.platform
+      description: Platform operating system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.platformPatchLevel
+      description: Platform operating system patch level.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.platformVersion
+      description: Platform operating system version.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.ip
+      description: IP address associated with a network connection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.port
+      description: Source or destination network port number when a specific network
+        connection is described within an event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.mac
+      description: MAC addresses associated with a device.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.administrativeDomain
+      description: Domain which the device belongs to (for example, the Windows domain).
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.url
+      description: Standard URL.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.commandLine
+      description: Stores the command line string for the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.productSpecificProcessId
+      description: Stores the product specific process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.productSpecificParentProcessId
+      description: Stores the product specific process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file
+      description: Stores the file name of the file in use by the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.parentPid
+      description: Stores the process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.process.pid
+      description: Stores the process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.registry.registryKey
+      description: Stores the registry key associated with an application or system
+        component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.registry.registryValueName
+      description: Stores the name of the registry value associated with an application
+        or system component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.registry.registryValueData
+      description: Stores the data associated with a registry value.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.emailAddresses
+      description: Stores the email addresses for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.employeeId
+      description: Stores the human resources employee ID for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.firstName
+      description: Stores the first name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.middleName
+      description: Stores the middle name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.lastName
+      description: Stores the last name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.groupid
+      description: Stores the group ID associated with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.phoneNumbers
+      description: Stores the phone numbers for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.title
+      description: Stores the job title for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.userDisplayName
+      description: Stores the display name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.userid
+      description: Stores the user ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.windowsSid
+      description: Stores the Microsoft Windows security identifier (SID) associated
+        with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.assetId
+      description: Vendor-specific unique device identifier.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.email
+      description: Email address.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.hostname
+      description: Client hostname or domain name field.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.platform
+      description: Platform operating system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.platformPatchLevel
+      description: Platform operating system patch level.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.platformVersion
+      description: Platform operating system version.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.ip
+      description: IP address associated with a network connection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.port
+      description: Source or destination network port number when a specific network
+        connection is described within an event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.mac
+      description: One or more MAC addresses associated with a device.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.administrativeDomain
+      description: Domain which the device belongs to (for example, the Windows domain).
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.url
+      description: Standard URL.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.commandLine
+      description: Stores the command line string for the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.productSpecificProcessId
+      description: Stores the product specific process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.productSpecificParentProcessId
+      description: Stores the product specific process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file
+      description: Stores the file name of the file in use by the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.parentPid
+      description: Stores the process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.process.pid
+      description: Stores the process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.registry.registryKey
+      description: Stores the registry key associated with an application or system
+        component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.registry.registryValueName
+      description: Stores the name of the registry value associated with an application
+        or system component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.registry.registryValueData
+      description: Stores the data associated with a registry value.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.emailAddresses
+      description: Stores the email addresses for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.employeeId
+      description: Stores the human resources employee ID for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.firstName
+      description: Stores the first name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.middleName
+      description: Stores the middle name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.lastName
+      description: Stores the last name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.groupid
+      description: Stores the group ID associated with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.phoneNumbers
+      description: Stores the phone numbers for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.title
+      description: Stores the job title for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.userDisplayName
+      description: Stores the display name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.userid
+      description: Stores the user ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.windowsSid
+      description: Stores the Microsoft Windows security identifier (SID) associated
+        with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.assetId
+      description: Vendor-specific unique device identifier.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.email
+      description: Email address.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.hostname
+      description: Client hostname or domain name field.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.platform
+      description: Platform operating system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.platformPatchLevel
+      description: Platform operating system patch level.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.platformVersion
+      description: Platform operating system version.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.ip
+      description: IP address associated with a network connection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.port
+      description: Source or destination network port number when a specific network
+        connection is described within an event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.mac
+      description: One or more MAC addresses associated with a device.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.administrativeDomain
+      description: Domain which the device belongs to (for example, the Windows domain).
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.url
+      description: Standard URL.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.commandLine
+      description: Stores the command line string for the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.productSpecificProcessId
+      description: Stores the product specific process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.productSpecificParentProcessId
+      description: Stores the product specific process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file
+      description: Stores the file name of the file in use by the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.parentPid
+      description: Stores the process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.process.pid
+      description: Stores the process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.registry.registryKey
+      description: Stores the registry key associated with an application or system
+        component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.registry.registryValueName
+      description: Stores the name of the registry value associated with an application
+        or system component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.registry.registryValueData
+      description: Stores the data associated with a registry value.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.emailAddresses
+      description: Stores the email addresses for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.employeeId
+      description: Stores the human resources employee ID for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.firstName
+      description: Stores the first name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.middleName
+      description: Stores the middle name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.lastName
+      description: Stores the last name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.groupid
+      description: Stores the group ID associated with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.phoneNumbers
+      description: Stores the phone numbers for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.title
+      description: Stores the job title for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.userDisplayName
+      description: Stores the display name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.userid
+      description: Stores the user ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.windowsSid
+      description: Stores the Microsoft Windows security identifier (SID) associated
+        with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.assetId
+      description: Vendor-specific unique device identifier.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.email
+      description: Email address.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.hostname
+      description: Client hostname or domain name field.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.platform
+      description: Platform operating system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.platformPatchLevel
+      description: Platform operating system patch level.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.platformVersion
+      description: Platform operating system version.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.ip
+      description: IP address associated with a network connection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.port
+      description: Source or destination network port number when a specific network
+        connection is described within an event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.mac
+      description: One or more MAC addresses associated with a device.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.administrativeDomain
+      description: Domain which the device belongs to (for example, the Windows domain).
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.url
+      description: Standard URL.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.commandLine
+      description: Stores the command line string for the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.productSpecificProcessId
+      description: Stores the product specific process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.productSpecificParentProcessId
+      description: Stores the product specific process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file
+      description: Stores the file name of the file in use by the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.parentPid
+      description: Stores the process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.process.pid
+      description: Stores the process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.registry.registryKey
+      description: Stores the registry key associated with an application or system
+        component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.registry.registryValueName
+      description: Stores the name of the registry value associated with an application
+        or system component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.registry.registryValueData
+      description: Stores the data associated with a registry value.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.emailAddresses
+      description: Stores the email addresses for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.employeeId
+      description: Stores the human resources employee ID for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.firstName
+      description: Stores the first name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.middleName
+      description: Stores the middle name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.lastName
+      description: Stores the last name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.groupid
+      description: Stores the group ID associated with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.phoneNumbers
+      description: Stores the phone numbers for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.title
+      description: Stores the job title for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.userDisplayName
+      description: Stores the display name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.userid
+      description: Stores the user ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.windowsSid
+      description: Stores the Microsoft Windows security identifier (SID) associated
+        with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.assetId
+      description: Vendor-specific unique device identifier.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.email
+      description: Email address.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.hostname
+      description: Client hostname or domain name field.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.platform
+      description: Platform operating system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.platformPatchLevel
+      description: Platform operating system patch level.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.platformVersion
+      description: Platform operating system version.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.ip
+      description: IP address associated with a network connection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.port
+      description: Source or destination network port number when a specific network
+        connection is described within an event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.mac
+      description: One or more MAC addresses associated with a device.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.administrativeDomain
+      description: Domain which the device belongs to (for example, the Windows domain).
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.url
+      description: Standard URL.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.commandLine
+      description: Stores the command line string for the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.productSpecificProcessId
+      description: Stores the product specific process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.productSpecificParentProcessId
+      description: Stores the product specific process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file
+      description: Stores the file name of the file in use by the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.parentPid
+      description: Stores the process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.process.pid
+      description: Stores the process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.registry.registryKey
+      description: Stores the registry key associated with an application or system
+        component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.registry.registryValueName
+      description: Stores the name of the registry value associated with an application
+        or system component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.registry.registryValueData
+      description: Stores the data associated with a registry value.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.emailAddresses
+      description: Stores the email addresses for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.employeeId
+      description: Stores the human resources employee ID for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.firstName
+      description: Stores the first name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.middleName
+      description: Stores the middle name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.lastName
+      description: Stores the last name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.groupid
+      description: Stores the group ID associated with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.phoneNumbers
+      description: Stores the phone numbers for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.title
+      description: Stores the job title for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.userDisplayName
+      description: Stores the display name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.userid
+      description: Stores the user ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.windowsSid
+      description: Stores the Microsoft Windows security identifier (SID) associated
+        with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.assetId
+      description: Vendor-specific unique device identifier.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.email
+      description: Email address.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.hostname
+      description: Client hostname or domain name field.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.platform
+      description: Platform operating system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.platformPatchLevel
+      description: Platform operating system patch level.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.platformVersion
+      description: Platform operating system version.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.ip
+      description: IP address associated with a network connection.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.port
+      description: Source or destination network port number when a specific network
+        connection is described within an event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.mac
+      description: One or more MAC addresses associated with a device.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.administrativeDomain
+      description: Domain which the device belongs to (for example, the Windows domain).
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.url
+      description: Standard URL.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.commandLine
+      description: Stores the command line string for the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.productSpecificProcessId
+      description: Stores the product specific process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.productSpecificParentProcessId
+      description: Stores the product specific process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file
+      description: Stores the file name of the file in use by the process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.fileMetadata
+      description: Metadata associated with the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.fullPath
+      description: Full path identifying the location of the file on the system.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.md5
+      description: MD5 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.mimeType
+      description: Multipurpose Internet Mail Extensions (MIME) type of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.sha1
+      description: SHA-1 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.sha256
+      description: SHA-256 hash value of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.file.size
+      description: Size of the file.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.parentPid
+      description: Stores the process ID for the parent process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.process.pid
+      description: Stores the process ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.registry.registryKey
+      description: Stores the registry key associated with an application or system
+        component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.registry.registryValueName
+      description: Stores the name of the registry value associated with an application
+        or system component.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.registry.registryValueData
+      description: Stores the data associated with a registry value.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.emailAddresses
+      description: Stores the email addresses for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.employeeId
+      description: Stores the human resources employee ID for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.firstName
+      description: Stores the first name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.middleName
+      description: Stores the middle name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.lastName
+      description: Stores the last name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.groupid
+      description: Stores the group ID associated with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.phoneNumbers
+      description: Stores the phone numbers for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.title
+      description: Stores the job title for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.userDisplayName
+      description: Stores the display name for the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.userid
+      description: Stores the user ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.windowsSid
+      description: Stores the Microsoft Windows security identifier (SID) associated
+        with a user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.applicationProtocol
+      description: Indicates the network application protocol.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.direction
+      description: Indicates the direction of network traffic.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.email
+      description: Specifies the email address for the sender/recipient.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.ipProtocol
+      description: Indicates the IP protocol.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.receivedBytes
+      description: Specifies the number of bytes received.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.sentBytes
+      description: Specifies the number of bytes sent.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.clientHostname
+      description: Hostname for the client.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.clientIdentifier
+      description: Client identifier.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.file
+      description: Filename for the boot image.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.flags
+      description: Value for the DHCP flags field.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.hlen
+      description: Hardware address length.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.hops
+      description: DHCP hop count.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.htype
+      description: Hardware address type.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.leaseTimeSeconds
+      description: Client-requested lease time for an IP address in seconds.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.opcode
+      description: BOOTP op code.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.requestedAddress
+      description: Client identifier.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.seconds
+      description: Seconds elapsed since the client began the address acquisition/renewal
+        process.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.sname
+      description: Name of the server which the client has requested to boot from.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.transactionId
+      description: Client transaction ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.type
+      description: DHCP message type.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.chaddr
+      description: IP address for the client hardware.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.ciaddr
+      description: IP address for the client.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.giaddr
+      description: IP address for the relay agent.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.siaddr
+      description: IP address for the next bootstrap server.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.yiaddr
+      description: Your IP address.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authoritative
+      description: Set to true for authoritative DNS servers.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.id
+      description: Stores the DNS query identifier.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.response
+      description: Set to true if the event is a DNS response.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.opcode
+      description: Stores the DNS OpCode used to specify the type of DNS query (standard,
+        inverse, server status, etc.).
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.recursionAvailable
+      description: Set to true if a recursive DNS lookup is available.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.recursionDesired
+      description: Set to true if a recursive DNS lookup is requested.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.responseCode
+      description: Stores the DNS response code as defined by RFC 1035, Domain Names
+        - Implementation and Specification.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.truncated
+      description: Set to true if this is a truncated DNS response.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.questions.name
+      description: Stores the domain name.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.questions.class
+      description: Stores the code specifying the class of the query.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.questions.type
+      description: Stores the code specifying the type of the query.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.binaryData
+      description: Stores the raw bytes of any non-UTF8 strings that might be included
+        as part of a DNS response.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.class
+      description: Stores the code specifying the class of the resource record.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.data
+      description: Stores the payload or response to the DNS question for all responses
+        encoded in UTF-8 format.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.name
+      description: Stores the name of the owner of the resource record.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.ttl
+      description: Stores the time interval for which the resource record can be cached
+        before the source of the information should again be queried.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.type
+      description: Stores the code specifying the type of the resource record.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.binaryData
+      description: Stores the raw bytes of any non-UTF8 strings that might be included
+        as part of a DNS response.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.class
+      description: Stores the code specifying the class of the resource record.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.data
+      description: Stores the payload or response to the DNS question for all responses
+        encoded in UTF-8 format.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.name
+      description: Stores the name of the owner of the resource record.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.ttl
+      description: Stores the time interval for which the resource record can be cached
+        before the source of the information should again be queried.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.type
+      description: Stores the code specifying the type of the resource record.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.binaryData
+      description: Stores the raw bytes of any non-UTF8 strings that might be included
+        as part of a DNS response.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.class
+      description: Stores the code specifying the class of the resource record.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.data
+      description: Stores the payload or response to the DNS question for all responses
+        encoded in UTF-8 format.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.name
+      description: Stores the name of the owner of the resource record.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.ttl
+      description: Stores the time interval for which the resource record can be cached
+        before the source of the information should again be queried.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.type
+      description: Stores the code specifying the type of the resource record.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.email.from
+      description: Stores the from email address.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.email.replyTo
+      description: Stores the reply_to email address.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.email.to
+      description: Stores the to email addresses.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.email.cc
+      description: Stores the cc email addresses.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.email.bcc
+      description: Stores the bcc email addresses.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.email.mailId
+      description: Stores the mail (or message) ID.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.email.subject
+      description: Stores the email subject line.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.ftp.command
+      description: Stores the FTP command.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.http.method
+      description: Stores the HTTP request method.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.http.referralUrl
+      description: Stores the URL for the HTTP referer.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.http.responseCode
+      description: Stores the HTTP response status code, which indicates whether a
+        specific HTTP request has been successfully completed.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.http.useragent
+      description: Stores the User-Agent request header which includes the application
+        type, operating system, software vendor or software version of the requesting
+        software user agent.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.authentication.authType
+      description: Type of system an authentication event is associated with (Chronicle
+        UDM).
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.authentication.mechanism
+      description: Mechanism(s) used for authentication.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.about
+      description: Provide a description of the security result.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.action
+      description: Specify a security action.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.category
+      description: Specify a security category.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.confidence
+      description: Specify a confidence with regards to a security event as estimated
+        by the product.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.confidenceDetails
+      description: Additional detail with regards to the confidence of a security
+        event as estimated by the product vendor.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.priority
+      description: Specify a priority with regards to a security event as estimated
+        by the product vendor.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.priorityDetails
+      description: Vendor-specific information about the security result priority.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.ruleId
+      description: Identifier for the security rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.ruleName
+      description: Name of the security rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.severity
+      description: Severity of a security event as estimated by the product vendor
+        using values defined by the Chronicle UDM.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.severityDetails
+      description: Severity for a security event as estimated by the product vendor.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.threatName
+      description: Name of the security threat.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.urlBackToProduct
+      description: URL to direct you to the source product console for this security
+        event.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Token.name
+      description: The name of the command to which the value of the nextPageToken
+        corresponds.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Token.nextPageToken
+      description: A page token that can be provided to the next call to view the
+        next page of detections. Absent if this is the last page.
+      type: String
+  dockerimage: demisto/googleapi-python3:1.0.0.15845
   feed: false
   isfetch: true
   longRunning: false
@@ -1780,4 +3110,6 @@ tests:
 - Google Chronicle Backstory List Alerts - Test
 - Google Chronicle Backstory IOC Details - Test
 - Google Chronicle Backstory List Events - Test
+- Google Chronicle Backstory List Detections - Test
+- Google Chronicle Backstory Reputation - Test
 fromversion: 5.0.0

@@ -1,24 +1,38 @@
 # pylint: disable=no-member
-from string import punctuation
-
-import demisto_ml
 
 from CommonServerPython import *
+from string import punctuation
+from nltk import word_tokenize
+import demisto_ml
+
+FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
+TORCH_TYPE = 'torch'
+UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
+
+
+def OrderedSet(iterable):
+    return list(dict.fromkeys(iterable))
 
 
 def get_model_data(model_name, store_type, is_return_error):
     res_model_list = demisto.executeCommand("getList", {"listName": model_name})[0]
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
-
     if is_error(res_model_list) and not is_error(res_model):
-        return res_model['Contents']['modelData']
+        model_data = res_model['Contents']['modelData']
+        try:
+            model_type = res_model['Contents']['model']["type"]["type"]
+            return model_data, model_type
+        except Exception:
+            return model_data, UNKNOWN_MODEL_TYPE
     elif not is_error(res_model_list) and is_error(res_model):
-        return res_model_list["Contents"]
+        return res_model_list["Contents"], UNKNOWN_MODEL_TYPE
     elif not is_error(res_model_list) and not is_error(res_model):
         if store_type == "list":
-            return res_model_list["Contents"]
+            return res_model_list["Contents"], UNKNOWN_MODEL_TYPE
         elif store_type == "mlModel":
-            return res_model['Contents']['modelData']
+            model_data = res_model['Contents']['modelData']
+            model_type = res_model['Contents']['model']["type"]["type"]
+            return model_data, model_type
     else:
         handle_error("error reading model %s from Demisto" % model_name, is_return_error)
 
@@ -31,22 +45,42 @@ def handle_error(message, is_return_error):
         sys.exit(0)
 
 
+def preprocess_text(text, model_type, is_return_error):
+    if model_type in [FASTTEXT_MODEL_TYPE, UNKNOWN_MODEL_TYPE]:
+        language = demisto.args().get('language', 'English')
+        tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
+        res = demisto.executeCommand('WordTokenizerNLP', {'value': text,
+                                                          'hashWordWithSeed': demisto.args().get('hashSeed'),
+                                                          'language': language,
+                                                          'tokenizationMethod': tokenization})
+        if is_error(res[0]):
+            handle_error(res[0]['Contents'], is_return_error)
+        tokenized_text_result = res[0]['Contents']
+        input_text = tokenized_text_result['hashedTokenizedText'] if tokenized_text_result.get(
+            'hashedTokenizedText') else \
+            tokenized_text_result['tokenizedText']
+        if tokenized_text_result.get('hashedTokenizedText'):
+            words_to_token_maps = tokenized_text_result['wordsToHashedTokens']
+        else:
+            words_to_token_maps = tokenized_text_result['originalWordsToTokens']
+
+    elif model_type == TORCH_TYPE:
+        input_text = text
+        words_to_token_maps = {w: w.lower() for w in word_tokenize(text)}
+    return input_text, words_to_token_maps
+
+
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
                            word_threshold, top_word_limit, is_return_error, set_incidents_fields=False):
-    model_data = get_model_data(model_name, model_store_type, is_return_error)
-    phishing_model = demisto_ml.phishing_model_loads(model_data)
-    text = "%s %s" % (email_subject, email_body)
-    language = demisto.args().get('language', 'English')
-    tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
-    res = demisto.executeCommand('WordTokenizerNLP', {'value': text,
-                                                      'hashWordWithSeed': demisto.args().get('hashSeed'),
-                                                      'language': language,
-                                                      'tokenizationMethod': tokenization})
-    if is_error(res[0]):
-        handle_error(res[0]['Contents'], is_return_error)
-    tokenized_text_result = res[0]['Contents']
-    input_text = tokenized_text_result['hashedTokenizedText'] if tokenized_text_result.get('hashedTokenizedText') else \
-        tokenized_text_result['tokenizedText']
+    model_data, model_type = get_model_data(model_name, model_store_type, is_return_error)
+    if model_type.strip() == '' or model_type.strip() == 'Phishing':
+        model_type = FASTTEXT_MODEL_TYPE
+    if model_type not in [FASTTEXT_MODEL_TYPE, TORCH_TYPE, UNKNOWN_MODEL_TYPE]:
+        model_type = UNKNOWN_MODEL_TYPE
+    phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
+    text = "%s \n%s" % (email_subject, email_body)
+    input_text, words_to_token_maps = preprocess_text(text, model_type, is_return_error)
+
     filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
     if filtered_text_number_of_words == 0:
         handle_error("The model does not contain any of the input text words", is_return_error)
@@ -65,31 +99,24 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         handle_error("Label probability is {:.2f} and it's below the input confidence threshold".format(
             predicted_prob), is_return_error)
 
-    if tokenized_text_result.get('hashedTokenizedText'):
-        words_to_token_maps = tokenized_text_result['wordsToHashedTokens']
-    else:
-        words_to_token_maps = tokenized_text_result['originalWordsToTokens']
-    positive_tokens = set([''.join(c for c in word if c.isalnum()) for word in explain_result['PositiveWords']])
-    negative_tokens = set([''.join(c for c in word if c.isalnum()) for word in explain_result['NegativeWords']])
+    positive_tokens = OrderedSet(explain_result['PositiveWords'])
+    negative_tokens = OrderedSet(explain_result['NegativeWords'])
     positive_words = find_words_contain_tokens(positive_tokens, words_to_token_maps)
     negative_words = find_words_contain_tokens(negative_tokens, words_to_token_maps)
-    positive_words = [s.strip(punctuation) for s in positive_words]
-    negative_words = [s.strip(punctuation) for s in negative_words]
+    positive_words = list(OrderedSet([s.strip(punctuation) for s in positive_words]))
+    negative_words = list(OrderedSet([s.strip(punctuation) for s in negative_words]))
 
-    if len(positive_words) > 0:
-        res = demisto.executeCommand('HighlightWords', {'text': tokenized_text_result['originalText'],
-                                                        'terms': ",".join(positive_words)})
-        res = res[0]
-        if not is_error(res):
-            highlighted_text_markdown = res['Contents']
-        else:
-            highlighted_text_markdown = tokenized_text_result['originalText'].strip()
-    else:
-        highlighted_text_markdown = tokenized_text_result['originalText'].strip()
-
-    explain_result['PositiveWords'] = positive_words
-    explain_result['NegativeWords'] = negative_words
-    explain_result['OriginalText'] = tokenized_text_result['originalText'].strip()
+    positive_words = [w for w in positive_words if w.isalnum()]
+    negative_words = [w for w in negative_words if w.isalnum()]
+    highlighted_text_markdown = text.strip()
+    for word in positive_words:
+        for cased_word in [word.lower(), word.title(), word.upper()]:
+            highlighted_text_markdown = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word),
+                                               highlighted_text_markdown)
+    highlighted_text_markdown = re.sub(r'\n+', '\n', highlighted_text_markdown)
+    explain_result['PositiveWords'] = [w.lower() for w in positive_words]
+    explain_result['NegativeWords'] = [w.lower() for w in negative_words]
+    explain_result['OriginalText'] = text.strip()
     explain_result['TextTokensHighlighted'] = highlighted_text_markdown
     predicted_label = explain_result["Label"]
 
@@ -98,8 +125,8 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     explain_result_hr['Label'] = predicted_label
     explain_result_hr['Probability'] = "%.2f" % predicted_prob
     explain_result_hr['Confidence'] = "%.2f" % predicted_prob
-    explain_result_hr['PositiveWords'] = ", ".join(positive_words)
-    explain_result_hr['NegativeWords'] = ", ".join(negative_words)
+    explain_result_hr['PositiveWords'] = ", ".join([w.lower() for w in positive_words])
+    explain_result_hr['NegativeWords'] = ", ".join([w.lower() for w in negative_words])
     incident_context = demisto.incidents()[0]
     if not incident_context['isPlayground'] and set_incidents_fields:
         demisto.executeCommand("setIncident", {'dbotprediction': predicted_label,
@@ -128,15 +155,28 @@ def find_words_contain_tokens(positive_tokens, words_to_token_maps):
     return positive_words
 
 
+def try_get_incident_field(field):
+    value = ''
+    incident = demisto.incident()
+    if 'CustomFields' in incident and incident['CustomFields'] is not None and field in incident['CustomFields']:
+        value = incident['CustomFields'][field]
+    return value
+
+
 def main():
     confidence_threshold = 0
     confidence_threshold = float(demisto.args().get("labelProbabilityThreshold", confidence_threshold))
     confidence_threshold = float(demisto.args().get("confidenceThreshold", confidence_threshold))
-
+    email_subject = demisto.args().get('emailSubject', '')
+    email_body = demisto.args().get('emailBody', '') or demisto.args().get('emailBodyHTML', '')
+    if email_subject == '':
+        email_subject = try_get_incident_field(field='emailsubject')
+    if email_body == '':
+        email_body = try_get_incident_field(field='emailbody')
     result = predict_phishing_words(demisto.args()['modelName'],
                                     demisto.args()['modelStoreType'],
-                                    demisto.args().get('emailSubject', ''),
-                                    demisto.args().get('emailBody', '') or demisto.args().get('emailBodyHTML', ''),
+                                    email_subject,
+                                    email_body,
                                     int(demisto.args()['minTextLength']),
                                     confidence_threshold,
                                     float(demisto.args().get('wordThreshold', 0)),

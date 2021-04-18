@@ -168,7 +168,8 @@ class McAfeeESMClient(BaseClient):
         """
         path = 'userGetUserList'
         headers = ['ID', 'Name', 'Email', 'Groups', 'IsMaster', 'IsAdmin', 'SMS']
-        result = self.__request(path, data={"authPW": {"value": self.__password}})
+        raw_response = self.__request(path, data={"authPW": {"value": self.__password}})
+        result = raw_response
         context_entry: List = [Dict] * len(result)
         human_readable = ''
         if not raw:
@@ -185,7 +186,8 @@ class McAfeeESMClient(BaseClient):
                     context_entry[i]['Groups'] = ''.join(str(result[i]['groups']))
 
             human_readable = tableToMarkdown(name='User list', t=context_entry, headers=headers)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry},\
+            raw_response
 
     def get_organization_list(self, raw: bool = False) -> Tuple[str, Dict, List[Dict]]:
         """
@@ -193,20 +195,20 @@ class McAfeeESMClient(BaseClient):
         :return: list of all organizations
         """
         path = 'caseGetOrganizationList'
-        result = self.__request(path)
-        entry: List = [None] * len(result)
+        raw_response = self.__request(path)
+        entry: List = [None] * len(raw_response)
         context_entry: Dict = {}
         human_readable: str = ''
         if not raw:
-            for i in range(len(result)):
+            for i in range(len(raw_response)):
                 entry[i] = {
-                    'ID': result[i].get('id'),
-                    'Name': result[i].get('name')
+                    'ID': raw_response[i].get('id'),
+                    'Name': raw_response[i].get('name')
                 }
             context_entry = {f'{CONTEXT_INTEGRATION_NAME}Organization(val.ID && val.ID == obj.ID)': entry}
-            human_readable = tableToMarkdown(name='Organizations', t=result)
+            human_readable = tableToMarkdown(name='Organizations', t=raw_response)
 
-        return human_readable, context_entry, result
+        return human_readable, context_entry, raw_response
 
     def get_case_list(self, start_time: str = None, raw: bool = False) -> Tuple[str, Dict, List]:
         """
@@ -220,7 +222,8 @@ class McAfeeESMClient(BaseClient):
         if not raw and not start_time:
             _, start_time, _ = set_query_times(since=since, difference=self.difference)
             start_time = convert_time_format(str(start_time), difference=self.difference)
-        result: List = self.__request(path)
+        raw_response: List = self.__request(path)
+        result = raw_response
         for case in result:
             case = dict_times_set(case, self.difference)
             if not start_time or not start_time > case.get('openTime'):
@@ -238,12 +241,14 @@ class McAfeeESMClient(BaseClient):
                 context_entry.append(temp_case)
         if not raw:
             human_readable = tableToMarkdown(name=f'cases since {since}', t=context_entry)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry},\
+            raw_response
 
     def get_case_event_list(self) -> Tuple[str, Dict, List[Dict]]:
         path = 'caseGetCaseEventsDetail'
         ids = argToList(self.args.get('ids'))
-        result = self.__request(path, data={'eventIds': {'list': ids}})
+        raw_response = self.__request(path, data={'eventIds': {'list': ids}})
+        result = raw_response
         case_event: List = [None] * len(result)
         for i in range(len(result)):
             result[i] = dict_times_set(result[i], self.difference)
@@ -255,11 +260,12 @@ class McAfeeESMClient(BaseClient):
 
         context_entry = {f'{CONTEXT_INTEGRATION_NAME}CaseEvent(val.ID && val.ID == obj.ID)': case_event}
         human_readable = tableToMarkdown(name='case event list', t=result)
-        return human_readable, context_entry, result
+        return human_readable, context_entry, raw_response
 
     def get_case_detail(self, case_id: str = None, raw: bool = False) -> Tuple[str, Dict, Dict]:
         path = 'caseGetCaseDetail'
-        result = self.__request(path, data={'id': case_id if case_id else self.args.get('id')})
+        raw_response = self.__request(path, data={'id': case_id if case_id else self.args.get('id')})
+        result = raw_response
         result = dict_times_set(result, difference=self.difference)
         status_id = result.get('statusId', {})
         if not isinstance(status_id, int):
@@ -281,16 +287,17 @@ class McAfeeESMClient(BaseClient):
         del readable_outputs['EventList']
         if not raw:
             human_readable = tableToMarkdown(name='Case', t=readable_outputs)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry}, \
+            raw_response
 
     def get_case_statuses(self, raw: bool = False) -> Tuple[str, Dict, Dict]:
         path = 'caseGetCaseStatusList'
         headers = ['id', 'name', 'default', 'showInCasePane']
-        result = self.__request(path)
+        raw_response = self.__request(path)
         human_readable = ''
         if not raw:
-            human_readable = tableToMarkdown(name='case statuses', t=result, headers=headers)
-        return human_readable, {}, result
+            human_readable = tableToMarkdown(name='case statuses', t=raw_response, headers=headers)
+        return human_readable, {}, raw_response
 
     def add_case(self) -> Tuple[str, Dict, Dict]:
         path = 'caseAddCase'
@@ -307,8 +314,8 @@ class McAfeeESMClient(BaseClient):
             'statusId': {'value': self.__status_and_id(status_name=self.args.get('status')).get('id')}
         }
         result = self.__request(path, data={'caseDetail': case_details})
-        human_readable, context_entry, result = self.get_case_detail(result.get('value'))
-        return human_readable, context_entry, result
+        human_readable, context_entry, raw_response = self.get_case_detail(result.get('value'))
+        return human_readable, context_entry, raw_response
 
     def edit_case(self) -> Tuple[str, Dict, Dict]:
         path = 'caseEditCase'
@@ -344,10 +351,10 @@ class McAfeeESMClient(BaseClient):
         }
         if 'should_show_in_case_pane' in self.args:
             status_details['showInCasePane'] = self.args['should_show_in_case_pane']
-        result = self.__request(path, data={'status': status_details})
+        raw_response = self.__request(path, data={'status': status_details})
         self.__cache['status'] = {}
         status_id = status_details['name']
-        return f'Added case status : {status_id}', {}, result
+        return f'Added case status : {status_id}', {}, raw_response
 
     def edit_case_status(self) -> Tuple[str, Dict, Dict]:
         path = 'caseEditCaseStatus'
@@ -361,9 +368,9 @@ class McAfeeESMClient(BaseClient):
 
         if 'show_in_case_pane' in self.args:
             status_details['status']['showInCasePane'] = self.args.get('show_in_case_pane')
-        self.__request(path, data=status_details)
+        raw_response = self.__request(path, data=status_details)
         self.__cache['status'] = {}
-        return f'Edited case status with ID: {status_id}', {}, {}
+        return f'Edited case status with ID: {status_id}', {}, raw_response
 
     def delete_case_status(self) -> Tuple[str, Dict, Dict]:
         path = 'caseDeleteCaseStatus'
@@ -374,11 +381,12 @@ class McAfeeESMClient(BaseClient):
 
     def fetch_fields(self) -> Tuple[str, Dict, Dict[str, list]]:
         path = 'qryGetFilterFields'
-        result = self.__request(path)
+        raw_response = self.__request(path)
+        result = raw_response
         for field_type in result:
             field_type['types'] = ','.join(set(field_type['types']))
         human_readable = tableToMarkdown(name='Fields', t=result)
-        return human_readable, {}, result
+        return human_readable, {}, raw_response
 
     def fetch_alarms(self, since: str = None, start_time: str = None, end_time: str = None, raw: bool = False) \
             -> Tuple[str, Dict, List]:
@@ -406,7 +414,8 @@ class McAfeeESMClient(BaseClient):
                 'id': self.__username_and_id(user_name=assigned_user).get('id')
             }
         }
-        result = self.__request(path, data=data, params=params)
+        raw_response = self.__request(path, data=data, params=params)
+        result = raw_response
 
         for i in range(len(result)):
             result[i] = dict_times_set(result[i], self.difference)
@@ -429,7 +438,8 @@ class McAfeeESMClient(BaseClient):
             table_headers = ['id', 'acknowledgedDate', 'acknowledgedUsername', 'alarmName', 'assignee', 'conditionType',
                              'severity', 'summary', 'triggeredDate']
             human_readable = tableToMarkdown(name='Alarms', t=result, headers=table_headers)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Alarm(val.ID && val.ID == obj.ID)': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Alarm(val.ID && val.ID == obj.ID)': context_entry},\
+            raw_response
 
     def acknowledge_alarms(self) -> Tuple[str, Dict, Dict]:
         try:
@@ -464,15 +474,17 @@ class McAfeeESMClient(BaseClient):
 
     def get_alarm_event_details(self) -> Tuple[str, Dict, Dict]:
         path = 'ipsGetAlertData'
-        result = self.__request(path, data={'id': self.args.get('eventId')})
+        raw_response = self.__request(path, data={'id': self.args.get('eventId')})
+        result = raw_response
         result = dict_times_set(result, self.difference)
         context_entry = self.__alarm_event_context_and_times_set(result)
         human_readable = tableToMarkdown(name='Alarm events', t=context_entry)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}AlarmEvent': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}AlarmEvent': context_entry}, raw_response
 
     def list_alarm_events(self) -> Tuple[str, Dict, Dict]:
         path = 'notifyGetTriggeredNotificationDetail'
-        result = self.__request(path, data={'id': self.args.get('alarmId')})
+        raw_response = self.__request(path, data={'id': self.args.get('alarmId')})
+        result = raw_response
         result = dict_times_set(result, self.difference)
         human_readable: str = ''
         context_entry: List = []
@@ -483,7 +495,7 @@ class McAfeeESMClient(BaseClient):
             human_readable = tableToMarkdown(name='Alarm events', t=context_entry)
 
         return human_readable, {f'{CONTEXT_INTEGRATION_NAME}'
-                                f'AlarmEvent(val.ID && val.ID == obj.ID)': context_entry}, result
+                                f'AlarmEvent(val.ID && val.ID == obj.ID)': context_entry}, raw_response
 
     def complete_search(self):
         time_out = int(self.args.get('timeOut', 30))
@@ -545,7 +557,7 @@ class McAfeeESMClient(BaseClient):
             'numRows': self.args.get('ratePerFetch', 50)
         }
         result_ready = False
-        result: Dict[str, List] = {
+        raw_response: Dict[str, List] = {
             'columns': [],
             'rows': []
         }
@@ -553,12 +565,12 @@ class McAfeeESMClient(BaseClient):
         while not result_ready:
             try:
                 temp = self.__request(path, data={'resultID': search_id}, params=params)
-                if not result['columns']:
-                    result['columns'] = temp.get('columns')
+                if not raw_response['columns']:
+                    raw_response['columns'] = temp.get('columns')
                 if len(temp.get('rows', {})) < params['numRows']:
                     result_ready = True
 
-                result['rows'].extend(temp.get('rows'))
+                raw_response['rows'].extend(temp.get('rows'))
                 params['startPos'] += params['numRows']
 
             except DemistoException as error:
@@ -566,6 +578,7 @@ class McAfeeESMClient(BaseClient):
                     raise
                 else:
                     result_ready = True
+        result = raw_response
         result = table_times_set(result, self.difference)
         entry: List = [{}] * len(result['rows'])
         headers = [str(field.get('name')).replace('.', '') for field in result['columns']]
@@ -575,7 +588,7 @@ class McAfeeESMClient(BaseClient):
         condition = '(val.AlertIPSIDAlertID && val.AlertIPSIDAlertID == obj.AlertIPSIDAlertID)' \
             if 'AlertIPSIDAlertID' in headers else ''
         context_entry = {f'{CONTEXT_INTEGRATION_NAME}results{condition}': entry}
-        return search_readable_outputs(result), context_entry, result
+        return search_readable_outputs(result), context_entry, raw_response
 
     def __alarm_event_context_and_times_set(self, result: Dict) -> Dict:
         context_entry = {
@@ -717,9 +730,9 @@ class McAfeeESMClient(BaseClient):
             'watchlist': watchlist_id if watchlist_id else self.__get_watchlist_id(self.args.get('watchlist_name', '')),
             'values': argToList(self.args.get('values', ''))
         }
-        self.__request(command, data=data)
+        raw_response = self.__request(command, data=data)
         human_readable = 'Watchlist successfully updated.'
-        return human_readable, {}, {}
+        return human_readable, {}, raw_response
 
     def watchlist_delete_entry(self):
         command = 'sysRemoveWatchlistValues'
