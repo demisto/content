@@ -144,7 +144,7 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             limit = 30
-            mocker.patch.object(edl, 'find_indicators_to_limit_loop', return_value=iocs_json)
+            mocker.patch.object(edl, 'find_indicators_to_limit_loop', return_value=(iocs_json, 1))
             edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit)
             assert len(edl_vals) == limit
 
@@ -156,11 +156,35 @@ class TestHelperFunctions:
             iocs_json = json.loads(iocs_json_f.read())
             limit = 30
             offset = 1
-            mocker.patch.object(edl, 'find_indicators_to_limit_loop', return_value=iocs_json)
+            mocker.patch.object(edl, 'find_indicators_to_limit_loop', return_value=(iocs_json, 1))
             edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit, offset=offset)
             assert len(edl_vals) == limit
             # check that the first value is the second on the list
             assert edl_vals[0].get('value') == '212.115.110.19'
+
+    @pytest.mark.find_indicators_to_limit_loop
+    def test_find_indicators_to_limit_loop_1(self, mocker):
+        """Test find indicators stops when reached last page"""
+        import EDL as edl
+        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
+            limit = 50
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
+            edl_vals, nxt_pg = edl.find_indicators_to_limit_loop(indicator_query='', limit=limit)
+            assert nxt_pg == 1  # assert entered into loop
+
+    @pytest.mark.find_indicators_to_limit_loop
+    def test_find_indicators_to_limit_loop_2(self, mocker):
+        """Test find indicators stops when reached limit"""
+        import EDL as edl
+        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
+            limit = 30
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
+            edl.PAGE_SIZE = IOC_RES_LEN
+            edl_vals, nxt_pg = edl.find_indicators_to_limit_loop(indicator_query='', limit=limit,
+                                                                 last_found_len=IOC_RES_LEN)
+            assert nxt_pg == 1  # assert entered into loop
 
     @pytest.mark.validate_basic_authentication
     def test_create_values_for_returned_dict(self):
