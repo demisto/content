@@ -1053,7 +1053,6 @@ class Pack(object):
             previous_commit = content_repo.commit(previous_commit_hash)
 
             for modified_file in current_commit.diff(previous_commit):
-            for modified_file in current_commit.diff(previous_commit).iter_change_type('M'):
                 logging.info(f'$$$$$$ modified file a path:{modified_file.a_path}')
                 logging.info(f'$$$$$$ modified file b path:{modified_file.b_path}')
                 if modified_file.a_path.startswith(PACKS_FOLDER):
