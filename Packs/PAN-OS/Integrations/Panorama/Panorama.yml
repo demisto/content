@@ -4589,7 +4589,7 @@ script:
     arguments:
     - name: version_name
       required: true
-      description: Update file name to be installed on Panorama
+      description: Update file name to be installed on PAN-OS.
     - name: category
       required: true
       auto: PREDEFINED
@@ -4604,7 +4604,7 @@ script:
       predefined:
       - "yes"
       - "no"
-      description: Skips file validity check with PANW update server. Use this option
+      description: Skips file validity check with PAN-OS update server. Use this option
         for networks disconnected from the Internet and only if you trust the content
         file.
       defaultValue: "no"
