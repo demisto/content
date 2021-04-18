@@ -81,7 +81,7 @@ script:
       description: A rank that's based on popularity.
       type: Number
     - contextPath: HostIo.Domain.web.server
-      description: Name of the server where the domain exist.
+      description: Name of the server where the domain exists.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
