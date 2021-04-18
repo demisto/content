@@ -11,6 +11,9 @@ import logging
 from datetime import datetime
 from zipfile import ZipFile
 from typing import Any, Tuple, Union, Optional
+
+from google.cloud.storage import Bucket
+
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
     LANDING_PAGE_SECTIONS_PATH, get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, \
@@ -246,6 +249,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
                             index_generation: int, is_private: bool = False, force_upload: bool = False,
                             previous_commit_hash: str = None, landing_page_sections: dict = None,
                             artifacts_dir: Optional[str] = None,
+                            storage_bucket: Optional[Bucket] = None,
                             ):
     """
     Upload updated index zip to cloud storage.
@@ -262,6 +266,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param previous_commit_hash: The previous commit hash to diff with.
     :param landing_page_sections: landingPage sections.
     :param artifacts_dir: The CircleCI artifacts directory to upload the index.json to.
+    :param storage_bucket: The storage bucket object
     :returns None.
 
     """
@@ -300,7 +305,9 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
         if is_private or current_index_generation == index_generation:
             # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
-            index_blob.upload_from_filename(index_json_path)
+            if storage_bucket:
+                storage_blob = storage_bucket.blob(index_json_path)
+                storage_blob.upload_from_filename(index_json_path)
             index_blob.upload_from_filename(index_zip_path)
             logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
@@ -1104,7 +1111,9 @@ def main():
                             current_commit_hash=current_commit_hash, index_generation=index_generation,
                             force_upload=force_upload, previous_commit_hash=previous_commit_hash,
                             landing_page_sections=landing_page_sections,
-                            artifacts_dir=os.path.dirname(packs_artifacts_path))
+                            artifacts_dir=os.path.dirname(packs_artifacts_path),
+                            storage_bucket=storage_bucket,
+                            )
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
