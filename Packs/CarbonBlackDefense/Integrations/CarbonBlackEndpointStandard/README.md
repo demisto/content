@@ -5,10 +5,10 @@ This integration was integrated and tested with version 1.1.2 of Carbon Black En
 The old integration is deprecated because Carbon Black have released a new version of their API.
 The new integration supports new commands, Also added a Mapper and a Layout.
 
-## Configure Carbon Black Defense v2 on Cortex XSOAR
+## Configure Carbon Black Endpoint Standard on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Carbon Black Defense v2.
+2. Search for Carbon Black Endpoint Standard.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -197,7 +197,7 @@ RBAC Permissions Required - org.alerts: READ
 
 #### Human Readable Output
 
->### Carbon Black Defense Get Alert Details
+>### Carbon Black Endpoint Standard Get Alert Details
 >|Id|Category|Device Id|Device Name|Device Username|Create Time|Ioc Hit|Policy Name|Process Name|Type|Severity|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 1234 | THREAT | 5678 | AB\winABC-123 | jon@example.com | 2021-04-04T10:42:54.143Z | ((netconn_port:5355 device_os:WINDOWS)) -enriched:true | default | svchost.exe | WATCHLIST | 1 |
@@ -625,7 +625,7 @@ RBAC Permissions Required - device: READ
 
 #### Human Readable Output
 
->### Carbon Black Defense Devices List Results
+>### Carbon Black Endpoint Standard Devices List Results
 >|Id|Name|Os|Policy Name|Quarantined|Status|Target Priority|Last Internal Ip Address|Last External Ip Address|Last Contact Time|Last Location|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 1234 | bo1tapsandbox-01 | LINUX | LRDemo-JH | false | REGISTERED | MEDIUM | 8.8.8.8 | 1.1.1.1 | 2021-04-04T13:29:14.616Z | UNKNOWN |
@@ -699,7 +699,7 @@ RBAC Permissions Required - org.search.events: CREATE
 
 #### Human Readable Output
 
->### Carbon Black Defense Processes Search
+>### Carbon Black Endpoint Standard Processes Search
 >|Job Id|
 >|---|
 >| f5a2ae0e-c3f7-4443-882d-009097eaabd3 |
@@ -771,7 +771,7 @@ RBAC Permissions Required - org.search.events: CREATE
 
 #### Human Readable Output
 
->### Carbon Black Defense Events Search
+>### Carbon Black Endpoint Standard Events Search
 >|Job Id|
 >|---|
 >| b853bf18-d1f3-4dcc-b590-6626ee547bec |
@@ -1754,7 +1754,7 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->### Carbon Black Defense Policies
+>### Carbon Black Endpoint Standard Policies
 >|Id|Priority Level|System Policy|Latest Revision|Version|
 >|---|---|---|---|---|
 >| 6525 | LOW | true | 2021-04-02T06:05:12.000Z | 2 |
@@ -1971,7 +1971,7 @@ Live Response Permissions Required
 
 #### Human Readable Output
 
->### Carbon Black Defense Policy
+>### Carbon Black Endpoint Standard Policy
 >|Id|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|
 >| 6527 | Detection_Servers | 2021-02-15T20:41:32.000Z | 2 | HIGH | true |
@@ -2216,7 +2216,7 @@ Live Response Permissions Required
 
 #### Human Readable Output
 
->### Carbon Black Defense Policy
+>### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
 >| 123456 | update example | demisto test1 | 2021-04-04T13:28:57.000Z | 2 | HIGH | false |
@@ -2664,7 +2664,7 @@ Live Response Permissions Required
 
 #### Human Readable Output
 
->### Carbon Black Defense Policy
+>### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
 >| 67586 | This is Demisto's test policy | Demisto test3 | 2021-04-04T13:28:49.000Z | 2 | HIGH | false |
@@ -2944,7 +2944,7 @@ Live Response Permissions Required
 
 #### Human Readable Output
 
->### Carbon Black Defense Policy
+>### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
 >| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:00.000Z | 2 | LOW | false |
@@ -3194,7 +3194,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Carbon Black Defense Policy
+>### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
 >| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:04.000Z | 2 | LOW | false |
@@ -3445,7 +3445,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Carbon Black Defense Policy
+>### Carbon Black Endpoint Standard Policy
 >|Id|Description|Name|Latest Revision|Version|Priority Level|System Policy|
 >|---|---|---|---|---|---|---|
 >| 123456 | This is Demisto's test policy after an update | demisto test1 | 2021-04-04T13:29:07.000Z | 2 | LOW | false |
@@ -3644,7 +3644,7 @@ RBAC Permissions Required - org.search.events: READ
 
 #### Human Readable Output
 
->### Carbon Black Defense Event Results
+>### Carbon Black Endpoint Standard Event Results
 >|Event Id|Device Id|Event Network Remote Port|Event Network Remote Ipv4|Event Network Local Ipv4|Enriched Event Type|
 >|---|---|---|---|---|---|
 >| 1234 | 1112 |  |  |  | CREATE_PROCESS |
@@ -3694,7 +3694,7 @@ RBAC Permissions Required - org.search.events: CREATE
 
 #### Human Readable Output
 
->### Carbon Black Defense Event Details Search
+>### Carbon Black Endpoint Standard Event Details Search
 >|Job Id|
 >|---|
 >| 3b7c0a61-2ef5-4541-b9bb-2389bd009d32 |
@@ -3832,7 +3832,7 @@ RBAC Permissions Required - org.search.events: READ
 
 #### Human Readable Output
 
->### Carbon Black Defense Event Details Results
+>### Carbon Black Endpoint Standard Event Details Results
 >|Event Id|Device Id|Event Network Remote Port|Event Network Remote Ipv4|Event Network Local Ipv4|Enriched Event Type|
 >|---|---|---|---|---|---|
 >| 1234 | 5678 | 80 | 8.8.8.8 | 1.1.1.1 | NETWORK |
@@ -4365,7 +4365,7 @@ RBAC Permissions Required - org.alerts: READ
 
 #### Human Readable Output
 
->### Carbon Black Defense Alerts List Results
+>### Carbon Black Endpoint Standard Alerts List Results
 >|Id|Category|Device Id|Device Name|Device Username|Create Time|Ioc Hit|Policy Name|Process Name|Type|Severity|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 1234 | THREAT | 1234 | QA\win2k16-vg6-11 | jon@example.com | 2021-04-04T13:28:21.393Z |  | default | setup.exe | CB_ANALYTICS | 2 |
