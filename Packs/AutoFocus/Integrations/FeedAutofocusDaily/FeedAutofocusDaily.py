@@ -1,10 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from typing import List, Tuple, Optional
 
 # IMPORTS
 import requests
-from typing import List, Tuple, Optional
+from CommonServerUserPython import *
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -246,15 +246,9 @@ def main():
         'autofocus-daily-get-indicators': get_indicators_command
     }
     try:
-        api_key = params.get('api_key')
-        if not api_key:
-            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
-                raise Exception('For versions earlier than 6.2.0, configure an API Key.')
-            if not params.get('override_default_credentials'):
-                raise Exception('If you wish to override the default credentials, please configure an API Key.')
-            api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
-
-        client = Client(api_key=api_key,
+        auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'),
+                                                         params.get('override_default_credentials'))
+        client = Client(api_key=auto_focus_key_retriever.key,
                         insecure=params.get('insecure'))
 
         if demisto.command() == 'fetch-indicators':

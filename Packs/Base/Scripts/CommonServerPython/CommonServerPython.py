@@ -6449,3 +6449,17 @@ class TableOrListWidget(BaseWidget):
             'total': len(self.data),
             'data': self.data
         })
+
+class AutoFocusKeyRetriever:
+    def __init__(self, api_key, override_default_credentials):
+        # demisto.getAutoFocusApiKey() is available from version 6.2.0
+        if not api_key:
+            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
+                raise Exception('For versions earlier than 6.2.0, configure an API Key.')
+            if not override_default_credentials:
+                raise Exception('If you wish to override the default credentials, please configure an API Key.')
+            try:
+                api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
+            except ValueError as err:
+                raise Exception('AutoFocus API Key is only available on the main account. ' + str(err))
+        self.key = api_key

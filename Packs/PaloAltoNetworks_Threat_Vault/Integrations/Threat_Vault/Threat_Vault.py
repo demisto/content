@@ -1,5 +1,3 @@
-from typing import Dict
-
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -513,13 +511,8 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    api_key = params.get('api_key')
-    if not api_key:
-        if not is_demisto_version_ge("6.2.0"):
-            return_error('For versions earlier than 6.2.0, configure an API Key.')
-        if api_key.get('override_default_credentials'):
-            return_error('If you wish to override the default credentials, please configure an API Key.')
-        api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
+    auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'),
+                                                     params.get('override_default_credentials'))
 
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
@@ -527,7 +520,7 @@ def main():
     try:
         command = demisto.command()
         LOG(f'Command being called is {demisto.command()}')
-        client = Client(api_key=api_key, verify=verify, proxy=proxy)
+        client = Client(api_key=auto_focus_key_retriever.key, verify=verify, proxy=proxy)
         commands = {
             'threatvault-antivirus-signature-get': antivirus_signature_get,
             'file': file_command,

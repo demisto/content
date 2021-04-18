@@ -1,8 +1,4 @@
-from typing import Optional
-
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
@@ -18,13 +14,8 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
 
-API_KEY = PARAMS.get('api_key')
-if not API_KEY:
-    if not is_demisto_version_ge("6.2.0"):
-        return_error('For versions earlier than 6.2.0, configure an API Key.')
-    if PARAMS.get('override_default_credentials'):
-        return_error('If you wish to override the default credentials, please configure an API Key.')
-    API_KEY = demisto.getAutoFocusApiKey()  # is not available on tenants
+API_KEY = AutoFocusKeyRetriever(PARAMS.get('api_key'),
+                                PARAMS.get('override_default_credentials')).key
 
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = 'https://autofocus.paloaltonetworks.com'
@@ -265,7 +256,6 @@ if PARAMS.get('mark_as_malicious'):
     verdicts = argToList(PARAMS.get('mark_as_malicious'))
     for verdict in verdicts:
         VERDICTS_TO_DBOTSCORE[verdict] = 3
-
 
 ''' HELPER FUNCTIONS '''
 
