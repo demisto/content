@@ -61,6 +61,72 @@ default:
     - npm --version
     - demisto-sdk --version
 
+run-unittests-and-lint:
+  stage: unittests-and-validations
+  artifacs:
+    expire_in: 48 hrs
+    paths:
+      - /builds/xsoar/content/unit-tests/*
+      - /builds/xsoar/content/artifacts/*
+    when: always
+  script:
+    - echo "====Trigger Private Build===="
+    - |
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]]; then
+        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+          echo "Skipping - not running in contribution instance"
+        else
+          python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+        fi
+      fi
+    - echo "====Test Infrustracture===="
+    - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
+    - python3 -m pytest ./Tests/Marketplace/Tests/ -v
+    - python3 -m pytest ./Tests/scripts/utils/tests -v
+    - python3 -m pytest ./Tests/tests -v
+    - python3 -m pytest ./Tests/private_build/ -v
+    - python3 -m pytest Utils -v
+    - |
+      if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
+      ./Tests/scripts/sdk_pylint_check.sh
+      fi
+    - echo "====Run Unit Testing and Lint===="
+    - |
+      if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+        echo "Skipping validations when uploading to a test bucket."
+      else
+        echo "demisto-sdk version: $(demisto-sdk --version)"
+        echo "mypy version: $(mypy --version)"
+        echo "flake8 py2 version: $(python2 -m flake8 --version)"
+        echo "flake8 py3 version: $(python3 -m flake8 --version)"
+        echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
+        echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
+        echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
+        echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
+        SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+        mkdir ./unit-tests
+        if [ -n "$SHOULD_LINT_ALL" ]; then
+          echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
+          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+        else
+          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+        fi
+      - echo "====Get Private Build Status===="
+      - |
+        if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]]; then
+          if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+            echo "Skipping - not running in contribution instance"
+          else
+            python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+          fi
+        fi
+      - echo "====Run Slack Notifier===="
+      - |
+        if [ -n "${BUCKET_UPLOAD}" ]; then
+          ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
+        else
+          ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+        fi
 
 variables:
   CONTENT_VERSION: "21.3.2"
