@@ -4,7 +4,6 @@ import stat
 import subprocess
 import fnmatch
 import re
-from pprint import pformat
 import glob
 import git
 import sys
@@ -12,8 +11,6 @@ import shutil
 import yaml
 import google.auth
 from google.cloud import storage
-from google.cloud import bigquery
-import enum
 import base64
 import urllib.parse
 import logging
@@ -22,145 +19,13 @@ from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime, timedelta
 from zipfile import ZipFile, ZIP_DEFLATED
+from typing import Tuple, Any, Union
 
-from Tests.scripts.utils.content_packs_util import IGNORED_FILES
+from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
+    PackTags, PackIgnored
+import Tests.Marketplace.marketplace_statistics as mp_statistics
+
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
-from typing import Tuple, Any, Union, List
-
-CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
-PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
-PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
-IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
-LANDING_PAGE_SECTIONS_PATH = os.path.abspath(os.path.join(__file__, '../landingPage_sections.json'))
-TRENDING_TAG_NAME = 'Trending'
-
-
-class BucketUploadFlow(object):
-    """ Bucket Upload Flow constants
-
-    """
-    PACKS_RESULTS_FILE = "packs_results.json"
-    PREPARE_CONTENT_FOR_TESTING = "prepare_content_for_testing"
-    UPLOAD_PACKS_TO_MARKETPLACE_STORAGE = "upload_packs_to_marketplace_storage"
-    SUCCESSFUL_PACKS = "successful_packs"
-    SUCCESSFUL_PRIVATE_PACKS = "successful_private_packs"
-    FAILED_PACKS = "failed_packs"
-    STATUS = "status"
-    AGGREGATED = "aggregated"
-    IMAGES = 'images'
-    AUTHOR = 'author'
-    INTEGRATIONS = 'integrations'
-    BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
-    BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
-    UPLOAD_JOB_NAME = "Upload Packs To Marketplace"
-    LATEST_VERSION = 'latest_version'
-    INTEGRATION_DIR_REGEX = r"^integration-(.+).yml$"
-
-
-class GCPConfig(object):
-    """ Google cloud storage basic configurations
-
-    """
-    STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
-    IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
-    BUILD_PATH_PREFIX = "content/builds"
-    BUILD_BASE_PATH = ""
-    PRIVATE_BASE_PATH = "content/packs"
-    STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
-    USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
-    GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
-    PRODUCTION_BUCKET = "marketplace-dist"
-    CI_BUILD_BUCKET = "marketplace-ci-build"
-    PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
-    CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
-    BASE_PACK = "Base"  # base pack name
-    INDEX_NAME = "index"  # main index folder name
-    CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    DOWNLOADS_TABLE = "oproxy-dev.shared_views.top_packs"  # packs downloads statistics table
-    TOP_PACKS_14_DAYS_TABLE = 'oproxy-dev.shared_views.top_packs_14_days'
-    BIG_QUERY_MAX_RESULTS = 2000  # big query max row results
-
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
-        CORE_PACKS_LIST = json.load(core_packs_list_file)
-
-
-class Metadata(object):
-    """ Metadata constants and default values that are used in metadata parsing.
-    """
-    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-    XSOAR_SUPPORT = "xsoar"
-    PARTNER_SUPPORT = "partner"
-    XSOAR_SUPPORT_URL = "https://www.paloaltonetworks.com/cortex"  # disable-secrets-detection
-    XSOAR_AUTHOR = "Cortex XSOAR"
-    SERVER_DEFAULT_MIN_VERSION = "6.0.0"
-    CERTIFIED = "certified"
-    EULA_URL = "https://github.com/demisto/content/blob/master/LICENSE"  # disable-secrets-detection
-
-
-class PackFolders(enum.Enum):
-    """ Pack known folders. Should be replaced by constants from demisto-sdk in later step.
-
-    """
-    SCRIPTS = "Scripts"
-    PLAYBOOKS = "Playbooks"
-    INTEGRATIONS = "Integrations"
-    TEST_PLAYBOOKS = 'TestPlaybooks'
-    REPORTS = "Reports"
-    DASHBOARDS = 'Dashboards'
-    WIDGETS = 'Widgets'
-    INCIDENT_FIELDS = 'IncidentFields'
-    INCIDENT_TYPES = 'IncidentTypes'
-    INDICATOR_FIELDS = 'IndicatorFields'
-    LAYOUTS = 'Layouts'
-    CLASSIFIERS = 'Classifiers'
-    INDICATOR_TYPES = 'IndicatorTypes'
-    CONNECTIONS = "Connections"
-
-    @classmethod
-    def pack_displayed_items(cls):
-        return {
-            PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
-            PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
-            PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
-            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
-        }
-
-    @classmethod
-    def yml_supported_folders(cls):
-        return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
-                PackFolders.TEST_PLAYBOOKS.value}
-
-    @classmethod
-    def json_supported_folders(cls):
-        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
-                PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
-                PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.WIDGETS.value}
-
-
-class PackStatus(enum.Enum):
-    """ Enum of pack upload status, is used in printing upload summary.
-
-    """
-    SUCCESS = "Successfully uploaded pack data to gcs"
-    FAILED_LOADING_USER_METADATA = "Failed in loading user defined metadata"
-    FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
-    FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
-    FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
-    FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
-    FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
-    FAILED_SIGNING_PACKS = "Failed to sign the packs"
-    FAILED_PREPARING_INDEX_FOLDER = "Failed in preparing and cleaning necessary index files"
-    FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
-    FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
-    PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
-    PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific pack is not updated in current build"
-    FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
-    FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
-    FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
-    FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
-    FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
-                          " which should be encrypted, seems not to be encrypted."
 
 
 class Pack(object):
@@ -189,8 +54,6 @@ class Pack(object):
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
-    PACK_IGNORE = ".pack-ignore"
-    SECRETS_IGNORE = ".secrets-ignore"
 
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
@@ -210,10 +73,32 @@ class Pack(object):
         self._bucket_url = None  # URL of where the pack was uploaded.
         self._aggregated = False  # weather the pack's rn was aggregated or not.
         self._aggregation_str = ""  # the aggregation string msg when the pack versions are aggregated
-        self._create_date = None
-        self._update_date = None
+        self._create_date = None  # initialized in enhance_pack_attributes function
+        self._update_date = None  # initialized in enhance_pack_attributes function
         self._uploaded_author_image = False  # whether the pack author image was uploaded or not
         self._uploaded_integration_images = []  # the list of all integration images that were uploaded for the pack
+        self._support_details = None  # initialized in enhance_pack_attributes function
+        self._author = None  # initialized in enhance_pack_attributes function
+        self._certification = None  # initialized in enhance_pack_attributes function
+        self._legacy = None  # initialized in enhance_pack_attributes function
+        self._author_image = None  # initialized in enhance_pack_attributes function
+        self._price = 0  # initialized in enhance_pack_attributes function
+        self._is_private_pack = False  # initialized in enhance_pack_attributes function
+        self._is_premium = False  # initialized in enhance_pack_attributes function
+        self._vendor_id = None  # initialized in enhance_pack_attributes function
+        self._partner_id = None  # initialized in enhance_pack_attributes function
+        self._partner_name = None  # initialized in enhance_pack_attributes function
+        self._content_commit_hash = None  # initialized in enhance_pack_attributes function
+        self._preview_only = None  # initialized in enhance_pack_attributes function
+        self._tags = None  # initialized in enhance_pack_attributes function
+        self._categories = None  # initialized in enhance_pack_attributes function
+        self._content_items = None  # initialized in collect_content_items function
+        self._search_rank = None  # initialized in enhance_pack_attributes function
+        self._related_integration_images = None  # initialized in enhance_pack_attributes function
+        self._use_cases = None  # initialized in enhance_pack_attributes function
+        self._keywords = None  # initialized in enhance_pack_attributes function
+        self._dependencies = None  # initialized in enhance_pack_attributes function
+        self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
 
     @property
     def name(self):
@@ -389,11 +274,19 @@ class Pack(object):
         """
         return self._create_date
 
+    @create_date.setter
+    def create_date(self, value):
+        self._create_date = value
+
     @property
     def update_date(self):
         """ str: pack update date.
         """
         return self._update_date
+
+    @update_date.setter
+    def update_date(self, value):
+        self._update_date = value
 
     @property
     def uploaded_author_image(self):
@@ -588,161 +481,76 @@ class Pack(object):
         else:
             return ""
 
-    @staticmethod
-    def _get_search_rank(name, tags, certification, content_items):
-        """ Returns pack search rank.
-
-        The initial value is 0
-        In case the pack has the tag Featured, its search rank will increase by 10
-        In case the pack was released in the last 30 days, its search rank will increase by 10
-        In case the pack is certified, its search rank will increase by 10
-        In case all the pack's integration are deprecated and there is at least 1 integration in the pack,
-        the pack's search rank will decrease by 50
-
-        Args:
-            name (str): the pack's name.
-            tags (str): the pack's tags.
-            certification (str): certification value from pack_metadata, if exists.
-            content_items (dict): all the pack's content items, including integrations info
-
-        Returns:
-            str: certification value
-        """
-        search_rank = 0
-        all_deprecated = False
-
-        if 'Featured' in tags:
-            search_rank += 10
-        if 'New' in tags:
-            search_rank += 10
-        if certification == Metadata.CERTIFIED:
-            search_rank += 10
-        if content_items:
-            integrations = content_items.get("integration")
-            if isinstance(integrations, list):
-                for integration in integrations:
-                    if 'deprecated' in integration.get('name').lower():
-                        all_deprecated = True
-                    else:
-                        all_deprecated = False
-                        break
-
-        if all_deprecated:
-            search_rank -= 50
-
-        return search_rank
-
-    def _handle_pack_tags(self, landing_page_sections: dict, user_tags: list = None) -> list:
+    def _get_tags_from_landing_page(self, landing_page_sections: dict) -> set:
         """
         Build the pack's tag list according to the user metadata and the landingPage sections file.
         Args:
-            user_tags (list): user metadata that was created in pack initialization.
             landing_page_sections (dict): landingPage sections and the packs in each one of them.
 
         Returns:
-            list: Pack's tags.
+            set: Pack's tags.
 
         """
 
-        tags = set(input_to_list(input_data=user_tags))
-
+        tags = set()
         sections = landing_page_sections.get('sections', []) if landing_page_sections else []
 
         for section in sections:
             if self._pack_name in landing_page_sections.get(section, []):
                 tags.add(section)
-        return list(tags)
 
-    def _parse_pack_metadata(self, user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data, server_min_version, build_number, commit_hash, downloads_count,
-                             is_feed_pack=False, landing_page_sections=None, trending_packs=None):
+        return tags
+
+    def _parse_pack_metadata(self, user_metadata, build_number, commit_hash):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
             user_metadata (dict): user metadata that was created in pack initialization.
-            pack_content_items (dict): content items located inside specific pack.
-            pack_id (str): pack unique identifier.
-            integration_images (list): list of gcs uploaded integration images.
-            author_image (str): gcs uploaded author image
-            dependencies_data (dict): mapping of pack dependencies data, of all levels.
-            server_min_version (str): server minimum version found during the iteration over content items.
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
-            downloads_count (int): number of packs downloads.
-            is_feed_pack (bool): a flag that indicates if the pack is a feed pack.
-            landing_page_sections (dict): landingPage sections and the packs in each one of them.
+
         Returns:
             dict: parsed pack metadata.
 
         """
-        pack_metadata = {}
-        pack_metadata['name'] = user_metadata.get('name') or pack_id
-        pack_metadata['id'] = pack_id
-        pack_metadata['description'] = user_metadata.get('description') or pack_id
-        pack_metadata['created'] = self._create_date
-        pack_metadata['updated'] = self._update_date
-        pack_metadata['legacy'] = user_metadata.get('legacy', True)
-        pack_metadata['support'] = user_metadata.get('support') or Metadata.XSOAR_SUPPORT
-        pack_metadata['supportDetails'] = Pack._create_support_section(support_type=pack_metadata['support'],
-                                                                       support_url=user_metadata.get('url'),
-                                                                       support_email=user_metadata.get('email'))
-        pack_metadata['eulaLink'] = Metadata.EULA_URL
-        pack_metadata['author'] = Pack._get_author(support_type=pack_metadata['support'],
-                                                   author=user_metadata.get('author', ''))
-        pack_metadata['authorImage'] = author_image
-        pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
-                                                                 certification=user_metadata.get('certification'))
-        pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
-        if 'partnerId' in user_metadata:
-            pack_metadata['premium'] = True
-            pack_metadata['vendorId'] = user_metadata.get('vendorId', "")
-            pack_metadata['partnerId'] = user_metadata.get('partnerId', "")
-            pack_metadata['partnerName'] = user_metadata.get('partnerName', "")
-            pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash', "")
-            if user_metadata.get('previewOnly'):
-                pack_metadata['previewOnly'] = True
-        pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
-        pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-        pack_metadata['versionInfo'] = build_number
-        pack_metadata['commit'] = commit_hash
-        pack_metadata['downloads'] = downloads_count
+        pack_metadata = {
+            'name': self._display_name or self._pack_name,
+            'id': self._pack_name,
+            'description': self._description or self._pack_name,
+            'created': self._create_date,
+            'updated': self._update_date,
+            'legacy': self._legacy,
+            'support': self._support_type,
+            'supportDetails': self._support_details,
+            'eulaLink': Metadata.EULA_URL,
+            'author': self._author,
+            'authorImage': self._author_image,
+            'certification': self._certification,
+            'price': self._price,
+            'serverMinVersion': user_metadata.get('serverMinVersion') or self.server_min_version,
+            'currentVersion': user_metadata.get('currentVersion', ''),
+            'versionInfo': build_number,
+            'commit': commit_hash,
+            'downloads': self._downloads_count,
+            'tags': list(self._tags),
+            'categories': self._categories,
+            'contentItems': self._content_items,
+            'searchRank': self._search_rank,
+            'integrations': self._related_integration_images,
+            'useCases': self._use_cases,
+            'keywords': self._keywords,
+            'dependencies': self._dependencies
+        }
 
-        # Setting a pack tags must come before calculating the pack's searchRank
-        pack_metadata['tags'] = self._handle_pack_tags(
-            user_tags=user_metadata.get('tags'), landing_page_sections=landing_page_sections)
-        if is_feed_pack and 'TIM' not in pack_metadata['tags']:
-            pack_metadata['tags'].append('TIM')
-        if self._create_date:
-            days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
-            if days_since_creation < 30 and 'New' not in pack_metadata['tags']:
-                pack_metadata['tags'].append('New')
-            if days_since_creation > 30 and 'New' in pack_metadata['tags']:
-                pack_metadata['tags'].remove('New')
-        if trending_packs:
-            if TRENDING_TAG_NAME in pack_metadata['tags']:
-                if self._pack_name not in trending_packs:
-                    logging.debug(f'Removing tag "{TRENDING_TAG_NAME}" from pack "{self._pack_name}"')
-                    pack_metadata['tags'].remove(TRENDING_TAG_NAME)
-            else:
-                if self._pack_name in trending_packs:
-                    logging.debug(f'Appending tag "{TRENDING_TAG_NAME}" into pack "{self._pack_name}"')
-                    pack_metadata['tags'].append(TRENDING_TAG_NAME)
-        pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
-        pack_metadata['contentItems'] = pack_content_items
-        pack_metadata['searchRank'] = Pack._get_search_rank(name=pack_metadata['name'],
-                                                            tags=pack_metadata['tags'],
-                                                            certification=pack_metadata['certification'],
-                                                            content_items=pack_content_items)
-
-        pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
-                                                                  user_metadata.get('displayedImages', []),
-                                                                  dependencies_data)
-        pack_metadata['useCases'] = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
-        if pack_metadata.get('useCases') and 'Use Case' not in pack_metadata['tags']:
-            pack_metadata['tags'].append('Use Case')
-        pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
-        pack_metadata['dependencies'] = Pack._parse_pack_dependencies(user_metadata.get('dependencies', {}),
-                                                                      dependencies_data)
+        if self._is_private_pack:
+            pack_metadata.update({
+                'premium': self._is_premium,
+                'vendorId': self._vendor_id,
+                'partnerId': self._partner_id,
+                'partnerName': self._partner_name,
+                'contentCommitHash': self._content_commit_hash,
+                'previewOnly': self._preview_only
+            })
 
         return pack_metadata
 
@@ -777,21 +585,6 @@ class Pack(object):
                 continue
 
         return dependencies_data_result
-
-    def _get_downloads_count(self, packs_statistic_df):
-        """ Returns number of packs downloads.
-
-        Args:
-             packs_statistic_df (pandas.core.frame.DataFrame): packs downloads statistics table.
-
-        Returns:
-            int: number of packs downloads.
-        """
-        downloads_count = 0
-        if self._pack_name in packs_statistic_df.index.values:
-            downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32'))
-
-        return downloads_count
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
                                 new_version=True, initial_release=False):
@@ -1591,6 +1384,7 @@ class Pack(object):
         except Exception:
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
+            self._content_items = content_items_result
             return task_status, content_items_result
 
     def load_user_metadata(self):
@@ -1627,15 +1421,97 @@ class Pack(object):
         finally:
             return task_status, user_metadata
 
-    def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df, pack_was_modified,
-                        landing_page_sections, trending_packs=None):
+    def _collect_pack_tags(self, user_metadata, landing_page_sections, trending_packs):
+        tags = set(input_to_list(input_data=user_metadata.get('tags')))
+        tags |= self._get_tags_from_landing_page(landing_page_sections)
+        tags |= {PackTags.TIM} if self._is_feed else set()
+        tags |= {PackTags.USE_CASE} if self._use_cases else set()
+
+        if self._create_date:
+            days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
+            if days_since_creation <= 30:
+                tags |= {PackTags.NEW}
+            else:
+                tags -= {PackTags.NEW}
+
+        if trending_packs:
+            if self._pack_name in trending_packs:
+                tags |= {PackTags.TRENDING}
+            else:
+                tags -= {PackTags.TRENDING}
+
+        return tags
+
+    def _enhance_pack_attributes(self, user_metadata, index_folder_path, pack_was_modified, author_image,
+                                 integration_images, dependencies_data, statistics_handler=None):
+        """ Enhances the pack object with attributes for the metadata file
+
+        Args:
+            user_metadata (dict): user metadata that was created in pack initialization.
+            integration_images (list): list of gcs uploaded integration images.
+            author_image (str): gcs uploaded author image
+            dependencies_data (dict): mapping of pack dependencies data, of all levels.
+
+        Returns:
+            dict: parsed pack metadata.
+
+        """
+        # ===== Pack Regular Attributes =====
+        self._support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
+        self._support_details = self._create_support_section(
+            support_type=self._support_type, support_url=user_metadata.get('url'),
+            support_email=user_metadata.get('email')
+        )
+        self._author = self._get_author(support_type=self._support_type, author=user_metadata.get('author', ''))
+        self._certification = self._get_certification(
+            support_type=self._support_type, certification=user_metadata.get('certification')
+        )
+        self._legacy = user_metadata.get('legacy', True)
+        self._author_image = author_image
+        self._create_date = self._get_pack_creation_date(index_folder_path)
+        self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
+        self._use_cases = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
+        self._categories = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
+        self._keywords = input_to_list(user_metadata.get('keywords'))
+        self._dependencies = self._parse_pack_dependencies(user_metadata.get('dependencies', {}), dependencies_data)
+
+        # ===== Pack Private Attributes =====
+        self._is_private_pack = user_metadata.get('partnerId', False)
+        self._is_premium = True if self._is_private_pack else False
+        self._preview_only = True if self._is_private_pack else False
+        self._price = convert_price(pack_id=self._pack_name, price_value_input=user_metadata.get('price'))
+        if self._is_private_pack:
+            self._vendor_id = user_metadata.get('vendorId', "")
+            self._partner_id = user_metadata.get('partnerId', "")
+            self._partner_name = user_metadata.get('partnerName', "")
+            self._content_commit_hash = user_metadata.get('contentCommitHash', "")
+
+        # ===== Pack Statistics Attributes =====
+        landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
+        trending_packs = None
+
+        if not self._is_private_pack and statistics_handler:  # Public Content case
+            self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
+                self._pack_name, statistics_handler.packs_statistics_df, index_folder_path
+            )
+            self._downloads_count = self._pack_statistics_handler.download_count
+            trending_packs = statistics_handler.trending_packs
+
+        self._tags = self._collect_pack_tags(user_metadata, landing_page_sections, trending_packs)
+        self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
+            tags=self._tags, certification=self._certification, content_items=self._content_items
+        )
+        self._related_integration_images = self._get_all_pack_images(
+            integration_images, user_metadata.get('displayedImages', []), dependencies_data
+        )
+
+    def format_metadata(self, user_metadata, integration_images, author_image, index_folder_path,
+                        packs_dependencies_mapping, build_number, commit_hash, pack_was_modified, statistics_handler):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
         Args:
             user_metadata (dict): user defined pack_metadata, prior the parsing process.
-            pack_content_items (dict): content items that are located inside specific pack.
             integration_images (list): list of uploaded integration images with integration display name and image gcs
             public url.
             author_image (str): uploaded public gcs path to author image.
@@ -1643,9 +1519,8 @@ class Pack(object):
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
-            packs_statistic_df (pandas.core.frame.DataFrame): packs downloads statistics table.
-            landing_page_sections (dict): landingPage sections and the packs in each one of them.
-            trending_packs: A list with 20 pack names that has highest download rate in the last 14 days
+            pack_was_modified (bool): Indicates whether the pack was modified or not.
+            statistics_handler (StatisticsHandler): The marketplace statistics handler
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -1654,62 +1529,53 @@ class Pack(object):
         task_status = False
 
         try:
-            metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
-
             self.set_pack_dependencies(user_metadata, packs_dependencies_mapping)
-
             if 'displayedImages' not in user_metadata:
                 user_metadata['displayedImages'] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get('displayedImages', [])
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
-
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []))
 
-            if packs_statistic_df is not None:
-                self.downloads_count = self._get_downloads_count(packs_statistic_df)
-
-            self._create_date = self._get_pack_creation_date(index_folder_path)
-            self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
-            formatted_metadata = self._parse_pack_metadata(user_metadata=user_metadata,
-                                                           pack_content_items=pack_content_items,
-                                                           pack_id=self._pack_name,
-                                                           integration_images=integration_images,
-                                                           author_image=author_image,
-                                                           dependencies_data=dependencies_data,
-                                                           server_min_version=self.server_min_version,
-                                                           build_number=build_number, commit_hash=commit_hash,
-                                                           downloads_count=self.downloads_count,
-                                                           is_feed_pack=self._is_feed,
-                                                           landing_page_sections=landing_page_sections,
-                                                           trending_packs=trending_packs)
-
-            with open(metadata_path, "w") as metadata_file:
-                json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
+            self._enhance_pack_attributes(
+                user_metadata, index_folder_path, pack_was_modified, author_image, integration_images,
+                dependencies_data, statistics_handler
+            )
+            formatted_metadata = self._parse_pack_metadata(user_metadata, build_number, commit_hash)
+            metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
+            json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
 
             logging.success(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.")
             task_status = True
-        except Exception:
-            logging.exception(f"Failed in formatting {self._pack_name} pack metadata.")
+
+        except Exception as e:
+            logging.exception(f"Failed in formatting {self._pack_name} pack metadata. Additional Info: {str(e)}")
+
         finally:
             return task_status
 
-    def pack_created_in_time_delta(self, time_delta: timedelta, index_folder_path: str) -> bool:
+    @staticmethod
+    def pack_created_in_time_delta(pack_name, time_delta: timedelta, index_folder_path: str) -> bool:
         """
         Checks if pack created before delta specified in the 'time_delta' argument and return boolean according
         to the result
         Args:
-            time_delta: time_delta to check if pack was created before
+            pack_name: the pack name.
+            time_delta: time_delta to check if pack was created before.
             index_folder_path: downloaded index folder directory path.
 
         Returns:
             True if pack was created before the time_delta from now, and False otherwise.
         """
-        pack_creation_time_str = self._get_pack_creation_date(index_folder_path)
+        pack_creation_time_str = Pack._calculate_pack_creation_date(pack_name, index_folder_path)
         return datetime.utcnow() - datetime.strptime(pack_creation_time_str, Metadata.DATE_FORMAT) < time_delta
 
     def _get_pack_creation_date(self, index_folder_path):
+        return self._calculate_pack_creation_date(self._pack_name, index_folder_path)
+
+    @staticmethod
+    def _calculate_pack_creation_date(pack_name, index_folder_path):
         """ Gets the pack created date.
         Args:
             index_folder_path (str): downloaded index folder directory path.
@@ -1717,13 +1583,13 @@ class Pack(object):
             datetime: Pack created date.
         """
         created_time = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-        metadata = load_json(os.path.join(index_folder_path, self._pack_name, Pack.METADATA))
+        metadata = load_json(os.path.join(index_folder_path, pack_name, Pack.METADATA))
 
         if metadata:
             if metadata.get('created'):
                 created_time = metadata.get('created')
             else:
-                raise Exception(f'The metadata file of the {self._pack_name} pack does not contain "created" time')
+                raise Exception(f'The metadata file of the {pack_name} pack does not contain "created" time')
 
         return created_time
 
@@ -2256,24 +2122,6 @@ class Pack(object):
         ])
 
 
-class PackIgnored(object):
-    """ A class that represents all pack files/directories to be ignored if a change is detected in any of them
-
-    ROOT_FILES: The files in the pack root directory
-    NESTED_FILES: The files to be ignored inside the pack entities directories. Empty list = all files.
-    NESTED_DIRS: The 2nd level directories under the pack entities directories to ignore all of their files.
-
-    """
-    ROOT_FILES = [Pack.SECRETS_IGNORE, Pack.PACK_IGNORE]
-    NESTED_FILES = {
-        PackFolders.INTEGRATIONS.value: ["README.md", "Pipfile", "Pipfile.lock", "_test.py", "commands.txt"],
-        PackFolders.SCRIPTS.value: ["README.md", "Pipfile", "Pipfile.lock", "_test.py"],
-        PackFolders.TEST_PLAYBOOKS.value: [],
-        PackFolders.PLAYBOOKS.value: ["_README.md"],
-    }
-    NESTED_DIRS = [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value]
-
-
 # HELPER FUNCTIONS
 
 
@@ -2421,98 +2269,6 @@ def init_storage_client(service_account=None):
         logging.info("Created gcp private account")
 
         return storage_client
-
-
-def init_bigquery_client(service_account=None):
-    """Initialize google cloud big query client.
-
-    In case of local dev usage the client will be initialized with user default credentials.
-    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
-
-    Args:
-        service_account (str): full path to service account json.
-
-    Return:
-         google.cloud.bigquery.client.Client: initialized google cloud big query client.
-    """
-    if service_account:
-        bq_client = bigquery.Client.from_service_account_json(service_account)
-        logging.info("Created big query service account")
-    else:
-        # in case of local dev use, ignored the warning of non use of service account.
-        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
-        credentials, project = google.auth.default()
-        bq_client = bigquery.Client(credentials=credentials, project=project)
-        logging.info("Created big query private account")
-
-    return bq_client
-
-
-def get_packs_statistics_dataframe(bq_client):
-    """ Runs big query, selects all columns from top_packs table and returns table as pandas data frame.
-    Additionally table index is set to pack_name (pack unique id).
-
-    Args:
-        bq_client (google.cloud.bigquery.client.Client): google cloud big query client.
-
-    Returns:
-        pandas.core.frame.DataFrame: downloads statistics table dataframe.
-    """
-    query = f"SELECT * FROM `{GCPConfig.DOWNLOADS_TABLE}` LIMIT {GCPConfig.BIG_QUERY_MAX_RESULTS}"
-    # ignore missing package warning
-    warnings.filterwarnings("ignore", message="Cannot create BigQuery Storage client, the dependency ")
-    packs_statistic_table = bq_client.query(query).result().to_dataframe()
-    packs_statistic_table.set_index('pack_name', inplace=True)
-
-    return packs_statistic_table
-
-
-def filter_packs_from_before_3_months(pack_list_to_filter: list, index_folder_path: str) -> List[str]:
-    """
-    Filtering packs from 'pack_list_to_filter' that were created more than 3 months ago by checking in the index file
-    Args:
-        pack_list_to_filter: The list of packs sorted by download rate to filter by creation date.
-        index_folder_path: The path in which the index.zip file was unzipped into.
-
-    Returns:
-        A list with pack names that were created within the last 3 months.
-    """
-    index_packs = {os.path.basename(pack_path): Pack(os.path.basename(pack_path), pack_path) for pack_path in
-                   glob.glob(f'{index_folder_path}/*') if os.path.isdir(pack_path)}
-    three_months_delta = timedelta(days=90)
-    filtered_packs_list = []
-    for pack_name in pack_list_to_filter:
-        if index_packs.get(pack_name) and index_packs[pack_name].pack_created_in_time_delta(three_months_delta,
-                                                                                            index_folder_path):
-            filtered_packs_list.append(pack_name)
-    logging.debug(f'packs with less than 3 months creation time: {pformat(filtered_packs_list)}')
-    return filtered_packs_list
-
-
-def get_trending_packs(bq_client, index_folder_path: str) -> list:
-    """
-    Updates the landing page sections data with Trending packs.
-    Trending packs: top 20 downloaded packs in the last 14 days.
-    Args:
-        bq_client (google.cloud.bigquery.client.Client): The bigquery client with proper permissions to execute the query.
-        index_folder_path (str): the full path of extracted index folder.
-    Returns:
-        A list with 20 pack names that has the highest download rate.
-    """
-    query = f"SELECT pack_name FROM `{GCPConfig.TOP_PACKS_14_DAYS_TABLE}` ORDER BY num_count DESC"
-    packs_sorted_by_download_count_dataframe = bq_client.query(query).result().to_dataframe()
-    packs_sorted_by_download_count = [pack_array[0] for pack_array in
-                                      packs_sorted_by_download_count_dataframe.to_numpy()]
-    filtered_pack_list = filter_packs_from_before_3_months(packs_sorted_by_download_count, index_folder_path)
-    top_downloaded_packs = filtered_pack_list[:20]
-    current_iteration_index = 0
-    while len(top_downloaded_packs) < 20:
-        current_pack = packs_sorted_by_download_count[current_iteration_index]
-        if current_pack not in top_downloaded_packs:
-            top_downloaded_packs.append(current_pack)
-        current_iteration_index += 1
-    logging.debug(f'Found the following trending packs {pformat(top_downloaded_packs)}')
-    return top_downloaded_packs
 
 
 def input_to_list(input_data, capitalize_input=False):
