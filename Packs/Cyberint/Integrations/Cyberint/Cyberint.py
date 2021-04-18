@@ -522,7 +522,6 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         }
         incidents.append(incident)
 
-
     if incidents:
         #  Update the time for the next fetch so that there won't be duplicates.
         last_incident_time = incidents[0].get('occurred', '')
