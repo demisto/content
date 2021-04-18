@@ -243,7 +243,7 @@ run-validations:
     - echo "====Create id set===="
     - demisto-sdk create-id-set -o ./Tests/id_set.json
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
-    - echo "====Merge public and private id sets"
+    - echo "====Merge public and private id sets===="
     - |
       if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
           echo "Skipping, Should not run on contributor's branch."
@@ -254,7 +254,7 @@ run-validations:
         echo "successfully activated google cloud service account"
 
         echo "Download private ID set"
-        gsutil cp gs://marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
+        gsutil cp "gs://marketplace-dist/content/private_id_set.json" $ARTIFACTS_FOLDER/unified_id_set.json
         echo "successfully downloaded private ID set"
         gcloud auth revoke --all &> /dev/null
         rm $GCS_PATH
@@ -288,7 +288,7 @@ run-validations:
         ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py2.txt
         ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py3.txt
       fi
-    - echo "====Validate content-test-conf Branch Merged"
+    - echo "====Validate content-test-conf Branch Merged===="
     - |
       if [[ $CI_COMMIT_BRANCH = "master" ]]; then
         echo "Skipping, Should not run on master branch."
@@ -307,7 +307,7 @@ run-validations:
     - echo "Download index.zip"
     - INDEX_PATH=$(mktemp)
     - |
-      gsutil cp gs://marketplace-dist/content/packs/index.zip $INDEX_PATH
+      gsutil cp "gs://marketplace-dist/content/packs/index.zip" $INDEX_PATH
     - echo "successfully downloaded index.zip into $INDEX_PATH"
 
     - UNZIP_PATH=$(mktemp -d)
