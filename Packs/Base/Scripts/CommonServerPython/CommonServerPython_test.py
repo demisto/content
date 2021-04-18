@@ -4071,6 +4071,16 @@ class TestCommonTypes:
 class TestAutoFocusKeyRetriever:
 
     def test_instantiate_class_with_param_key(self, mocker):
+        """
+        Given:
+            - giving the api_key parameter
+            - override_default_credentials is False
+        When:
+            - Mocking getAutoFocusApiKey
+            - Mocking server version to be 6.2.0
+        Then:
+            - The Auto Focus API Key is the one given to the class
+        """
         from CommonServerPython import AutoFocusKeyRetriever
         mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
         mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
@@ -4078,6 +4088,16 @@ class TestAutoFocusKeyRetriever:
         assert auto_focus_key_retriever.key == '1234'
 
     def test_instantiate_class_without_param_key(self, mocker):
+        """
+        Given:
+            - not giving the api_key parameter
+            - override_default_credentials is True
+        When:
+            - Mocking getAutoFocusApiKey
+            - Mocking server version to be 6.2.0
+        Then:
+            - The Auto Focus API Key is the one given by the getAutoFocusApiKey method
+        """
         from CommonServerPython import AutoFocusKeyRetriever
         mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
         mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
