@@ -6452,8 +6452,12 @@ class TableOrListWidget(BaseWidget):
 
 
 class IndicatorsSearcher:
-    """
-    Used in order to search indicators by the paging or serachAfter param
+    """Used in order to search indicators by the paging or serachAfter param
+     :type page: ``int``
+    :param page: the number of page from which we start search indicators from.
+
+    :return: No data returned
+    :rtype: ``None``
     """
     def __init__(self, page=0):
         # searchAfter is available in searchIndicators from version 6.1.0
@@ -6463,11 +6467,30 @@ class IndicatorsSearcher:
         self._page = page
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
-        """
-        There are 2 cases depends on the sever version:
+        """There are 2 cases depends on the sever version:
         1. Search indicators using paging, raise the page number in each call.
         2. Search indicators using searchAfter param, update the _search_after_param in each call.
+
+        :type from_date: ``str``
+        :param from_date: the start date to search from.
+
+        :type query: ``str``
+        :param query: indicator search query
+
+        :type size: ``size``
+        :param size: limit the number of returned results.
+
+        :type to_date: ``str``
+        :param to_date: the end date to search until to.
+
+        :type value: ``str``
+        :param value: the indicator value to search.
+
+        :return: object contains the search results
+        :rtype: ``dict``
         """
+
+
         if self._can_use_search_after:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value, searchAfter=self._search_after_param)
             if self._search_after_title in res and res[self._search_after_title] is not None:
