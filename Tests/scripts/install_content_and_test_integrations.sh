@@ -11,11 +11,8 @@ IS_NIGHTLY=false
 if [ -n "${NIGHTLY}" ]; then
   IS_NIGHTLY=true
 fi
-if [ -f create_instances_build_num.txt ]; then
-  PREVIOUS_JOB_NUMBER=`cat create_instances_build_num.txt`
-fi
 
-python3 ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" -s "$SECRET_CONF_PATH" -g "$GIT_SHA1" --ami_env "$1" -n $IS_NIGHTLY --branch "$CI_COMMIT_BRANCH" --build-number "$PREVIOUS_JOB_NUMBER" -sa "$GCS_MARKET_KEY"
+python3 ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" -s "$SECRET_CONF_PATH" -g "$GIT_SHA1" --ami_env "$1" -n $IS_NIGHTLY --branch "$CI_COMMIT_BRANCH" --build-number "$CI_PIPELINE_ID" -sa "$GCS_MARKET_KEY"
 if [ -f ./Tests/test_pack.zip ]; then
   cp ./Tests/test_pack.zip $ARTIFACTS_FOLDER
 fi
