@@ -4,7 +4,7 @@
 import pytest
 
 # Import local packages
-from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command
+from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command
 from CommonServerPython import DBotScoreReliability
 
 INTEGRATION_NAME = 'AlienVault OTX v2'
@@ -89,3 +89,30 @@ def test_file_command(mocker, raw_response_general, raw_response_analysis, expec
     results = file_command(client, {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'})
     # results is tuple (human_readable, context_entry, raw_response).
     assert expected == results[1]
+
+
+def test_url_command(mocker):
+    """
+    Given
+    - A url with status code 404.
+
+    When
+    - Running url_command with the url.
+
+    Then
+    - Return no matches for the url.
+    """
+    url = 'http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026data=LeFzS0ZTdINxJN2UMVFvyPotO31n'\
+          'Q1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9'\
+          'TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8'\
+          'cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5JVX3kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
+    expected_result = 'No matches for URL http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026dat' \
+                      'a=LeFzS0ZTdINxJN2UMVFvyPotO31nQ1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB' \
+                      '2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFO' \
+                      'qG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5JVX3' \
+                      'kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
+    mocker.patch.object(client, 'query', return_value=404)
+
+    command_results = url_command(client, url)
+
+    assert command_results[0] == expected_result
