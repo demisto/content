@@ -3184,6 +3184,11 @@
             "integrations": "FeedExpanse",
             "playbookID": "Feed Expanse Test",
             "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "Armis",
+            "playbookID": "Armis-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3332,6 +3337,7 @@
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
         "Akamai WAF": "Issue 32318",
+        "Armis": "No instance - SOAR experts development",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",

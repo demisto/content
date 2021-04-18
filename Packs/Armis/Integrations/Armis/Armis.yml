@@ -485,7 +485,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- Armis-Test
 defaultmapperin: Armis_mapper-incoming
 defaultclassifier: classifier-armis-alerts
 fromversion: 5.0.0
