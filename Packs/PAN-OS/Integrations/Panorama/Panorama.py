@@ -5117,8 +5117,6 @@ def panorama_content_update_install_status_command(args: dict):
     """
     Check jobID of content update install status
     """
-    if DEVICE_GROUP:
-        raise Exception('Content download status is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     job_id = args['job_id']
     result = panorama_content_update_install_status(target, job_id)
@@ -5336,8 +5334,6 @@ def panorama_install_panos_status_command(args: dict):
     """
     Check jobID of panos install status
     """
-    if DEVICE_GROUP:
-        raise Exception('PAN-OS installation status status is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     job_id = args['job_id']
     result = panorama_install_panos_status(target, job_id)
@@ -6930,6 +6926,83 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         XPATH_RULEBASE = f"/config/devices/entry[@name=\'localhost.localdomain\']/vsys/entry[@name=\'{VSYS}\']/"
 
 
+def panorama_upload_content_update_file_command(args: dict):
+    category = args.get('category')
+    entry_id = args.get('entryID')
+    file_path = demisto.getFilePath(entry_id)['path']
+    file_name = demisto.getFilePath(entry_id)['name']
+
+    try:
+        shutil.copy(file_path, file_name)
+    except Exception:
+        raise Exception('Failed to prepare file for upload.')
+
+    with open(file_name, 'rb') as file:
+        files = {'file': file}
+        params = {'type': 'import', 'category': category, 'key': API_KEY}
+        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files=files)
+        human_readble = tableToMarkdown("Results", t=response.get('response'))
+        content_upload_info = {
+            'Message': response['response']['msg'],
+            'Status': response['response']['@status']
+        }
+        entry_context = {"Panorama.Content.Upload(val.Status == obj.Status": content_upload_info}
+        results = CommandResults(raw_response=response, readable_output=human_readble)
+
+    shutil.rmtree(file_name, ignore_errors=True)
+    return results
+
+
+@logger
+def panorama_install_file_content_update(version: str, category: str, validity: str):
+    if category == "content":
+        params = {
+            'type': 'op',
+            'cmd': (
+                f'<request><{category}><upgrade><install><skip-content-validity-check>{validity}'
+                f'</skip-content-validity-check><file>{version}</file></install></upgrade></{category}></request>'), 'key': API_KEY
+        }
+    else:
+        params = {
+            'type': 'op',
+            'cmd': (
+                f'<request><{category}><upgrade><install><file>{version}</file></install></upgrade></{category}></request>'), 'key': API_KEY
+        }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_install_file_content_update_command(args: dict):
+    version = args.get('version_name')
+    category = args.get('category')
+    validity = args['skip_validity_check']
+    result = panorama_install_file_content_update(version, category, validity)
+
+    if 'result' in result.get('response'):
+        # installation has been given a jobid
+        content_install_info = {
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
+        human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
+
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': entry_context
+        })
+    else:
+        # no content install took place
+        return_results(result['response']['msg'])
+
 def main():
     try:
         args = demisto.args()
@@ -7289,6 +7362,12 @@ def main():
 
         elif demisto.command() == 'panorama-list-configured-user-id-agents':
             list_configured_user_id_agents_command(args)
+
+        elif demisto.command() == 'panorama-upload-content-update-file':
+            return_results(panorama_upload_content_update_file_command(args))
+
+        elif demisto.command() == 'panorama-install-file-content-update':
+            panorama_install_file_content_update_command(args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
