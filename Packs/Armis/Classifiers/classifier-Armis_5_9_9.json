@@ -289,7 +289,7 @@
                     "complex": null,
                     "simple": "title"
                 },
-                "Armis Device ID": {
+                "Armis Device IDs": {
                     "complex": null,
                     "simple": "deviceIds.[0]"
                 },
