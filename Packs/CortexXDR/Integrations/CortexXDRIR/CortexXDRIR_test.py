@@ -10,40 +10,6 @@ from freezegun import freeze_time
 
 XDR_URL = 'https://api.xdrurl.com'
 
-RUN_SCRIPT_COMMAND_TEST_CASES = [
-    (
-        '{"param1":"value1","param2":2}',
-        {
-            "request_data": {
-                "script_uid": "script_uid",
-                "timeout": 10,
-                "filters": [{
-                    "field": "endpoint_id_list",
-                    "operator": "in",
-                    "value": ['endpoint_id1', 'endpoint_id2']
-                }],
-                "parameters_values": {"param1": "value1", "param2": 2}
-            }
-        }
-    ),
-    (
-        {},
-        {
-            "request_data": {
-                "script_uid": "script_uid",
-                "timeout": 10,
-                "filters": [{
-                    "field": "endpoint_id_list",
-                    "operator": "in",
-                    "value": ['endpoint_id1', 'endpoint_id2']
-                }],
-                "parameters_values": {}
-            }
-        }
-    )
-]
-
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -1991,8 +1957,7 @@ def test_create_account_context_user_is_none():
     assert account_context == []
 
 
-@pytest.mark.parametrize('parameters, expected_result', RUN_SCRIPT_COMMAND_TEST_CASES)
-def test_run_script_command(requests_mock, parameters, expected_result):
+def test_run_script_command(requests_mock):
     """
     Given:
         - XDR client
@@ -2014,6 +1979,7 @@ def test_run_script_command(requests_mock, parameters, expected_result):
     script_uid = 'script_uid'
     endpoint_ids = 'endpoint_id1,endpoint_id2'
     timeout = '10'
+    parameters = '{"param1":"value1","param2":2}'
     args = {
         'script_uid': script_uid,
         'endpoint_ids': endpoint_ids,
@@ -2024,7 +1990,18 @@ def test_run_script_command(requests_mock, parameters, expected_result):
     response = run_script_command(client, args)
 
     assert response.outputs == api_response.get('reply')
-    assert requests_mock.request_history[0].json() == expected_result
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': script_uid,
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': json.loads(parameters)
+        }
+    }
 
 
 def test_run_script_command_empty_params(requests_mock):
@@ -2069,7 +2046,7 @@ def test_run_script_command_empty_params(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'parameters_values': parameters
+            'parameters_values': {}
         }
     }
 
