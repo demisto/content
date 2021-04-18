@@ -124,7 +124,6 @@ def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
         ip_ec = {
             "Address": analysis.get("ipAddress"),
             "Geo": {"Country": analysis.get("countryName") or analysis.get("countryCode")},
-            "ISP": analysis.get("isp")
         }
         abuse_ec = {
             "IP": {
