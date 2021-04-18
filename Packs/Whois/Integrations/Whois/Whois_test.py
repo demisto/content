@@ -183,7 +183,7 @@ def test_ip_command(mocker):
     assert result[0].indicator.to_context() == {
         'IP(val.Address && val.Address == obj.Address)': {
             'Organization': {'Name': u'LEVEL3, US'},
-            'FeedRelatedIndicators': [{'type': 'IP', 'description': None, 'value': u'4.4.0.0/16'}],
+            'FeedRelatedIndicators': [{'type': 'CIDR', 'description': None, 'value': u'4.4.0.0/16'}],
             'Geo': {'Country': u'US'},
             'ASN': u'3356',
             'Address': '4.4.4.4'},

@@ -63,6 +63,7 @@ args:
   - doesn't match caseless
   - doesn't start with
   - doesn't start with caseless
+  - 'email-header: decode'
   - ends with
   - ends with caseless
   - equals
@@ -141,7 +142,7 @@ args:
   description: 'Filter Operation: value is filtered by,is filtered by,keeps,doesn''t
     keep,is,isn''t,equals,doesn''t equal,greater or equal,greater than,less or equal,less
     than,in range,starts with,starts with caseless,doesn''t start with,doesn''t start
-    with caseless,ends with,ends with caseless,doesn''t end with,doesn''t end with
+    with caseless,email-header: decode,ends with,ends with caseless,doesn''t end with,doesn''t end with
     caseless,includes,includes caseless,doesn''t include,doesn''t include caseless,finds,finds
     caseless,doesn''t find,doesn''t find caseless,matches,matches caseless,doesn''t
     match,doesn''t match caseless,matches wildcard,matches caseless wildcard,doesn''t
@@ -181,7 +182,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.9.4.18682
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
