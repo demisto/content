@@ -211,6 +211,7 @@ run-unittests-and-lint:
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         fi
+      fi
       - echo "====Get Private Build Status===="
       - |
         if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]]; then
