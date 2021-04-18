@@ -235,7 +235,6 @@ run-validations:
   artifacts:
     expire_in: 48 hrs
     paths:
-      - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
     when: always
   script:
@@ -305,7 +304,7 @@ run-validations:
         fi
       fi
     - echo "====Validate landingPageSections.json===="
-    - # Download index.zip
+    - echo "Download index.zip"
     - INDEX_PATH=$(mktemp)
     - gsutil cp gs://marketplace-dist/content/packs/index.zip $INDEX_PATH
     - echo "successfully downloaded index.zip into $INDEX_PATH"
