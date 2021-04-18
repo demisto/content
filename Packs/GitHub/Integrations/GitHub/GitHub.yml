@@ -638,7 +638,7 @@ script:
       description: The repository of the pull request.
       isArray: false
       name: repository
-      required: flase
+      required: false
       secret: false
     deprecated: false
     description: Lists the pull request files.
