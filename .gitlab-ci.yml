@@ -63,7 +63,7 @@ default:
 
 run-unittests-and-lint:
   stage: unittests-and-validations
-  artifacs:
+  artifacts:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/unit-tests/*
