@@ -10,7 +10,9 @@ configuration:
     type: 0
   - additionalinfo: API Key (leave empty. Fill in the API Key in the password field.)
     name: api_token
+    displaypassword: API Token
     required: false
+    hiddenusername: true
     type: 9
   - display: Fetch incidents
     name: isFetch
@@ -988,7 +990,7 @@ script:
       description: Get a list of available TMS groups.
       execution: false
       name: na-sightline-tms-group-list
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: true
   longRunning: false

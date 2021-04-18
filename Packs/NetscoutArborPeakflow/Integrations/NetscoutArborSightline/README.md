@@ -1,5 +1,6 @@
 DDoS protection and network visibility.
-This integration was integrated and tested with version xx of NetscoutArborSightline
+This integration was integrated and tested with version 9.3 of Netscout Arbor Sightline Peakflow.
+
 ## Configure NetscoutArborSightline on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
