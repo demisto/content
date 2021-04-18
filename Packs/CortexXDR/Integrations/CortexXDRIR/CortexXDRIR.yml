@@ -1666,25 +1666,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds.
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: gte_first_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds.
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: gte_last_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: lte_first_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: lte_last_seen
       required: false
