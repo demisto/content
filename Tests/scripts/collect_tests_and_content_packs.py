@@ -127,11 +127,11 @@ _FAILED = False
 ID_SET = {}
 CONF: Union[TestConf, dict] = {}
 
-if os.path.isfile('./Tests/id_set.json'):
-    with open('./Tests/id_set.json', 'r') as conf_file:
+if os.path.isfile('./artifacts/id_set.json'):
+    with open('./artifacts/id_set.json', 'r') as conf_file:
         ID_SET = json.load(conf_file)
 
-if os.path.isfile('./Tests/conf.json'):
+if os.path.isfile('./artifacts/conf.json'):
     with open('./Tests/conf.json', 'r') as conf_file:
         CONF = TestConf(json.load(conf_file))
 

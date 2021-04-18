@@ -81,7 +81,7 @@ def main():
     global SETUP_TIMEOUT
     instance_name_to_wait_on = sys.argv[1]
     ready_ami_list = []
-    with open('./env_results.json', 'r') as json_file:
+    with open('./artifacts/env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
         instance_ips = [(env.get('Role'), env.get('InstanceDNS'), env.get('TunnelPort')) for env in env_results]
 
