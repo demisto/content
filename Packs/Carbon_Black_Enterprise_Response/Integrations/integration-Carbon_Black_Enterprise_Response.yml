@@ -1344,7 +1344,7 @@ script:
                 return deleteWatch(); // Tested
             case 'cb-binary-download':
                 return getBinaryZip();
-            case 'Endpoint':
+            case 'endpoint':
                 return endpoint();
             default:
                 throw `Unknown Command: ${command}`;
@@ -2161,7 +2161,7 @@ script:
       description: The description of the signature.
     description: Retrieve a binary from CarbonBlack based on hash. Returns a .zip
       file containing the requested file and it's metadata.
-  - name: Endpoint
+  - name: endpoint
     arguments:
     - name: id
       required: true

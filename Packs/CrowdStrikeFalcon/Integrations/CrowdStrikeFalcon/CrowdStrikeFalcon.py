@@ -2475,7 +2475,7 @@ def main():
                     device_id=args.get('device_id')
                 )
             )
-        elif command == 'Endpoint':
+        elif command == 'endpoint':
             return_results(get_endpoint_command())
         # Log exceptions
     except Exception as e:

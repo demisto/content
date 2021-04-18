@@ -3264,7 +3264,7 @@ def main():
         elif demisto.command() == 'xdr-run-script-kill-process':
             return_results(run_script_kill_process_command(client, args))
 
-        elif demisto.command() == 'Endpoint':
+        elif demisto.command() == 'endpoint':
             return_outputs(*endpoint_command(client, args))
 
     except Exception as err:

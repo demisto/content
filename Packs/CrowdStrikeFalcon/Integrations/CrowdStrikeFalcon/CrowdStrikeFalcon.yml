@@ -2089,7 +2089,7 @@ script:
     deprecated: false
     description: Returns information about an endpoint.
     execution: false
-    name: Endpoint
+    name: endpoint
     outputs:
     - contextPath: Endpoint.Hostname
       description: The endpoint's hostname.
