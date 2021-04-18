@@ -20,7 +20,7 @@ echo "Auth loaded successfully."
 
 # ====== BUILD CONFIGURATION ======
 GCS_BUILD_BUCKET="marketplace-ci-build"
-BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_BUILD_ID"
+BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID"
 TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
 CONTENT_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
@@ -36,7 +36,7 @@ if [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
   SOURCE_PATH="content"
 else
   # ====== UPDATING TESTING BUCKET ======
-  SOURCE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_BUILD_ID/content"
+  SOURCE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
   echo "Copying production bucket files at: gs://marketplace-dist/content to testing bucket at path: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH ..."
   gsutil -m cp -r "gs://marketplace-dist/content" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing.log" 2>&1
   echo "Finished copying successfully."
