@@ -1,4 +1,4 @@
-Use the HostIo integration to enrich Domains using the Host.io API.
+Use the HostIo integration to enrich domains using the Host.io API.
 This integration was integrated and tested with version 1.0 of HostIo
 ## Configure HostIo on Cortex XSOAR
 
@@ -19,7 +19,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### hostio-domain-search
 ***
-Returns a list of domains associated with a specific field, and the total amount of these domains
+Returns a list of domains associated with a specific field, and the total number of these domains.
 
 
 #### Base Command
@@ -29,9 +29,9 @@ Returns a list of domains associated with a specific field, and the total amount
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | Field name to search a Domain according to it. Possible values are: ip, ns, mx, asn, backlinks, redirects, adsense, facebook, twitter, instagram, gtm, googleanalytics, email. | Required | 
-| value | The Value of the given field. | Required | 
-| limit | The maximum number of domains to display, must be one of 0, 1, 5, 10, 25, 100, 250, or 1000, The default value is 25. | Optional | 
+| field | Field name by which to search for a domain. Possible values are: ip, ns, mx, asn, backlinks, redirects, adsense, facebook, twitter, instagram, gtm, googleanalytics, email. | Required | 
+| value | The value of the given field. | Required | 
+| limit | The maximum number of domains to display. Possible values are 0, 1, 5, 10, 25, 100, 250, or 1000. Default is 25. | Optional | 
 
 
 #### Context Output
@@ -40,8 +40,8 @@ Returns a list of domains associated with a specific field, and the total amount
 | --- | --- | --- |
 | HostIo.Search.Field | String | The field to look up. | 
 | HostIo.Search.Value | String | The value of the given field. | 
-| HostIo.Search.Domains | Unknown | List of Domains associated with the given field. | 
-| HostIo.Search.Total | Number | The total amount of domains associated with the given field. | 
+| HostIo.Search.Domains | Unknown | List of domains associated with the given field. | 
+| HostIo.Search.Total | Number | The total number of domains associated with the given field. | 
 
 
 #### Command Example
@@ -92,7 +92,7 @@ Returns Domain information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | List of Domains. | Required | 
+| domain | List of domains. | Required | 
 
 
 #### Context Output
@@ -100,15 +100,15 @@ Returns Domain information.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HostIo.Domain.web.rank | Number | A rank that's based on popularity. | 
-| HostIo.Domain.web.server | String | Name of the server where the domain exist. | 
+| HostIo.Domain.web.server | String | Name of the server where the domain exists. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| Domain.Name | String | The Domain name. | 
-| Domain.Registrant.Name | String | The name of the Registrant. | 
-| Domain.Registrant.Country | String | The country of the Registrant. | 
-| Domain.UpdatedDate | Date | The date when the Domain was last updated. Format is ISO8601 \(i.e. '2020-04-30T10:35:00.000Z'\). | 
+| Domain.Name | String | The domain name. | 
+| Domain.Registrant.Name | String | The name of the registrant. | 
+| Domain.Registrant.Country | String | The country of the registrant. | 
+| Domain.UpdatedDate | Date | The date when the domain was last updated in ISO8601 format \(i.e. '2020-04-30T10:35:00.000Z'\). | 
 | Domain.NameServers | String | Name of the server where the domain exist. | 
 
 
@@ -676,4 +676,3 @@ Returns Domain information.
 >|dns|domain|ipinfo|related|updated_date|web|
 >|---|---|---|---|---|---|
 >| domain: twitter.com<br/>a: 104.244.42.1,<br/>104.244.42.193<br/>mx: 10 aspmx.l.google.com.,<br/>20 alt1.aspmx.l.google.com.,<br/>20 alt2.aspmx.l.google.com.,<br/>30 aspmx2.googlemail.com.,<br/>30 aspmx3.googlemail.com.<br/>ns: a.r06.twtrdns.net.,<br/>b.r06.twtrdns.net.,<br/>c.r06.twtrdns.net.,<br/>d.r06.twtrdns.net.,<br/>d01-01.ns.twtrdns.net.,<br/>d01-02.ns.twtrdns.net.,<br/>ns1.p34.dynect.net.,<br/>ns2.p34.dynect.net.,<br/>ns3.p34.dynect.net.,<br/>ns4.p34.dynect.net. | twitter.com | 104.244.42.6: {"city": "San Francisco", "region": "California", "country": "US", "loc": "37.7749,-122.4194", "postal": "94103", "timezone": "America/Los_Angeles", "asn": {"asn": "AS13414", "name": "Twitter Inc.", "domain": "twitter.com", "route": "104.244.42.0/24", "type": "business"}}<br/>104.244.42.1: {"city": "San Francisco", "region": "California", "country": "US", "loc": "37.7749,-122.4194", "postal": "94103", "timezone": "America/Los_Angeles", "asn": {"asn": "AS13414", "name": "Twitter Inc.", "domain": "twitter.com", "route": "104.244.42.0/24", "type": "business"}}<br/>104.244.42.193: {"city": "San Francisco", "region": "California", "country": "US", "loc": "37.7749,-122.4194", "postal": "94103", "timezone": "America/Los_Angeles", "asn": {"asn": "AS13414", "name": "Twitter Inc.", "domain": "twitter.com", "route": "104.244.42.0/24", "type": "business"}} | ip: {'value': '104.244.42.6', 'count': 92624},<br/>{'value': '104.244.42.1', 'count': 51},<br/>{'value': '104.244.42.193', 'count': 52}<br/>asn: {'value': 'AS13414', 'count': 392693}<br/>ns: {'value': 'twtrdns.net', 'count': 118},<br/>{'value': 'dynect.net', 'count': 181297}<br/>mx: {'value': 'google.com', 'count': 13977803},<br/>{'value': 'googlemail.com', 'count': 5288687}<br/>backlinks: {'value': 'twitter.com', 'count': 18707958}<br/>redirects: {'value': 'twitter.com', 'count': 389612} | 2020-11-25T20:10:08Z | domain: twitter.com<br/>rank: 5<br/>url: https://mobile.twitter.com/signup<br/>ip: 104.244.42.6<br/>date: 2020-11-25T20:10:08.708Z<br/>length: 4170<br/>server: tsa_a<br/>encoding: utf8<br/>twitter: signup<br/>title: Twitter<br/>links:  |
-
