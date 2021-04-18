@@ -6,6 +6,7 @@ import re
 import sys
 
 import requests
+import gitlab
 from circleci.api import Api as circle_api
 from slack import WebClient as SlackClient
 
@@ -27,10 +28,17 @@ CONTENT_CHANNEL = 'dmst-content-team'
 
 def get_faild_steps_list():
     options = options_handler()
+    if options.gitlab_server:
+        return get_gitlab_failed_steps(options.ci_token, options.buildNumber, options.gitlab_server,
+                                       options.gitlab_project_id)
+    return get_circle_failed_steps(options.ci_token, options.buildNumber)
+
+
+def get_circle_failed_steps(ci_token, build_number):
     failed_steps_list = []
-    circle_client = circle_api(options.circleci)
+    circle_client = circle_api(ci_token)
     vcs_type = 'github'
-    build_report = circle_client.get_build_info(username='demisto', project='content', build_num=options.buildNumber,
+    build_report = circle_client.get_build_info(username='demisto', project='content', build_num=build_number,
                                                 vcs_type=vcs_type)
     for step in build_report.get('steps', []):
         step_name = step.get('name', '')
@@ -43,6 +51,21 @@ def get_faild_steps_list():
                     failed_steps_list.append(f'{step_name}: {action_name}')
                 else:
                     failed_steps_list.append(f'{step_name}')
+
+    return failed_steps_list
+
+
+def get_gitlab_failed_steps(ci_token, build_number, server_url, project_id):
+    failed_steps_list = []
+    gitlab_client = gitlab.Gitlab(server_url, job_token=ci_token)
+    project = gitlab_client.projects.get(project_id)
+    pipeline = project.pipelines.get(build_number)
+    jobs = pipeline.jobs.list()
+
+    for job in jobs:
+        job_name = job.get('name', '')
+        if job.get('status', '') == 'failed':
+            failed_steps_list.append(f'{job_name}')
 
     return failed_steps_list
 
@@ -66,14 +89,18 @@ def options_handler():
     parser.add_argument('-u', '--url', help='The url of the current build', required=True)
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
-    parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
+    parser.add_argument('-c', '--ci_token', help='The token for circleci/gitlab', required=True)
     parser.add_argument('-t', '--test_type', help='unittests or test_playbooks or sdk_unittests or sdk_faild_steps'
                                                   'or bucket_upload')
     parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address')
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True, type=str2bool)
-    parser.add_argument('-ca', '--circle_artifacts', help="The path to the circle artifacts directory")
+    parser.add_argument('-ca', '--ci_artifacts', help="The path to the ci artifacts directory")
     parser.add_argument('-j', '--job_name', help='The job name that is running the slack notifier')
     parser.add_argument('-ch', '--slack_channel', help='The slack channel in which to send the notification')
+    parser.add_argument('-g', '--gitlab_server', help='The gitlab server running the script, if left empty circleci '
+                                                      'is assumed.')
+    parser.add_argument('-gp', '--gitlab_project_id', help='The gitlab project_id. Only needed if the script is ran '
+                                                           'from gitlab.')
     options = parser.parse_args()
 
     return options
