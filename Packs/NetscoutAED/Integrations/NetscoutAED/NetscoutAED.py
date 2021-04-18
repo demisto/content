@@ -160,10 +160,10 @@ def init_commands_dict() -> dict:
        :rtype: ``dict``
     """
 
-    inbound_blacklisted = {'direction': 'inbound', 'list_color': 'blacklisted'}
-    inbound_whitelisted = {'direction': 'inbound', 'list_color': 'whitelisted'}
-    outbound_blacklisted = {'direction': 'outbound', 'list_color': 'blacklisted'}
-    outbound_whitelisted = {'direction': 'outbound', 'list_color': 'whitelisted'}
+    inbound_blacklisted = {'direction': 'inbound', 'list_color': 'blacklist'}
+    inbound_whitelisted = {'direction': 'inbound', 'list_color': 'whitelist'}
+    outbound_blacklisted = {'direction': 'outbound', 'list_color': 'blacklist'}
+    outbound_whitelisted = {'direction': 'outbound', 'list_color': 'whitelist'}
 
     return {
         # test module
@@ -191,41 +191,41 @@ def init_commands_dict() -> dict:
         # outbound blacklisted hosts
         'netscout-aed-outbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
                                                          'meta_data': outbound_blacklisted},
-        'netscout-aed-outbound-blacklisted-hosts-add': {'func': handle_host_addition_and_updates_commands,
+        'netscout-aed-outbound-blacklisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
                                                         'meta_data': merge_dicts(outbound_blacklisted, {'op': 'POST'})},
 
-        'netscout-aed-outbound-blacklisted-hosts-update': {'func': handle_host_addition_and_updates_commands,
-                                                           'meta_data': merge_dicts(outbound_blacklisted, {'op': 'PUT'})},
+        'netscout-aed-outbound-blacklisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
+                                                            'meta_data': merge_dicts(outbound_blacklisted, {'op': 'PUT'})},
         'netscout-aed-outbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                            'meta_data': outbound_blacklisted},
 
         # inbound blacklisted hosts
         'netscout-aed-inbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
                                                         'meta_data': inbound_blacklisted},
-        'netscout-aed-inbound-blacklisted-hosts-add': {'func': handle_host_addition_and_updates_commands,
+        'netscout-aed-inbound-blacklisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
                                                        'meta_data': merge_dicts(inbound_blacklisted, {'op': 'POST'})},
-        'netscout-aed-inbound-blacklisted-hosts-update': {'func': handle_host_addition_and_updates_commands,
-                                                          'meta_data': merge_dicts(inbound_blacklisted, {'op': 'PUT'})},
+        'netscout-aed-inbound-blacklisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
+                                                           'meta_data': merge_dicts(inbound_blacklisted, {'op': 'PUT'})},
         'netscout-aed-inbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                           'meta_data': inbound_blacklisted},
 
         # outbound whitelisted hosts
         'netscout-aed-outbound-whitelisted-hosts-list': {'func': handle_host_list_commands,
                                                          'meta_data': outbound_whitelisted},
-        'netscout-aed-outbound-whitelisted-hosts-add': {'func': handle_host_addition_and_updates_commands,
+        'netscout-aed-outbound-whitelisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
                                                         'meta_data': merge_dicts(outbound_whitelisted, {'op': 'POST'})},
-        'netscout-aed-outbound-whitelisted-hosts-update': {'func': handle_host_addition_and_updates_commands,
-                                                           'meta_data': merge_dicts(outbound_whitelisted, {'op': 'PUT'})},
+        'netscout-aed-outbound-whitelisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
+                                                            'meta_data': merge_dicts(outbound_whitelisted, {'op': 'PUT'})},
         'netscout-aed-outbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                            'meta_data': outbound_whitelisted},
 
         # inbound whitelisted hosts
         'netscout-aed-inbound-whitelisted-hosts-list': {'func': handle_host_list_commands,
                                                         'meta_data': inbound_whitelisted},
-        'netscout-aed-inbound-whitelisted-hosts-add': {'func': handle_host_addition_and_updates_commands,
+        'netscout-aed-inbound-whitelisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
                                                        'meta_data': merge_dicts(inbound_whitelisted, {'op': 'POST'})},
-        'netscout-aed-inbound-whitelisted-hosts-update': {'func': handle_host_addition_and_updates_commands,
-                                                          'meta_data': merge_dicts(inbound_whitelisted, {'op': 'PUT'})},
+        'netscout-aed-inbound-whitelisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
+                                                           'meta_data': merge_dicts(inbound_whitelisted, {'op': 'PUT'})},
         'netscout-aed-inbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                           'meta_data': inbound_whitelisted},
 
@@ -354,12 +354,13 @@ def test_module(client: Client, demisto_args: dict) -> str:
     try:
         client.country_code_list_command(demisto_args)
     except Exception as e:
+        demisto.debug(f"Error: {str(e)}")
         if 'UNAUTHORIZED' in str(e) or 'invalidAuthToken' in str(e):
-            raise DemistoException('Test failed, make sure API Key is correctly set.')
+            raise DemistoException('Test failed, make sure API Key is correctly set.', e)
         elif 'Error in API call' in str(e):
-            raise DemistoException("Test failed, Error in API call")
+            raise DemistoException("Test failed, Error in API call [404]", e)
         else:
-            raise DemistoException(f'Test failed, Please check your parameters. \n{str(e)}')
+            raise DemistoException(f'Test failed, Please check your parameters. \n{str(e)}', e)
     return "ok"
 
 
@@ -378,14 +379,20 @@ def country_code_list_command(client: Client, demisto_args: dict) -> CommandResu
         :rtype: ``CommandResults``
 
     """
+    query = demisto_args.pop('query', None)
+    if query:
+        demisto_args['q'] = query
     remove_nulls_from_dictionary(demisto_args)
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
     raw_result = client.country_code_list_command(demisto_args)
     countries_list = [{"country_name": item.get('name'), "iso_code": item.get('country')} for item in
                       raw_result.get('countries', [])]
-    readable_output = tableToMarkdown('Netscout AED Countries List', countries_list, removeNull=True)
+    readable_output = tableToMarkdown('Netscout AED Countries List',
+                                      countries_list,
+                                      removeNull=True,
+                                      headerTransform=string_to_table_header)
     return CommandResults(
-        outputs_prefix='NetscoutAED.Countries',
+        outputs_prefix='NetscoutAED.Country',
         outputs_key_field='country_name',
         outputs=countries_list,
         raw_response=countries_list,
@@ -415,6 +422,9 @@ def handle_country_list_commands(client: Client, demisto_args: dict,
 
     direction = meta_data.get('direction')
     remove_nulls_from_dictionary(demisto_args)
+    query = demisto_args.pop('query', None)
+    if query:
+        demisto_args['q'] = query
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
 
     if direction == "outbound":
@@ -425,12 +435,13 @@ def handle_country_list_commands(client: Client, demisto_args: dict,
     name = list(raw_result.keys())[0]
     countries_list = copy.deepcopy(raw_result.get(name, []))
     objects_time_to_readable_time(countries_list, 'updateTime')
+    table_header = string_to_table_header(name.replace('-', ' '))
 
-    readable_output = tableToMarkdown(name, countries_list, headers=['country', 'update_time', 'annotation'],
+    readable_output = tableToMarkdown(table_header, countries_list, headers=['country', 'update_time', 'annotation'],
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.Blacklisted.Countries',
+        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.Blacklist.Country',
         outputs_key_field='country',
         outputs=countries_list,
         raw_response=raw_result,
@@ -487,7 +498,7 @@ def handle_country_addition_commands(client: Client, demisto_args: dict,
                                                             'annotation'],
                                                    headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
-        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.Blacklisted.Countries',
+        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.Blacklist.Country',
         outputs_key_field='country',
         outputs=countries_list,
         raw_response=raw_result,
@@ -560,16 +571,19 @@ def handle_host_list_commands(client: Client, demisto_args: dict,
     direction = meta_data.get('direction')
     list_color = meta_data.get('list_color')
     remove_nulls_from_dictionary(demisto_args)
+    query = demisto_args.pop('query', None)
+    if query:
+        demisto_args['q'] = query
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
 
     if direction == "outbound":
-        if list_color == "blacklisted":
+        if list_color == "blacklist":
             raw_result = client.outbound_blacklisted_host_list_command(demisto_args)
-        else:  # whitelisted
+        else:  # whitelist
             raw_result = client.outbound_whitelisted_host_list_command(demisto_args)
 
     else:  # inbound
-        if list_color == "blacklisted":
+        if list_color == "blacklist":
             raw_result = client.inbound_blacklisted_host_list_command(demisto_args)
         else:
             raw_result = client.inbound_whitelisted_host_list_command(demisto_args)
@@ -577,13 +591,13 @@ def handle_host_list_commands(client: Client, demisto_args: dict,
     name = list(raw_result.keys())[0]
     hosts_list = copy.deepcopy(raw_result.get(name, []))
     objects_time_to_readable_time(hosts_list, 'updateTime')
-
-    readable_output = tableToMarkdown(name, hosts_list,
+    table_header = string_to_table_header(name.replace('-', ' '))
+    readable_output = tableToMarkdown(table_header, hosts_list,
                                       headers=['host_address', 'cid', 'pgid', 'update_time', 'annotation'],
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.{camelize_string(list_color)}.Hosts',
+        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.{camelize_string(list_color)}.Host',
         outputs_key_field='host_address',
         outputs=hosts_list,
         raw_response=raw_result,
@@ -591,8 +605,9 @@ def handle_host_list_commands(client: Client, demisto_args: dict,
     )
 
 
-def handle_host_addition_and_updates_commands(client: Client, demisto_args: dict,
-                                              meta_data: dict) -> CommandResults:
+def handle_host_addition_and_replacement_commands(client: Client,
+                                                  demisto_args: dict,
+                                                  meta_data: dict) -> CommandResults:
     """
 
         Adds hosts to the inbound/outbound blacklisted/whitelisted list.
@@ -605,9 +620,9 @@ def handle_host_addition_and_updates_commands(client: Client, demisto_args: dict
 
         :type meta_data: ``dict``
         :param meta_data: The meta data which determines if the host list is
-                          (outbound or inbound) and (blacklisted or whitelisted).
+                          (outbound or inbound) and (blacklist or whitelist).
 
-        :return: The command results which contains a dict of the added/updated hosts in the
+        :return: The command results which contains a dict of the added/replaced hosts in the
                  outbound/inbound blacklisted/whitelisted list.
         :rtype: ``CommandResults``
 
@@ -626,20 +641,27 @@ def handle_host_addition_and_updates_commands(client: Client, demisto_args: dict
     demisto_args['hostAddress'] = argToList(host_address)
 
     if direction == "outbound":
-        if list_color == "blacklisted":
+        if list_color == "blacklist":
             raw_result = client.outbound_blacklisted_host_add_update_command(demisto_args, op)
-        else:  # whitelisted
+        else:  # whitelist
             raw_result = client.outbound_whitelisted_host_add_update_command(demisto_args, op)
 
     else:  # inbound
-        if list_color == "blacklisted":
+        if list_color == "blacklist":
             raw_result = client.inbound_blacklisted_host_add_update_command(demisto_args, op)
         else:
             raw_result = client.inbound_whitelisted_host_add_update_command(demisto_args, op)
 
     hosts_list = copy.deepcopy(raw_result.get('hosts', [raw_result]))
 
-    msg = f"Hosts were successfully added/updated in the {direction} {list_color} list"
+    if op == 'POST':
+        msg_op = 'added to'
+    elif op == 'PUT':
+        msg_op = 'replaced in'
+    else:
+        msg_op = ''
+
+    msg = f"Hosts were successfully {msg_op} the {direction} {list_color} list"
 
     objects_time_to_readable_time(hosts_list, 'updateTime')
 
@@ -650,7 +672,7 @@ def handle_host_addition_and_updates_commands(client: Client, demisto_args: dict
                                                    headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.{camelize_string(list_color)}.Hosts',
+        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.{camelize_string(list_color)}.Host',
         outputs_key_field='host_address',
         outputs=hosts_list,
         raw_response=raw_result,
@@ -672,7 +694,7 @@ def handle_host_deletion_commands(client: Client, demisto_args: dict,
 
         :type meta_data: ``dict``
         :param meta_data: The meta data which determines if the host list is
-                          (outbound or inbound) and (blacklisted or whitelisted).
+                          (outbound or inbound) and (blacklist or whitelist).
 
         :return: A message which says that the hosts were successfully deleted from the list.
         :rtype: ``str``
@@ -690,13 +712,13 @@ def handle_host_deletion_commands(client: Client, demisto_args: dict,
     demisto_args['hostAddress'] = ','.join(argToList(host_address))
 
     if direction == "outbound":
-        if list_color == "blacklisted":
+        if list_color == "blacklist":
             raw_result = client.outbound_blacklisted_host_remove_command(demisto_args)
         else:
             raw_result = client.outbound_whitelisted_host_remove_command(demisto_args)
 
     else:  # inbound
-        if list_color == "blacklisted":
+        if list_color == "blacklist":
             raw_result = client.inbound_blacklisted_host_remove_command(demisto_args)
         else:
             raw_result = client.inbound_whitelisted_host_remove_command(demisto_args)
@@ -723,6 +745,9 @@ def handle_protection_groups_list_commands(client: Client, demisto_args: dict) -
 
     """
     remove_nulls_from_dictionary(demisto_args)
+    query = demisto_args.pop('query', None)
+    if query:
+        demisto_args['q'] = query
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
     serialize_protection_groups([demisto_args])
     raw_result = client.protection_group_list_command(demisto_args)
@@ -730,13 +755,14 @@ def handle_protection_groups_list_commands(client: Client, demisto_args: dict) -
     deserialize_protection_groups(protection_group_list)
     objects_time_to_readable_time(protection_group_list, 'timeCreated')
 
-    headers = ['name', 'pgid', 'protection_level', 'active', 'server_name', 'profiling', 'profiling_duration', 'time_created']
+    headers = ['name', 'pgid', 'protection_level', 'active', 'server_name', 'profiling', 'profiling_duration',
+               'time_created', 'description']
 
     readable_output = tableToMarkdown('Protection Groups', protection_group_list, headers=headers,
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix="NetscoutAED.Protection_Groups",
+        outputs_prefix="NetscoutAED.Protection_Group",
         outputs_key_field='pgid',
         outputs=protection_group_list,
         raw_response=raw_result,
@@ -772,19 +798,20 @@ def handle_protection_groups_update_commands(client: Client, demisto_args: dict)
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
     serialize_protection_groups([demisto_args])
     raw_result = client.protection_group_patch_command(demisto_args)
-    protection_group_list = [copy.deepcopy(raw_result)]
-    deserialize_protection_groups(protection_group_list)
-    objects_time_to_readable_time(protection_group_list, 'timeCreated')
-    headers = ['name', 'pgid', 'protection_level', 'active', 'server_name', 'profiling', 'profiling_duration', 'time_created']
+    protection_groups_list = copy.deepcopy(raw_result.get('protection-groups', [raw_result]))
+    deserialize_protection_groups(protection_groups_list)
+    objects_time_to_readable_time(protection_groups_list, 'timeCreated')
+    headers = ['name', 'pgid', 'protection_level', 'active', 'server_name', 'profiling', 'profiling_duration',
+               'time_created', 'description']
     msg = f"Successfully updated the protection group object with protection group id: {pgid}"
 
-    readable_output = msg + '\n' + tableToMarkdown('Protection Groups', protection_group_list, headers=headers,
+    readable_output = msg + '\n' + tableToMarkdown('Protection Groups', protection_groups_list, headers=headers,
                                                    headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='NetscoutAED.Protection_Groups',
+        outputs_prefix='NetscoutAED.Protection_Group',
         outputs_key_field='pgid',
-        outputs=protection_group_list,
+        outputs=protection_groups_list,
         raw_response=raw_result,
         readable_output=readable_output
     )
@@ -807,6 +834,9 @@ def handle_domain_list_commands(client: Client, demisto_args: dict) -> CommandRe
     """
 
     remove_nulls_from_dictionary(demisto_args)
+    query = demisto_args.pop('query', None)
+    if query:
+        demisto_args['q'] = query
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
 
     raw_result = client.inbound_blacklisted_domain_list_command(demisto_args)
@@ -814,12 +844,12 @@ def handle_domain_list_commands(client: Client, demisto_args: dict) -> CommandRe
     domains_list = copy.deepcopy(raw_result.get('blacklisted-domains', []))
     objects_time_to_readable_time(domains_list, 'updateTime')
 
-    readable_output = tableToMarkdown("blacklisted domains", domains_list,
+    readable_output = tableToMarkdown("Blacklisted Domains", domains_list,
                                       headers=['domain', 'pgid', 'cid', 'update_time', 'annotation'],
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='NetscoutAED.Inbound.Blacklisted.Domains',
+        outputs_prefix='NetscoutAED.Inbound.Blacklist.Domain',
         outputs_key_field='domain',
         outputs=domains_list,
         raw_response=raw_result,
@@ -864,7 +894,7 @@ def handle_domain_addition_commands(client: Client, demisto_args: dict) -> Comma
                                                    headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='NetscoutAED.Inbound.Blacklisted.Domains',
+        outputs_prefix='NetscoutAED.Inbound.Blacklist.Domain',
         outputs_key_field='domain',
         outputs=domains_list,
         raw_response=raw_result,
@@ -919,6 +949,9 @@ def handle_url_list_commands(client: Client, demisto_args: dict) -> CommandResul
 
     """
     remove_nulls_from_dictionary(demisto_args)
+    query = demisto_args.pop('query', None)
+    if query:
+        demisto_args['q'] = query
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
 
     raw_result = client.inbound_blacklisted_url_list_command(demisto_args)
@@ -926,12 +959,12 @@ def handle_url_list_commands(client: Client, demisto_args: dict) -> CommandResul
     urls_list = copy.deepcopy(raw_result.get('blacklisted-urls', []))
     objects_time_to_readable_time(urls_list, 'updateTime')
 
-    readable_output = tableToMarkdown('blacklisted urls', urls_list,
+    readable_output = tableToMarkdown('Blacklisted URLs', urls_list,
                                       headers=['url', 'pgid', 'cid', 'update_time', 'annotation'],
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='NetscoutAED.Inbound.Blacklisted.Urls',
+        outputs_prefix='NetscoutAED.Inbound.Blacklist.Url',
         outputs_key_field='url',
         outputs=urls_list,
         raw_response=raw_result,
@@ -975,7 +1008,7 @@ def handle_url_addition_commands(client: Client, demisto_args: dict) -> CommandR
                                                    headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix="NetscoutAED.Inbound.Blacklisted.Urls",
+        outputs_prefix="NetscoutAED.Inbound.Blacklist.Url",
         outputs_key_field="url",
         outputs=urls_list,
         raw_response=raw_result,
@@ -1024,6 +1057,7 @@ def main() -> None:
     proxy: bool = params.get('proxy', False)
     api_token = params.get('api_token')
     commands = init_commands_dict()
+    demisto_command = demisto.command()
     try:
         handle_proxy()
         client = Client(
@@ -1031,12 +1065,11 @@ def main() -> None:
             verify=verify_certificate,
             api_token=api_token,
             proxy=proxy)
-        demisto_command = demisto.command()
 
         if not demisto_command or demisto_command not in commands:
             raise NotImplementedError(f'Command {demisto_command} is not implemented.')
 
-        demisto.info(f'Command being called is {demisto_command}')
+        demisto.debug(f'Command being called is {demisto_command}')
         func_to_execute = dict_safe_get(commands, [demisto_command, 'func'])
         meta_data = dict_safe_get(commands, [demisto_command, 'meta_data'])
         demisto_args = demisto.args()

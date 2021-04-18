@@ -12,10 +12,10 @@ client = Client(
     api_token="api_token",
     proxy=False)
 
-inbound_blacklisted = {'direction': 'inbound', 'list_color': 'blacklisted'}
-inbound_whitelisted = {'direction': 'inbound', 'list_color': 'whitelisted'}
-outbound_blacklisted = {'direction': 'outbound', 'list_color': 'blacklisted'}
-outbound_whitelisted = {'direction': 'outbound', 'list_color': 'whitelisted'}
+inbound_blacklisted = {'direction': 'inbound', 'list_color': 'blacklist'}
+inbound_whitelisted = {'direction': 'inbound', 'list_color': 'whitelist'}
+outbound_blacklisted = {'direction': 'outbound', 'list_color': 'blacklist'}
+outbound_whitelisted = {'direction': 'outbound', 'list_color': 'whitelist'}
 
 
 def util_load_json(path):
@@ -395,7 +395,7 @@ def test_handle_host_addition_commands(mocker, host, func_mock, raw_respond, dir
             - Ensure expected human readable response is returned and output is correct
 
     """
-    from NetscoutAED import handle_host_addition_and_updates_commands
+    from NetscoutAED import handle_host_addition_and_replacement_commands
 
     hosts_raw = util_load_json('test_data/hosts/' + raw_respond)
     if host == '1.1.1.1':
@@ -404,9 +404,8 @@ def test_handle_host_addition_commands(mocker, host, func_mock, raw_respond, dir
         hosts_raw = hosts_raw["multiple_hosts_output"]
 
     mocker.patch.object(client, func_mock, return_value=hosts_raw)
-    result = handle_host_addition_and_updates_commands(client, {"host_address": host}, direction_color)
-    assert f"Hosts were successfully added/updated in the {direction_color['direction']}" \
-           f" {direction_color['list_color']}" in result.readable_output
+    result = handle_host_addition_and_replacement_commands(client, {"host_address": host}, direction_color)
+    assert "Hosts were successfully" in result.readable_output
     assert all([x == y for x, y in zip(expected_output, result.outputs)])
 
 
@@ -423,9 +422,9 @@ def test_handle_host_addition_commands_no_host_given():
             - An exception is raised by the function
 
     """
-    from NetscoutAED import handle_host_addition_and_updates_commands
+    from NetscoutAED import handle_host_addition_and_replacement_commands
     with pytest.raises(DemistoException, match="You must provide host in order to add/update"):
-        handle_host_addition_and_updates_commands(client, {}, outbound_blacklisted)
+        handle_host_addition_and_replacement_commands(client, {}, outbound_blacklisted)
 
 
 host_deletion_params = [

@@ -1,19 +1,19 @@
 id: NetscoutAED-Test
-version: -1
+version: 8
+vcShouldKeepItemLegacyProdMachine: false
 name: NetscoutAED-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 11fdbf45-f068-4afb-8064-9a1f040913f4
+    taskid: d677c797-0215-42df-84e3-9a903409cc1f
     type: start
     task:
-      id: 11fdbf45-f068-4afb-8064-9a1f040913f4
+      id: d677c797-0215-42df-84e3-9a903409cc1f
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -30,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 80100418-9148-4fb7-80d5-7ca15a80463d
+    taskid: 665dd7d1-623a-472e-8416-089b850c544f
     type: regular
     task:
-      id: 80100418-9148-4fb7-80d5-7ca15a80463d
+      id: 665dd7d1-623a-472e-8416-089b850c544f
       version: -1
       name: List of countries
       description: gets a country or list of countries (country name and ISO-standardized
@@ -60,12 +62,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 59b37661-3dab-46b6-8b77-fa31eedd4896
+    taskid: 6b6ea509-3a11-422c-8439-5c73c703cc77
     type: condition
     task:
-      id: 59b37661-3dab-46b6-8b77-fa31eedd4896
+      id: 6b6ea509-3a11-422c-8439-5c73c703cc77
       version: -1
       name: Verify list of countries results
       type: condition
@@ -81,22 +85,22 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: NetscoutAED.Countries.country_name
+              simple: NetscoutAED.Country.country_name
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: NetscoutAED.Countries.iso_code
+              simple: NetscoutAED.Country.iso_code
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: NetscoutAED.Countries.country_name
+              simple: NetscoutAED.Country.country_name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: NetscoutAED.Countries.iso_code
+              simple: NetscoutAED.Country.iso_code
             iscontext: true
     view: |-
       {
@@ -110,12 +114,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 77cce2ed-0227-49d4-8113-868a738cfdc3
+    taskid: c5badfa8-2431-4677-853c-ecdbb91a3da8
     type: regular
     task:
-      id: 77cce2ed-0227-49d4-8113-868a738cfdc3
+      id: c5badfa8-2431-4677-853c-ecdbb91a3da8
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -142,12 +148,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 018ab5cc-0a78-4c02-8644-5d9e7be3f00a
+    taskid: cb9f81da-86cc-471e-8168-756644bd9d5a
     type: regular
     task:
-      id: 018ab5cc-0a78-4c02-8644-5d9e7be3f00a
+      id: cb9f81da-86cc-471e-8168-756644bd9d5a
       version: -1
       name: Remove country from outbound blacklisted list
       description: Removes one or more countries from the outbound blacklist.
@@ -174,12 +182,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a8b48651-41c7-47d4-87fa-552f95a24027
+    taskid: 32c00d82-2adb-46ba-89c8-a144c868de24
     type: regular
     task:
-      id: a8b48651-41c7-47d4-87fa-552f95a24027
+      id: 32c00d82-2adb-46ba-89c8-a144c868de24
       version: -1
       name: Get list of outbound blacklisted countries
       description: Gets the countries on the outbound blacklist. By default, 10 blacklisted
@@ -204,12 +214,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 1a88adcd-3773-40d1-8fea-85310c04ef4c
+    taskid: e2c4ef53-9f47-4177-8a60-d2ef2d134a2d
     type: condition
     task:
-      id: 1a88adcd-3773-40d1-8fea-85310c04ef4c
+      id: e2c4ef53-9f47-4177-8a60-d2ef2d134a2d
       version: -1
       name: Verify that the country was removed from both lists
       type: condition
@@ -228,7 +240,7 @@ tasks:
               simple: US
           right:
             value:
-              simple: NetscoutAED.Outbound.Blacklisted.Countries.country
+              simple: NetscoutAED.Outbound.Blacklist.Country.country
             iscontext: true
       - - operator: notIn
           left:
@@ -237,7 +249,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Countries.country
+              simple: NetscoutAED.Inbound.Blacklist.Country.country
             iscontext: true
     view: |-
       {
@@ -251,12 +263,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 1e9f771f-ca68-4b91-8d76-11178ab9dda7
+    taskid: 6743f632-5057-4070-827c-3b5421ec2813
     type: regular
     task:
-      id: 1e9f771f-ca68-4b91-8d76-11178ab9dda7
+      id: 6743f632-5057-4070-827c-3b5421ec2813
       version: -1
       name: Add country to the outbound blacklisted list
       description: Adds one or more countries to the outbound blacklist.
@@ -283,12 +297,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: ec19980b-59ad-4705-8653-790d95c1517f
+    taskid: 4604221c-c560-45cd-85de-39f70613aa76
     type: condition
     task:
-      id: ec19980b-59ad-4705-8653-790d95c1517f
+      id: 4604221c-c560-45cd-85de-39f70613aa76
       version: -1
       name: Verify that countries were added
       type: condition
@@ -304,7 +320,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklisted.Countries.country
+              simple: NetscoutAED.Outbound.Blacklist.Country.country
             iscontext: true
           right:
             value:
@@ -312,7 +328,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Countries.country
+              simple: NetscoutAED.Inbound.Blacklist.Country.country
             iscontext: true
           right:
             value:
@@ -329,18 +345,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 69ae0614-52a2-41a9-87ca-7f9bf68eb7b8
+    taskid: 9a355709-fe64-46ce-8a23-c18c595091e9
     type: title
     task:
-      id: 69ae0614-52a2-41a9-87ca-7f9bf68eb7b8
+      id: 9a355709-fe64-46ce-8a23-c18c595091e9
       version: -1
       name: Done checking countries commands
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -357,12 +374,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: b96493ff-badd-4cde-8017-d05a4e944289
+    taskid: e65689f5-f0dc-46da-8dff-c6c2eb8f5fd5
     type: regular
     task:
-      id: b96493ff-badd-4cde-8017-d05a4e944289
+      id: e65689f5-f0dc-46da-8dff-c6c2eb8f5fd5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -389,12 +408,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 8bb471e8-4510-4ce0-8ee2-c91566d2418b
+    taskid: bfbccbec-fcd8-4e92-8cd7-5a6a954d5fce
     type: regular
     task:
-      id: 8bb471e8-4510-4ce0-8ee2-c91566d2418b
+      id: bfbccbec-fcd8-4e92-8cd7-5a6a954d5fce
       version: -1
       name: Add country to the inbound blacklisted list
       description: Adds one or more countries to the inbound blacklist by pgid or
@@ -422,12 +443,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 28ec4b8d-ac6d-48f9-8d4e-0b679103f58e
+    taskid: 5306efcb-bf14-48d8-8fb5-771c034a689e
     type: regular
     task:
-      id: 28ec4b8d-ac6d-48f9-8d4e-0b679103f58e
+      id: 5306efcb-bf14-48d8-8fb5-771c034a689e
       version: -1
       name: Remove country from inbound blacklisted list
       description: Removes one or more countries from the blacklist for a specific
@@ -455,12 +478,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 32f4c8ff-b147-4e0e-8c51-aea5e160a87d
+    taskid: f149c201-9450-4c33-85d0-2dc4bb696b90
     type: regular
     task:
-      id: 32f4c8ff-b147-4e0e-8c51-aea5e160a87d
+      id: f149c201-9450-4c33-85d0-2dc4bb696b90
       version: -1
       name: Get list of inbound blacklisted countries
       description: Gets the inbound blacklisted countries. By default, 10 blacklisted
@@ -487,12 +512,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: b44b03d1-c5ca-45ae-80f1-cd93a3a8626a
+    taskid: 7fcf079a-8cd3-4ebd-8697-5e7468dafe7e
     type: regular
     task:
-      id: b44b03d1-c5ca-45ae-80f1-cd93a3a8626a
+      id: 7fcf079a-8cd3-4ebd-8697-5e7468dafe7e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -519,12 +546,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: f9ba0022-d972-4225-8fb2-894d2059f377
+    taskid: 8cb94386-59ee-47d0-87ec-b4e241452bf0
     type: regular
     task:
-      id: f9ba0022-d972-4225-8fb2-894d2059f377
+      id: 8cb94386-59ee-47d0-87ec-b4e241452bf0
       version: -1
       name: Add host to the outbound blacklisted list
       description: Adds one or more hosts to the outbound blacklist.
@@ -551,12 +580,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 8b4facc6-040a-426c-8793-84239448d960
+    taskid: 377314db-f8a1-4bdd-8411-7af24614d181
     type: regular
     task:
-      id: 8b4facc6-040a-426c-8793-84239448d960
+      id: 377314db-f8a1-4bdd-8411-7af24614d181
       version: -1
       name: Add host to the inbound blacklisted list
       description: Adds one or more hosts to the inbound blacklisted list.
@@ -583,12 +614,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 6a83c291-ef60-42ab-8b97-b009bf116b41
+    taskid: e06ae6e9-c065-4887-8df4-992ea4792035
     type: regular
     task:
-      id: 6a83c291-ef60-42ab-8b97-b009bf116b41
+      id: e06ae6e9-c065-4887-8df4-992ea4792035
       version: -1
       name: Add host to the outbound whitelisted list
       description: Adds one or more hosts to the outbound whitelisted list
@@ -615,12 +648,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 567646a7-a44d-413b-8846-fc471dd3f091
+    taskid: 2a45f9e4-a1a2-4034-8da5-492aad96c454
     type: regular
     task:
-      id: 567646a7-a44d-413b-8846-fc471dd3f091
+      id: 2a45f9e4-a1a2-4034-8da5-492aad96c454
       version: -1
       name: Add host to the inbound whitelisted list
       description: Adds one or more hosts to the inbound whitelisted list.
@@ -647,12 +682,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: cab12b4b-cf1b-4910-895b-92caebb6b753
+    taskid: fc3fcf40-5be1-4961-8381-baa7ee762053
     type: condition
     task:
-      id: cab12b4b-cf1b-4910-895b-92caebb6b753
+      id: fc3fcf40-5be1-4961-8381-baa7ee762053
       version: -1
       name: Verify that hosts were added
       type: condition
@@ -668,7 +705,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklisted.Hosts.host_address
+              simple: NetscoutAED.Outbound.Blacklist.Host.host_address
             iscontext: true
           right:
             value:
@@ -676,7 +713,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Hosts.host_address
+              simple: NetscoutAED.Inbound.Blacklist.Host.host_address
             iscontext: true
           right:
             value:
@@ -684,7 +721,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Whitelisted.Hosts.host_address
+              simple: NetscoutAED.Outbound.Whitelist.Host.host_address
             iscontext: true
           right:
             value:
@@ -692,7 +729,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Whitelisted.Hosts.host_address
+              simple: NetscoutAED.Inbound.Whitelist.Host.host_address
             iscontext: true
           right:
             value:
@@ -709,16 +746,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 669f6b67-ddc1-45fc-84ac-df8a4280bc0b
+    taskid: 6bb5d79f-ee02-4d41-8ffe-9d09ab38538d
     type: regular
     task:
-      id: 669f6b67-ddc1-45fc-84ac-df8a4280bc0b
+      id: 6bb5d79f-ee02-4d41-8ffe-9d09ab38538d
       version: -1
-      name: Update host in the outbound blacklisted list
+      name: Replace host in the outbound blacklisted list
       description: Replaces all the hosts on the outbound blacklisted list.
-      script: '|||netscout-aed-outbound-blacklisted-hosts-update'
+      script: '|||netscout-aed-outbound-blacklisted-hosts-replace'
       type: regular
       iscommand: true
       brand: ""
@@ -741,16 +780,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 48609e59-96fe-4ffe-8b5e-e0834b006bed
+    taskid: 4d921d3f-e3f3-4b0f-8e05-588e95946b4c
     type: regular
     task:
-      id: 48609e59-96fe-4ffe-8b5e-e0834b006bed
+      id: 4d921d3f-e3f3-4b0f-8e05-588e95946b4c
       version: -1
-      name: Update host in the inbound blacklisted list
+      name: Replace host in the inbound blacklisted list
       description: Replaces all the hosts on the inbound blacklist.
-      script: '|||netscout-aed-inbound-blacklisted-hosts-update'
+      script: '|||netscout-aed-inbound-blacklisted-hosts-replace'
       type: regular
       iscommand: true
       brand: ""
@@ -773,16 +814,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 814985cf-acb3-4c08-89fe-ba7c53a0e0a6
+    taskid: 75fd26dd-0e5b-4766-8bf2-b262560fb495
     type: regular
     task:
-      id: 814985cf-acb3-4c08-89fe-ba7c53a0e0a6
+      id: 75fd26dd-0e5b-4766-8bf2-b262560fb495
       version: -1
-      name: update host in the outbound whitelisted list
+      name: Replace host in the outbound whitelisted list
       description: Replaces all the hosts on the outbound whitelisted list.
-      script: '|||netscout-aed-outbound-whitelisted-hosts-update'
+      script: '|||netscout-aed-outbound-whitelisted-hosts-replace'
       type: regular
       iscommand: true
       brand: ""
@@ -805,16 +848,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 8e18a58d-2c9b-44c6-832d-e9530e7ec9fc
+    taskid: 6b575f15-70d8-4ba7-8d14-679143717c35
     type: regular
     task:
-      id: 8e18a58d-2c9b-44c6-832d-e9530e7ec9fc
+      id: 6b575f15-70d8-4ba7-8d14-679143717c35
       version: -1
-      name: Update host in the inbound whitelisted list
+      name: Replace host in the inbound whitelisted list
       description: Replaces all the hosts on the inbound whitelist.
-      script: '|||netscout-aed-inbound-whitelisted-hosts-update'
+      script: '|||netscout-aed-inbound-whitelisted-hosts-replace'
       type: regular
       iscommand: true
       brand: ""
@@ -837,12 +882,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: b952ea75-76c7-4ed7-8e1d-b49d2a41e76a
+    taskid: 483f4ce9-deaa-4d34-857b-0a5b24c5257d
     type: condition
     task:
-      id: b952ea75-76c7-4ed7-8e1d-b49d2a41e76a
+      id: 483f4ce9-deaa-4d34-857b-0a5b24c5257d
       version: -1
       name: Verify that hosts were updated
       type: condition
@@ -858,7 +905,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklisted.Hosts.host_address
+              simple: NetscoutAED.Outbound.Blacklist.Host.host_address
             iscontext: true
           right:
             value:
@@ -866,7 +913,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Hosts.host_address
+              simple: NetscoutAED.Inbound.Blacklist.Host.host_address
             iscontext: true
           right:
             value:
@@ -874,7 +921,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Whitelisted.Hosts.host_address
+              simple: NetscoutAED.Outbound.Whitelist.Host.host_address
             iscontext: true
           right:
             value:
@@ -890,7 +937,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklisted.Hosts.host_address
+              simple: NetscoutAED.Outbound.Blacklist.Host.host_address
             iscontext: true
           right:
             value:
@@ -898,7 +945,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Hosts.host_address
+              simple: NetscoutAED.Inbound.Blacklist.Host.host_address
             iscontext: true
           right:
             value:
@@ -906,7 +953,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Whitelisted.Hosts.host_address
+              simple: NetscoutAED.Outbound.Whitelist.Host.host_address
             iscontext: true
           right:
             value:
@@ -914,7 +961,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Whitelisted.Hosts.host_address
+              simple: NetscoutAED.Inbound.Whitelist.Host.host_address
             iscontext: true
           right:
             value:
@@ -931,12 +978,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 599a0d24-752a-4ab1-84ce-d6db3e8cc076
+    taskid: 5fc0580b-7a1d-4d72-8c97-89754b662198
     type: regular
     task:
-      id: 599a0d24-752a-4ab1-84ce-d6db3e8cc076
+      id: 5fc0580b-7a1d-4d72-8c97-89754b662198
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -963,12 +1012,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: a2dbcaf9-86e2-4c77-851b-e6f904c066ae
+    taskid: f415c817-4a4c-41bd-8683-8ea4dd11a465
     type: regular
     task:
-      id: a2dbcaf9-86e2-4c77-851b-e6f904c066ae
+      id: f415c817-4a4c-41bd-8683-8ea4dd11a465
       version: -1
       name: Get list of outbound blacklisted host
       description: Gets the outbound blacklisted hosts. By default, 10 blacklisted
@@ -993,12 +1044,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: eb8ba44f-6b90-423d-8c0e-961ba31f2d4f
+    taskid: 1ef3caf2-f5a7-4b76-87a4-f0f518283357
     type: regular
     task:
-      id: eb8ba44f-6b90-423d-8c0e-961ba31f2d4f
+      id: 1ef3caf2-f5a7-4b76-87a4-f0f518283357
       version: -1
       name: Get list of inbound blacklisted hosts
       description: Gets the inbound blacklisted hosts. By default, 10 blacklisted
@@ -1025,12 +1078,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 9f4387bb-9d92-4b58-8119-a5e0bdb87f8a
+    taskid: 1a212a6e-aaaf-4a94-8ed7-f6a7ba31344f
     type: regular
     task:
-      id: 9f4387bb-9d92-4b58-8119-a5e0bdb87f8a
+      id: 1a212a6e-aaaf-4a94-8ed7-f6a7ba31344f
       version: -1
       name: Get list of outbound whitelisted hosts
       description: Gets the outbound whitelisted hosts. By default, 10 whitelisted
@@ -1055,12 +1110,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 60dcfd15-d576-4e01-84e7-e573491eb4c6
+    taskid: 8ee2c86f-b5d5-4325-8e0f-4f1e85b7e646
     type: regular
     task:
-      id: 60dcfd15-d576-4e01-84e7-e573491eb4c6
+      id: 8ee2c86f-b5d5-4325-8e0f-4f1e85b7e646
       version: -1
       name: Get list of inbound whitelisted hosts
       description: Get the whitelisted hosts. By default, 10 whitelisted hosts are
@@ -1087,12 +1144,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: b00d1117-6a92-49cd-81a0-34934e5700a3
+    taskid: 119f0a5c-bf21-46f2-8993-808430552567
     type: condition
     task:
-      id: b00d1117-6a92-49cd-81a0-34934e5700a3
+      id: 119f0a5c-bf21-46f2-8993-808430552567
       version: -1
       name: Verify that hosts were removed
       type: condition
@@ -1108,7 +1167,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklisted.Hosts.host_address
+              simple: NetscoutAED.Outbound.Blacklist.Host.host_address
             iscontext: true
           right:
             value:
@@ -1116,7 +1175,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Hosts.host_address
+              simple: NetscoutAED.Inbound.Blacklist.Host.host_address
             iscontext: true
           right:
             value:
@@ -1124,7 +1183,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Whitelisted.Hosts.host_address
+              simple: NetscoutAED.Outbound.Whitelist.Host.host_address
             iscontext: true
           right:
             value:
@@ -1132,7 +1191,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Whitelisted.Hosts.host_address
+              simple: NetscoutAED.Inbound.Whitelist.Host.host_address
             iscontext: true
           right:
             value:
@@ -1140,7 +1199,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklisted.Hosts.host_address
+              simple: NetscoutAED.Outbound.Blacklist.Host.host_address
             iscontext: true
           right:
             value:
@@ -1148,7 +1207,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Hosts.host_address
+              simple: NetscoutAED.Inbound.Blacklist.Host.host_address
             iscontext: true
           right:
             value:
@@ -1156,7 +1215,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Whitelisted.Hosts.host_address
+              simple: NetscoutAED.Outbound.Whitelist.Host.host_address
             iscontext: true
           right:
             value:
@@ -1164,7 +1223,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Whitelisted.Hosts.host_address
+              simple: NetscoutAED.Inbound.Whitelist.Host.host_address
             iscontext: true
           right:
             value:
@@ -1181,18 +1240,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: a30430f3-c132-4027-89e5-746cd4b738eb
+    taskid: 3f6def71-3b61-4ea1-8306-8b779f79c818
     type: title
     task:
-      id: a30430f3-c132-4027-89e5-746cd4b738eb
+      id: 3f6def71-3b61-4ea1-8306-8b779f79c818
       version: -1
       name: Done checking hosts commands
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1209,12 +1269,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: ac5816d4-7bfb-427c-8c8c-95142e625592
+    taskid: 1f97d443-9b9f-4f78-8f6d-cdd04a4371db
     type: regular
     task:
-      id: ac5816d4-7bfb-427c-8c8c-95142e625592
+      id: 1f97d443-9b9f-4f78-8f6d-cdd04a4371db
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1241,12 +1303,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 65f91680-7f3a-455f-869b-4679f92798b1
+    taskid: a11c06b6-5778-4a93-8719-3e2c6e4800e2
     type: regular
     task:
-      id: 65f91680-7f3a-455f-869b-4679f92798b1
+      id: a11c06b6-5778-4a93-8719-3e2c6e4800e2
       version: -1
       name: Remove host in the outbound blacklisted list
       description: Removes one or more hosts or CIDRS from the outbound blacklist.
@@ -1273,12 +1337,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: b1e6642d-4a1c-47bb-8d5d-7f60df7c3b17
+    taskid: ba92f6d3-d1cf-407b-8660-4607bd26ef81
     type: regular
     task:
-      id: b1e6642d-4a1c-47bb-8d5d-7f60df7c3b17
+      id: ba92f6d3-d1cf-407b-8660-4607bd26ef81
       version: -1
       name: Remove host in the inbound blacklisted list
       description: Removes one or more hosts or CIDRs from the blacklist for a specific
@@ -1306,12 +1372,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 6eceb9c8-86af-4fce-88b6-71cdc75876ce
+    taskid: fddaf134-3963-4af8-824f-04ef6ab5bc2c
     type: regular
     task:
-      id: 6eceb9c8-86af-4fce-88b6-71cdc75876ce
+      id: fddaf134-3963-4af8-824f-04ef6ab5bc2c
       version: -1
       name: Remove host in the outbound whitelisted list
       description: Removes one or more hosts or CIDRs from the outbound whitelist.
@@ -1338,12 +1406,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 4c63b10b-1489-4229-8f78-8aa12c3bcf74
+    taskid: 0f08f32a-a7c8-4f62-8d5e-045e14930aa4
     type: regular
     task:
-      id: 4c63b10b-1489-4229-8f78-8aa12c3bcf74
+      id: 0f08f32a-a7c8-4f62-8d5e-045e14930aa4
       version: -1
       name: Remove host in the inbound whitelisted list
       description: Removes one or more hosts or CIDRs from the whitelist for a specific
@@ -1371,12 +1441,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 5026b708-bec8-4fee-88b7-6827b4df15d8
+    taskid: a41d1156-e149-4cb2-8562-49588d4091aa
     type: regular
     task:
-      id: 5026b708-bec8-4fee-88b7-6827b4df15d8
+      id: a41d1156-e149-4cb2-8562-49588d4091aa
       version: -1
       name: Get list of outbound blacklisted host
       description: Gets the outbound blacklisted hosts. By default, 10 blacklisted
@@ -1401,12 +1473,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: eb585531-b87c-458b-80e5-60bbf0a1bc93
+    taskid: d8ca0601-020d-4d84-87fd-5fcc8951ab18
     type: regular
     task:
-      id: eb585531-b87c-458b-80e5-60bbf0a1bc93
+      id: d8ca0601-020d-4d84-87fd-5fcc8951ab18
       version: -1
       name: Get list of inbound blacklisted hosts
       description: Gets the inbound blacklisted hosts. By default, 10 blacklisted
@@ -1433,12 +1507,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: ef69be9b-2568-4a8e-818d-77daca559734
+    taskid: e686f52a-433a-448d-8df1-98e2f897eff7
     type: regular
     task:
-      id: ef69be9b-2568-4a8e-818d-77daca559734
+      id: e686f52a-433a-448d-8df1-98e2f897eff7
       version: -1
       name: Get list of outbound whitelisted hosts
       description: Gets the outbound whitelisted hosts. By default, 10 whitelisted
@@ -1463,12 +1539,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 073762a8-21cc-494f-8f02-1e455418067b
+    taskid: ca6db44e-40ff-4c63-8079-6a10242ea575
     type: regular
     task:
-      id: 073762a8-21cc-494f-8f02-1e455418067b
+      id: ca6db44e-40ff-4c63-8079-6a10242ea575
       version: -1
       name: Get list of inbound whitelisted hosts
       description: Get the whitelisted hosts. By default, 10 whitelisted hosts are
@@ -1495,12 +1573,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 8d586a33-2e26-467b-8260-e977b053c372
+    taskid: eb8d8c72-ef7e-4085-8b30-75a3f9cac7d8
     type: regular
     task:
-      id: 8d586a33-2e26-467b-8260-e977b053c372
+      id: eb8d8c72-ef7e-4085-8b30-75a3f9cac7d8
       version: -1
       name: Get protection groups list
       description: Gets a list of the protection groups.
@@ -1524,12 +1604,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: e2ce2068-f0a0-4b72-89d3-00ff47a9753d
+    taskid: ba33ab4c-7453-4b99-881c-9a88faa01787
     type: condition
     task:
-      id: e2ce2068-f0a0-4b72-89d3-00ff47a9753d
+      id: ba33ab4c-7453-4b99-881c-9a88faa01787
       version: -1
       name: Verify list of protection groups
       type: condition
@@ -1545,22 +1627,22 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: NetscoutAED.Protection_Groups.pgid
+              simple: NetscoutAED.Protection_Group.pgid
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: NetscoutAED.Protection_Groups.pgid
+              simple: NetscoutAED.Protection_Group.pgid
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: NetscoutAED.Protection_Groups.pgid
+              simple: NetscoutAED.Protection_Group.pgid
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: NetscoutAED.Protection_Groups.pgid
+              simple: NetscoutAED.Protection_Group.pgid
             iscontext: true
     view: |-
       {
@@ -1574,18 +1656,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: c5759f7c-f861-44e9-8444-3579d8b49838
+    taskid: cd7e4d6f-24d4-4742-8684-6b7880cd4f87
     type: title
     task:
-      id: c5759f7c-f861-44e9-8444-3579d8b49838
+      id: cd7e4d6f-24d4-4742-8684-6b7880cd4f87
       version: -1
       name: Done checking protection groups commands
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "46"
@@ -1602,12 +1685,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 9e835fe4-b0b7-45a8-8946-487a8e1793f7
+    taskid: c918ab37-7d94-4064-87e9-6d57dd6dc533
     type: regular
     task:
-      id: 9e835fe4-b0b7-45a8-8946-487a8e1793f7
+      id: c918ab37-7d94-4064-87e9-6d57dd6dc533
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1634,12 +1719,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: e9dd9ea6-83f1-40ef-8246-024a07d895de
+    taskid: 8c1fd0e4-4fb1-4fdb-8386-94a4ae9ff430
     type: regular
     task:
-      id: e9dd9ea6-83f1-40ef-8246-024a07d895de
+      id: 8c1fd0e4-4fb1-4fdb-8386-94a4ae9ff430
       version: -1
       name: Add domains to the inbound blacklisted list
       description: Adds one or more domains to the blacklist by pgid or cid.
@@ -1666,12 +1753,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: bc2d6337-58bc-4be4-8b36-cd05ceb9160e
+    taskid: 445cf637-8b83-4a94-8d24-506d7bee9bf3
     type: condition
     task:
-      id: bc2d6337-58bc-4be4-8b36-cd05ceb9160e
+      id: 445cf637-8b83-4a94-8d24-506d7bee9bf3
       version: -1
       name: Verify that domains were added to the inbound blacklisted list
       type: condition
@@ -1687,7 +1776,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Domains.domain
+              simple: NetscoutAED.Inbound.Blacklist.Domain.domain
             iscontext: true
           right:
             value:
@@ -1695,7 +1784,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Domains.domain
+              simple: NetscoutAED.Inbound.Blacklist.Domain.domain
             iscontext: true
           right:
             value:
@@ -1712,12 +1801,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: b090fef8-b13f-4dea-837c-b549235d9d04
+    taskid: 9beca3cb-c134-4146-8cab-e6170a651faa
     type: regular
     task:
-      id: b090fef8-b13f-4dea-837c-b549235d9d04
+      id: 9beca3cb-c134-4146-8cab-e6170a651faa
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1744,12 +1835,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: ce73e8a5-a55c-435a-8471-c9eaf9bb6cb4
+    taskid: e6534034-2513-48af-834f-77f6d8fa4b3e
     type: regular
     task:
-      id: ce73e8a5-a55c-435a-8471-c9eaf9bb6cb4
+      id: e6534034-2513-48af-834f-77f6d8fa4b3e
       version: -1
       name: Get list of inbound blacklisted domains
       description: Gets the blacklisted domains. By default, 10 blacklisted domains
@@ -1776,12 +1869,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 97ae772c-b6cf-4f0e-8173-e2400f0817b0
+    taskid: 14718fa1-9a2c-4e9d-8e6d-ddb343e01f6d
     type: condition
     task:
-      id: 97ae772c-b6cf-4f0e-8173-e2400f0817b0
+      id: 14718fa1-9a2c-4e9d-8e6d-ddb343e01f6d
       version: -1
       name: Verify that one of the domains was removed
       type: condition
@@ -1797,7 +1892,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Domains.domain
+              simple: NetscoutAED.Inbound.Blacklist.Domain.domain
             iscontext: true
           right:
             value:
@@ -1805,7 +1900,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Domains.domain
+              simple: NetscoutAED.Inbound.Blacklist.Domain.domain
             iscontext: true
           right:
             value:
@@ -1822,12 +1917,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: a3e04873-c21c-46bb-8110-900190be4f1d
+    taskid: 0cd006a9-d856-41e7-811f-fff8ba3dc6cf
     type: regular
     task:
-      id: a3e04873-c21c-46bb-8110-900190be4f1d
+      id: 0cd006a9-d856-41e7-811f-fff8ba3dc6cf
       version: -1
       name: Remove one of the domains from the inbound blacklisted domains
       description: Removes one or more domains from the blacklist for a specific protection
@@ -1855,12 +1952,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: afc2241d-3c1d-4b9a-858d-7885c48df471
+    taskid: 537e542b-b084-4c68-8ea7-fba6653260e5
     type: regular
     task:
-      id: afc2241d-3c1d-4b9a-858d-7885c48df471
+      id: 537e542b-b084-4c68-8ea7-fba6653260e5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1887,12 +1986,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 7a559e28-86eb-4c2d-84fd-2c9edc8783bf
+    taskid: d22504d1-abf1-4007-8fd7-033a4834dfd3
     type: regular
     task:
-      id: 7a559e28-86eb-4c2d-84fd-2c9edc8783bf
+      id: d22504d1-abf1-4007-8fd7-033a4834dfd3
       version: -1
       name: Add urls to the inbound blacklisted list
       description: Adds one or more URLs to the blacklist by pgid or cid.
@@ -1919,12 +2020,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 1762aa1b-7ed0-477a-856e-35c7a89a5eee
+    taskid: 871ba140-c3de-47de-827e-25ea1ae99394
     type: condition
     task:
-      id: 1762aa1b-7ed0-477a-856e-35c7a89a5eee
+      id: 871ba140-c3de-47de-827e-25ea1ae99394
       version: -1
       name: Verify that urls were added to the inbound blacklisted list
       type: condition
@@ -1940,7 +2043,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Urls.url
+              simple: NetscoutAED.Inbound.Blacklist.Url.url
             iscontext: true
           right:
             value:
@@ -1948,7 +2051,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Urls.url
+              simple: NetscoutAED.Inbound.Blacklist.Url.url
             iscontext: true
           right:
             value:
@@ -1965,12 +2068,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 0a4a8069-3168-4ab6-8986-c299acbe5491
+    taskid: 536ccc06-30c9-4a87-8577-e8685b14888f
     type: regular
     task:
-      id: 0a4a8069-3168-4ab6-8986-c299acbe5491
+      id: 536ccc06-30c9-4a87-8577-e8685b14888f
       version: -1
       name: Remove one of the urls from the inbound blacklisted domains
       description: Removes one or more URLs from the blacklist for a specific protection
@@ -1998,12 +2103,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 452ab65b-dc07-4ae3-8d83-3e1107833d00
+    taskid: c37224d6-97f6-4dd4-8a76-8ffa5fa23414
     type: regular
     task:
-      id: 452ab65b-dc07-4ae3-8d83-3e1107833d00
+      id: c37224d6-97f6-4dd4-8a76-8ffa5fa23414
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2030,12 +2137,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 3fcfcb8c-1f81-4d9f-8637-c5e03e79dbce
+    taskid: 5a5e1de9-05e4-4064-8775-0e5fdcfe45b3
     type: regular
     task:
-      id: 3fcfcb8c-1f81-4d9f-8637-c5e03e79dbce
+      id: 5a5e1de9-05e4-4064-8775-0e5fdcfe45b3
       version: -1
       name: Get list of inbound blacklisted urls
       description: Gets the blacklisted URLs. By default, 10 blacklisted URLs are
@@ -2062,12 +2171,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 1f93c784-6257-4de5-808b-cdec41f029df
+    taskid: 03b95e1a-376a-4c75-8a44-e0ca98b4274e
     type: condition
     task:
-      id: 1f93c784-6257-4de5-808b-cdec41f029df
+      id: 03b95e1a-376a-4c75-8a44-e0ca98b4274e
       version: -1
       name: Verify that one of the urls was removed
       type: condition
@@ -2083,7 +2194,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Urls.url
+              simple: NetscoutAED.Inbound.Blacklist.Url.url
             iscontext: true
           right:
             value:
@@ -2091,7 +2202,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklisted.Urls.url
+              simple: NetscoutAED.Inbound.Blacklist.Url.url
             iscontext: true
           right:
             value:
@@ -2108,18 +2219,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: aa821690-4b74-4034-8ca8-cfd81f0379b8
+    taskid: abc43a85-7ba7-4c93-8279-7c28bac4e9af
     type: title
     task:
-      id: aa821690-4b74-4034-8ca8-cfd81f0379b8
+      id: abc43a85-7ba7-4c93-8279-7c28bac4e9af
       version: -1
       name: Done checking domains commands
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "53"
@@ -2136,18 +2248,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: afb3f56b-c6b3-4df2-8159-e7640d03eeb4
+    taskid: b293aaae-df82-4e64-86bf-f82d42b46062
     type: title
     task:
-      id: afb3f56b-c6b3-4df2-8159-e7640d03eeb4
+      id: b293aaae-df82-4e64-86bf-f82d42b46062
       version: -1
       name: Done checking urls commands
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -2161,6 +2274,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
