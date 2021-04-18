@@ -6948,8 +6948,11 @@ def panorama_upload_content_update_file_command(args: dict):
             'Message': response['response']['msg'],
             'Status': response['response']['@status']
         }
-        entry_context = {"Panorama.Content.Upload(val.Status == obj.Status": content_upload_info}
-        results = CommandResults(raw_response=response, readable_output=human_readble)
+        results = CommandResults(raw_response=response,
+                                 readable_output=human_readble,
+                                 outputs_prefix="Panorama.Content.Upload",
+                                 outputs_key_field="Status",
+                                 outputs= content_upload_info)
 
     shutil.rmtree(file_name, ignore_errors=True)
     return results
