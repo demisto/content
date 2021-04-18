@@ -4476,7 +4476,7 @@ class RelationsTypes(object):
     :rtype: ``None``
     """
     # dict which keys is a relationship type and the value is the reverse type.
-    RELATIONSHIP_TYPES = ['IndicatorToIndicator']
+    RELATIONSHIP_TYPES = ['indicatorToIndicator']
 
     @staticmethod
     def is_valid_type(_type):
@@ -4704,7 +4704,7 @@ class EntityRelation:
     """
 
     def __init__(self, name, entity_a, object_type_a, entity_b, object_type_b,
-                 relation_type='IndicatorToIndicator', entity_a_family='Indicator', entity_b_family='Indicator',
+                 relation_type='indicatorToIndicator', entity_a_family='Indicator', entity_b_family='Indicator',
                  source_reliability="", fields=None, brand=""):
 
         # Relation
