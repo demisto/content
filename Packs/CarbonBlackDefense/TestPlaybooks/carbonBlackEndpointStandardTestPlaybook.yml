@@ -1336,7 +1336,7 @@ tasks:
         the parameters is required. It returns a list of events with general information.
         For detailed information about an event, use the "find event details" playbook
         with an event ID.
-      playbookName: Carbon Black Defense Find Events
+      playbookName: Carbon Black Endpoint Standard Find Events
       type: playbook
       iscommand: false
       brand: ""
@@ -1438,7 +1438,7 @@ tasks:
       version: -1
       name: Carbon Black Endpoint Standard Find Event Details
       description: Receives event IDs and returns details about the event.
-      playbookName: Carbon Black Defense Find Event Details
+      playbookName: Carbon Black Endpoint Standard Find Event Details
       type: playbook
       iscommand: false
       brand: ""
@@ -1476,7 +1476,7 @@ tasks:
       name: Carbon Black Endpoint Standard Find Processes
       description: Find processes using a search query (or device_id, etc.). One of
         the parameters is required. Returns a list of processes.
-      playbookName: Carbon Black Defense Find Processes
+      playbookName: Carbon Black Endpoint Standard Find Processes
       type: playbook
       iscommand: false
       brand: ""
