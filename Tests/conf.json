@@ -3282,7 +3282,8 @@
         },
         {
             "integrations": "Carbon Black Endpoint Standard",
-            "playbookID": "carbonBlackEndpointStandardTestPlaybook"
+            "playbookID": "carbonBlackEndpointStandardTestPlaybook",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
