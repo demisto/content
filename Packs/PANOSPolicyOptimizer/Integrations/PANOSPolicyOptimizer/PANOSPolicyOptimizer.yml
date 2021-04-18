@@ -3,14 +3,9 @@ commonfields:
   id: PAN-OS Policy Optimizer
   version: -1
 configuration:
-- display: Server URL (e.g., https://192.168.0.1)
-  name: server
+- display: Server URL (e.g., https://192.168.0.1:443)
+  name: server_url
   required: true
-  type: 0
-- defaultvalue: '443'
-  display: Port (e.g 443)
-  name: port
-  required: false
   type: 0
 - display: Username
   name: credentials

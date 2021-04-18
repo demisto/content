@@ -243,9 +243,13 @@ def get_policy_optimizer_statistics_command(client: Client) -> CommandResults:
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
     outputs_stats = {}
-    result = client.get_policy_optimizer_statistics()
+    raw_response = client.get_policy_optimizer_statistics()
 
-    stats = result['result']['result']
+    stats = raw_response['result']
+    if '@status' in stats and stats['@status'] == 'error':
+        raise Exception(f'Operation Failed with: {str(stats)}')
+
+    stats = stats['result']
     # we need to spin the keys and values and put them into dict so they'll look better in the context
     for i in stats['entry']:
         outputs_stats[i['@name']] = i['text']
@@ -254,7 +258,7 @@ def get_policy_optimizer_statistics_command(client: Client) -> CommandResults:
         outputs_prefix='PanOS.PolicyOptimizer.Stats',
         outputs=outputs_stats,
         readable_output=tableToMarkdown(name='Policy Optimizer Statistics:', t=stats['entry'], removeNull=True),
-        raw_response=result
+        raw_response=raw_response
     )
 
 
@@ -262,15 +266,15 @@ def policy_optimizer_no_apps_command(client: Client) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
-    result = client.policy_optimizer_no_apps()
+    raw_response = client.policy_optimizer_no_apps()
 
-    stats = result['result']
+    stats = raw_response['result']
     if '@status' in stats and stats['@status'] == 'error':
         raise Exception(f'Operation Failed with: {str(stats)}')
 
     stats = stats['result']
     if '@count' in stats and stats['@count'] == '0':
-        return CommandResults(readable_output='No Rules without apps were found.', raw_response=result)
+        return CommandResults(readable_output='No Rules without apps were found.', raw_response=raw_response)
 
     rules_no_apps = stats['entry']
     if not isinstance(rules_no_apps, list):
@@ -284,7 +288,7 @@ def policy_optimizer_no_apps_command(client: Client) -> CommandResults:
         outputs=rules_no_apps,
         readable_output=tableToMarkdown(name='Policy Optimizer No App Specified:', t=rules_no_apps, headers=headers,
                                         removeNull=True),
-        raw_response=result
+        raw_response=raw_response
     )
 
 
@@ -292,18 +296,22 @@ def policy_optimizer_get_unused_apps_command(client: Client) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
-    result = client.policy_optimizer_get_unused_apps()
+    raw_response = client.policy_optimizer_get_unused_apps()
 
-    stats = result['result']['result']
+    stats = raw_response['result']
+    if '@status' in stats and stats['@status'] == 'error':
+        raise Exception(f'Operation Failed with: {str(stats)}')
+
+    stats = stats['result']
     if '@count' in stats and stats['@count'] == '0':
-        return CommandResults(readable_output='No Rules with unused apps were found.', raw_response=result)
+        return CommandResults(readable_output='No Rules with unused apps were found.', raw_response=raw_response)
 
     return CommandResults(
         outputs_prefix='PanOS.PolicyOptimizer.UnusedApps',
         outputs_key_field='Stats',
-        outputs=result,
+        outputs=stats,
         readable_output=tableToMarkdown(name='Policy Optimizer Unused Apps:', t=stats['entry'], removeNull=True),
-        raw_response=result
+        raw_response=raw_response
     )
 
 
@@ -315,10 +323,14 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     usage = str(args.get('usage'))
     exclude = argToBoolean(args.get('exclude'))
 
-    result = client.policy_optimizer_get_rules(timeframe, usage, exclude)
-    stats = result['result']['result']
+    raw_response = client.policy_optimizer_get_rules(timeframe, usage, exclude)
+    stats = raw_response['result']
+    if '@status' in stats and stats['@status'] == 'error':
+        raise Exception(f'Operation Failed with: {str(stats)}')
+
+    stats = stats['result']
     if '@count' in stats and stats['@count'] == '0':
-        return CommandResults(readable_output=f'No {usage} rules where found.', raw_response=result)
+        return CommandResults(readable_output=f'No {usage} rules where found.', raw_response=raw_response)
 
     rules = stats['entry']
     if not isinstance(rules, list):
@@ -332,7 +344,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
         outputs=rules,
         readable_output=tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=rules, headers=headers,
                                         removeNull=True),
-        raw_response=result
+        raw_response=raw_response
     )
 
 
@@ -342,11 +354,15 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
     """
     rule_uuid = str(args.get('rule_uuid'))
 
-    result = client.policy_optimizer_app_and_usage(rule_uuid)
+    raw_response = client.policy_optimizer_app_and_usage(rule_uuid)
 
-    stats = result['result']['result']
+    stats = raw_response['result']
+    if '@status' in stats and stats['@status'] == 'error':
+        raise Exception(f'Operation Failed with: {str(stats)}')
+
+    stats = stats['result']
     if '@count' in stats and stats['@count'] == '0':
-        return CommandResults(readable_output=f'Rule with UUID:{rule_uuid} does not use apps.', raw_response=result)
+        return CommandResults(readable_output=f'Rule with UUID:{rule_uuid} does not use apps.', raw_response=raw_response)
 
     rule_stats = stats['rules']['entry'][0]
 
@@ -355,7 +371,7 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
         outputs_key_field='@uuid',
         outputs=rule_stats,
         readable_output=tableToMarkdown(name='Policy Optimizer Apps and Usage:', t=rule_stats, removeNull=True),
-        raw_response=result
+        raw_response=raw_response
     )
 
 
@@ -364,15 +380,19 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
     Gets the DAG
     """
     dag = str(args.get('dag'))
-    result = client.policy_optimizer_get_dag(dag)
-    result = result['result']['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
+    raw_response = client.policy_optimizer_get_dag(dag)
+    result = raw_response['result']
+    if '@status' in result and result['@status'] == 'error':
+        raise Exception(f'Operation Failed with: {str(result)}')
+
+    result = result['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
 
     return CommandResults(
         outputs_prefix='PanOS.PolicyOptimizer.DAG',
         outputs_key_field='Stats',
         outputs=result,
         readable_output=tableToMarkdown(name='Policy Optimizer Dynamic Address Group:', t=result, removeNull=True),
-        raw_response=result
+        raw_response=raw_response
     )
 
 
@@ -383,11 +403,7 @@ def main():
     demisto.debug(f'Command being called is: {command}')
     client: Client = None  # type: ignore
     try:
-        if not params.get('port'):
-            raise Exception('Set a port for the instance.')
-        url = f'{params.get("server").rstrip("/:")}:{params.get("port")}'
-
-        client = Client(url=url, username=params['credentials']['identifier'],
+        client = Client(url=params.get('server_url'), username=params['credentials']['identifier'],
                         password=params['credentials']['password'], vsys=params.get('vsys'),
                         device_group=params.get('device_group'), verify=not params.get('insecure'), tid=50)
         client.session_metadata['cookie'] = client.login()  # Login to PAN-OS and return the GUI cookie value
