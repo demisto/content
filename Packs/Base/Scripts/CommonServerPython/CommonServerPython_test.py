@@ -1021,6 +1021,21 @@ def test_return_error_fetch_incidents(mocker):
     assert returned_error
 
 
+def test_return_error_fetch_credentials(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-credentials
+    mocker.patch.object(demisto, 'command', return_value="fetch-credentials")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
 def test_return_error_fetch_indicators(mocker):
     from CommonServerPython import return_error
     err_msg = "Testing unicode Ё"
@@ -1082,6 +1097,29 @@ def test_exception_in_return_error(mocker):
     assert expected == results
     # IntegrationLogger = LOG (2 times if exception supplied)
     assert IntegrationLogger.__call__.call_count == 2
+
+
+def test_return_error_get_modified_remote_data(mocker):
+    from CommonServerPython import return_error
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'results')
+    err_msg = 'Test Error'
+    with raises(SystemExit):
+        return_error(err_msg)
+    assert demisto.results.call_args[0][0]['Contents'] == 'skip update. error: ' + err_msg
+
+
+def test_return_error_get_modified_remote_data_not_implemented(mocker):
+    from CommonServerPython import return_error
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'results')
+    err_msg = 'Test Error'
+    with raises(SystemExit):
+        try:
+            raise NotImplementedError('Command not implemented')
+        except:
+            return_error(err_msg)
+    assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
 def test_get_demisto_version(mocker, clear_version_cache):
@@ -1223,6 +1261,153 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
+    def test_outputs_without_outputs_prefix(self):
+        """
+        Given
+        - outputs as a list without output_prefix
+
+        When
+        - Returins results
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import CommandResults
+        with pytest.raises(ValueError, match='outputs_prefix'):
+            CommandResults(outputs=[])
+
+    def test_dbot_score_is_in_to_context_ip(self):
+        """
+        Given
+        - IP indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and IP output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = '1.1.1.1'
+        raw_response = {'id': indicator_id}
+        indicator = Common.IP(
+            indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.IP,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='Indicator!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.IP.CONTEXT_PATH in entry_context
+
+    def test_dbot_score_is_in_to_context_file(self):
+        """
+        Given
+        - File indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and File output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = '63347f5d946164a23faca26b78a91e1c'
+        raw_response = {'id': indicator_id}
+        indicator = Common.File(
+            md5=indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.FILE,
+                'Indicator',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.File.CONTEXT_PATH in entry_context
+
+    def test_dbot_score_is_in_to_context_domain(self):
+        """
+        Given
+        - domain indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and File output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = 'example.com'
+        raw_response = {'id': indicator_id}
+        indicator = Common.Domain(
+            indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.DOMAIN,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.Domain.CONTEXT_PATH in entry_context
+
+    def test_dbot_score_is_in_to_context_url(self):
+        """
+        Given
+        - domain indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and File output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = 'https://example.com'
+        raw_response = {'id': indicator_id}
+        indicator = Common.URL(
+            indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.URL,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.URL.CONTEXT_PATH in entry_context
+
     def test_multiple_outputs_keys(self):
         """
         Given
@@ -1892,6 +2077,62 @@ class TestBaseClient:
         requests_mock.get('http://example.com/api/v2/event')
         res = self.client._http_request('get', 'event', resp_type='response')
         assert isinstance(res, requests.Response)
+
+    def test_http_request_proxy_false(self):
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = 'http://testproxy:8899'
+        os.environ['https_proxy'] = 'https://testproxy:8899'
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=False, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert not m.last_request.proxies
+            assert m.called is True
+
+    def test_http_request_proxy_true(self):
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = 'http://testproxy:8899'
+        os.environ['https_proxy'] = 'https://testproxy:8899'
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert m.last_request.proxies == {
+                'http': 'http://testproxy:8899',
+                'https': 'https://testproxy:8899'
+            }
+            assert m.called is True
+
+    def test_http_request_verify_false(self):
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=False)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify is False
+            assert m.called is True
 
     def test_http_request_not_ok(self, requests_mock):
         from CommonServerPython import DemistoException
@@ -3285,7 +3526,14 @@ class TestCommonTypes:
                 'sub-domain1.somedomain.com',
                 'sub-domain2.somedomain.com',
                 'sub-domain3.somedomain.com'
-            ]
+            ],
+            tags=['tag1', 'tag2'],
+            malware_family=['malware_family1', 'malware_family2'],
+            feed_related_indicators=[Common.FeedRelatedIndicators(
+                value='8.8.8.8',
+                indicator_type="IP",
+                description='test'
+            )]
         )
 
         results = CommandResults(
@@ -3337,6 +3585,9 @@ class TestCommonTypes:
                             "PNS31.CLOUDNS.NET",
                             "PNS32.CLOUDNS.NET"
                         ],
+                        "Tags": ["tag1", "tag2"],
+                        "FeedRelatedIndicators": [{"value": "8.8.8.8", "type": "IP", "description": "test"}],
+                        "MalwareFamily": ["malware_family1", "malware_family2"],
                         "WHOIS": {
                             "Registrar": {
                                 "Name": "Mr Registrar",

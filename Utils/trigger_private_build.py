@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import json
 import time
@@ -16,6 +17,10 @@ PRIVATE_BUILD_INFRA_SCRIPTS = ['Tests/scripts/validate_premium_packs.sh', 'Tests
                                'Tests/scripts/validate_index.py']
 PRIVATE_BUILD_INFRA_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
 
+NON_PRIVATE_BUILD_FILES = ['Tests/Marketplace/landingPage_sections.json',
+                           'Tests/Marketplace/validate_landing_page_sections.py',
+                           'Tests/Marketplace/Tests/validate_landing_page_sections_test.py']
+
 TRIGGER_BUILD_URL = 'https://api.github.com/repos/demisto/content-private/dispatches'
 GET_DISPATCH_WORKFLOWS_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs'
 WORKFLOW_HTML_URL = 'https://github.com/demisto/content-private/actions/runs'
@@ -23,7 +28,7 @@ GET_WORKFLOW_URL = 'https://api.github.com/repos/demisto/content-private/actions
 
 PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
-GET_WORKFLOWS_MAX_RETRIES = 3
+GET_WORKFLOWS_MAX_RETRIES = 5
 
 GET_WORKFLOWS_TIMEOUT_THRESHOLD = 3600  # one hour
 
@@ -60,6 +65,8 @@ def branch_has_private_build_infra_change(branch_name: str = None) -> bool:
     """
     modified_files = get_modified_files(branch_name)
     for infra_file in modified_files:
+        if infra_file in NON_PRIVATE_BUILD_FILES:
+            continue
         if infra_file in PRIVATE_BUILD_INFRA_SCRIPTS:
             return True
 
@@ -107,16 +114,19 @@ def main():
     args = arg_parser.parse_args()
 
     github_token = args.github_token
-    commit_sha1 = os.environ.get('CIRCLE_SHA1')
-    branch_name = os.environ.get('CIRCLE_BRANCH')
 
-    if branch_has_private_build_infra_change(commit_sha1):
+    # get branch name
+    branches = tools.run_command("git branch")
+    branch_name_regex = re.search(r"\* (.*)", branches)
+    branch_name = branch_name_regex.group(1)
+
+    if branch_has_private_build_infra_change(branch_name):
         # get the workflows ids before triggering the build
         pre_existing_workflow_ids = get_dispatch_workflows_ids(github_token, 'master')
 
         # trigger private build
         payload = {'event_type': f'Trigger private build from content/{branch_name}',
-                   'client_payload': {'commit_sha1': commit_sha1, 'is_infra_build': 'True'}}
+                   'client_payload': {'commit_sha1': branch_name, 'is_infra_build': 'True'}}
 
         res = requests.post(TRIGGER_BUILD_URL,
                             headers={'Accept': 'application/vnd.github.everest-preview+json',

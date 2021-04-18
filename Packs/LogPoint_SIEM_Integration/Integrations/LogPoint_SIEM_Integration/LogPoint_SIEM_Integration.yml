@@ -729,7 +729,7 @@ script:
     - contextPath: LogPoint.Incidents.users.usergroups
       description: LogPoint Incidents Users Usergroups
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
   longRunning: false
@@ -742,5 +742,5 @@ tests:
 - LogPoint SIEM Integration - Test Playbook 1
 - LogPoint SIEM Integration - Test Playbook 2
 defaultmapperin: LogPoint-mapper
-defaultclassifier: null
+defaultclassifier:
 fromversion: 6.0.0

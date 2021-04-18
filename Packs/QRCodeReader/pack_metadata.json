@@ -1,0 +1,17 @@
+{
+    "name": "QR Code Reader",
+    "description": "Pack contains an integration with api.qrserver.com to read QR codes from uploaded image files.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "vibhuabharadwaj",
+    "url": "",
+    "email": "",
+    "created": "2021-03-04T09:36:39Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "vibhuabharadwaj"
+    ]
+}

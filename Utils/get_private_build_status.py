@@ -57,6 +57,11 @@ def get_workflow_status(github_token: str, workflow_id: str) -> (str, str, str):
     if job_status == 'completed':
         return 'completed', job_conclusion, ''
 
+    # check for failure steps
+    failure_steps = [step for step in jobs[0].get('steps') if step.get('conclusion') == 'failure']
+    if failure_steps:
+        return 'completed', 'failure', failure_steps[0].get('name')
+
     # if the job is still in progress - get the current step
     curr_step = next(step for step in jobs[0].get('steps') if step.get('status') == 'in_progress')
 

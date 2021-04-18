@@ -65,6 +65,13 @@ This playbook does not use any scripts.
 | WildFire.Report.FileType | The type of the submission. | string |
 | WildFire.Report.Status | The status of the submission. | string |
 | WildFire.Report.Size | The size of the submission. | number |
+| WildFire.Report.detection_reasons | The detection reasons object. | unknown |
+| WildFire.Report.detection_reasons.description | Reason for the detection verdict. | string |
+| WildFire.Report.detection_reasons.name | Name of the detection. | string |
+| WildFire.Report.detection_reasons.type | Type of the detection. | string |
+| WildFire.Report.detection_reasons.verdict | Verdict of the detection. | string |
+| WildFire.Report.detection_reasons.artifacts | Artifacts for the detection. | string |
+| WildFire.Report.iocs | Associated IOCs. | string |
 
 ## Playbook Image
 ---

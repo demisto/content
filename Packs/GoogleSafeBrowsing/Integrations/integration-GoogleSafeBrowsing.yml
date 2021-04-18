@@ -30,6 +30,20 @@ configuration:
   defaultvalue: https://safebrowsing.googleapis.com/v4/threatMatches:find
   type: 0
   required: true
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
@@ -43,21 +57,16 @@ configuration:
 script:
   script: >
     var apiKey = params.apiKey;
-
     var lookupUrl = params.url;
-
     if (lookupUrl[lookupUrl.length - 1] !== '/') {
         lookupUrl += '/';
     }
-
     lookupUrl += "?key=" + apiKey;
-
 
     var client = {
         clientId: params.clientId,
         clientVersion: params.clientVer
     }
-
 
     var types = {
         threatTypes:      ["MALWARE", "SOCIAL_ENGINEERING","POTENTIALLY_HARMFUL_APPLICATION","UNWANTED_SOFTWARE"],
@@ -103,7 +112,6 @@ script:
         return {body: result.Body, obj: obj, statusCode: result.StatusCode};
     };
 
-
     var checkURL = function(url) {
         var body = {
             "client": client,
@@ -118,11 +126,14 @@ script:
         return res.obj;
     }
 
-
     var getThreats = function(matches) {
         return dq(matches,"[]=val.threatType+'/'+val.platformType");
     }
 
+    var isValidReliability = function(reliability) {
+        var reliability_options = ['A+ - 3rd party enrichment', 'A - Completely reliable', 'B - Usually reliable', 'C - Fairly reliable', 'D - Not usually reliable', 'E - Unreliable', 'F - Reliability cannot be judged'];
+        return reliability_options.indexOf(reliability) >= 0;
+    }
 
     switch (command) {
         case 'test-module':
@@ -140,6 +151,15 @@ script:
             var md = "### Google Safe Browsing APIs - URL Query\n";
             var ec = {};
 
+            var reliability = params.integrationReliability;
+
+            if(!reliability){
+                reliability = 'B - Usually reliable';
+            }
+            if(!isValidReliability(reliability)) {
+                return 'Error, Source Reliability value is invalid. Please choose from available reliability options.';
+            }
+
 
             if (res.matches) {
                 dbotScore=3;
@@ -147,7 +167,8 @@ script:
                     Data: args.url,
                     Malicious: {Vendor: 'GoogleSafeBrowsing', Description: 'Match found: '+getThreats(res.matches)}
                 });
-                ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'GoogleSafeBrowsing', Score: dbotScore};
+
+                ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'GoogleSafeBrowsing', Score: dbotScore, Reliability: reliability};
 
                 md += "#### Found matches for URL " + args.url + "\n";
                 md += arrToMd(res.matches);
@@ -179,13 +200,20 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     description: Check URL Reputation
 hidden: false
 system: true
