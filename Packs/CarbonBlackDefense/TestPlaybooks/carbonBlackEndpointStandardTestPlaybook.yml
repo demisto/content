@@ -1,14 +1,15 @@
 id: carbonBlackEndpointStandardTestPlaybook
 version: -1
 name: carbonBlackEndpointStandardTestPlaybook
+description: A test playbook of the Carbon Black Endpoint Standard pack
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: df66c65e-dde5-4628-807c-72f42ee8adca
+    taskid: b4bfbd89-1ade-42a0-8f1b-6fdbc231d19c
     type: start
     task:
-      id: df66c65e-dde5-4628-807c-72f42ee8adca
+      id: b4bfbd89-1ade-42a0-8f1b-6fdbc231d19c
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 2110b5da-4ad9-499b-8c59-10e9a69f5f40
+    taskid: 0ae7cacc-cddd-45d8-8529-48f2e2663753
     type: regular
     task:
-      id: 2110b5da-4ad9-499b-8c59-10e9a69f5f40
+      id: 0ae7cacc-cddd-45d8-8529-48f2e2663753
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -67,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 0353fa18-3f90-4e16-8347-7b78dde0700c
+    taskid: f2b033a7-cf96-4d90-8e84-831deb552893
     type: regular
     task:
-      id: 0353fa18-3f90-4e16-8347-7b78dde0700c
+      id: f2b033a7-cf96-4d90-8e84-831deb552893
       version: -1
       name: cbd-get-alert-details
       script: '|||cbd-get-alert-details'
@@ -100,10 +101,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: c345ce4d-f9e8-4f43-82e4-c31c15847f67
+    taskid: f20bfda3-facc-4d7d-8284-0d921cb1c49a
     type: condition
     task:
-      id: c345ce4d-f9e8-4f43-82e4-c31c15847f67
+      id: f20bfda3-facc-4d7d-8284-0d921cb1c49a
       version: -1
       name: Verify Outputs
       type: condition
@@ -143,10 +144,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: ac4e12f6-6ae6-4ca4-81a1-6e051d9de5b4
+    taskid: 4913eb53-a472-43be-8e02-731ee3143abf
     type: regular
     task:
-      id: ac4e12f6-6ae6-4ca4-81a1-6e051d9de5b4
+      id: 4913eb53-a472-43be-8e02-731ee3143abf
       version: -1
       name: cbd-device-search
       script: '|||cbd-device-search'
@@ -179,10 +180,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 60ff3192-c6c4-458d-809c-e34fdc59c8bd
+    taskid: 88762137-d6ae-4315-8d66-47080e2a3e45
     type: regular
     task:
-      id: 60ff3192-c6c4-458d-809c-e34fdc59c8bd
+      id: 88762137-d6ae-4315-8d66-47080e2a3e45
       version: -1
       name: cbd-get-policies
       script: '|||cbd-get-policies'
@@ -207,10 +208,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: e9342893-0ad4-4246-80ea-e5671c8091ae
+    taskid: b3bcf050-7b10-46a3-81fa-f003c2c81b90
     type: regular
     task:
-      id: e9342893-0ad4-4246-80ea-e5671c8091ae
+      id: b3bcf050-7b10-46a3-81fa-f003c2c81b90
       version: -1
       name: cbd-get-policy
       script: '|||cbd-get-policy'
@@ -240,10 +241,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 9cbac1c1-0206-40af-84ef-0123c19acd69
+    taskid: f1d19942-3d2d-47d3-8f33-965c4c8d532d
     type: condition
     task:
-      id: 9cbac1c1-0206-40af-84ef-0123c19acd69
+      id: f1d19942-3d2d-47d3-8f33-965c4c8d532d
       version: -1
       name: Verify Outputs
       type: condition
@@ -280,10 +281,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 7becbb87-52d4-4d40-8e2a-55588fe99e79
+    taskid: 7ff6e554-8b64-468c-8028-5f8580ae85fb
     type: regular
     task:
-      id: 7becbb87-52d4-4d40-8e2a-55588fe99e79
+      id: 7ff6e554-8b64-468c-8028-5f8580ae85fb
       version: -1
       name: cbd-set-policy
       script: '|||cbd-set-policy'
@@ -341,10 +342,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 448ca63f-eae6-4882-8ba7-8901bf1f22d6
+    taskid: d7ae8bcd-76d0-44e0-86e9-0cccfccec842
     type: regular
     task:
-      id: 448ca63f-eae6-4882-8ba7-8901bf1f22d6
+      id: d7ae8bcd-76d0-44e0-86e9-0cccfccec842
       version: -1
       name: cbd-create-policy
       script: '|||cbd-create-policy'
@@ -378,10 +379,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 905558a6-3c47-4711-8426-e2de1cb6ed4f
+    taskid: 540bb752-fd2e-4957-8205-873cb820d34c
     type: regular
     task:
-      id: 905558a6-3c47-4711-8426-e2de1cb6ed4f
+      id: 540bb752-fd2e-4957-8205-873cb820d34c
       version: -1
       name: cbd-delete-policy
       script: '|||cbd-delete-policy'
@@ -411,10 +412,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: fa68553c-7a6e-43f5-838a-5fdccca83042
+    taskid: 425b413a-4c4a-4221-8ae1-24f573dfcde0
     type: regular
     task:
-      id: fa68553c-7a6e-43f5-838a-5fdccca83042
+      id: 425b413a-4c4a-4221-8ae1-24f573dfcde0
       version: -1
       name: cbd-update-policy
       script: '|||cbd-update-policy'
@@ -454,10 +455,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 339c5fc1-3b47-42e8-8294-2fc98838ce76
+    taskid: ba40b7b3-600b-4dc6-828e-e9e9b864b53e
     type: regular
     task:
-      id: 339c5fc1-3b47-42e8-8294-2fc98838ce76
+      id: ba40b7b3-600b-4dc6-828e-e9e9b864b53e
       version: -1
       name: cbd-add-rule-to-policy
       script: '|||cbd-add-rule-to-policy'
@@ -499,10 +500,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: f50d4928-c9a8-4a56-8290-8e6f486454eb
+    taskid: 4e811226-6d4d-4024-8038-debd8aa6ed8a
     type: regular
     task:
-      id: f50d4928-c9a8-4a56-8290-8e6f486454eb
+      id: 4e811226-6d4d-4024-8038-debd8aa6ed8a
       version: -1
       name: cbd-update-rule-in-policy
       description: Update an existing rule with a new rule. Please note that system
@@ -548,10 +549,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: fd91b04e-1865-422f-8fb5-29e7fd718958
+    taskid: 7ad6f70e-7d09-4126-8401-8c25cb73291b
     type: regular
     task:
-      id: fd91b04e-1865-422f-8fb5-29e7fd718958
+      id: 7ad6f70e-7d09-4126-8401-8c25cb73291b
       version: -1
       name: cbd-delete-rule-from-policy
       script: '|||cbd-delete-rule-from-policy'
@@ -585,10 +586,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 7dfc5523-274a-49d4-87fb-8d4b9473b177
+    taskid: 3bebe0d9-11de-4a11-830b-544b71a4259b
     type: regular
     task:
-      id: 7dfc5523-274a-49d4-87fb-8d4b9473b177
+      id: 3bebe0d9-11de-4a11-830b-544b71a4259b
       version: -1
       name: cbd-device-quarantine
       script: '|||cbd-device-quarantine'
@@ -617,10 +618,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: cb005a9d-f2fa-4f7a-832f-04df58dfe283
+    taskid: 1f52dbe6-0d23-4c0a-8b96-fe8d5735988f
     type: regular
     task:
-      id: cb005a9d-f2fa-4f7a-832f-04df58dfe283
+      id: 1f52dbe6-0d23-4c0a-8b96-fe8d5735988f
       version: -1
       name: cbd-device-background-scan
       script: '|||cbd-device-background-scan'
@@ -649,10 +650,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: ec039f84-2ab5-4c99-8eac-f9734f95f281
+    taskid: f447223a-7bfa-483e-82eb-6f1b4147afe7
     type: regular
     task:
-      id: ec039f84-2ab5-4c99-8eac-f9734f95f281
+      id: f447223a-7bfa-483e-82eb-6f1b4147afe7
       version: -1
       name: cbd-device-background-scan-stop
       script: '|||cbd-device-background-scan-stop'
@@ -681,10 +682,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: bb040f83-0288-4dab-856e-346bc6cc070a
+    taskid: 7cadebb8-4cae-47aa-8dcf-5680cdbf1511
     type: regular
     task:
-      id: bb040f83-0288-4dab-856e-346bc6cc070a
+      id: 7cadebb8-4cae-47aa-8dcf-5680cdbf1511
       version: -1
       name: cbd-device-bypass
       script: '|||cbd-device-bypass'
@@ -713,10 +714,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 3c89f508-b03c-4460-870f-4fc5d0aeb9e8
+    taskid: 55592838-4737-43a6-8947-df0c19aae511
     type: regular
     task:
-      id: 3c89f508-b03c-4460-870f-4fc5d0aeb9e8
+      id: 55592838-4737-43a6-8947-df0c19aae511
       version: -1
       name: cbd-device-unbypass
       script: '|||cbd-device-unbypass'
@@ -745,10 +746,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 120c68b3-68de-472b-8696-ec4eef8784bc
+    taskid: 7fa756b7-f12a-43db-850a-c497958a527f
     type: regular
     task:
-      id: 120c68b3-68de-472b-8696-ec4eef8784bc
+      id: 7fa756b7-f12a-43db-850a-c497958a527f
       version: -1
       name: cbd-device-policy-update
       script: '|||cbd-device-policy-update'
@@ -780,10 +781,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 04fba87c-547f-4524-8859-8bbc6d3e05cb
+    taskid: 92ebea42-357c-4edc-8221-a46a4a355fbf
     type: regular
     task:
-      id: 04fba87c-547f-4524-8859-8bbc6d3e05cb
+      id: 92ebea42-357c-4edc-8221-a46a4a355fbf
       version: -1
       name: cbd-device-update-sensor-version
       script: '|||cbd-device-update-sensor-version'
@@ -815,10 +816,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: e812b0f5-be46-469a-81ee-7f92bbeb2181
+    taskid: 4865fba8-181e-4ed8-891e-20c815a05180
     type: title
     task:
-      id: e812b0f5-be46-469a-81ee-7f92bbeb2181
+      id: 4865fba8-181e-4ed8-891e-20c815a05180
       version: -1
       name: Test Done
       type: title
@@ -840,10 +841,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 880a5792-3d5e-4ee8-8690-68fb51406724
+    taskid: 503aae00-6343-4be9-88bb-6d2049e8263f
     type: condition
     task:
-      id: 880a5792-3d5e-4ee8-8690-68fb51406724
+      id: 503aae00-6343-4be9-88bb-6d2049e8263f
       version: -1
       name: Verify Outputs
       type: condition
@@ -877,10 +878,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: a9e485cc-b786-4a83-844d-df0745cfd894
+    taskid: 0ebe5825-870b-4e28-8991-0b3aa42a5a93
     type: condition
     task:
-      id: a9e485cc-b786-4a83-844d-df0745cfd894
+      id: 0ebe5825-870b-4e28-8991-0b3aa42a5a93
       version: -1
       name: Verify Outputs
       type: condition
@@ -917,10 +918,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: d0f01b08-c781-432f-8b75-f41311a5da57
+    taskid: ec982f97-d925-4491-83d0-3a3daa1889bd
     type: condition
     task:
-      id: d0f01b08-c781-432f-8b75-f41311a5da57
+      id: ec982f97-d925-4491-83d0-3a3daa1889bd
       version: -1
       name: Verify Outputs
       type: condition
@@ -954,10 +955,10 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: a1793455-30f7-4dde-8f10-67278fd8a730
+    taskid: 9340e83c-5744-4a67-8495-bd918ee83a99
     type: title
     task:
-      id: a1793455-30f7-4dde-8f10-67278fd8a730
+      id: 9340e83c-5744-4a67-8495-bd918ee83a99
       version: -1
       name: Test policies commands
       type: title
@@ -982,10 +983,10 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: 86051cb1-64d4-48d5-8142-d5c81bd7ba43
+    taskid: 2142fca9-8994-4f32-8f95-48b2cdfe8593
     type: title
     task:
-      id: 86051cb1-64d4-48d5-8142-d5c81bd7ba43
+      id: 2142fca9-8994-4f32-8f95-48b2cdfe8593
       version: -1
       name: Test events commands
       type: title
@@ -1010,10 +1011,10 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: fc241304-00e4-4eed-84c5-e7420eb5b1df
+    taskid: 435856eb-b5b5-4398-874a-2a32cfa7d250
     type: title
     task:
-      id: fc241304-00e4-4eed-84c5-e7420eb5b1df
+      id: 435856eb-b5b5-4398-874a-2a32cfa7d250
       version: -1
       name: Test devices commands
       type: title
@@ -1038,10 +1039,10 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: d20b314b-da03-4db7-8e51-74d5e9b04895
+    taskid: 8c156613-8928-42c9-87cc-5803e7e88b7e
     type: title
     task:
-      id: d20b314b-da03-4db7-8e51-74d5e9b04895
+      id: 8c156613-8928-42c9-87cc-5803e7e88b7e
       version: -1
       name: Test alerts commands
       type: title
@@ -1066,10 +1067,10 @@ tasks:
     quietmode: 0
   "66":
     id: "66"
-    taskid: 1380ed7f-134c-42bd-8b27-364bd7972cb3
+    taskid: ead8130e-9df6-43f7-8d0a-14bb7ef4564e
     type: title
     task:
-      id: 1380ed7f-134c-42bd-8b27-364bd7972cb3
+      id: ead8130e-9df6-43f7-8d0a-14bb7ef4564e
       version: -1
       name: Test processes commands
       type: title
@@ -1094,10 +1095,10 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: 95d7caad-62c0-49cf-8a7a-d7923ec0845e
+    taskid: c969b7bc-5932-4872-8eb3-6b01454cbec2
     type: title
     task:
-      id: 95d7caad-62c0-49cf-8a7a-d7923ec0845e
+      id: c969b7bc-5932-4872-8eb3-6b01454cbec2
       version: -1
       name: Done
       type: title
@@ -1119,10 +1120,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: fffbca86-39d8-4cf1-863f-1cce9697bcce
+    taskid: 450ba464-6f16-4ce3-8505-5849fcfc6584
     type: title
     task:
-      id: fffbca86-39d8-4cf1-863f-1cce9697bcce
+      id: 450ba464-6f16-4ce3-8505-5849fcfc6584
       version: -1
       name: Done
       type: title
@@ -1144,10 +1145,10 @@ tasks:
     quietmode: 0
   "69":
     id: "69"
-    taskid: e38561f6-223a-4619-8d75-209baad17639
+    taskid: b8102274-16ee-404d-8a75-efad64264384
     type: title
     task:
-      id: e38561f6-223a-4619-8d75-209baad17639
+      id: b8102274-16ee-404d-8a75-efad64264384
       version: -1
       name: Done
       type: title
@@ -1167,37 +1168,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "70":
-    id: "70"
-    taskid: 95a49ce9-5339-4672-8cc7-792349b331a2
-    type: title
-    task:
-      id: 95a49ce9-5339-4672-8cc7-792349b331a2
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "78":
     id: "78"
-    taskid: 46accbf3-34f3-4002-8bfb-54b917c8d6f6
+    taskid: ec143a2f-2e49-4734-873c-073f200a7313
     type: condition
     task:
-      id: 46accbf3-34f3-4002-8bfb-54b917c8d6f6
+      id: ec143a2f-2e49-4734-873c-073f200a7313
       version: -1
       name: Verify Outputs
       type: condition
@@ -1234,10 +1210,10 @@ tasks:
     quietmode: 0
   "79":
     id: "79"
-    taskid: fe5870a6-978b-46c6-8742-d7a6194a253a
+    taskid: 95c29ebc-c2b9-4373-8280-99fe75ea3830
     type: regular
     task:
-      id: fe5870a6-978b-46c6-8742-d7a6194a253a
+      id: 95c29ebc-c2b9-4373-8280-99fe75ea3830
       version: -1
       name: cbd-device-unquarantine
       description: Unquarantine the device
@@ -1267,10 +1243,10 @@ tasks:
     quietmode: 0
   "81":
     id: "81"
-    taskid: 34871f68-c03e-4f6b-8593-dc97b21e0516
+    taskid: efe7f0ae-e6f1-4a58-82ed-3f2c452fae40
     type: regular
     task:
-      id: 34871f68-c03e-4f6b-8593-dc97b21e0516
+      id: efe7f0ae-e6f1-4a58-82ed-3f2c452fae40
       version: -1
       name: cbd-alerts-search
       description: Alert search request. Multiple pathways support similar request
@@ -1313,10 +1289,10 @@ tasks:
     quietmode: 0
   "82":
     id: "82"
-    taskid: 5aa64158-7e3b-4e32-88bc-7ef18ff2d6ef
+    taskid: 3665f6e1-f700-4333-8d76-c7900eabb850
     type: condition
     task:
-      id: 5aa64158-7e3b-4e32-88bc-7ef18ff2d6ef
+      id: 3665f6e1-f700-4333-8d76-c7900eabb850
       version: -1
       name: Verify Outputs
       type: condition
@@ -1350,21 +1326,57 @@ tasks:
     quietmode: 0
   "83":
     id: "83"
-    taskid: 1dd42e01-cc55-4105-8b80-642c99e9b464
+    taskid: 3dc90397-7236-4143-8993-ba554100f8c8
     type: playbook
     task:
-      id: 1dd42e01-cc55-4105-8b80-642c99e9b464
+      id: 3dc90397-7236-4143-8993-ba554100f8c8
       version: -1
-      name: Carbon Black Defense Find Events
+      name: Carbon Black Endpoint Standard Find Events
+      description: Finds events using a search query (or device_id, etc.). One of
+        the parameters is required. It returns a list of events with general information.
+        For detailed information about an event, use the "find event details" playbook
+        with an event ID.
       playbookName: Carbon Black Defense Find Events
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "85"
+    scriptarguments:
+      alert_category: {}
+      blocked_hash: {}
+      device_external_ip: {}
+      device_id:
+        simple: "3925348"
+      device_internal_ip: {}
+      device_name: {}
+      device_os: {}
+      device_timestamp: {}
+      event_type: {}
+      parent_hash: {}
+      parent_name: {}
+      parent_reputation: {}
+      process_cmdline: {}
+      process_guid: {}
+      process_hash: {}
+      process_name: {}
+      process_pid: {}
+      process_reputation: {}
+      process_start_time: {}
+      process_terminated: {}
+      process_username: {}
+      query: {}
+      rows: {}
+      sensor_action: {}
+      start: {}
+      time_range: {}
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -1379,10 +1391,10 @@ tasks:
     quietmode: 0
   "84":
     id: "84"
-    taskid: fb813e0c-5e3b-4e7b-8b7c-c331bcb273d3
+    taskid: cfb93db6-8412-414b-8d40-92a76902e891
     type: condition
     task:
-      id: fb813e0c-5e3b-4e7b-8b7c-c331bcb273d3
+      id: cfb93db6-8412-414b-8d40-92a76902e891
       version: -1
       name: Verify Outputs
       type: condition
@@ -1419,21 +1431,29 @@ tasks:
     quietmode: 0
   "85":
     id: "85"
-    taskid: 48f3927d-cea0-4999-80ea-fe790a706e44
+    taskid: 3b967362-7fd7-4184-8806-0cb159a18633
     type: playbook
     task:
-      id: 48f3927d-cea0-4999-80ea-fe790a706e44
+      id: 3b967362-7fd7-4184-8806-0cb159a18633
       version: -1
-      name: Carbon Black Defense Find Event Details
+      name: Carbon Black Endpoint Standard Find Event Details
+      description: Receives event IDs and returns details about the event.
       playbookName: Carbon Black Defense Find Event Details
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "68"
+    scriptarguments:
+      event_ids:
+        simple: 31b7d1137b6711eb8facebf4f00683df, 560a03037b6211ebbb20a5e827610140
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -1448,21 +1468,55 @@ tasks:
     quietmode: 0
   "86":
     id: "86"
-    taskid: 2131df07-bc01-4a6e-87ab-74beb600fc37
+    taskid: c408bd45-af18-48d8-8b30-b33e4a39ef5a
     type: playbook
     task:
-      id: 2131df07-bc01-4a6e-87ab-74beb600fc37
+      id: c408bd45-af18-48d8-8b30-b33e4a39ef5a
       version: -1
-      name: Carbon Black Defense Find Processes
+      name: Carbon Black Endpoint Standard Find Processes
+      description: Find processes using a search query (or device_id, etc.). One of
+        the parameters is required. Returns a list of processes.
       playbookName: Carbon Black Defense Find Processes
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "67"
+    scriptarguments:
+      alert_category: {}
+      blocked_hash: {}
+      device_external_ip: {}
+      device_id: {}
+      device_internal_ip: {}
+      device_name: {}
+      device_os: {}
+      device_timestamp: {}
+      event_type: {}
+      parent_hash: {}
+      parent_name: {}
+      parent_reputation: {}
+      process_cmdline: {}
+      process_guid: {}
+      process_hash: {}
+      process_name: {}
+      process_pid: {}
+      process_reputation: {}
+      process_start_time: {}
+      process_terminated: {}
+      process_username: {}
+      query:
+        simple: chrome
+      rows: {}
+      sensor_action: {}
+      start: {}
+      time_range: {}
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -1477,10 +1531,10 @@ tasks:
     quietmode: 0
   "87":
     id: "87"
-    taskid: 86c145e1-c916-4763-8c62-76b637d386d0
+    taskid: 5b3f0d6f-b9e9-4671-8700-5feddf72b47b
     type: title
     task:
-      id: 86c145e1-c916-4763-8c62-76b637d386d0
+      id: 5b3f0d6f-b9e9-4671-8700-5feddf72b47b
       version: -1
       name: Done
       type: title
@@ -1533,4 +1587,3 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 5.5.0
-description: A test playbook of the Carbon Black Endpoint Standard pack
