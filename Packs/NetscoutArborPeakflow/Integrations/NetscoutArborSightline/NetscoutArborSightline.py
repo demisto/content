@@ -92,7 +92,7 @@ class NetscoutClient(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    def _http_request(self, method, url_suffix=None, params=None, json_data=None) -> requests.Response:
+    def _http_request(self, method: str, url_suffix: str = None, params: dict = None, json_data: dict = None):
 
         return super()._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
                                      error_handler=self.error_handler)
@@ -130,8 +130,8 @@ class NetscoutClient(BaseClient):
             raise DemistoException(error)
 
         except ValueError:
-            raise DemistoException(
-                f'Could not parse error returned from Netscout Arbor Sightline server:\n{res.content}')
+            raise DemistoException(f'Could not parse error returned from Netscout Arbor Sightline '
+                                   f'server:\n{res.content}')
 
     def calculate_amount_of_incidents(self, start_time: str) -> int:
         """
@@ -209,7 +209,7 @@ class NetscoutClient(BaseClient):
                     }
         return relationships
 
-    def build_data_attribute_filter(self, **kwargs) -> str:
+    def build_data_attribute_filter(self, **kwargs: Optional[dict]) -> str:
         """
         Builds data attribute filter in the NetscoutArbor form. For example: '/data/attributes/importance>1' where
         key=importance operator='>' and value=1.
@@ -641,7 +641,7 @@ def main() -> None:
         params = demisto.params()
 
         if not (api_token := params.get('api_token', {}).get('password')):
-            return_error('Missing API Key. Fill in a valid key in the integration configuration.')
+            raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
         base_url = urljoin(params['url'], f'api/sp/{API_VERSION}')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
