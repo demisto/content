@@ -5,7 +5,6 @@ Host.io collects data about every known domain name. Use the integration in this
 - Provides information about specified domains including (but not limited to):
    - The domain's rank based on popularity.
    - Name of the server where the domain exists.
-   - The DBot score of the domain. 
 
 To use this pack, you need to generate an API token using one of the following plans:
  - The Free plan: Simply sign up with a valid email address. This plan has a limitation of 1,000 API requests per month.
