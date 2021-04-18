@@ -617,10 +617,6 @@ class Pack(object):
             search_rank += 10
         if certification == Metadata.CERTIFIED:
             search_rank += 10
-
-        if name == 'DBot Truth Bombs':
-            search_rank += 50
-
         if content_items:
             integrations = content_items.get("integration")
             if isinstance(integrations, list):
