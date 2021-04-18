@@ -2571,7 +2571,7 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 
 ### xdr-endpoint-scan-abort
 ***
-Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are in Pending or in Progress status. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
 
 
 #### Base Command
@@ -2593,7 +2593,7 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 | alias | Endpoint alias name. | Optional | 
 | isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
 | hostname | Name of the host. | Optional | 
-| all | Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
+| all | Whether to scan all of the endpoints or not. Default is false. Note that scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
