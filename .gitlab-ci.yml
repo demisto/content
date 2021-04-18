@@ -212,19 +212,19 @@ run-unittests-and-lint:
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         fi
       fi
-      - echo "====Get Private Build Status===="
-      - |
-        if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]]; then
-          if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-            echo "Skipping - not running in contribution instance"
-          else
-            python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
-          fi
-        fi
-      - echo "====Run Slack Notifier===="
-      - |
-        if [ -n "${BUCKET_UPLOAD}" ]; then
-          ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
+    - echo "====Get Private Build Status===="
+    - |
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]]; then
+        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+          echo "Skipping - not running in contribution instance"
         else
-          ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+          python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
         fi
+      fi
+    - echo "====Run Slack Notifier===="
+    - |
+      if [ -n "${BUCKET_UPLOAD}" ]; then
+        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
+      else
+        ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+      fi
