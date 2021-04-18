@@ -457,10 +457,10 @@ script:
       predefined:
       - "True"
       - "False"
-      description: The updated boolean value that specifies whether the ThreateIntelSet
+      description: The updated boolean value that specifies whether the ThreatIntelSet
         is active or not.
     - name: location
-      description: The updated URI of the file that contains the ThreateIntelSet.
+      description: The updated URI of the file that contains the ThreatIntelSet.
         For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
     - name: name
       description: The user-friendly ThreatIntelSet name.
@@ -582,7 +582,7 @@ script:
       predefined:
       - USEFUL
       - NOT_USEFUL
-      description: Specifi wheter the finding was usful or not.
+      description: Specify whether the finding was useful or not.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
@@ -594,7 +594,90 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Marks specified Amazon GuardDuty findings as useful or not useful.
-  dockerimage: demisto/boto3:2.0.0.17652
+  - arguments:
+    - description: The ID of the detector that specifies the GuardDuty service whose
+        members you want to retrieve.
+      name: detectorId
+      required: true
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Describes Amazon GuardDuty members for the specified detector ID.
+    name: aws-gd-list-members
+    outputs:
+      - contextPath: AWS.GuardDuty.Members.AccountId
+        description: The unique account ID of the member.
+        type: string
+      - contextPath: AWS.GuardDuty.Members.DetectorId
+        description: The unique detector ID of the member.
+        type: string
+      - contextPath: AWS.GuardDuty.Members.MasterId
+        description: The unique detector ID of the master.
+        type: string
+      - contextPath: AWS.GuardDuty.Members.Email
+        description: The email of the member.
+        type: string
+      - contextPath: AWS.GuardDuty.Members.RelationshipStatus
+        description: The relationship  status of member.
+        type: string
+      - contextPath: AWS.GuardDuty.Members.InvitedAt
+        description: The first time a member was invited.
+        type: string
+      - contextPath: AWS.GuardDuty.Members.UpdatedAt
+        description: The time a member was last updated.
+        type: string
+  - arguments:
+    - description: The ID of the detector that specifies the GuardDuty service whose
+        members you want to retrieve.
+      name: detectorId
+      required: true
+    - description: The ID of the account that specifies the GuardDuty service whose
+        details you want to retrieve.
+      name: accountIds
+      required: true
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Describes Amazon GuardDuty members for the specified detector ID
+      & account ID.
+    name: aws-gd-get-members
+    outputs:
+    - contextPath: AWS.GuardDuty.Members.AccountId
+      description: The unique account ID of the member.
+      type: string
+    - contextPath: AWS.GuardDuty.Members.DetectorId
+      description: The unique detector ID of the member.
+      type: string
+    - contextPath: AWS.GuardDuty.Members.MasterId
+      description: The unique detector ID of the master.
+      type: string
+    - contextPath: AWS.GuardDuty.Members.Email
+      description: The email of the member.
+      type: string
+    - contextPath: AWS.GuardDuty.Members.RelationshipStatus
+      description: The relationship  status of member.
+      type: string
+    - contextPath: AWS.GuardDuty.Members.InvitedAt
+      description: The first time a member was invited.
+      type: string
+    - contextPath: AWS.GuardDuty.Members.UpdatedAt
+      description: The time a member was last updated.
+      type: string
+  dockerimage: demisto/boto3:2.0.0.18967
   isfetch: true
   runonce: false
 tests:
