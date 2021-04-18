@@ -7,14 +7,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cortex XDR - Check Action Status
 
 ### Integrations
-This playbook does not use any integrations.
+* CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* xdr-run-script-execute-commands
 * xdr-get-script-execution-results
+* xdr-run-script-execute-commands
 
 ## Playbook Inputs
 ---
@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - Run script execute commands](https://raw.githubusercontent.com/demisto/content/4440f08a9f57f4cd349267a18d94e189e3315ae9/Packs/CortexXDR/doc_files/Cortex_XDR_-_Run_script_execute_commands.png)
+![Cortex XDR - execute commands](Insert the link to your image here)

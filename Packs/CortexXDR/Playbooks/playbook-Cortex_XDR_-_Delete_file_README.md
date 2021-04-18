@@ -7,14 +7,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cortex XDR - Check Action Status
 
 ### Integrations
-This playbook does not use any integrations.
+* CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* xdr-get-script-execution-results
 * xdr-run-script-delete-file
+* xdr-get-script-execution-results
 
 ## Playbook Inputs
 ---
@@ -27,8 +27,11 @@ This playbook does not use any scripts.
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptResult.results._return_value | Value returned by the script in case the type is not a dictionary. | unknown |
 
 ## Playbook Image
 ---
-![Cortex XDR - Run script delete file](https://raw.githubusercontent.com/demisto/content/4440f08a9f57f4cd349267a18d94e189e3315ae9/Packs/CortexXDR/doc_files/Cortex_XDR_-_Run_script_delete_file.png)
+![Cortex XDR - Delete file](Insert the link to your image here)

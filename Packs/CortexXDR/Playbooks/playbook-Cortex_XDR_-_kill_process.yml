@@ -1,21 +1,14 @@
-description: Initiates a new endpoint script execution action using a provided script
-  unique id from Cortex XDR script library.
-id: Cortex XDR - Run script
+description: Use to Initiates a new endpoint script execution kill process and retrieve
+  the results.
+id: Cortex XDR - kill process
 inputs:
 - description: 'A comma-separated list of endpoint IDs. '
-  key: endpoint_ids
+  key: endpoint_id
   playbookInputQuery:
   required: false
   value: {}
-- description: Unique identifier of the script. Can be retrieved by running the xdr-get-scripts
-    command.
-  key: script_uid
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: Dictionary contains the parameter name as key and its value for this
-    execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}
-  key: parameters
+- description: Name of the process to kill.
+  key: process_name
   playbookInputQuery:
   required: false
   value: {}
@@ -26,10 +19,12 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-name: Cortex XDR - Run script
+name: Cortex XDR - kill process
 outputs:
 - contextPath: PaloAltoNetworksXDR.ScriptResult.results._return_value
   description: Value returned by the script in case the type is not a dictionary.
+- contextPath: PaloAltoNetworksXDR.ScriptResult.results.standard_output
+  description: The STDOUT and the STDERR logged by the script during the execution.
 starttaskid: "0"
 tasks:
   "0":
@@ -44,19 +39,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0a2f4a6b-3a8c-45f2-89ed-89eea47b1500
+      id: c921b006-b140-4aec-8f74-210ff1a2f843
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 0a2f4a6b-3a8c-45f2-89ed-89eea47b1500
+    taskid: c921b006-b140-4aec-8f74-210ff1a2f843
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 60
+          "y": 70
         }
       }
   "1":
@@ -70,19 +65,10 @@ tasks:
     scriptarguments:
       endpoint_ids:
         complex:
-          root: inputs.endpoint_ids
-      parameters:
+          root: inputs.endpoint_id
+      process_name:
         complex:
-          filters:
-          - - left:
-                iscontext: true
-                value:
-                  simple: inputs.parameters
-              operator: isNotEmpty
-          root: inputs.parameters
-      script_uid:
-        complex:
-          root: inputs.script_uid
+          root: inputs.process_name
       timeout:
         complex:
           root: inputs.timeout
@@ -90,15 +76,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Initiates a new endpoint script execution action using a script
-        from the script library.
-      id: af14806d-8b59-4b6d-8f03-21c2045832c6
+      description: Initiates a new endpoint script execution kill process.
+      id: e1bd9a08-9050-4079-846f-15105514aac9
       iscommand: true
-      name: Execute Cortex XDR Script
-      script: '|||xdr-run-script'
+      name: Kill process
+      script: '|||xdr-run-script-kill-process'
       type: regular
       version: -1
-    taskid: af14806d-8b59-4b6d-8f03-21c2045832c6
+    taskid: e1bd9a08-9050-4079-846f-15105514aac9
     timertriggers: []
     type: regular
     view: |-
@@ -130,21 +115,21 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8708453a-a427-402e-80ae-c6c932c5358b
+      id: 7f127dac-78fc-490d-8d0e-4021b330f167
       iscommand: false
       name: Cortex XDR - Check Action Status
       playbookId: Cortex XDR - Check Action Status
       type: playbook
       version: -1
       description: ''
-    taskid: 8708453a-a427-402e-80ae-c6c932c5358b
+    taskid: 7f127dac-78fc-490d-8d0e-4021b330f167
     timertriggers: []
     type: playbook
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 380
+          "y": 370
         }
       }
   "3":
@@ -165,20 +150,20 @@ tasks:
     task:
       brand: ""
       description: Retrieve the results of a script execution action.
-      id: 5487d7f4-691d-434e-828e-01190a697e56
+      id: fd056a11-7a31-4c7a-84bc-e65a5384c47f
       iscommand: true
       name: Get script execution results
       script: '|||xdr-get-script-execution-results'
       type: regular
       version: -1
-    taskid: 5487d7f4-691d-434e-828e-01190a697e56
+    taskid: fd056a11-7a31-4c7a-84bc-e65a5384c47f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 570
+          "y": 550
         }
       }
   "4":
@@ -190,20 +175,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8de1f7d1-e21d-48a4-8760-0ed56299c77f
+      id: 7fff75ed-08b9-485f-88d7-9895681b63ad
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 8de1f7d1-e21d-48a4-8760-0ed56299c77f
+    taskid: 7fff75ed-08b9-485f-88d7-9895681b63ad
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 730
+          "y": 710
         }
       }
 version: -1
@@ -212,10 +197,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 705,
         "width": 380,
         "x": 450,
-        "y": 60
+        "y": 70
       }
     }
   }
