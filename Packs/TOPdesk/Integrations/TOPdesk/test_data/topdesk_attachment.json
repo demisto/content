@@ -1,0 +1,14 @@
+{
+  "id": "some-id",
+  "fileName": "small_upload_file.txt",
+  "downloadUrl": "/tas/api/incidents/id/incident_id/attachments/some-id/download",
+  "size": 26,
+  "description": null,
+  "invisibleForCaller": false,
+  "entryDate": "2021-02-16T12:48:15.000+0000",
+  "operator": {
+    "id": "some_operator_id",
+    "name": "Xsoar - Operator"
+  },
+  "person": null
+}
