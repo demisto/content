@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Content developer setup
-description: 6.0.0
+description: Setup content working environment.
 starttaskid: "0"
 tasks:
   "0":
@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 2732.5,
-          "y": 50
+          "y": -50
         }
       }
     note: false
@@ -35,10 +35,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: f0a935af-b00d-413e-8d3c-7b47854fe301
+    taskid: 37a2ed7a-698b-4ed3-897f-e56198839a8a
     type: regular
     task:
-      id: f0a935af-b00d-413e-8d3c-7b47854fe301
+      id: 37a2ed7a-698b-4ed3-897f-e56198839a8a
       version: -1
       name: Install osx-command line tools
       description: Install OSx command-line tools, For more info - https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/
@@ -53,12 +53,15 @@ tasks:
       - "2"
       - "3"
       - "5"
+    scriptarguments:
+      execution-timeout:
+        simple: "7200"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 2732.5,
-          "y": 195
+          "y": 115
         }
       }
     note: false
@@ -68,10 +71,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: b6573aaf-e090-41e4-8f25-09f079f241c9
+    taskid: 3a4c6a82-8ca4-42c8-87b5-ac3b9a829530
     type: regular
     task:
-      id: b6573aaf-e090-41e4-8f25-09f079f241c9
+      id: 3a4c6a82-8ca4-42c8-87b5-ac3b9a829530
       version: -1
       name: Install basic packages using homebrew
       description: Install and configure homebrew, Install additional homebrew/-cask
@@ -80,6 +83,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
     scriptarguments:
       apps:
         simple: git,zsh,libxmlsec1,protobuf,jq,protoc-gen-go,protoc-gen-go,elastic/tap/elasticsearch-full
@@ -94,7 +100,7 @@ tasks:
       {
         "position": {
           "x": 2732.5,
-          "y": 370
+          "y": 360
         }
       }
     note: false
@@ -192,7 +198,7 @@ tasks:
       {
         "position": {
           "x": 3880,
-          "y": 520
+          "y": 360
         }
       }
     note: false
@@ -202,10 +208,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 71452bae-72f2-423f-81a8-6bba84aba0ea
+    taskid: 0a7051b6-072c-4e05-8ab5-5cccf2f49305
     type: regular
     task:
-      id: 71452bae-72f2-423f-81a8-6bba84aba0ea
+      id: 0a7051b6-072c-4e05-8ab5-5cccf2f49305
       version: -1
       name: GitHub deploy public ssh key
       description: Generate private/public key, Configure ssh client, and deploy keys
@@ -265,7 +271,7 @@ tasks:
       {
         "position": {
           "x": 3880,
-          "y": 895
+          "y": 845
         }
       }
     note: false
@@ -425,7 +431,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "26"
     scriptarguments:
       dest:
         simple: ~/dev/demisto/content
@@ -756,45 +762,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "23":
-    id: "23"
-    taskid: 4bef64b7-cca9-4a93-8801-95020e358f9a
-    type: regular
-    task:
-      id: 4bef64b7-cca9-4a93-8801-95020e358f9a
-      version: -1
-      name: Set git hooks
-      description: Run command in host.
-      script: '|||tidy-exec'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      chdir:
-        simple: ~/dev/demisto/content
-      command:
-        simple: source .hooks/bootstrap
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "24":
     id: "24"
-    taskid: 08000a51-61a9-46df-8c5f-292b3a7658de
+    taskid: ccee89fe-ca5d-47ee-8972-f2d51b8ff2bb
     type: collection
     task:
-      id: 08000a51-61a9-46df-8c5f-292b3a7658de
+      id: ccee89fe-ca5d-47ee-8972-f2d51b8ff2bb
       version: -1
       name: Enable github SSO
+      description: Check if the user has enabled SSO
       type: collection
       iscommand: false
       brand: ""
@@ -849,7 +825,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: GitHub SSH SSO
-      description: ""
+      description: Enable GitHub ssh key
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -890,37 +866,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "27":
-    id: "27"
-    taskid: bff55f1d-2943-405b-89fc-a7f242b0ba8a
+  "26":
+    id: "26"
+    taskid: c283bb4b-06f3-41c3-86ca-a87531d11f21
     type: regular
     task:
-      id: bff55f1d-2943-405b-89fc-a7f242b0ba8a
+      id: c283bb4b-06f3-41c3-86ca-a87531d11f21
       version: -1
-      name: Install requirements
-      description: Run command in host.
-      script: '|||tidy-exec'
+      name: Install python environment
+      description: Install python environment.
+      script: '|||tidy-python-env'
       type: regular
       iscommand: true
       brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      chdir:
-        simple: ~/dev/demisto/content
-      command:
-        simple: pip3 install -r dev-requirements-py3.txt
-      execution-timeout:
-        simple: "7200"
-      retry-count:
-        simple: "2"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1230
+          "y": 1270
         }
       }
     note: false
@@ -933,10 +897,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1485,
+        "height": 1415,
         "width": 4650,
         "x": 50,
-        "y": 50
+        "y": -50
       }
     }
   }
@@ -954,6 +918,6 @@ inputs:
   description: Github token with public key admin permissions.
   playbookInputQuery:
 outputs: []
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0
