@@ -492,12 +492,19 @@ script:
       description: For malicious URLs, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Cofense.URL.Data
       description: Bad URLs.
     - contextPath: Cofense.URL.Malicious.Vendor
@@ -522,12 +529,19 @@ script:
       description: For malicious files, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Cofense.File.MD5
       description: MD5 hash of the file.
     - contextPath: Cofense.File.Malicious.Vendor
@@ -551,13 +565,20 @@ script:
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the reason that the vendor made the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Cofense.IP.Data
       description: Bad IP Address found
     - contextPath: Cofense.IP.Malicious.Vendor
@@ -593,12 +614,19 @@ script:
       description: For malicious emails, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Cofense.Email.Data
       description: Sender address to check.
     - contextPath: Cofense.Email.Malicious.Vendor

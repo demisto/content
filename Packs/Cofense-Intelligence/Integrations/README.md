@@ -43,10 +43,11 @@ Checks the reputation of a URL.
 | URL.Data | unknown | Bad URLs. | 
 | URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision. | 
 | URL.Malicious.Description | unknown | For malicious URLs, the reason that the vendor made the decision. | 
-| DBotScore.Indicator | unknown | The indicator that was tested. | 
-| DBotScore.Type | unknown | Indicator type. | 
-| DBotScore.Vendor | unknown | Vendor used to calculate the score. | 
-| DBotScore.Score | unknown | The actual score. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | Cofense.URL.Data | unknown | Bad URLs. | 
 | Cofense.URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision. | 
 | Cofense.URL.Malicious.Description | unknown | For malicious URLs, the reason that the vendor made the decision. | 
@@ -96,10 +97,11 @@ Checks the reputation of a file hash.
 | File.MD5 | unknown | File MD5 | 
 | File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | unknown | For malicious files, the reason that the vendor made the decision. | 
-| DBotScore.Indicator | unknown | The indicator that was tested. | 
-| DBotScore.Type | unknown | Indicator type. | 
-| DBotScore.Vendor | unknown | Vendor used to calculate the score. | 
-| DBotScore.Score | unknown | The actual score | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | Cofense.File.MD5 | unknown | MD5 hash of the file. | 
 | Cofense.File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision. | 
 | Cofense.File.Malicious.Description | unknown | For malicious files, the reason that the vendor made the decision. | 
@@ -135,10 +137,11 @@ Checks the reputation of an IP address.
 | IP.Data | unknown | Bad IP Address found | 
 | IP.Malicious.Vendor | unknown | For malicious IPs, the vendor that made the decision | 
 | IP.Malicious.Description | unknown | For malicious IPs, the reason that the vendor made the decision | 
-| DBotScore.Indicator | unknown | The indicator that was tested | 
-| DBotScore.Type | unknown | Indicator type | 
-| DBotScore.Vendor | unknown | Vendor used to calculate the score | 
-| DBotScore.Score | unknown | The actual score | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | Cofense.IP.Data | unknown | Bad IP Address found | 
 | Cofense.IP.Malicious.Vendor | unknown | For malicious IPs, the vendor that made the decision | 
 | Cofense.IP.Malicious.Description | unknown | For malicious IPs, the reason that the vendor made the decision | 
@@ -167,7 +170,7 @@ Checks the reputation of an IP address.
 
 #### Human Readable Output
 
->## Cofense IP Reputation for: 1.2.3.4
+>## Cofense IP Reputation for: x.x.x.x
 >No information found for this ip
 
 ### email
@@ -193,10 +196,11 @@ Checks the reputation of an email address.
 | Account.Email.Address | unknown | Sender email address to check. | 
 | Account.Email.Malicious.Vendor | unknown | For malicious emails, the vendor that made the decision. | 
 | Account.Email.Malicious.Description | unknown | For malicious emails, the reason that the vendor made the decision. | 
-| DBotScore.Indicator | unknown | The indicator that was tested. | 
-| DBotScore.Type | unknown | Indicator type. | 
-| DBotScore.Vendor | unknown | Vendor used to calculate the score. | 
-| DBotScore.Score | unknown | The actual score. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | Cofense.Email.Data | unknown | Sender address to check. | 
 | Cofense.Email.Malicious.Vendor | unknown | For malicious emails, the vendor that made the decision. | 
 | Cofense.Email.Malicious.Description | unknown | For malicious URLs, the reason that the vendor made the decision. | 
