@@ -214,6 +214,28 @@ class TestHelperFunctions:
             assert num_of_indicators == 2
 
     @pytest.mark.validate_basic_authentication
+    def test_create_values_for_returned_dict__filters(self):
+        from EDL import create_values_for_returned_dict, EDL_VALUES_KEY, RequestArguments
+        iocs = [
+            {'value': '2603:1006:1400::/40', 'indicator_type': 'IPv6'},
+            {'value': '2002:ac8:b8d:0:0:0:0:0', 'indicator_type': 'IPv6'},
+            {'value': 'demisto.com:369/rest/of/path', 'indicator_type': 'URL'},
+            {'value': 'panw.com/path', 'indicator_type': 'URL'},
+            {'value': '*.domain.com', 'indicator_type': 'URL'},
+        ]
+
+        request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True)
+        returned_dict, num_of_indicators = create_values_for_returned_dict(iocs, request_args)
+        returned_output = returned_dict.get(EDL_VALUES_KEY, '').split('\n')
+        assert '2603:1006:1400::/40' in returned_output
+        assert '2002:ac8:b8d:0:0:0:0:0' in returned_output
+        assert 'demisto.com/rest/of/path' in returned_output  # port stripping
+        assert 'panw.com/path' in returned_output
+        assert '*.domain.com' in returned_output
+        assert 'domain.com' in returned_output  # PAN-OS URLs
+        assert num_of_indicators == 6
+
+    @pytest.mark.validate_basic_authentication
     def test_validate_basic_authentication(self):
         """Test Authentication"""
         from EDL import validate_basic_authentication
