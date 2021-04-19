@@ -202,6 +202,14 @@ class TidyClient:
         """
         return self._execute(playbook_name="zsh")
 
+    def python_env(self) -> Runner:
+        """ Execute python environment playbook.
+
+        Returns:
+            Runner: ansible-runner Runner object.
+        """
+        return self._execute(playbook_name="python-env")
+
     def block_in_file(self, path: str, block: str, marker: str, create: str) -> Runner:
         """ Execute blockinfile playbook.
 
@@ -599,6 +607,24 @@ def tidy_demisto_web_client_command(client: TidyClient, **kwargs) -> DemistoResu
                           additional_vars={'Command': command})
 
 
+def tidy_python_env_command(client: TidyClient, **kwargs) -> DemistoResult:
+    """ Install Python environment.
+
+    Args:
+        client: Tidy client object.
+        **kwargs: command kwargs.
+
+    Returns:
+        DemistoResults: Demisto structured response.
+    """
+    runner: Runner = client.python_env()
+
+    return parse_response(response=runner,
+                          human_readable_name="Exec Results",
+                          installed_software="Execution",
+                          additional_vars={})
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -618,6 +644,7 @@ def main() -> None:
         "tidy-block-in-file": tidy_block_in_file_command,
         "tidy-exec": tidy_exec_command,
         "tidy-osx-command-line-tools": tidy_osx_command_line_tools_command,
+        "tidy-python-env": tidy_python_env_command,
         "tidy-demisto-server": tidy_demisto_server_command,
         "tidy-demisto-web-client": tidy_demisto_web_client_command,
     }
