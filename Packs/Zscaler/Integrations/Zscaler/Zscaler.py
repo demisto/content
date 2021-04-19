@@ -513,7 +513,7 @@ def category_add_url(category_id, url):
             break
     if found_category:
         url_list = argToList(url)
-        response = add_or_remove_from_category(ADD, url_list, category_data)
+        response = add_or_remove_urls_from_category(ADD, url_list, category_data)[0]
         context = {
             'ID': category_id,
             'CustomCategory': response.get('customCategory'),
@@ -595,11 +595,11 @@ def category_remove_url(category_id, url):
         updated_urls = [url for url in category_data['urls'] if url not in url_list]  # noqa
         if updated_urls == category_data['urls']:
             return return_error('Could not find given URL in the category.')
-        response = add_or_remove_from_category(REMOVE, url_list, category_data)
+        response = add_or_remove_urls_from_category(REMOVE, url_list, category_data)[0]
         context = {
             'ID': category_id,
-            'CustomCategory': response['customCategory'],
-            'URL': response['urls']
+            'CustomCategory': response.get('customCategory'),
+            'URL': response.get('urls')
         }
         if 'description' in category_data and category_data['description']:  # Custom might not have description
             context['Description'] = category_data['description']
@@ -681,7 +681,7 @@ def category_ioc_update(category_data):
     return response
 
 
-def add_or_remove_from_category(action: str, urls: list[str], category_data: dict[Any: Any]):
+def add_or_remove_urls_from_category(action, urls, category_data):
     """
     Add or remove urls from a category.
     Args:
