@@ -1,14 +1,14 @@
-Use to Initiates a new endpoint script execution action using the provided snippet code and retrieve the file results.
+Use to initiate a new endpoint script execution action using the provided snippet code and retrieve the file results.
 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - Check Action Status
+Cortex XDR - Check Action Status
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
