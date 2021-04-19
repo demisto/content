@@ -1,4 +1,4 @@
-Use to initiate a new endpoint script execution action using the provided snippet code and retrieve the file results.
+Initiates a new endpoint script execution action using the provided snippet code and retrieves the file results.
 
 
 ## Dependencies
