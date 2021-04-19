@@ -4070,7 +4070,7 @@ class TestCommonTypes:
 
 class TestAutoFocusKeyRetriever:
 
-    def test_instantiate_class_with_param_key(self, mocker):
+    def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
         """
         Given:
             - giving the api_key parameter
@@ -4087,7 +4087,24 @@ class TestAutoFocusKeyRetriever:
         auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='1234', override_default_credentials=False)
         assert auto_focus_key_retriever.key == '1234'
 
-    def test_instantiate_class_without_param_key(self, mocker):
+    def test_instantiate_class_pre_6_2_failed(self, mocker, clear_version_cache):
+        """
+        Given:
+            - not giving the api_key parameter
+            - override_default_credentials is True
+        When:
+            - Mocking getAutoFocusApiKey
+            - Mocking server version to be 6.1.0
+        Then:
+            - Validate an exception with appropriate error message is raised.
+        """
+        from CommonServerPython import AutoFocusKeyRetriever
+        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.1.0', 'buildNumber': '61000'})
+        with raises(Exception, match='For versions earlier than 6.2.0, configure an API Key.'):
+            AutoFocusKeyRetriever(api_key='', override_default_credentials=True)
+
+    def test_instantiate_class_override_no_api_key_success(self, mocker, clear_version_cache):
         """
         Given:
             - not giving the api_key parameter
@@ -4096,10 +4113,10 @@ class TestAutoFocusKeyRetriever:
             - Mocking getAutoFocusApiKey
             - Mocking server version to be 6.2.0
         Then:
-            - The Auto Focus API Key is the one given by the getAutoFocusApiKey method
+            - The Auto Focus API Key is the one from the Cortex XSOAR server
         """
         from CommonServerPython import AutoFocusKeyRetriever
         mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
-        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.1', 'buildNumber': '62000'})
         auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='', override_default_credentials=True)
         assert auto_focus_key_retriever.key == 'test'
