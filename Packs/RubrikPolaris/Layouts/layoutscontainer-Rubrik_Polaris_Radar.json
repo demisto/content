@@ -325,6 +325,23 @@
                         "w": 3,
                         "x": 0,
                         "y": 0
+                    },
+					{
+                        "h": 2,
+                        "i": "rubrikPolaris-344948e0-9e37-11eb-ac95-f33fbce9c16e",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Data Classification",
+                        "query": "RubrikSonarSensitiveHits",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
                     }
                 ],
 				"type": "custom"
