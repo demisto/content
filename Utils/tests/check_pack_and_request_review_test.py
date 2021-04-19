@@ -2,7 +2,7 @@ import pytest
 import os
 from oauth2client.client import AccessTokenCredentials
 
-from Utils.request_contributor_review import check_reviewers, get_access_token, send_email_to_reviewers
+from Utils.request_contributor_review import check_reviewers, send_email_to_reviewers
 
 
 @pytest.mark.parametrize('pr_author,version,reviewers,call_count,expected',
@@ -33,48 +33,11 @@ def test_check_reviewers(mocker, pr_author, version, reviewers, call_count, expe
     assert notified == expected
 
 
-def test_get_access_token_with_refresh_token(requests_mock):
-    """
-       Given
-        - refresh_token - in order to obtain access token, to send mails
-
-       When
-       - calling get_access_token function at the send_email_to_reviewers function
-
-       Then
-       - validating that access_token was returned as expected
-        """
-    requests_mock.post("https://www.googleapis.com/oauth2/v4/token",
-                       json={"access_token": "access_token_test",
-                             "expires_in": 3599,
-                             "token_type": "Bearer"})
-
-    access_token = get_access_token('refresh_token')
-    assert access_token == 'access_token_test'
-
-
-def test_get_access_token_with_saved_access_token_in_environ():
-    """
-       Given
-        - access_token and valid until saved in the os environment
-
-       When
-       - calling get_access_token function at the send_email_to_reviewers function
-
-       Then
-       - validating that access_token was returned as expected, same as was saved in the environ
-        """
-    os.environ['ACCESS_TOKEN'] = 'access_token_test'
-    os.environ['VALID_UNTIL'] = str(2532944120)
-    access_token = get_access_token('refresh_token')
-    assert access_token == 'access_token_test'
-
-
 def test_send_email_to_reviewers(mocker, capsys):
     """
        Given
         - reviewers_emails - developer mails to review the changes on the pack
-        - refresh_token - gmail refresh token in order to obtain access key
+        - api_token - sendgrid api token in order to obtain access key
         - pack_name - pack that was modified
         - pr_number - github pr number
 
@@ -85,26 +48,26 @@ def test_send_email_to_reviewers(mocker, capsys):
        - validating that message was sent sucessfully, and information printed out
     """
     class ServiceMock:
-        def users(self):
+        def client(self):
             return self
 
-        def messages(self):
+        def mail(self):
             return self
 
         def send(self, userId, body):
             return self
 
-        def execute(self):
-            return
+        def post(self):
+            return self
+
 
     service_mock = ServiceMock()
-    mocker.patch('Utils.request_contributor_review.get_access_token', return_value='access_token')
-    mocker.patch.object(AccessTokenCredentials, '__init__', return_value=None)
-    mocker.patch('Utils.request_contributor_review.build', return_value=service_mock)
+
+    mocker.patch('Utils.request_contributor_review.sendgrid.SendGridAPIClient', return_value=service_mock)
 
     send_email_to_reviewers(
         reviewers_emails='reviewer1@mail.com, reviewer2@mail.com',  # disable-secrets-detection
-        refresh_token='email_refresh_token',
+        api_token='email_api_token',
         pack_name='TestPack',
         pr_number='1',
         modified_files=['file1', 'file2']

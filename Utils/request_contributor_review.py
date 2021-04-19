@@ -3,15 +3,9 @@ import requests
 import os
 import sys
 from pathlib import Path
-from googleapiclient.discovery import build
-from apiclient import errors
-from email.mime.text import MIMEText
-import base64
-from oauth2client.client import AccessTokenCredentials
-import urllib.parse
 import json
-import urllib3
-from datetime import datetime
+import sendgrid
+from sendgrid.helpers.mail import *
 
 REPO_OWNER = "demisto"
 REPO_NAME = "content"
@@ -25,9 +19,7 @@ PACK_METADATA_GITHUB_USER_FIELD = "githubUser"
 PR_COMMENT_PREFIX = "pack has been modified on files:\n"
 PACK_METADATA_SUPPORT_EMAIL_FIELD = "email"
 PACK_METADATA_DEV_EMAIL_FIELD = "devEmail"
-GMAIL_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"
-TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
-EMAIL_FROM = 'dkoval@paloaltonetworks.com'
+EMAIL_FROM = "do-not-reply@xsoar-contrib.pan.dev"
 
 
 def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
@@ -127,7 +119,7 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl, pack):
     return result_tagged_reviewers
 
 
-def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True, email_refresh_token=None):
+def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True, email_api_token=None):
     modified_packs, modified_files = get_pr_modified_files_and_packs(pr_number=pr_number, github_token=github_token,
                                                                      verify_ssl=verify_ssl)
     pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
@@ -154,7 +146,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                                                                             list) else reviewers_emails
                 notified_by_email = send_email_to_reviewers(
                     reviewers_emails=reviewers_emails,
-                    refresh_token=email_refresh_token,
+                    api_token=email_api_token,
                     pack_name=pack,
                     pr_number=pr_number,
                     modified_files=modified_files
@@ -187,7 +179,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                                                                                 list) else reviewers_emails
                     send_email_to_reviewers(
                         reviewers_emails=reviewers_emails,
-                        refresh_token=email_refresh_token,
+                        api_token=email_api_token,
                         pack_name=pack,
                         pr_number=pr_number,
                         modified_files=modified_files
@@ -237,23 +229,20 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
         return False
 
 
-def send_email_to_reviewers(reviewers_emails: str, refresh_token: str, pack_name: str,
+def send_email_to_reviewers(reviewers_emails: str, api_token: str, pack_name: str,
                             pr_number: str, modified_files: list) -> bool:
     """ Compose mail and send it to the reviewers_emails, to review the changes in their pack
 
     Args:
         modified_files(list): modified files on pr
         reviewers_emails(str): reviewers of the pack to send mail to them
-        refresh_token(str): refresh token to send mails using gmail API
+        api_token(str): refresh token to send mails using gmail API
         pack_name(str): pack that was modified
         pr_number(str): github pr number
 
     Return: true if mail was sent, else prints an error
 
     """
-    access_token = get_access_token(refresh_token)
-    credentials = AccessTokenCredentials(access_token, 'Demisto Github send mails to contributors')
-    service = build('gmail', 'v1', credentials=credentials)
 
     pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
                   and Path(file).parts[1] == pack_name}
@@ -267,97 +256,42 @@ def send_email_to_reviewers(reviewers_emails: str, refresh_token: str, pack_name
 
     email_subject = f'Changes made to {pack_name} content pack'
 
-    message = MIMEText(email_content, 'html', 'utf-8')
-    message['bcc'] = reviewers_emails  # send mails to all contributors in bcc
-    message['from'] = EMAIL_FROM
-    message['subject'] = email_subject
-    message_to_send = {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
+    sg = sendgrid.SendGridAPIClient(api_token)
+    email_from = Email(EMAIL_FROM)
+    to_email = To(reviewers_emails)
+    content = Content("text/html", email_content)
+    mail = Mail(email_from, to_email, email_subject, content)
 
     try:
-        service.users().messages().send(userId=EMAIL_FROM, body=message_to_send).execute()
-        print(f'Email sent to {reviewers_emails} contributors of pack {pack_name}')
-        return True
-    except errors.HttpError as e:
-        print(f'An error occurred during sending emails to contributors: {str(e)}')
-        sys.exit(1)
-
-
-def get_access_token(refresh_token: str):
-    """ Gets access token from os environment if it was saved there. Else, generates access token from refresh token.
-
-    Args:
-        refresh_token(str): refresh token to obtain access token, to send mails using gmail API
-
-    Returns:
-        access_token(str): access token is used to send mails using gmail API
-
-    """
-    access_token = os.getenv('ACCESS_TOKEN')
-    valid_until = int(os.getenv('VALID_UNTIL')) if os.getenv('VALID_UNTIL') else None
-
-    # check if access token is valid
-    if access_token and valid_until:
-        if int(datetime.now().timestamp()) < valid_until:
-            return access_token
-
-    if not refresh_token:
-        print("Failed to send emails: Error obtaining access token - refresh token wasn't received.")
-        sys.exit(1)
-
-    # else access token should be obtained from refresh token
-    try:
-        body = {
-            'refresh_token': refresh_token,
-            'client_id': GMAIL_CLIENT_ID,
-            'grant_type': 'refresh_token',
-        }
-        headers = {
-            "Content-Type": "application/x-www-form-urlencoded",
-            'Accept': 'application/json',
-        }
-        resp = requests.post(url=TOKEN_URL, data=urllib.parse.urlencode(body), headers=headers)
+        response = sg.client.mail.send.post(request_body=mail.get())
+        if response.status_code in [200, 201]:
+            print(f'Email sent to {reviewers_emails} contributors of pack {pack_name}')
+            return True
+        else:
+            print(f'An error occurred during sending emails to contributors: {response.text}')
+            return False
     except Exception as e:
-        print(f"Failed to send emails: error obtaining access token\nError: {e}.")
-        sys.exit(1)
-
-    if resp.status_code not in [200, 201]:
-        print(f"Failed to send emails: error obtaining access token\n{resp}.")
-        sys.exit(1)
-
-    parsed_response = resp.json()
-    access_token = parsed_response.get('access_token')
-    expires_in = parsed_response.get('expires_in', 3595)
-
-    time_now = int(datetime.now().timestamp())
-    time_buffer = 5  # seconds by which to shorten the validity period
-    if expires_in - time_buffer > 0:
-        # err on the side of caution with a slightly shorter access token validity period
-        expires_in = expires_in - time_buffer
-
-    # set environment variables
-    os.environ['ACCESS_TOKEN'] = access_token
-    os.environ['VALID_UNTIL'] = str(time_now + expires_in)
-
-    return access_token
+        print(f'An error occurred during sending emails to contributors: {str(e)}')
+        return False
 
 
 def main():
     parser = argparse.ArgumentParser(description='Requests contributor pack review.')
     parser.add_argument('-p', '--pr_number', help='Opened PR number')
     parser.add_argument('-g', '--github_token', help='Github token', required=False)
-    parser.add_argument('-e', '--email_refresh_token', help='Email refresh token', required=False)
+    parser.add_argument('-e', '--email_api_token', help='Email API Token', required=False)
     args = parser.parse_args()
 
     pr_number = args.pr_number
     github_token = args.github_token
     verify_ssl = True if github_token else False
-    email_refresh_token = args.email_refresh_token if args.email_refresh_token else ''
+    email_api_token = args.email_refresh_token if args.email_refresh_token else ''
 
     if not verify_ssl:
         urllib3.disable_warnings()
 
     check_pack_and_request_review(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl,
-                                  email_refresh_token=email_refresh_token)
+                                  email_api_token=email_api_token)
 
 
 if __name__ == "__main__":
