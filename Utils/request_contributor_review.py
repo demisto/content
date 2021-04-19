@@ -285,7 +285,7 @@ def main():
     pr_number = args.pr_number
     github_token = args.github_token
     verify_ssl = True if github_token else False
-    email_api_token = args.email_refresh_token if args.email_refresh_token else ''
+    email_api_token = args.email_api_token if args.email_api_token else ''
 
     if not verify_ssl:
         urllib3.disable_warnings()
