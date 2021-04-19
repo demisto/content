@@ -1,5 +1,5 @@
 description: |
-  Use to initiate a new endpoint script execution to check if file exists and retrieve the results.
+  Initiates a new endpoint script execution to check if the file exists and retrieves the results.
 id: Cortex XDR - check file existence
 inputs:
 - description: 'A comma-separated list of endpoint IDs. '
