@@ -11,6 +11,8 @@ import random
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
+ADD = 'ADD_TO_LIST'
+REMOVE = 'REMOVE_FROM_LIST'
 CLOUD_NAME = demisto.params()['cloud']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
@@ -501,6 +503,7 @@ def lookup_request(ioc, multiple=True):
 
 
 def category_add_url(category_id, url):
+    category_data = {}
     categories = get_categories()
     found_category = False
     for category in categories:
@@ -510,14 +513,11 @@ def category_add_url(category_id, url):
             break
     if found_category:
         url_list = argToList(url)
-        all_urls = url_list[:]
-        all_urls.extend(list(map(lambda x: x.strip(), category_data['urls'])))
-        category_data['urls'] = all_urls
-        category_ioc_update(category_data)
+        response = add_or_remove_from_category(ADD, url_list, category_data)
         context = {
             'ID': category_id,
-            'CustomCategory': category_data['customCategory'],
-            'URL': category_data['urls']
+            'CustomCategory': response.get('customCategory'),
+            'URL': response.get('urls')
         }
         if 'description' in category_data and category_data['description']:  # Custom might not have description
             context['Description'] = category_data['description']
@@ -595,12 +595,11 @@ def category_remove_url(category_id, url):
         updated_urls = [url for url in category_data['urls'] if url not in url_list]  # noqa
         if updated_urls == category_data['urls']:
             return return_error('Could not find given URL in the category.')
-        category_data['urls'] = updated_urls
-        response = category_ioc_update(category_data)
+        response = add_or_remove_from_category(REMOVE, url_list, category_data)
         context = {
             'ID': category_id,
-            'CustomCategory': category_data['customCategory'],
-            'URL': category_data['urls']
+            'CustomCategory': response['customCategory'],
+            'URL': response['urls']
         }
         if 'description' in category_data and category_data['description']:  # Custom might not have description
             context['Description'] = category_data['description']
@@ -682,6 +681,34 @@ def category_ioc_update(category_data):
     return response
 
 
+def add_or_remove_from_category(action: str, urls: list[str], category_data: dict[Any: Any]):
+    """
+    Add or remove urls from a category.
+    Args:
+        action: The action requested, can be ADD_TO_LIST for adding or REMOVE_FROM_LIST for removing.
+        urls: the list of urls to add or remove from the category
+        category_data: the data of the category as returned from the API
+
+    Returns:
+        The response as returned from the API
+
+    """
+
+    cmd_url = '/urlCategories/' + category_data.get('id') + '?action=' + action
+    data = {
+        'customCategory': category_data.get('customCategory'),
+        'urls': urls,
+        'id': category_data.get('id')
+    }
+    if 'description' in category_data:
+        data['description'] = category_data['description']
+    if 'configuredName' in category_data:
+        data['configuredName'] = category_data['configuredName']
+    json_data = json.dumps(data)
+    response = http_request('PUT', cmd_url, json_data).json()
+    return response
+
+
 def url_quota_command():
     cmd_url = '/urlCategories/urlQuota'
     response = http_request('GET', cmd_url).json()
@@ -712,7 +739,7 @@ def get_categories_command(display_url, custom_only=False):
             'ID': raw_category['id'],
             'CustomCategory': raw_category['customCategory']
         }
-        if raw_category['urls']:
+        if raw_category.get('urls'):
             category['URL'] = raw_category['urls']
         if 'description' in raw_category:
             category['Description'] = raw_category['description']
