@@ -1613,19 +1613,19 @@ script:
     execution: false
     name: exabeam-get-notable-assets
     outputs:
-    - contextPath: Exabeam.NotableAsset.hostName
+    - contextPath: Exabeam.NotableAsset.HostName
       description: The notable asset host name.
       type: String
-    - contextPath: Exabeam.NotableAsset.ipAddress
+    - contextPath: Exabeam.NotableAsset.IPAddress
       description: The notable asset IP address.
       type: String
-    - contextPath: Exabeam.NotableAsset.assetType
+    - contextPath: Exabeam.NotableAsset.AssetType
       description: The notable asset type.
       type: String
-    - contextPath: Exabeam.NotableAsset.firstSeen
+    - contextPath: Exabeam.NotableAsset.FirstSeen
       description: Time when the asset was first seen.
       type: Date
-    - contextPath: Exabeam.NotableAsset.lastSeen
+    - contextPath: Exabeam.NotableAsset.LastSeen
       description: Time when the asset was last seen.
       type: Date
     - contextPath: Exabeam.NotableAsset.highestRiskScore

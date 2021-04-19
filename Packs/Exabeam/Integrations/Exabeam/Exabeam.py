@@ -954,12 +954,12 @@ def contents_asset_data(asset_data) -> Dict:
         A contents dict with the relevant asset data
     """
     contents = {
-        'hostName': asset_data.get('hostName'),
-        'ipAddress': asset_data.get('ipAddress'),
-        'assetType': asset_data.get('assetType'),
-        'firstSeen': convert_unix_to_date(asset_data.get('firstSeen')),
-        'lastSeen': convert_unix_to_date(asset_data.get('lastSeen')),
-        'labels': asset_data.get('labels')
+        'HostName': asset_data.get('hostName'),
+        'IPAddress': asset_data.get('ipAddress'),
+        'AssetType': asset_data.get('assetType'),
+        'FirstSeen': convert_unix_to_date(asset_data.get('firstSeen')),
+        'LastSeen': convert_unix_to_date(asset_data.get('lastSeen')),
+        'Labels': asset_data.get('labels')
     }
     return contents
 
