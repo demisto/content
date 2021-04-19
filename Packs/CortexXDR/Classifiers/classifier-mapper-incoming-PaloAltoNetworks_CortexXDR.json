@@ -2,6 +2,10 @@
     "description": "Maps incoming Cortex XDR incidents fields.",
     "feed": false,
     "id": "Cortex XDR - IR-mapper",
+    "name": "XDR - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0",
     "mapping": {
         "Cortex XDR Incident": {
             "dontMapEventToLabels": true,
@@ -542,9 +546,5 @@
 
             }
         }
-    },
-    "name": "XDR - Incoming Mapper_copy",
-    "type": "mapping-incoming",
-    "version": -1,
-    "fromVersion": "6.0.0"
+    }
 }
