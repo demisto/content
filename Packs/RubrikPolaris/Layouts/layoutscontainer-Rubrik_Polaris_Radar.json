@@ -296,6 +296,13 @@
                 "type": "warRoom"
             },
             {
+				"hidden": false,
+				"id": "rubrikPolaris",
+				"name": "Rubrik Polaris",
+				"sections": [],
+				"type": "custom"
+			},
+            {
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
