@@ -3279,6 +3279,10 @@
             "integrations": "VirusTotal - Premium (API v3)",
             "playbookID": "VirusTotal Premium v3 TestPlaybook",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "G Suite Security Alert Center",
+            "playbookID": "G Suite Security Alert Center-Test"
         }
     ],
     "skipped_tests": {
@@ -3468,7 +3472,8 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "G Suite Security Alert Center": "Need to fix permissions in instance"
     },
     "nightly_integrations": [
         "Lastline v2",
