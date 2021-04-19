@@ -1,4 +1,4 @@
-description: Use to Initiates a new endpoint script execution to delete the specified
+description: Initiates a new endpoint script execution to delete the specified
   file and retrieve the results.
 id: Cortex XDR - delete file
 inputs:
