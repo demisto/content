@@ -1,4 +1,4 @@
-Use to Initiates a new endpoint script execution to check if file exists and retrieve the results.
+Initiates a new endpoint script execution to check if the file exists and retrieve the results.
 
 
 ## Dependencies
