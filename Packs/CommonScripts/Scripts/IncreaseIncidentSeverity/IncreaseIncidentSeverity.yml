@@ -1,15 +1,18 @@
 commonfields:
   id: IncreaseIncidentSeverity
-  version: -1
+  version: 39
+vcShouldKeepItemLegacyProdMachine: false
 name: IncreaseIncidentSeverity
 script: ''
-type: javascript
+type: python
 tags: []
-comment: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+comment: |-
+  Increases the incident severity in the following manner:
+  If no argument is specified - increases the current incident severity by 1, or by 0.5 if the current severity is 0.5 (informational).
+  If an argument is specified - the incident severity will not be increased above the severity that was specified.
 enabled: true
 args:
 - name: severity
-  required: true
   auto: PREDEFINED
   predefined:
   - Unknown
@@ -24,10 +27,13 @@ args:
   - "2"
   - "3"
   - "4"
-  description: The incident severity to increase the incident to. Can be "Unknown", "Informational", "Low", "Medium", "High", "Critical", "0", "0.5", "1", "2", "3", or "4".
+  description: The highest incident severity to increase the incident to. If no severity
+    is specified, the severity will be increased by 1 unless it's already at 4. In
+    the case that the severity is 0.5 (informational) - the seveirty will be increased
+    by 0.5 (to low).
 scripttarget: 0
+subtype: python3
+pswd: ""
 runonce: false
+dockerimage: demisto/python3:3.9.4.18682
 runas: DBotWeakRole
-fromversion: 5.0.0
-tests:
-  - IncreaseIncidentSeverity-Test
