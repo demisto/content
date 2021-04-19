@@ -1295,11 +1295,13 @@ class Pack(object):
             A dict of version, rn data for all corresponding versions, and the highest version among those keys as str
 
         """
+        lowest_version = [LooseVersion(Pack.PACK_INITIAL_VERSION)]
         lower_versions, higher_versions = [], []
         same_block_versions_dict: dict = dict()
         for item in changelog.keys():  # divide the versions into lists of lower and higher than given version
             (lower_versions if LooseVersion(item) < version else higher_versions).append(LooseVersion(item))
         higher_nearest_version = min(higher_versions)
+        lower_versions = lower_versions + lowest_version  # if the version is 1.0.0, ensure lower_versions is not empty
         lower_nearest_version = max(lower_versions)
         for rn_filename in os.listdir(release_notes_dir):
             _current_version = rn_filename.replace('.md', '')
