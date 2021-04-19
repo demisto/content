@@ -1,13 +1,13 @@
-Use to Initiates a new endpoint script execution to delete the specified file and retrieve the results.
+Use to initiate a new endpoint script execution to delete the specified file and retrieve the results.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - Check Action Status
+Cortex XDR - Check Action Status
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
