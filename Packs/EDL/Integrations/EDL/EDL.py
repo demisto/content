@@ -187,7 +187,8 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) 
         next_page = 0
         offset_in_page = 0
 
-    iocs = find_indicators_to_limit_loop(indicator_query, limit, next_page=next_page)
+    # the second returned variable is the next page - it is implemented for a future use of repolling
+    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit, next_page=next_page)
 
     # if offset in page is bigger than the amount of results returned return empty list
     if len(iocs) <= offset_in_page:
@@ -229,7 +230,7 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
                     for ioc in fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
-    return iocs
+    return iocs, search_indicators.page
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):

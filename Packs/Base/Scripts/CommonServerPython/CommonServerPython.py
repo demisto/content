@@ -6503,3 +6503,7 @@ class IndicatorsSearcher:
             self._page += 1
 
         return res
+
+    @property
+    def page(self):
+        return self._page
