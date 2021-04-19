@@ -60,7 +60,7 @@ Creates an issue in GitHub.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
-| GitHub.Issue.Owner | String | The repository owner. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -68,7 +68,7 @@ Creates an issue in GitHub.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Owner|Title|State|Body|Created_at|Updated_at|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|
 |---|---|---|---|---|---|---|---|
 |138|Git-Integration|demisto|“newbug”|open|“found|2019-06-17T15:14:10Z|2019-06-17T15:14:10Z|
 
@@ -102,7 +102,7 @@ Closes an existing issue.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
-| GitHub.Issue.Owner | String | The repository owner. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -110,7 +110,7 @@ Closes an existing issue.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Owner|Title|State|Created_at|Updated_at|Closed_at|Closed_by|Labels|
+|ID|Repository|Organization|Title|State|Created_at|Updated_at|Closed_at|Closed_by|Labels|
 |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
 |136|Git-Integration|demisto|new|closed|2019-06-17T14:48:15Z|2019-06-17T15:14:12Z|2019-06-17T15:14:12Z|roysagi|bug, else, new|
 
@@ -149,7 +149,7 @@ Updates the parameters of a specified issue.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
-| GitHub.Issue.Owner | String | The repository owner. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -157,7 +157,7 @@ Updates the parameters of a specified issue.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Owner|Title|State|Body|Created_at|Updated_at|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|
 |--- |--- |--- |--- |--- |--- |--- |--- |
 |137|Git-Integration|demisto|“new_title”|open|“new|2019-06-17T15:09:50Z|2019-06-17T15:14:13Z|
 
@@ -193,7 +193,7 @@ Lists all issues that the user has access to view.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
-| GitHub.Issue.Owner | String | The repository owner. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -201,7 +201,7 @@ Lists all issues that the user has access to view.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Owner|Title|State|Body|Created_at|Updated_at|Closed_at|Labels|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|Closed_at|Labels|
 |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
 |109|Git-Integration|demisto|"new issue"|closed|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|newbug|
 |110|Git-Integration|demisto|"new issue"|closed|"new information"|2019-06-04T11:53:19Z|2019-06-04T11:53:22Z|2019-06-04T11:53:22Z|newbug|
@@ -238,7 +238,7 @@ Searches for and returns issues that match a given query.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
-| GitHub.Issue.Owner | String | The repository owner. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -246,7 +246,7 @@ Searches for and returns issues that match a given query.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Owner|Title|State|Body|Created_at|Updated_at|Closed_at|Assignees|Labels|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|Closed_at|Assignees|Labels|
 |--- |--- |--- |--- |--- |--- |--- |--- |--- | ---|--- |
 |109|Git-Integration|demisto|"new issue"|open|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|teizenman|newbug|
 
