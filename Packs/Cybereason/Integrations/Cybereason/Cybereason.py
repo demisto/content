@@ -673,13 +673,13 @@ def malop_processes_command():
             if not wanted_machine:
                 continue
 
-            output = {}
-            for info in PROCESS_INFO:
-                if item.get('type', '') == 'filterData':
-                    output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
+        output = {}
+        for info in PROCESS_INFO:
+            if info.get('type', '') == 'filterData':
+                output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
 
-            output = update_output(output, simple_values, element_values, PROCESS_INFO)
-            outputs.append(output)
+        output = update_output(output, simple_values, element_values, PROCESS_INFO)
+        outputs.append(output)
 
     context = []
     for output in outputs:
