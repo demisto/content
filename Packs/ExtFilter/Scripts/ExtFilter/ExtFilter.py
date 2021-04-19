@@ -385,7 +385,7 @@ def extract_value(source: Any,
 
 def extract_dt(dtstr: str,
                dx: Optional[ContextData],
-               node: Optional[Dict[str,Any]] = None) -> Any:
+               node: Optional[Dict[str, Any]] = None) -> Any:
     """ Extract dt expression
 
     :param dtstr: The dt expressions (string within ${}).
