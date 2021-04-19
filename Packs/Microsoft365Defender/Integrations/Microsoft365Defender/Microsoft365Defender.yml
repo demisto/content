@@ -1,0 +1,79 @@
+category: Utilities
+commonfields:
+  id: Microsoft365Defender
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The API Key to use for connection
+  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
+  display: APP ID
+  name: app_id
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: '[Enter a comprehensive, yet concise, description of what the integration
+  does, what use cases it is designed for, etc.]'
+display: Microsoft365Defender
+name: Microsoft365Defender
+script:
+  commands:
+  - deprecated: false
+    execution: false
+    name: microsoft-365-defender-auth-start
+  - deprecated: false
+    execution: false
+    name: microsoft-365-defender-auth-complete
+  - deprecated: false
+    execution: false
+    name: microsoft-365-defender-auth-reset
+  - deprecated: false
+    execution: false
+    name: microsoft-365-defender-auth-test
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: status
+      predefined:
+      - Active
+      - Resolved
+      - Redirected
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: assigned_to
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: microsoft-365-defender-incidents-list
+  dockerimage: demisto/crypto:1.0.0.14297
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
