@@ -1,0 +1,107 @@
+{
+   "URL":"https://qa5-onprem.respond-software.com//secure/incidents/700?tenantId=qa5",
+   "accounts":[
+      {
+         "domain":"pmcorp",
+         "name":"tchapman"
+      },
+      {
+         "domain":"pmcorp",
+         "name":"laugustson"
+      },
+      {
+         "domain":null,
+         "name":"Unknown"
+      }
+   ],
+   "assetCount":3,
+   "assetCriticality":"Critical",
+   "assets":[
+      {
+         "hostname":null,
+         "ipaddress":"10.150.15.10",
+         "isinternal":true
+      },
+      {
+         "hostname":null,
+         "ipaddress":"10.150.15.7",
+         "isinternal":true
+      },
+      {
+         "hostname":null,
+         "ipaddress":"10.150.15.8",
+         "isinternal":true
+      }
+   ],
+   "assignedUsers":[
+      "danno@respond-software.com"
+   ],
+   "attackStage":"AttackObjective",
+   "attackTactic":null,
+   "closeURL":"https://qa5-onprem.respond-software.com//secure/incidents/feedback/700?tenantId=qa5",
+   "dbotMirrorDirection":"Both",
+   "dbotMirrorInstance":"Respond_Analyst_instance_1",
+   "description":"Click%20_on_%20%5Bthis%5D(http://www.yahoo.com)%20.",
+   "domains":[
+      "thyrsi.com"
+   ],
+   "escalationReasons":[
+      {
+         "label":"External System on Threat Intel List"
+      },
+      {
+         "label":"Repeated Suspicious Communications"
+      },
+      {
+         "label":"Mismatch in File Type Requested and Type Returned"
+      },
+      {
+         "label":"External Systems Observed in Past Incidents"
+      }
+   ],
+   "eventCount":6,
+   "externalSystems":[
+      {
+         "hostname":"acroipm2.adobe.com",
+         "ipaddress":"23.193.44.58",
+         "isinternal":false
+      },
+      {
+         "hostname":"thyrsi.com",
+         "ipaddress":"52.4.209.67",
+         "isinternal":false
+      },
+      {
+         "hostname":"thyrsi.com",
+         "ipaddress":"151.101.70.49",
+         "isinternal":false
+      }
+   ],
+   "feedback":{
+      "comments":"additional feedback\n",
+      "outcome":"Confirmed Incident",
+      "timeUpdated":"1604448789216",
+      "userId":"danno@respond-software.com"
+   },
+   "firstEventTime":"2020-10-20T03:59:07Z",
+   "hashes":[
+
+   ],
+   "incidentId":"700",
+   "lastEventTime":"2020-10-21T05:21:32Z",
+   "malware":[
+
+   ],
+   "owner":"danno",
+   "probability":"Low",
+   "respondRemoteId":"QA 5:700",
+   "severity":"Medium",
+   "signatures":[
+
+   ],
+   "status":"Closed",
+   "tenantId":"QA 5",
+   "tenantIdRespond":"qa5",
+   "timeGenerated":"2020-10-19T21:59:34Z",
+   "title":"Suspicious Repeated Connections"
+}
