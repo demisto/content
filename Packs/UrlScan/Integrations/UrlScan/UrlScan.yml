@@ -40,7 +40,7 @@ configuration:
   name: is_public
   required: false
   type: 8
-description: Urlscan.io reputation
+description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io
 script:
