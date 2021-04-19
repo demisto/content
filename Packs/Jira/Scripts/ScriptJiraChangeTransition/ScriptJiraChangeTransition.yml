@@ -13,7 +13,8 @@ runonce: false
 dockerimage: demisto/python3:3.9.2.17957
 runas: DBotWeakRole
 fromversion: 5.0.0
+deprecated: true
 comment: |-
-  This script changes the transition field of an issue. It gets the new Jira status and updates the Cortex XSOAR incident status.
+  Deprecated. please use: JiraChangeTransition. This script changes the transition field of an issue. It gets the new Jira status and updates the Cortex XSOAR incident status.
 tests:
 - Jira-v2-Test
