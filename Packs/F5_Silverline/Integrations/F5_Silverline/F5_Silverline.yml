@@ -1,0 +1,249 @@
+category: Network Security
+commonfields:
+  id: F5_Silverline
+  version: -1
+configuration:
+- defaultvalue: https://portal.f5silverline.com
+  display: Your F5 Silverline server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The API Key to use for connection
+  display: API Key
+  name: token
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
+defaultclassifier: 'null'
+description: '[Enter a comprehensive, yet concise, description of what the integration
+  does, what use cases it is designed for, etc.]'
+display: F5_Silverline
+name: F5_Silverline
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The list type can be one of allowlist or denylist or bad_actor.
+      isArray: false
+      name: list_type
+      predefined:
+      - allowlist
+      - denylist
+      - bad_actor
+      required: true
+      secret: false
+    - default: false
+      description: 'Comma separated list of IP object IDs. If this argument is given,
+        only this particular IP object will be returned. Otherwise, all of the IP
+        objects that match list_type will be returned. '
+      isArray: true
+      name: object_id
+      required: false
+      secret: false
+    - default: false
+      description: Page number to return. The first page number is 1.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: Number of results in a page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a particular ip objects list by the list type (allowlist/denylist/bad_actor).
+    execution: false
+    name: f5-silverline-ip-objects-list
+    outputs:
+    - contextPath: F5Silverline.IPObjectList.ID
+      description: List object ID
+      type: String
+    - contextPath: F5Silverline.IPObjectList.type
+      description: List object type
+      type: String
+    - contextPath: F5Silverline.IPObjectList.attributes.IP
+      description: IP address
+      type: String
+    - contextPath: F5Silverline.IPObjectList.attributes.mask
+      description: Mask - change
+      type: String
+    - contextPath: F5Silverline.IPObjectList.attributes.duration
+      description: Duration - change
+      type: String
+    - contextPath: F5Silverline.IPObjectList.attributes.expires_at
+      description: Expiration date (timestamp)
+      type: String
+    - contextPath: F5Silverline.IPObjectList.attributes.list_target
+      description: List target of this object (proxy) - change
+      type: String
+    - contextPath: F5Silverline.IPObjectList.links.self
+      description: Url link to this specific IP object
+      type: String
+    - contextPath: F5Silverline.IPObjectList.meta.note
+      description: IP object notes
+      type: String
+    - contextPath: F5Silverline.IPObjectList.meta.tags
+      description: ' IP object tags'
+      type: Unknown
+    - contextPath: F5Silverline.IPObjectList.meta.created_at
+      description: IP object creation timestamp
+      type: String
+    - contextPath: F5Silverline.IPObjectList.meta.updated_at
+      description: IP object laast update timestamp
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The list type can be one of allowlist or denylist or bad_actor.
+      isArray: false
+      name: list_type
+      predefined:
+      - allowlist
+      - denylist
+      - bad_actor
+      required: true
+      secret: false
+    - default: false
+      description: 'Comma separated list of IP object IDs. If this argument is given,
+        only this particular IP object will be returned. Otherwise, all of the IP
+        objects that match list_type will be returned. '
+      isArray: true
+      name: object_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The list target can be one of proxy or routed or proxy-routed.
+        This param limits the denylist type but is ignored for the other list types.
+        An optional list_target parameter can be supplied to target either the proxy
+        OR routed denylist. If list_target is not specified it will assume both proxy
+        and routed are requested.
+      isArray: false
+      name: list_target
+      predefined:
+      - proxy
+      - routed
+      - proxy-routed
+      required: false
+      secret: false
+    - default: false
+      description: Page number to return. The first page number is 1.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: Number of results in a page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The IP address of the IP object to set.
+      isArray: false
+      name: IP
+      required: false
+      secret: false
+    - default: false
+      description: The mask address of the IP object to set.
+      isArray: false
+      name: mask
+      required: false
+      secret: false
+    - default: false
+      description: The duration of the IP object to set.
+      isArray: false
+      name: mask
+      required: false
+      secret: false
+    - default: false
+      description: The note of the IP object to set.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    - default: false
+      description: Tags of the IP object to set.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: When set to false (default), the inputs will be validated during
+        request processing and errors are reported in the response. When set to true,
+        the inputs will be accepted for processing but some may be skipped if they
+        don’t meet the validation criteria.
+      isArray: false
+      name: defer_validataion
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Add IP addresses in a particular list.
+    execution: false
+    name: f5-silverline-ip-object-add
+    outputs:
+    - contextPath: F5Silverline.IPObjectList.ID
+      description: List object ID
+      type: String
+    - contextPath: F5Silverline.IPObjectList.type
+      description: List object type
+      type: String
+    - contextPath: F5Silverline.IPObjectList.attributes.IP
+      description: IP address
+      type: String
+    - contextPath: F5Silverline.IPObjectList.attributes.mask
+      description: Mask - change
+      type: String
+    - contextPath: F5Silverline.IPObjectList.attributes.duration
+      description: Duration - change
+      type: String
+    - contextPath: F5Silverline.IPObjectList.attributes.expires_at
+      description: Expiration date (timestamp)
+      type: String
+    - contextPath: F5Silverline.IPObjectList.attributes.list_target
+      description: List target of this object (proxy) - change
+      type: String
+    - contextPath: F5Silverline.IPObjectList.links.self
+      description: Url link to this specific IP object
+      type: String
+    - contextPath: F5Silverline.IPObjectList.meta.note
+      description: IP object notes
+      type: String
+    - contextPath: F5Silverline.IPObjectList.meta.tags
+      description: ' IP object tags'
+      type: Unknown
+    - contextPath: F5Silverline.IPObjectList.meta.created_at
+      description: IP object creation timestamp
+      type: String
+    - contextPath: F5Silverline.IPObjectList.meta.updated_at
+      description: IP object laast update timestamp
+      type: String
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
