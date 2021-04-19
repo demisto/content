@@ -1,14 +1,14 @@
-Initiates a new endpoint script execution to check if the file exists and retrieve the results.
+Initiates a new endpoint script execution to check if the file exists and retrieves the results.
 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - Check Action Status
+Cortex XDR - Check Action Status
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
