@@ -852,7 +852,8 @@ def get_incident_command(rest_client, args):
     # }
     # return new_incident
     readable_output = tableToMarkdown(f'Mandiant Automated Defense Alert, '
-                                      f'{formatted_incident["tenantId"] : formatted_incident["incidentId"]}', formatted_incident)
+                                      f'{formatted_incident["tenantId"]} : {formatted_incident["incidentId"]}',
+                                      formatted_incident)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='RespondSoftware.Incident',
