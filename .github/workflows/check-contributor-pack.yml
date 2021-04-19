@@ -24,10 +24,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           BRANCH_NAME: ${{ github.head_ref }}
-          EMAIL_REFRESH_TOKEN: ${{ secrets.EMAIL_API_KEY }}
+          SENDGRID_EMAIL_API_KEY: ${{ secrets.SENDGRID_EMAIL_API_KEY }}
         run: |
           echo "PR number is: $PR_NUMBER"
           echo "Target branch name is: $BRANCH_NAME"
           echo "Starting check of contributor packs"
-          python Utils/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN --email_api_token $EMAIL_API_KEY
+          python Utils/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN --email_api_token $SENDGRID_EMAIL_API_KEY
           echo "Finished check of contributor packs"
