@@ -43,25 +43,33 @@ def iterate_indicator_entry(indicator, entry):
 def main():
     try:
         indicators = argToList(demisto.args()['indicator'])
+        existing_dbot_scores = demisto.get(demisto.context(), CONTEXT_PATH)
+        if isinstance(existing_dbot_scores, dict):
+            existing_dbot_scores = [existing_dbot_scores]
+
         for indicator in indicators:
             resp = demisto.executeCommand("getIndicator", {'value': indicator})
 
             if isError(resp) or not resp:
                 demisto.results(resp)
-                return
+                continue
 
             data = resp[0].get("Contents")
 
             if not data:
                 demisto.results("No results found for indicator {}.".format(indicator))
-                return
+                continue
+
             dbot_scores = []
+
             for entry in data:
                 for dbot_score, results in iterate_indicator_entry(indicator, entry):
                     demisto.results(results)
                     dbot_scores.append(dbot_score)
-            dbot_scores = dbot_scores if len(dbot_scores) > 1 or not dbot_scores else dbot_scores[0]
-            appendContext(CONTEXT_PATH, dbot_scores)
+
+            existing_dbot_scores.extend(dbot_scores)
+
+        demisto.setContext(CONTEXT_PATH, existing_dbot_scores)
 
     except Exception as error:
         return_error(str(error), error)
