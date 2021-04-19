@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Email Communication",
+    "description": "Classifies MS Graph Mail email messages.",
+    "feed": false,
+    "id": "173a8bc5-663b-4478-89a5-d2ce2ce8a31f",
+    "keyTypeMap": {
+        "High": "Email Communication",
+        "Low": "Email Communication",
+        "MicrosoftGraphMail": "Email Communication",
+        "Normal": "Email Communication"
+    },
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "name": "MS Graph Mail - Classifier - Email Communication",
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

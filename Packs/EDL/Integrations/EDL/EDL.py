@@ -311,33 +311,35 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
         # protocol stripping
         indicator = _PROTOCOL_REMOVAL.sub('', indicator)
 
-        # Port stripping
-        indicator_with_port = indicator
-        # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
-        indicator = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
-        # check if removing the port changed something about the indicator
-        if indicator != indicator_with_port and not request_args.url_port_stripping:
-            # if port was in the indicator and url_port_stripping param not set - ignore the indicator
-            continue
-        # Reformatting to to PAN-OS URL format
-        with_invalid_tokens_indicator = indicator
-        # mix of text and wildcard in domain field handling
-        indicator = _INVALID_TOKEN_REMOVAL.sub('*', indicator)
-        # check if the indicator held invalid tokens
-        if with_invalid_tokens_indicator != indicator:
-            # invalid tokens in indicator- if drop_invalids is set - ignore the indicator
-            if request_args.drop_invalids:
+        if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,
+                            FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR]:
+            # Port stripping
+            indicator_with_port = indicator
+            # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
+            indicator = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
+            # check if removing the port changed something about the indicator
+            if indicator != indicator_with_port and not request_args.url_port_stripping:
+                # if port was in the indicator and url_port_stripping param not set - ignore the indicator
                 continue
-        # for PAN-OS *.domain.com does not match domain.com
-        # we should provide both
-        # this could generate more than num entries according to PAGE_SIZE
-        if indicator.startswith('*.'):
-            formatted_indicators.append(indicator.lstrip('*.'))
+            # Reformatting to PAN-OS URL format
+            with_invalid_tokens_indicator = indicator
+            # mix of text and wildcard in domain field handling
+            indicator = _INVALID_TOKEN_REMOVAL.sub('*', indicator)
+            # check if the indicator held invalid tokens
+            if with_invalid_tokens_indicator != indicator:
+                # invalid tokens in indicator- if drop_invalids is set - ignore the indicator
+                if request_args.drop_invalids:
+                    continue
+            # for PAN-OS *.domain.com does not match domain.com
+            # we should provide both
+            # this could generate more than num entries according to PAGE_SIZE
+            if indicator.startswith('*.'):
+                formatted_indicators.append(indicator.lstrip('*.'))
 
-        if request_args.collapse_ips != DONT_COLLAPSE and ioc_type == 'IP':
+        if request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IP:
             ipv4_formatted_indicators.append(IPAddress(indicator))
 
-        elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == 'IPv6':
+        elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IPv6:
             ipv6_formatted_indicators.append(IPAddress(indicator))
 
         else:
