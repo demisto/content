@@ -33,7 +33,7 @@ def main():
                     "transform": "\\1"
                 },
                 "relation_entity_b": {
-                    "regex": r"^.+,.+,.+,.+,(.+)",
+                    "regex": r"^.+,.+,.+,.+,\"(.+)\"",
                     "transform": "\\1"
                 }
             }],
