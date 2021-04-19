@@ -4,6 +4,7 @@ import fnmatch
 import hashlib
 import json
 import re
+from email.header import decode_header
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import demistomock as demisto  # noqa: F401
@@ -47,9 +48,9 @@ class Ddict:
                path: str) -> Optional[Tuple[str, Any, str]]:
         """ Get a child node
 
-            :param node: A root node.
-            :param path: A path to separete a child and names under the child.
-            :return: child_name, child_value, descendant_name.
+        :param node: A root node.
+        :param path: A path to separete a child and names under the child.
+        :return: child_name, child_value, descendant_name.
         """
         res = Ddict.__search(node, path.split('.'))
         if res is None:
@@ -114,8 +115,8 @@ class ContextData:
     def get(self, key: Optional[str] = None) -> Any:
         """ Get the context value given the key
 
-          :param key: The dt expressions (string within ${}).
-          :return: The value.
+        :param key: The dt expressions (string within ${}).
+        :return: The value.
         """
         if key is not None:
             dx = self.__demisto
@@ -204,11 +205,11 @@ def match_pattern(
         patalg: int) -> bool:
     """ Pattern matching
 
-      :param pattern: The pattern string.
-      :param value: The value to compare with the pattern.
-      :param caseless: True if the pattern matching take places in case insensitive, otherwise False.
-      :param patalg: The pattern matching algorithm. Spefify any of PATALG_BINARY, PATALG_WILDCARD and PATALG_REGEX.
-      :return: Return True if the value matches the pattern, otherwise False.
+    :param pattern: The pattern string.
+    :param value: The value to compare with the pattern.
+    :param caseless: True if the pattern matching take places in case insensitive, otherwise False.
+    :param patalg: The pattern matching algorithm. Spefify any of PATALG_BINARY, PATALG_WILDCARD and PATALG_REGEX.
+    :return: Return True if the value matches the pattern, otherwise False.
     """
     if patalg == PATALG_BINARY:
         if caseless:
@@ -280,10 +281,10 @@ def extract_value(source: Any,
                   dx: Optional[ContextData]) -> Any:
     """ Extract value including dt expression
 
-      :param source: The value to be extracted that may include dt expressions.
-      :param extractor: The extractor to get real value within ${dt}.
-      :param dx: The demisto context.
-      :return: The value extracted.
+    :param source: The value to be extracted that may include dt expressions.
+    :param extractor: The extractor to get real value within ${dt}.
+    :param dx: The demisto context.
+    :return: The value extracted.
     """
     def _extract(source: str,
                  extractor: Optional[Callable[[str,
@@ -337,9 +338,9 @@ def extract_value(source: Any,
 def extract_dt(dtstr: str, dx: Optional[ContextData]) -> Any:
     """ Extract dt expression
 
-      :param dtstr: The dt expressions (string within ${}).
-      :param dx: The demisto context.
-      :return: The value extracted.
+    :param dtstr: The dt expressions (string within ${}).
+    :param dx: The demisto context.
+    :return: The value extracted.
     """
     return dx.get(dtstr) if dx else dtstr
 
@@ -353,18 +354,18 @@ def get_parent_child(root: dict,
                                                Tuple[Any, str]]]:
     """ Get first and second level node
 
-      :param root: The root node.
-      :param path: The path to identify the leaf node.
-      :return: (
-        (
-          parent node: The first level node in the hierarchy of the path
-          parent path: The path based on the root node
-        )
-        (
-          child node: The second level node in the hierarchy of the path
-          child path: The path based on the parent node
-        )
+    :param root: The root node.
+    :param path: The path to identify the leaf node.
+    :return: (
+      (
+        parent node: The first level node in the hierarchy of the path
+        parent path: The path based on the root node
       )
+      (
+        child node: The second level node in the hierarchy of the path
+        child path: The path based on the parent node
+      )
+    )
     """
     res = Ddict.search(root, path)
     if res is None:
@@ -389,11 +390,11 @@ class ExtFilter:
     def match_value(self, lhs: Any, optype: str, rhs: Any) -> bool:
         """ Matching with the conditional operator
 
-          :param self: This instance.
-          :param lhs: The left hand side value
-          :param optype: The conditional operator
-          :param rhs: The right hand side value
-          :return: Return True if the lhs matches the rhs, otherwise False.
+        :param self: This instance.
+        :param lhs: The left hand side value
+        :param optype: The conditional operator
+        :param rhs: The right hand side value
+        :return: Return True if the lhs matches the rhs, otherwise False.
         """
         if optype == "is":
             if not isinstance(rhs, str):
@@ -744,35 +745,35 @@ class ExtFilter:
                                 inlist: bool = False) -> Optional[Value]:
         """ Filter the value with the conditions
 
-          *** NOTE ***
-          condition: root == 1 or ( root > 10 and root < 20 )
-          expression:
+        *** NOTE ***
+        condition: root == 1 or ( root > 10 and root < 20 )
+        expression:
+        [
+          {'==': 1},
+          'or',
+          {'>': 10, '<': 20}
+        ]
+
+        condition: root isn't integer or ( root == 1 or ( root > 10 and root < 20 ) )
+        expression:
+        [
+          [
+            {"isn't": 'integer'}
+          ],
+          'or',
           [
             {'==': 1},
             'or',
             {'>': 10, '<': 20}
           ]
+        ]
 
-          condition: root isn't integer or ( root == 1 or ( root > 10 and root < 20 ) )
-          expression:
-          [
-            [
-              {"isn't": 'integer'}
-            ],
-            'or',
-            [
-              {'==': 1},
-              'or',
-              {'>': 10, '<': 20}
-            ]
-          ]
-
-          :param self: This instance.
-          :param root: The value to filter.
-          :param conds: The expressions to filter the value.
-          :param path: The path to apply the conditions.
-          :param inlist: True if `root` is an element in a list, False otherwise.
-          :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
+        :param self: This instance.
+        :param root: The value to filter.
+        :param conds: The expressions to filter the value.
+        :param path: The path to apply the conditions.
+        :param inlist: True if `root` is an element in a list, False otherwise.
+        :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
         if isinstance(conds, dict):
             # AND conditions
@@ -848,35 +849,35 @@ class ExtFilter:
             self, root: Any, conds: Union[dict, list]) -> Optional[Value]:
         """ Filter the value with the conditions
 
-          *** NOTE ***
-          expression for 'conds':
+        *** NOTE ***
+        expression for 'conds':
+        [
+          {
+            "path1": <expression> for filter_with_expressions(),
+            "path2": <expression> for filter_with_expressions()
+            :
+          }
+          'or',
           [
+            'not',
             {
-              "path1": <expression> for filter_with_expressions(),
-              "path2": <expression> for filter_with_expressions()
+              "path3": <expression> for filter_with_expressions(),
+              "path4": <expression> for filter_with_expressions()
+              :
+            },
+            'or',
+            {
+              "path5": <expression> for filter_with_expressions(),
+              "path6": <expression> for filter_with_expressions()
               :
             }
-            'or',
-            [
-              'not',
-              {
-                "path3": <expression> for filter_with_expressions(),
-                "path4": <expression> for filter_with_expressions()
-                :
-              },
-              'or',
-              {
-                "path5": <expression> for filter_with_expressions(),
-                "path6": <expression> for filter_with_expressions()
-                :
-              }
-            }
-          ]
+          }
+        ]
 
-          :param self: This instance.
-          :param root: The value to filter.
-          :param conds: The condition expression to filter the value.
-          :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
+        :param self: This instance.
+        :param root: The value to filter.
+        :param conds: The condition expression to filter the value.
+        :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
         if isinstance(conds, dict):
             # AND conditions
@@ -930,12 +931,12 @@ class ExtFilter:
             path: Optional[str] = None) -> Optional[Value]:
         """ Filter values of a list with the conditions
 
-          :param self: This instance.
-          :param root: The values to filter.
-          :param optype: The conditional operator.
-          :param conds: The condition expression to filter the value.
-          :param path: The path to apply the conditions.
-          :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
+        :param self: This instance.
+        :param root: The values to filter.
+        :param optype: The conditional operator.
+        :param conds: The condition expression to filter the value.
+        :param path: The path to apply the conditions.
+        :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
         return Value([v.value for v in [self.filter_value(
             r, optype, conds, path, True) for r in root] if v])
@@ -949,13 +950,13 @@ class ExtFilter:
             inlist: bool = False) -> Optional[Value]:
         """ Filter the value with the conditions
 
-          :param self: This instance.
-          :param root: The value to filter.
-          :param optype: The conditional operator.
-          :param conds: The condition expression to filter the value.
-          :param path: The path to apply the conditions.
-          :param inlist: True if `root` is an element in a list, False otherwise.
-          :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
+        :param self: This instance.
+        :param root: The value to filter.
+        :param optype: The conditional operator.
+        :param conds: The condition expression to filter the value.
+        :param path: The path to apply the conditions.
+        :param inlist: True if `root` is an element in a list, False otherwise.
+        :return: Return the filtered value in Value object if the conditions matches it, otherwise None.
         """
         if optype == "abort":
             exit_error(
@@ -1513,7 +1514,7 @@ class ExtFilter:
         """
         if optype == "json: encode":
             params = self.parse_conds_json(rhs)
-            indent = params.get("indent")
+            indent = params.get('indent')
             return Value(
                 json.dumps(
                     lhs, indent=None if indent is None else int(indent)))
@@ -1527,12 +1528,43 @@ class ExtFilter:
                     str(lhs).encode('utf-8')).decode('utf-8'))
 
         elif optype == "base64: decode":
-            return Value(base64.b64decode(lhs.encode('utf-8')).decode('utf-8'))
+            return Value(base64.b64decode(lhs.encode('utf-8')).decode('utf-8', errors='ignore'))
 
         elif optype == "digest":
             params = self.parse_conds_json(rhs)
             return Value(
                 hashdigest(str(lhs), str(params.get('algorithm', 'sha256'))))
+
+        elif optype == "email-header: decode":
+            out = ''
+            try:
+                for decoded_s, encoding in decode_header(str(lhs)):
+                    if encoding:
+                        out += decoded_s.decode(encoding)
+                    elif isinstance(decoded_s, bytes):
+                        out += decoded_s.decode('utf-8')
+                    else:
+                        out += decoded_s
+            except Exception:
+                demisto.debug(f'Failed to decode by `email-header: decode`: {lhs}')
+                out = str(lhs)
+            return Value(out)
+
+        elif optype == "regex: replace":
+            params = self.parse_conds_json(rhs)
+            pattern = params['pattern']
+            matched = params['matched']
+            flags = 0
+            flags |= re.IGNORECASE if argToBoolean(params.get('caseless', False)) else 0
+            flags |= re.MULTILINE if argToBoolean(params.get('multiline', False)) else 0
+            flags |= re.DOTALL if argToBoolean(params.get('dotall', False)) else 0
+            match = re.fullmatch(pattern, str(lhs), flags=flags)
+            if not match:
+                return Value(params['unmatched'] if 'unmatched' in params else lhs)
+            elif isinstance(matched, str):
+                return Value(match.expand(matched.replace(r'\0', r'\g<0>')))
+            else:
+                return Value(matched)
 
         """
         Filter for single value (boolean evaluation)
@@ -1542,9 +1574,9 @@ class ExtFilter:
     def extract_value(self, source: Any) -> Any:
         """ Extract value including dt expression
 
-          :param self: This instance.
-          :param source: The value to be extracted that may include dt expressions.
-          :return: The value extracted.
+        :param self: This instance.
+        :param source: The value to be extracted that may include dt expressions.
+        :return: The value extracted.
         """
         return extract_value(source, extract_dt, self.__dx)
 
@@ -1554,10 +1586,10 @@ class ExtFilter:
             only_parse_for_string: bool = True) -> Any:
         """ parse a json string and extract value
 
-          :param self: This instance.
-          :param jstr: A json string.
-          :param only_parse_for_string: True: only parse the JSON when jstr is `string`, otherwise returns the raw jstr.
-          :return: The value extracted.
+        :param self: This instance.
+        :param jstr: A json string.
+        :param only_parse_for_string: True: only parse the JSON when jstr is `string`, otherwise returns the raw jstr.
+        :return: The value extracted.
         """
         if only_parse_for_string and not isinstance(jstr, str):
             return jstr
