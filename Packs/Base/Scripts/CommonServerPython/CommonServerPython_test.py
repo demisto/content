@@ -128,98 +128,98 @@ TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
     )
 ]
 
-DATA_WITH_URLS = [(
-    [
-        {
+DATA_WITH_URLS =  [(
+        [
+            {
             'header_1': 'a1',
             'url1': 'b1',
             'url2': 'c1'
-        },
-        {
+            },
+            {
             'header_1': 'a2',
             'url1': 'b2',
             'url2': 'c2'
-        },
-        {
+            },
+            {
             'header_1': 'a3',
             'url1': 'b3',
             'url2': 'c3'
-        }
-    ],
-    '''### tableToMarkdown test
-    |header_1|url1|url2|
-    |---|---|---|
-    | a1 | [b1](b1) | [c1](c1) |
-    | a2 | [b2](b2) | [c2](c2) |
-    | a3 | [b3](b3) | [c3](c3) |
-    '''
-)]
+            }
+        ],
+'''### tableToMarkdown test
+|header_1|url1|url2|
+|---|---|---|
+| a1 | [b1](b1) | [c1](c1) |
+| a2 | [b2](b2) | [c2](c2) |
+| a3 | [b3](b3) | [c3](c3) |
+'''
+    )]
 
 COMPLEX_DATA_WITH_URLS = [(
     [
-        {'data':
-             {'id': '1',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': 'url'
-                          }
-                      ]
-                  },
-              'links': ['link']
-              }
-         },
-        {'data':
-             {'id': '2',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': 'url'
-                          }
-                      ]
-                  },
-              'links': ['link']
-              }
+    {'data':
+         {'id': '1',
+          'result':
+              {'files':
+                  [
+                      {
+                          'filename': 'name',
+                          'size': 0,
+                          'url': 'url'
+                      }
+                  ]
+              },
+          'links': ['link']
+          }
+     },
+    {'data':
+        {'id': '2',
+            'result':
+            {'files':
+               [
+                   {
+                       'filename': 'name',
+                       'size': 0,
+                       'url': 'url'
+                    }
+               ]
+            },
+            'links': ['link']
          }
-    ],
+     }
+],
     [
-        {'data':
-             {'id': '1',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': '[url](url)'
-                          }
-                      ]
-                  },
-              'links': ['[link](link)']
-              }
-         },
-        {'data':
-             {'id': '2',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': '[url](url)'
-                          }
-                      ]
-                  },
-              'links': ['[link](link)']
-              }
+    {'data':
+         {'id': '1',
+          'result':
+              {'files':
+                  [
+                      {
+                          'filename': 'name',
+                          'size': 0,
+                          'url': '[url](url)'
+                      }
+                  ]
+              },
+          'links': ['[link](link)']
+          }
+     },
+    {'data':
+        {'id': '2',
+            'result':
+            {'files':
+               [
+                   {
+                       'filename': 'name',
+                       'size': 0,
+                       'url': '[url](url)'
+                    }
+               ]
+            },
+            'links': ['[link](link)']
          }
-    ])]
+     }
+])]
 
 
 @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
