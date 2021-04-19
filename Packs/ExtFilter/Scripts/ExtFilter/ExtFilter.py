@@ -188,7 +188,7 @@ def listize(value: Any) -> List[Any]:
     return value if isinstance(value, list) else [value]
 
 
-def delistize(value: Any) -> List[Any]:
+def delistize(value: Any) -> Any:
     return value[0] if isinstance(value, list) and len(value) == 1 else value
 
 
@@ -383,8 +383,7 @@ def extract_value(source: Any,
 
 def extract_dt(dtstr: str,
                dx: Optional[ContextData],
-               node: Optional[Dict[str,
-                                   Any]] = None) -> Any:
+               node: Optional[Dict[str,Any]] = None) -> Any:
     """ Extract dt expression
 
     :param dtstr: The dt expressions (string within ${}).
