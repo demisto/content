@@ -3,7 +3,7 @@ import io
 from copy import deepcopy
 
 import pytest
-from Packs.NetscoutArborPeakflow.Integrations.NetscoutArborSightline.NetscoutArborSightline import NetscoutClient, \
+from NetscoutArborSightline import NetscoutClient, \
     fetch_incidents_command, list_alerts_command, alert_annotation_list_command, mitigation_list_command, \
     mitigation_template_list_command, router_list_command, tms_group_list_command, managed_object_list_command, \
     mitigation_create_command, clean_links, validate_json_arg, build_human_readable
