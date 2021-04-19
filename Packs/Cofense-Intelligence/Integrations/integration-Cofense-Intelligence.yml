@@ -67,7 +67,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: >-
+  script: >2-
      var reliability = params.integrationReliability;
 
      if(!reliability){
@@ -75,11 +75,9 @@ script:
      }
      var isValidReliability = function(reliability) {
          var reliability_options = ['A+ - 3rd party enrichment', 'A - Completely reliable', 'B - Usually reliable', 'C - Fairly reliable', 'D - Not usually reliable', 'E - Unreliable', 'F - Reliability cannot be judged'];
-         return reliability_options.indexOf(reliability) >= 0;
-     }
+         return reliability_options.indexOf(reliability) >= 0;}
      if(!isValidReliability(reliability)) {
-         return 'Error, Source Reliability value is invalid. Please choose from available reliability options.';
-     }
+         return 'Error, Source Reliability value is invalid. Please choose from available reliability options.';}
 
       var auth = 'Basic ' + Base64.encode(params.credentials.identifier + ':' + params.credentials.password);
          var sendRequest = function(method,api,urlargs) {
