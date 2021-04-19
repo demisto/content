@@ -1,13 +1,13 @@
-Use to Initiate a new script execution of shell commands. 
+Initiates a new script execution of shell commands. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - Check Action Status
+Cortex XDR - Check Action Status
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
