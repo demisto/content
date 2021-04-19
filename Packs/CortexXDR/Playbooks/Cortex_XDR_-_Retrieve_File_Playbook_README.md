@@ -7,13 +7,13 @@ Inputs for this playbook are:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+GenericPolling
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
-* PrintErrorEntry
+PrintErrorEntry
 
 ### Commands
 * xdr-retrieve-files
@@ -25,7 +25,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | endpoint_ids | A comma-separated list of endpoint IDs. |  | Required |
-| file_path | A comma-separated list of file paths in any platform. It can be used instead of the macOS/Windows/Linux file paths. <br/>The order of the files path list must be parallel to the endpoints list order. Therefore, the first file path in the list is related to the first endpoint id and so on. |  | Optional |
+| file_path | A comma-separated list of file paths in any platform. It can be used instead of the macOS/Windows/Linux file paths. <br/>The order of the files path list must be parallel to the endpoints list order. Therefore, the first file path in the list is related to the first endpoint ID and so on. |  | Optional |
 | windows_file_paths | A comma-separated list of Windows paths.<br/>Enter at least one path for either Windows, Linux, or Mac. |  | Optional |
 | linux_file_paths | A comma-separated list Linux paths.<br/>Enter at least one path for either Windows, Linux, or Mac. |  | Optional |
 | mac_file_paths | A comma-separated list of Mac paths.<br/>Enter at least one path for either Windows, Linux, or Mac. |  | Optional |
