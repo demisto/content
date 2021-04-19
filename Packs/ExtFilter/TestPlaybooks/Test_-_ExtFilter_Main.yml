@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7f1500c6-f17d-4b20-8ad0-a0b95464d867
+    taskid: 6a2465df-56f5-4b11-8e19-664a03d39cda
     type: start
     task:
-      id: 7f1500c6-f17d-4b20-8ad0-a0b95464d867
+      id: 6a2465df-56f5-4b11-8e19-664a03d39cda
       version: -1
       name: ""
       description: ""
@@ -17,7 +17,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "230"
+      - "251"
     separatecontext: false
     view: |-
       {
@@ -33,12 +33,12 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: e73ab66a-ad72-4b1c-8087-396e6ad84065
+    taskid: 912ea05f-3c03-4a20-8ad5-d2473380dfd7
     type: playbook
     task:
-      id: e73ab66a-ad72-4b1c-8087-396e6ad84065
+      id: 912ea05f-3c03-4a20-8ad5-d2473380dfd7
       version: -1
-      name: Test - ExtFilter
+      name: matches conditions of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -183,7 +183,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1595
         }
       }
     note: false
@@ -193,12 +193,12 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 0e8c603b-bb6d-4626-8515-a35ca55eb7f5
+    taskid: 6596ab93-1cfe-4df1-8569-79d80db44ebc
     type: playbook
     task:
-      id: 0e8c603b-bb6d-4626-8515-a35ca55eb7f5
+      id: 6596ab93-1cfe-4df1-8569-79d80db44ebc
       version: -1
-      name: Test - ExtFilter
+      name: is filtered with (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -342,7 +342,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 1245
         }
       }
     note: false
@@ -352,12 +352,12 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: ddc24ed9-8b3f-45bd-805a-57f0dcc03c5a
+    taskid: 6e975698-8235-45a7-8136-6689e762a580
     type: playbook
     task:
-      id: ddc24ed9-8b3f-45bd-805a-57f0dcc03c5a
+      id: 6e975698-8235-45a7-8136-6689e762a580
       version: -1
-      name: Test - ExtFilter
+      name: value matches conditions of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -471,7 +471,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1770
         }
       }
     note: false
@@ -481,12 +481,12 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 3b34dab9-2c82-4580-8e64-361a91023d59
+    taskid: f2db516a-9e31-4ef2-8156-74ebce8d951d
     type: playbook
     task:
-      id: 3b34dab9-2c82-4580-8e64-361a91023d59
+      id: f2db516a-9e31-4ef2-8156-74ebce8d951d
       version: -1
-      name: Test - ExtFilter
+      name: matches conditions of (wildcard)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -600,7 +600,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1945
         }
       }
     note: false
@@ -610,12 +610,12 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 0f48912e-09d8-4177-81ba-9703661534b8
+    taskid: 828521cc-50d9-4d0e-8749-3f0c51c23e9b
     type: playbook
     task:
-      id: 0f48912e-09d8-4177-81ba-9703661534b8
+      id: 828521cc-50d9-4d0e-8749-3f0c51c23e9b
       version: -1
-      name: Test - ExtFilter
+      name: matches conditions of (regex)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -729,7 +729,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 2120
         }
       }
     note: false
@@ -739,12 +739,12 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 32962d07-3964-49b1-8ca9-e1d4ca6e69da
+    taskid: 49603102-a96c-46ab-880b-a5ad27e2b33f
     type: playbook
     task:
-      id: 32962d07-3964-49b1-8ca9-e1d4ca6e69da
+      id: 49603102-a96c-46ab-880b-a5ad27e2b33f
       version: -1
-      name: Test - ExtFilter
+      name: value matches conditions of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1018,7 +1018,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 2295
         }
       }
     note: false
@@ -1028,12 +1028,12 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 81e5a771-905c-4d30-8d2b-92fdae944323
+    taskid: 32ea3756-400e-4159-8e03-0c68fa74300a
     type: playbook
     task:
-      id: 81e5a771-905c-4d30-8d2b-92fdae944323
+      id: 32ea3756-400e-4159-8e03-0c68fa74300a
       version: -1
-      name: Test - ExtFilter
+      name: value is filtered with
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1090,7 +1090,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2470
         }
       }
     note: false
@@ -1100,12 +1100,12 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: ffb03f93-90b7-4200-8f41-41c382a92484
+    taskid: 366e01d0-1ba8-43c8-83e5-97c0d42699cc
     type: playbook
     task:
-      id: ffb03f93-90b7-4200-8f41-41c382a92484
+      id: 366e01d0-1ba8-43c8-83e5-97c0d42699cc
       version: -1
-      name: Test - ExtFilter
+      name: keeps (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1226,7 +1226,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 1420
         }
       }
     note: false
@@ -1236,12 +1236,12 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 78b072a3-7d35-4223-895c-2c7f131e2159
+    taskid: cd8dd8ce-de08-489b-863e-bf4421f86b5b
     type: playbook
     task:
-      id: 78b072a3-7d35-4223-895c-2c7f131e2159
+      id: cd8dd8ce-de08-489b-863e-bf4421f86b5b
       version: -1
-      name: Test - ExtFilter
+      name: is existing key (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1348,7 +1348,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2645
         }
       }
     note: false
@@ -1358,12 +1358,12 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 9aef5c7c-3862-4ff9-8970-7e703690b8b9
+    taskid: 60fb4428-77ca-46d8-8d60-945aec0910a6
     type: playbook
     task:
-      id: 9aef5c7c-3862-4ff9-8970-7e703690b8b9
+      id: 60fb4428-77ca-46d8-8d60-945aec0910a6
       version: -1
-      name: Test - ExtFilter
+      name: is existing key (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1486,7 +1486,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2820
         }
       }
     note: false
@@ -1496,12 +1496,12 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 802ff811-ea26-4637-8976-e3065c9e904d
+    taskid: 40dbdf98-e46f-41ef-88ac-54cd30c616f1
     type: playbook
     task:
-      id: 802ff811-ea26-4637-8976-e3065c9e904d
+      id: 40dbdf98-e46f-41ef-88ac-54cd30c616f1
       version: -1
-      name: Test - ExtFilter
+      name: isn't empty (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1602,7 +1602,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2995
         }
       }
     note: false
@@ -1612,12 +1612,12 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 393e21b8-671e-4fd5-8f33-b2dcda06b2b6
+    taskid: aab91091-711f-4cf9-8711-4e46b016cf34
     type: playbook
     task:
-      id: 393e21b8-671e-4fd5-8f33-b2dcda06b2b6
+      id: aab91091-711f-4cf9-8711-4e46b016cf34
       version: -1
-      name: Test - ExtFilter
+      name: isn't null
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1720,7 +1720,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 3170
         }
       }
     note: false
@@ -1730,12 +1730,12 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 60aa6ca8-e5c2-4f20-8576-fe3116d1a680
+    taskid: 72d43efe-f2b2-4a51-8036-d686f3742679
     type: playbook
     task:
-      id: 60aa6ca8-e5c2-4f20-8576-fe3116d1a680
+      id: 72d43efe-f2b2-4a51-8036-d686f3742679
       version: -1
-      name: Test - ExtFilter
+      name: isn't any integer
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1833,7 +1833,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 3345
         }
       }
     note: false
@@ -1843,12 +1843,12 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: b71b3319-233e-48b4-8935-5324d8c27992
+    taskid: c55940af-a6dc-4b4c-83bb-b9cacc636c09
     type: playbook
     task:
-      id: b71b3319-233e-48b4-8935-5324d8c27992
+      id: c55940af-a6dc-4b4c-83bb-b9cacc636c09
       version: -1
-      name: Test - ExtFilter
+      name: isn't existing key (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -1966,7 +1966,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 3520
         }
       }
     note: false
@@ -1976,12 +1976,12 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 0582efa2-b3c7-4b4a-8733-b4aafecf210e
+    taskid: 89ec6db1-f6ef-4267-8ab5-6e60a94004db
     type: playbook
     task:
-      id: 0582efa2-b3c7-4b4a-8733-b4aafecf210e
+      id: 89ec6db1-f6ef-4267-8ab5-6e60a94004db
       version: -1
-      name: Test - ExtFilter
+      name: equals (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2080,7 +2080,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3695
         }
       }
     note: false
@@ -2090,12 +2090,12 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: fdd91674-4641-4195-8e21-6cc2cc13ffdb
+    taskid: 4879e9a6-af4a-4518-8f04-15d32ed9de9d
     type: playbook
     task:
-      id: fdd91674-4641-4195-8e21-6cc2cc13ffdb
+      id: 4879e9a6-af4a-4518-8f04-15d32ed9de9d
       version: -1
-      name: Test - ExtFilter
+      name: doesn't equal (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2193,7 +2193,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3870
         }
       }
     note: false
@@ -2203,12 +2203,12 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: c5e598e6-c46f-4c7e-8c4f-49e45c8b9d31
+    taskid: 0737bf02-1a17-4e90-89c9-b9493fc40c13
     type: playbook
     task:
-      id: c5e598e6-c46f-4c7e-8c4f-49e45c8b9d31
+      id: 0737bf02-1a17-4e90-89c9-b9493fc40c13
       version: -1
-      name: Test - ExtFilter
+      name: greater or equal (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2309,7 +2309,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 4045
         }
       }
     note: false
@@ -2319,12 +2319,12 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: c1b530aa-6ad0-47b5-8870-801e9e201020
+    taskid: a680bf47-cf4c-4617-8428-d5a7bbf70bab
     type: playbook
     task:
-      id: c1b530aa-6ad0-47b5-8870-801e9e201020
+      id: a680bf47-cf4c-4617-8428-d5a7bbf70bab
       version: -1
-      name: Test - ExtFilter
+      name: greater than (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2423,7 +2423,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 4220
         }
       }
     note: false
@@ -2433,12 +2433,12 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 6af495e5-b265-466d-8992-a408fa4f8158
+    taskid: ea113d8b-d152-48d8-8f57-91dc8d458b18
     type: playbook
     task:
-      id: 6af495e5-b265-466d-8992-a408fa4f8158
+      id: ea113d8b-d152-48d8-8f57-91dc8d458b18
       version: -1
-      name: Test - ExtFilter
+      name: less or equal (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2539,7 +2539,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 4395
         }
       }
     note: false
@@ -2549,12 +2549,12 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: cbfb6645-37a9-4a19-8a58-6402c57cdb7b
+    taskid: 6803eb80-8a88-4d4a-85e1-8c463c74352e
     type: playbook
     task:
-      id: cbfb6645-37a9-4a19-8a58-6402c57cdb7b
+      id: 6803eb80-8a88-4d4a-85e1-8c463c74352e
       version: -1
-      name: Test - ExtFilter
+      name: less than (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2653,7 +2653,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 4570
         }
       }
     note: false
@@ -2663,12 +2663,12 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: e5408ddf-91ec-4ac7-8fa7-70bfd3db2332
+    taskid: 1dedf0cd-c1ad-4873-87a4-dd5a4a03162b
     type: playbook
     task:
-      id: e5408ddf-91ec-4ac7-8fa7-70bfd3db2332
+      id: 1dedf0cd-c1ad-4873-87a4-dd5a4a03162b
       version: -1
-      name: Test - ExtFilter
+      name: in range (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2770,7 +2770,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 4745
         }
       }
     note: false
@@ -2780,12 +2780,12 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 109aeebc-04fb-4527-8111-7676754c82d6
+    taskid: 44c1d660-d0d0-4eca-8db2-afa65af62943
     type: playbook
     task:
-      id: 109aeebc-04fb-4527-8111-7676754c82d6
+      id: 44c1d660-d0d0-4eca-8db2-afa65af62943
       version: -1
-      name: Test - ExtFilter
+      name: starts with (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -2886,7 +2886,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4920
         }
       }
     note: false
@@ -2896,12 +2896,12 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: fa9954b6-3867-48cb-889c-54c6d3d74347
+    taskid: 1531af10-018e-4889-830c-cb4f5918efaf
     type: playbook
     task:
-      id: fa9954b6-3867-48cb-889c-54c6d3d74347
+      id: 1531af10-018e-4889-830c-cb4f5918efaf
       version: -1
-      name: Test - ExtFilter
+      name: starts with caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3004,7 +3004,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 5095
         }
       }
     note: false
@@ -3014,12 +3014,12 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: cd0cb2dc-65fe-45c5-8dcb-af74f67f13a8
+    taskid: 993f2561-c0db-4d5c-8b8c-4f6eb82fafcd
     type: playbook
     task:
-      id: cd0cb2dc-65fe-45c5-8dcb-af74f67f13a8
+      id: 993f2561-c0db-4d5c-8b8c-4f6eb82fafcd
       version: -1
-      name: Test - ExtFilter
+      name: doesn't start with (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3124,7 +3124,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 5270
         }
       }
     note: false
@@ -3134,12 +3134,12 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: ccfa1b8a-d776-4377-8b24-096e13fb135c
+    taskid: 7377c8d2-020f-40ec-84a1-7f6a1d0bb647
     type: playbook
     task:
-      id: ccfa1b8a-d776-4377-8b24-096e13fb135c
+      id: 7377c8d2-020f-40ec-84a1-7f6a1d0bb647
       version: -1
-      name: Test - ExtFilter
+      name: doesn't start with caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3245,7 +3245,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 5445
         }
       }
     note: false
@@ -3255,12 +3255,12 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 5f5011bb-192f-4bef-8d68-49326d7291ec
+    taskid: 7b08d02b-3689-4067-8f3f-6a71c7ee5396
     type: playbook
     task:
-      id: 5f5011bb-192f-4bef-8d68-49326d7291ec
+      id: 7b08d02b-3689-4067-8f3f-6a71c7ee5396
       version: -1
-      name: Test - ExtFilter
+      name: ends with (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3361,7 +3361,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 5620
         }
       }
     note: false
@@ -3371,12 +3371,12 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 18f9cc4b-a54f-4751-88c0-d6007d730247
+    taskid: 375ad8e4-ce6a-4bc9-89ef-f3e0f07b8f5e
     type: playbook
     task:
-      id: 18f9cc4b-a54f-4751-88c0-d6007d730247
+      id: 375ad8e4-ce6a-4bc9-89ef-f3e0f07b8f5e
       version: -1
-      name: Test - ExtFilter
+      name: ends with caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3479,7 +3479,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 5795
         }
       }
     note: false
@@ -3489,12 +3489,12 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 3673a89e-4ade-4a6d-8c49-706c437d7c64
+    taskid: 72e3120c-572d-4d50-8653-e9f90a7ed336
     type: playbook
     task:
-      id: 3673a89e-4ade-4a6d-8c49-706c437d7c64
+      id: 72e3120c-572d-4d50-8653-e9f90a7ed336
       version: -1
-      name: Test - ExtFilter
+      name: doesn't end with (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3599,7 +3599,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 5970
         }
       }
     note: false
@@ -3609,12 +3609,12 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 2e912413-b1d3-4ff3-8054-32bd07eaed37
+    taskid: 8c421b7b-94f0-4042-8d24-ea8e07cba3ec
     type: playbook
     task:
-      id: 2e912413-b1d3-4ff3-8054-32bd07eaed37
+      id: 8c421b7b-94f0-4042-8d24-ea8e07cba3ec
       version: -1
-      name: Test - ExtFilter
+      name: doesn't end with caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3720,7 +3720,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 6145
         }
       }
     note: false
@@ -3730,12 +3730,12 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 42dcf6c3-7d3f-439d-8d86-5d3a06cda0d6
+    taskid: 428da616-a63d-41c1-83f4-4200b4998add
     type: playbook
     task:
-      id: 42dcf6c3-7d3f-439d-8d86-5d3a06cda0d6
+      id: 428da616-a63d-41c1-83f4-4200b4998add
       version: -1
-      name: Test - ExtFilter
+      name: includes (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3837,7 +3837,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 6495
         }
       }
     note: false
@@ -3847,12 +3847,12 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 22a9c392-d0f3-45be-8144-d7776ed152e4
+    taskid: 731f1c01-727b-451a-8e67-a97bfed63dd4
     type: playbook
     task:
-      id: 22a9c392-d0f3-45be-8144-d7776ed152e4
+      id: 731f1c01-727b-451a-8e67-a97bfed63dd4
       version: -1
-      name: Test - ExtFilter
+      name: includes caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -3954,7 +3954,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 6670
         }
       }
     note: false
@@ -3964,12 +3964,12 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 4e88289f-f732-4e96-8e03-b450899bacbd
+    taskid: 36835d67-660c-4c9c-8573-b57204f7cd8c
     type: playbook
     task:
-      id: 4e88289f-f732-4e96-8e03-b450899bacbd
+      id: 36835d67-660c-4c9c-8573-b57204f7cd8c
       version: -1
-      name: Test - ExtFilter
+      name: doesn't include (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4073,7 +4073,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5970
+          "y": 6845
         }
       }
     note: false
@@ -4083,12 +4083,12 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 0f2e84cd-0f1a-44f8-894b-a2a2709fac0d
+    taskid: ca5803ef-525e-4a68-8b0f-446cec9898a1
     type: playbook
     task:
-      id: 0f2e84cd-0f1a-44f8-894b-a2a2709fac0d
+      id: ca5803ef-525e-4a68-8b0f-446cec9898a1
       version: -1
-      name: Test - ExtFilter
+      name: includes (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4178,7 +4178,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 6320
         }
       }
     note: false
@@ -4188,12 +4188,12 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: e09f5294-996b-4f60-825e-9c035c1395b3
+    taskid: e17a3463-de9e-4f77-860d-d31e3952a782
     type: playbook
     task:
-      id: e09f5294-996b-4f60-825e-9c035c1395b3
+      id: e17a3463-de9e-4f77-860d-d31e3952a782
       version: -1
-      name: Test - ExtFilter
+      name: doesn't include caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4297,7 +4297,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 7020
         }
       }
     note: false
@@ -4307,12 +4307,12 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 3dd0fd31-5458-4cde-88bd-010f333b0d57
+    taskid: 6eb35a1a-7d43-457e-8990-28753c630b5a
     type: playbook
     task:
-      id: 3dd0fd31-5458-4cde-88bd-010f333b0d57
+      id: 6eb35a1a-7d43-457e-8990-28753c630b5a
       version: -1
-      name: Test - ExtFilter
+      name: doesn't include caseless (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4416,7 +4416,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 7195
         }
       }
     note: false
@@ -4426,12 +4426,12 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: 50bef6f5-5f1d-4c4f-8d92-e6e6bb3b7d3d
+    taskid: 6404e71b-52cc-41a2-8003-c4df61d03b6f
     type: playbook
     task:
-      id: 50bef6f5-5f1d-4c4f-8d92-e6e6bb3b7d3d
+      id: 6404e71b-52cc-41a2-8003-c4df61d03b6f
       version: -1
-      name: Test - ExtFilter
+      name: finds (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4521,7 +4521,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 7370
         }
       }
     note: false
@@ -4531,12 +4531,12 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: d851291f-9f8e-4e0d-85bf-4682f0b29147
+    taskid: 2efbcc04-75f2-4711-830c-953dbc613e96
     type: playbook
     task:
-      id: d851291f-9f8e-4e0d-85bf-4682f0b29147
+      id: 2efbcc04-75f2-4711-830c-953dbc613e96
       version: -1
-      name: Test - ExtFilter
+      name: finds (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4642,7 +4642,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 7545
         }
       }
     note: false
@@ -4652,12 +4652,12 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: 86f4629f-1054-486d-805e-49d4398ef2cb
+    taskid: 6544bae8-5ed9-4ec3-8ef0-4deb6ec4eca4
     type: playbook
     task:
-      id: 86f4629f-1054-486d-805e-49d4398ef2cb
+      id: 6544bae8-5ed9-4ec3-8ef0-4deb6ec4eca4
       version: -1
-      name: Test - ExtFilter
+      name: finds caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4747,7 +4747,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7020
+          "y": 7895
         }
       }
     note: false
@@ -4757,12 +4757,12 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: bad9e0dc-5f7e-46b1-8d6e-f36c5fff6bfa
+    taskid: e1daa471-cb70-4222-80ee-a5e4785491ac
     type: playbook
     task:
-      id: bad9e0dc-5f7e-46b1-8d6e-f36c5fff6bfa
+      id: e1daa471-cb70-4222-80ee-a5e4785491ac
       version: -1
-      name: Test - ExtFilter
+      name: finds caseless (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4866,7 +4866,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7195
+          "y": 8070
         }
       }
     note: false
@@ -4876,12 +4876,12 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: 843dd9bc-eb0e-480f-8cf8-e15c8bccaa47
+    taskid: 7a54272e-5d18-49f7-8981-bd1d95a2a11a
     type: playbook
     task:
-      id: 843dd9bc-eb0e-480f-8cf8-e15c8bccaa47
+      id: 7a54272e-5d18-49f7-8981-bd1d95a2a11a
       version: -1
-      name: Test - ExtFilter
+      name: doesn't find (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -4971,7 +4971,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7370
+          "y": 8245
         }
       }
     note: false
@@ -4981,12 +4981,12 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: 2ebdbc03-f5a3-4ba8-872f-3b90f6cbbc9a
+    taskid: da08a2e6-8550-4491-8c5b-a54abfdceda0
     type: playbook
     task:
-      id: 2ebdbc03-f5a3-4ba8-872f-3b90f6cbbc9a
+      id: da08a2e6-8550-4491-8c5b-a54abfdceda0
       version: -1
-      name: Test - ExtFilter
+      name: doesn't find (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5084,7 +5084,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7545
+          "y": 8420
         }
       }
     note: false
@@ -5094,12 +5094,12 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 45008dfe-eb2d-4014-81d6-a91849df9ba0
+    taskid: e914eff8-fe3a-4468-893b-aacd20667baa
     type: playbook
     task:
-      id: 45008dfe-eb2d-4014-81d6-a91849df9ba0
+      id: e914eff8-fe3a-4468-893b-aacd20667baa
       version: -1
-      name: Test - ExtFilter
+      name: doesn't find (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5205,7 +5205,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7720
+          "y": 8595
         }
       }
     note: false
@@ -5215,12 +5215,12 @@ tasks:
     quietmode: 0
   "60":
     id: "60"
-    taskid: 9a86a051-0ce4-45cd-858b-993c7931a566
+    taskid: 3f635d1f-2927-475a-8e38-990502eceb39
     type: playbook
     task:
-      id: 9a86a051-0ce4-45cd-858b-993c7931a566
+      id: 3f635d1f-2927-475a-8e38-990502eceb39
       version: -1
-      name: Test - ExtFilter
+      name: doesn't find caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5310,7 +5310,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7895
+          "y": 8770
         }
       }
     note: false
@@ -5320,12 +5320,12 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: 130c79ef-930f-49bf-8e11-cd36fee6a31f
+    taskid: 2c063f26-60fb-4f4a-8026-840b2aba8c68
     type: playbook
     task:
-      id: 130c79ef-930f-49bf-8e11-cd36fee6a31f
+      id: 2c063f26-60fb-4f4a-8026-840b2aba8c68
       version: -1
-      name: Test - ExtFilter
+      name: doesn't find caseless (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5422,7 +5422,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8070
+          "y": 8945
         }
       }
     note: false
@@ -5432,12 +5432,12 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: 5369884e-b4b5-488a-8ab2-874294ec997a
+    taskid: d95526ff-f18f-4c96-82bf-ef08693727cd
     type: playbook
     task:
-      id: 5369884e-b4b5-488a-8ab2-874294ec997a
+      id: d95526ff-f18f-4c96-82bf-ef08693727cd
       version: -1
-      name: Test - ExtFilter
+      name: doesn't find caseless (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5541,7 +5541,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8245
+          "y": 9120
         }
       }
     note: false
@@ -5551,12 +5551,12 @@ tasks:
     quietmode: 0
   "63":
     id: "63"
-    taskid: 728b359c-a0e7-4e1f-8d8f-50ba2366298d
+    taskid: efd5ba78-7f09-4979-8fd2-50b55a8a8755
     type: playbook
     task:
-      id: 728b359c-a0e7-4e1f-8d8f-50ba2366298d
+      id: efd5ba78-7f09-4979-8fd2-50b55a8a8755
       version: -1
-      name: Test - ExtFilter
+      name: finds (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5654,7 +5654,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 7720
         }
       }
     note: false
@@ -5664,12 +5664,12 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: e7c6fa6f-a657-477a-81c7-87e5fac06fbe
+    taskid: b0d2158b-c050-4600-8fff-34c0f7189c1e
     type: playbook
     task:
-      id: e7c6fa6f-a657-477a-81c7-87e5fac06fbe
+      id: b0d2158b-c050-4600-8fff-34c0f7189c1e
       version: -1
-      name: Test - ExtFilter
+      name: matches (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5759,7 +5759,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8420
+          "y": 9295
         }
       }
     note: false
@@ -5769,12 +5769,12 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: f165584f-2fe8-47d1-86d0-4d36a03e0ce1
+    taskid: 1a3887f2-d1fa-4088-878d-0c71cffd8349
     type: playbook
     task:
-      id: f165584f-2fe8-47d1-86d0-4d36a03e0ce1
+      id: 1a3887f2-d1fa-4088-878d-0c71cffd8349
       version: -1
-      name: Test - ExtFilter
+      name: matches (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5864,7 +5864,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8595
+          "y": 9470
         }
       }
     note: false
@@ -5874,12 +5874,12 @@ tasks:
     quietmode: 0
   "66":
     id: "66"
-    taskid: b7202841-b158-4bd1-8f11-6083f9beaf49
+    taskid: 3b8ee480-7834-4069-83c8-b167c2ba49b2
     type: playbook
     task:
-      id: b7202841-b158-4bd1-8f11-6083f9beaf49
+      id: 3b8ee480-7834-4069-83c8-b167c2ba49b2
       version: -1
-      name: Test - ExtFilter
+      name: matches (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -5979,7 +5979,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8770
+          "y": 9645
         }
       }
     note: false
@@ -5989,12 +5989,12 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: 6cf98714-701d-4bd6-8bab-261c1da43e79
+    taskid: 3b6ca8e6-02d4-4162-8eb3-082e8cbbea42
     type: playbook
     task:
-      id: 6cf98714-701d-4bd6-8bab-261c1da43e79
+      id: 3b6ca8e6-02d4-4162-8eb3-082e8cbbea42
       version: -1
-      name: Test - ExtFilter
+      name: matches caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6084,7 +6084,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8945
+          "y": 9820
         }
       }
     note: false
@@ -6094,12 +6094,12 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: 8fa57dc6-1a85-4af5-8e76-ce88529974ff
+    taskid: 478318da-16f0-403a-827b-a23c943a4ac6
     type: playbook
     task:
-      id: 8fa57dc6-1a85-4af5-8e76-ce88529974ff
+      id: 478318da-16f0-403a-827b-a23c943a4ac6
       version: -1
-      name: Test - ExtFilter
+      name: matches caseless (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6189,7 +6189,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9120
+          "y": 9995
         }
       }
     note: false
@@ -6199,12 +6199,12 @@ tasks:
     quietmode: 0
   "69":
     id: "69"
-    taskid: 2ee5aa41-084a-4d39-8119-061ab26d2a97
+    taskid: c29f8448-3569-4fb2-858e-20c27ddc4543
     type: playbook
     task:
-      id: 2ee5aa41-084a-4d39-8119-061ab26d2a97
+      id: c29f8448-3569-4fb2-858e-20c27ddc4543
       version: -1
-      name: Test - ExtFilter
+      name: matches caseless (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6304,7 +6304,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9295
+          "y": 10170
         }
       }
     note: false
@@ -6314,12 +6314,12 @@ tasks:
     quietmode: 0
   "70":
     id: "70"
-    taskid: dfd2a7d7-812a-4df4-8d7a-3f9e5dd6c34f
+    taskid: b0b85e92-d9e5-447d-8058-575d61611fed
     type: playbook
     task:
-      id: dfd2a7d7-812a-4df4-8d7a-3f9e5dd6c34f
+      id: b0b85e92-d9e5-447d-8058-575d61611fed
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6409,7 +6409,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9470
+          "y": 10345
         }
       }
     note: false
@@ -6419,12 +6419,12 @@ tasks:
     quietmode: 0
   "71":
     id: "71"
-    taskid: 76f25dd7-c842-4047-8cf4-5ec8fdf7f0cc
+    taskid: ece6750a-958a-4992-8381-670b24d5ddc3
     type: playbook
     task:
-      id: 76f25dd7-c842-4047-8cf4-5ec8fdf7f0cc
+      id: ece6750a-958a-4992-8381-670b24d5ddc3
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6514,7 +6514,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9645
+          "y": 10520
         }
       }
     note: false
@@ -6524,12 +6524,12 @@ tasks:
     quietmode: 0
   "72":
     id: "72"
-    taskid: f98f6077-11a3-465d-88cf-d67c3c430cb2
+    taskid: 0694782a-5657-4420-8a15-4121eccd5f2c
     type: playbook
     task:
-      id: f98f6077-11a3-465d-88cf-d67c3c430cb2
+      id: 0694782a-5657-4420-8a15-4121eccd5f2c
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6632,7 +6632,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9820
+          "y": 10695
         }
       }
     note: false
@@ -6642,12 +6642,12 @@ tasks:
     quietmode: 0
   "73":
     id: "73"
-    taskid: 67cfc752-bb45-415a-8da5-2a94c5330f41
+    taskid: 4f9982e3-52f3-4d40-8de2-20b432a26c4e
     type: playbook
     task:
-      id: 67cfc752-bb45-415a-8da5-2a94c5330f41
+      id: 4f9982e3-52f3-4d40-8de2-20b432a26c4e
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6737,7 +6737,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9995
+          "y": 10870
         }
       }
     note: false
@@ -6747,12 +6747,12 @@ tasks:
     quietmode: 0
   "74":
     id: "74"
-    taskid: 379f9763-a34f-4250-8b4e-28499532e6d0
+    taskid: b4ca9a99-fd33-43f4-8b4a-8494ac405d42
     type: playbook
     task:
-      id: 379f9763-a34f-4250-8b4e-28499532e6d0
+      id: b4ca9a99-fd33-43f4-8b4a-8494ac405d42
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match caseless (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6842,7 +6842,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10170
+          "y": 11045
         }
       }
     note: false
@@ -6852,12 +6852,12 @@ tasks:
     quietmode: 0
   "75":
     id: "75"
-    taskid: 24adc232-92ae-46e4-8864-32d72a3c97db
+    taskid: 92ac677d-5784-419a-8ca2-77eb8454114f
     type: playbook
     task:
-      id: 24adc232-92ae-46e4-8864-32d72a3c97db
+      id: 92ac677d-5784-419a-8ca2-77eb8454114f
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match caseless (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -6960,7 +6960,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10345
+          "y": 11220
         }
       }
     note: false
@@ -6970,12 +6970,12 @@ tasks:
     quietmode: 0
   "76":
     id: "76"
-    taskid: d2212b17-1f6c-42b4-8e78-416866634fa0
+    taskid: 02a30d2d-9c86-4964-8401-04f6ddc8e082
     type: playbook
     task:
-      id: d2212b17-1f6c-42b4-8e78-416866634fa0
+      id: 02a30d2d-9c86-4964-8401-04f6ddc8e082
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: matches (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7065,7 +7065,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10520
+          "y": 11395
         }
       }
     note: false
@@ -7075,12 +7075,12 @@ tasks:
     quietmode: 0
   "77":
     id: "77"
-    taskid: 9abcd4c1-f7e7-4762-81bf-39a40d944014
+    taskid: 67049035-0e00-4b74-8832-7f3b1980bdc5
     type: playbook
     task:
-      id: 9abcd4c1-f7e7-4762-81bf-39a40d944014
+      id: 67049035-0e00-4b74-8832-7f3b1980bdc5
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: matches (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7180,7 +7180,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10695
+          "y": 11570
         }
       }
     note: false
@@ -7190,12 +7190,12 @@ tasks:
     quietmode: 0
   "78":
     id: "78"
-    taskid: 0f566c92-2c53-4bd6-8585-e2f89bd98da1
+    taskid: 06908935-52e0-4f0c-8b8c-b764331e3aae
     type: playbook
     task:
-      id: 0f566c92-2c53-4bd6-8585-e2f89bd98da1
+      id: 06908935-52e0-4f0c-8b8c-b764331e3aae
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: matches caseless (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7285,7 +7285,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10870
+          "y": 11745
         }
       }
     note: false
@@ -7295,12 +7295,12 @@ tasks:
     quietmode: 0
   "79":
     id: "79"
-    taskid: a72a0488-1120-48cf-8838-8eedc280b747
+    taskid: d1bc097f-4dc3-4da2-8450-e10fd1b5a6a7
     type: playbook
     task:
-      id: a72a0488-1120-48cf-8838-8eedc280b747
+      id: d1bc097f-4dc3-4da2-8450-e10fd1b5a6a7
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: matches caseless (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7400,7 +7400,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 11045
+          "y": 11920
         }
       }
     note: false
@@ -7410,12 +7410,12 @@ tasks:
     quietmode: 0
   "80":
     id: "80"
-    taskid: 7911eee8-e719-4b9d-8268-9d914990442a
+    taskid: f7b4b454-e639-4e19-8de1-6436d9136ed4
     type: playbook
     task:
-      id: 7911eee8-e719-4b9d-8268-9d914990442a
+      id: f7b4b454-e639-4e19-8de1-6436d9136ed4
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t match (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7505,7 +7505,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 11220
+          "y": 12095
         }
       }
     note: false
@@ -7515,12 +7515,12 @@ tasks:
     quietmode: 0
   "81":
     id: "81"
-    taskid: 6733c5d1-f482-4a9d-8825-61f0fa98753f
+    taskid: 2bc0f85b-8275-4458-8cbb-d3f7f9408bbf
     type: playbook
     task:
-      id: 6733c5d1-f482-4a9d-8825-61f0fa98753f
+      id: 2bc0f85b-8275-4458-8cbb-d3f7f9408bbf
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t match (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7623,7 +7623,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 11395
+          "y": 12270
         }
       }
     note: false
@@ -7633,12 +7633,12 @@ tasks:
     quietmode: 0
   "82":
     id: "82"
-    taskid: 44e88632-81a0-40e7-83ee-49462f384f0a
+    taskid: f5368608-be9a-4f01-8cdb-99f8efad49fc
     type: playbook
     task:
-      id: 44e88632-81a0-40e7-83ee-49462f384f0a
+      id: f5368608-be9a-4f01-8cdb-99f8efad49fc
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t match caseless (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7728,7 +7728,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 11570
+          "y": 12445
         }
       }
     note: false
@@ -7738,12 +7738,12 @@ tasks:
     quietmode: 0
   "83":
     id: "83"
-    taskid: 14b488b9-fac9-4655-8a0b-bcd13a57ec00
+    taskid: 5f22a073-1c88-433e-81b7-fc4b4eacdbb2
     type: playbook
     task:
-      id: 14b488b9-fac9-4655-8a0b-bcd13a57ec00
+      id: 5f22a073-1c88-433e-81b7-fc4b4eacdbb2
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t match caseless (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7846,7 +7846,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 11745
+          "y": 12620
         }
       }
     note: false
@@ -7856,12 +7856,12 @@ tasks:
     quietmode: 0
   "84":
     id: "84"
-    taskid: 8cf409cf-003c-46de-8d04-f65df270bb32
+    taskid: 0bdfa850-96ed-4648-85fa-9fdcfbf47747
     type: playbook
     task:
-      id: 8cf409cf-003c-46de-8d04-f65df270bb32
+      id: 0bdfa850-96ed-4648-85fa-9fdcfbf47747
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: matches (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -7951,7 +7951,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 11920
+          "y": 12795
         }
       }
     note: false
@@ -7961,12 +7961,12 @@ tasks:
     quietmode: 0
   "85":
     id: "85"
-    taskid: 016d5836-d943-4da3-8ae7-0b653070c40d
+    taskid: 6d0f75c6-108f-43c7-86e2-462e4996b44d
     type: playbook
     task:
-      id: 016d5836-d943-4da3-8ae7-0b653070c40d
+      id: 6d0f75c6-108f-43c7-86e2-462e4996b44d
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: matches (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8066,7 +8066,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 12095
+          "y": 12970
         }
       }
     note: false
@@ -8076,12 +8076,12 @@ tasks:
     quietmode: 0
   "86":
     id: "86"
-    taskid: adacaecb-791a-4ac3-877e-bada3561d34b
+    taskid: 0a371109-70e7-4329-8914-f1ad2d15eb16
     type: playbook
     task:
-      id: adacaecb-791a-4ac3-877e-bada3561d34b
+      id: 0a371109-70e7-4329-8914-f1ad2d15eb16
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: matches caseless (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8171,7 +8171,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 12270
+          "y": 13145
         }
       }
     note: false
@@ -8181,12 +8181,12 @@ tasks:
     quietmode: 0
   "87":
     id: "87"
-    taskid: 200f3d69-d04c-4f58-818e-3bdc9afc19e3
+    taskid: 7c7eddf7-3e67-4f15-87e1-21bd6e6074e1
     type: playbook
     task:
-      id: 200f3d69-d04c-4f58-818e-3bdc9afc19e3
+      id: 7c7eddf7-3e67-4f15-87e1-21bd6e6074e1
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: matches caseless (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8286,7 +8286,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 12445
+          "y": 13320
         }
       }
     note: false
@@ -8296,12 +8296,12 @@ tasks:
     quietmode: 0
   "88":
     id: "88"
-    taskid: dee3a234-cb36-45ab-8a48-759fd5bed418
+    taskid: 9749c3b8-4389-47ce-8a23-6492bea11c04
     type: playbook
     task:
-      id: dee3a234-cb36-45ab-8a48-759fd5bed418
+      id: 9749c3b8-4389-47ce-8a23-6492bea11c04
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t match (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8391,7 +8391,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 12620
+          "y": 13495
         }
       }
     note: false
@@ -8401,12 +8401,12 @@ tasks:
     quietmode: 0
   "89":
     id: "89"
-    taskid: 9fc470cf-db14-4037-838e-f4642b711eed
+    taskid: 57095ee6-fb85-48a8-8b7a-0aa21c50b1ee
     type: playbook
     task:
-      id: 9fc470cf-db14-4037-838e-f4642b711eed
+      id: 57095ee6-fb85-48a8-8b7a-0aa21c50b1ee
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t match (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8509,7 +8509,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 12795
+          "y": 13670
         }
       }
     note: false
@@ -8519,12 +8519,12 @@ tasks:
     quietmode: 0
   "90":
     id: "90"
-    taskid: f23a7a3d-af92-4dd6-83c5-1eef04aaa830
+    taskid: 6f91a03d-569d-4c69-8c3c-df1e16531da5
     type: playbook
     task:
-      id: f23a7a3d-af92-4dd6-83c5-1eef04aaa830
+      id: 6f91a03d-569d-4c69-8c3c-df1e16531da5
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t match caseless (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8614,7 +8614,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 12970
+          "y": 13845
         }
       }
     note: false
@@ -8624,12 +8624,12 @@ tasks:
     quietmode: 0
   "91":
     id: "91"
-    taskid: e49f5328-ca22-47bc-89a3-9b7a6e80116d
+    taskid: 1b9ee719-ae46-42d9-8185-b8712ddec856
     type: playbook
     task:
-      id: e49f5328-ca22-47bc-89a3-9b7a6e80116d
+      id: 1b9ee719-ae46-42d9-8185-b8712ddec856
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t match caseless (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8732,7 +8732,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 13145
+          "y": 14020
         }
       }
     note: false
@@ -8742,12 +8742,12 @@ tasks:
     quietmode: 0
   "92":
     id: "92"
-    taskid: a03f2561-379b-456e-8916-0ee0c62e82c3
+    taskid: 1971ad4f-8393-4a3f-83cd-4dba0768cd11
     type: playbook
     task:
-      id: a03f2561-379b-456e-8916-0ee0c62e82c3
+      id: 1971ad4f-8393-4a3f-83cd-4dba0768cd11
       version: -1
-      name: Test - ExtFilter
+      name: in list (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8837,7 +8837,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 13320
+          "y": 14195
         }
       }
     note: false
@@ -8847,12 +8847,12 @@ tasks:
     quietmode: 0
   "93":
     id: "93"
-    taskid: 0ff87f83-9c99-4b9d-87b6-8c4f05b854cb
+    taskid: 6c0cfda7-d6a9-4486-83d7-5037569e7169
     type: playbook
     task:
-      id: 0ff87f83-9c99-4b9d-87b6-8c4f05b854cb
+      id: 6c0cfda7-d6a9-4486-83d7-5037569e7169
       version: -1
-      name: Test - ExtFilter
+      name: in list (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -8954,7 +8954,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 13495
+          "y": 14370
         }
       }
     note: false
@@ -8964,12 +8964,12 @@ tasks:
     quietmode: 0
   "94":
     id: "94"
-    taskid: 46fdf196-22cc-4580-8232-5ef7267437f8
+    taskid: 92a7cdbd-c0af-4c2b-8e9e-fea2ccf71086
     type: playbook
     task:
-      id: 46fdf196-22cc-4580-8232-5ef7267437f8
+      id: 92a7cdbd-c0af-4c2b-8e9e-fea2ccf71086
       version: -1
-      name: Test - ExtFilter
+      name: in caseless list (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9059,7 +9059,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 13670
+          "y": 14545
         }
       }
     note: false
@@ -9069,12 +9069,12 @@ tasks:
     quietmode: 0
   "95":
     id: "95"
-    taskid: 53608634-422b-477b-8cf0-4abf9970c974
+    taskid: e711dc80-4c42-4162-8a47-d03c23f092e1
     type: playbook
     task:
-      id: 53608634-422b-477b-8cf0-4abf9970c974
+      id: e711dc80-4c42-4162-8a47-d03c23f092e1
       version: -1
-      name: Test - ExtFilter
+      name: in caseless list (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9176,7 +9176,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 13845
+          "y": 14720
         }
       }
     note: false
@@ -9186,12 +9186,12 @@ tasks:
     quietmode: 0
   "96":
     id: "96"
-    taskid: 5909eb76-4c7c-4b2c-8250-8e666f2b65ee
+    taskid: 63dc7308-ad44-48a5-821d-cf767dd5e5ab
     type: playbook
     task:
-      id: 5909eb76-4c7c-4b2c-8250-8e666f2b65ee
+      id: 63dc7308-ad44-48a5-821d-cf767dd5e5ab
       version: -1
-      name: Test - ExtFilter
+      name: not in list (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9281,7 +9281,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 14020
+          "y": 14895
         }
       }
     note: false
@@ -9291,12 +9291,12 @@ tasks:
     quietmode: 0
   "97":
     id: "97"
-    taskid: 8155954f-de32-43a2-8348-777f037b5973
+    taskid: 24c52de6-a52c-4f1d-8c14-4ded06a77397
     type: playbook
     task:
-      id: 8155954f-de32-43a2-8348-777f037b5973
+      id: 24c52de6-a52c-4f1d-8c14-4ded06a77397
       version: -1
-      name: Test - ExtFilter
+      name: not in list (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9400,7 +9400,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 14195
+          "y": 15070
         }
       }
     note: false
@@ -9410,12 +9410,12 @@ tasks:
     quietmode: 0
   "98":
     id: "98"
-    taskid: 119226a4-c806-466e-835b-fab6adda0cf7
+    taskid: 0288972a-708d-407b-86cf-ff8c45c430af
     type: playbook
     task:
-      id: 119226a4-c806-466e-835b-fab6adda0cf7
+      id: 0288972a-708d-407b-86cf-ff8c45c430af
       version: -1
-      name: Test - ExtFilter
+      name: not in caseless list (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9505,7 +9505,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 14370
+          "y": 15245
         }
       }
     note: false
@@ -9515,12 +9515,12 @@ tasks:
     quietmode: 0
   "99":
     id: "99"
-    taskid: 0c10d1aa-b9dc-435e-8adf-1f401d621d8c
+    taskid: a0e7ab5e-b87b-4e10-8cd4-edebbe93c5c1
     type: playbook
     task:
-      id: 0c10d1aa-b9dc-435e-8adf-1f401d621d8c
+      id: a0e7ab5e-b87b-4e10-8cd4-edebbe93c5c1
       version: -1
-      name: Test - ExtFilter
+      name: not in caseless list (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9624,7 +9624,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 14545
+          "y": 15420
         }
       }
     note: false
@@ -9634,12 +9634,12 @@ tasks:
     quietmode: 0
   "100":
     id: "100"
-    taskid: 0d677fcd-d8b0-4437-8dad-c788dcbae513
+    taskid: f7fde1ab-45d0-437e-84fc-ef95e62dae73
     type: playbook
     task:
-      id: 0d677fcd-d8b0-4437-8dad-c788dcbae513
+      id: f7fde1ab-45d0-437e-84fc-ef95e62dae73
       version: -1
-      name: Test - ExtFilter
+      name: contains (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9729,7 +9729,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 14720
+          "y": 15595
         }
       }
     note: false
@@ -9739,12 +9739,12 @@ tasks:
     quietmode: 0
   "101":
     id: "101"
-    taskid: 4d2d5765-3bc4-4d99-881d-27491fddf356
+    taskid: 15f333c3-6025-49f1-8061-ab72043f70a1
     type: playbook
     task:
-      id: 4d2d5765-3bc4-4d99-881d-27491fddf356
+      id: 15f333c3-6025-49f1-8061-ab72043f70a1
       version: -1
-      name: Test - ExtFilter
+      name: contains (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9834,7 +9834,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 14895
+          "y": 15770
         }
       }
     note: false
@@ -9844,12 +9844,12 @@ tasks:
     quietmode: 0
   "102":
     id: "102"
-    taskid: 4cd5b244-064e-49d8-8805-f3c7c4aabafc
+    taskid: de7a968a-41bd-4c6c-8089-a13c609cde2d
     type: playbook
     task:
-      id: 4cd5b244-064e-49d8-8805-f3c7c4aabafc
+      id: de7a968a-41bd-4c6c-8089-a13c609cde2d
       version: -1
-      name: Test - ExtFilter
+      name: contains (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -9949,7 +9949,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 15070
+          "y": 15945
         }
       }
     note: false
@@ -9959,12 +9959,12 @@ tasks:
     quietmode: 0
   "103":
     id: "103"
-    taskid: 170beba9-a92e-40bd-8560-85a079f2f6f7
+    taskid: 0551899c-e5d9-4185-8957-61e104febefb
     type: playbook
     task:
-      id: 170beba9-a92e-40bd-8560-85a079f2f6f7
+      id: 0551899c-e5d9-4185-8957-61e104febefb
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10054,7 +10054,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 15595
+          "y": 16470
         }
       }
     note: false
@@ -10064,12 +10064,12 @@ tasks:
     quietmode: 0
   "104":
     id: "104"
-    taskid: fcc6712c-8faf-4103-820f-c33788e84b8c
+    taskid: 58a25cc8-08de-4103-83ec-74c78b8b34a3
     type: playbook
     task:
-      id: fcc6712c-8faf-4103-820f-c33788e84b8c
+      id: 58a25cc8-08de-4103-83ec-74c78b8b34a3
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10159,7 +10159,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 15770
+          "y": 16645
         }
       }
     note: false
@@ -10169,12 +10169,12 @@ tasks:
     quietmode: 0
   "105":
     id: "105"
-    taskid: cd76c068-ebe9-4e18-8af2-db4bd129939e
+    taskid: c075fa5f-2165-499a-8888-a7cfcb6513d5
     type: playbook
     task:
-      id: cd76c068-ebe9-4e18-8af2-db4bd129939e
+      id: c075fa5f-2165-499a-8888-a7cfcb6513d5
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10269,7 +10269,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 15945
+          "y": 16820
         }
       }
     note: false
@@ -10279,12 +10279,12 @@ tasks:
     quietmode: 0
   "106":
     id: "106"
-    taskid: d501f9ca-0452-4e21-80f0-143ccada3cd6
+    taskid: 37172107-bedf-4463-8c23-78d224c6eea1
     type: playbook
     task:
-      id: d501f9ca-0452-4e21-80f0-143ccada3cd6
+      id: 37172107-bedf-4463-8c23-78d224c6eea1
       version: -1
-      name: Test - ExtFilter
+      name: contains caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10374,7 +10374,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 15245
+          "y": 16120
         }
       }
     note: false
@@ -10384,12 +10384,12 @@ tasks:
     quietmode: 0
   "107":
     id: "107"
-    taskid: 23fd1735-7450-490b-8199-8b3bedb8ff2d
+    taskid: 5c9599c8-ee5d-46cf-8333-d38193307f6c
     type: playbook
     task:
-      id: 23fd1735-7450-490b-8199-8b3bedb8ff2d
+      id: 5c9599c8-ee5d-46cf-8333-d38193307f6c
       version: -1
-      name: Test - ExtFilter
+      name: contains caseless (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10489,7 +10489,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 15420
+          "y": 16295
         }
       }
     note: false
@@ -10499,12 +10499,12 @@ tasks:
     quietmode: 0
   "108":
     id: "108"
-    taskid: f4a57fc7-46ad-4aeb-8291-a5af0a4973ae
+    taskid: 687224de-a5ef-4e48-819e-d270bafe74e6
     type: playbook
     task:
-      id: f4a57fc7-46ad-4aeb-8291-a5af0a4973ae
+      id: 687224de-a5ef-4e48-819e-d270bafe74e6
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain caseless (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10594,7 +10594,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 16120
+          "y": 16995
         }
       }
     note: false
@@ -10604,12 +10604,12 @@ tasks:
     quietmode: 0
   "109":
     id: "109"
-    taskid: c8b877d2-f9cc-444a-83a6-f5fa81e38536
+    taskid: c6341f39-bc79-4e70-85ad-4d99409070d3
     type: playbook
     task:
-      id: c8b877d2-f9cc-444a-83a6-f5fa81e38536
+      id: c6341f39-bc79-4e70-85ad-4d99409070d3
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain caseless (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10699,7 +10699,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 16295
+          "y": 17170
         }
       }
     note: false
@@ -10709,12 +10709,12 @@ tasks:
     quietmode: 0
   "110":
     id: "110"
-    taskid: fd18e2a4-0ca8-4f22-864c-4692f6a8782e
+    taskid: dcb42f70-4a68-4884-8b8a-a920e20ff374
     type: playbook
     task:
-      id: fd18e2a4-0ca8-4f22-864c-4692f6a8782e
+      id: dcb42f70-4a68-4884-8b8a-a920e20ff374
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain caseless (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10809,7 +10809,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 16470
+          "y": 17345
         }
       }
     note: false
@@ -10819,12 +10819,12 @@ tasks:
     quietmode: 0
   "111":
     id: "111"
-    taskid: b8dce94a-5a36-4c11-84bb-7d8ccf84a2fd
+    taskid: b232385f-8911-4927-8659-ffdd63b0777e
     type: playbook
     task:
-      id: b8dce94a-5a36-4c11-84bb-7d8ccf84a2fd
+      id: b232385f-8911-4927-8659-ffdd63b0777e
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: contains (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -10914,7 +10914,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 16645
+          "y": 17520
         }
       }
     note: false
@@ -10924,12 +10924,12 @@ tasks:
     quietmode: 0
   "112":
     id: "112"
-    taskid: b7077d34-ec71-43eb-8310-392a1ea86a60
+    taskid: f662e778-621a-45ec-82a7-ee6f98acc098
     type: playbook
     task:
-      id: b7077d34-ec71-43eb-8310-392a1ea86a60
+      id: f662e778-621a-45ec-82a7-ee6f98acc098
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: contains (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11029,7 +11029,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 16820
+          "y": 17695
         }
       }
     note: false
@@ -11039,12 +11039,12 @@ tasks:
     quietmode: 0
   "113":
     id: "113"
-    taskid: fcd2c0e1-813a-415c-8eaa-27e82f6d96f0
+    taskid: 8f917122-9d38-4f9b-8215-40bde913c8b6
     type: playbook
     task:
-      id: fcd2c0e1-813a-415c-8eaa-27e82f6d96f0
+      id: 8f917122-9d38-4f9b-8215-40bde913c8b6
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: contains caseless (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11134,7 +11134,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 16995
+          "y": 17870
         }
       }
     note: false
@@ -11144,12 +11144,12 @@ tasks:
     quietmode: 0
   "114":
     id: "114"
-    taskid: 1876f4e6-687f-4e82-88c8-9a4b20a29906
+    taskid: f12c5a09-2bd0-4522-82d5-cb0e26462cca
     type: playbook
     task:
-      id: 1876f4e6-687f-4e82-88c8-9a4b20a29906
+      id: f12c5a09-2bd0-4522-82d5-cb0e26462cca
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: contains caseless (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11249,7 +11249,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 17170
+          "y": 18045
         }
       }
     note: false
@@ -11259,12 +11259,12 @@ tasks:
     quietmode: 0
   "115":
     id: "115"
-    taskid: 43ffdc79-1e09-4829-8c72-11e32b31fc9a
+    taskid: 77b472ea-f738-4b64-8f19-275f5d8e7346
     type: playbook
     task:
-      id: 43ffdc79-1e09-4829-8c72-11e32b31fc9a
+      id: 77b472ea-f738-4b64-8f19-275f5d8e7346
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11354,7 +11354,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 17345
+          "y": 18220
         }
       }
     note: false
@@ -11364,12 +11364,12 @@ tasks:
     quietmode: 0
   "116":
     id: "116"
-    taskid: f33abba8-9be8-4b76-81e7-70b482be4642
+    taskid: 57a553ff-ed5e-4632-8b70-5bfa9e303387
     type: playbook
     task:
-      id: f33abba8-9be8-4b76-81e7-70b482be4642
+      id: 57a553ff-ed5e-4632-8b70-5bfa9e303387
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11459,7 +11459,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 17520
+          "y": 18395
         }
       }
     note: false
@@ -11469,12 +11469,12 @@ tasks:
     quietmode: 0
   "117":
     id: "117"
-    taskid: 59c557e0-0afa-4662-822e-943215ddf08c
+    taskid: c82b4e38-ea5e-48c0-8e0f-f374035c04e4
     type: playbook
     task:
-      id: 59c557e0-0afa-4662-822e-943215ddf08c
+      id: c82b4e38-ea5e-48c0-8e0f-f374035c04e4
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11572,7 +11572,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 17695
+          "y": 18570
         }
       }
     note: false
@@ -11582,12 +11582,12 @@ tasks:
     quietmode: 0
   "118":
     id: "118"
-    taskid: e27254ad-2a6e-481a-828d-1f71284dea9c
+    taskid: cf3d631e-cefa-475d-8e91-6347ca6072bc
     type: playbook
     task:
-      id: e27254ad-2a6e-481a-828d-1f71284dea9c
+      id: cf3d631e-cefa-475d-8e91-6347ca6072bc
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain caseless (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11677,7 +11677,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 17870
+          "y": 18745
         }
       }
     note: false
@@ -11687,12 +11687,12 @@ tasks:
     quietmode: 0
   "119":
     id: "119"
-    taskid: 9c056c25-bb30-4002-8444-4513a9455867
+    taskid: 5cdbda09-6d62-4aac-89b1-3fea8c38aaab
     type: playbook
     task:
-      id: 9c056c25-bb30-4002-8444-4513a9455867
+      id: 5cdbda09-6d62-4aac-89b1-3fea8c38aaab
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain caseless (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11782,7 +11782,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 18045
+          "y": 18920
         }
       }
     note: false
@@ -11792,12 +11792,12 @@ tasks:
     quietmode: 0
   "120":
     id: "120"
-    taskid: 963329d2-f0fd-4ec7-83df-d4780184c584
+    taskid: 0e15bba5-3962-4403-839b-6398d62ed61d
     type: playbook
     task:
-      id: 963329d2-f0fd-4ec7-83df-d4780184c584
+      id: 0e15bba5-3962-4403-839b-6398d62ed61d
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain caseless (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -11895,7 +11895,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 18220
+          "y": 19095
         }
       }
     note: false
@@ -11905,12 +11905,12 @@ tasks:
     quietmode: 0
   "121":
     id: "121"
-    taskid: cd38395f-4e78-4216-80ca-3741bc3e5192
+    taskid: 23137015-61ee-4279-89fc-7571c0376ae0
     type: playbook
     task:
-      id: cd38395f-4e78-4216-80ca-3741bc3e5192
+      id: 23137015-61ee-4279-89fc-7571c0376ae0
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: contains (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12000,7 +12000,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 18395
+          "y": 19270
         }
       }
     note: false
@@ -12010,12 +12010,12 @@ tasks:
     quietmode: 0
   "122":
     id: "122"
-    taskid: a852c85f-5009-4e85-8f5c-f60d1ebbf3cf
+    taskid: 5e6a5b66-2b1a-4f5b-8cd3-313045219abf
     type: playbook
     task:
-      id: a852c85f-5009-4e85-8f5c-f60d1ebbf3cf
+      id: 5e6a5b66-2b1a-4f5b-8cd3-313045219abf
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: contains (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12115,7 +12115,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 18570
+          "y": 19445
         }
       }
     note: false
@@ -12125,12 +12125,12 @@ tasks:
     quietmode: 0
   "123":
     id: "123"
-    taskid: 2287581f-5760-4d24-8a3f-37b8a3ea176c
+    taskid: 0b1e22fa-b2e8-4f71-8dbb-493989256c96
     type: playbook
     task:
-      id: 2287581f-5760-4d24-8a3f-37b8a3ea176c
+      id: 0b1e22fa-b2e8-4f71-8dbb-493989256c96
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: contains caseless (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12220,7 +12220,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 18745
+          "y": 19620
         }
       }
     note: false
@@ -12230,12 +12230,12 @@ tasks:
     quietmode: 0
   "124":
     id: "124"
-    taskid: 4a80e632-a61d-4b72-8aff-39701c96318b
+    taskid: 319bd6f0-213d-4a6d-8b47-a2055a95ce43
     type: playbook
     task:
-      id: 4a80e632-a61d-4b72-8aff-39701c96318b
+      id: 319bd6f0-213d-4a6d-8b47-a2055a95ce43
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: contains caseless (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12335,7 +12335,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 18920
+          "y": 19795
         }
       }
     note: false
@@ -12345,12 +12345,12 @@ tasks:
     quietmode: 0
   "125":
     id: "125"
-    taskid: 6c971669-fe7c-4ae8-8645-df974a1bcd16
+    taskid: 790d6b7d-b5fa-4a3f-8238-bb6f6fe0bf72
     type: playbook
     task:
-      id: 6c971669-fe7c-4ae8-8645-df974a1bcd16
+      id: 790d6b7d-b5fa-4a3f-8238-bb6f6fe0bf72
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12440,7 +12440,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 19095
+          "y": 19970
         }
       }
     note: false
@@ -12450,12 +12450,12 @@ tasks:
     quietmode: 0
   "126":
     id: "126"
-    taskid: d644ef1b-f0e9-4ba2-8799-3a312ae12b2e
+    taskid: 3da27559-fe79-4495-8f95-e0abe27abfa0
     type: playbook
     task:
-      id: d644ef1b-f0e9-4ba2-8799-3a312ae12b2e
+      id: 3da27559-fe79-4495-8f95-e0abe27abfa0
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12545,7 +12545,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 19270
+          "y": 20145
         }
       }
     note: false
@@ -12555,12 +12555,12 @@ tasks:
     quietmode: 0
   "127":
     id: "127"
-    taskid: 9d0387b7-9982-434b-8a30-17cbd6f29c5c
+    taskid: e7e09787-1361-45b2-8730-98d607b1e9b6
     type: playbook
     task:
-      id: 9d0387b7-9982-434b-8a30-17cbd6f29c5c
+      id: e7e09787-1361-45b2-8730-98d607b1e9b6
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12658,7 +12658,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 19445
+          "y": 20320
         }
       }
     note: false
@@ -12668,12 +12668,12 @@ tasks:
     quietmode: 0
   "128":
     id: "128"
-    taskid: 3ae350ba-7ab7-4459-8542-f5527332f96c
+    taskid: 22fff095-eac8-4a03-802c-0631e7589310
     type: playbook
     task:
-      id: 3ae350ba-7ab7-4459-8542-f5527332f96c
+      id: 22fff095-eac8-4a03-802c-0631e7589310
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain caseless (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12763,7 +12763,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 19620
+          "y": 20495
         }
       }
     note: false
@@ -12773,12 +12773,12 @@ tasks:
     quietmode: 0
   "129":
     id: "129"
-    taskid: f34fa1bd-4455-4b1b-8e0a-14f161c0d876
+    taskid: d5d39fa8-bed0-47a5-8811-736052ec1d7c
     type: playbook
     task:
-      id: f34fa1bd-4455-4b1b-8e0a-14f161c0d876
+      id: d5d39fa8-bed0-47a5-8811-736052ec1d7c
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain caseless (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12868,7 +12868,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 19795
+          "y": 20670
         }
       }
     note: false
@@ -12878,12 +12878,12 @@ tasks:
     quietmode: 0
   "130":
     id: "130"
-    taskid: 653d7deb-5a11-4b61-8dbd-52a6ccc4ab90
+    taskid: 5a9b22e4-d76b-46cd-87cf-78565964ae72
     type: playbook
     task:
-      id: 653d7deb-5a11-4b61-8dbd-52a6ccc4ab90
+      id: 5a9b22e4-d76b-46cd-87cf-78565964ae72
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain caseless (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -12981,7 +12981,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 19970
+          "y": 20845
         }
       }
     note: false
@@ -12991,12 +12991,12 @@ tasks:
     quietmode: 0
   "131":
     id: "131"
-    taskid: e71edc0b-2e01-4b52-86b0-4bbfb3d727c1
+    taskid: c6e9e8b7-6a40-42f8-88d8-83cc1b391e63
     type: playbook
     task:
-      id: e71edc0b-2e01-4b52-86b0-4bbfb3d727c1
+      id: c6e9e8b7-6a40-42f8-88d8-83cc1b391e63
       version: -1
-      name: Test - ExtFilter
+      name: contains any line of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13089,7 +13089,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 26445
+          "y": 27320
         }
       }
     note: false
@@ -13099,12 +13099,12 @@ tasks:
     quietmode: 0
   "132":
     id: "132"
-    taskid: 3ee66dad-1e81-46c7-8f41-4439b08d683a
+    taskid: cc5c0cba-255c-4aec-8a67-43da4c3feb0f
     type: playbook
     task:
-      id: 3ee66dad-1e81-46c7-8f41-4439b08d683a
+      id: cc5c0cba-255c-4aec-8a67-43da4c3feb0f
       version: -1
-      name: Test - ExtFilter
+      name: contains any line of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13207,7 +13207,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 26620
+          "y": 27495
         }
       }
     note: false
@@ -13217,12 +13217,12 @@ tasks:
     quietmode: 0
   "133":
     id: "133"
-    taskid: 271df420-130d-4245-8968-b8a55225b10e
+    taskid: fdc85cbb-19a6-479e-8459-f4f1eb6db580
     type: playbook
     task:
-      id: 271df420-130d-4245-8968-b8a55225b10e
+      id: fdc85cbb-19a6-479e-8459-f4f1eb6db580
       version: -1
-      name: Test - ExtFilter
+      name: contains any line of (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13320,7 +13320,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 26795
+          "y": 27670
         }
       }
     note: false
@@ -13330,12 +13330,12 @@ tasks:
     quietmode: 0
   "134":
     id: "134"
-    taskid: ea92b8f4-828f-443e-8c32-1ea81523918f
+    taskid: 4f03938b-8a84-4ed7-83a2-a75cddb26252
     type: playbook
     task:
-      id: ea92b8f4-828f-443e-8c32-1ea81523918f
+      id: 4f03938b-8a84-4ed7-83a2-a75cddb26252
       version: -1
-      name: Test - ExtFilter
+      name: contains any caseless line of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13428,7 +13428,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 26970
+          "y": 27845
         }
       }
     note: false
@@ -13438,12 +13438,12 @@ tasks:
     quietmode: 0
   "135":
     id: "135"
-    taskid: 23ca038b-6477-4555-85cb-d63dcccc6f41
+    taskid: 7c552947-d0df-4672-80ca-21f553d2e560
     type: playbook
     task:
-      id: 23ca038b-6477-4555-85cb-d63dcccc6f41
+      id: 7c552947-d0df-4672-80ca-21f553d2e560
       version: -1
-      name: Test - ExtFilter
+      name: contains any caseless line of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13546,7 +13546,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 27145
+          "y": 28020
         }
       }
     note: false
@@ -13556,12 +13556,12 @@ tasks:
     quietmode: 0
   "136":
     id: "136"
-    taskid: 865f4f0d-bbb6-478c-8b7d-97a86b57250e
+    taskid: ed21e6fa-cfb5-4549-8858-b07206953c16
     type: playbook
     task:
-      id: 865f4f0d-bbb6-478c-8b7d-97a86b57250e
+      id: ed21e6fa-cfb5-4549-8858-b07206953c16
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain any line of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13654,7 +13654,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 27320
+          "y": 28195
         }
       }
     note: false
@@ -13664,12 +13664,12 @@ tasks:
     quietmode: 0
   "137":
     id: "137"
-    taskid: 0fc69679-270a-4b6e-87b7-cdc65433271a
+    taskid: b72494e1-e2e6-4abb-8183-ad68f5b99a5c
     type: playbook
     task:
-      id: 0fc69679-270a-4b6e-87b7-cdc65433271a
+      id: b72494e1-e2e6-4abb-8183-ad68f5b99a5c
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain any line of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13772,7 +13772,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 27495
+          "y": 28370
         }
       }
     note: false
@@ -13782,12 +13782,12 @@ tasks:
     quietmode: 0
   "138":
     id: "138"
-    taskid: e89df5db-8700-466a-8c93-47f3ad9af5fd
+    taskid: 13861613-2adb-426d-8898-7949a60d853b
     type: playbook
     task:
-      id: e89df5db-8700-466a-8c93-47f3ad9af5fd
+      id: 13861613-2adb-426d-8898-7949a60d853b
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain any line of (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13885,7 +13885,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 27670
+          "y": 28545
         }
       }
     note: false
@@ -13895,12 +13895,12 @@ tasks:
     quietmode: 0
   "139":
     id: "139"
-    taskid: ee29aacf-5e70-459c-80cd-8d45591de91e
+    taskid: 2c4ce26c-1b27-44aa-85d8-ab9dcbbe67e2
     type: playbook
     task:
-      id: ee29aacf-5e70-459c-80cd-8d45591de91e
+      id: 2c4ce26c-1b27-44aa-85d8-ab9dcbbe67e2
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any caseless line of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -13993,7 +13993,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 27845
+          "y": 28720
         }
       }
     note: false
@@ -14003,12 +14003,12 @@ tasks:
     quietmode: 0
   "140":
     id: "140"
-    taskid: 8cd8b7c0-bb76-4dfd-85f1-f0575a82306d
+    taskid: 0994283b-5f2a-4091-8e98-4cbeec113610
     type: playbook
     task:
-      id: 8cd8b7c0-bb76-4dfd-85f1-f0575a82306d
+      id: 0994283b-5f2a-4091-8e98-4cbeec113610
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any caseless line of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14111,7 +14111,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 28020
+          "y": 28895
         }
       }
     note: false
@@ -14121,12 +14121,12 @@ tasks:
     quietmode: 0
   "141":
     id: "141"
-    taskid: f0b648de-38ca-4aec-890d-41733caefc06
+    taskid: 791a385d-2c61-4c09-8126-184775ed7cc0
     type: playbook
     task:
-      id: f0b648de-38ca-4aec-890d-41733caefc06
+      id: 791a385d-2c61-4c09-8126-184775ed7cc0
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any caseless line of (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14228,7 +14228,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 28195
+          "y": 29070
         }
       }
     note: false
@@ -14238,12 +14238,12 @@ tasks:
     quietmode: 0
   "142":
     id: "142"
-    taskid: 1e90c2cc-fea1-43a7-8c04-60f2c5d906b1
+    taskid: 02848ed7-b5ab-40bf-895c-38ccaf31d0b7
     type: playbook
     task:
-      id: 1e90c2cc-fea1-43a7-8c04-60f2c5d906b1
+      id: 02848ed7-b5ab-40bf-895c-38ccaf31d0b7
       version: -1
-      name: Test - ExtFilter
+      name: matches any string of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14338,7 +14338,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 21720
+          "y": 22595
         }
       }
     note: false
@@ -14348,12 +14348,12 @@ tasks:
     quietmode: 0
   "143":
     id: "143"
-    taskid: e9e59ee5-33df-4831-899c-1c88f471b847
+    taskid: f650a667-2b9e-47bc-8a15-ae80641fbfbc
     type: playbook
     task:
-      id: e9e59ee5-33df-4831-899c-1c88f471b847
+      id: f650a667-2b9e-47bc-8a15-ae80641fbfbc
       version: -1
-      name: Test - ExtFilter
+      name: matches any string of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14457,7 +14457,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 21895
+          "y": 22770
         }
       }
     note: false
@@ -14467,12 +14467,12 @@ tasks:
     quietmode: 0
   "144":
     id: "144"
-    taskid: f10a1c94-3250-45af-83a6-f1b063a10545
+    taskid: 9a7498e5-28c9-4806-8aad-204df14b92d4
     type: playbook
     task:
-      id: f10a1c94-3250-45af-83a6-f1b063a10545
+      id: 9a7498e5-28c9-4806-8aad-204df14b92d4
       version: -1
-      name: Test - ExtFilter
+      name: matches any string of (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14574,7 +14574,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 22070
+          "y": 22945
         }
       }
     note: false
@@ -14584,12 +14584,12 @@ tasks:
     quietmode: 0
   "145":
     id: "145"
-    taskid: fd393ee2-1505-49a0-82c3-4f8649fc4563
+    taskid: 0d2152d0-2c78-454f-8042-ff8fa03e8e9c
     type: playbook
     task:
-      id: fd393ee2-1505-49a0-82c3-4f8649fc4563
+      id: 0d2152d0-2c78-454f-8042-ff8fa03e8e9c
       version: -1
-      name: Test - ExtFilter
+      name: matches any caseless string of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14684,7 +14684,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 22245
+          "y": 23120
         }
       }
     note: false
@@ -14694,12 +14694,12 @@ tasks:
     quietmode: 0
   "146":
     id: "146"
-    taskid: 21326138-802b-4471-8239-a400739236b5
+    taskid: 756ad408-b420-42a0-84f6-15f1e9144964
     type: playbook
     task:
-      id: 21326138-802b-4471-8239-a400739236b5
+      id: 756ad408-b420-42a0-84f6-15f1e9144964
       version: -1
-      name: Test - ExtFilter
+      name: matches any caseless string of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14803,7 +14803,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 22420
+          "y": 23295
         }
       }
     note: false
@@ -14813,12 +14813,12 @@ tasks:
     quietmode: 0
   "147":
     id: "147"
-    taskid: d7024f71-232b-4fe4-8ec2-a4e67400e197
+    taskid: 1bbb6218-586a-493e-8f40-a56827414e99
     type: playbook
     task:
-      id: d7024f71-232b-4fe4-8ec2-a4e67400e197
+      id: 1bbb6218-586a-493e-8f40-a56827414e99
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any string of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -14913,7 +14913,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 22595
+          "y": 23470
         }
       }
     note: false
@@ -14923,12 +14923,12 @@ tasks:
     quietmode: 0
   "148":
     id: "148"
-    taskid: b9e1e6d7-d2c2-4776-81bc-871a7255b586
+    taskid: 9adb6a0b-8f1b-4a18-864b-63eb7dcdc50a
     type: playbook
     task:
-      id: b9e1e6d7-d2c2-4776-81bc-871a7255b586
+      id: 9adb6a0b-8f1b-4a18-864b-63eb7dcdc50a
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any string of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15032,7 +15032,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 22770
+          "y": 23645
         }
       }
     note: false
@@ -15042,12 +15042,12 @@ tasks:
     quietmode: 0
   "149":
     id: "149"
-    taskid: e2b4db37-482a-404d-87a2-a61623eaaf28
+    taskid: e8558aed-0760-4095-8d7e-75309015a7c4
     type: playbook
     task:
-      id: e2b4db37-482a-404d-87a2-a61623eaaf28
+      id: e8558aed-0760-4095-8d7e-75309015a7c4
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any caseless string of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15142,7 +15142,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 22945
+          "y": 23820
         }
       }
     note: false
@@ -15152,12 +15152,12 @@ tasks:
     quietmode: 0
   "150":
     id: "150"
-    taskid: 1a0dae58-520f-4009-8417-84f8d1b71fa1
+    taskid: 00d8d767-98f8-4d05-84ce-6166fdb729ba
     type: playbook
     task:
-      id: 1a0dae58-520f-4009-8417-84f8d1b71fa1
+      id: 00d8d767-98f8-4d05-84ce-6166fdb729ba
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any caseless string of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15261,7 +15261,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 23120
+          "y": 23995
         }
       }
     note: false
@@ -15271,12 +15271,12 @@ tasks:
     quietmode: 0
   "151":
     id: "151"
-    taskid: c677697c-ef86-4e97-80d2-b905559d7828
+    taskid: 147ad671-8332-4ab1-8be1-e35e5e5b92c4
     type: playbook
     task:
-      id: c677697c-ef86-4e97-80d2-b905559d7828
+      id: 147ad671-8332-4ab1-8be1-e35e5e5b92c4
       version: -1
-      name: Test - ExtFilter
+      name: matches any line of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15369,7 +15369,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 20145
+          "y": 21020
         }
       }
     note: false
@@ -15379,12 +15379,12 @@ tasks:
     quietmode: 0
   "152":
     id: "152"
-    taskid: b1bd7ab4-0046-484a-8dd4-f5c871f9ecf8
+    taskid: 29676f99-ee5a-43eb-86d9-c3d9eb9c4364
     type: playbook
     task:
-      id: b1bd7ab4-0046-484a-8dd4-f5c871f9ecf8
+      id: 29676f99-ee5a-43eb-86d9-c3d9eb9c4364
       version: -1
-      name: Test - ExtFilter
+      name: matches any line of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15486,7 +15486,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 20320
+          "y": 21195
         }
       }
     note: false
@@ -15496,12 +15496,12 @@ tasks:
     quietmode: 0
   "153":
     id: "153"
-    taskid: 17ffb599-44bd-410d-8965-b650b2511bc7
+    taskid: 2777b6ac-4b8f-4fda-80ba-8eb496ed3529
     type: playbook
     task:
-      id: 17ffb599-44bd-410d-8965-b650b2511bc7
+      id: 2777b6ac-4b8f-4fda-80ba-8eb496ed3529
       version: -1
-      name: Test - ExtFilter
+      name: matches any line of (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15601,7 +15601,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 20495
+          "y": 21370
         }
       }
     note: false
@@ -15611,12 +15611,12 @@ tasks:
     quietmode: 0
   "154":
     id: "154"
-    taskid: 713a6097-d8d6-4009-8a4d-c7da93127659
+    taskid: edf09541-9bcd-4997-8914-4e9e34b95827
     type: playbook
     task:
-      id: 713a6097-d8d6-4009-8a4d-c7da93127659
+      id: edf09541-9bcd-4997-8914-4e9e34b95827
       version: -1
-      name: Test - ExtFilter
+      name: matches any caseless line of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15709,7 +15709,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 20670
+          "y": 21545
         }
       }
     note: false
@@ -15719,12 +15719,12 @@ tasks:
     quietmode: 0
   "155":
     id: "155"
-    taskid: 41144e25-f140-4d13-8448-e016cc6183f4
+    taskid: 451ffc95-f3e7-4f2f-8cc1-19db9787954c
     type: playbook
     task:
-      id: 41144e25-f140-4d13-8448-e016cc6183f4
+      id: 451ffc95-f3e7-4f2f-8cc1-19db9787954c
       version: -1
-      name: Test - ExtFilter
+      name: matches any caseless line of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15826,7 +15826,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 20845
+          "y": 21720
         }
       }
     note: false
@@ -15836,12 +15836,12 @@ tasks:
     quietmode: 0
   "156":
     id: "156"
-    taskid: 78166eff-0885-457e-8b5e-9e72d15ff644
+    taskid: cb1ce579-784e-4498-81d3-a19ea875d86c
     type: playbook
     task:
-      id: 78166eff-0885-457e-8b5e-9e72d15ff644
+      id: cb1ce579-784e-4498-81d3-a19ea875d86c
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any line of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -15934,7 +15934,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 21020
+          "y": 21895
         }
       }
     note: false
@@ -15944,12 +15944,12 @@ tasks:
     quietmode: 0
   "157":
     id: "157"
-    taskid: c2619872-e086-4412-8e39-1e3fd0b59f74
+    taskid: 5781d89a-00c2-48e2-8ef3-a1c22200f4b6
     type: playbook
     task:
-      id: c2619872-e086-4412-8e39-1e3fd0b59f74
+      id: 5781d89a-00c2-48e2-8ef3-a1c22200f4b6
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any line of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16051,7 +16051,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 21195
+          "y": 22070
         }
       }
     note: false
@@ -16061,12 +16061,12 @@ tasks:
     quietmode: 0
   "158":
     id: "158"
-    taskid: 4bed81a3-cc09-4d6b-8ee2-4af80c28f43c
+    taskid: bd67f472-d645-48ef-8f1a-511669e48738
     type: playbook
     task:
-      id: 4bed81a3-cc09-4d6b-8ee2-4af80c28f43c
+      id: bd67f472-d645-48ef-8f1a-511669e48738
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any caseless line of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16159,7 +16159,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 21370
+          "y": 22245
         }
       }
     note: false
@@ -16169,12 +16169,12 @@ tasks:
     quietmode: 0
   "159":
     id: "159"
-    taskid: 1d30a244-f16f-47f7-89e9-b32bd7e4f399
+    taskid: 8764e268-e3e0-4615-8020-9fa7e115585e
     type: playbook
     task:
-      id: 1d30a244-f16f-47f7-89e9-b32bd7e4f399
+      id: 8764e268-e3e0-4615-8020-9fa7e115585e
       version: -1
-      name: Test - ExtFilter
+      name: doesn't match any caseless line of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16276,7 +16276,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 21545
+          "y": 22420
         }
       }
     note: false
@@ -16286,12 +16286,12 @@ tasks:
     quietmode: 0
   "160":
     id: "160"
-    taskid: 90d249d3-12ab-4b98-8a5a-efda76d4d00f
+    taskid: 2479719d-e565-4223-8303-1e4cf8148cd2
     type: playbook
     task:
-      id: 90d249d3-12ab-4b98-8a5a-efda76d4d00f
+      id: 2479719d-e565-4223-8303-1e4cf8148cd2
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: matches any string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16386,7 +16386,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 23295
+          "y": 24170
         }
       }
     note: false
@@ -16396,12 +16396,12 @@ tasks:
     quietmode: 0
   "161":
     id: "161"
-    taskid: 130dd2d0-5b4f-4cc5-8e27-79991258cbe1
+    taskid: bffcb297-024b-4d52-8ef3-8c4fccf14f3e
     type: playbook
     task:
-      id: 130dd2d0-5b4f-4cc5-8e27-79991258cbe1
+      id: bffcb297-024b-4d52-8ef3-8c4fccf14f3e
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: matches any string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16505,7 +16505,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 23470
+          "y": 24345
         }
       }
     note: false
@@ -16515,12 +16515,12 @@ tasks:
     quietmode: 0
   "162":
     id: "162"
-    taskid: 918686c0-c646-4878-82c1-4e81acefd37f
+    taskid: 3520cb9c-22e4-4136-8ea9-e22bc5992ab4
     type: playbook
     task:
-      id: 918686c0-c646-4878-82c1-4e81acefd37f
+      id: 3520cb9c-22e4-4136-8ea9-e22bc5992ab4
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: matches any string of (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16622,7 +16622,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 23645
+          "y": 24520
         }
       }
     note: false
@@ -16632,12 +16632,12 @@ tasks:
     quietmode: 0
   "163":
     id: "163"
-    taskid: 11cd3ff9-7f3a-4611-864c-ef1977bb107c
+    taskid: 9e17d558-e69a-44d1-8390-eca7d750330b
     type: playbook
     task:
-      id: 11cd3ff9-7f3a-4611-864c-ef1977bb107c
+      id: 9e17d558-e69a-44d1-8390-eca7d750330b
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: matches any caseless string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16732,7 +16732,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 23820
+          "y": 24695
         }
       }
     note: false
@@ -16742,12 +16742,12 @@ tasks:
     quietmode: 0
   "164":
     id: "164"
-    taskid: 0dc3afb5-e5ab-4da9-8f52-45cb4d57c3ae
+    taskid: 6042d4f6-cfc2-4d2f-8301-5d3bf1a767c9
     type: playbook
     task:
-      id: 0dc3afb5-e5ab-4da9-8f52-45cb4d57c3ae
+      id: 6042d4f6-cfc2-4d2f-8301-5d3bf1a767c9
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: matches any caseless string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16851,7 +16851,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 23995
+          "y": 24870
         }
       }
     note: false
@@ -16861,12 +16861,12 @@ tasks:
     quietmode: 0
   "165":
     id: "165"
-    taskid: d9774add-f695-4da9-806a-e064db91d1b7
+    taskid: 8babbf2b-0f58-4885-82a9-02f487181b8a
     type: playbook
     task:
-      id: d9774add-f695-4da9-806a-e064db91d1b7
+      id: 8babbf2b-0f58-4885-82a9-02f487181b8a
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t match any string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -16961,7 +16961,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 24170
+          "y": 25045
         }
       }
     note: false
@@ -16971,12 +16971,12 @@ tasks:
     quietmode: 0
   "166":
     id: "166"
-    taskid: 62cb0e42-9d71-4853-87eb-14fb7e73895f
+    taskid: 25ced5f1-0bb7-40d0-847d-89d6bd1a4bbe
     type: playbook
     task:
-      id: 62cb0e42-9d71-4853-87eb-14fb7e73895f
+      id: 25ced5f1-0bb7-40d0-847d-89d6bd1a4bbe
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t match any string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17079,7 +17079,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 24345
+          "y": 25220
         }
       }
     note: false
@@ -17089,12 +17089,12 @@ tasks:
     quietmode: 0
   "167":
     id: "167"
-    taskid: 7ed410b0-6b10-4a23-81a5-5b1aa87e7f8b
+    taskid: 6644ccee-9a2a-48c8-8125-6dd9468ec09d
     type: playbook
     task:
-      id: 7ed410b0-6b10-4a23-81a5-5b1aa87e7f8b
+      id: 6644ccee-9a2a-48c8-8125-6dd9468ec09d
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t match any caseless string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17189,7 +17189,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 24520
+          "y": 25395
         }
       }
     note: false
@@ -17199,12 +17199,12 @@ tasks:
     quietmode: 0
   "168":
     id: "168"
-    taskid: 9736395b-d997-44f1-8e49-e08f082003c4
+    taskid: db5b93f5-e10b-43a6-8bf5-89b860d4ac54
     type: playbook
     task:
-      id: 9736395b-d997-44f1-8e49-e08f082003c4
+      id: db5b93f5-e10b-43a6-8bf5-89b860d4ac54
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t match any caseless string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17307,7 +17307,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 24695
+          "y": 25570
         }
       }
     note: false
@@ -17317,12 +17317,12 @@ tasks:
     quietmode: 0
   "169":
     id: "169"
-    taskid: c0e172c8-b1a8-4a9d-801c-f0f0b629ddc7
+    taskid: 7c2f6b01-7aad-4cb5-8a95-ee34e56e70e2
     type: playbook
     task:
-      id: c0e172c8-b1a8-4a9d-801c-f0f0b629ddc7
+      id: 7c2f6b01-7aad-4cb5-8a95-ee34e56e70e2
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: matches any string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17417,7 +17417,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 24870
+          "y": 25745
         }
       }
     note: false
@@ -17427,12 +17427,12 @@ tasks:
     quietmode: 0
   "170":
     id: "170"
-    taskid: 73afce45-a93d-4384-817f-34f5cf7a97d6
+    taskid: 8eaf9cc3-d569-47c0-8240-54cfed9979ea
     type: playbook
     task:
-      id: 73afce45-a93d-4384-817f-34f5cf7a97d6
+      id: 8eaf9cc3-d569-47c0-8240-54cfed9979ea
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: matches any string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17536,7 +17536,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 25045
+          "y": 25920
         }
       }
     note: false
@@ -17546,12 +17546,12 @@ tasks:
     quietmode: 0
   "171":
     id: "171"
-    taskid: e6d0ed66-c395-4f9a-878e-aad8ca9b228e
+    taskid: a440adf6-77dd-4dc4-86dc-ebafe1d5b411
     type: playbook
     task:
-      id: e6d0ed66-c395-4f9a-878e-aad8ca9b228e
+      id: a440adf6-77dd-4dc4-86dc-ebafe1d5b411
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: matches any string of (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17653,7 +17653,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 25220
+          "y": 26095
         }
       }
     note: false
@@ -17663,12 +17663,12 @@ tasks:
     quietmode: 0
   "172":
     id: "172"
-    taskid: f2486218-2749-454f-86bd-0206fbc1bf62
+    taskid: 827ebb9b-0588-4ab6-8bcd-f53a92b9ec20
     type: playbook
     task:
-      id: f2486218-2749-454f-86bd-0206fbc1bf62
+      id: 827ebb9b-0588-4ab6-8bcd-f53a92b9ec20
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: matches any caseless string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17763,7 +17763,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 25395
+          "y": 26270
         }
       }
     note: false
@@ -17773,12 +17773,12 @@ tasks:
     quietmode: 0
   "173":
     id: "173"
-    taskid: 02473dce-cfad-407f-86d9-1f074626cef7
+    taskid: f3a4792c-41f5-4bcd-823c-491ae4296010
     type: playbook
     task:
-      id: 02473dce-cfad-407f-86d9-1f074626cef7
+      id: f3a4792c-41f5-4bcd-823c-491ae4296010
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: matches any caseless string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17882,7 +17882,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 25570
+          "y": 26445
         }
       }
     note: false
@@ -17892,12 +17892,12 @@ tasks:
     quietmode: 0
   "174":
     id: "174"
-    taskid: 291aedd6-c313-4bd7-8837-8011bfe6130c
+    taskid: 09822039-d26e-462a-8f3c-99e79c55a69a
     type: playbook
     task:
-      id: 291aedd6-c313-4bd7-8837-8011bfe6130c
+      id: 09822039-d26e-462a-8f3c-99e79c55a69a
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t match any string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -17992,7 +17992,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 25745
+          "y": 26620
         }
       }
     note: false
@@ -18002,12 +18002,12 @@ tasks:
     quietmode: 0
   "175":
     id: "175"
-    taskid: 868bfc7a-ae4c-4b1f-893b-d6c65f04f397
+    taskid: dc4448f0-89f9-4a63-81e3-bb517d758e5d
     type: playbook
     task:
-      id: 868bfc7a-ae4c-4b1f-893b-d6c65f04f397
+      id: dc4448f0-89f9-4a63-81e3-bb517d758e5d
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t match any string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18110,7 +18110,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 25920
+          "y": 26795
         }
       }
     note: false
@@ -18120,12 +18120,12 @@ tasks:
     quietmode: 0
   "176":
     id: "176"
-    taskid: 02e45883-6b6b-4ef5-8741-c714eeef8ce1
+    taskid: 60fe512a-0a2a-4870-8f23-0cc1da075b6c
     type: playbook
     task:
-      id: 02e45883-6b6b-4ef5-8741-c714eeef8ce1
+      id: 60fe512a-0a2a-4870-8f23-0cc1da075b6c
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t match any caseless string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18220,7 +18220,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 26095
+          "y": 26970
         }
       }
     note: false
@@ -18230,12 +18230,12 @@ tasks:
     quietmode: 0
   "177":
     id: "177"
-    taskid: 753ad5f6-4a69-4e5d-8e93-6dcc5cb37f16
+    taskid: 99c56794-d8c3-4f9d-8389-82983f334a3e
     type: playbook
     task:
-      id: 753ad5f6-4a69-4e5d-8e93-6dcc5cb37f16
+      id: 99c56794-d8c3-4f9d-8389-82983f334a3e
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t match any caseless string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18338,7 +18338,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 26270
+          "y": 27145
         }
       }
     note: false
@@ -18348,12 +18348,12 @@ tasks:
     quietmode: 0
   "178":
     id: "178"
-    taskid: 2c7887e1-8eaa-4b90-85eb-0359ed4ac996
+    taskid: 0aaa46e8-3908-4156-83e3-2d3f7a2ee415
     type: playbook
     task:
-      id: 2c7887e1-8eaa-4b90-85eb-0359ed4ac996
+      id: 0aaa46e8-3908-4156-83e3-2d3f7a2ee415
       version: -1
-      name: Test - ExtFilter
+      name: contains any string of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18443,7 +18443,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 28370
+          "y": 29245
         }
       }
     note: false
@@ -18453,12 +18453,12 @@ tasks:
     quietmode: 0
   "179":
     id: "179"
-    taskid: 992d4cc8-fc47-4698-8805-6518fd5a4e80
+    taskid: f30031f9-fe4b-41a4-8655-57613a7389b4
     type: playbook
     task:
-      id: 992d4cc8-fc47-4698-8805-6518fd5a4e80
+      id: f30031f9-fe4b-41a4-8655-57613a7389b4
       version: -1
-      name: Test - ExtFilter
+      name: contains any string of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18553,7 +18553,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 28545
+          "y": 29420
         }
       }
     note: false
@@ -18563,12 +18563,12 @@ tasks:
     quietmode: 0
   "180":
     id: "180"
-    taskid: de2d2fda-11c8-4cb1-8efa-7c1dfca1e57c
+    taskid: 6e2af846-4de2-4ee2-8c67-75119568da38
     type: playbook
     task:
-      id: de2d2fda-11c8-4cb1-8efa-7c1dfca1e57c
+      id: 6e2af846-4de2-4ee2-8c67-75119568da38
       version: -1
-      name: Test - ExtFilter
+      name: contains any string of (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18673,7 +18673,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 28720
+          "y": 29595
         }
       }
     note: false
@@ -18683,12 +18683,12 @@ tasks:
     quietmode: 0
   "181":
     id: "181"
-    taskid: 70e328dc-83ae-47e5-87e2-3f540b299e52
+    taskid: 20da705d-25f1-45d3-8389-f8bbc841a518
     type: playbook
     task:
-      id: 70e328dc-83ae-47e5-87e2-3f540b299e52
+      id: 20da705d-25f1-45d3-8389-f8bbc841a518
       version: -1
-      name: Test - ExtFilter
+      name: contains any string of (4)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18788,7 +18788,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 28895
+          "y": 29770
         }
       }
     note: false
@@ -18798,12 +18798,12 @@ tasks:
     quietmode: 0
   "182":
     id: "182"
-    taskid: 966caba7-8796-4002-8e7d-2429aa707ea7
+    taskid: 17da8091-237d-41bd-8d4c-4eb176fe5044
     type: playbook
     task:
-      id: 966caba7-8796-4002-8e7d-2429aa707ea7
+      id: 17da8091-237d-41bd-8d4c-4eb176fe5044
       version: -1
-      name: Test - ExtFilter
+      name: contains any caseless string of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -18898,7 +18898,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 29070
+          "y": 29945
         }
       }
     note: false
@@ -18908,12 +18908,12 @@ tasks:
     quietmode: 0
   "183":
     id: "183"
-    taskid: 9ecd11cb-74ec-4156-8ddd-35b89e60fa84
+    taskid: 191581e4-06bf-4074-8e8e-8782a1c26da9
     type: playbook
     task:
-      id: 9ecd11cb-74ec-4156-8ddd-35b89e60fa84
+      id: 191581e4-06bf-4074-8e8e-8782a1c26da9
       version: -1
-      name: Test - ExtFilter
+      name: contains any caseless string of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19018,7 +19018,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 29245
+          "y": 30120
         }
       }
     note: false
@@ -19028,12 +19028,12 @@ tasks:
     quietmode: 0
   "184":
     id: "184"
-    taskid: 3a1e9e59-06b2-4c7c-8455-bad90200d8f4
+    taskid: 51039620-3cab-437b-83c9-5cc104b9d525
     type: playbook
     task:
-      id: 3a1e9e59-06b2-4c7c-8455-bad90200d8f4
+      id: 51039620-3cab-437b-83c9-5cc104b9d525
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain any string of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19128,7 +19128,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 29420
+          "y": 30295
         }
       }
     note: false
@@ -19138,12 +19138,12 @@ tasks:
     quietmode: 0
   "185":
     id: "185"
-    taskid: 1cb20f47-e915-466e-80e7-9cc4aef4d770
+    taskid: 888d5f7c-57d2-4779-83ca-17b8c8aa0b70
     type: playbook
     task:
-      id: 1cb20f47-e915-466e-80e7-9cc4aef4d770
+      id: 888d5f7c-57d2-4779-83ca-17b8c8aa0b70
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain any string of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19248,7 +19248,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 29595
+          "y": 30470
         }
       }
     note: false
@@ -19258,12 +19258,12 @@ tasks:
     quietmode: 0
   "186":
     id: "186"
-    taskid: b60f5ac9-c223-48cd-81f1-a3f0bc7abb1f
+    taskid: 9a714ffd-31f3-4a36-888a-042d1969b8f5
     type: playbook
     task:
-      id: b60f5ac9-c223-48cd-81f1-a3f0bc7abb1f
+      id: 9a714ffd-31f3-4a36-888a-042d1969b8f5
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain any string of (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19363,7 +19363,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 29770
+          "y": 30645
         }
       }
     note: false
@@ -19373,12 +19373,12 @@ tasks:
     quietmode: 0
   "187":
     id: "187"
-    taskid: d50c7c0e-fd95-4164-8bc9-b1811b7d80f3
+    taskid: ec4e8e37-77ad-4637-89e6-dfa5495dbc5b
     type: playbook
     task:
-      id: d50c7c0e-fd95-4164-8bc9-b1811b7d80f3
+      id: ec4e8e37-77ad-4637-89e6-dfa5495dbc5b
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain any caseless string of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19478,7 +19478,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 29945
+          "y": 30820
         }
       }
     note: false
@@ -19488,12 +19488,12 @@ tasks:
     quietmode: 0
   "188":
     id: "188"
-    taskid: e97140b4-fad4-4f0b-8524-7d918566b15d
+    taskid: fbadf897-c8a1-493c-8ce9-4f46b6fd680c
     type: playbook
     task:
-      id: e97140b4-fad4-4f0b-8524-7d918566b15d
+      id: fbadf897-c8a1-493c-8ce9-4f46b6fd680c
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain any caseless string of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19598,7 +19598,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 30120
+          "y": 30995
         }
       }
     note: false
@@ -19608,12 +19608,12 @@ tasks:
     quietmode: 0
   "189":
     id: "189"
-    taskid: eb572621-d5bb-48e9-831b-182c67e89257
+    taskid: eb647138-6c32-4130-8a32-a78a0554e2a2
     type: playbook
     task:
-      id: eb572621-d5bb-48e9-831b-182c67e89257
+      id: eb647138-6c32-4130-8a32-a78a0554e2a2
       version: -1
-      name: Test - ExtFilter
+      name: doesn't contain any caseless string of (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19713,7 +19713,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 30295
+          "y": 31170
         }
       }
     note: false
@@ -19723,12 +19723,12 @@ tasks:
     quietmode: 0
   "190":
     id: "190"
-    taskid: 81302a9e-c553-481a-8040-7100bf7a06f7
+    taskid: efd6a90e-94c1-4675-8e54-0c86e2a90754
     type: playbook
     task:
-      id: 81302a9e-c553-481a-8040-7100bf7a06f7
+      id: efd6a90e-94c1-4675-8e54-0c86e2a90754
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: contains any string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19818,7 +19818,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 30470
+          "y": 31345
         }
       }
     note: false
@@ -19828,12 +19828,12 @@ tasks:
     quietmode: 0
   "191":
     id: "191"
-    taskid: 12a21091-d3de-4d74-89ce-63926700ce23
+    taskid: c3935554-be64-4a19-8139-934d98fd022d
     type: playbook
     task:
-      id: 12a21091-d3de-4d74-89ce-63926700ce23
+      id: c3935554-be64-4a19-8139-934d98fd022d
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: contains any string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -19928,7 +19928,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 30645
+          "y": 31520
         }
       }
     note: false
@@ -19938,12 +19938,12 @@ tasks:
     quietmode: 0
   "192":
     id: "192"
-    taskid: 5cae4c19-c174-4140-8156-5c91df49ad49
+    taskid: a758c519-f63f-4725-81ac-e538af1a0c75
     type: playbook
     task:
-      id: 5cae4c19-c174-4140-8156-5c91df49ad49
+      id: a758c519-f63f-4725-81ac-e538af1a0c75
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: contains any string of (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20048,7 +20048,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 30820
+          "y": 31695
         }
       }
     note: false
@@ -20058,12 +20058,12 @@ tasks:
     quietmode: 0
   "193":
     id: "193"
-    taskid: 7b28816d-445e-477c-8c64-f2d3ae46c972
+    taskid: 8f932f49-2f59-45c1-8849-e5cf88ea830b
     type: playbook
     task:
-      id: 7b28816d-445e-477c-8c64-f2d3ae46c972
+      id: 8f932f49-2f59-45c1-8849-e5cf88ea830b
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: contains any string of (4)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20163,7 +20163,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 30995
+          "y": 31870
         }
       }
     note: false
@@ -20173,12 +20173,12 @@ tasks:
     quietmode: 0
   "194":
     id: "194"
-    taskid: 76e27259-3425-49c7-8d1a-7e949f4db1fd
+    taskid: 5b890623-b25e-462b-81a6-8d498fd0228f
     type: playbook
     task:
-      id: 76e27259-3425-49c7-8d1a-7e949f4db1fd
+      id: 5b890623-b25e-462b-81a6-8d498fd0228f
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: contains any caseless string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20273,7 +20273,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 31170
+          "y": 32045
         }
       }
     note: false
@@ -20283,12 +20283,12 @@ tasks:
     quietmode: 0
   "195":
     id: "195"
-    taskid: e4c8a27b-719b-4bc4-8410-086c57bd5579
+    taskid: e75e8a32-a639-4a19-83a6-317ec4925d46
     type: playbook
     task:
-      id: e4c8a27b-719b-4bc4-8410-086c57bd5579
+      id: e75e8a32-a639-4a19-83a6-317ec4925d46
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: contains any caseless string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20393,7 +20393,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 31345
+          "y": 32220
         }
       }
     note: false
@@ -20403,12 +20403,12 @@ tasks:
     quietmode: 0
   "196":
     id: "196"
-    taskid: e5775f79-07a0-4aed-8970-cf97254a8a06
+    taskid: 5955fec5-c68d-44b8-8596-95b99539e2a8
     type: playbook
     task:
-      id: e5775f79-07a0-4aed-8970-cf97254a8a06
+      id: 5955fec5-c68d-44b8-8596-95b99539e2a8
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain any string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20503,7 +20503,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 31520
+          "y": 32395
         }
       }
     note: false
@@ -20513,12 +20513,12 @@ tasks:
     quietmode: 0
   "197":
     id: "197"
-    taskid: be584fdf-4e5d-46cf-8b6e-cd36ae2677e0
+    taskid: 28f3795f-c794-4db7-84e2-b13cb73065ee
     type: playbook
     task:
-      id: be584fdf-4e5d-46cf-8b6e-cd36ae2677e0
+      id: 28f3795f-c794-4db7-84e2-b13cb73065ee
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain any string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20618,7 +20618,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 31695
+          "y": 32570
         }
       }
     note: false
@@ -20628,12 +20628,12 @@ tasks:
     quietmode: 0
   "198":
     id: "198"
-    taskid: 94f8814b-f303-4d68-8766-98adf734cf49
+    taskid: 90a165b4-69fa-4f56-8587-79e813721405
     type: playbook
     task:
-      id: 94f8814b-f303-4d68-8766-98adf734cf49
+      id: 90a165b4-69fa-4f56-8587-79e813721405
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain any string of (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20738,7 +20738,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 31870
+          "y": 32745
         }
       }
     note: false
@@ -20748,12 +20748,12 @@ tasks:
     quietmode: 0
   "199":
     id: "199"
-    taskid: 6176e11f-6048-4c45-85c8-6abae9a985b3
+    taskid: 05a96c41-6612-4625-8185-c6db5adbde58
     type: playbook
     task:
-      id: 6176e11f-6048-4c45-85c8-6abae9a985b3
+      id: 05a96c41-6612-4625-8185-c6db5adbde58
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain any caseless string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20848,7 +20848,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 32045
+          "y": 32920
         }
       }
     note: false
@@ -20858,12 +20858,12 @@ tasks:
     quietmode: 0
   "200":
     id: "200"
-    taskid: 66a8eb8e-5502-4f1a-8ec4-2450852ed28b
+    taskid: f616beb1-068a-4f8a-85e7-003c6e04f91d
     type: playbook
     task:
-      id: 66a8eb8e-5502-4f1a-8ec4-2450852ed28b
+      id: f616beb1-068a-4f8a-85e7-003c6e04f91d
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain any caseless string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -20968,7 +20968,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 32220
+          "y": 33095
         }
       }
     note: false
@@ -20978,12 +20978,12 @@ tasks:
     quietmode: 0
   "201":
     id: "201"
-    taskid: 4304296f-1c9c-49a6-8c31-522eeffcbc7c
+    taskid: cf7c7828-8faf-4c7c-8e4a-092bc4de2628
     type: playbook
     task:
-      id: 4304296f-1c9c-49a6-8c31-522eeffcbc7c
+      id: cf7c7828-8faf-4c7c-8e4a-092bc4de2628
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'wildcard: doesn''t contain any caseless string of (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21083,7 +21083,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 32395
+          "y": 33270
         }
       }
     note: false
@@ -21093,12 +21093,12 @@ tasks:
     quietmode: 0
   "202":
     id: "202"
-    taskid: 2502625e-10d2-49e8-8997-c0864206e773
+    taskid: 19d87d8a-e614-4f16-8fd1-632f80d2e655
     type: playbook
     task:
-      id: 2502625e-10d2-49e8-8997-c0864206e773
+      id: 19d87d8a-e614-4f16-8fd1-632f80d2e655
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: contains any string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21188,7 +21188,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 32570
+          "y": 33445
         }
       }
     note: false
@@ -21198,12 +21198,12 @@ tasks:
     quietmode: 0
   "203":
     id: "203"
-    taskid: dd263e06-0d20-4444-82b2-9f65480f9779
+    taskid: 35668f58-3f24-4395-8ad8-7df7a52f802e
     type: playbook
     task:
-      id: dd263e06-0d20-4444-82b2-9f65480f9779
+      id: 35668f58-3f24-4395-8ad8-7df7a52f802e
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: contains any string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21298,7 +21298,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 32745
+          "y": 33620
         }
       }
     note: false
@@ -21308,12 +21308,12 @@ tasks:
     quietmode: 0
   "204":
     id: "204"
-    taskid: 2338e064-1731-4f8f-8f82-cf0e8bdcdb30
+    taskid: 7fa06337-ff9f-4e11-8aad-83aa381f4376
     type: playbook
     task:
-      id: 2338e064-1731-4f8f-8f82-cf0e8bdcdb30
+      id: 7fa06337-ff9f-4e11-8aad-83aa381f4376
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: contains any string of (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21418,7 +21418,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 32920
+          "y": 33795
         }
       }
     note: false
@@ -21428,12 +21428,12 @@ tasks:
     quietmode: 0
   "205":
     id: "205"
-    taskid: 3581be4e-7cfe-493c-8bfa-d6f5b712cf5f
+    taskid: a0f813f4-4bdf-4741-8aba-d820389fe79e
     type: playbook
     task:
-      id: 3581be4e-7cfe-493c-8bfa-d6f5b712cf5f
+      id: a0f813f4-4bdf-4741-8aba-d820389fe79e
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: contains any string of (4)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21533,7 +21533,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 33095
+          "y": 33970
         }
       }
     note: false
@@ -21543,12 +21543,12 @@ tasks:
     quietmode: 0
   "206":
     id: "206"
-    taskid: eea43bff-d93f-4b3d-8a4b-1ac8e075fc0c
+    taskid: 6b8e1388-dd0c-4090-8c4a-01eacea609a2
     type: playbook
     task:
-      id: eea43bff-d93f-4b3d-8a4b-1ac8e075fc0c
+      id: 6b8e1388-dd0c-4090-8c4a-01eacea609a2
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: contains any caseless string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21643,7 +21643,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 33270
+          "y": 34145
         }
       }
     note: false
@@ -21653,12 +21653,12 @@ tasks:
     quietmode: 0
   "207":
     id: "207"
-    taskid: 91003701-a983-47ce-8c1e-4d02678f681a
+    taskid: 7c9d10df-2248-4619-85b6-05ed466e020a
     type: playbook
     task:
-      id: 91003701-a983-47ce-8c1e-4d02678f681a
+      id: 7c9d10df-2248-4619-85b6-05ed466e020a
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: contains any caseless string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21763,7 +21763,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 33445
+          "y": 34320
         }
       }
     note: false
@@ -21773,12 +21773,12 @@ tasks:
     quietmode: 0
   "208":
     id: "208"
-    taskid: c819bd9a-417a-4284-87b4-32c2fa077e85
+    taskid: c291c1f4-4225-4b04-83e7-182c95b8b01b
     type: playbook
     task:
-      id: c819bd9a-417a-4284-87b4-32c2fa077e85
+      id: c291c1f4-4225-4b04-83e7-182c95b8b01b
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain any string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21873,7 +21873,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 33620
+          "y": 34495
         }
       }
     note: false
@@ -21883,12 +21883,12 @@ tasks:
     quietmode: 0
   "209":
     id: "209"
-    taskid: febed553-48b5-4a21-878c-3a3a18133ead
+    taskid: e4205415-b7dc-47dc-8843-37ea4f94d78b
     type: playbook
     task:
-      id: febed553-48b5-4a21-878c-3a3a18133ead
+      id: e4205415-b7dc-47dc-8843-37ea4f94d78b
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain any string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -21988,7 +21988,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 33795
+          "y": 34670
         }
       }
     note: false
@@ -21998,12 +21998,12 @@ tasks:
     quietmode: 0
   "210":
     id: "210"
-    taskid: 40d510d3-4695-494d-8772-5a0e62a401f2
+    taskid: 477b31c1-9c34-458e-8782-d61dd41500f5
     type: playbook
     task:
-      id: 40d510d3-4695-494d-8772-5a0e62a401f2
+      id: 477b31c1-9c34-458e-8782-d61dd41500f5
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain any string of (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22108,7 +22108,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 33970
+          "y": 34845
         }
       }
     note: false
@@ -22118,12 +22118,12 @@ tasks:
     quietmode: 0
   "211":
     id: "211"
-    taskid: 05fe543c-84df-4cd9-8965-a55d676ea145
+    taskid: 842ce9b6-46ed-4e69-8d08-f5ad631a23f1
     type: playbook
     task:
-      id: 05fe543c-84df-4cd9-8965-a55d676ea145
+      id: 842ce9b6-46ed-4e69-8d08-f5ad631a23f1
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain any caseless string of (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22218,7 +22218,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 34145
+          "y": 35020
         }
       }
     note: false
@@ -22228,12 +22228,12 @@ tasks:
     quietmode: 0
   "212":
     id: "212"
-    taskid: 9538bb1d-7f81-4341-8de7-b4e05044284b
+    taskid: 69356ca7-d649-4b61-88f1-dcbf6ecbdb34
     type: playbook
     task:
-      id: 9538bb1d-7f81-4341-8de7-b4e05044284b
+      id: 69356ca7-d649-4b61-88f1-dcbf6ecbdb34
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain any caseless string of (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22338,7 +22338,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 34320
+          "y": 35195
         }
       }
     note: false
@@ -22348,12 +22348,12 @@ tasks:
     quietmode: 0
   "213":
     id: "213"
-    taskid: 353c6f90-1666-495f-854d-3d32375de950
+    taskid: 00ff2893-ae1a-4ae7-8ef9-0a10bc41a243
     type: playbook
     task:
-      id: 353c6f90-1666-495f-854d-3d32375de950
+      id: 00ff2893-ae1a-4ae7-8ef9-0a10bc41a243
       version: -1
-      name: 'Test - ExtFilter'
+      name: 'regex: doesn''t contain any caseless string of (3)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22453,7 +22453,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 34495
+          "y": 35370
         }
       }
     note: false
@@ -22463,12 +22463,12 @@ tasks:
     quietmode: 0
   "214":
     id: "214"
-    taskid: 704980d7-e49f-41f8-861b-c7eee2a0d507
+    taskid: cea3d4be-ef03-493f-8584-259889289f35
     type: playbook
     task:
-      id: 704980d7-e49f-41f8-861b-c7eee2a0d507
+      id: cea3d4be-ef03-493f-8584-259889289f35
       version: -1
-      name: Test - ExtFilter
+      name: matches expressions of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22570,7 +22570,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 34670
+          "y": 35545
         }
       }
     note: false
@@ -22580,12 +22580,12 @@ tasks:
     quietmode: 0
   "215":
     id: "215"
-    taskid: 090dde04-f586-4742-89a7-1dc209a1c7e1
+    taskid: cae5b3cc-ace2-41cc-8f0a-a6dd780d8059
     type: playbook
     task:
-      id: 090dde04-f586-4742-89a7-1dc209a1c7e1
+      id: cae5b3cc-ace2-41cc-8f0a-a6dd780d8059
       version: -1
-      name: Test - ExtFilter
+      name: matches expressions of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22704,7 +22704,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 34845
+          "y": 35720
         }
       }
     note: false
@@ -22714,12 +22714,12 @@ tasks:
     quietmode: 0
   "216":
     id: "216"
-    taskid: 94928cdc-aa81-4577-8c82-1208d82ce6eb
+    taskid: e42e7853-217c-414e-8e0a-e619700c9164
     type: playbook
     task:
-      id: 94928cdc-aa81-4577-8c82-1208d82ce6eb
+      id: e42e7853-217c-414e-8e0a-e619700c9164
       version: -1
-      name: Test - ExtFilter
+      name: matches conditions of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -22872,7 +22872,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 35020
+          "y": 35895
         }
       }
     note: false
@@ -22882,12 +22882,12 @@ tasks:
     quietmode: 0
   "217":
     id: "217"
-    taskid: fa446348-e8d1-454e-8e95-4a382b7226f8
+    taskid: 50b591b4-57e7-48cd-8857-41ea242ec6ee
     type: playbook
     task:
-      id: fa446348-e8d1-454e-8e95-4a382b7226f8
+      id: 50b591b4-57e7-48cd-8857-41ea242ec6ee
       version: -1
-      name: Test - ExtFilter
+      name: matches conditions of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23037,7 +23037,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 35195
+          "y": 36070
         }
       }
     note: false
@@ -23047,12 +23047,12 @@ tasks:
     quietmode: 0
   "218":
     id: "218"
-    taskid: 9138aa4c-d30e-4278-841a-31b1579e2fc0
+    taskid: 8c43a577-aaba-4efe-8ff3-d3ab11fdb0a9
     type: playbook
     task:
-      id: 9138aa4c-d30e-4278-841a-31b1579e2fc0
+      id: 8c43a577-aaba-4efe-8ff3-d3ab11fdb0a9
       version: -1
-      name: Test - ExtFilter
+      name: matches conditions of (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23206,7 +23206,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 35370
+          "y": 36245
         }
       }
     note: false
@@ -23216,12 +23216,12 @@ tasks:
     quietmode: 0
   "219":
     id: "219"
-    taskid: bb44abc5-1fc0-40cf-8165-5e0cb16718c3
+    taskid: 7339ea00-3cd6-49e5-827e-c0b7cdf5f3c6
     type: playbook
     task:
-      id: bb44abc5-1fc0-40cf-8165-5e0cb16718c3
+      id: 7339ea00-3cd6-49e5-827e-c0b7cdf5f3c6
       version: -1
-      name: Test - ExtFilter
+      name: matches conditions of (4)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23347,7 +23347,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 35545
+          "y": 36420
         }
       }
     note: false
@@ -23357,12 +23357,12 @@ tasks:
     quietmode: 0
   "220":
     id: "220"
-    taskid: 786f4928-18e7-4f71-8beb-08cc3a5de3b7
+    taskid: 1dcb0e05-8e18-4c4e-85b9-2ae335d69a6b
     type: playbook
     task:
-      id: 786f4928-18e7-4f71-8beb-08cc3a5de3b7
+      id: 1dcb0e05-8e18-4c4e-85b9-2ae335d69a6b
       version: -1
-      name: Test - ExtFilter
+      name: value matches expressions of (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23463,7 +23463,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 35720
+          "y": 36595
         }
       }
     note: false
@@ -23473,12 +23473,12 @@ tasks:
     quietmode: 0
   "221":
     id: "221"
-    taskid: 85136560-189d-4fde-8e05-8733a4df8e3d
+    taskid: aad806ca-ee44-4705-81a6-f294696344e1
     type: playbook
     task:
-      id: 85136560-189d-4fde-8e05-8733a4df8e3d
+      id: aad806ca-ee44-4705-81a6-f294696344e1
       version: -1
-      name: Test - ExtFilter
+      name: value matches expressions of (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23594,7 +23594,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 35895
+          "y": 36770
         }
       }
     note: false
@@ -23604,12 +23604,12 @@ tasks:
     quietmode: 0
   "222":
     id: "222"
-    taskid: 52dfe36b-325b-475c-8196-e087d55a4391
+    taskid: 07367649-8b3d-49a7-8d88-4acf12c2651f
     type: playbook
     task:
-      id: 52dfe36b-325b-475c-8196-e087d55a4391
+      id: 07367649-8b3d-49a7-8d88-4acf12c2651f
       version: -1
-      name: Test - ExtFilter
+      name: value matches conditions of (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23733,7 +23733,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 36070
+          "y": 36945
         }
       }
     note: false
@@ -23743,12 +23743,12 @@ tasks:
     quietmode: 0
   "223":
     id: "223"
-    taskid: 1d41b6b1-364b-4ef7-85ec-8781df83c9a1
+    taskid: 6c5891d7-e175-4559-8533-f59217a60ba9
     type: playbook
     task:
-      id: 1d41b6b1-364b-4ef7-85ec-8781df83c9a1
+      id: 6c5891d7-e175-4559-8533-f59217a60ba9
       version: -1
-      name: Test - ExtFilter
+      name: value matches conditions of (4)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -23901,7 +23901,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 36245
+          "y": 37120
         }
       }
     note: false
@@ -23911,12 +23911,12 @@ tasks:
     quietmode: 0
   "224":
     id: "224"
-    taskid: adb1d98b-1dfb-4697-8137-e904d560d38a
+    taskid: 80e8f6c3-059b-44e7-89b6-8dd02e5b5686
     type: playbook
     task:
-      id: adb1d98b-1dfb-4697-8137-e904d560d38a
+      id: 80e8f6c3-059b-44e7-89b6-8dd02e5b5686
       version: -1
-      name: Test - ExtFilter
+      name: value is filtered with (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24018,7 +24018,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 36420
+          "y": 37295
         }
       }
     note: false
@@ -24028,12 +24028,12 @@ tasks:
     quietmode: 0
   "225":
     id: "225"
-    taskid: ebac0b44-9797-44a0-8283-46b47f4ca901
+    taskid: 2857db63-cb31-4c92-86ee-9456c6460a45
     type: playbook
     task:
-      id: ebac0b44-9797-44a0-8283-46b47f4ca901
+      id: 2857db63-cb31-4c92-86ee-9456c6460a45
       version: -1
-      name: Test - ExtFilter
+      name: value is filtered with (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24156,7 +24156,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 36595
+          "y": 37470
         }
       }
     note: false
@@ -24166,12 +24166,12 @@ tasks:
     quietmode: 0
   "226":
     id: "226"
-    taskid: b40988b3-0d72-46e7-824b-0a575acca2a6
+    taskid: 2d876a1c-6f7f-44f9-895b-2040ad5213f4
     type: playbook
     task:
-      id: b40988b3-0d72-46e7-824b-0a575acca2a6
+      id: 2d876a1c-6f7f-44f9-895b-2040ad5213f4
       version: -1
-      name: 'Test - ExtFilter'
+      name: '"===" (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24271,7 +24271,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 36770
+          "y": 37645
         }
       }
     note: false
@@ -24281,12 +24281,12 @@ tasks:
     quietmode: 0
   "227":
     id: "227"
-    taskid: a881b16f-3a48-4bca-8a23-61222bb5f347
+    taskid: 93604654-e687-4f3f-8116-c1691a7ae709
     type: playbook
     task:
-      id: a881b16f-3a48-4bca-8a23-61222bb5f347
+      id: 93604654-e687-4f3f-8116-c1691a7ae709
       version: -1
-      name: 'Test - ExtFilter'
+      name: '"===" (2)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24386,7 +24386,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 36945
+          "y": 37820
         }
       }
     note: false
@@ -24396,12 +24396,12 @@ tasks:
     quietmode: 0
   "228":
     id: "228"
-    taskid: 45e67039-3b58-41d5-874e-0ed0c3b9c0b9
+    taskid: 2db931cc-f158-40cd-849f-215d798b86d8
     type: playbook
     task:
-      id: 45e67039-3b58-41d5-874e-0ed0c3b9c0b9
+      id: 2db931cc-f158-40cd-849f-215d798b86d8
       version: -1
-      name: 'Test - ExtFilter'
+      name: '!== (1)'
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24500,7 +24500,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 37120
+          "y": 37995
         }
       }
     note: false
@@ -24510,10 +24510,10 @@ tasks:
     quietmode: 0
   "230":
     id: "230"
-    taskid: 4dc388c1-9060-4c94-89df-9be69a26eb28
+    taskid: bb9a11c0-b5f6-4c5d-868e-efbc8632612b
     type: condition
     task:
-      id: 4dc388c1-9060-4c94-89df-9be69a26eb28
+      id: bb9a11c0-b5f6-4c5d-868e-efbc8632612b
       version: -1
       name: encode (1)
       description: Run ExtFilter for a test
@@ -24633,7 +24633,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 1070
         }
       }
     note: false
@@ -24643,12 +24643,12 @@ tasks:
     quietmode: 0
   "231":
     id: "231"
-    taskid: 84921698-0124-435f-8f46-3424bd58abc9
+    taskid: bd534444-86f9-4015-80b5-796cbf0b7f7a
     type: playbook
     task:
-      id: 84921698-0124-435f-8f46-3424bd58abc9
+      id: bd534444-86f9-4015-80b5-796cbf0b7f7a
       version: -1
-      name: Test - ExtFilter
+      name: is replaced with (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24755,7 +24755,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 37295
+          "y": 38170
         }
       }
     note: false
@@ -24765,12 +24765,12 @@ tasks:
     quietmode: 0
   "232":
     id: "232"
-    taskid: 27430889-2772-4da3-8f98-b362673e0267
+    taskid: 29f633ab-005c-46d7-8305-7bbce5cd4e4e
     type: playbook
     task:
-      id: 27430889-2772-4da3-8f98-b362673e0267
+      id: 29f633ab-005c-46d7-8305-7bbce5cd4e4e
       version: -1
-      name: Test - ExtFilter
+      name: is replaced with (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24871,7 +24871,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 37470
+          "y": 38345
         }
       }
     note: false
@@ -24881,12 +24881,12 @@ tasks:
     quietmode: 0
   "235":
     id: "235"
-    taskid: d84fef48-a5b1-4d02-89cc-b9224d034abd
+    taskid: f5888ce0-ea9d-4dac-869d-b241d1bc7efe
     type: playbook
     task:
-      id: d84fef48-a5b1-4d02-89cc-b9224d034abd
+      id: f5888ce0-ea9d-4dac-869d-b241d1bc7efe
       version: -1
-      name: Test - ExtFilter
+      name: is updated with (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -24993,7 +24993,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 37645
+          "y": 38520
         }
       }
     note: false
@@ -25003,12 +25003,12 @@ tasks:
     quietmode: 0
   "236":
     id: "236"
-    taskid: 9497cfe7-2d60-415e-852c-b1dc7aa5d301
+    taskid: 814c7809-03e5-42c2-8af3-93d8e939d4b1
     type: playbook
     task:
-      id: 9497cfe7-2d60-415e-852c-b1dc7aa5d301
+      id: 814c7809-03e5-42c2-8af3-93d8e939d4b1
       version: -1
-      name: Test - ExtFilter
+      name: is updated with (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25108,7 +25108,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 37820
+          "y": 38695
         }
       }
     note: false
@@ -25118,12 +25118,12 @@ tasks:
     quietmode: 0
   "237":
     id: "237"
-    taskid: 1ec0bae9-b100-4b6c-8032-7319f30955a2
+    taskid: adf90a54-ab10-4833-8197-6b3bf5751e8e
     type: playbook
     task:
-      id: 1ec0bae9-b100-4b6c-8032-7319f30955a2
+      id: adf90a54-ab10-4833-8197-6b3bf5751e8e
       version: -1
-      name: Test - ExtFilter
+      name: appends (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25227,7 +25227,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 37995
+          "y": 38870
         }
       }
     note: false
@@ -25237,12 +25237,12 @@ tasks:
     quietmode: 0
   "238":
     id: "238"
-    taskid: 909aa3c2-4ca8-451f-89e0-36dd4b4a03a5
+    taskid: 16cef67b-64e9-48a9-8bd7-e141728f4ed0
     type: playbook
     task:
-      id: 909aa3c2-4ca8-451f-89e0-36dd4b4a03a5
+      id: 16cef67b-64e9-48a9-8bd7-e141728f4ed0
       version: -1
-      name: Test - ExtFilter
+      name: appends (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25358,7 +25358,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 38170
+          "y": 39045
         }
       }
     note: false
@@ -25368,12 +25368,12 @@ tasks:
     quietmode: 0
   "239":
     id: "239"
-    taskid: a977b7c7-7bf6-45bb-82c5-1fd9cace647a
+    taskid: 4b3527cb-c583-486d-8406-4a62cb95b6f8
     type: playbook
     task:
-      id: a977b7c7-7bf6-45bb-82c5-1fd9cace647a
+      id: 4b3527cb-c583-486d-8406-4a62cb95b6f8
       version: -1
-      name: Test - ExtFilter
+      name: if-then-else (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25513,7 +25513,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 38345
+          "y": 39220
         }
       }
     note: false
@@ -25523,12 +25523,12 @@ tasks:
     quietmode: 0
   "240":
     id: "240"
-    taskid: 8e8a569f-5445-4646-87d9-b24e5b5f4c17
+    taskid: 50fb1879-759e-42f3-8eec-5e914e43ec60
     type: playbook
     task:
-      id: 8e8a569f-5445-4646-87d9-b24e5b5f4c17
+      id: 50fb1879-759e-42f3-8eec-5e914e43ec60
       version: -1
-      name: Test - ExtFilter
+      name: if-then-else (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25636,7 +25636,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 38520
+          "y": 39395
         }
       }
     note: false
@@ -25646,12 +25646,12 @@ tasks:
     quietmode: 0
   "241":
     id: "241"
-    taskid: 0efcc9f1-696d-4fc6-801b-da73c203a49e
+    taskid: c298def4-9814-4682-84cd-43e85f070020
     type: playbook
     task:
-      id: 0efcc9f1-696d-4fc6-801b-da73c203a49e
+      id: c298def4-9814-4682-84cd-43e85f070020
       version: -1
-      name: Test - ExtFilter
+      name: if-then-else (3)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25756,7 +25756,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 38695
+          "y": 39570
         }
       }
     note: false
@@ -25766,12 +25766,12 @@ tasks:
     quietmode: 0
   "242":
     id: "242"
-    taskid: f3929c4c-64a3-4774-8218-d4cd94208b14
+    taskid: 2195875e-122c-4c40-88a6-53f71c86a5aa
     type: playbook
     task:
-      id: f3929c4c-64a3-4774-8218-d4cd94208b14
+      id: 2195875e-122c-4c40-88a6-53f71c86a5aa
       version: -1
-      name: Test - ExtFilter
+      name: switch-case (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -25925,7 +25925,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 38870
+          "y": 39745
         }
       }
     note: false
@@ -25935,12 +25935,12 @@ tasks:
     quietmode: 0
   "243":
     id: "243"
-    taskid: 41d71d80-8ca6-4e6e-868d-0cb114cfd808
+    taskid: 506b8486-1725-4868-865e-8b5bbcc1bf21
     type: playbook
     task:
-      id: 41d71d80-8ca6-4e6e-868d-0cb114cfd808
+      id: 506b8486-1725-4868-865e-8b5bbcc1bf21
       version: -1
-      name: Test - ExtFilter
+      name: switch-case (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -26088,7 +26088,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 39045
+          "y": 39920
         }
       }
     note: false
@@ -26098,12 +26098,12 @@ tasks:
     quietmode: 0
   "244":
     id: "244"
-    taskid: 7b05aeb2-6605-4bf5-897d-7570e30cbbab
+    taskid: 36a33017-59d0-475a-80ea-eb0a600904d4
     type: playbook
     task:
-      id: 7b05aeb2-6605-4bf5-897d-7570e30cbbab
+      id: 36a33017-59d0-475a-80ea-eb0a600904d4
       version: -1
-      name: Test - ExtFilter
+      name: collects values (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -26227,7 +26227,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 39220
+          "y": 40095
         }
       }
     note: false
@@ -26237,12 +26237,12 @@ tasks:
     quietmode: 0
   "245":
     id: "245"
-    taskid: 438d4cd7-7a59-4321-8b94-df904982f5ff
+    taskid: 8d252cbd-404d-4744-8548-7ad88fe6f383
     type: playbook
     task:
-      id: 438d4cd7-7a59-4321-8b94-df904982f5ff
+      id: 8d252cbd-404d-4744-8548-7ad88fe6f383
       version: -1
-      name: Test - ExtFilter
+      name: collects keys (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -26354,7 +26354,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 39570
+          "y": 40445
         }
       }
     note: false
@@ -26364,12 +26364,12 @@ tasks:
     quietmode: 0
   "246":
     id: "246"
-    taskid: 9344e520-ec0e-477b-82fb-6563a82ac49c
+    taskid: de27693e-0c65-43be-8b60-d494b01477cc
     type: playbook
     task:
-      id: 9344e520-ec0e-477b-82fb-6563a82ac49c
+      id: de27693e-0c65-43be-8b60-d494b01477cc
       version: -1
-      name: Test - ExtFilter
+      name: flattens with values (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -26485,7 +26485,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 39745
+          "y": 40620
         }
       }
     note: false
@@ -26495,12 +26495,12 @@ tasks:
     quietmode: 0
   "247":
     id: "247"
-    taskid: 45869eb0-143f-4faa-8746-80f72922e39e
+    taskid: bbb3f065-0ab3-4b4b-8b24-e86801addb00
     type: playbook
     task:
-      id: 45869eb0-143f-4faa-8746-80f72922e39e
+      id: bbb3f065-0ab3-4b4b-8b24-e86801addb00
       version: -1
-      name: Test - ExtFilter
+      name: flattens with keys (1)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -26615,7 +26615,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 39920
+          "y": 40795
         }
       }
     note: false
@@ -26625,12 +26625,12 @@ tasks:
     quietmode: 0
   "248":
     id: "248"
-    taskid: 3244e132-a326-4b36-863c-a8904caf5008
+    taskid: dbcc39fe-40a5-4099-8ce1-d1cb8d80bd02
     type: playbook
     task:
-      id: 3244e132-a326-4b36-863c-a8904caf5008
+      id: dbcc39fe-40a5-4099-8ce1-d1cb8d80bd02
       version: -1
-      name: Test - ExtFilter
+      name: collects values (2)
       description: Run ExtFilter for a test
       playbookName: Test - ExtFilter
       type: playbook
@@ -26730,7 +26730,325 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 39395
+          "y": 40270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "249":
+    id: "249"
+    taskid: 17860e50-aeb8-4805-8857-62433f98ae87
+    type: condition
+    task:
+      id: 17860e50-aeb8-4805-8857-62433f98ae87
+      version: -1
+      name: 'email-header: decode (2)'
+      description: Run ExtFilter for a test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${
+                accessor: =}
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: "ABC =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?= XYZ"
+                - operator: ExtFilter
+                  args:
+                    ctx_demisto: {}
+                    ctx_incident: {}
+                    ctx_inputs: {}
+                    ctx_lists: {}
+                    filter:
+                      value:
+                        simple: '{}'
+                    operation:
+                      value:
+                        simple: 'email-header: decode'
+                    path: {}
+            iscontext: true
+          right:
+            value:
+              simple: ABC あいうえお XYZ
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "250":
+    id: "250"
+    taskid: 525fdce3-8eb2-4d35-800b-91b75eeebec4
+    type: condition
+    task:
+      id: 525fdce3-8eb2-4d35-800b-91b75eeebec4
+      version: -1
+      name: 'email-header: decode (1)'
+      description: Run ExtFilter for a test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "249"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${
+                accessor: =}
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: "=?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?="
+                - operator: ExtFilter
+                  args:
+                    ctx_demisto: {}
+                    ctx_incident: {}
+                    ctx_inputs: {}
+                    ctx_lists: {}
+                    filter:
+                      value:
+                        simple: '{}'
+                    operation:
+                      value:
+                        simple: 'email-header: decode'
+                    path: {}
+            iscontext: true
+          right:
+            value:
+              simple: あいうえお
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "251":
+    id: "251"
+    taskid: ed63320d-318e-46b3-8631-aeeee208258d
+    type: condition
+    task:
+      id: ed63320d-318e-46b3-8631-aeeee208258d
+      version: -1
+      name: 'regex: replace (1)'
+      description: Run ExtFilter for a test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "252"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${
+                accessor: =}
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: 'Re: Re: Fw: Hello!'
+                - operator: ExtFilter
+                  args:
+                    ctx_demisto: {}
+                    ctx_incident: {}
+                    ctx_inputs: {}
+                    ctx_lists: {}
+                    filter:
+                      value:
+                        simple: |-
+                          {
+                            "pattern": "( *(Re: *|Fw: *)*)(.*)",
+                            "matched": "\\3"
+                          }
+                    operation:
+                      value:
+                        simple: 'regex: replace'
+                    path: {}
+            iscontext: true
+          right:
+            value:
+              simple: Hello!
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "252":
+    id: "252"
+    taskid: adf4678f-f611-4794-80c7-9c26ff4b6076
+    type: condition
+    task:
+      id: adf4678f-f611-4794-80c7-9c26ff4b6076
+      version: -1
+      name: 'regex: replace (2)'
+      description: Run ExtFilter for a test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "253"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${
+                accessor: =}
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: xyz
+                - operator: ExtFilter
+                  args:
+                    ctx_demisto: {}
+                    ctx_incident: {}
+                    ctx_inputs: {}
+                    ctx_lists: {}
+                    filter:
+                      value:
+                        simple: |-
+                          {
+                            "pattern": ".*(abcde).*",
+                            "matched": "\\1",
+                             "unmatched": "unmatched"
+                          }
+                    operation:
+                      value:
+                        simple: 'regex: replace'
+                    path: {}
+            iscontext: true
+          right:
+            value:
+              simple: unmatched
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "253":
+    id: "253"
+    taskid: 8f7d27e4-1d02-407b-8e24-7898dda01525
+    type: condition
+    task:
+      id: 8f7d27e4-1d02-407b-8e24-7898dda01525
+      version: -1
+      name: 'regex: replace (3)'
+      description: Run ExtFilter for a test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "250"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${
+                accessor: =}
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: xyz
+                - operator: ExtFilter
+                  args:
+                    ctx_demisto: {}
+                    ctx_incident: {}
+                    ctx_inputs: {}
+                    ctx_lists: {}
+                    filter:
+                      value:
+                        simple: |-
+                          {
+                            "pattern": ".*(abcde).*",
+                            "matched": "\\1"
+                          }
+                    operation:
+                      value:
+                        simple: 'regex: replace'
+                    path: {}
+            iscontext: true
+          right:
+            value:
+              simple: xyz
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -26743,7 +27061,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 39965,
+        "height": 40840,
         "width": 380,
         "x": 50,
         "y": 50
@@ -26753,5 +27071,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
