@@ -4198,7 +4198,9 @@ def camelize_string(src_str, delim='_', upper_camel=True):
     :param delim: indicator category.
 
     :type upper_camel: ``bool``
-    :param upper_camel: if True then transform it to camel case with the first letter capitalised, otherwise not.
+    :param upper_camel: When True then transforms string to camel case with the first letter capitalised
+                        (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                        (for example: demisto_content to demistoContent).
 
     :return: A CammelCase string.
     :rtype: ``str``
@@ -4729,7 +4731,9 @@ def camelize(src, delim=' ', upper_camel=True):
         :param delim: The delimiter between two words in the key (e.g. delim=' ' for "Start Date"). Default ' '.
 
         :type upper_camel: ``bool``
-        :param upper_camel: if True then transform it to camel case with the first letter capitalised, otherwise not.
+        :param upper_camel: When True then transforms dictionary keys to camel case with the first letter capitalised
+                            (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                            (for example: demisto_content to demistoContent).
 
         :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
         :rtype: ``dict`` or ``list``
@@ -4825,7 +4829,9 @@ def underscoreToCamelCase(s, upper_camel=True):
        :param s: The string to convert (e.g. hello_world) (required)
 
        :type upper_camel: ``bool``
-       :param upper_camel: if True then transform it to camel case with the first letter capitalised, otherwise not.
+       :param upper_camel: When True then transforms dictionarykeys to camel case with the first letter capitalised
+                           (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                           (for example: demisto_content to demistoContent).
 
        :return: The converted string (e.g. HelloWorld)
        :rtype: ``str``
