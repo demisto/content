@@ -1,4 +1,4 @@
-description: Use to Initiates a new endpoint script execution kill process and retrieve
+description: Initiates a new endpoint script execution kill process and retrieves
   the results.
 id: Cortex XDR - kill process
 inputs:
