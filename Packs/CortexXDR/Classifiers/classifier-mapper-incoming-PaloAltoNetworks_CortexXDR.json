@@ -220,8 +220,22 @@
                     "simple": "user_count"
                 },
                 "XDR Users": {
-                    "complex": null,
-                    "simple": "alerts.user_name"
+                    "complex": {
+                        "accessor": "user_name",
+                        "filters": [
+
+                        ],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "args": {
+
+                                },
+                                "operator": "uniq"
+                            }
+                        ]
+                    },
+                    "simple": ""
                 },
                 "dbotMirrorDirection": {
                     "complex": null,
@@ -529,7 +543,7 @@
             }
         }
     },
-    "name": "XDR - Incoming Mapper",
+    "name": "XDR - Incoming Mapper_copy",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
