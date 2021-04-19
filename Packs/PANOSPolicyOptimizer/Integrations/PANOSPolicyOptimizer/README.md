@@ -1,5 +1,6 @@
 Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama
-This integration was integrated and tested with version 0.1 of PAN-OS Policy Optimizer, Co-Authored with Maciej Drobniuch.## Configure PAN-OS Policy Optimizer on Cortex XSOAR
+This integration was integrated and tested with version 0.1 of PAN-OS Policy Optimizer, Co-Authored with Maciej Drobniuch.
+## Configure PAN-OS Policy Optimizer on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for PAN-OS Policy Optimizer.
