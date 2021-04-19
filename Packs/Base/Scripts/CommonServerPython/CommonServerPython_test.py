@@ -4063,3 +4063,57 @@ class TestCommonTypes:
             dbot_score=dbot_score
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com', 'Domain': 'example.com'}
+
+
+class TestIndicatorsSearcher:
+    def mock_search_after_output(self, fromDate, toDate, query, size, value, searchAfter):
+        if not searchAfter:
+            searchAfter = 0
+
+        return {'searchAfter': searchAfter + 1}
+
+    def test_search_indicators_by_page(self, mocker):
+        """
+        Given:
+          - Searching indicators couple of times
+          - Server version in less than 6.1.0
+        When:
+          - Mocking search indicators using paging
+        Then:
+          - The page number is rising
+          - The searchAfter param is null
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+
+        search_indicators_obj_paging = IndicatorsSearcher()
+        search_indicators_obj_paging._can_use_search_after = False
+
+        for n in range(5):
+            search_indicators_obj_paging.search_indicators_by_version()
+
+        assert search_indicators_obj_paging._page == 5
+        assert not search_indicators_obj_paging._search_after_param
+
+    def test_search_indicators_by_search_after(self, mocker):
+        """
+        Given:
+          - Searching indicators couple of times
+          - Server version in equal or higher than 6.1.0
+        When:
+          - Mocking search indicators using the searchAfter parameter
+        Then:
+          - The search after param is rising
+          - The page param is 0
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        search_indicators_obj_search_after = IndicatorsSearcher()
+        search_indicators_obj_search_after._can_use_search_after = True
+
+        for n in range(5):
+            search_indicators_obj_search_after.search_indicators_by_version()
+
+        assert search_indicators_obj_search_after._search_after_param == 5
+        assert search_indicators_obj_search_after._page == 0
