@@ -2283,11 +2283,10 @@ script:
     - contextPath: CiscoFP.TaskStatus.Status
       description: task status
       type: String
-    description: Retrieves information about a previously submitted pending job or
-      task with the specified ID. Used for deploying.
-name: ciscofp-get-url-groups-object
+  - name: ciscofp-get-url-groups-object
     arguments:
     - name: id
+      description: ID of the group.
       required: true
     outputs:
     - contextPath: CiscoFP.URLGroups.ID
@@ -2314,7 +2313,7 @@ name: ciscofp-get-url-groups-object
     - contextPath: CiscoFP.URLGroups.Objects.Type
       description: The object type.
       type: string
-      description: Retrieves the groups of url objects and addresses associated with
+    description: Retrieves the groups of url objects and addresses associated with
       the specified ID. If not supplied, retrieves a list of all url objects.
   - name: ciscofp-update-url-groups-objects
     arguments:
@@ -2338,8 +2337,8 @@ name: ciscofp-get-url-groups-object
     - name: name
       required: true
       description: The group name.
-      description: UpdateThe ID of the group to update.s a group of url objects.
-  dockerimage: demisto/python3:3.8.6.14516
+    description: Updates the ID of a group of url objects.
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
   longRunning: false
