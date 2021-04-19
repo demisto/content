@@ -99,6 +99,7 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     page_number = args.get('page_number')
     page_size = args.get('page_size')
     url_suffix = f'ip_lists/{list_type}/ip_objects'
+    defer_validation = argToBoolean(args.get('defer_validation', False))
 
 
     params = {}

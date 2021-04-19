@@ -182,13 +182,12 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
       description: When set to false (default), the inputs will be validated during
         request processing and errors are reported in the response. When set to true,
         the inputs will be accepted for processing but some may be skipped if they
         don’t meet the validation criteria.
       isArray: false
-      name: defer_validataion
+      name: defer_validation
       predefined:
       - 'true'
       - 'false'
