@@ -1092,103 +1092,18 @@ Checks the reputation of a domain.
                     "positives": 3,
                     "sha256": "459d071829a5977e8c0f288be2cb473cd8cc44f450b65e8d8ddb240bccd59f84",
                     "total": 74
-                },
-                {
-                    "date": "2021-04-13 10:29:33",
-                    "positives": 8,
-                    "sha256": "1557a2a3f8ce9f9bfc2625da009a6fd68ab5d75f5b8dca6d84b31401d3f8ef75",
-                    "total": 74
-                },
-                {
-                    "date": "2021-04-13 10:53:28",
-                    "positives": 40,
-                    "sha256": "8c8eff0f8389e49ccbda4914b889395affd569435553fb3d22223c8cc996ac3c",
-                    "total": 75
-                },
-                {
-                    "date": "2021-04-13 10:49:47",
-                    "positives": 2,
-                    "sha256": "0f404f28a67a608580c071d37b9e201b716cf42ee06d7b714467a74e6d37cadf",
-                    "total": 74
-                },
-                {
-                    "date": "2021-04-13 10:51:41",
-                    "positives": 28,
-                    "sha256": "dcec9be3f1e2ec0832dd2d036e4716aa6fe1a45b1f259bcf93cadb96d10222bd",
-                    "total": 75
-                },
-                {
-                    "date": "2021-04-13 10:50:45",
-                    "positives": 40,
-                    "sha256": "74a21715e86c792efc30f56e9a0033452bd169279c5ece7e1bd301c0fcf3dbed",
-                    "total": 75
-                },
-                {
-                    "date": "2021-04-13 10:48:56",
-                    "positives": 1,
-                    "sha256": "aaf8e7812403b2c1efe89c6c232d4a584d01b2f2dc8d6a27ae886ab1bbc4299e",
-                    "total": 74
-                },
-                {
-                    "date": "2021-04-13 10:40:01",
-                    "positives": 57,
-                    "sha256": "8b9919b5ddec35db98ff1d2e2797b337f0278f9cfbc1b00cee3c4f5fd0608462",
-                    "total": 75
-                },
-                {
-                    "date": "2021-04-13 10:39:59",
-                    "positives": 44,
-                    "sha256": "8b98d416f60fa725e25671f499a2512c526c1ac9f1ffd025b15da6c1c19a4e2c",
-                    "total": 75
-                },
-                {
-                    "date": "2021-04-13 10:39:42",
-                    "positives": 1,
-                    "sha256": "8a02f58307b2a2ebdc86f29462a6ce6066a47ff3a4055fadb23960eeb8096387",
-                    "total": 74
-                },
-                {
-                    "date": "2021-04-13 10:37:52",
-                    "positives": 50,
-                    "sha256": "8131f1134e55641a5cf0aaf5c1c2dd12645143ac0ea4714f7f246aa4add66e86",
-                    "total": 75
-                },
-                {
-                    "date": "2021-04-12 10:37:22",
-                    "positives": 52,
-                    "sha256": "7e23f0c60b7efcaf0ce283e3c906333047ab22b417a802bc1b4c5ab20a8f51e9",
-                    "total": 75
-                },
-                {
-                    "date": "2021-04-13 10:35:06",
-                    "positives": 50,
-                    "sha256": "8c91cd37f9a3bcb6be28e91555e41160dc78c32727a434768975c735139834b7",
-                    "total": 74
-                },
-                {
-                    "date": "2021-04-05 12:48:34",
-                    "positives": 52,
-                    "sha256": "7491f9da9ef07843b0cb67a66ff5f80dfa463892bee5e0f197ad365b7d0a12f4",
-                    "total": 75
                 }
             ],
             "Resolutions": [
                 {
-                    "ip_address": "192.0.43.10",
+                    "ip_address": "x.x.x.x",
                     "last_resolved": "2013-07-27 00:00:00"
                 },
                 {
-                    "ip_address": "221.121.159.162",
+                    "ip_address": "x.x.x.x",
                     "last_resolved": "2019-11-04 09:44:13"
                 },
-                {
-                    "ip_address": "93.184.216.119",
-                    "last_resolved": "2013-10-18 00:00:00"
-                },
-                {
-                    "ip_address": "93.184.216.34",
-                    "last_resolved": "2020-09-15 09:14:20"
-                }
+                
             ],
             "Subdomains": [],
             "UnAVDetectedCommunicatingHashes": [
@@ -1851,7 +1766,7 @@ Checks the reputation of a domain.
                     "total": 73
                 }
             ],
-            "Whois": "Creation Date: 1995-08-14T04:00:00Z\nDNSSEC: signedDelegation\nDomain Name: EXAMPLE.COM\nDomain Status: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited\nDomain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited\nDomain Status: clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited\nName Server: A.IANA-SERVERS.NET\nName Server: B.IANA-SERVERS.NET\nRegistrar IANA ID: 376\nRegistrar URL: http://res-dom.iana.org\nRegistrar WHOIS Server: whois.iana.org\nRegistrar: RESERVED-Internet Assigned Numbers Authority\nRegistry Domain ID: 2336799_DOMAIN_COM-VRSN\nRegistry Expiry Date: 2021-08-13T04:00:00Z\nUpdated Date: 2020-08-14T07:02:37Z\ncreated: 1992-01-01\ndomain: EXAMPLE.COM\norganisation: Internet Assigned Numbers Authority\nsource: IANA"
+            "Whois": "Creation Date: 1995-08-14T04:00:00Z\nDNSSEC: signedDelegation\nDomain Name: EXAMPLE.COM\nDomain Status: clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited\nDomain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited\nDomain Status: clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited\nName Server: A.IANA-SERVERS.NET\nName Server: B.IANA-SERVERS.NET\nRegistrar IANA ID: 376\nRegistrar URL: http://example.example.org\nRegistrar WHOIS Server: whois.iana.org\nRegistrar: RESERVED-Internet Assigned Numbers Authority\nRegistry Domain ID: 2336799_DOMAIN_COM-VRSN\nRegistry Expiry Date: 2021-08-13T04:00:00Z\nUpdated Date: 2020-08-14T07:02:37Z\ncreated: 1992-01-01\ndomain: EXAMPLE.COM\norganisation: Internet Assigned Numbers Authority\nsource: IANA"
         }
     }
 }
@@ -1880,7 +1795,7 @@ Checks the reputation of a domain.
 >**Name Server**: A.IANA-SERVERS.NET
 >**Name Server**: B.IANA-SERVERS.NET
 >**Registrar IANA ID**: 376
->**Registrar URL**: http://res-dom.iana.org
+>**Registrar URL**: http://example.example.org
 >**Registrar WHOIS Server**: whois.iana.org
 >**Registrar**: RESERVED-Internet Assigned Numbers Authority
 >**Registry Domain ID**: 2336799_DOMAIN_COM-VRSN
