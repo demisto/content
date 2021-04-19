@@ -1,7 +1,7 @@
 commonfields:
-  id: script-JiraListTransition
+  id: JiraListTransition
   version: -1
-name: script-JiraListTransition
+name: JiraListTransition
 script: ''
 type: python
 tags:

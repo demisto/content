@@ -52,13 +52,13 @@ def main():
                                                 break
                                             else:
                                                 output = create_output(
-                                                    f"Error occurred while running script-JiraChangeTransition. Could "
+                                                    f"Error occurred while running JiraChangeTransition. Could "
                                                     f"not find: the issue's status name. The issue returned is: "
                                                     f"{incident_fields} "
                                                 )
                                         else:
                                             output = create_output(
-                                                f'Error occurred while running script-JiraChangeTransition. Could not '
+                                                f'Error occurred while running JiraChangeTransition. Could not '
                                                 f'find:"fields" as key. The issue returned is: {incident_content} '
                                             )
                                     else:
@@ -67,12 +67,12 @@ def main():
                                         )
                                 else:
                                     output = create_output(
-                                        f'Error occurred while running script-JiraChangeTransition. Could not find:'
+                                        f'Error occurred while running JiraChangeTransition. Could not find:'
                                         f'"Content" as key. The response is: {res} '
                                     )
                     else:
                         output = create_output(
-                            f"Error occurred while running script-JiraChangeTransition. expected a list as response "
+                            f"Error occurred while running JiraChangeTransition. expected a list as response "
                             f"but got: {type(res)}. The response is: {res} "
                         )
                 else:
@@ -91,7 +91,7 @@ def main():
 
     except Exception as ex:
         output = create_output(
-            "Error occurred while running script-JiraChangeTransition. got the next error:\n"
+            "Error occurred while running JiraChangeTransition. got the next error:\n"
             + str(ex)
         )
     finally:
