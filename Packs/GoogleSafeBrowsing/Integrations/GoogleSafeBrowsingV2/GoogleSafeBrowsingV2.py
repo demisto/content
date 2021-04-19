@@ -63,18 +63,18 @@ def handle_errors(result):
     status_code = result.get('StatusCode', 0)
     result_body = result.get('Body')
 
-    if 200 > status_code > 299:
-        raise Exception(f'Failed to perform request, request status code: {status_code}')
-
     if result_body == '' and status_code == 204:
         raise Exception('No content received. Possible API rate limit reached.')
+
+    if 200 < status_code < 299:
+        raise Exception(f'Failed to perform request, request status code: {status_code}.')
 
     if result_body == '':
         raise Exception('No content received. Maybe you tried a private API?.')
 
     if result.get('error'):
         error_massage = result.get('error', {}).get('message')
-        error_code = result.get('code', {}).get('code')
+        error_code = result.get('error', {}).get('code')
         raise Exception(f'Failed accessing Google Safe Browsing APIs. Error: {error_massage}. Error code: {error_code}')
 
 
