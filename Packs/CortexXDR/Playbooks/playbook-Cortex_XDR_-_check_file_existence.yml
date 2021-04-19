@@ -1,5 +1,5 @@
 description: |
-  Use to Initiates a new endpoint script execution to check if file exists and retrieve the results.
+  Use to initiate a new endpoint script execution to check if file exists and retrieve the results.
 id: Cortex XDR - check file existence
 inputs:
 - description: 'A comma-separated list of endpoint IDs. '
@@ -75,7 +75,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Initiates a new endpoint script execution to check if file exists.
+      description: Initiates a new endpoint script execution to check if the file exists.
       id: af2ebc62-afc0-4284-8a90-aa07d85df504
       iscommand: true
       name: Run script file exists
