@@ -1171,11 +1171,11 @@ createdSize: 0, updatedSize: 0, removedSize: 2, duplicates: []
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Exabeam.NotableAsset.hostName | String | The notable asset host name. | 
-| Exabeam.NotableAsset.ipAddress | String | The notable asset IP address. | 
-| Exabeam.NotableAsset.assetType | String | The notable asset type. | 
-| Exabeam.NotableAsset.firstSeen | Date | Time when the asset was first seen. | 
-| Exabeam.NotableAsset.lastSeen | Date | Time when the asset was last seen. | 
+| Exabeam.NotableAsset.HostName | String | The notable asset host name. | 
+| Exabeam.NotableAsset.IPAddress | String | The notable asset IP address. | 
+| Exabeam.NotableAsset.AssetType | String | The notable asset type. | 
+| Exabeam.NotableAsset.FirstSeen | Date | Time when the asset was first seen. | 
+| Exabeam.NotableAsset.LastSeen | Date | Time when the asset was last seen. | 
 | Exabeam.NotableAsset.highestRiskScore | Number | The highest risk score of the asset. | 
 | Exabeam.NotableAsset.id | String | The notable asset ID. | 
 | Exabeam.NotableAsset.entityName | String | The entity name of the asset. | 
