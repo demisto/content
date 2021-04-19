@@ -134,11 +134,11 @@ def main():
     try:
         if demisto.command() == 'test-module':
             test_module()
-        elif demisto.command() == 'iLert-submit-event':
+        elif demisto.command() == 'ilert-submit-event':
             demisto.results(submit_new_event_command(**demisto.args()))
-        elif demisto.command() == 'iLert-acknowledge-event':
+        elif demisto.command() == 'ilert-acknowledge-event':
             demisto.results(submit_acknowledge_event_command(**demisto.args()))
-        elif demisto.command() == 'iLert-resolve-event':
+        elif demisto.command() == 'ilert-resolve-event':
             demisto.results(submit_resolve_event_command(**demisto.args()))
     except Exception as err:
         return_error(err)

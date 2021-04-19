@@ -1,5 +1,5 @@
 Alert and notify users using iLert
-This integration was integrated and tested with version xx of iLert
+This integration was integrated and tested with version v1 of iLert
 ## Configure iLert on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -41,13 +41,6 @@ Creates a new event/incident in iLert (In order to use this command  you have to
 | iLert.Event.incidentKey | string | Incident key | 
 | iLert.Event.incidentUrl | unknown | Incident Url | 
 | iLert.Event.responseCode | unknown | Response code | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### iLert-acknowledge-event

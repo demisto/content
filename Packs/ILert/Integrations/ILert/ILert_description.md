@@ -1,3 +1,3 @@
 ### iLert Integration
- 
-[View Integration Documentation](https://docs.ilert.com/integrations/cortex-xsoar)
+
+[View Integration Documentation](https://api.ilert.com/api-docs/)
