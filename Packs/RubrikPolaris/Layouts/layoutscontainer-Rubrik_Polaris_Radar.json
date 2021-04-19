@@ -299,7 +299,34 @@
 				"hidden": false,
 				"id": "rubrikPolaris",
 				"name": "Rubrik Polaris",
-				"sections": [],
+				"sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "rubrikPolaris-35620770-a14e-11eb-a966-5fbb5aa7e80a",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "rubrikpolarismessage",
+                                "height": 106,
+                                "id": "5f7cfd80-a14e-11eb-a966-5fbb5aa7e80a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Anomaly Detection Event Timeline",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
 				"type": "custom"
 			},
             {
