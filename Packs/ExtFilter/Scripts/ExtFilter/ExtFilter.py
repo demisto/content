@@ -320,7 +320,8 @@ def match_pattern(
 
 def extract_value(source: Any,
                   extractor: Callable[[str,
-                                       Optional[ContextData]],
+                                       Optional[ContextData],
+                                       Optional[Dict[str, Any]],
                                       Optional[Dict[str, Any]]],
                   dx: Optional[ContextData],
                   node: Optional[Dict[str, Any]] = None) -> Any:
@@ -334,7 +335,8 @@ def extract_value(source: Any,
     """
     def _extract(source: str,
                  extractor: Optional[Callable[[str,
-                                               Optional[ContextData]],
+                                               Optional[ContextData],
+                                               Optional[Dict[str, Any]],
                                               Optional[Dict[str, Any]]]],
                  dx: Optional[ContextData],
                  node: Optional[Dict[str, Any]],
