@@ -31,7 +31,7 @@ RELEASE_SUFFIX = USER_SUFFIX + '/releases'
 PULLS_SUFFIX = USER_SUFFIX + '/pulls'
 
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
-ISSUE_HEADERS = ['ID', 'Repository', 'Owner', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
+ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
                  'Assignees', 'Labels']
 FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'DownloadUrl']
 
@@ -218,16 +218,16 @@ def issue_format(issue):
     if issue.get('closed_by') is not None and issue.get('state') == 'closed':
         closed_by = issue.get('closed_by').get('login')
 
-    owner = ''
+    org = ''
     repository_url = issue.get('repository_url').split('/')
     repo = repository_url[-1]
     if len(repository_url) > 1:
-        owner = repository_url[-2]
+        org = repository_url[-2]
 
     form = {
         'ID': issue.get('number'),
         'Repository': repo,
-        'Owner': owner,
+        'Organization': org,
         'Title': issue.get('title'),
         'Body': issue.get('body'),
         'State': issue.get('state'),
@@ -1312,7 +1312,7 @@ def list_files_command():
             'DownloadUrl': file.get('download_url')
         })
 
-    ec = {'GitHub.File(val.Name === obj.Name && val.Path === obj.Path)': ec_object}
+    ec = {'GitHub.File(val.Path === obj.Path)': ec_object}
     human_readable = tableToMarkdown(f'Files in path: {path}', ec_object, removeNull=True, headers=FILE_HEADERS)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
 

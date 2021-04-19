@@ -117,7 +117,7 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
-    - contextPath: GitHub.Issue.Owner
+    - contextPath: GitHub.Issue.Organization
       description: The repository owner.
       type: String
   - arguments:
@@ -165,7 +165,7 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
-    - contextPath: GitHub.Issue.Owner
+    - contextPath: GitHub.Issue.Organization
       description: The repository owner.
       type: String
   - arguments:
@@ -247,7 +247,7 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
-    - contextPath: GitHub.Issue.Owner
+    - contextPath: GitHub.Issue.Organization
       description: The repository owner.
       type: String
   - arguments:
@@ -309,7 +309,7 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
-    - contextPath: GitHub.Issue.Owner
+    - contextPath: GitHub.Issue.Organization
       description: The repository owner.
       type: String
   - arguments:
@@ -365,7 +365,7 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
-    - contextPath: GitHub.Issue.Owner
+    - contextPath: GitHub.Issue.Organization
       description: The repository owner.
       type: String
   - deprecated: false
