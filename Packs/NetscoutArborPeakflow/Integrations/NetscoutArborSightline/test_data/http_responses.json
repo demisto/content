@@ -48,7 +48,7 @@
                     "subobject": {
                         "direction": "Incoming",
                         "fast_detected": true,
-                        "host_address": "192.168.123.123",
+                        "host_address": "1.2.3.4",
                         "impact_boundary": "managed object",
                         "impact_bps": 1072,
                         "impact_pps": 3,
@@ -204,7 +204,7 @@
                 "subobject": {
                     "direction": "Incoming",
                     "fast_detected": true,
-                    "host_address": "192.168.123.123",
+                    "host_address": "1.2.3.4",
                     "impact_boundary": "managed object",
                     "impact_bps": 1077,
                     "impact_pps": 3,
@@ -1219,7 +1219,7 @@
                     "dynamic_match_enabled": false,
                     "editable": true,
                     "family": "customer",
-                    "match": "192.168.123.123/32",
+                    "match": "1.2.3.4/32",
                     "match_enabled": true,
                     "match_type": "cidr_blocks",
                     "mitigation_automitigation": false,
