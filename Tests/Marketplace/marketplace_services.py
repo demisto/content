@@ -1053,10 +1053,9 @@ class Pack(object):
             previous_commit = content_repo.commit(previous_commit_hash)
 
             for modified_file in current_commit.diff(previous_commit):
-                logging.info(f'$$$$$$ modified file a path:{modified_file.a_path}')
-                logging.info(f'$$$$$$ modified file b path:{modified_file.b_path}')
                 if modified_file.a_path.startswith(PACKS_FOLDER):
                     modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
+
                     if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
                         if not is_ignored_pack_file(modified_file_path_parts):
                             logging.info(f"Detected modified files in {self._pack_name} pack")
@@ -1264,17 +1263,6 @@ class Pack(object):
             version = _version.replace('_', '.')
             # Should only apply on modified files that are not the last rn file
             if LooseVersion(version) < changelog_latest_rn_version:
-                # checking the case of modifing 1.0.0 version rn and it is not being the latest one - the latest one case is already handled
-                # if version == self.PACK_INITIAL_VERSION:
-                #     # if the initial version is in the changelog as a key, it is surely not aggregated,
-                #     # so only set new release notes lines as value
-                #     if changelog.get(version):
-                #         with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
-                #             rn_lines = rn_file.read()
-                #         modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
-                #     else:  # version 1.0.0 is aggregated with a higher version
-
-
                 # The case where the version is a key in the changelog file,
                 # and the value is not an aggregated release note
                 if is_the_only_rn_in_block(release_notes_dir, version, changelog):
