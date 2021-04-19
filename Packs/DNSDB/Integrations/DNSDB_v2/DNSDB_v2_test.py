@@ -955,7 +955,7 @@ class TestRDataCommand:
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/lookup/rdata/{args["type"]}/{args["value"]}'
                           f'?limit={args["limit"]}'
-                          f'&swclient=demisto-integration&version=v2.0',
+                          f'&swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}',
                           text=_saf_wrap(input))
 
         for v in args.values():
@@ -1090,7 +1090,7 @@ class TestSummarizeRDataCommand:
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/summarize/rdata/{args["type"]}/{args["value"]}'
                           f'?limit={args["limit"]}'
                           f'&max_count={args["max_count"]}'
-                          f'&swclient=demisto-integration&version=v2.0',
+                          f'&swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}',
                           text=_saf_wrap(input))
 
         for v in args.values():
@@ -1169,7 +1169,7 @@ class TestRRSetCommand:
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/lookup/rrset/name/{DNSDB.quote(args["owner_name"])}'
                           f'?limit={args["limit"]}'
-                          f'&swclient=demisto-integration&version=v2.0',
+                          f'&swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}',
                           text=_saf_wrap(input))
 
         for v in args.values():
@@ -1246,7 +1246,7 @@ class TestSummarizeRRSetCommand:
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/summarize/rrset/name/{args["owner_name"]}'
                           f'?limit={args["limit"]}'
                           f'&max_count={args["max_count"]}'
-                          f'&swclient=demisto-integration&version=v2.0',
+                          f'&swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}',
                           text=_saf_wrap(input))
 
         for v in args.values():

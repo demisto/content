@@ -1,0 +1,597 @@
+{
+  "fetch-incidents": {
+    "response": {
+      "pagination": {
+        "page": 1,
+        "items_per_page": "2",
+        "total": "31"
+      },
+      "incidents": [
+        {
+          "identifier": "JJJ-444222",
+          "reference_id": "123aaa",
+          "url": "http://www.malicious.com",
+          "status": "new",
+          "type": "Phishing",
+          "brand": "Testing Brand 1",
+          "link": "https://www.phishportal.com/client/incident/JJJ-444222"
+        },
+        {
+          "identifier": "JJJ-444223",
+          "reference_id": "a",
+          "url": "http://www.malicious2.com",
+          "status": "new",
+          "type": "Vishing",
+          "brand": "Testing Brand 2",
+          "link": "https://www.phishportal.com/client/incident/JJJ-444223"
+        },
+        {
+          "identifier": "JJJ-444224",
+          "reference_id": "b",
+          "url": "http://www.malicious3.com",
+          "status": "new",
+          "type": "Phishing",
+          "brand": "Testing Brand 3",
+          "link": "https://www.phishportal.com/client/incident/JJJ-444224"
+        },
+        {
+          "identifier": "JJJ-444225",
+          "reference_id": "c",
+          "url": "http://www.malicious.com",
+          "status": "new",
+          "type": "Phishing",
+          "brand": "Testing Brand 4",
+          "link": "https://www.phishportal.com/client/incident/JJJ-444225"
+        }
+      ]
+    }
+  },
+  "fraudwatch-incidents-list": {
+    "suffix": "incidents",
+    "response": {
+      "pagination": {
+        "page": 1,
+        "items_per_page": "2",
+        "total": "31"
+      },
+      "incidents": [
+        {
+          "identifier": "JJJ-444222",
+          "reference_id": "123aaa",
+          "url": "http://www.malicious.com",
+          "status": "new",
+          "type": "Phishing",
+          "brand": "Testing Brand 1",
+          "client": "Palo Alto",
+          "content_ip": null,
+          "host": null,
+          "host_country": null,
+          "host_timezone": null,
+          "created_by": "Client",
+          "discovered_by": "client",
+          "current_duration": "12280",
+          "active_duration": "12280",
+          "date_opened": "2021-01-31T13:00:05.000Z",
+          "date_closed": null,
+          "additional_urls": [
+            "http://example1.com",
+            "http://example3.com",
+            "http://example2.com"
+          ],
+          "link": "https://www.phishportal.com/client/incident/JJJ-444222"
+        },
+        {
+          "identifier": "JJJ-333122",
+          "reference_id": "",
+          "url": "http://very-malicious.com",
+          "status": "new",
+          "type": "Phishing",
+          "brand": "Testing Brand 1",
+          "client": "Palo Alto",
+          "content_ip": null,
+          "host": null,
+          "host_country": null,
+          "host_timezone": null,
+          "created_by": "Client",
+          "discovered_by": "client",
+          "current_duration": "441332",
+          "active_duration": "441332",
+          "date_opened": "2021-01-31T13:00:05.000Z",
+          "date_closed": null,
+          "additional_urls": [],
+          "link": "https://www.phishportal.com/client/incident/JJJ-333122"
+        }
+      ]
+    },
+    "expected": {
+      "outputs_prefix": "FraudWatch.Incident",
+      "outputs_key_field": "identifier",
+      "outputs": [
+        {
+          "identifier": "JJJ-444222",
+          "reference_id": "123aaa",
+          "url": "http://www.malicious.com",
+          "status": "new",
+          "type": "Phishing",
+          "brand": "Testing Brand 1",
+          "client": "Palo Alto",
+          "content_ip": null,
+          "host": null,
+          "host_country": null,
+          "host_timezone": null,
+          "created_by": "Client",
+          "discovered_by": "client",
+          "current_duration": "12280",
+          "active_duration": "12280",
+          "date_opened": "2021-01-31T13:00:05.000Z",
+          "date_closed": null,
+          "additional_urls": [
+            "http://example1.com",
+            "http://example3.com",
+            "http://example2.com"
+          ],
+          "link": "https://www.phishportal.com/client/incident/JJJ-444222"
+        },
+        {
+          "identifier": "JJJ-333122",
+          "reference_id": "",
+          "url": "http://very-malicious.com",
+          "status": "new",
+          "type": "Phishing",
+          "brand": "Testing Brand 1",
+          "client": "Palo Alto",
+          "content_ip": null,
+          "host": null,
+          "host_country": null,
+          "host_timezone": null,
+          "created_by": "Client",
+          "discovered_by": "client",
+          "current_duration": "441332",
+          "active_duration": "441332",
+          "date_opened": "2021-01-31T13:00:05.000Z",
+          "date_closed": null,
+          "additional_urls": [],
+          "link": "https://www.phishportal.com/client/incident/JJJ-333122"
+        }
+      ]
+    },
+    "args": {
+      "limit": 2
+    }
+  },
+  "fraudwatch-incident-report": {
+    "suffix": "incidents",
+    "response": {
+      "identifier": "JJJ-312312",
+      "reference_id": null,
+      "url": "asd",
+      "status": "monitor",
+      "type": "Vishing",
+      "brand": "Testing Brand 1",
+      "client": "Palo Alto",
+      "content_ip": null,
+      "host": null,
+      "host_country": null,
+      "host_timezone": null,
+      "created_by": "FraudWatch",
+      "discovered_by": "client",
+      "current_duration": "0",
+      "active_duration": null,
+      "date_opened": "2021-01-31T13:33:46.000Z",
+      "date_closed": null,
+      "additional_urls": [
+        "http://www.example.com"
+      ],
+      "link": "https://www.phishportal.com/client/incident/JJJ-312312"
+    },
+    "expected": {
+      "outputs_prefix": "FraudWatch.Incident",
+      "outputs_key_field": "identifier",
+      "outputs": {
+        "identifier": "JJJ-312312",
+        "reference_id": null,
+        "url": "asd",
+        "status": "monitor",
+        "type": "Vishing",
+        "brand": "Testing Brand 1",
+        "client": "Palo Alto",
+        "content_ip": null,
+        "host": null,
+        "host_country": null,
+        "host_timezone": null,
+        "created_by": "FraudWatch",
+        "discovered_by": "client",
+        "current_duration": "0",
+        "active_duration": null,
+        "date_opened": "2021-01-31T13:33:46.000Z",
+        "date_closed": null,
+        "additional_urls": [
+          "http://www.example.com"
+        ],
+        "link": "https://www.phishportal.com/client/incident/JJJ-312312"
+      }
+    },
+    "args": {
+      "id": "JJJ-312312"
+    }
+  },
+  "fraudwatch-incident-update": {
+    "suffix": "incident/JJJ-321321",
+    "response": "Incident updated successfully",
+    "expected": {
+      "outputs_prefix": null,
+      "outputs_key_field": null,
+      "outputs": null
+    },
+    "args": {
+      "incident_id": "JJJ-321321",
+      "reference_id": "1a2sa4"
+    }
+  },
+  "fraudwatch-incident-get-by-identifier": {
+    "reference_id_suffix": "incident/reference/123aaa",
+    "incident_id_suffix": "incident/JJJ-123123",
+    "response": {
+      "identifier": "JJJ-123123",
+      "reference_id": "123aaa",
+      "url": "http://www.malicious.com",
+      "status": "new",
+      "type": "Phishing",
+      "brand": "Testing Brand 1",
+      "client": "Palo Alto",
+      "content_ip": null,
+      "host": null,
+      "host_country": null,
+      "host_timezone": null,
+      "created_by": "Client",
+      "discovered_by": "client",
+      "current_duration": "2200",
+      "active_duration": "2200",
+      "date_opened": "2021-01-31T13:00:05.000Z",
+      "date_closed": null,
+      "additional_urls": [
+        "http://example1.com",
+        "http://example3.com"
+      ],
+      "link": "https://www.phishportal.com/client/incident/JJJ-123123"
+    },
+    "expected": {
+      "outputs_prefix": "FraudWatch.Incident",
+      "outputs_key_field": "identifier",
+      "outputs": {
+        "identifier": "JJJ-123123",
+        "reference_id": "123aaa",
+        "url": "http://www.malicious.com",
+        "status": "new",
+        "type": "Phishing",
+        "brand": "Testing Brand 1",
+        "client": "Palo Alto",
+        "content_ip": null,
+        "host": null,
+        "host_country": null,
+        "host_timezone": null,
+        "created_by": "Client",
+        "discovered_by": "client",
+        "current_duration": "2200",
+        "active_duration": "2200",
+        "date_opened": "2021-01-31T13:00:05.000Z",
+        "date_closed": null,
+        "additional_urls": [
+          "http://example1.com",
+          "http://example3.com"
+        ],
+        "link": "https://www.phishportal.com/client/incident/JJJ-123123"
+      }
+    },
+    "reference_id_args": {
+      "reference_id": "123aaa"
+    },
+    "incident_id_args": {
+      "incident_id": "JJJ-123123"
+    }
+  },
+  "fraudwatch-incident-forensic-get": {
+    "suffix": "incident/JJJ-124124/forensic",
+    "response": {
+      "host_provider": {
+        "name": null,
+        "country": null
+      },
+      "host_nameservers": [
+        "malicous.com",
+        "malicious2.com"
+      ],
+      "host_domain_registrar": {
+        "name": "Online Services LLC",
+        "email": "http://www.services.com",
+        "country": "abuse@services.com"
+      },
+      "host_site_owner": [],
+      "host_site_admin": [],
+      "host_domain_admin": [],
+      "host_ip_providier": []
+    },
+    "expected": {
+      "outputs_prefix": "FraudWatch.IncidentForensicData",
+      "outputs_key_field": "identifier",
+      "outputs": {
+        "host_nameservers": [
+          "malicous.com",
+          "malicious2.com"
+        ],
+        "host_domain_registrar": {
+          "name": "Online Services LLC",
+          "email": "http://www.services.com",
+          "country": "abuse@services.com"
+        },
+        "identifier": "JJJ-124124"
+      }
+    },
+    "args": {
+      "incident_id": "JJJ-124124"
+    }
+  },
+  "fraudwatch-incident-contact-emails-list": {
+    "suffix": "incident/JJJ-123123/message",
+    "response": [
+      {
+        "noteId": "10594818",
+        "subject": "Outgoing email recorded",
+        "creator": "FraudWatch",
+        "content": "Dear Palo Alto\r\n\r\nPlease find the details of the following new Phishing incident:\r\n\r\n----------------------\r\nURL: malicious .com\r\nBrand Targeted: Testing Brand 1\r\n\r\nWeb Host: \r\nWeb Host Country: \r\n\r\nType: Phishing\r\n----------------------\r\n\r\nWe are working to have this site taken down ASAP.\r\n\r\n\r\nYou can view details of this incident by logging into PhishPortal (https://www.phishportal.com).\r\n\r\nRegards,\r\nSecurity Operations\r\nFraudWatch International\r\nTel USA: +1-415-449-8800 Ext 200\r\nTel AUS: +613 9887 6777\r\nFax: +613 8660 2688\r\nEmail: security@fraudwatchinternational.com\r\nhttp://www.fraudwatchinternational.com\r\n",
+        "date": "2020-12-09T07:52:07.000Z"
+      }
+    ],
+    "expected": {
+      "outputs_prefix": "FraudWatch.IncidentContacts",
+      "outputs_key_field": "noteId",
+      "outputs": [
+        {
+          "noteId": "10594818",
+          "subject": "Outgoing email recorded",
+          "creator": "FraudWatch",
+          "content": "Dear Palo Alto\r\n\r\nPlease find the details of the following new Phishing incident:\r\n\r\n----------------------\r\nURL: malicious .com\r\nBrand Targeted: Testing Brand 1\r\n\r\nWeb Host: \r\nWeb Host Country: \r\n\r\nType: Phishing\r\n----------------------\r\n\r\nWe are working to have this site taken down ASAP.\r\n\r\n\r\nYou can view details of this incident by logging into PhishPortal (https://www.phishportal.com).\r\n\r\nRegards,\r\nSecurity Operations\r\nFraudWatch International\r\nTel USA: +1-415-449-8800 Ext 200\r\nTel AUS: +613 9887 6777\r\nFax: +613 8660 2688\r\nEmail: security@fraudwatchinternational.com\r\nhttp://www.fraudwatchinternational.com\r\n",
+          "date": "2020-12-09T07:52:07.000Z",
+          "identifier": "JJJ-123123"
+        }
+      ]
+    },
+    "args": {
+      "incident_id": "JJJ-123123",
+      "limit": 1
+    }
+  },
+  "fraudwatch-incident-messages-add": {
+    "suffix": "incident/JJJ-312312/message/add",
+    "response": "Message added successfully",
+    "expected": {
+      "outputs_prefix": null,
+      "outputs_key_field": null,
+      "outputs": null
+    },
+    "args": {
+      "incident_id": "JJJ-312312",
+      "message_content": "message to sent details"
+    }
+  },
+  "fraudwatch-incident-urls-add": {
+    "suffix": "incident/JJJ-123123/urls/add",
+    "response": {
+      "success": "Add additional urls successfully",
+      "new_urls": [
+        "http://as33"
+      ]
+    },
+    "expected": {
+      "outputs_prefix": "FraudWatch.IncidentUrls",
+      "outputs_key_field": null,
+      "outputs": {
+        "success": "Add additional urls successfully",
+        "new_urls": [
+          "http://as33"
+        ]
+      }
+    },
+    "args": {
+      "urls": "http://as33",
+      "incident_id": "JJJ-123123"
+    }
+  },
+  "fraudwatch-brands-list": {
+    "suffix": "account/brands",
+    "response": {
+      "pagination": {
+        "total": 2,
+        "page": 1,
+        "items_per_page": 20
+      },
+      "brands": [
+        {
+          "client": "Palo Alto",
+          "alternate business name": "",
+          "name": "Testing Brand 1",
+          "active": true,
+          "services": [
+            {
+              "name": "Phishing",
+              "action": "takedown"
+            },
+            {
+              "name": "Vishing",
+              "action": "monitor"
+            },
+            {
+              "name": "Brand Abuse",
+              "action": "monitor"
+            },
+            {
+              "name": "Malware",
+              "action": "monitor"
+            },
+            {
+              "name": "Social Media Brand Abuse",
+              "action": "monitor"
+            },
+            {
+              "name": "Mobile App (Unauthorized)",
+              "action": "monitor"
+            },
+            {
+              "name": "PAC File",
+              "action": "monitor"
+            },
+            {
+              "name": "Messaging",
+              "action": "monitor"
+            },
+            {
+              "name": "DMARC Email Server",
+              "action": "monitor"
+            }
+          ]
+        },
+        {
+          "client": "Palo Alto",
+          "alternate business name": "",
+          "name": "Testing Brand 2",
+          "active": true,
+          "services": [
+            {
+              "name": "Phishing",
+              "action": "takedown"
+            },
+            {
+              "name": "Vishing",
+              "action": "monitor"
+            },
+            {
+              "name": "Brand Abuse",
+              "action": "monitor"
+            },
+            {
+              "name": "Malware",
+              "action": "monitor"
+            },
+            {
+              "name": "Social Media Brand Abuse",
+              "action": "monitor"
+            },
+            {
+              "name": "Mobile App (Unauthorized)",
+              "action": "monitor"
+            },
+            {
+              "name": "PAC File",
+              "action": "monitor"
+            },
+            {
+              "name": "Messaging",
+              "action": "monitor"
+            },
+            {
+              "name": "DMARC Email Server",
+              "action": "monitor"
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "outputs_prefix": "FraudWatch.Brand",
+      "outputs_key_field": "name",
+      "outputs": [
+        {
+          "client": "Palo Alto",
+          "alternate business name": "",
+          "name": "Testing Brand 1",
+          "active": true,
+          "services": [
+            {
+              "name": "Phishing",
+              "action": "takedown"
+            },
+            {
+              "name": "Vishing",
+              "action": "monitor"
+            },
+            {
+              "name": "Brand Abuse",
+              "action": "monitor"
+            },
+            {
+              "name": "Malware",
+              "action": "monitor"
+            },
+            {
+              "name": "Social Media Brand Abuse",
+              "action": "monitor"
+            },
+            {
+              "name": "Mobile App (Unauthorized)",
+              "action": "monitor"
+            },
+            {
+              "name": "PAC File",
+              "action": "monitor"
+            },
+            {
+              "name": "Messaging",
+              "action": "monitor"
+            },
+            {
+              "name": "DMARC Email Server",
+              "action": "monitor"
+            }
+          ]
+        },
+        {
+          "client": "Palo Alto",
+          "alternate business name": "",
+          "name": "Testing Brand 2",
+          "active": true,
+          "services": [
+            {
+              "name": "Phishing",
+              "action": "takedown"
+            },
+            {
+              "name": "Vishing",
+              "action": "monitor"
+            },
+            {
+              "name": "Brand Abuse",
+              "action": "monitor"
+            },
+            {
+              "name": "Malware",
+              "action": "monitor"
+            },
+            {
+              "name": "Social Media Brand Abuse",
+              "action": "monitor"
+            },
+            {
+              "name": "Mobile App (Unauthorized)",
+              "action": "monitor"
+            },
+            {
+              "name": "PAC File",
+              "action": "monitor"
+            },
+            {
+              "name": "Messaging",
+              "action": "monitor"
+            },
+            {
+              "name": "DMARC Email Server",
+              "action": "monitor"
+            }
+          ]
+        }
+      ]
+    },
+    "args": {
+      "limit": 2
+    }
+  }
+}

@@ -917,6 +917,15 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Location
       description: Security and compliance search action result location.
       type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.ItemCount
+      description: Security and compliance search action result item count.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.TotalSize
+      description: Security and compliance search action result total size.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.FailedCount
+      description: Security and compliance search action result failed count.
+      type: Number
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Sender
       description: Security and compliance search action result mail sender.
       type: String
@@ -959,7 +968,7 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
-  dockerimage: demisto/powershell-ubuntu:7.0.3.12001
+  dockerimage: demisto/powershell-ubuntu:7.1.1.16151
   isfetch: false
   longRunning: false
   longRunningPort: false

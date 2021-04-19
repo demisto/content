@@ -10,11 +10,15 @@ import requests
 import logging
 from datetime import datetime
 from zipfile import ZipFile
-from typing import Any, Tuple, Union
+from typing import Any, Tuple, Union, Optional
+
+from google.cloud.storage import Bucket
+
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, get_recent_commits_data, \
-    store_successful_and_failed_packs_in_ci_artifacts
+    LANDING_PAGE_SECTIONS_PATH, get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, \
+    get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
+    get_trending_packs
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -243,7 +247,10 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
 def upload_index_to_storage(index_folder_path: str, extract_destination_path: str, index_blob: Any,
                             build_number: str, private_packs: list, current_commit_hash: str,
                             index_generation: int, is_private: bool = False, force_upload: bool = False,
-                            previous_commit_hash: str = None):
+                            previous_commit_hash: str = None, landing_page_sections: dict = None,
+                            artifacts_dir: Optional[str] = None,
+                            storage_bucket: Optional[Bucket] = None,
+                            ):
     """
     Upload updated index zip to cloud storage.
 
@@ -257,6 +264,9 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param is_private: Indicates if upload is private.
     :param force_upload: Indicates if force upload or not.
     :param previous_commit_hash: The previous commit hash to diff with.
+    :param landing_page_sections: landingPage sections.
+    :param artifacts_dir: The CircleCI artifacts directory to upload the index.json to.
+    :param storage_bucket: The storage bucket object
     :returns None.
 
     """
@@ -270,13 +280,18 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         commit = current_commit_hash
         logging.info('Updating production index commit hash to master last commit hash')
 
+    if not landing_page_sections:
+        landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
+
     logging.debug(f'commit hash is: {commit}')
-    with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
+    index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    with open(index_json_path, "w+") as index_file:
         index = {
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
             'packs': private_packs,
-            'commit': commit
+            'commit': commit,
+            'landingPage': {'sections': landing_page_sections.get('sections', [])}
         }
         json.dump(index, index_file, indent=4)
 
@@ -289,6 +304,11 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
         if is_private or current_index_generation == index_generation:
+            # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
+            if storage_bucket:
+                index_json_path_storage = os.path.join(GCPConfig.STORAGE_BASE_PATH, f'{GCPConfig.INDEX_NAME}.json')
+                storage_blob = storage_bucket.blob(index_json_path_storage)
+                storage_blob.upload_from_filename(index_json_path)
             index_blob.upload_from_filename(index_zip_path)
             logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
@@ -300,6 +320,12 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         logging.exception(f"Failed in uploading {GCPConfig.INDEX_NAME}.")
         sys.exit(1)
     finally:
+        if artifacts_dir:
+            # Store index.json in CircleCI artifacts
+            shutil.copyfile(
+                os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
+                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}.json'),
+            )
         shutil.rmtree(index_folder_path)
 
 
@@ -546,10 +572,9 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
                     'price': metadata.get('price'),
-                    'vendorId': metadata.get('vendorId'),
-                    'vendorName': metadata.get('vendorName'),
-                    'partnerId': metadata.get('partnerId'),
-                    'partnerName': metadata.get('partnerName'),
+                    'vendorId': metadata.get('vendorId', ""),
+                    'partnerId': metadata.get('partnerId', ""),
+                    'partnerName': metadata.get('partnerName', ""),
                     'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
         except ValueError:
@@ -876,6 +901,29 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
         return False, [], []
 
 
+def get_images_data(packs_list: list):
+    """ Returns a data structure of all packs that an integration/author image of them was uploaded
+
+    Args:
+        packs_list (list): The list of all packs
+
+    Returns:
+        The images data structure
+    """
+    images_data = {}
+
+    for pack in packs_list:
+        pack_image_data = {pack.name: {}}
+        if pack.uploaded_author_image:
+            pack_image_data[pack.name][BucketUploadFlow.AUTHOR] = True
+        if pack.uploaded_integration_images:
+            pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
+        if pack_image_data[pack.name]:
+            images_data.update(pack_image_data)
+
+    return images_data
+
+
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
@@ -900,6 +948,9 @@ def main():
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
+    # google cloud bigquery client initialized
+    bq_client = init_bigquery_client(service_account)
+
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
@@ -910,6 +961,8 @@ def main():
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
+    landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
+    trending_packs = get_trending_packs(bq_client, index_folder_path)
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
@@ -921,6 +974,7 @@ def main():
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+    diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
@@ -931,8 +985,6 @@ def main():
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
 
-    # google cloud bigquery client initialized
-    bq_client = init_bigquery_client(service_account)
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
 
     # clean index and gcs from non existing or invalid packs
@@ -952,13 +1004,13 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, integration_images = pack.upload_integration_images(storage_bucket)
+        task_status, integration_images = pack.upload_integration_images(storage_bucket, diff_files_list, True)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status, author_image = pack.upload_author_image(storage_bucket)
+        task_status, author_image = pack.upload_author_image(storage_bucket, diff_files_list, True)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
@@ -977,7 +1029,9 @@ def main():
                                            packs_dependencies_mapping=packs_dependencies_mapping,
                                            build_number=build_number, commit_hash=current_commit_hash,
                                            packs_statistic_df=packs_statistic_df,
-                                           pack_was_modified=pack_was_modified)
+                                           pack_was_modified=pack_was_modified,
+                                           landing_page_sections=landing_page_sections,
+                                           trending_packs=trending_packs)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
@@ -1056,7 +1110,11 @@ def main():
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
                             index_blob=index_blob, build_number=build_number, private_packs=private_packs,
                             current_commit_hash=current_commit_hash, index_generation=index_generation,
-                            force_upload=force_upload, previous_commit_hash=previous_commit_hash)
+                            force_upload=force_upload, previous_commit_hash=previous_commit_hash,
+                            landing_page_sections=landing_page_sections,
+                            artifacts_dir=os.path.dirname(packs_artifacts_path),
+                            storage_bucket=storage_bucket,
+                            )
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
@@ -1068,7 +1126,7 @@ def main():
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
-        updated_private_packs_ids
+        updated_private_packs_ids, images_data=get_images_data(packs_list)
     )
 
     # summary of packs status
