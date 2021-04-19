@@ -437,7 +437,8 @@ def handle_country_list_commands(client: Client, demisto_args: dict,
     objects_time_to_readable_time(countries_list, 'updateTime')
     table_header = string_to_table_header(name.replace('-', ' '))
 
-    readable_output = tableToMarkdown(table_header, countries_list, headers=['country', 'update_time', 'annotation'],
+    readable_output = tableToMarkdown(table_header, countries_list,
+                                      headers=['country', 'update_time', 'annotation', "pgid", "cid"],
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
