@@ -4508,11 +4508,12 @@ Retrieves a list of all devices with configuration changes that are ready to dep
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return. The default is 50. | Optional | 
-| offset | Index of first item to return. The default is 0. | Optional | 
+| limit | The maximum number of items to return.<br/>The default is 50. | Optional | 
+| offset | Index of first item to return.<br/>The default is 0. | Optional | 
+| container_uuid | The container UUID. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -4522,33 +4523,22 @@ Retrieves a list of all devices with configuration changes that are ready to dep
 | CiscoFP.DeployableDevices.DeviceName | String | Device name. | 
 | CiscoFP.DeployableDevices.DeviceType | String | Device type. | 
 | CiscoFP.DeployableDevices.Version | String | Device version. | 
+| CiscoFP.PendingDeployment.ID | String | Device ID. | 
+| CiscoFP.PendingDeployment.Name | String | Device name. | 
+| CiscoFP.PendingDeployment.Type | String | Device type. | 
+| CiscoFP.PendingDeployment.Status | String | Device status. | 
+| CiscoFP.PendingDeployment.StartTime | String | Start time of the deployment. | 
+| CiscoFP.PendingDeployment.EndTime | String | End time of the deployment. | 
 
 
-##### Command Example
-```!ciscofp-get-deployable-devices```
+#### Command Example
+``` !ciscofp-get-deployable-devices container_uuid=a24eca98-7a3a-11eb-999c-cdd9570e11cf ```
 
-##### Context Example
-```
-{
-    "CiscoFP.DeployableDevices": [
-        {
-            "DeviceName": "FTD_10.8.49.209", 
-            "CanBeDeployed": true, 
-            "UpToDate": false, 
-            "Version": "1585679109082", 
-            "DeviceType": "SENSOR", 
-            "DeviceID": "43e032dc-07c5-11ea-b83d-d5fdc079bf65"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-### Cisco Firepower - List of deployable devices:
-|CanBeDeployed|UpToDate|DeviceID|DeviceName|DeviceType|Version|
+#### Human Readable Output
+### Cisco Firepower - List of devices status pending deployment:
+|EndTime|ID|Name|StartTime|Status|Type|
 |---|---|---|---|---|---|
-| true | false | 43e032dc-07c5-11ea-b83d-d5fdc079bf65 | FTD_10.8.49.209 | SENSOR | 1585679109082 |
-
+| 1618225761 | 00224867-78A7-0ed3-0000-128849018939 | api_user_job_2021-04-12 11:08:43.523 | 1618225723 | PARTIALLY_SUCCEEDED | Deployment |
 
 
 ### 33. ciscofp-get-device-records
@@ -4763,48 +4753,3 @@ There is no context output for this command.
 |ID|Name|Overridable|Description|Addresses|Objects|
 |---|---|---|---|---|---|
 | 00224867-78A7-0ed3-0000-004294969111 | XXX_Proactive_Response_URL | false |  | 1 | 0 |
-
-### ciscofp-get-deployable-devices
-***
-Retrieves a list of all devices with configuration changes that are ready to deploy.
-
-
-#### Base Command
-
-`ciscofp-get-deployable-devices`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | The maximum number of items to return.<br/>The default is 50. | Optional | 
-| offset | Index of first item to return.<br/>The default is 0. | Optional | 
-| container_uuid | The container UUID. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CiscoFP.DeployableDevices.CanBeDeployed | String | Can be deployed. | 
-| CiscoFP.DeployableDevices.UpToDate | String | Up to date. | 
-| CiscoFP.DeployableDevices.DeviceID | String | Device ID. | 
-| CiscoFP.DeployableDevices.DeviceName | String | Device name. | 
-| CiscoFP.DeployableDevices.DeviceType | String | Device type. | 
-| CiscoFP.DeployableDevices.Version | String | Device version. | 
-| CiscoFP.PendingDeployment.ID | String | Device ID. | 
-| CiscoFP.PendingDeployment.Name | String | Device name. | 
-| CiscoFP.PendingDeployment.Type | String | Device type. | 
-| CiscoFP.PendingDeployment.Status | String | Device status. | 
-| CiscoFP.PendingDeployment.StartTime | String | Start time of the deployment. | 
-| CiscoFP.PendingDeployment.EndTime | String | End time of the deployment. | 
-
-
-#### Command Example
-``` !ciscofp-get-deployable-devices container_uuid=a24eca98-7a3a-11eb-999c-cdd9570e11cf ```
-
-#### Human Readable Output
-### Cisco Firepower - List of devices status pending deployment:
-|EndTime|ID|Name|StartTime|Status|Type|
-|---|---|---|---|---|---|
-| 1618225761 | 00224867-78A7-0ed3-0000-128849018939 | api_user_job_2021-04-12 11:08:43.523 | 1618225723 | PARTIALLY_SUCCEEDED | Deployment |
-
