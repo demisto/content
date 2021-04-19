@@ -1176,7 +1176,7 @@ def get_policy_command(client: Client, args: dict):
     policy_info = dict(res.get('policyInfo'))
     if not policy_info:
         return "Policy not found, You may not have sent a correct policy id."
-    del policy_info['policy']
+    del policy_info['policy']  # we delete the policy info (it's too big) from the human readable
     policy_info['latestRevision'] = timestamp_to_datestring(policy_info.get('latestRevision', ''))
 
     readable_output = tableToMarkdown('Carbon Black Defense Policy',
@@ -1331,8 +1331,8 @@ def find_events_results_command(client: Client, args: dict):
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Events.Results',
-        outputs_key_field='results.event_id',
-        outputs=res,
+        outputs_key_field='job_id',
+        outputs={"job_id": job_id, "results": res},
         readable_output=readable_output,
         raw_response=res
     )
@@ -1371,8 +1371,8 @@ def find_events_details_results_command(client: Client, args: dict):
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.EventDetails.Results',
-        outputs_key_field='results.event_id',
-        outputs=res,
+        outputs_key_field='job_id',
+        outputs={"job_id": job_id, "results": res},
         readable_output=readable_output,
         raw_response=res
     )
@@ -1415,8 +1415,8 @@ def find_processes_results_command(client: Client, args: dict):
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Process.Results',
-        outputs_key_field='results.id',
-        outputs=res,
+        outputs_key_field='job_id',
+        outputs={"job_id": job_id, "results": res},
         readable_output=readable_output,
         raw_response=res
     )

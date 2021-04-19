@@ -1,16 +1,15 @@
 id: Carbon Black Endpoint Standard Find Event Details
 version: -1
-fromversion: 5.5.0
 name: Carbon Black Endpoint Standard Find Event Details
 description: Receives event IDs and returns details about the event.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b5619592-15dc-4bfa-88f4-5889c6ebb52f
+    taskid: 92cee982-3ea9-4205-8db5-566dfbdadb9f
     type: start
     task:
-      id: b5619592-15dc-4bfa-88f4-5889c6ebb52f
+      id: 92cee982-3ea9-4205-8db5-566dfbdadb9f
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +33,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 94220dd6-89c3-409f-8af9-2f089e11e61b
+    taskid: 3a725fba-cd3d-4a97-8011-664e41ea53b1
     type: regular
     task:
-      id: 94220dd6-89c3-409f-8af9-2f089e11e61b
+      id: 3a725fba-cd3d-4a97-8011-664e41ea53b1
       version: -1
       name: cbd-find-events-details
       description: Initiates a request to retrieve detail fields for enriched events.
@@ -67,10 +66,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: e1b79283-323c-4d28-86a6-aa39a4a9d236
+    taskid: 9ed3f1b3-f12c-4cf6-86f0-e9dc830c0595
     type: regular
     task:
-      id: e1b79283-323c-4d28-86a6-aa39a4a9d236
+      id: 9ed3f1b3-f12c-4cf6-86f0-e9dc830c0595
       version: -1
       name: cbd-find-events-details-results
       description: Retrieves the status for an enriched events detail request for
@@ -102,10 +101,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 14588279-02fb-497c-810b-3b79b69f4ea9
+    taskid: e71dc4ab-6259-4daa-83ff-57fbe21ebe57
     type: title
     task:
-      id: 14588279-02fb-497c-810b-3b79b69f4ea9
+      id: e71dc4ab-6259-4daa-83ff-57fbe21ebe57
       version: -1
       name: Done
       type: title
@@ -127,10 +126,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 1fc7ec8f-1688-4104-8eb4-b5ab2faa6a3d
+    taskid: d672b7a5-0a81-4aa7-8c3d-34fba375e561
     type: playbook
     task:
-      id: 1fc7ec8f-1688-4104-8eb4-b5ab2faa6a3d
+      id: d672b7a5-0a81-4aa7-8c3d-34fba375e561
       version: -1
       name: GenericPolling
       description: |-
@@ -164,7 +163,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: CarbonBlackDefense.EventDetails.Results(val.completed !=  val.contacted)
+        simple: CarbonBlackDefense.EventDetails.Results.results(val.completed !=  val.contacted)
     separatecontext: true
     loop:
       iscommand: false
@@ -204,19 +203,24 @@ inputs:
     A list of event ids to fetch. (comma separated)
   playbookInputQuery:
 outputs:
-- contextPath: CarbonBlackDefense.EventsDetails.Results.approximate_unaggregated
+- contextPath: CarbonBlackDefense.EventsDetails.Results.results.approximate_unaggregated
   description: The approximate number of unaggregated results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.completed
+- contextPath: CarbonBlackDefense.EventsDetails.Results.results.completed
   description: The number of completed results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.contacted
+- contextPath: CarbonBlackDefense.EventsDetails.Results.results.contacted
   description: The number of contacted results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.num_aggregated
+- contextPath: CarbonBlackDefense.EventsDetails.Results.results.num_aggregated
   description: The number of aggregated results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.num_available
+- contextPath: CarbonBlackDefense.EventsDetails.Results.results.num_available
   description: The number of event details available in this search.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.num_found
+- contextPath: CarbonBlackDefense.EventsDetails.Results.results.num_found
   description: The number of event details found in this search.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.results
+- contextPath: CarbonBlackDefense.EventsDetails.Results.results.results
   description: The lists that contains the data of the results for this search.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.job_id
+  description: The job ID of the event details search.
+- contextPath: CarbonBlackDefense.EventsDetails.Search.job_id
+  description: The job ID of the event details search.
 tests:
 - carbonBlackEndpointStandardTestPlaybook
+fromversion: 5.5.0
