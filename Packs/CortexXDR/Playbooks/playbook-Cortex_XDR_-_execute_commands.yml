@@ -1,4 +1,4 @@
-description: 'Use to Initiate a new script execution of shell commands. '
+description: 'Initiates a new script execution of shell commands. '
 id: Cortex XDR - execute commands
 inputs:
 - description: A comma-separated list of endpoint IDs.
