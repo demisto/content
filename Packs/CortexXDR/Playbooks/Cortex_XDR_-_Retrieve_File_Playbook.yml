@@ -297,7 +297,7 @@ inputs:
   description: "A comma-separated list of file paths in any platform. It can be used\
     \ instead of the macOS/Windows/Linux file paths. \nThe order of the files path\
     \ list must be parallel to the endpoints list order. Therefore, the first file\
-    \ path in the list is related to the first endpoint id and so on."
+    \ path in the list is related to the first endpoint ID and so on."
   playbookInputQuery:
 - key: windows_file_paths
   value: {}
