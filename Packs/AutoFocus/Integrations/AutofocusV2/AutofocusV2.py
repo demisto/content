@@ -24,8 +24,9 @@ SERVER = 'https://autofocus.paloaltonetworks.com'
 USE_SSL = not PARAMS.get('insecure', False)
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
-
 VENDOR_NAME = 'AutoFocus V2'
+VERSION_MISMATCH_ERROR = 'This command is not supported for your server version. Please update your server version to ' \
+                         '6.2.0 or later.'
 
 # Headers to be sent in requests
 HEADERS = {
@@ -1090,6 +1091,49 @@ def test_module():
 
 def search_samples_command():
     args = demisto.args()
+    md, info, ctx_prefix, ctx_key = search_samples_helper(args)
+    return_results(CommandResults(outputs=info, readable_output=md, outputs_key_field=ctx_key,
+                                  outputs_prefix=ctx_prefix))
+
+
+def search_samples_with_results_command():
+    if not is_demisto_version_ge('6.2.0'):
+        raise DemistoException(VERSION_MISMATCH_ERROR)
+    args = demisto.args()
+    interval_in_secs = args.get('interval_in_seconds', '60')
+    # start query
+    if 'af_cookie' not in args:
+        if 'scope' not in args:
+            raise DemistoException('Please provide a scope for the search.')
+        md, info, ctx_prefix, af_ctx_path = search_samples_helper(args)
+        af_cookie = info.get(af_ctx_path)
+        if info.get('Status') != 'complete' and af_cookie:
+            polling_args = {
+                'af_cookie': af_cookie,
+                'interval_in_seconds': interval_in_secs
+            }
+            return_results(CommandResults(outputs_prefix=ctx_prefix, outputs_key_field=af_ctx_path,
+                                          outputs=info, readable_output=md, polling_next_run=interval_in_secs,
+                                          polling_command='autofocus-search-samples-with-results',
+                                          polling_timeout='600', polling_args=polling_args))
+            return
+        else:
+            # continue search command
+            args['af_cookie'] = af_cookie
+
+    command_results, status = samples_search_results_helper(args)
+    if status != 'complete':
+        polling_args = {
+            'af_cookie': args.get('af_cookie'),
+            'interval_in_seconds': interval_in_secs
+        }
+        command_results.append(CommandResults(polling_next_run=interval_in_secs, polling_timeout='600',
+                                              polling_command='autofocus-search-samples-with-results',
+                                              polling_args=polling_args))
+    return_results(command_results)
+
+
+def search_samples_helper(args):
     file_hash = argToList(args.get('file_hash'))
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
@@ -1107,17 +1151,52 @@ def search_samples_command():
                           domain=domain, ip=ip, url=url, wildfire_verdict=wildfire_verdict, first_seen=first_seen,
                           last_updated=last_updated, artifact_source=artifact_source)
     md = tableToMarkdown('Search Samples Info:', info)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': info,
-        'EntryContext': {'AutoFocus.SamplesSearch(val.AFCookie == obj.AFCookie)': info},
-        'HumanReadable': md
-    })
+    return md, info, 'AutoFocus.SamplesSearch', 'AFCookie'
 
 
 def search_sessions_command():
     args = demisto.args()
+    md, info, ctx_prefix, ctx_key = search_sessions_helper(args)
+    return_results(CommandResults(outputs=info, readable_output=md, outputs_key_field=ctx_key,
+                                  outputs_prefix=ctx_prefix))
+
+
+def search_sessions_with_results_command():
+    if not is_demisto_version_ge('6.2.0'):
+        raise DemistoException(VERSION_MISMATCH_ERROR)
+    args = demisto.args()
+    interval_in_secs = args.get('interval_in_seconds', '60')
+    if 'af_cookie' not in args:
+        md, info, ctx_prefix, af_ctx_path = search_sessions_helper(args)
+        af_cookie = info.get(af_ctx_path)
+        if info.get('Status') != 'complete' and af_cookie:
+            polling_args = {
+                'af_cookie': af_cookie,
+                'interval_in_seconds': interval_in_secs
+            }
+            return_results(CommandResults(outputs_prefix=ctx_prefix, outputs_key_field=af_ctx_path,
+                                          outputs=info, readable_output=md, polling_next_run=interval_in_secs,
+                                          polling_command='autofocus-search-sessions-with-results',
+                                          polling_timeout='600', polling_args=polling_args))
+            return
+        else:
+            # continue search command
+            args['af_cookie'] = af_cookie
+
+    command_results, status = sessions_search_results_helper(args)
+    if status != 'complete':
+        polling_args = {
+            'af_cookie': args.get('af_cookie'),
+            'interval_in_seconds': interval_in_secs
+        }
+        command_results.polling_timeout = '600'
+        command_results.polling_command = 'autofocus-search-sessions-with-results'
+        command_results.polling_args = polling_args
+        command_results.polling_next_run = interval_in_secs
+    return_results(command_results)
+
+
+def search_sessions_helper(args):
     file_hash = argToList(args.get('file_hash'))
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
@@ -1140,17 +1219,16 @@ def search_sessions_command():
     info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
                            ip=ip, url=url, from_time=from_time, to_time=to_time)
     md = tableToMarkdown('Search Sessions Info:', info)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': info,
-        'EntryContext': {'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': info},
-        'HumanReadable': md
-    })
+    return md, info, 'AutoFocus.SessionsSearch', 'AFCookie'
 
 
 def samples_search_results_command():
     args = demisto.args()
+    command_results, _ = samples_search_results_helper(args)
+    return_results(command_results)
+
+
+def samples_search_results_helper(args):
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
     files = get_files_data_from_results(results)
@@ -1160,9 +1238,10 @@ def samples_search_results_command():
         status = 'complete'
     context = {
         'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
-        'AutoFocus.SamplesSearch(val.AFCookie ==== obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+        'AutoFocus.SamplesSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
         outputPaths['file']: files
     }
+    command_results = []
     if not results:
         return_outputs(readable_output=hr, outputs=context, raw_response={})
     else:
@@ -1170,11 +1249,11 @@ def samples_search_results_command():
         for result in results:
             if 'Artifact' in result:
                 hr = samples_search_result_hr(result, status)
-                return_outputs(readable_output=hr, outputs=context, raw_response=results)
             else:
                 hr = tableToMarkdown(f'Search Samples Result is {status}', result)
                 hr += tableToMarkdown('Artifacts for Sample: ', [])
-                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+            command_results.append(CommandResults(readable_output=hr, outputs=context, raw_response=results))
+    return command_results, status
 
 
 def samples_search_result_hr(result: dict, status: str) -> str:
@@ -1204,6 +1283,11 @@ def samples_search_result_hr(result: dict, status: str) -> str:
 
 def sessions_search_results_command():
     args = demisto.args()
+    command_results, _ = sessions_search_results_helper(args)
+    return_results(command_results)
+
+
+def sessions_search_results_helper(args):
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('sessions', af_cookie)
     files = get_files_data_from_results(results)
@@ -1217,13 +1301,7 @@ def sessions_search_results_command():
         'AutoFocus.SessionsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
         outputPaths['file']: files
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': results,
-        'EntryContext': context,
-        'HumanReadable': md
-    })
+    return CommandResults(outputs=context, raw_response=results, readable_output=md), status
 
 
 def get_session_details_command():
@@ -1700,6 +1778,10 @@ def main():
             samples_search_results_command()
         elif active_command == 'autofocus-sessions-search-results':
             sessions_search_results_command()
+        elif active_command == 'autofocus-search-samples-with-results':
+            search_samples_with_results_command()
+        elif active_command == 'autofocus-search-sessions-with-results':
+            search_sessions_with_results_command()
         elif active_command == 'autofocus-get-session-details':
             get_session_details_command()
         elif active_command == 'autofocus-sample-analysis':
