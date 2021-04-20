@@ -96,7 +96,7 @@ create-instances:
       cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
     - ./Documentation/commonServerDocs.sh
-    -  demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
     - echo $successful_feature_branch_build
@@ -142,7 +142,7 @@ create-instances:
         then
           echo "Skipping - not running in INSTANCE_TESTS build"
         else
-        echo "====== Creating instances ======"
+          echo "====== Creating instances ======"
           [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
           if [ -n "${NIGHTLY}" ] ;
             then
