@@ -1513,12 +1513,12 @@ Returns all Git branches data corresponding to the repository and owner names gi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Git.Branches.ref | String | Ref name of the branch. | 
-| Git.Branches.node_id | String | Node ID of the branch. | 
-| Git.Branches.url | String | URL of the branch. | 
-| Git.Branches.object.sha | String | Sha of the git object. | 
-| Git.Branches.object.type | String | Type of the git object. | 
-| Git.Branches.object.url | String | URL of the git object. | 
+| GitHub.Branch.ref | String | Ref name of the branch. | 
+| GitHub.Branch.node_id | String | Node ID of the branch. | 
+| GitHub.Branch.url | String | URL of the branch. | 
+| GitHub.Branch.object.sha | String | Sha of the git object. | 
+| GitHub.Branch.object.type | String | Type of the git object. | 
+| GitHub.Branch.object.url | String | URL of the git object. | 
 
 
 #### Command Example
