@@ -36,7 +36,7 @@ For more information on activating the license see [Activating AutoFocus License
    | API Key | Account's private token. | N/A  |
    | Source Reliability | Reliability of the source providing the intelligence data. | B - Usually reliable |
    | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |   
-   | Override default credentials | Whether to override the default AutoFocus API Key given by the Cortex XSOAR platform. | False |   
+   | Override default credentials | Whether to override the default AutoFocus API key given by the Cortex XSOAR platform. | False |   
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  N/A | 
 

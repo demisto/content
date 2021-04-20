@@ -21,7 +21,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: Whether to override the default AutoFocus API Key given by the Cortex XSOAR platform.
+- additionalinfo: Whether to override the default AutoFocus API key given by the Cortex XSOAR platform.
   display: Override default credentials
   name: override_default_credentials
   required: false
