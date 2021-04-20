@@ -122,8 +122,8 @@ Check whether a given IP address is "Internet background noise", or has been obs
 ### IP Quick Check Details
 |IP|Noise|Code|Code Description|
 |---|---|---|---|
-| [45.83.66.18](https://viz.greynoise.io/ip/45.83.66.18) | true | "0x01" | IP has been observed by the GreyNoise sensor network |
-| [45.83.65.120](https://viz.greynoise.io/ip/45.83.65.120) | true | "0x01" | IP has been observed by the GreyNoise sensor network |
+| [45.83.66.18](https://viz.greynoise.io/ip/45.83.66.18) | true | 0x01 | IP has been observed by the GreyNoise sensor network |
+| [45.83.65.120](https://viz.greynoise.io/ip/45.83.65.120) | true | 0x01 | IP has been observed by the GreyNoise sensor network |
 
 ### greynoise-query
 ***
