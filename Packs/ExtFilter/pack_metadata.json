@@ -2,7 +2,7 @@
     "name": "ExtFilter",
     "description": "This transformer enables you to make advanced filters with comlex conditions.",
     "support": "community",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
