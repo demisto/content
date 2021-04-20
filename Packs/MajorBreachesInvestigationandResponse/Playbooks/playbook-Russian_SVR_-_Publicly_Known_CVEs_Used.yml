@@ -1,0 +1,684 @@
+id: Russian SVR - Publicly Known CVEs Used
+version: -1
+name: Russian SVR - Publicly Known CVEs Used
+description: "Russian Foreign Intelligence Service (SVR) actors (also known as APT29,\
+  \ Cozy Bear, and The Dukes) frequently use publicly known vulnerabilities to conduct\
+  \ widespread scanning and exploitation.\nThis playbook includes the following tasks:\n\
+  - Enrich related known CVEs used by the SVR.\n- Search for unpatched endpoints vulnerable\
+  \ to the exploits.\n- Search network facing system using Expanse for relevant connection.\n\
+  \nNote: This is a beta playbook, which lets you implement and test pre-release software.\
+  \ Since the playbook is beta, it might contain bugs. Updates to the pack during\
+  \ the beta phase might include non-backward compatible features. We appreciate your\
+  \ feedback on the quality and usability of the pack to help us identify issues,\
+  \ fix them, and continually improve. \n\nMore information:\n[Cyber Security Advisory](https://media.defense.gov/2021/Apr/15/2002621240/-1/-1/0/CSA_SVR_TARGETS_US_ALLIES_UOO13234021.PDF/CSA_SVR_TARGETS_US_ALLIES_UOO13234021.PDF)"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ed616dd6-95ab-487c-84df-45786d0a2a8d
+    type: start
+    task:
+      id: ed616dd6-95ab-487c-84df-45786d0a2a8d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 32d971d0-feee-4d6a-8939-1af91570eaa7
+    type: title
+    task:
+      id: 32d971d0-feee-4d6a-8939-1af91570eaa7
+      version: -1
+      name: Enrich Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 75d1bdac-3556-4589-885b-85a68974eab6
+    type: regular
+    task:
+      id: 75d1bdac-3556-4589-885b-85a68974eab6
+      version: -1
+      name: Extract CVEs from playbook inputs
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        complex:
+          root: inputs.Related_CVEs
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4b9cade2-9d6d-4ba5-8c97-c5fc691f68f7
+    type: regular
+    task:
+      id: 4b9cade2-9d6d-4ba5-8c97-c5fc691f68f7
+      version: -1
+      name: Enrich CVE Indicators
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: inputs.Related_CVEs
+          transformers:
+          - operator: uniq
+      using-brand: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 010befdd-98d2-4ed9-8ae3-e208b8b0a98d
+    type: title
+    task:
+      id: 010befdd-98d2-4ed9-8ae3-e208b8b0a98d
+      version: -1
+      name: Hunt Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e334c9fd-75d2-492c-88cb-00685cf4f17e
+    type: condition
+    task:
+      id: e334c9fd-75d2-492c-88cb-00685cf4f17e
+      version: -1
+      name: Is Expanse enabled?
+      description: Checks if Expanse integration enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ExpanseV2
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: e6d4386a-a892-48da-88c0-d9b432611691
+    type: regular
+    task:
+      id: e6d4386a-a892-48da-88c0-d9b432611691
+      version: -1
+      name: Expanse search for Pulse Secure PCS
+      description: |
+        Search for vulnerable Pulse Secure server with Expanse.
+      script: '|||expanse-get-issues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      activity_status: {}
+      assignee: {}
+      business_unit: {}
+      content_search:
+        simple: Pulse
+      created_after: {}
+      created_before: {}
+      domain_search: {}
+      inet_search: {}
+      issue_type:
+        simple: VpnDevice
+      limit: {}
+      modified_after: {}
+      modified_before: {}
+      port_number: {}
+      priority: {}
+      progress_status: {}
+      provider: {}
+      sort: {}
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 194f8b53-c84d-4908-84a4-d4b1d225b0c5
+    type: regular
+    task:
+      id: 194f8b53-c84d-4908-84a4-d4b1d225b0c5
+      version: -1
+      name: Expanse search for FortiOS SSL VPN
+      description: |
+        Search for vulnerable FortiOS SSL VPN server with Expanse.
+      script: '|||expanse-get-issues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      activity_status: {}
+      assignee: {}
+      business_unit: {}
+      content_search:
+        simple: Fortinet
+      created_after: {}
+      created_before: {}
+      domain_search: {}
+      inet_search: {}
+      issue_type:
+        simple: FortinetDevice
+      limit: {}
+      modified_after: {}
+      modified_before: {}
+      port_number: {}
+      priority: {}
+      progress_status: {}
+      provider: {}
+      sort: {}
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: a34ac2f4-981a-422c-81dd-e1ee88f01207
+    type: regular
+    task:
+      id: a34ac2f4-981a-422c-81dd-e1ee88f01207
+      version: -1
+      name: Expanse search for Synacor Zimbra Collaboration Suite
+      description: |
+        Search for vulnerable Synacor Zimbra server with Expanse.
+      script: '|||expanse-get-issues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      activity_status: {}
+      assignee: {}
+      business_unit: {}
+      content_search:
+        simple: Zimbra
+      created_after: {}
+      created_before: {}
+      domain_search: {}
+      inet_search: {}
+      issue_type:
+        simple: SynacorZimbraCollaborationSuite
+      limit: {}
+      modified_after: {}
+      modified_before: {}
+      port_number: {}
+      priority: {}
+      progress_status: {}
+      provider: {}
+      sort: {}
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 50d29dc9-359d-4dec-8f54-e5131b92fe39
+    type: regular
+    task:
+      id: 50d29dc9-359d-4dec-8f54-e5131b92fe39
+      version: -1
+      name: Expanse search for VMware Workspace One Access Server
+      description: |
+        Search for vulnerable Vmware Workspace One server with Expanse.
+      script: '|||expanse-get-issues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      activity_status: {}
+      assignee: {}
+      business_unit: {}
+      content_search:
+        simple: VMware
+      created_after: {}
+      created_before: {}
+      domain_search: {}
+      inet_search: {}
+      issue_type:
+        simple: VMwareWorkspaceOneAccessServer
+      limit: {}
+      modified_after: {}
+      modified_before: {}
+      port_number: {}
+      priority: {}
+      progress_status: {}
+      provider: {}
+      sort: {}
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 984ba67d-3a18-48cf-8de5-2db5f24995ec
+    type: regular
+    task:
+      id: 984ba67d-3a18-48cf-8de5-2db5f24995ec
+      version: -1
+      name: Expanse search for Citrix Application Delivery Controller
+      description: Search for vulnerable Citrix server with Expanse.
+      script: '|||expanse-get-issues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      activity_status: {}
+      assignee: {}
+      business_unit: {}
+      content_search:
+        simple: citrix
+      created_after: {}
+      created_before: {}
+      domain_search: {}
+      inet_search: {}
+      issue_type:
+        simple: CitrixApplicationDeliveryController
+      limit: {}
+      modified_after: {}
+      modified_before: {}
+      port_number: {}
+      priority: {}
+      progress_status: {}
+      provider: {}
+      sort: {}
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 2cc967e6-e975-41cc-8fb1-2a782f2380e4
+    type: playbook
+    task:
+      id: 2cc967e6-e975-41cc-8fb1-2a782f2380e4
+      version: -1
+      name: Search Endpoint by CVE - Generic
+      description: Hunt for assets with a given CVE using available tools
+      playbookName: Search Endpoint by CVE - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      CVE_ID:
+        complex:
+          root: inputs.Related_CVEs
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 731cd9be-3d0f-47c0-8c60-01838e12a393
+    type: title
+    task:
+      id: 731cd9be-3d0f-47c0-8c60-01838e12a393
+      version: -1
+      name: Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 4e7aae57-ce5f-48e0-8e31-d738f674dd02
+    type: condition
+    task:
+      id: 4e7aae57-ce5f-48e0-8e31-d738f674dd02
+      version: -1
+      name: Are there any affected assets?
+      description: Checks if there are any affected assets from the Expanse issues
+        and the CVEs hunt
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Endpoint
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: Expanse
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 9e46b35e-ad60-4999-821d-f46cd7b33fdd
+    type: regular
+    task:
+      id: 9e46b35e-ad60-4999-821d-f46cd7b33fdd
+      version: -1
+      name: Install and verify related patch on affected assets
+      description: |-
+        Verify and update if necessary the affected assets.
+
+        List of related patches:
+        [1. Fortinet](https://www.fortinet.com/blog/psirt-blogs/update-regarding-cve-2018-13379)
+        [2. VMware](https://www.vmware.com/security/advisories/VMSA-2020-0027.html)
+        [3. Citrix](https://support.citrix.com/article/CTX267027)
+        [4. Pulse](https://kb.pulsesecure.net/articles/Pulse_Security_Advisories/SA44101)
+        [5. Zimbra](https://wiki.zimbra.com/wiki/Zimbra_Releases/8.7.11/P10)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 82aa290c-95b0-4b82-8a5d-ded6b9d66b19
+    type: title
+    task:
+      id: 82aa290c-95b0-4b82-8a5d-ded6b9d66b19
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_10_yes": 0.74,
+      "6_11_yes": 0.74,
+      "6_14_#default#": 0.56,
+      "6_7_yes": 0.8,
+      "6_9_yes": 0.78
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2185,
+        "width": 2000,
+        "x": -620,
+        "y": 30
+      }
+    }
+  }
+inputs:
+- key: Related_CVEs
+  value:
+    simple: CVE-2018-13379, CVE-2019-9670, CVE-2019-11510, CVE-2019-19781, CVE-2020-4006
+  required: false
+  description: Known related CVEs to hunt
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
