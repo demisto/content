@@ -38,7 +38,7 @@ For more information on activating the license see [Activating AutoFocus License
    | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |   
    | Override default credentials | Whether to override the default AutoFocus API Key given by the Cortex XSOAR platform. | False |   
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/www.markdownguide.org | 
+   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  N/A | 
 
 
 4. Click **Test** to validate the URLs, token, and connection.
