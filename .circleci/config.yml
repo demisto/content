@@ -180,6 +180,8 @@ references:
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
         echo 'source /home/circleci/project/.circleci/content_release_vars.sh' >> $BASH_ENV
+        chmod +x .circleci/gitlab-ci-env-variables.sh
+        ./.circleci/gitlab-ci-env-variables.sh
         if [ -n "${NIGHTLY_PARAMETER}" ];
         then
             echo 'export NIGHTLY=true' >> $BASH_ENV
@@ -331,18 +333,15 @@ references:
       command: |
         demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8 --content_version $CONTENT_VERSION
 
-        GCS_PATH=$(mktemp)
-        echo "$GCS_ARTIFACTS_KEY" > "$GCS_PATH"
-        gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
         echo "successfully activated google cloud service account"
 
         FEATURE_BRANCH_NAME="v4.5.0"
         successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
         gcloud auth revoke --all
-        rm $GCS_PATH
 
         python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
-        
+
         zip -j $CIRCLE_ARTIFACTS/uploadable_packs.zip $CIRCLE_ARTIFACTS/uploadable_packs/* || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure" && exit 0)
         rm -rf $CIRCLE_ARTIFACTS/uploadable_packs
 
@@ -458,16 +457,13 @@ references:
             exit 0
         fi
 
-        GCS_PATH=$(mktemp)
-        echo "$GCS_MARKET_KEY" > "$GCS_PATH"
-        gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
         echo "successfully activated google cloud service account"
 
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
         echo "successfully downloaded private ID set"
         gcloud auth revoke --all &> /dev/null
-        rm $GCS_PATH
 
         # Merge public and private ID sets
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
@@ -654,7 +650,7 @@ references:
       name: Check If Instance Was Created
       when: always
       command: |
-        export TEMP=$(cat ./Tests/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
+        export TEMP=$(cat $CIRCLE_ARTIFACTS/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
         echo "$INSTANCE_ROLE filter=$TEMP"
         if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
           then
@@ -1089,17 +1085,14 @@ jobs:
             EXTRACT_FOLDER=$(mktemp -d)
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-            GCS_PATH=$(mktemp)
             CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
             CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
-            echo $GCS_MARKET_KEY > $GCS_PATH
 
             GCS_BUILD_BUCKET="marketplace-ci-build"
             if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
               STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
             fi
-            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
-            rm $GCS_PATH
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
           when: on_success
       - *store_artifacts
 
@@ -1129,18 +1122,15 @@ jobs:
                   EXTRACT_FOLDER=$(mktemp -d)
                   PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
                   PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-                  GCS_PATH=$(mktemp)
                   CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
                   CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
-                  echo $GCS_MARKET_KEY > $GCS_PATH
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
                   if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
                     STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
                   fi
 
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
-                  rm $GCS_PATH
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
             - run:
                 name: Validate Premium Packs
                 shell: /bin/bash
