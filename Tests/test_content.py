@@ -34,8 +34,8 @@ FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, p
 
 LOCKS_PATH = 'content-locks'
 BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
-CIRCLE_BUILD_NUM = os.environ.get('CIRCLE_BUILD_NUM')
-WORKFLOW_ID = os.environ.get('CIRCLE_WORKFLOW_ID')
+BUILD_NUM = os.environ.get('CI_BUILD_ID')
+WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
 ENV_RESULTS_PATH = './env_results.json'
 
@@ -429,8 +429,8 @@ def get_all_tests(tests_settings):
 
 def add_pr_comment(comment):
     token = os.environ['CONTENT_GITHUB_TOKEN']
-    branch_name = os.environ['CIRCLE_BRANCH']
-    sha1 = os.environ['CIRCLE_SHA1']
+    branch_name = os.environ['CI_COMMIT_BRANCH']
+    sha1 = os.environ['CI_COMMIT_SHA']
 
     query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
     url = 'https://api.github.com/search/issues'
@@ -638,7 +638,7 @@ def create_lock_files(integrations_generation_number: dict,
     for integration, generation_number in integrations_generation_number.items():
         blob = bucket.blob(f'{LOCKS_PATH}/{integration}')
         try:
-            blob.upload_from_string(f'{WORKFLOW_ID}:{CIRCLE_BUILD_NUM}:{test_timeout + 30}',
+            blob.upload_from_string(f'{WORKFLOW_ID}:{BUILD_NUM}:{test_timeout + 30}',
                                     if_generation_match=generation_number)
             logging_manager.debug(f'integration {integration} locked')
             locked_integrations.append(integration)
@@ -668,7 +668,7 @@ def unlock_integrations(integrations_details: list,
         try:
             # Verifying build number is the same as current build number to avoid deleting other tests lock files
             _, build_number, _ = lock_file.download_as_string().decode().split(':')
-            if build_number == CIRCLE_BUILD_NUM:
+            if build_number == BUILD_NUM:
                 lock_file.delete(if_generation_match=lock_file.generation)
                 logging_manager.debug(
                     f'Integration {integration} unlocked')
