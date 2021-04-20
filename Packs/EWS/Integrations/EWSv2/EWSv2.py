@@ -5,6 +5,7 @@ import warnings
 from collections import deque
 from multiprocessing import Process
 
+import dateparser
 import exchangelib
 from CommonServerPython import *
 from cStringIO import StringIO
@@ -902,38 +903,17 @@ def get_last_run():
     return last_run
 
 
-def parse_fetch_time_to_minutes():
-    """
-    Calculate the time to fetch back in minutes
-    Returns (int): Time to fetch back in minutes
-    """
-    number_of_times, time_unit = FETCH_TIME.split(' ')
-    if str(number_of_times).isdigit():
-        number_of_times = int(number_of_times)
-    else:
-        return_error('Error: Invalid fetch time: {}, need to be a positive integer with the time unit '
-                     'afterwards e.g 2 months, 4 days.'.format(FETCH_TIME))
-    # If the user input contains a plural of a time unit, for example 'hours', we remove the 's' as it doesn't
-    # impact the minutes in that time unit
-    if time_unit[-1] == 's':
-        time_unit = time_unit[:-1]
-    time_unit_value_in_minutes = TIME_UNIT_TO_MINUTES.get(time_unit.lower())
-    if time_unit_value_in_minutes:
-        return number_of_times * time_unit_value_in_minutes
-
-    return_error('Error: Invalid time unit: {}'.format(FETCH_TIME))
-
-
 def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude_ids=None):
     qs = get_folder_by_path(account, folder_name, is_public=IS_PUBLIC_FOLDER)
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         if not FETCH_ALL_HISTORY:
-            fetch_time_in_minutes = parse_fetch_time_to_minutes()
-            start_time_for_fetch = timedelta(minutes=fetch_time_in_minutes)
-            last_fetch_minutes = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - start_time_for_fetch
-            qs = qs.filter(datetime_received__gte=last_fetch_minutes)
+
+            tz = EWSTimeZone.timezone('UTC')
+            first_fetch_datetime = dateparser.parse(FETCH_TIME)
+            first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
+            qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
     qs = qs.filter().order_by('datetime_received')
 

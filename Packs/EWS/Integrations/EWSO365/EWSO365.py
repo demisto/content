@@ -2,6 +2,7 @@ import random
 import string
 from typing import Dict
 
+import dateparser
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -11,7 +12,6 @@ import traceback
 import json
 import os
 import hashlib
-from datetime import timedelta
 from io import StringIO
 import logging
 import warnings
@@ -2180,28 +2180,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
         return []
 
 
-def parse_fetch_time_to_minutes():
-    """
-    Calculate the time to fetch back in minutes
-    Returns (int): Time to fetch back in minutes
-    """
-    number_of_times, time_unit = FETCH_TIME.split(' ')
-    if str(number_of_times).isdigit():
-        number_of_times = int(number_of_times)
-    else:
-        return_error('Error: Invalid fetch time: {}, need to be a positive integer with the time unit '
-                     'afterwards e.g 2 months, 4 days.'.format(FETCH_TIME))
-    # If the user input contains a plural of a time unit, for example 'hours', we remove the 's' as it doesn't
-    # impact the minutes in that time unit
-    if time_unit[-1] == 's':
-        time_unit = time_unit[:-1]
-    time_unit_value_in_minutes = TIME_UNIT_TO_MINUTES.get(time_unit.lower())
-    if time_unit_value_in_minutes:
-        return number_of_times * time_unit_value_in_minutes
-
-    return_error('Error: Invalid time unit: {}'.format(FETCH_TIME))
-
-
 def fetch_last_emails(
         client: EWSClient, folder_name="Inbox", since_datetime=None, exclude_ids=None
 ):
@@ -2217,10 +2195,10 @@ def fetch_last_emails(
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
-        fetch_time_in_minutes = parse_fetch_time_to_minutes()
-        start_time_for_fetch = timedelta(minutes=fetch_time_in_minutes)
-        last_fetch_minutes = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - start_time_for_fetch
-        qs = qs.filter(last_modified_time__gte=last_fetch_minutes)
+        tz = EWSTimeZone.timezone('UTC')
+        first_fetch_datetime = dateparser.parse(FETCH_TIME)
+        first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
+        qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by("datetime_received")
 
