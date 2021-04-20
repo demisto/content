@@ -39,6 +39,7 @@ TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 # Remove proxy if not set to true in params
 handle_proxy()
+ENDPOINT_CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
 
 ''' KEY DICTIONARY '''
 
@@ -1552,29 +1553,103 @@ def search_device_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
-    entries = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
-    headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
-    hr = tableToMarkdown('Devices', entries, headers=headers, headerTransform=pascalToSpace)
-    endpoint_context = [get_trasnformed_dict(device, ENDPOINT_KEY_MAP) for device in devices]
-    ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries,
-          'Endpoint(val.ID === obj.ID)': endpoint_context}
-    return create_entry_object(contents=raw_res, ec=ec, hr=hr)
+
+    command_results = []
+    for single_device in devices:
+        status, is_isolated = generate_status_fields(single_device.get('status'))
+        endpoint = Common.Endpoint(
+            id=single_device.get('device_id'),
+            hostname=single_device.get('hostname'),
+            ip_address=single_device.get('local_ip'),
+            os=single_device.get('platform_name'),
+            os_version=single_device.get('os_version'),
+            status=status,
+            is_isolated=is_isolated,
+            mac_address=single_device.get('mac_address'))
+
+        entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
+        headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
+
+        command_results.append(CommandResults(
+            outputs_prefix='CrowdStrike.Device',
+            outputs_key_field='ID',
+            outputs=entry,
+            readable_output=tableToMarkdown('Devices', entry, headers=headers, headerTransform=pascalToSpace),
+            raw_response=raw_res,
+            indicator=endpoint
+        ))
+
+    return command_results
+
+
+def search_device_by_ip(raw_res, ip_address):
+    devices = raw_res.get('resources')
+    filtered_devices = []
+    for single_device in devices:
+        if single_device.get('local_ip') == ip_address:
+            filtered_devices.append(single_device)
+
+    if filtered_devices:
+        raw_res['resources'] = filtered_devices
+    else:
+        raw_res = None
+    return raw_res
+
+
+def generate_status_fields(endpoint_status):
+    status = ''
+    is_isolated = ''
+
+    if endpoint_status == 'normal':
+        status = 'Online'
+    elif endpoint_status == 'containment_pending':
+        is_isolated = 'Pending isolation'
+    elif endpoint_status == 'contained':
+        is_isolated = 'Yes'
+    elif endpoint_status == 'lift_containment_pending':
+        is_isolated = 'Pending unisolation'
+
+    return status, is_isolated
 
 
 def get_endpoint_command():
     args = demisto.args()
     if 'id' in args.keys():
-        args['device_id'] = args.get('id', '')
-        args.pop('id')
+        args['ids'] = args.get('id', '')
+
+    # handles the search by id or by hostname
     raw_res = search_device()
+
+    if ip := args.get('ip'):
+        # there is no option to filter by ip, in this case we'll get all the devices
+        raw_res = search_device_by_ip(raw_res, ip)
+
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
-    endpoint_context = [get_trasnformed_dict(device, ENDPOINT_KEY_MAP) for device in devices]
-    headers = ['ID', 'IPAddress', 'OS', 'Hostname', 'Status']
-    hr = tableToMarkdown('Endpoints', endpoint_context, headers=headers, headerTransform=pascalToSpace)
-    ec = {'Endpoint(val.ID === obj.ID)': endpoint_context}
-    return create_entry_object(contents=raw_res, ec=ec, hr=hr)
+
+    command_results = []
+    for single_device in devices:
+        status, is_isolated = generate_status_fields(single_device.get('status'))
+        endpoint = Common.Endpoint(
+            id=single_device.get('device_id'),
+            hostname=single_device.get('hostname'),
+            ip_address=single_device.get('local_ip'),
+            os=single_device.get('platform_name'),
+            os_version=single_device.get('os_version'),
+            status=status,
+            is_isolated=is_isolated,
+            mac_address=single_device.get('mac_address'))
+
+        endpoint_context = endpoint.to_context().get(ENDPOINT_CONTEXT_PATH)
+        hr = tableToMarkdown('CrowdStrike Falcon Endpoints', endpoint_context)
+
+        command_results.append(CommandResults(
+            readable_output=hr,
+            raw_response=raw_res,
+            indicator=endpoint
+        ))
+    return command_results
 
 
 def get_behavior_command():
@@ -2406,7 +2481,7 @@ def main():
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
-            demisto.results(search_device_command())
+            return_results(search_device_command())
         elif command == 'cs-falcon-get-behavior':
             demisto.results(get_behavior_command())
         elif command == 'cs-falcon-search-detection':

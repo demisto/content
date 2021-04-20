@@ -2979,7 +2979,7 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None):
+                     memory=None, processors=None, processor=None, vendor=None, status=None, is_isolated=None):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
@@ -2993,6 +2993,9 @@ class Common(object):
             self.memory = memory
             self.processors = processors
             self.processor = processor
+            self.vendor = vendor
+            self.status = status
+            self.is_isolated = is_isolated
 
         def to_context(self):
             endpoint_context = {
@@ -3034,6 +3037,15 @@ class Common(object):
 
             if self.processor:
                 endpoint_context['Processor'] = self.processor
+
+            if self.vendor:
+                endpoint_context['Vendor'] = self.vendor
+
+            if self.status:
+                endpoint_context['Status'] = self.status
+
+            if self.is_isolated:
+                endpoint_context['IsIsolated'] = self.is_isolated
 
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
