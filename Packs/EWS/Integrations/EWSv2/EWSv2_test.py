@@ -1,6 +1,7 @@
 import EWSv2
 import logging
 
+
 def test_keys_to_camel_case():
     assert EWSv2.keys_to_camel_case('this_is_a_test') == 'thisIsATest'
     # assert keys_to_camel_case(('this_is_a_test', 'another_one')) == ('thisIsATest', 'anotherOne')
