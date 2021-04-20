@@ -6523,11 +6523,12 @@ class AutoFocusKeyRetriever:
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
             if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
-                raise Exception('For versions earlier than 6.2.0, configure an API Key.')
+                raise DemistoException('For versions earlier than 6.2.0, configure an API Key.')
             if not override_default_credentials:
-                raise Exception('If you wish to override the default credentials, please configure an API Key.')
+                raise DemistoException('If you wish to override the default credentials, please configure an API Key.')
             try:
                 api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
             except ValueError as err:
-                raise Exception('AutoFocus API Key is only available on the main account. ' + str(err))
+                raise DemistoException('AutoFocus API Key is only available on the main account. ' + str(err))
         self.key = api_key
+
