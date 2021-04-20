@@ -16,7 +16,8 @@ configuration:
   - Samples Feed
   required: true
   type: 16
-- display: API Key
+- additionalinfo: TIM customers that upgraded to version 6.2 or above have this value pre-configured in their main account, so no additional input is needed.
+  display: API Key
   name: api_key
   required: false
   type: 4
