@@ -4168,19 +4168,3 @@ class TestAutoFocusKeyRetriever:
         auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='')
         assert auto_focus_key_retriever.key == 'test'
 
-    def test_instantiate_class_without_param_key_no_override_failed(self, mocker, clear_version_cache):
-        """
-        Given:
-            - not giving the api_key parameter
-        When:
-            - Mocking getAutoFocusApiKey
-            - Mocking server version to be 6.2.0
-        Then:
-            - Validate an exception with appropriate error message is raised.
-        """
-        from CommonServerPython import AutoFocusKeyRetriever
-        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
-        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.5.0', 'buildNumber': '65000'})
-        with raises(DemistoException,
-                    match='If you wish to override the default credentials, please configure an API Key.'):
-            AutoFocusKeyRetriever(api_key='')
