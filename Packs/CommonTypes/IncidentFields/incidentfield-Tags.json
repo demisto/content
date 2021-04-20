@@ -5,7 +5,7 @@
     "name": "Tags",
     "ownerOnly": false,
     "cliName": "tags",
-    "type": "tagsSelect",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,

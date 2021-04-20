@@ -2,29 +2,77 @@
     "name": "Carbon Black Endpoint Standard Incoming Mapper",
     "description": "Maps incoming Carbon Black alert fields.",
     "feed": false,
-    "id": "60ac2988-3cc1-4ae3-8dea-a6a3c834080c",
+    "id": "1f567c33-349d-419b-8e36-7088b78edbf7",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0",
     "mapping": {
         "Carbon Black Endpoint Standard": {
-            "dontMapEventToLabels": false,
+            "dontMapEventToLabels": true,
             "internalMapping": {
                 "Alert Category": {
                     "complex": null,
                     "simple": "category"
                 },
-                "Alert Severity": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Carbon Black ES Alert Severity": {
                     "complex": null,
                     "simple": "severity"
+                },
+                "Carbon Black ES First Event Time": {
+                    "complex": null,
+                    "simple": "first_event_time"
+                },
+                "Carbon Black ES IOC Hit": {
+                    "complex": null,
+                    "simple": "ioc_hit"
+                },
+                "Carbon Black ES IOC Id": {
+                    "complex": null,
+                    "simple": "ioc_id"
+                },
+                "Carbon Black ES Last Event Time": {
+                    "complex": null,
+                    "simple": "last_event_time"
+                },
+                "Carbon Black ES Process Id": {
+                    "complex": null,
+                    "simple": "process_guid"
+                },
+                "Carbon Black ES Process Name": {
+                    "complex": null,
+                    "simple": "process_name"
+                },
+                "Carbon Black ES Report Name": {
+                    "complex": null,
+                    "simple": "report_name"
+                },
+                "Carbon Black ES Reputation": {
+                    "complex": null,
+                    "simple": "threat_cause_reputation"
+                },
+                "Carbon Black ES Target Value": {
+                    "complex": null,
+                    "simple": "target_value"
+                },
+                "Carbon Black ES Threat Category": {
+                    "complex": null,
+                    "simple": "threat_cause_threat_category"
+                },
+                "Carbon Black ES Threat Id": {
+                    "complex": null,
+                    "simple": "threat_id"
+                },
+                "Carbon Black ES Vector": {
+                    "complex": null,
+                    "simple": "threat_cause_vector"
                 },
                 "Changed": {
                     "complex": null,
                     "simple": "workflow.changed_by"
-                },
-                "Comment": {
-                    "complex": null,
-                    "simple": "workflow.comment"
                 },
                 "Description": {
                     "complex": null,
@@ -42,22 +90,6 @@
                     "complex": null,
                     "simple": "device_username"
                 },
-                "First Event Time": {
-                    "complex": null,
-                    "simple": "first_event_time"
-                },
-                "IOC Hit": {
-                    "complex": null,
-                    "simple": "ioc_hit"
-                },
-                "IOC Id": {
-                    "complex": null,
-                    "simple": "ioc_id"
-                },
-                "Last Event Time": {
-                    "complex": null,
-                    "simple": "last_event_time"
-                },
                 "Last Update Time": {
                     "complex": null,
                     "simple": "last_update_time"
@@ -74,25 +106,9 @@
                     "complex": null,
                     "simple": "policy_id"
                 },
-                "Process Id": {
-                    "complex": null,
-                    "simple": "process_guid"
-                },
-                "Process Name": {
-                    "complex": null,
-                    "simple": "process_name"
-                },
-                "Report Id": {
+                "Report ID": {
                     "complex": null,
                     "simple": "report_id"
-                },
-                "Report Name": {
-                    "complex": null,
-                    "simple": "report_name"
-                },
-                "Reputation": {
-                    "complex": null,
-                    "simple": "threat_cause_reputation"
                 },
                 "SHA256": {
                     "complex": null,
@@ -105,22 +121,6 @@
                 "Tags": {
                     "complex": null,
                     "simple": "tags"
-                },
-                "Target Value": {
-                    "complex": null,
-                    "simple": "target_value"
-                },
-                "Threat Category": {
-                    "complex": null,
-                    "simple": "threat_cause_threat_category"
-                },
-                "Threat Id": {
-                    "complex": null,
-                    "simple": "threat_id"
-                },
-                "Vector": {
-                    "complex": null,
-                    "simple": "threat_cause_vector"
                 }
             }
         }

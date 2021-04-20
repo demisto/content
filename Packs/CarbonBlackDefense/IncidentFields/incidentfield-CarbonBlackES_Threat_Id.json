@@ -1,7 +1,7 @@
 {
     "id": "incident_carbonblackesthreatid",
     "version": -1,
-    "name": "Threat Id",
+    "name": "Carbon Black ES Threat Id",
     "ownerOnly": false,
     "description": "Threat Id",
     "cliName": "carbonblackesthreatid",

@@ -1,7 +1,7 @@
 {
     "id": "incident_carbonblackesreportid",
     "version": -1,
-    "name": "Report Id",
+    "name": "Report Carbon Black ES ID",
     "ownerOnly": false,
     "description": "Report Id",
     "cliName": "carbonblackesreportid",

@@ -48,15 +48,6 @@
                                 "fieldId": "sourcebrand",
                                 "height": 22,
                                 "id": "incident-sourceBrand-field",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "sourceinstance",
-                                "height": 22,
-                                "id": "incident-sourceInstance-field",
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -67,6 +58,15 @@
                                 "height": 22,
                                 "id": "incident-playbookId-field",
                                 "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -188,19 +188,19 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 1,
-                                "fieldId": "dbotmodified",
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
                                 "height": 53,
-                                "id": "incident-modified-field",
+                                "id": "incident-dueDate-field",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "dbotduedate",
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
                                 "height": 53,
-                                "id": "incident-dueDate-field",
+                                "id": "incident-modified-field",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -219,7 +219,7 @@
                                 "fieldId": "dbotclosed",
                                 "height": 53,
                                 "id": "incident-closed-field",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 1
                             }
@@ -283,9 +283,9 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "details",
-                                "height": 22,
+                                "height": 106,
                                 "id": "incident-details-field",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -299,16 +299,17 @@
                         "y": 6
                     },
                     {
+                        "description": "",
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-bbb3b2b0-9ba4-11eb-86b6-cfc1de65881e",
+                        "i": "caseinfoid-fffdd7b0-a19f-11eb-a779-d9a59d920a78",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "alertid",
-                                "height": 22,
-                                "id": "1334b3b0-9bbc-11eb-bb0e-b5f498013122",
+                                "height": 53,
+                                "id": "62f477c0-a1a0-11eb-a779-d9a59d920a78",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -316,8 +317,8 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "description",
-                                "height": 22,
-                                "id": "e7643ce0-9ba4-11eb-86b6-cfc1de65881e",
+                                "height": 53,
+                                "id": "79e48850-a1a8-11eb-9a82-db6fe141dfa9",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -325,8 +326,8 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "carbonblackeslasteventtime",
-                                "height": 22,
-                                "id": "ede10120-9ba4-11eb-86b6-cfc1de65881e",
+                                "height": 53,
+                                "id": "81fc5bc0-a1a4-11eb-9a82-db6fe141dfa9",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -335,17 +336,8 @@
                                 "endCol": 2,
                                 "fieldId": "carbonblackesalertseverity",
                                 "height": 22,
-                                "id": "f3bd66b0-9ba4-11eb-86b6-cfc1de65881e",
+                                "id": "e355c9c0-a1a8-11eb-9a82-db6fe141dfa9",
                                 "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "carbonblackesalertseverity",
-                                "height": 22,
-                                "id": "1d164e90-9c50-11eb-b01c-2f6d289c576f",
-                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -364,13 +356,13 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-f5ce4550-9ba4-11eb-86b6-cfc1de65881e",
+                        "i": "caseinfoid-87ba15c0-a1a4-11eb-9a82-db6fe141dfa9",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "carbonblackesreportname",
-                                "height": 22,
-                                "id": "27a00640-9ba5-11eb-86b6-cfc1de65881e",
+                                "height": 53,
+                                "id": "a7d27c30-a1a4-11eb-9a82-db6fe141dfa9",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -378,17 +370,17 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "carbonblackesiochit",
-                                "height": 22,
-                                "id": "2a714eb0-9ba5-11eb-86b6-cfc1de65881e",
+                                "height": 53,
+                                "id": "b3416d10-a1a4-11eb-9a82-db6fe141dfa9",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "carbonblackesreportid",
-                                "height": 22,
-                                "id": "3181a060-9ba5-11eb-86b6-cfc1de65881e",
+                                "fieldId": "reportid",
+                                "height": 53,
+                                "id": "a9e18610-a1a4-11eb-9a82-db6fe141dfa9",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -397,7 +389,7 @@
                                 "endCol": 2,
                                 "fieldId": "carbonblackesiocid",
                                 "height": 22,
-                                "id": "2b726b00-9ba5-11eb-86b6-cfc1de65881e",
+                                "id": "b58605e0-a1a4-11eb-9a82-db6fe141dfa9",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -414,72 +406,66 @@
                         "y": 2
                     },
                     {
+                        "description": "",
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-ff297160-9ba4-11eb-86b6-cfc1de65881e",
+                        "i": "caseinfoid-078163f0-a1a8-11eb-9a82-db6fe141dfa9",
                         "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "sha256",
-                                "height": 22,
-                                "id": "37ea1950-9ba5-11eb-86b6-cfc1de65881e",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "carbonblackesfirsteventtime",
-                                "height": 22,
-                                "id": "6de0e710-9c4e-11eb-b01c-2f6d289c576f",
-                                "index": 1,
-                                "listId": "caseinfoid-ff297160-9ba4-11eb-86b6-cfc1de65881e",
+                                "fieldId": "sha256",
+                                "height": 53,
+                                "id": "21278d70-a1a8-11eb-9a82-db6fe141dfa9",
+                                "index": 0,
+                                "listId": "caseinfoid-078163f0-a1a8-11eb-9a82-db6fe141dfa9",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "carbonblackesprocessid",
-                                "height": 22,
-                                "id": "44ae39f0-9ba5-11eb-86b6-cfc1de65881e",
-                                "index": 2,
+                                "height": 53,
+                                "id": "f4c9b6d0-a1a8-11eb-9a82-db6fe141dfa9",
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "carbonblackesvector",
-                                "height": 22,
-                                "id": "414c9860-9ba5-11eb-86b6-cfc1de65881e",
-                                "index": 3,
+                                "height": 53,
+                                "id": "3370f2f0-a1a8-11eb-9a82-db6fe141dfa9",
+                                "index": 2,
+                                "listId": "caseinfoid-078163f0-a1a8-11eb-9a82-db6fe141dfa9",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "carbonblackesprocessname",
-                                "height": 22,
-                                "id": "490f4a20-9ba5-11eb-86b6-cfc1de65881e",
-                                "index": 4,
+                                "height": 53,
+                                "id": "ffadccd0-a1a8-11eb-9a82-db6fe141dfa9",
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "carbonblackesfirsteventtime",
-                                "height": 22,
-                                "id": "3bed03f0-9ba5-11eb-86b6-cfc1de65881e",
-                                "index": 5,
+                                "height": 53,
+                                "id": "2bc21750-a1a8-11eb-9a82-db6fe141dfa9",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "carbonblackesreputation",
-                                "height": 22,
-                                "id": "4c2f9cf0-9ba5-11eb-86b6-cfc1de65881e",
+                                "height": 53,
+                                "id": "06964b30-a1a9-11eb-9a82-db6fe141dfa9",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -499,23 +485,14 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-06d31ce0-9ba5-11eb-86b6-cfc1de65881e",
+                        "i": "caseinfoid-4723ac70-a1a8-11eb-9a82-db6fe141dfa9",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "carbonblackestargetvalue",
                                 "height": 22,
-                                "id": "53969a20-9ba5-11eb-86b6-cfc1de65881e",
+                                "id": "13de8ff0-a1a9-11eb-9a82-db6fe141dfa9",
                                 "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "carbonblackesthreatcategory",
-                                "height": 22,
-                                "id": "55dd7ce0-9ba5-11eb-86b6-cfc1de65881e",
-                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -523,8 +500,62 @@
                                 "endCol": 2,
                                 "fieldId": "carbonblackesthreatid",
                                 "height": 22,
-                                "id": "568a85c0-9ba5-11eb-86b6-cfc1de65881e",
+                                "id": "a59a69b0-a1a8-11eb-9a82-db6fe141dfa9",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "carbonblackesthreatcategory",
+                                "height": 22,
+                                "id": "abe6a810-a1a8-11eb-9a82-db6fe141dfa9",
                                 "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "alertcategory",
+                                "height": 22,
+                                "id": "b106e990-a1a8-11eb-9a82-db6fe141dfa9",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "changed",
+                                "height": 22,
+                                "id": "7da851a0-a1a9-11eb-9a82-db6fe141dfa9",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "comment",
+                                "height": 22,
+                                "id": "81ed4e50-a1a9-11eb-9a82-db6fe141dfa9",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "deviceusername",
+                                "height": 22,
+                                "id": "224ff5f0-a1aa-11eb-9a82-db6fe141dfa9",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "44025d50-a1aa-11eb-9a82-db6fe141dfa9",
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -533,7 +564,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Carbon Black Data",
+                        "name": "CARBON BLACK DATA",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -570,8 +601,8 @@
         ]
     },
     "group": "incident",
-    "id": "d2ff9b7f-5759-4208-8db1-ca3e2778deed",
-    "name": "Carbon Black Endpoint Standard layout",
+    "id": "60181348-b463-4826-8326-36e97ba5b92b",
+    "name": "Carbon Black Endpoint Standard Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

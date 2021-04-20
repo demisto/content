@@ -1,7 +1,7 @@
 {
     "id": "incident_carbonblackestargetvalue",
     "version": -1,
-    "name": "Target Value",
+    "name": "Carbon Black ES Target Value",
     "ownerOnly": false,
     "description": "Target Value",
     "cliName": "carbonblackestargetvalue",

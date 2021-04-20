@@ -1,7 +1,7 @@
 {
     "id": "incident_carbonblackesfirsteventtime",
     "version": -1,
-    "name": "First Event Time",
+    "name": "Carbon Black ES First Event Time",
     "ownerOnly": false,
     "description": "First Event Time",
     "cliName": "carbonblackesfirsteventtime",

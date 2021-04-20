@@ -5,7 +5,7 @@
     "ownerOnly": false,
     "description": "Comment",
     "cliName": "comment",
-    "type": "markdown",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,

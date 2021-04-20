@@ -1,7 +1,7 @@
 {
     "id": "incident_carbonblackesreputation",
     "version": -1,
-    "name": "Reputation",
+    "name": "Carbon Black ES Reputation",
     "ownerOnly": false,
     "description": "Reputation",
     "cliName": "carbonblackesreputation",

@@ -1,7 +1,7 @@
 {
     "id": "incident_carbonblackesiochit",
     "version": -1,
-    "name": "IOC Hit",
+    "name": "Carbon Black ES IOC Hit",
     "ownerOnly": false,
     "description": "IOC Hit",
     "cliName": "carbonblackesiochit",

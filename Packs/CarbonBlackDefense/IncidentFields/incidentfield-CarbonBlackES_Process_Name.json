@@ -1,7 +1,7 @@
 {
     "id": "incident_carbonblackesprocessname",
     "version": -1,
-    "name": "Process Name",
+    "name": "Carbon Black ES Process Name",
     "ownerOnly": false,
     "description": "Process Name",
     "cliName": "carbonblackesprocessname",
