@@ -78,6 +78,27 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision
+      type: string
+    - contextPath: URL.Data
+      description: URL name
+      type: string
+    - contextPath: GoogleSafeBrowsingV2.URL.threatType
+      description: The URL threat type.
+      type: string
+    - contextPath: GoogleSafeBrowsingV2.URL.platformType
+      description: The URL platform type.
+      type: string
+    - contextPath: GoogleSafeBrowsingV2.URL.cacheDuration
+      description: The URL cache duration time.
+      type: string
+    - contextPath: GoogleSafeBrowsingV2.URL.threatEntryType
+      description: The URL threat entry type.
+      type: string
   dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
