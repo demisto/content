@@ -14,6 +14,7 @@ from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
 import tldextract
+
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 
 EMAIL_BODY_FIELD = 'emailbody'
@@ -114,7 +115,8 @@ def extract_domain_from_recipients(row):
     return domains_list
 
 
-def create_context_for_campaign_details(campaign_found=False, incidents_df=None, additional_context_fields=[]):
+def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
+                                        additional_context_fields: list = None):
     if not campaign_found:
         return {
             'isCampaignFound': campaign_found,
@@ -123,11 +125,11 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         incident_id = demisto.incident()['id']
         incidents_df['recipients'] = incidents_df.apply(lambda row: get_recipients(row), axis=1)
         incidents_df['recipientsdomain'] = incidents_df.apply(lambda row: extract_domain_from_recipients(row), axis=1)
-        context_keys = ['id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain']
-
-        for key in additional_context_fields:
-            if key not in context_keys and key in incidents_df.columns:
-                context_keys.append(key)
+        context_keys = {'id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain'}
+        if additional_context_fields is not None:
+            for key in additional_context_fields:
+                if key in incidents_df.columns:
+                    context_keys.add(key)
 
         incident_df = incidents_df[context_keys]  # lgtm [py/hash-unhashable-value]
         incident_df = incident_df[incident_df['id'] != incident_id]
@@ -342,8 +344,7 @@ def create_email_summary_hr(incidents_df, fields_to_display):
     hr_email_summary += '\n ##### ' + email_summary
     context = add_context_key(
         create_context_for_campaign_details(
-            campaign_found=True,
-            incidents_df=incidents_df,
+            campaign_found=True, incidents_df=incidents_df,
             additional_context_fields=fields_to_display))
     return context, hr_email_summary
 

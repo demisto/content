@@ -167,16 +167,13 @@ def test_return_campaign_details_entry_list_dumped_recipients_cc(mocker):
         assert original_incident['fromdomain'] == context_incident['emailfromdomain']
 
 
-ADDITIONAL_CONTET_KEYS_PARAMETRIZE = [
-    (['name', 'emailfrom', 'emailto', 'severity', 'status', 'created'], []),
-    (['name_', 'emailfrom', 'emailto', 'severity1', 'status', 'created'], ['name_', 'severity1']),
-    ([], [])
+ADDITIONAL_CONTEXT_KEYS_PARAMETRIZE = [
+    (['name', 'emailfrom', 'emailto', 'severity', 'status', 'created']),
+    (['name', 'emailfrom', 'emailto'])
 ]
 
 
-@pytest.mark.parametrize(
-    'expected_in_context, not_expected_in_context', ADDITIONAL_CONTET_KEYS_PARAMETRIZE)
-def test_context_populated_with_required_keys_happy_path(mocker, expected_in_context, not_expected_in_context):
+def prepare_additional_context_fields_test(mocker):
     global RESULTS
     RESULTS = []
     # prepare
@@ -188,18 +185,62 @@ def test_context_populated_with_required_keys_happy_path(mocker, expected_in_con
         emailfrom='a@a.com', emailcc='["a@a.com", "b@a.com"]')
     incidents_list = [incident]
     data = pd.DataFrame(incidents_list)
+    return data
+
+
+@pytest.mark.parametrize(
+    'fields_to_store_in_context', ADDITIONAL_CONTEXT_KEYS_PARAMETRIZE)
+def test_context_populated_with_requested_fields_happy_path(mocker, fields_to_store_in_context):
+    """
+
+    Given:
+        - List of valid fields for the command argument fieldsToDisplay, expected to be stored in the context
+
+    When:
+        - Get the campaign details entry
+
+    Then:
+        - Assert that the user requested fields are stored in the context
+
+    """
+    # prepare
+
+    data = prepare_additional_context_fields_test(mocker)
 
     # run
-    return_campaign_details_entry(data, fields_to_display=expected_in_context)
+    return_campaign_details_entry(data, fields_to_display=fields_to_store_in_context)
+    res = RESULTS[0]
+    context = res['EntryContext']
+
+    # assert
+    for context_incident in context['EmailCampaign.incidents']:
+        for field in fields_to_store_in_context:
+            assert field in context_incident, 'the field "{}" is expected to be stored in context'.format(field)
+
+
+def test_context_not_populated_with_invalid_fields(mocker):
+    """
+
+    Given:
+        - List of invalid fields for the command argument fieldsToDisplay, expected not to be stored in the context
+
+    When:
+        - Get the campaign details entry
+
+    Then:
+        - Assert that the invalid fields aren't stored in the context
+
+    """
+    invalid_fields = ['name_', 'email_from', 'emailTo', 'Severity', 'statuses', 'create']
+    data = prepare_additional_context_fields_test(mocker)
+
+    # run
+    return_campaign_details_entry(data, fields_to_display=invalid_fields)
     res = RESULTS[0]
     context = res['EntryContext']
 
     # assert that valid expected keys are in the context
     # and invalid keys aren't in the context
-    assert context['EmailCampaign.incidents'][0]
-    for original_incident, context_incident in zip(incidents_list, context['EmailCampaign.incidents']):
-        for k in expected_in_context:
-            if k in not_expected_in_context:
-                assert context_incident.get(k) is None and original_incident.get(k) is None
-            else:
-                assert context_incident[k] is not None and original_incident[k] == context_incident[k]
+    for context_incident in context['EmailCampaign.incidents']:
+        for field in invalid_fields:
+            assert field not in context_incident, 'the field "{}" should not be stored in context'.format(field)

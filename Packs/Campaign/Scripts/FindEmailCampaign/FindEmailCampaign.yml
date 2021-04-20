@@ -116,9 +116,10 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-seperated list of fields to display and store in the context. An example is "emailclassification,closereason".
-    If a list of fields is provided, and a campaign is detected, these incidents fields
-    will be displayed and stored in the context.
+  description: A comma-seperated list of fields to display and store in the context.
+    An example is "emailclassification,closereason". If a list of fields is provided,
+    and a campaign is detected, these incidents fields will be displayed and stored
+    in the context.
   isArray: false
   name: fieldsToDisplay
   predefined:
@@ -175,7 +176,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.18886
+dockerimage: demisto/sklearn:1.0.0.19049
 tests:
 - No tests (auto formatted)
 runonce: true
