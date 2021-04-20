@@ -1528,7 +1528,7 @@ Returns all Git branches data corresponding to the repository and owner names gi
 ```json
 {
     "GitHub": {
-        "Branches": [
+        "Branch": [
             {
                 "node_id": "MDM6UmVmNjA1MjUzOTI6cmVmcy9oZWFkcy9BaXJHYXBIb3Blcg==",
                 "object": {
