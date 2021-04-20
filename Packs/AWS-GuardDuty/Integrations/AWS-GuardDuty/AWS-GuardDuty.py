@@ -1,5 +1,5 @@
 import boto3
-
+from datetime import datetime, date
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -70,11 +70,7 @@ def parse_finding_ids(finding_ids):
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):  # pylint: disable=E0202
-        if isinstance(obj, datetime.datetime):  # type: ignore  # pylint: disable=E1101
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, datetime.date):  # type: ignore
-            return obj.strftime('%Y-%m-%d')
-        elif isinstance(obj, datetime):  # type: ignore
+        if isinstance(obj, datetime):  # type: ignore
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
         elif isinstance(obj, date):  # type: ignore  # pylint: disable=E0602
             return obj.strftime('%Y-%m-%d')
