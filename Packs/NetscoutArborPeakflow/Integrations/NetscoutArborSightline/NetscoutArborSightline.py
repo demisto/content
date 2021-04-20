@@ -5,7 +5,7 @@ from CommonServerUserPython import *  # noqa
 from copy import deepcopy
 import requests
 import traceback
-from typing import Dict
+from typing import Dict, Tuple
 from datetime import timezone
 
 # Disable insecure warnings
@@ -92,8 +92,8 @@ class NetscoutClient(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    def _http_request(self, method: str, url_suffix: str = None, params: dict = None, json_data: dict = None,
-                      return_empty_response: bool = None):
+    def http_request(self, method: str, url_suffix: str = None, params: dict = None, json_data: dict = None,
+                     return_empty_response: bool = None):
 
         return super()._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
                                      error_handler=self.error_handler, return_empty_response=return_empty_response)
@@ -131,8 +131,8 @@ class NetscoutClient(BaseClient):
             raise DemistoException(error)
 
         except ValueError:
-            raise DemistoException(f'Could not parse error returned from Netscout Arbor Sightline '
-                                   f'server:\n{res.content}')
+            raise DemistoException(
+                f'Could not parse error returned from Netscout Arbor Sightline server:\n{str(res.content)}')
 
     def calculate_amount_of_incidents(self, start_time: str) -> int:
         """
@@ -145,8 +145,9 @@ class NetscoutClient(BaseClient):
         Returns:
             (int) The amount of pages (incidents) in total in the given query, 0 if none.
         """
-        data_attribute_filter = self.build_data_attribute_filter(start_time=start_time,
-                                                                 start_time_operator='>', alert_class=self.alert_class,
+        data_attribute_filter = self.build_data_attribute_filter(start_time=start_time,  # type: ignore
+                                                                 start_time_operator='>',  # type: ignore
+                                                                 alert_class=self.alert_class,
                                                                  alert_type=self.alert_type,
                                                                  classification=self.classification,
                                                                  importance=self.importance,
@@ -189,21 +190,21 @@ class NetscoutClient(BaseClient):
         Returns:
             (dict): Netscout relationships object
         """
-        relationships = {}
+        relationships: Dict[str, Any] = {}
         for key, val in kwargs.items():
             if val:
                 # In some cases the name of the relationships is not the same as the type (most cases it is)
                 _type = self.RELATIONSHIP_TO_TYPE.get(key, key)
                 if key == 'routers':
                     relationships[key] = {
-                        'data': [{
+                        'data': [{  # type: ignore[dict-item]
                             'type': _type,
                             'id': val[0]
                         }]
                     }
                 else:
                     relationships[key] = {
-                        'data': {
+                        'data': {  #
                             'type': _type,
                             'id': val
                         }
@@ -231,17 +232,17 @@ class NetscoutClient(BaseClient):
 
             # We don't create a filter for operator names
             if key not in operator_names and val:
-                operator = '='
+                operator = '='  # type: str
 
                 # If the current parameter supports a special operator (it appears in the OPERATOR_NAME_DICTIONARY),
                 # we take the operator value using the operator name (that appears in the OPERATOR_NAME_DICTIONARY)
                 if operator_name := self.OPERATOR_NAME_DICTIONARY.get(key):
-                    operator = kwargs.get(operator_name) if kwargs.get(operator_name) else '='
+                    operator = kwargs.get(operator_name) if kwargs.get(operator_name) else '='  # type: ignore
 
-                param_list.append(f'/data/attributes/{key + operator + val}')
+                param_list.append(f'/data/attributes/{key + operator + val}')  # type: ignore
         return ' AND '.join(param_list)
 
-    def fetch_incidents(self) -> (list, str):
+    def fetch_incidents(self) -> Tuple[list, str]:
         """
         Perform fetch incidents process.
         1.  We first save the current time to know what was the time at the beginning of the incidents counting process.
@@ -269,7 +270,8 @@ class NetscoutClient(BaseClient):
         incidents: list = []
 
         if amount_of_incidents:
-            data_attribute_filter = self.build_data_attribute_filter(start_time=now, start_time_operator='<',
+            data_attribute_filter = self.build_data_attribute_filter(start_time=now,  # type: ignore
+                                                                     start_time_operator='<',  # type: ignore
                                                                      alert_class=self.alert_class,
                                                                      alert_type=self.alert_type,
                                                                      importance=self.importance,
@@ -282,7 +284,7 @@ class NetscoutClient(BaseClient):
 
             results = self.list_alerts(page_size=amount_of_incidents, search_filter=data_attribute_filter)
             all_alerts = results.get('data')
-            short_alert_list = all_alerts[-self.max_fetch:]
+            short_alert_list = all_alerts[-1 * self.max_fetch:]
             if short_alert_list:
                 new_last_start_time = short_alert_list[0].get('attributes', {}).get('start_time')
 
@@ -299,26 +301,26 @@ class NetscoutClient(BaseClient):
 
     def list_alerts(self, page: int = None, page_size: int = None, search_filter: str = None):
 
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix='alerts',
             params=assign_params(page=page, perPage=page_size, filter=search_filter)
         )
 
     def get_alert(self, alert_id: str):
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix=f'alerts/{alert_id}'
         )
 
     def get_annotations(self, alert_id: str):
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix=f'alerts/{alert_id}/annotations'
         )
 
     def list_mitigations(self, mitigation_id: str, page: int = None, page_size: int = None):
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix=f'mitigations/{mitigation_id}' if mitigation_id else 'mitigations',
             params=assign_params(page=page, perPage=page_size)
@@ -326,42 +328,42 @@ class NetscoutClient(BaseClient):
         )
 
     def create_mitigation(self, data: dict):
-        return self._http_request(
+        return self.http_request(
             method='POST',
-            url_suffix=f'mitigations/',
+            url_suffix='mitigations/',
             json_data=data
         )
 
-    def delete_mitigation(self, mitigation_id: str):
-        return self._http_request(
+    def delete_mitigation(self, mitigation_id: Optional[str]):
+        self.http_request(
             method='DELETE',
-            url_suffix=f'mitigations/{mitigation_id}' if mitigation_id else 'mitigations',
+            url_suffix='mitigations/{mitigation_id}' if mitigation_id else 'mitigations',
             return_empty_response=True
         )
 
     def mitigation_template_list(self):
-        return self._http_request(
+        return self.http_request(
             method='GET',
-            url_suffix=f'mitigation_templates/'
+            url_suffix='mitigation_templates/'
         )
 
     def router_list(self):
-        return self._http_request(
+        return self.http_request(
             method='GET',
-            url_suffix=f'routers/'
+            url_suffix='routers/'
         )
 
     def managed_object_list(self, page: int = None, page_size: int = None):
-        return self._http_request(
+        return self.http_request(
             method='GET',
-            url_suffix=f'managed_objects/',
+            url_suffix='managed_objects/',
             params=assign_params(page=page, perPage=page_size)
         )
 
     def tms_group_list(self):
-        return self._http_request(
+        return self.http_request(
             method='GET',
-            url_suffix=f'tms_groups/'
+            url_suffix='tms_groups/'
         )
 
 
@@ -466,7 +468,7 @@ def fetch_incidents_command(client: NetscoutClient):
     demisto.setLastRun({'LastFetchTime': last_start_time})
 
 
-def list_alerts_command(client: NetscoutClient, args: dict):
+def list_alerts_command(client: NetscoutClient, args: Dict[str, str]):
     limit = arg_to_number(args.get('limit'))
     page = arg_to_number(args.get('page'))
     alert_id = args.get('alert_id')
@@ -486,8 +488,9 @@ def list_alerts_command(client: NetscoutClient, args: dict):
         raw_result = client.get_alert(alert_id)
     else:
         data_attribute_filter = client.build_data_attribute_filter(alert_id=alert_id, alert_class=alert_class,
-                                                                   alert_type=alert_type,
-                                                                   classification=classification, importance=importance,
+                                                                   alert_type=alert_type,  # type: ignore
+                                                                   classification=classification,
+                                                                   importance=importance,  # type: ignore
                                                                    importance_operator=importance_operator,
                                                                    ongoing=ongoing, start_time=start_time,
                                                                    start_time_operator=start_time_operator,
@@ -506,14 +509,14 @@ def list_alerts_command(client: NetscoutClient, args: dict):
     return CommandResults(outputs_prefix='NASightline.Alert',
                           outputs_key_field='id',
                           outputs=outputs,
-                          readable_output=tableToMarkdown(f'Alerts', hr),
+                          readable_output=tableToMarkdown('Alerts', hr),
                           raw_response=raw_result)
 
 
 def alert_annotation_list_command(client: NetscoutClient, args: dict):
-    alert_id = args.get('alert_id')
+    alert_id = args.get('alert_id')  # type: ignore
     extend_data = argToBoolean(args.get('extend_data', False))
-    raw_result = client.get_annotations(alert_id)
+    raw_result = client.get_annotations(alert_id)  # type: ignore
     data = raw_result.get('data')
     hr = [build_human_readable(data=annotation) for annotation in data]
     annotations = [build_output(data=annotation, extend_data=extend_data) for annotation in data]
@@ -528,8 +531,8 @@ def alert_annotation_list_command(client: NetscoutClient, args: dict):
 def mitigation_list_command(client: NetscoutClient, args: dict):
     page = arg_to_number(args.get('page'))
     limit = arg_to_number(args.get('limit'))
-    mitigation_id = args.get('mitigation_id')
-    extend_data = argToBoolean(args.get('extend_data', False))
+    mitigation_id: str = args.get('mitigation_id')  # type: ignore
+    extend_data = argToBoolean(args.get('extend_data', False))  # type: bool
     raw_result = client.list_mitigations(mitigation_id, page=page, page_size=limit)
     data = raw_result.get('data')
     data = data[:limit] if isinstance(data, list) else [data]
@@ -539,20 +542,20 @@ def mitigation_list_command(client: NetscoutClient, args: dict):
     return CommandResults(outputs_prefix='NASightline.Mitigation',
                           outputs_key_field='id',
                           outputs=mitigations,
-                          readable_output=tableToMarkdown(f'Mitigation list', hr),
+                          readable_output=tableToMarkdown('Mitigation list', hr),
                           raw_response=raw_result)
 
 
 def mitigation_create_command(client: NetscoutClient, args: dict):
-    ip_version = IP_DICTIONARY.get(args.get('ip_version'))
+    ip_version = IP_DICTIONARY.get(args.get('ip_version'))  # type: ignore
     if not ip_version:
-        raise DemistoException(f'ip_version value can be one of the following: '
+        raise DemistoException('ip_version value can be one of the following: '
                                f'{",".join(list(IP_DICTIONARY.keys()))}. {args.get("ip_version")} was given.')
     description = args.get('description')
     name = args.get('name')
     ongoing = args.get('ongoing', 'false')
     sub_type = args.get('sub_type')
-    sub_object = validate_json_arg(args.get('sub_object'), {})
+    sub_object = validate_json_arg(args.get('sub_object'), 'sub_object')  # type: ignore
     alert_id = args.get('alert_id')
     managed_object_id = args.get('managed_object_id')
     mitigation_template_id = args.get('mitigation_template_id')
@@ -573,11 +576,11 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
     return CommandResults(outputs_prefix='NASightline.Mitigation',
                           outputs_key_field='id',
                           outputs=mitigation,
-                          readable_output=tableToMarkdown(f'Mitigation was created', hr),
+                          readable_output=tableToMarkdown('Mitigation was created', hr),
                           raw_response=raw_result)
 
 
-def mitigation_delete_command(client: NetscoutClient, args: dict):
+def mitigation_delete_command(client: NetscoutClient, args: Dict[str, str]):
     mitigation_id = args.get('mitigation_id')
     client.delete_mitigation(mitigation_id)
     hr = f'### Mitigation {mitigation_id} was deleted'
@@ -597,7 +600,7 @@ def mitigation_template_list_command(client: NetscoutClient, args: dict):
     return CommandResults(outputs_prefix='NASightline.MitigationTemplate',
                           outputs_key_field='id',
                           outputs=mitigation_templates,
-                          readable_output=tableToMarkdown(f'Mitigation template list', hr, removeNull=True),
+                          readable_output=tableToMarkdown('Mitigation template list', hr, removeNull=True),
                           raw_response=raw_result)
 
 
@@ -611,7 +614,7 @@ def router_list_command(client: NetscoutClient, args: dict):
     return CommandResults(outputs_prefix='NASightline.Router',
                           outputs_key_field='id',
                           outputs=routers,
-                          readable_output=tableToMarkdown(f'Router list', hr, headers=ROUTERS_HR_HEADERS,
+                          readable_output=tableToMarkdown('Router list', hr, headers=ROUTERS_HR_HEADERS,
                                                           removeNull=True),
                           raw_response=raw_result)
 
@@ -628,7 +631,7 @@ def managed_object_list_command(client: NetscoutClient, args: dict):
     return CommandResults(outputs_prefix='NASightline.ManagedObject',
                           outputs_key_field='id',
                           outputs=objects,
-                          readable_output=tableToMarkdown(f'Managed object list', hr,
+                          readable_output=tableToMarkdown('Managed object list', hr,
                                                           headers=MANAGED_OBJECTS_HR_HEADERS, removeNull=True),
                           raw_response=raw_result)
 
@@ -643,7 +646,7 @@ def tms_group_list_command(client: NetscoutClient, args: dict):
     return CommandResults(outputs_prefix='NASightline.TMSGroup',
                           outputs_key_field='id',
                           outputs=groups,
-                          readable_output=tableToMarkdown(f'TMS group list', hr, removeNull=True),
+                          readable_output=tableToMarkdown('TMS group list', hr, removeNull=True),
                           raw_response=raw_result)
 
 
@@ -660,7 +663,9 @@ def main() -> None:
         base_url = urljoin(params['url'], f'api/sp/{API_VERSION}')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
-        first_fetch = arg_to_datetime(params.get('first_fetch', '3 days')).isoformat()
+
+        if first_fetch_dt := arg_to_datetime(params.get('first_fetch', '3 days')):
+            first_fetch = first_fetch_dt.isoformat()
         max_fetch = min(arg_to_number(params.get('max_fetch', 50)), 100)
         alert_class = params.get('alert_class')
         alert_type = params.get('alert_type')
