@@ -1736,7 +1736,7 @@ class TestStoreInCircleCIArtifacts:
                - Private updated packs list - TestPack5 , TestPack6
                - A path to the circle ci artifacts dir
            When:
-               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
            Then:
                - Verify that the file content contains the successful, failed and private
                 packs TestPack1, TestPack2 & TestPack3, TestPack4, TestPack5 & TestPack6 respectively.
@@ -1773,7 +1773,7 @@ class TestStoreInCircleCIArtifacts:
                - Successful packs list - TestPack1, TestPack2
                - A path to the circle ci artifacts dir
            When:
-               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
            Then:
                - Verify that the file content contains the successful packs TestPack1 & TestPack2.
        """
@@ -1798,7 +1798,7 @@ class TestStoreInCircleCIArtifacts:
                - Failed packs list - TestPack3 , TestPack4
                - A path to the circle ci artifacts dir
            When:
-               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
            Then:
                - Verify that the file content contains the failed packs TestPack & TestPack4.
        """
@@ -1823,7 +1823,7 @@ class TestStoreInCircleCIArtifacts:
                - Updated private packs list - TestPack5 , TestPack6
                - A path to the circle ci artifacts dir
            When:
-               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
            Then:
                - Verify that the file content contains the successful packs TestPack5 & TestPack6.
        """
