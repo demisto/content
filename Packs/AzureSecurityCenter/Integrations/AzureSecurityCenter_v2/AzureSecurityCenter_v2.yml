@@ -122,7 +122,7 @@ script:
       secret: false
     deprecated: false
     description: Gets an alert that is associated a resource group or a subscription. The subscription_id argument is
-                 required in case it was not defined in the integration's credentials.
+      required in case it was not defined in the integration's credentials.
     execution: false
     name: azure-sc-get-alert
     outputs:
@@ -479,7 +479,7 @@ script:
     description: The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
     execution: false
     name: azure-sc-list-location
-  dockerimage: demisto/crypto:1.0.0.11650
+  dockerimage: demisto/crypto:1.0.0.19032
   isfetch: false
   longRunning: false
   longRunningPort: false
