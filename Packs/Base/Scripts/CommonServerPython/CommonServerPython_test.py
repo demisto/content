@@ -4086,6 +4086,7 @@ class TestIndicatorsSearcher:
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
 
+<<<<<<< HEAD
         search_indicators_obj_paging = IndicatorsSearcher()
         search_indicators_obj_paging._can_use_search_after = False
 
@@ -4136,6 +4137,7 @@ class TestAutoFocusKeyRetriever:
         mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
         auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='1234', override_default_credentials=False)
         assert auto_focus_key_retriever.key == '1234'
+
     def test_instantiate_class_pre_6_2_failed(self, mocker, clear_version_cache):
         """
         Given:
@@ -4152,7 +4154,8 @@ class TestAutoFocusKeyRetriever:
         mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.1.0', 'buildNumber': '61000'})
         with raises(Exception, match='For versions earlier than 6.2.0, configure an API Key.'):
             AutoFocusKeyRetriever(api_key='', override_default_credentials=True)
-    def test_instantiate_class_override_no_api_key_success(self, mocker, clear_version_cache):
+
+    def test_instantiate_class_without_param_key(self, mocker, clear_version_cache):
         """
         Given:
             - not giving the api_key parameter
@@ -4161,10 +4164,10 @@ class TestAutoFocusKeyRetriever:
             - Mocking getAutoFocusApiKey
             - Mocking server version to be 6.2.0
         Then:
-            - The Auto Focus API Key is the one from the Cortex XSOAR server
+            - The Auto Focus API Key is the one given by the getAutoFocusApiKey method
         """
         from CommonServerPython import AutoFocusKeyRetriever
         mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
-        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.1', 'buildNumber': '62000'})
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
         auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='', override_default_credentials=True)
         assert auto_focus_key_retriever.key == 'test'
