@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 import tldextract
 from email.utils import parseaddr
+import pytest
 
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 
@@ -33,7 +34,7 @@ text2 = "Love of my life, you've hurt me You've broken my heart and now you leav
 
 def create_incident(subject=None, body=None, html=None, emailfrom=None, created=None, id_=None,
                     similarity=0, sender='a@phishing.com', emailto='a@paloaltonetwork.com', emailcc='',
-                    emailbcc=''):
+                    emailbcc='', status=1, severity=1):
     global IDS_COUNTER
     dt_format = '%Y-%m-%d %H:%M:%S.%f %z'
     incident = {
@@ -49,7 +50,9 @@ def create_incident(subject=None, body=None, html=None, emailfrom=None, created=
         'fromdomain': extract_domain(sender),
         'emailto': emailto,
         'emailcc': emailcc,
-        'emailbcc': emailbcc
+        'emailbcc': emailbcc,
+        'status': status,
+        'severity': severity
     }
     return incident
 
@@ -162,3 +165,41 @@ def test_return_campaign_details_entry_list_dumped_recipients_cc(mocker):
             assert recipient.strip() in context_incident['recipients']
             assert extract_domain(recipient) in context_incident['recipientsdomain']
         assert original_incident['fromdomain'] == context_incident['emailfromdomain']
+
+
+ADDITIONAL_CONTET_KEYS_PARAMETRIZE = [
+    (['name', 'emailfrom', 'emailto', 'severity', 'status', 'created'], []),
+    (['name_', 'emailfrom', 'emailto', 'severity1', 'status', 'created'], ['name_', 'severity1']),
+    ([], [])
+]
+
+
+@pytest.mark.parametrize(
+    'expected_in_context, not_expected_in_context', ADDITIONAL_CONTET_KEYS_PARAMETRIZE)
+def test_context_populated_with_required_keys_happy_path(mocker, expected_in_context, not_expected_in_context):
+    global RESULTS
+    RESULTS = []
+    # prepare
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    mocker.patch('FindEmailCampaign.summarize_email_body', mock_summarize_email_body)
+    mocker.patch('FindEmailCampaign.standardize_recipients_column')
+    incident = create_incident(
+        subject='subject', body='email body',
+        emailfrom='a@a.com', emailcc='["a@a.com", "b@a.com"]')
+    incidents_list = [incident]
+    data = pd.DataFrame(incidents_list)
+
+    # run
+    return_campaign_details_entry(data, fields_to_display=expected_in_context)
+    res = RESULTS[0]
+    context = res['EntryContext']
+
+    # assert that valid expected keys are in the context
+    # and invalid keys aren't in the context
+    assert context['EmailCampaign.incidents'][0]
+    for original_incident, context_incident in zip(incidents_list, context['EmailCampaign.incidents']):
+        for k in expected_in_context:
+            if k in not_expected_in_context:
+                assert context_incident.get(k) is None and original_incident.get(k) is None
+            else:
+                assert context_incident[k] is not None and original_incident[k] == context_incident[k]

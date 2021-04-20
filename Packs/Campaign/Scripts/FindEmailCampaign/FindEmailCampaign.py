@@ -114,7 +114,7 @@ def extract_domain_from_recipients(row):
     return domains_list
 
 
-def create_context_for_campaign_details(campaign_found=False, incidents_df=None):
+def create_context_for_campaign_details(campaign_found=False, incidents_df=None, additional_context_fields=[]):
     if not campaign_found:
         return {
             'isCampaignFound': campaign_found,
@@ -124,6 +124,11 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None)
         incidents_df['recipients'] = incidents_df.apply(lambda row: get_recipients(row), axis=1)
         incidents_df['recipientsdomain'] = incidents_df.apply(lambda row: extract_domain_from_recipients(row), axis=1)
         context_keys = ['id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain']
+
+        for key in additional_context_fields:
+            if key not in context_keys and key in incidents_df.columns:
+                context_keys.append(key)
+
         incident_df = incidents_df[context_keys]  # lgtm [py/hash-unhashable-value]
         incident_df = incident_df[incident_df['id'] != incident_id]
         incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
@@ -324,7 +329,7 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
     return '\n'.join(summary)
 
 
-def create_email_summary_hr(incidents_df):
+def create_email_summary_hr(incidents_df, fields_to_display):
     hr_email_summary = ''
     clean_email_subject = incidents_df.iloc[0][PREPROCESSED_EMAIL_SUBJECT]
     email_summary = 'Subject: ' + clean_email_subject.replace('\n', '')
@@ -335,13 +340,17 @@ def create_email_summary_hr(incidents_df):
             email_summary = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word), email_summary)
     hr_email_summary += '\n\n' + '### Current Incident\'s Email Snippets'
     hr_email_summary += '\n ##### ' + email_summary
-    context = add_context_key(create_context_for_campaign_details(campaign_found=True, incidents_df=incidents_df))
+    context = add_context_key(
+        create_context_for_campaign_details(
+            campaign_found=True,
+            incidents_df=incidents_df,
+            additional_context_fields=fields_to_display))
     return context, hr_email_summary
 
 
 def return_campaign_details_entry(incidents_df, fields_to_display):
     hr_campaign_details = calculate_campaign_details_table(incidents_df, fields_to_display)
-    context, hr_email_summary = create_email_summary_hr(incidents_df)
+    context, hr_email_summary = create_email_summary_hr(incidents_df, fields_to_display)
     hr = '\n'.join([hr_campaign_details, hr_email_summary])
     return return_outputs_custom(hr, context, tag='campaign_details')
 
