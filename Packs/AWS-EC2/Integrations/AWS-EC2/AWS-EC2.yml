@@ -6699,6 +6699,32 @@ script:
       - 'off'
       required: false
       secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
     deprecated: false
     description: Allocates a Dedicated Host to your account.
     execution: false
@@ -6710,7 +6736,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The IDs of the Dedicated Hosts to release.
+      description: Comma-seperated of IDs of the Dedicated Hosts to release.
       isArray: true
       name: host_id
       required: true

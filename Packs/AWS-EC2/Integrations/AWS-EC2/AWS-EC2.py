@@ -2968,7 +2968,7 @@ def allocate_hosts_command(args):
 
     response = client.allocate_hosts(AvailabilityZone=availability_zone, Quantity=quantity, **kwargs)
     data = ({
-        'HostId': response['HostIds']
+        'HostId': response.get('HostIds')
     })
     ec = {'AWS.EC2.Host': data}
     human_readable = tableToMarkdown('AWS EC2 Dedicated Host ID', data)
@@ -2985,7 +2985,7 @@ def release_hosts_command(args):
     host_id = argToList(args.get('host_id'))
     response = client.release_hosts(HostIds=host_id)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The ID of the Dedicated Hosts was successfully released.")
+        demisto.results("The host was successfully released.")
 
 
 """COMMAND BLOCK"""
