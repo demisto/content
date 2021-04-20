@@ -2258,8 +2258,7 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
         else:
             raise e
 
-    search_indicators = IndicatorsSearcher(page=page)
-    indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
+    indicators = demisto.searchIndicators(query=query, page=page, size=limit).get('iocs', [])
     indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
                        for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
     indicator_values: List[Any] = [indicator.get('Indicator Value') for indicator in indicators_data]
