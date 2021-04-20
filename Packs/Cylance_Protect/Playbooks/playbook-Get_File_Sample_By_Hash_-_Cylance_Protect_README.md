@@ -1,4 +1,4 @@
-Returns a file sample correlating to SHA256 hashes to the War Room, in the inputs using Cylance Protect integration.
+Returns to the war-room a file sample correlating to SHA256 hashes in the inputs using Cylance Protect integration
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,13 +7,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Cylance Protect v2
 * Cylance Protect
+* Cylance Protect v2
 
 ### Scripts
 * UnzipFile
-* Exists
 * http
+* Exists
 
 ### Commands
 * cylance-protect-download-threat
@@ -21,19 +21,18 @@ This playbook does not use any sub-playbooks.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| SHA256 | The SHA256 hash of the file to download. | SHA256 | File | Optional |
-| ZipPassword | The password for the zip file. | infected | - | Required |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| SHA256 | The SHA256 hash of the file we want to download | File.SHA256 | Optional |
+| ZipPassword | The password for the zip file | infected | Required |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | The sample file. | unknown |
-
+| File | The sample file | unknown |
 
 ## Playbook Image
 ---
-![Get_File_Sample_By_Hash_Cylance_Protect](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_By_Hash_Cylance_Protect.png)
+![Get File Sample By Hash - Cylance Protect](Insert the link to your image here)
