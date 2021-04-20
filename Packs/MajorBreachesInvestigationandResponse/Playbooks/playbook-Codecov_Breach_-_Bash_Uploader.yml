@@ -1,6 +1,6 @@
-id: Codecov breach - Bash Uploader
+id: Codecov Breach - Bash Uploader
 version: -1
-name: Codecov breach - Bash Uploader
+name: Codecov Breach - Bash Uploader
 description: |-
   This playbook includes the following tasks:
   - Search for the Security Notice email sent from Codecov.
