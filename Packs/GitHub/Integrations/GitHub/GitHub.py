@@ -1106,7 +1106,7 @@ def search_command():
     q = demisto.args().get('query')
     limit = int(demisto.args().get('limit'))
     if limit > 100:
-        limit = 100
+        limit = 100  # per GitHub limitation.
 
     response = search_issue(q, limit)
     create_issue_table(response['items'], response, limit)
