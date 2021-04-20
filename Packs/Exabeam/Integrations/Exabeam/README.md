@@ -1222,24 +1222,24 @@ Returns notable session details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Exabeam.NotableSession.UserName | String | The notable session user name. | 
-| Exabeam.NotableSession.RiskScore | number | The notable session risk score. | 
-| Exabeam.NotableSession.AverageRiskScore | number | The average risk score of the notable session. | 
-| Exabeam.NotableSession.FirstSeen | Date | Time when the notable session was first seen. | 
-| Exabeam.NotableSession.LastSeen | Date | Time when the notable session was last seen. | 
-| Exabeam.NotableSession.lastActivityType | String | The last activity type of the user. | 
-| Exabeam.NotableSession.Labels | Unknown | The labels of the user. | 
-| Exabeam.NotableSession.LastSessionID | String | The last session ID of the user. | 
-| Exabeam.NotableSession.EmployeeType | String | The employee type of the user. | 
-| Exabeam.NotableSession.Department | String | The department of the user. | 
-| Exabeam.NotableSession.Title | String | The role of the user. | 
-| Exabeam.NotableSession.Location | String | The location of the user. | 
-| Exabeam.NotableSession.Email | String | The email of the user. | 
-| Exabeam.NotableSession.SessionID | String | The Session ID. | 
-| Exabeam.NotableSession.InitialRiskScore | Number | Initial risk score of the session. | 
-| Exabeam.NotableSession.LoginHost | String | The host from which the user was logged in. | 
-| Exabeam.NotableSession.Accounts | String | Accounts in the session. | 
-| Exabeam.NotableSession.executiveUserFlags | Boolean | Whether the user is a executive user. | 
+| Exabeam.NotableSession.users.UserName | String | The notable session user name. | 
+| Exabeam.NotableSession.users.RiskScore | number | The notable session risk score. | 
+| Exabeam.NotableSession.users.AverageRiskScore | number | The average risk score of the notable session. | 
+| Exabeam.NotableSession.users.FirstSeen | Date | Time when the notable session was first seen. | 
+| Exabeam.NotableSession.users.LastSeen | Date | Time when the notable session was last seen. | 
+| Exabeam.NotableSession.users.lastActivityType | String | The last activity type of the user. | 
+| Exabeam.NotableSession.users.Labels | Unknown | The labels of the user. | 
+| Exabeam.NotableSession.users.LastSessionID | String | The last session ID of the user. | 
+| Exabeam.NotableSession.users.EmployeeType | String | The employee type of the user. | 
+| Exabeam.NotableSession.users.Department | String | The department of the user. | 
+| Exabeam.NotableSession.users.Title | String | The role of the user. | 
+| Exabeam.NotableSession.users.Location | String | The location of the user. | 
+| Exabeam.NotableSession.users.Email | String | The email of the user. | 
+| Exabeam.NotableSession.sessions.SessionID | String | The Session ID. | 
+| Exabeam.NotableSession.sessions.InitialRiskScore | Number | Initial risk score of the session. | 
+| Exabeam.NotableSession.sessions.LoginHost | String | The host from which the user was logged in. | 
+| Exabeam.NotableSession.sessions.Accounts | String | Accounts in the session. | 
+| Exabeam.NotableSession.executiveUserFlags | Unknown | Whether the user is a executive user. | 
 
 
 #### Command Example

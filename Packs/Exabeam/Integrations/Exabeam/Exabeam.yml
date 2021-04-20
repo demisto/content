@@ -1723,60 +1723,60 @@ script:
     execution: false
     name: exabeam-get-notable-session-details
     outputs:
-    - contextPath: Exabeam.NotableSession.UserName
+    - contextPath: Exabeam.NotableSession.users.UserName
       description: The notable session user name.
       type: String
-    - contextPath: Exabeam.NotableSession.RiskScore
+    - contextPath: Exabeam.NotableSession.users.RiskScore
       description: The notable session risk score.
       type: number
-    - contextPath: Exabeam.NotableSession.AverageRiskScore
+    - contextPath: Exabeam.NotableSession.users.AverageRiskScore
       description: The average risk score of the notable session.
       type: number
-    - contextPath: Exabeam.NotableSession.FirstSeen
+    - contextPath: Exabeam.NotableSession.users.FirstSeen
       description: Time when the notable session was first seen.
       type: Date
-    - contextPath: Exabeam.NotableSession.LastSeen
+    - contextPath: Exabeam.NotableSession.users.LastSeen
       description: Time when the notable session was last seen.
       type: Date
-    - contextPath: Exabeam.NotableSession.lastActivityType
+    - contextPath: Exabeam.NotableSession.users.lastActivityType
       description: The last activity type of the user.
       type: String
-    - contextPath: Exabeam.NotableSession.Labels
+    - contextPath: Exabeam.NotableSession.users.Labels
       description: The labels of the user.
       type: Unknown
-    - contextPath: Exabeam.NotableSession.LastSessionID
+    - contextPath: Exabeam.NotableSession.users.LastSessionID
       description: The last session ID of the user.
       type: String
-    - contextPath: Exabeam.NotableSession.EmployeeType
+    - contextPath: Exabeam.NotableSession.users.EmployeeType
       description: The employee type of the user.
       type: String
-    - contextPath: Exabeam.NotableSession.Department
+    - contextPath: Exabeam.NotableSession.users.Department
       description: The department of the user.
       type: String
-    - contextPath: Exabeam.NotableSession.Title
+    - contextPath: Exabeam.NotableSession.users.Title
       description: The role of the user.
       type: String
-    - contextPath: Exabeam.NotableSession.Location
+    - contextPath: Exabeam.NotableSession.users.Location
       description: The location of the user.
       type: String
-    - contextPath: Exabeam.NotableSession.Email
+    - contextPath: Exabeam.NotableSession.users.Email
       description: The email of the user.
       type: String
-    - contextPath: Exabeam.NotableSession.SessionID
+    - contextPath: Exabeam.NotableSession.sessions.SessionID
       description: The Session ID.
       type: String
-    - contextPath: Exabeam.NotableSession.InitialRiskScore
+    - contextPath: Exabeam.NotableSession.sessions.InitialRiskScore
       description: Initial risk score of the session.
       type: Number
-    - contextPath: Exabeam.NotableSession.LoginHost
+    - contextPath: Exabeam.NotableSession.sessions.LoginHost
       description: The host from which the user was logged in.
       type: String
-    - contextPath: Exabeam.NotableSession.Accounts
+    - contextPath: Exabeam.NotableSession.sessions.Accounts
       description: Accounts in the session.
       type: String
     - contextPath: Exabeam.NotableSession.executiveUserFlags
       description: Whether the user is a executive user.
-      type: Boolean
+      type: Unknown
   - arguments:
     - default: false
       description: The asset ID for which to fetch data.
