@@ -822,7 +822,7 @@ jobs:
               echo "successfully activated google cloud service account"
 
               mkdir BucketPacks
-              gsutil -m cp -r "gs://marketplace-dist/content/packs/" BucketPacks
+              gsutil -m cp -r "gs://marketplace-dist/content/packs/*" BucketPacks
               gcloud auth revoke --all &> /dev/null
               rm $GCS_PATH
 
