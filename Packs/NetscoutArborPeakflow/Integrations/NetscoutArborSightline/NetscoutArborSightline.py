@@ -720,7 +720,7 @@ def main() -> None:
         elif command == 'na-sightline-tms-group-list':
             result = tms_group_list_command(client, args)
         else:
-            result = f'Command: {command} is not implemented'
+            raise NotImplementedError('Command: {command} is not implemented')
 
         if result:
             return_results(result)
