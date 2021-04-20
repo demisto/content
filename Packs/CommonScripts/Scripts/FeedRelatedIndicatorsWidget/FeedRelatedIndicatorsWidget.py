@@ -42,7 +42,7 @@ def feed_related_indicator(args) -> CommandResults:
     for item in feed_related_indicators:
         ioc_value = item.get('value', '')
 
-        results = demisto.searchIndicators(value=ioc_value).get('iocs', [])
+        results = demisto.search_change_Indicators(value=ioc_value).get('iocs', [])
 
         if results:
             ioc_id = results[0].get('id')

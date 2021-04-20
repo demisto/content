@@ -133,11 +133,11 @@ def create_file_sync(file_path, batch_size: int = 200):
 
 
 def get_iocs_size(query=None) -> int:
-    return demisto.searchIndicators(query=query if query else Client.query, page=0, size=1).get('total', 0)
+    return demisto.search_change_Indicators(query=query if query else Client.query, page=0, size=1).get('total', 0)
 
 
 def get_iocs(page=0, size=200, query=None) -> List:
-    return demisto.searchIndicators(query=query if query else Client.query, page=page, size=size).get('iocs', [])
+    return demisto.search_change_Indicators(query=query if query else Client.query, page=page, size=size).get('iocs', [])
 
 
 def demisto_expiration_to_xdr(expiration) -> int:
@@ -259,7 +259,7 @@ def get_indicators(indicators: str) -> List:
         iocs: list = []
         not_found = []
         for indicator in indicators.split(','):
-            data = demisto.searchIndicators(value=indicator).get('iocs')
+            data = demisto.search_change_Indicators(value=indicator).get('iocs')
             if data:
                 iocs.extend(data)
             else:
@@ -405,7 +405,7 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
     xdr_local: int = 0
     score = 0
     if indicator:
-        ioc = demisto.searchIndicators(value=indicator).get('iocs')
+        ioc = demisto.search_change_Indicators(value=indicator).get('iocs')
         if ioc:
             ioc = ioc[0]
             score = ioc.get('score', 0)
