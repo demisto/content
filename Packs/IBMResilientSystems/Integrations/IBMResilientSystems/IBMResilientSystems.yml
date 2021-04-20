@@ -39,12 +39,12 @@ configuration:
   hidden: false
   name: api_key_id
   required: false
-  type: 9
+  type: 4
 - display: API key secret
   hidden: false
   name: api_key_secret
   required: false
-  type: 9
+  type: 4
 description: Case management that enables visibility across your tools for continual IR improvement
 display: IBM Resilient Systems
 name: IBM Resilient Systems
@@ -585,7 +585,7 @@ script:
     - contextPath: Resilient.Incidents.Tasks.Status
       description: Task status (Open/Closed)
       type: string
-  dockerimage: demisto/resilient:1.0.0.9895
+  dockerimage: demisto/resilient:1.0.0.18173
   feed: false
   isfetch: true
   longRunning: false

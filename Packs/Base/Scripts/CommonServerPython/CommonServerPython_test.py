@@ -1099,6 +1099,29 @@ def test_exception_in_return_error(mocker):
     assert IntegrationLogger.__call__.call_count == 2
 
 
+def test_return_error_get_modified_remote_data(mocker):
+    from CommonServerPython import return_error
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'results')
+    err_msg = 'Test Error'
+    with raises(SystemExit):
+        return_error(err_msg)
+    assert demisto.results.call_args[0][0]['Contents'] == 'skip update. error: ' + err_msg
+
+
+def test_return_error_get_modified_remote_data_not_implemented(mocker):
+    from CommonServerPython import return_error
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'results')
+    err_msg = 'Test Error'
+    with raises(SystemExit):
+        try:
+            raise NotImplementedError('Command not implemented')
+        except:
+            return_error(err_msg)
+    assert demisto.results.call_args[0][0]['Contents'] == err_msg
+
+
 def test_get_demisto_version(mocker, clear_version_cache):
     # verify expected server version and build returned in case Demisto class has attribute demistoVersion
     mocker.patch.object(
@@ -3506,11 +3529,11 @@ class TestCommonTypes:
             ],
             tags=['tag1', 'tag2'],
             malware_family=['malware_family1', 'malware_family2'],
-            feed_related_indicators=Common.FeedRelatedIndicators(
+            feed_related_indicators=[Common.FeedRelatedIndicators(
                 value='8.8.8.8',
                 indicator_type="IP",
                 description='test'
-            )
+            )]
         )
 
         results = CommandResults(
@@ -3563,7 +3586,7 @@ class TestCommonTypes:
                             "PNS32.CLOUDNS.NET"
                         ],
                         "Tags": ["tag1", "tag2"],
-                        "FeedRelatedIndicators": {"value": "8.8.8.8", "type": "IP", "description": "test"},
+                        "FeedRelatedIndicators": [{"value": "8.8.8.8", "type": "IP", "description": "test"}],
                         "MalwareFamily": ["malware_family1", "malware_family2"],
                         "WHOIS": {
                             "Registrar": {
@@ -4040,3 +4063,57 @@ class TestCommonTypes:
             dbot_score=dbot_score
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com', 'Domain': 'example.com'}
+
+
+class TestIndicatorsSearcher:
+    def mock_search_after_output(self, fromDate, toDate, query, size, value, searchAfter):
+        if not searchAfter:
+            searchAfter = 0
+
+        return {'searchAfter': searchAfter + 1}
+
+    def test_search_indicators_by_page(self, mocker):
+        """
+        Given:
+          - Searching indicators couple of times
+          - Server version in less than 6.1.0
+        When:
+          - Mocking search indicators using paging
+        Then:
+          - The page number is rising
+          - The searchAfter param is null
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+
+        search_indicators_obj_paging = IndicatorsSearcher()
+        search_indicators_obj_paging._can_use_search_after = False
+
+        for n in range(5):
+            search_indicators_obj_paging.search_indicators_by_version()
+
+        assert search_indicators_obj_paging._page == 5
+        assert not search_indicators_obj_paging._search_after_param
+
+    def test_search_indicators_by_search_after(self, mocker):
+        """
+        Given:
+          - Searching indicators couple of times
+          - Server version in equal or higher than 6.1.0
+        When:
+          - Mocking search indicators using the searchAfter parameter
+        Then:
+          - The search after param is rising
+          - The page param is 0
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        search_indicators_obj_search_after = IndicatorsSearcher()
+        search_indicators_obj_search_after._can_use_search_after = True
+
+        for n in range(5):
+            search_indicators_obj_search_after.search_indicators_by_version()
+
+        assert search_indicators_obj_search_after._search_after_param == 5
+        assert search_indicators_obj_search_after._page == 0

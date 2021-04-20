@@ -25,11 +25,16 @@ Attributes:
 INTEGRATION_NAME = 'AlienVault OTX v2'
 INTEGRATION_COMMAND_NAME = 'alienvault'
 INTEGRATION_CONTEXT_NAME = 'AlienVaultOTX'
-DEFAULT_THRESHOLD = int(demisto.params().get('default_threshold', 2))
-TOKEN = demisto.params().get('api_token')
 
 
 class Client(BaseClient):
+    def __init__(self, base_url, headers, verify, proxy, default_threshold, reliability):
+
+        BaseClient.__init__(self, base_url=base_url, headers=headers, verify=verify, proxy=proxy,)
+
+        self.reliability = reliability
+        self.default_threshold = default_threshold
+
     def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
@@ -63,21 +68,28 @@ class Client(BaseClient):
                                       url_suffix=suffix,
                                       params=params,
                                       timeout=30)
-        return self._http_request('GET',
-                                  url_suffix=suffix,
-                                  params=params)
+        try:
+            result = self._http_request('GET',
+                                        url_suffix=suffix,
+                                        params=params)
+        except DemistoException as e:
+            if e.res.status_code == 404:
+                result = 404
+            else:
+                raise
+        return result
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_dbot_score(pulse_info: Union[dict, None]) -> float:
+def calculate_dbot_score(client: Client, pulse_info: Union[dict, None]) -> float:
     """
     calculate DBot score for query
     :param pulse_info: returned from general section as dictionary
     :return: score - good (if 0), bad (if grater than default), suspicious if between
     """
-    default_threshold = int(DEFAULT_THRESHOLD)
+    default_threshold = int(client.default_threshold)
     if isinstance(pulse_info, dict):
         count = int(pulse_info.get('count', '0'))
         if count and count >= 0:
@@ -199,9 +211,10 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
             })
             dbotscore_ec.append({
                 'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(raw_response.get('pulse_info', {})),
+                'Score': calculate_dbot_score(client, raw_response.get('pulse_info', {})),
                 'Type': 'ip',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             })
     if not raws:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
@@ -247,9 +260,10 @@ def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Union[Dict, 
             })
             dbotscore_ec.append({
                 'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(raw_response.get('pulse_info')),
+                'Score': calculate_dbot_score(client, raw_response.get('pulse_info')),
                 'Type': 'domain',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             })
     if not raws:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
@@ -305,9 +319,10 @@ def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list
             })
             dbotscore_ec.append({
                 'Indicator': raw_response_general.get('indicator'),
-                'Score': calculate_dbot_score(raw_response_general.get('pulse_info', {})),
+                'Score': calculate_dbot_score(client, raw_response_general.get('pulse_info', {})),
                 'Type': 'file',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             })
     if not raws:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
@@ -342,6 +357,8 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
         raw_response = client.query(section='url',
                                     argument=args)
         if raw_response:
+            if raw_response == 404:
+                return f'No matches for URL {args}', {}, {}
             raws.append(raw_response)
             url_ec.append({
                 'Data': raw_response.get('indicator')
@@ -355,9 +372,10 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
             })
             dbotscore_ec.append({
                 'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(raw_response.get('pulse_info')),
+                'Score': calculate_dbot_score(client, raw_response.get('pulse_info')),
                 'Type': 'url',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             })
     if not raws:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
@@ -398,9 +416,10 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
             },
             outputPaths.get("dbotscore"): {
                 'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(raw_response.get('pulse_info')),
+                'Score': calculate_dbot_score(client, raw_response.get('pulse_info')),
                 'Type': 'hostname',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             }
         }
         human_readable = tableToMarkdown(name=title,
@@ -438,9 +457,10 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
             },
             outputPaths.get("dbotscore"): {
                 'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(raw_response.get('pulse_info')),
+                'Score': calculate_dbot_score(client, raw_response.get('pulse_info')),
                 'Type': 'cve',
-                'Vendor': 'AlienVault OTX v2'
+                'Vendor': 'AlienVault OTX v2',
+                'Reliability': client.reliability
             }
         }
         human_readable = tableToMarkdown(t=context_entry.get(outputPaths.get("cve")),
@@ -619,25 +639,37 @@ def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> Tuple
 
 def main():
     params = demisto.params()
+
     base_url = urljoin(params.get('url'), '/api/v1/')
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
+    default_threshold = int(params.get('default_threshold', 2))
+    token = params.get('api_token')
+    reliability = params.get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.C
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("Please provide a valid value for the Source Reliability parameter.")
+
     client = Client(
         base_url=base_url,
-        headers={'X-OTX-API-KEY': TOKEN},
+        headers={'X-OTX-API-KEY': token},
         verify=verify_ssl,
-        proxy=proxy
+        proxy=proxy,
+        default_threshold=default_threshold,
+        reliability=reliability
     )
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': test_module_command,
-        'ip': ip_command,
         'domain': domain_command,
         'file': file_command,
         'url': url_command,
         f'{INTEGRATION_COMMAND_NAME}-search-hostname': alienvault_search_hostname_command,
-        f'{INTEGRATION_COMMAND_NAME}-search-ipv6': ip_command,
         f'{INTEGRATION_COMMAND_NAME}-search-cve': alienvault_search_cve_command,
         f'{INTEGRATION_COMMAND_NAME}-get-related-urls-by-indicator': alienvault_get_related_urls_by_indicator_command,
         f'{INTEGRATION_COMMAND_NAME}-get-related-hashes-by-indicator': alienvault_get_related_hashes_by_indicator_command,
@@ -647,13 +679,13 @@ def main():
     }
     try:
         if command == f'{INTEGRATION_COMMAND_NAME}-search-ipv6':
-            readable_output, outputs, raw_response = commands[command](client=client,
-                                                                       ip_address=demisto.args().get('ip'),
-                                                                       ip_version='IPv6')
+            readable_output, outputs, raw_response = ip_command(client=client,
+                                                                ip_address=demisto.args().get('ip'),
+                                                                ip_version='IPv6')
         elif command == 'ip':
-            readable_output, outputs, raw_response = commands[command](client=client,
-                                                                       ip_address=demisto.args().get('ip'),
-                                                                       ip_version='IPv4')
+            readable_output, outputs, raw_response = ip_command(client=client,
+                                                                ip_address=demisto.args().get('ip'),
+                                                                ip_version='IPv4')
         else:
             readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
         return_outputs(readable_output, outputs, raw_response)
