@@ -10,9 +10,9 @@ from typing import Dict, Any
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 TYPES = {
-        'threatTypes': ["MALWARE", "SOCIAL_ENGINEERING", "POTENTIALLY_HARMFUL_APPLICATION", "UNWANTED_SOFTWARE"],
-        'platformTypes': ["ANY_PLATFORM", "WINDOWS", "LINUX", "ALL_PLATFORMS", "OSX", "CHROME", "IOS", "ANDROID"]
-    }
+    'threatTypes': ["MALWARE", "SOCIAL_ENGINEERING", "POTENTIALLY_HARMFUL_APPLICATION", "UNWANTED_SOFTWARE"],
+    'platformTypes': ["ANY_PLATFORM", "WINDOWS", "LINUX", "ALL_PLATFORMS", "OSX", "CHROME", "IOS", "ANDROID"]
+}
 
 
 class Client(BaseClient):
@@ -79,7 +79,7 @@ def handle_errors(result):
 
 
 def arrange_results_to_urls(results, url_list):
-    urls_results = {}
+    urls_results: Dict[str, list] = {}
     for url in url_list:
         urls_results[url] = []
 
@@ -147,7 +147,7 @@ def url_command(client: Client, args: Dict[str, Any], client_body, reliability, 
                 indicator=url_standard_context
             ))
 
-    return url_data_list
+    return url_data_list  # type: ignore
 
 
 def main() -> None:
@@ -207,4 +207,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

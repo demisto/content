@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Google Safe Browsing V2
+  id: Google Safe Browsing v2
   version: -1
 configuration:
 - defaultvalue: https://safebrowsing.googleapis.com/v4/threatMatches:find
@@ -47,8 +47,8 @@ configuration:
   required: true
   type: 15
 description: Search Safe Browsing
-display: Google Safe Browsing V2
-name: Google Safe Browsing V2
+display: Google Safe Browsing v2
+name: Google Safe Browsing v2
 script:
   commands:
   - arguments:

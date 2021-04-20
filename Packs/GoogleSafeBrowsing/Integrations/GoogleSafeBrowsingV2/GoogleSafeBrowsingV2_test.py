@@ -56,5 +56,3 @@ def test_handle_errors():
     with pytest.raises(Exception) as e:
         handle_errors({'error': {'message': 'massage', 'code': 'code'}})
     assert str(e.value) == 'Failed accessing Google Safe Browsing APIs. Error: massage. Error code: code'
-
-
