@@ -1,15 +1,15 @@
 id: Netscout Arbor Sightline - Test Playbook
-version: 2
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Netscout Arbor Sightline - Test Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7927c323-0540-48fc-8f1d-ca81e338d56a
+    taskid: 39170ce8-69f4-46f3-8d36-9ebd9b426d1b
     type: start
     task:
-      id: 7927c323-0540-48fc-8f1d-ca81e338d56a
+      id: 39170ce8-69f4-46f3-8d36-9ebd9b426d1b
       version: -1
       name: ""
       iscommand: false
@@ -30,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c97f6035-76a2-496e-8227-b6ab79d5858a
+    taskid: 7d378e2f-b15c-4581-824e-d672587544f5
     type: regular
     task:
-      id: c97f6035-76a2-496e-8227-b6ab79d5858a
+      id: 7d378e2f-b15c-4581-824e-d672587544f5
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -44,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "4"
     scriptarguments:
       all:
         simple: "yes"
@@ -53,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 200
+          "y": 195
         }
       }
     note: false
@@ -61,12 +63,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c48ed9b1-87d7-4530-8bcd-0ffe7b960103
+    taskid: 078fc255-9d99-4feb-8399-af2cb2b5790e
     type: regular
     task:
-      id: c48ed9b1-87d7-4530-8bcd-0ffe7b960103
+      id: 078fc255-9d99-4feb-8399-af2cb2b5790e
       version: -1
       name: na-sightline-alert-annotation-list
       script: '|||na-sightline-alert-annotation-list'
@@ -75,13 +79,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "6"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: NASightline.Alert
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 720
         }
       }
     note: false
@@ -89,77 +100,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 35edad1c-2cfd-4884-8eef-085c3555c761
-    type: condition
-    task:
-      id: 35edad1c-2cfd-4884-8eef-085c3555c761
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.AlertAnnotation.AlertID
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.AlertAnnotation.Annotations.added
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.AlertAnnotation.Annotations.author
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.AlertAnnotation.Annotations.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.AlertAnnotation.Annotations.text
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.AlertAnnotation.Annotations.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.AlertAnnotation.Annotations.relationships
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: eeeca45c-b856-4450-8050-899fdc79c226
+    taskid: 4800ecad-8323-436b-804b-5f197b9e0bbe
     type: regular
     task:
-      id: eeeca45c-b856-4450-8050-899fdc79c226
+      id: 4800ecad-8323-436b-804b-5f197b9e0bbe
       version: -1
       name: na-sightline-alert-list
       script: '|||na-sightline-alert-list'
@@ -174,7 +122,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 800
+          "y": 370
         }
       }
     note: false
@@ -182,12 +130,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 17c7aebc-2ed7-420d-8a5e-f8ce6d66a38d
+    taskid: dad41203-acb0-439d-87bd-5a1193d3a429
     type: condition
     task:
-      id: 17c7aebc-2ed7-420d-8a5e-f8ce6d66a38d
+      id: dad41203-acb0-439d-87bd-5a1193d3a429
       version: -1
       name: Verify Outputs
       type: condition
@@ -195,7 +145,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "2"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -228,11 +178,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: NASightline.Alert.relationships
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: NASightline.Alert.start_time
             iscontext: true
       - - operator: isNotEmpty
@@ -240,26 +185,11 @@ tasks:
             value:
               simple: NASightline.Alert.type
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.Alert.classification
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.Alert.stop_time
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.Alert.subobject
-            iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1000
+          "y": 545
         }
       }
     note: false
@@ -267,12 +197,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 2049127c-b782-455a-879e-9c8932b2d3f1
+    taskid: 6ec4217f-f640-4282-8d79-2706bdb97d02
     type: regular
     task:
-      id: 2049127c-b782-455a-879e-9c8932b2d3f1
+      id: 6ec4217f-f640-4282-8d79-2706bdb97d02
       version: -1
       name: na-sightline-mitigation-list
       script: '|||na-sightline-mitigation-list'
@@ -287,7 +219,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1200
+          "y": 895
         }
       }
     note: false
@@ -295,12 +227,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f0166d92-dcbc-447e-8cc3-65caa7f363d0
+    taskid: ff04ff17-90fc-4e6a-8205-87d3e55e20e3
     type: condition
     task:
-      id: f0166d92-dcbc-447e-8cc3-65caa7f363d0
+      id: ff04ff17-90fc-4e6a-8205-87d3e55e20e3
       version: -1
       name: Verify Outputs
       type: condition
@@ -328,7 +262,7 @@ tasks:
             value:
               simple: NASightline.Mitigation.ip_version
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Mitigation.is_automitigation
@@ -363,21 +297,11 @@ tasks:
             value:
               simple: NASightline.Mitigation.user
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.Mitigation.relationships
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.Mitigation.subobject
-            iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1400
+          "y": 1070
         }
       }
     note: false
@@ -385,12 +309,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: c4763da6-2f59-44da-82dc-287f020a35d1
+    taskid: f59d6a55-864e-4b02-894c-622922af393f
     type: regular
     task:
-      id: c4763da6-2f59-44da-82dc-287f020a35d1
+      id: f59d6a55-864e-4b02-894c-622922af393f
       version: -1
       name: na-sightline-mitigation-create
       script: '|||na-sightline-mitigation-create'
@@ -400,12 +326,27 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: NASightline.Alert
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      ip_version:
+        simple: IPv4
+      name:
+        simple: Nightly Test Playbook Mitigation
+      sub_object:
+        simple: '{"protection_prefixes": ["192.0.2.0/24"]}'
+      sub_type:
+        simple: flowspec
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1600
+          "y": 1245
         }
       }
     note: false
@@ -413,12 +354,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 8d856ae7-bffb-43fc-8c54-c09dfa040576
+    taskid: afbee4d4-e42e-40ae-8acb-522e06947d55
     type: condition
     task:
-      id: 8d856ae7-bffb-43fc-8c54-c09dfa040576
+      id: afbee4d4-e42e-40ae-8acb-522e06947d55
       version: -1
       name: Verify Outputs
       type: condition
@@ -426,7 +369,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -441,7 +384,7 @@ tasks:
             value:
               simple: NASightline.Mitigation.ip_version
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Mitigation.is_automitigation
@@ -451,20 +394,10 @@ tasks:
             value:
               simple: NASightline.Mitigation.name
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Mitigation.ongoing
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.Mitigation.subobject.action.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.Mitigation.subobject
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -476,16 +409,11 @@ tasks:
             value:
               simple: NASightline.Mitigation.type
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.Mitigation.relationships
-            iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1800
+          "y": 1420
         }
       }
     note: false
@@ -493,12 +421,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 4bd7f52b-7c67-4dce-8a93-78328cf163f2
+    taskid: 26631d1d-1001-4a7a-867f-d9485f4b9786
     type: regular
     task:
-      id: 4bd7f52b-7c67-4dce-8a93-78328cf163f2
+      id: 26631d1d-1001-4a7a-867f-d9485f4b9786
       version: -1
       name: na-sightline-mitigation-template-list
       script: '|||na-sightline-mitigation-template-list'
@@ -513,7 +443,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2000
+          "y": 1770
         }
       }
     note: false
@@ -521,12 +451,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 04ab5457-18f5-4909-887d-ce23d3c16519
+    taskid: 01d26228-34c3-419f-83d8-96ffeca9c6f4
     type: condition
     task:
-      id: 04ab5457-18f5-4909-887d-ce23d3c16519
+      id: 01d26228-34c3-419f-83d8-96ffeca9c6f4
       version: -1
       name: Verify Outputs
       type: condition
@@ -574,21 +506,11 @@ tasks:
             value:
               simple: NASightline.MitigationTemplate.type
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.MitigationTemplate.subobject
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.MitigationTemplate.relationships
-            iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2200
+          "y": 1945
         }
       }
     note: false
@@ -596,12 +518,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7ecb3c20-389d-4b59-80af-61543c6d3f15
+    taskid: e2256b7c-4aa8-4f0a-8fcd-969c21d53f58
     type: regular
     task:
-      id: 7ecb3c20-389d-4b59-80af-61543c6d3f15
+      id: e2256b7c-4aa8-4f0a-8fcd-969c21d53f58
       version: -1
       name: na-sightline-router-list
       script: '|||na-sightline-router-list'
@@ -616,7 +540,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2400
+          "y": 2120
         }
       }
     note: false
@@ -624,12 +548,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 10be7202-f5a6-4fdc-8636-28042de85b35
+    taskid: c3dffdd0-2810-49c3-84af-a2229a3c7f0a
     type: condition
     task:
-      id: 10be7202-f5a6-4fdc-8636-28042de85b35
+      id: c3dffdd0-2810-49c3-84af-a2229a3c7f0a
       version: -1
       name: Verify Outputs
       type: condition
@@ -647,27 +573,27 @@ tasks:
             value:
               simple: NASightline.Router.advanced_fallback_alg
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Router.advanced_use_simpson_flowspec_redirect_ip
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Router.bgp2_capabilities_labeled_unicast
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Router.bgp_capabilities_l3vpn_flowspec_ipv4
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Router.bgp_capabilities_l3vpn_flowspec_ipv6
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Router.bgp_capabilities_labeled_unicast
@@ -677,7 +603,7 @@ tasks:
             value:
               simple: NASightline.Router.description
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Router.flow_alerting
@@ -687,12 +613,12 @@ tasks:
             value:
               simple: NASightline.Router.flow_export_ip
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Router.flow_flow_ignored
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Router.flow_flow_ignored_ipv6
@@ -707,7 +633,7 @@ tasks:
             value:
               simple: NASightline.Router.id
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: NASightline.Router.is_proxy
@@ -782,16 +708,11 @@ tasks:
             value:
               simple: NASightline.Router.bgp_session_name
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.Router.relationships
-            iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2600
+          "y": 2295
         }
       }
     note: false
@@ -799,12 +720,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 94c21d18-ef45-401c-845e-2c06eeffb44e
+    taskid: e97b4148-f765-4c44-85a9-e1734e0c658b
     type: regular
     task:
-      id: 94c21d18-ef45-401c-845e-2c06eeffb44e
+      id: e97b4148-f765-4c44-85a9-e1734e0c658b
       version: -1
       name: na-sightline-managed-object-list
       script: '|||na-sightline-managed-object-list'
@@ -819,7 +742,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2800
+          "y": 2470
         }
       }
     note: false
@@ -827,12 +750,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 851bec8c-5c85-4cc0-88a3-fbfd6ee3c98a
+    taskid: fa539842-110f-4256-8fcd-060426d76060
     type: condition
     task:
-      id: 851bec8c-5c85-4cc0-88a3-fbfd6ee3c98a
+      id: fa539842-110f-4256-8fcd-060426d76060
       version: -1
       name: Verify Outputs
       type: condition
@@ -848,152 +773,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: NASightline.ManagedObject.autodetected
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.automitigation_precise_protection_prefixes
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_network_country_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_network_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_profiled_autorate
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_profiled_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_profiled_fast_flood_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_profiled_outgoing_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_profiled_severity_duration
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_profiled_severity_snmp_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_profiled_threshold_bandwidth
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_profiled_threshold_packet_rate
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.detection_profiled_threshold_protocol
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.dynamic_match_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.editable
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.family
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: NASightline.ManagedObject.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: NASightline.ManagedObject.match
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.match_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.match_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.mitigation_automitigation_stop_event
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.mitigation_automitigation_stop_minutes
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.mitigation_automitigation_tms_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.mitigation_blackhole_auto_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.mitigation_flowspec_auto_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: NASightline.ManagedObject.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.num_children
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.parent_editable
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.relationships
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.ManagedObject.scrub_insight_mo_match
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1009,7 +794,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3000
+          "y": 2645
         }
       }
     note: false
@@ -1017,12 +802,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 5f8f41f6-7093-4295-80d2-f9a21710386c
+    taskid: c92c6dcc-c0eb-410d-8837-8f9f91b50c3b
     type: regular
     task:
-      id: 5f8f41f6-7093-4295-80d2-f9a21710386c
+      id: c92c6dcc-c0eb-410d-8837-8f9f91b50c3b
       version: -1
       name: na-sightline-tms-group-list
       script: '|||na-sightline-tms-group-list'
@@ -1037,7 +824,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3200
+          "y": 2820
         }
       }
     note: false
@@ -1045,12 +832,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 2ecee1aa-7870-4f2d-8225-69e7f00dfdea
+    taskid: cdde216d-830c-48a5-8770-1be5af154f28
     type: condition
     task:
-      id: 2ecee1aa-7870-4f2d-8225-69e7f00dfdea
+      id: cdde216d-830c-48a5-8770-1be5af154f28
       version: -1
       name: Verify Outputs
       type: condition
@@ -1066,52 +855,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: NASightline.TMSGroup.check_available_bw
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.check_bgp_peering
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.check_group_allup
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.default_bgp_offramp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: NASightline.TMSGroup.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.fail_open
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.flowspec_redirect_ipv4_destination
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.flowspec_redirect_ipv4_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.flowspec_redirect_ipv6_destination
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.flowspec_redirect_ipv6_type
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1121,57 +865,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: NASightline.TMSGroup.l3vpn_flowspec_ipv4_route_distinguisher
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.l3vpn_flowspec_ipv6_route_distinguisher
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.member_limits_differ
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.mitigation_orchestration.bandwidth_threshold_percent
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.mitigation_orchestration.enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: NASightline.TMSGroup.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.nexthop
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.nexthop_v6
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.relationships
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.system
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NASightline.TMSGroup.tms_group_type
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1182,7 +876,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3400
+          "y": 2995
         }
       }
     note: false
@@ -1190,12 +884,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c6c8b62f-d0ce-470b-8571-fa2fd7a0f6fe
+    taskid: ee41ad36-a02d-42b9-804d-2e71a8ddb6d6
     type: title
     task:
-      id: c6c8b62f-d0ce-470b-8571-fa2fd7a0f6fe
+      id: ee41ad36-a02d-42b9-804d-2e71a8ddb6d6
       version: -1
       name: Test Done
       type: title
@@ -1206,7 +902,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3600
+          "y": 3170
         }
       }
     note: false
@@ -1214,12 +910,52 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 02f4db55-4602-4260-8913-d15ce8dd2959
+    type: regular
+    task:
+      id: 02f4db55-4602-4260-8913-d15ce8dd2959
+      version: -1
+      name: na-sightline-mitigation-delete
+      description: Delete a given mitigation.
+      script: NetscoutArborSightline|||na-sightline-mitigation-delete
+      type: regular
+      iscommand: true
+      brand: NetscoutArborSightline
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      mitigation_id:
+        complex:
+          root: NASightline.Mitigation
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 200,
+        "height": 3185,
         "width": 380,
         "x": 50,
         "y": 50
