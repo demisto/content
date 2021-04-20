@@ -617,10 +617,6 @@ class Pack(object):
             search_rank += 10
         if certification == Metadata.CERTIFIED:
             search_rank += 10
-
-        if name == 'DBot Truth Bombs':
-            search_rank += 50
-
         if content_items:
             integrations = content_items.get("integration")
             if isinstance(integrations, list):
@@ -1054,7 +1050,7 @@ class Pack(object):
             current_commit = content_repo.commit(current_commit_hash)
             previous_commit = content_repo.commit(previous_commit_hash)
 
-            for modified_file in current_commit.diff(previous_commit).iter_change_type('M'):
+            for modified_file in current_commit.diff(previous_commit):
                 if modified_file.a_path.startswith(PACKS_FOLDER):
                     modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
 
