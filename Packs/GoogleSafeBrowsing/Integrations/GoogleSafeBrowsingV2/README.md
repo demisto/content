@@ -39,9 +39,6 @@ Check URL Reputation
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | string | Bad URLs found | 
-| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision | 
-| URL.Malicious.Description | string | For malicious URLs, the reason for the vendor to make the decision | 
 | DBotScore.Indicator | string | The indicator we tested | 
 | DBotScore.Type | string | The type of the indicator | 
 | DBotScore.Vendor | string | Vendor used to calculate the score | 
