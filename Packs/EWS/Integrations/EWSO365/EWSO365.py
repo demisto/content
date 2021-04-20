@@ -65,8 +65,7 @@ APP_NAME = "ms-ews-o365"
 FOLDER_ID_LEN = 120
 MAX_INCIDENTS_PER_FETCH = 50
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
-TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
-                        'year': 365 * 24 * 60}
+
 # move results
 MOVED_TO_MAILBOX = "movedToMailbox"
 MOVED_TO_FOLDER = "movedToFolder"
