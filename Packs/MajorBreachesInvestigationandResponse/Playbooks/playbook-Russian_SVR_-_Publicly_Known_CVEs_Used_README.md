@@ -38,4 +38,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Russian SVR - Publicly Known CVEs Used](Insert the link to your image here)
+![Russian SVR - Publicly Known CVEs Used](https://raw.githubusercontent.com/demisto/content/4e9644a4037f3e6ff6dc746665c58bc826bb3172/Packs/MajorBreachesInvestigationandResponse/doc_files/Russian_SVR_-_Publicly_Known_CVEs_Used.png)
