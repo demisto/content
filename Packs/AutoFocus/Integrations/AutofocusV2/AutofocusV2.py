@@ -14,8 +14,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
 
-API_KEY = AutoFocusKeyRetriever(PARAMS.get('api_key'),
-                                PARAMS.get('override_default_credentials')).key
+API_KEY = AutoFocusKeyRetriever(PARAMS.get('api_key')).key
 
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = 'https://autofocus.paloaltonetworks.com'

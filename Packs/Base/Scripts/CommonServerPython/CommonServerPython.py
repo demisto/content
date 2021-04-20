@@ -6519,13 +6519,11 @@ class AutoFocusKeyRetriever:
     :return: No data returned
     :rtype: ``None``
     """
-    def __init__(self, api_key, override_default_credentials):
+    def __init__(self, api_key):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
             if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
                 raise DemistoException('For versions earlier than 6.2.0, configure an API Key.')
-            if not override_default_credentials:
-                raise DemistoException('If you wish to override the default credentials, please configure an API Key.')
             try:
                 api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
             except ValueError as err:

@@ -246,8 +246,7 @@ def main():
         'autofocus-daily-get-indicators': get_indicators_command
     }
     try:
-        auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'),
-                                                         params.get('override_default_credentials'))
+        auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'))
         client = Client(api_key=auto_focus_key_retriever.key,
                         insecure=params.get('insecure'))
 

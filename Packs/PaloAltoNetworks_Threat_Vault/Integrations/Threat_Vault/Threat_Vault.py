@@ -517,8 +517,7 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'),
-                                                     params.get('override_default_credentials'))
+    auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'))
 
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')

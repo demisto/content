@@ -101,11 +101,6 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- additionalinfo: Whether to override the default AutoFocus API Key given by the Cortex XSOAR platform.
-  display: Override default credentials
-  name: override_default_credentials
-  required: false
-  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
