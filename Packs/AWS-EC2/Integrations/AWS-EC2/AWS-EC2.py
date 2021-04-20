@@ -2944,6 +2944,53 @@ def create_traffic_mirror_session_command(args):
     return_outputs(human_readable, ec)
 
 
+def allocate_hosts_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'))
+
+    availability_zone = args.get('availability_zone')
+    quantity = args.get('quantity')
+
+    kwargs = {}
+    if args.get('auto_placement'):
+        kwargs.update({'AutoPlacement': args.get('auto_placement')})
+    if args.get('client_token'):
+        kwargs.update({'ClientToken': args.get('client_token')})
+    if args.get('instance_type'):
+        kwargs.update({'InstanceType': args.get('instance_type')})
+    if args.get('instance_family'):
+        kwargs.update({'InstanceFamily': args.get('instance_family')})
+    if args.get('host_recovery'):
+        kwargs.update({'HostRecovery': args.get('host_recovery')})
+
+    response = client.allocate_hosts(AvailabilityZone=availability_zone, Quantity=quantity, **kwargs)
+    data = ({
+        'HostId': response['HostIds']
+    })
+    ec = {'AWS.EC2.Host': data}
+    human_readable = tableToMarkdown('AWS EC2 Dedicated Host ID', data)
+    return_outputs(human_readable, ec)
+
+
+def release_hosts_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    host_id = args.get('host_id')
+    response = client.release_hosts(HostIds=host_id)
+    if host_id in response['Successful']:
+        demisto.results("The IDs of the Dedicated Hosts was successfully released.")
+    else:
+        error_message = response['Unsuccessful']['Error']['Message']
+        return_error("The host could not be released\n" + error_message)
+
+
 """COMMAND BLOCK"""
 
 
@@ -3160,6 +3207,12 @@ def main():
 
         elif demisto.command() == 'aws-ec2-create-traffic-mirror-session':
             create_traffic_mirror_session_command(demisto.args())
+
+        elif demisto.command() == 'aws-ec2-allocate-hosts':
+            allocate_hosts_command(demisto.args())
+
+        elif demisto.command() == 'aws-ec2-release-hosts':
+            release_hosts_command(demisto.args())
 
     except ResponseParserError as e:
         return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
