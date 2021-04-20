@@ -2952,7 +2952,7 @@ def allocate_hosts_command(args):
         roleSessionDuration=args.get('roleSessionDuration'))
 
     availability_zone = args.get('availability_zone')
-    quantity = args.get('quantity')
+    quantity = int(args.get('quantity'))
 
     kwargs = {}
     if args.get('auto_placement'):
@@ -2982,13 +2982,10 @@ def release_hosts_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    host_id = args.get('host_id')
+    host_id = argToList(args.get('host_id'))
     response = client.release_hosts(HostIds=host_id)
-    if host_id in response['Successful']:
-        demisto.results("The IDs of the Dedicated Hosts was successfully released.")
-    else:
-        error_message = response['Unsuccessful']['Error']['Message']
-        return_error("The host could not be released\n" + error_message)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results("The ID of the Dedicated Hosts was successfully released.")
 
 
 """COMMAND BLOCK"""
