@@ -233,9 +233,9 @@ def options_handler():
                         default='/home/runner/work/content-private/content-private/content')
     parser.add_argument('--id_set_path', help='Path to the ID set.')
     parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
-                        default='./Tests/filter_file.txt')
+                        default='./artifacts/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
-                        default='./Tests/content_packs_to_install.txt')
+                        default='./artifacts/content_packs_to_install.txt')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -965,7 +965,7 @@ def get_changed_integrations(build: Build) -> tuple:
 
 def get_pack_ids_to_install():
     if Build.run_environment == Running.CIRCLECI_RUN:
-        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+        with open('./artifacts/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = packs_stream.readlines()
             return [pack_id.rstrip('\n') for pack_id in pack_ids]
     else:

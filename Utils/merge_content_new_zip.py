@@ -1,6 +1,5 @@
 import zipfile as z
 import os
-import json
 from google.cloud import storage
 import argparse
 import shutil
