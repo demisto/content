@@ -817,15 +817,16 @@ jobs:
           when: always
           command: |
               GCS_PATH=$(mktemp)
-              echo $GCS_MARKET_KEY > $GCS_PATH
+              echo "$GCS_MARKET_KEY" > "$GCS_PATH"
               gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
               echo "successfully activated google cloud service account"
 
               mkdir BucketPacks
               gsutil -m cp -r "gs://marketplace-dist/content/packs/" BucketPacks
-              gcloud auth revoke --all
+              gcloud auth revoke --all &> /dev/null
               rm $GCS_PATH
 
+              mv BucketPacks $CIRCLE_ARTIFACTS
               zip -r -P $PSWD $CIRCLE_ARTIFACTS/Bucket.zip BucketPacks
 
               exit 1
