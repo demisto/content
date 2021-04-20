@@ -917,6 +917,15 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Location
       description: Security and compliance search action result location.
       type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.ItemCount
+      description: Security and compliance search action result item count.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.TotalSize
+      description: Security and compliance search action result total size.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.FailedCount
+      description: Security and compliance search action result failed count.
+      type: Number
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Sender
       description: Security and compliance search action result mail sender.
       type: String
