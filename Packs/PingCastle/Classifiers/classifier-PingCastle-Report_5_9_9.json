@@ -25,15 +25,6 @@
             "transformers": []
           },
           "simple": ""
-        },
-        "PingCastle-XML-Report": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "xmlReport",
-            "transformers": []
-          },
-          "simple": ""
         }
       }
     }

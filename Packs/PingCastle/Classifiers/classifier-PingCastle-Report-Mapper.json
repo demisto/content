@@ -1,43 +1,34 @@
 {
-    "description": "",
-    "feed": false,
-    "id": "339a2e42-7a1e-44ba-8670-f8573c89aee9",
-    "mapping": {
-        "PingCastle": {
-            "dontMapEventToLabels": true,
-            "internalMapping": {
-                "File Name": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "filename",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "PingCastle XML Report": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "xmlReport",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "PingCastle-XML-Report": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "xmlReport",
-                        "transformers": []
-                    },
-                    "simple": ""
-                }
-            }
+  "description": "",
+  "feed": false,
+  "id": "339a2e42-7a1e-44ba-8670-f8573c89aee9",
+  "mapping": {
+    "PingCastle": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "File Name": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "filename",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "PingCastle XML Report": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "xmlReport",
+            "transformers": []
+          },
+          "simple": ""
         }
-    },
-    "name": "PingCastle-Report-Mapper",
-    "type": "mapping-incoming",
-    "version": -1,
-    "fromVersion": "6.0.0"
+      }
+    }
+  },
+  "name": "PingCastle-Report-Mapper",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.0.0"
 }
