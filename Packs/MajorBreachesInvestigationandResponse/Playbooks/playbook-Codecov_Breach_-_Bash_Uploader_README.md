@@ -35,4 +35,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Codecov - Bash Uploader Unauthorized Access](https://raw.githubusercontent.com/demisto/content/23a32e2688dd522c9c42d6a0ca5cc4f065b4c23f/Packs/MajorBreachesInvestigationandResponse/doc_files/Codecov_breach_-_Bash_Uploader.png)
+![Codecov - Bash Uploader Unauthorized Access](https://raw.githubusercontent.com/demisto/content/3009cf4aa3e1db8d99c4ea83f1a05bfcc8077230/Packs/MajorBreachesInvestigationandResponse/doc_files/Codecov_breach_-_Bash_Uploader.png)
