@@ -2665,6 +2665,49 @@ script:
     - contextPath: GitHub.FileContent.Branch
       description: The branch from which the file was fetched.
       type: Unknown
+  - arguments:
+    - default: false
+      description: The repository owner.
+      isArray: false
+      name: owner
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list. Specify branches to get data about branches listed in 'branches' only,
+        e.g 'branches=refs/heads/BugFix,refs/heads/BugFix2' will return the data of 'BugFix' and 'BugFix2' only.
+      isArray: true
+      name: branches
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of branches data to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all Git branches data corresponding to the repository and owner names given.
+    execution: false
+    name: GitHub-branches-list
+    outputs:
+    - contextPath: Git.Branches.ref
+      description: Ref name of the branch.
+      type: String
+    - contextPath: Git.Branches.node_id
+      description: Node ID of the branch.
+      type: String
+    - contextPath: Git.Branches.url
+      description: URL of the branch.
+      type: String
+    - contextPath: Git.Branches.object.sha
+      description: Sha of the git object.
+      type: String
+    - contextPath: Git.Branches.object.type
+      description: Type of the git object.
+      type: String
+    - contextPath: Git.Branches.object.url
+      description: URL of the git object.
+      type: String
   dockerimage: demisto/pyjwt3:1.0.0.16907
   feed: false
   isfetch: true

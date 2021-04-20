@@ -1271,6 +1271,28 @@ def get_file_content_from_repo():
     return_results(results)
 
 
+def github_get_branches_command():
+    """
+
+    Returns:
+
+    """
+    args = demisto.args()
+    limit = arg_to_number(args.get('limit'))
+    branches = set(argToList(args.get('branches')))
+    owner = args.get('owner')
+    response = http_request(method='GET', url_suffix=f'/repos/{owner}/{REPOSITORY}/git/refs/heads')
+    if branches:
+        response = [branch for branch in response if branch.get('ref') in branches]
+    outputs = response[:limit] if limit else response
+
+    return CommandResults(
+        outputs_prefix='GitHub.Branches',
+        outputs_key_field='ref',
+        outputs=outputs
+    )
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1333,6 +1355,7 @@ COMMANDS = {
     'GitHub-create-pull-request': create_pull_request_command,
     'Github-get-github-actions-usage': get_github_actions_usage,
     'GitHub-get-file-content': get_file_content_from_repo,
+    'GitHub-branches-list': github_get_branches_command
 }
 
 '''EXECUTION'''
@@ -1366,5 +1389,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == '__main__' or '__builtin__' or __name__ == 'builtins':
     main()
