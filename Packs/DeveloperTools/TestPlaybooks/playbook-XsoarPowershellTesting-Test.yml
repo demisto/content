@@ -6,22 +6,22 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9d5494f9-4284-43a1-876e-35722e64aef1
+    taskid: 41ea1302-cebe-49ed-88f6-90f1e0beb47e
     type: start
     task:
-      id: 9d5494f9-4284-43a1-876e-35722e64aef1
+      id: 41ea1302-cebe-49ed-88f6-90f1e0beb47e
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 40,
           "y": 50
         }
       }
@@ -30,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ff74a901-b5d3-4c6f-8ee2-731ef37f3999
+    taskid: 4ddb8aca-0ffc-430a-8ca5-96df31b5e1da
     type: regular
     task:
-      id: ff74a901-b5d3-4c6f-8ee2-731ef37f3999
+      id: 4ddb8aca-0ffc-430a-8ca5-96df31b5e1da
       version: -1
       name: Set integration context
       description: Set integration context.
@@ -54,8 +56,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -63,12 +65,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7617209d-f03d-426f-802f-cbf2ebe5f1f4
+    taskid: c3617d00-3122-48de-8cd2-404c07fe5ce6
     type: regular
     task:
-      id: 7617209d-f03d-426f-802f-cbf2ebe5f1f4
+      id: c3617d00-3122-48de-8cd2-404c07fe5ce6
       version: -1
       name: Get integration context
       description: Get integration context.
@@ -83,8 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 430
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -92,12 +96,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: e464849b-a56d-41c7-8eb5-66c3638db14d
+    taskid: 1e1b452b-b673-47c7-857a-00da8a98fe68
     type: condition
     task:
-      id: e464849b-a56d-41c7-8eb5-66c3638db14d
+      id: 1e1b452b-b673-47c7-857a-00da8a98fe68
       version: -1
       name: Check integration context set/get value
       description: Check integration context setup succesfully and retrieve succesfully.
@@ -123,8 +129,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 610
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -132,12 +138,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 75cfaaa1-e31e-49f3-8bcc-1d999e312fd7
+    taskid: 8d4a92c3-e3e3-4e1b-846d-9d2b5918dcc1
     type: title
     task:
-      id: 75cfaaa1-e31e-49f3-8bcc-1d999e312fd7
+      id: 8d4a92c3-e3e3-4e1b-846d-9d2b5918dcc1
       version: -1
       name: Finished succefully
       type: title
@@ -147,8 +155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 800
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -156,14 +164,50 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: cd96a984-ed3e-4750-8d30-403f6b1e7b28
+    type: regular
+    task:
+      id: cd96a984-ed3e-4750-8d30-403f6b1e7b28
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 815,
-        "width": 380,
-        "x": 450,
+        "height": 910,
+        "width": 390,
+        "x": 40,
         "y": 50
       }
     }

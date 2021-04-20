@@ -19,13 +19,14 @@ function TestModuleCommand() {
 
 function GetIntegrationContextCommand() {
     # Raw response
-    $raw_response = $demisto.GetIntegrationContext()
+    $raw_response = GetIntegrationContext
+    $raw_response_json = $raw_response | ConvertTo-Json
     # Human readable
-    $human_readable = "Integration context value is **$raw_response**"
+    $human_readable = "Integration context value is **$raw_response_json**"
     # Entry context
     $entry_context = @{}
     $entry_context = @{
-        "$script:INTEGRATION_ENTRY_CONTEX.IntegrationContext.Value" = $raw_response[0]
+        "$script:INTEGRATION_ENTRY_CONTEX.IntegrationContext" = $raw_response
     }
 
     return $human_readable, $entry_context, $raw_response
@@ -33,7 +34,10 @@ function GetIntegrationContextCommand() {
 
 function SetIntegrationContextCommand([hashtable]$kwargs) {
     # Raw response
-    $demisto.SetIntegrationContext($kwargs.value)
+    $integration_context = @{
+    "Value" = $kwargs.value
+    }
+    SetIntegrationContext $integration_context
     $raw_response = @{}
     # Human readable
     $human_readable = "Integration context value set to **$($kwargs.value)** "
