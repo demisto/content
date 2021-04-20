@@ -378,7 +378,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "reportid",
+                                "fieldId": "carbonblackesreportid",
                                 "height": 53,
                                 "id": "a9e18610-a1a4-11eb-9a82-db6fe141dfa9",
                                 "index": 2,

@@ -106,7 +106,7 @@
                     "complex": null,
                     "simple": "policy_id"
                 },
-                "Report ID": {
+                "Carbon Black ES Report ID": {
                     "complex": null,
                     "simple": "report_id"
                 },
