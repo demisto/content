@@ -6450,27 +6450,60 @@ class TableOrListWidget(BaseWidget):
             'data': self.data
         })
 
-class AutoFocusKeyRetriever:
-    """AutoFocus API Key management class
-    :type api_key: ``str``
-    :param api_key: Auto Focus API key coming from the integration parameters
 
-    :type override_default_credentials: ``bool``
-    :param override_default_credentials: Whether to override the default credentials and use the
-     Cortex XSOAR given AutoFocus API Key
+class IndicatorsSearcher:
+    """Used in order to search indicators by the paging or serachAfter param
+     :type page: ``int``
+    :param page: the number of page from which we start search indicators from.
 
     :return: No data returned
     :rtype: ``None``
     """
-    def __init__(self, api_key, override_default_credentials):
-        # demisto.getAutoFocusApiKey() is available from version 6.2.0
-        if not api_key:
-            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
-                raise Exception('For versions earlier than 6.2.0, configure an API Key.')
-            if not override_default_credentials:
-                raise Exception('If you wish to override the default credentials, please configure an API Key.')
-            try:
-                api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
-            except ValueError as err:
-                raise Exception('AutoFocus API Key is only available on the main account. ' + str(err))
-        self.key = api_key
+    def __init__(self, page=0):
+        # searchAfter is available in searchIndicators from version 6.1.0
+        self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        self._search_after_title = 'searchAfter'
+        self._search_after_param = None
+        self._page = page
+
+    def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
+        """There are 2 cases depends on the sever version:
+        1. Search indicators using paging, raise the page number in each call.
+        2. Search indicators using searchAfter param, update the _search_after_param in each call.
+
+        :type from_date: ``str``
+        :param from_date: the start date to search from.
+
+        :type query: ``str``
+        :param query: indicator search query
+
+        :type size: ``size``
+        :param size: limit the number of returned results.
+
+        :type to_date: ``str``
+        :param to_date: the end date to search until to.
+
+        :type value: ``str``
+        :param value: the indicator value to search.
+
+        :return: object contains the search results
+        :rtype: ``dict``
+        """
+        if self._can_use_search_after:
+            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
+                                           searchAfter=self._search_after_param)
+            if self._search_after_title in res and res[self._search_after_title] is not None:
+                self._search_after_param = res[self._search_after_title]
+            else:
+                demisto.log('Elastic search using searchAfter was not found in searchIndicators')
+
+        else:
+            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page,
+                                           value=value)
+            self._page += 1
+
+        return res
+
+    @property
+    def page(self):
+        return self._page

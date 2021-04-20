@@ -1,23 +1,22 @@
 # -*- coding: utf-8 -*-
+import demistomock as demisto
 import copy
 import json
-import os
 import re
+import os
 import sys
-import warnings
-
-import pytest
 import requests
 from pytest import raises, mark
+import pytest
+import warnings
 
-import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers,\
     url_to_clickable_markdown, WarningsHandler
 
 try:
@@ -830,8 +829,7 @@ SENSITIVE_PARAM = {
 
 def test_logger_replace_strs_credentials(mocker):
     mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
-    basic_auth = b64_encode(
-        '{}:{}'.format(SENSITIVE_PARAM['authentication']['identifier'], SENSITIVE_PARAM['authentication']['password']))
+    basic_auth = b64_encode('{}:{}'.format(SENSITIVE_PARAM['authentication']['identifier'], SENSITIVE_PARAM['authentication']['password']))
     ilog = IntegrationLogger()
     # log some secrets
     ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh key: {}.'
@@ -4054,8 +4052,8 @@ class TestCommonTypes:
             score=Common.DBotScore.GOOD
         )
         dbot_context = {'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                        'val.Vendor == obj.Vendor && val.Type == obj.Type)':
-                            {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
+                   'val.Vendor == obj.Vendor && val.Type == obj.Type)':
+                       {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
 
         assert dbot_context == dbot_score.to_context()
 
@@ -4064,59 +4062,58 @@ class TestCommonTypes:
             address='user@example.com',
             dbot_score=dbot_score
         )
-        assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com',
-                                                                          'Domain': 'example.com'}
+        assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com', 'Domain': 'example.com'}
 
 
-class TestAutoFocusKeyRetriever:
+class TestIndicatorsSearcher:
+    def mock_search_after_output(self, fromDate, toDate, query, size, value, searchAfter):
+        if not searchAfter:
+            searchAfter = 0
 
-    def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
+        return {'searchAfter': searchAfter + 1}
+
+    def test_search_indicators_by_page(self, mocker):
         """
         Given:
-            - giving the api_key parameter
-            - override_default_credentials is False
+          - Searching indicators couple of times
+          - Server version in less than 6.1.0
         When:
-            - Mocking getAutoFocusApiKey
-            - Mocking server version to be 6.2.0
+          - Mocking search indicators using paging
         Then:
-            - The Auto Focus API Key is the one given to the class
+          - The page number is rising
+          - The searchAfter param is null
         """
-        from CommonServerPython import AutoFocusKeyRetriever
-        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
-        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
-        auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='1234', override_default_credentials=False)
-        assert auto_focus_key_retriever.key == '1234'
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
 
-    def test_instantiate_class_pre_6_2_failed(self, mocker, clear_version_cache):
+        search_indicators_obj_paging = IndicatorsSearcher()
+        search_indicators_obj_paging._can_use_search_after = False
+
+        for n in range(5):
+            search_indicators_obj_paging.search_indicators_by_version()
+
+        assert search_indicators_obj_paging._page == 5
+        assert not search_indicators_obj_paging._search_after_param
+
+    def test_search_indicators_by_search_after(self, mocker):
         """
         Given:
-            - not giving the api_key parameter
-            - override_default_credentials is True
+          - Searching indicators couple of times
+          - Server version in equal or higher than 6.1.0
         When:
-            - Mocking getAutoFocusApiKey
-            - Mocking server version to be 6.1.0
+          - Mocking search indicators using the searchAfter parameter
         Then:
-            - Validate an exception with appropriate error message is raised.
+          - The search after param is rising
+          - The page param is 0
         """
-        from CommonServerPython import AutoFocusKeyRetriever
-        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
-        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.1.0', 'buildNumber': '61000'})
-        with raises(Exception, match='For versions earlier than 6.2.0, configure an API Key.'):
-            AutoFocusKeyRetriever(api_key='', override_default_credentials=True)
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
-    def test_instantiate_class_override_no_api_key_success(self, mocker, clear_version_cache):
-        """
-        Given:
-            - not giving the api_key parameter
-            - override_default_credentials is True
-        When:
-            - Mocking getAutoFocusApiKey
-            - Mocking server version to be 6.2.0
-        Then:
-            - The Auto Focus API Key is the one from the Cortex XSOAR server
-        """
-        from CommonServerPython import AutoFocusKeyRetriever
-        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
-        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.1', 'buildNumber': '62000'})
-        auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='', override_default_credentials=True)
-        assert auto_focus_key_retriever.key == 'test'
+        search_indicators_obj_search_after = IndicatorsSearcher()
+        search_indicators_obj_search_after._can_use_search_after = True
+
+        for n in range(5):
+            search_indicators_obj_search_after.search_indicators_by_version()
+
+        assert search_indicators_obj_search_after._search_after_param == 5
+        assert search_indicators_obj_search_after._page == 0
