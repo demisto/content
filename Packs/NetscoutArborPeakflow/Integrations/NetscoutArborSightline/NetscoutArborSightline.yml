@@ -615,9 +615,6 @@ script:
         - contextPath: NASightline.Mitigation.ongoing
           description: Whether the mitigation is currently running or not.
           type: Boolean
-        - contextPath: NASightline.Mitigation.subobject.action.type
-          description: Type of the returned object.
-          type: String
         - contextPath: NASightline.Mitigation.subobject
           description: Subobject data (only visible when extending data).
           type: Unknown
@@ -631,10 +628,20 @@ script:
           description: Relationships of the mitigation (only visible when extending data).
           type: Unknown
       deprecated: false
-      description: List all alerts, when an alert ID is given only the relevant alert
-        will be fetched.
+      description: List all alerts, when an alert ID is given only the relevant alert will be fetched.
       execution: false
       name: na-sightline-mitigation-create
+    - arguments:
+        - default: true
+          description: The mitigation ID to delete.
+          isArray: false
+          name: mitigation_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Delete a given mitigation.
+      execution: false
+      name: na-sightline-mitigation-delete
     - arguments:
         - name: extend_data
           description: Whather to extend results with all available data.

@@ -332,14 +332,14 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
 
 
 #### Command Example
-```!na-sightline-mitigation-create description="Some annotation description" ip_version=IPv4 name="Mitigation Annotation Name1" ongoing=true sub_object="{\"protection_prefixes\": [\"192.0.2.0/24\"]}" sub_type=flowspec```
+```!na-sightline-mitigation-create description="Some mitigation description" ip_version=IPv4 name="Mitigation Annotation Name1" ongoing=true sub_object="{\"protection_prefixes\": [\"192.0.2.0/24\"]}" sub_type=flowspec```
 
 #### Context Example
 ```json
 {
     "NASightline": {
         "Mitigation": {
-            "description": "Some annotation description",
+            "description": "Some mitigation description",
             "id": "flowspec-12",
             "ip_version": 4,
             "is_automitigation": false,
@@ -367,7 +367,33 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
 >### Mitigation was created
 >|description|id|ip_version|is_automitigation|links|name|ongoing|start|subtype|type|user|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| Some annotation description | flowspec-12 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-12 | Mitigation Annotation Name1 | true | 2021-04-17T18:03:54.875020+00:00 | flowspec | mitigation | demisto |
+>| Some mitigation description | flowspec-12 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-12 | Mitigation Annotation Name1 | true | 2021-04-17T18:03:54.875020+00:00 | flowspec | mitigation | demisto |
+
+### na-sightline-mitigation-delete
+***
+Delete a given mitigation.
+
+
+#### Base Command
+
+`na-sightline-mitigation-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mitigation_id | The mitigation ID to delete. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!na-sightline-mitigation-delete mitigation_id=flowspec-34```
+
+#### Human Readable Output
+
+>### Mitigation flowspec-34 was deleted
 
 
 ### na-sightline-mitigation-template-list

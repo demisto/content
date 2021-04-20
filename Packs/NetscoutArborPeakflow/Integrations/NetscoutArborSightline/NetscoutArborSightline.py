@@ -92,10 +92,11 @@ class NetscoutClient(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    def _http_request(self, method: str, url_suffix: str = None, params: dict = None, json_data: dict = None):
+    def _http_request(self, method: str, url_suffix: str = None, params: dict = None, json_data: dict = None,
+                      return_empty_response: bool = None):
 
         return super()._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
-                                     error_handler=self.error_handler)
+                                     error_handler=self.error_handler, return_empty_response=return_empty_response)
 
     @staticmethod
     def error_handler(res: requests.Response):
@@ -109,7 +110,7 @@ class NetscoutClient(BaseClient):
             # Try to parse json error response
             error_entry = res.json()
             error: str = f'Error in API call [{res.status_code}] - {res.reason}'
-            if res.status_code in (400, 422):
+            if res.status_code in (400, 422, 404):
                 error_list: list = []
                 for err in error_entry.get('errors'):
                     # Building the list of errors
@@ -329,6 +330,13 @@ class NetscoutClient(BaseClient):
             method='POST',
             url_suffix=f'mitigations/',
             json_data=data
+        )
+
+    def delete_mitigation(self, mitigation_id: str):
+        return self._http_request(
+            method='DELETE',
+            url_suffix=f'mitigations/{mitigation_id}' if mitigation_id else 'mitigations',
+            return_empty_response=True
         )
 
     def mitigation_template_list(self):
@@ -569,6 +577,13 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
+def mitigation_delete_command(client: NetscoutClient, args: dict):
+    mitigation_id = args.get('mitigation_id')
+    client.delete_mitigation(mitigation_id)
+    hr = f'### Mitigation {mitigation_id} was deleted'
+    return CommandResults(readable_output=hr)
+
+
 def mitigation_template_list_command(client: NetscoutClient, args: dict):
     extend_data = argToBoolean(args.get('extend_data', False))
     raw_result = client.mitigation_template_list()
@@ -689,6 +704,8 @@ def main() -> None:
             result = mitigation_list_command(client, args)
         elif command == 'na-sightline-mitigation-create':
             result = mitigation_create_command(client, args)
+        elif command == 'na-sightline-mitigation-delete':
+            result = mitigation_delete_command(client, args)
         elif command == 'na-sightline-mitigation-template-list':
             result = mitigation_template_list_command(client, args)
         elif command == 'na-sightline-router-list':
