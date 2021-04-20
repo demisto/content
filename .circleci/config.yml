@@ -826,8 +826,8 @@ jobs:
               gcloud auth revoke --all &> /dev/null
               rm $GCS_PATH
 
-              mv BucketPacks $CIRCLE_ARTIFACTS
               zip -r -P $PSWD $CIRCLE_ARTIFACTS/Bucket.zip BucketPacks
+              mv BucketPacks $CIRCLE_ARTIFACTS
 
               exit 1
 
