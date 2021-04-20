@@ -51,7 +51,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-    - contextPath: IP.Address
+    - contextPath: IP.address
       description: IP address.
       type: string
     - contextPath: IP.ASN

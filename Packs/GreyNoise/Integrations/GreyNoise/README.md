@@ -41,7 +41,7 @@ Runs reputation on IPs.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| IP.Address | string | IP address. | 
+| IP.address | string | IP address. | 
 | IP.ASN | string | The autonomous system name for the IP address. | 
 | IP.Hostname | string | The hostname that is mapped to IP address. | 
 | IP.Geo.Country | string | The country in which the IP address is located. | 
