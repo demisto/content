@@ -1,6 +1,6 @@
-id: Codecov - Bash Uploader Unauthorized Access
+id: Codecov breach - Bash Uploader
 version: -1
-name: Codecov - Bash Uploader Unauthorized Access
+name: Codecov breach - Bash Uploader
 description: |-
   This playbook includes the following tasks:
   - Search for the Security Notice email sent from Codecov.
@@ -8,8 +8,8 @@ description: |-
   - Query network logs to detect related activity.
   Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
-  Sources:
-  https://about.codecov.io/security-update/
+  More information:
+  [Codecov Security Notice](https://about.codecov.io/security-update/)
 starttaskid: "0"
 tasks:
   "0":
@@ -98,12 +98,13 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: c4c69c66-2140-49e3-8b39-05f7fe51e41e
+    taskid: 05d283a2-28d2-4112-8cb6-d8ba3e67e80c
     type: condition
     task:
-      id: c4c69c66-2140-49e3-8b39-05f7fe51e41e
+      id: 05d283a2-28d2-4112-8cb6-d8ba3e67e80c
       version: -1
       name: Is EWS enabled?
+      description: Checks if EWS integration enabled
       type: condition
       iscommand: false
       brand: ""
@@ -149,12 +150,12 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 3b909c8c-4aa4-40d6-8211-9e28edd42635
+    taskid: bc99d94d-90fb-4d69-8062-f1e4e54dd719
     type: title
     task:
-      id: 3b909c8c-4aa4-40d6-8211-9e28edd42635
+      id: bc99d94d-90fb-4d69-8062-f1e4e54dd719
       version: -1
-      name: Check if possible compromised
+      name: Check if compromised
       type: title
       iscommand: false
       brand: ""
@@ -248,12 +249,13 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 30a2f01f-852f-4cc7-870f-999ad2f527e4
+    taskid: f03d42f1-189a-47d9-8c7b-7a67827fd24f
     type: condition
     task:
-      id: 30a2f01f-852f-4cc7-870f-999ad2f527e4
+      id: f03d42f1-189a-47d9-8c7b-7a67827fd24f
       version: -1
       name: Found Codecov security notice emails?
+      description: Searches for the Codecov Security Notice email
       type: condition
       iscommand: false
       brand: ""
@@ -287,12 +289,12 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: b45b97cd-5b7c-411b-8ff1-6c0f35921c87
+    taskid: 1ea37a97-35d8-49fa-8233-a594dfdf2d57
     type: condition
     task:
-      id: b45b97cd-5b7c-411b-8ff1-6c0f35921c87
+      id: 1ea37a97-35d8-49fa-8233-a594dfdf2d57
       version: -1
-      name: Check for possible impact
+      name: Check for affected Bash Uploader possible impact
       description: |
         If you used the following between January 31, 2021 and April 1, 2021, and did not conduct a checksum validation:
         Codecov-bash (bash uploader)
@@ -580,12 +582,12 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 54c6adb8-3acd-4451-8b23-b2e3933158ea
+    taskid: cba1718f-0b78-4ccb-8c15-6a2b7fa4ec74
     type: regular
     task:
-      id: 54c6adb8-3acd-4451-8b23-b2e3933158ea
+      id: cba1718f-0b78-4ccb-8c15-6a2b7fa4ec74
       version: -1
-      name: Extract known indicators
+      name: Extract indicators from known and custom inputs
       description: commands.local.cmd.extract.indicators
       script: Builtin|||extractIndicators
       type: regular
@@ -624,12 +626,12 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 8420752f-76ca-4f08-8efa-a3f372d7bbde
+    taskid: 8d37d324-0f2c-4564-8493-b1af87f46e79
     type: title
     task:
-      id: 8420752f-76ca-4f08-8efa-a3f372d7bbde
+      id: 8d37d324-0f2c-4564-8493-b1af87f46e79
       version: -1
-      name: Manual Remediation Steps
+      name: Remediation Steps
       type: title
       iscommand: false
       brand: ""

@@ -1,11 +1,11 @@
-This playbook includes the following tasks:
-- Search for the Security Notice email sent from Codecov.
-- Collect indicators to be used in your threat hunting process.
-- Query network logs to detect related activity.
-Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
+  This playbook includes the following tasks:
+  - Search for the Security Notice email sent from Codecov.
+  - Collect indicators to be used in your threat hunting process.
+  - Query network logs to detect related activity.
+  Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
-Sources:
-https://about.codecov.io/security-update/
+  More information:
+  [Codecov Security Notice](https://about.codecov.io/security-update/)
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
