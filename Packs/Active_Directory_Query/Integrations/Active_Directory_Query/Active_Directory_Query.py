@@ -54,6 +54,12 @@ FIELDS_THAT_CANT_BE_MODIFIED = [
     "dn", "samaccountname", "cn", "ou"
 ]
 
+IAM_ERROR_MESSAGE = "Please make sure that:\n" \
+                    "* You've added a transformer script which determines the OU where " \
+                    "the user will be created, in the Active Directory outgoing mapper, " \
+                    "in the User Profile incident type and schema type, under the \"ou\" field.\n" \
+                    "* You're using LDAPS in the Active Directory (port 636) integration.\n"
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -544,10 +550,11 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         )
 
         if not entries.get('flat'):
-            iam_user_profile.set_result(success=False,
-                                        error_message="No user was found",
-                                        action=IAMActions.GET_USER
-                                        )
+            error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
+            user_profile.set_result(action=IAMActions.GET_USER,
+                                    success=False,
+                                    error_code=error_code,
+                                    error_message=error_message)
         else:
             user_account_control = get_user_activity_by_samaccountname(default_base_dn, value)
             ad_user["userAccountControl"] = user_account_control
@@ -562,8 +569,11 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
+        error_msg = f'Failed to get user. Error is: {str(e)}\n{IAM_ERROR_MESSAGE}'
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_code=error_code,
+                                    error_message=error_msg,
                                     action=IAMActions.GET_USER
                                     )
         return iam_user_profile
@@ -782,19 +792,25 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
                                             username=ad_user.get('name'),
                                             details=ad_user,
                                             action=IAMActions.CREATE_USER,
-                                            active=True)
+                                            active=False)  # the user should be activated with the IAMInitADUser script
 
             else:
+                error_code, _ = IAMErrors.BAD_REQUEST
+                error_msg = 'Failed to create user. ' + IAM_ERROR_MESSAGE
                 iam_user_profile.set_result(success=False,
-                                            error_message="Failed to create user",
+                                            error_code=error_code,
+                                            error_message=error_msg,
                                             action=IAMActions.CREATE_USER
                                             )
 
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
+        error_msg = f'Failed to create user. Error is: {str(e)}\n{IAM_ERROR_MESSAGE}'
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_code=error_code,
+                                    error_message=error_msg,
                                     action=IAMActions.CREATE_USER,
                                     )
         return iam_user_profile
@@ -874,8 +890,9 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
         return iam_user_profile
 
     except Exception as e:
+        error_msg = f'Failed to update the user. Error is: {str(e)}\n{IAM_ERROR_MESSAGE}'
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_message=error_msg,
                                     action=IAMActions.UPDATE_USER
                                     )
         return iam_user_profile
@@ -1182,8 +1199,10 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
             success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [dn], [grp_dn])
             if not success:
                 command_failed = True
+                error_code, _ = IAMErrors.BAD_REQUEST
                 e = 'Failed to remove user from {} group'.format(disabled_users_group_cn)
                 iam_user_profile.set_result(success=False,
+                                            error_code=error_code,
                                             error_message=e,
                                             action=IAMActions.DISABLE_USER,
                                             )
@@ -1198,8 +1217,11 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
+        error_msg = f'Failed to disable user. Error is: {str(e)}\n{IAM_ERROR_MESSAGE}'
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_code=error_code,
+                                    error_message=error_msg,
                                     action=IAMActions.DISABLE_USER
                                     )
         return iam_user_profile
