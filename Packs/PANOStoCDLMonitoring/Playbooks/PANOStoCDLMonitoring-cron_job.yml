@@ -67,7 +67,7 @@ tasks:
       fw_serials:
         simple: ${inputs.fw_serials}
       pan_os_integration_instance_name:
-        simple: ${inputs.panosintegrationinstancename}
+        simple: ${inputs.panorama_integration}
     separatecontext: false
     skipunavailable: false
     task:
