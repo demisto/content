@@ -1273,7 +1273,12 @@ def get_file_content_from_repo():
 
 def github_get_branches_command():
     """
+    Retrieves data of branches corresponding to the 'REPOSITORY' parameter and 'owner' argument given from Git.
 
+    Args:
+        - 'limit': Maximum number of branches to retrieve their data.
+        - 'branches': If specified, will only retrieve data of branches given in 'branches'.
+        - 'owner': Owner of the 'REPOSITORY' parameter given.
     Returns:
 
     """
@@ -1286,11 +1291,11 @@ def github_get_branches_command():
         response = [branch for branch in response if branch.get('ref') in branches]
     outputs = response[:limit] if limit else response
 
-    return CommandResults(
-        outputs_prefix='GitHub.Branches',
+    return_results(CommandResults(
+        outputs_prefix='GitHub.Branch',
         outputs_key_field='ref',
         outputs=outputs
-    )
+    ))
 
 
 def fetch_incidents_command():
@@ -1389,5 +1394,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__main__' or '__builtin__' or __name__ == 'builtins':
+if __name__ == '__builtin__' or __name__ == 'builtins':
     main()

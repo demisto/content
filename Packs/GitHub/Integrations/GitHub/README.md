@@ -1492,3 +1492,73 @@ Gets the content of a file from GitHub.
 |---|---|---|---|
 |branch-test|This is the content of the file|raw|file.json| 
 
+### GitHub-branches-list
+***
+Returns all Git branches data corresponding to the repository and owner names given.
+
+
+#### Base Command
+
+`GitHub-branches-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The repository owner. | Required | 
+| branches | Comma separated list. Specify branches to get data about branches listed in 'branches' only, e.g 'branches=refs/heads/BugFix,refs/heads/BugFix2' will return the data of 'BugFix' and 'BugFix2' only. | Optional | 
+| limit | Maximum number of branches data to retrieve. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Git.Branches.ref | String | Ref name of the branch. | 
+| Git.Branches.node_id | String | Node ID of the branch. | 
+| Git.Branches.url | String | URL of the branch. | 
+| Git.Branches.object.sha | String | Sha of the git object. | 
+| Git.Branches.object.type | String | Type of the git object. | 
+| Git.Branches.object.url | String | URL of the git object. | 
+
+
+#### Command Example
+```!GitHub-branches-list limit=2 owner=demisto```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "Branches": [
+            {
+                "node_id": "MDM6UmVmNjA1MjUzOTI6cmVmcy9oZWFkcy9BaXJHYXBIb3Blcg==",
+                "object": {
+                    "sha": "04debb8935850be5f88506477224e81ab43a9244",
+                    "type": "commit",
+                    "url": "https://api.github.com/repos/demisto/content/git/commits/04debb8935850be5f88506477224e81ab43a9244"
+                },
+                "ref": "refs/heads/AirGapHoper",
+                "url": "https://api.github.com/repos/demisto/content/git/refs/heads/AirGapHoper"
+            },
+            {
+                "node_id": "MDM6UmVmNjA1MjUzOTI6cmVmcy9oZWFkcy9Bbm9tYWxpX1RocmVhdFN0cmVhbV92Mi1hZGRfcmVsaWFiaWxpdHk=",
+                "object": {
+                    "sha": "bd84afc5bb766cfe65ece37dec87e88475df95fa",
+                    "type": "commit",
+                    "url": "https://api.github.com/repos/demisto/content/git/commits/bd84afc5bb766cfe65ece37dec87e88475df95fa"
+                },
+                "ref": "refs/heads/Anomali_ThreatStream_v2-add_reliability",
+                "url": "https://api.github.com/repos/demisto/content/git/refs/heads/Anomali_ThreatStream_v2-add_reliability"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|node_id|object|ref|url|
+>|---|---|---|---|
+>| MDM6UmVmNjA1MjUzOTI6cmVmcy9oZWFkcy9BaXJHYXBIb3Blcg== | sha: 04debb8935850be5f88506477224e81ab43a9244<br/>type: commit<br/>url: https://api.github.com/repos/demisto/content/git/commits/04debb8935850be5f88506477224e81ab43a9244 | refs/heads/AirGapHoper | https://api.github.com/repos/demisto/content/git/refs/heads/AirGapHoper |
+>| MDM6UmVmNjA1MjUzOTI6cmVmcy9oZWFkcy9Bbm9tYWxpX1RocmVhdFN0cmVhbV92Mi1hZGRfcmVsaWFiaWxpdHk= | sha: bd84afc5bb766cfe65ece37dec87e88475df95fa<br/>type: commit<br/>url: https://api.github.com/repos/demisto/content/git/commits/bd84afc5bb766cfe65ece37dec87e88475df95fa | refs/heads/Anomali_ThreatStream_v2-add_reliability | https://api.github.com/repos/demisto/content/git/refs/heads/Anomali_ThreatStream_v2-add_reliability |
+

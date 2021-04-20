@@ -2690,22 +2690,22 @@ script:
     execution: false
     name: GitHub-branches-list
     outputs:
-    - contextPath: Git.Branches.ref
+    - contextPath: GitHub.Branch.ref
       description: Ref name of the branch.
       type: String
-    - contextPath: Git.Branches.node_id
+    - contextPath: GitHub.Branch.node_id
       description: Node ID of the branch.
       type: String
-    - contextPath: Git.Branches.url
+    - contextPath: GitHub.Branch.url
       description: URL of the branch.
       type: String
-    - contextPath: Git.Branches.object.sha
+    - contextPath: GitHub.Branch.object.sha
       description: Sha of the git object.
       type: String
-    - contextPath: Git.Branches.object.type
+    - contextPath: GitHub.Branch.object.type
       description: Type of the git object.
       type: String
-    - contextPath: Git.Branches.object.url
+    - contextPath: GitHub.Branch.object.url
       description: URL of the git object.
       type: String
   dockerimage: demisto/pyjwt3:1.0.0.16907
