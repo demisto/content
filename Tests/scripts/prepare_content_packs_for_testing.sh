@@ -15,7 +15,6 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
 fi
 
 echo "Preparing content packs for testing ..."
-
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 echo "Auth loaded successfully."
 
@@ -50,7 +49,7 @@ echo "Finished copying successfully."
 
 if [ ! -n "${BUCKET_UPLOAD}" ]; then
     echo "Updating modified content packs in the bucket ..."
-    CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
+    CONTENT_PACKS_TO_INSTALL_FILE="$ARTIFACTS_FOLDER/content_packs_to_install.txt"
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
     echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
   else
