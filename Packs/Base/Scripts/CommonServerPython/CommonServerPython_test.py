@@ -4086,7 +4086,6 @@ class TestIndicatorsSearcher:
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
 
-<<<<<<< HEAD
         search_indicators_obj_paging = IndicatorsSearcher()
         search_indicators_obj_paging._can_use_search_after = False
 
