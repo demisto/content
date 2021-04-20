@@ -133,12 +133,6 @@ create-instances:
           echo "Skipping - not running in INSTANCE_TESTS build"
         else
           ./Tests/scripts/upload_artifacts.sh
-      fi
-    - |
-      if [ -n "${DEMISTO_SDK_NIGHTLY}" ];
-        then
-          echo "Skipping - not running in INSTANCE_TESTS build"
-        else
           [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
           if [ -n "${NIGHTLY}" ] ;
             then

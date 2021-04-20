@@ -19,7 +19,7 @@ from demisto_sdk.commands.test_content.tools import is_redhat_instance
 
 urllib3.disable_warnings()
 
-ARTIFACTS_PATH = os.environ.get('CIRCLE_ARTIFACTS')
+ARTIFACTS_PATH = os.environ.get('ARTIFACTS_FOLDER')
 MAX_TRIES = 30
 PRINT_INTERVAL_IN_SECONDS = 30
 SETUP_TIMEOUT = 60 * 60
