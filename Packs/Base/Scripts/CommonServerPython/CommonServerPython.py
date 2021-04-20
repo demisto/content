@@ -2283,52 +2283,52 @@ class Common(object):
         :param asn: The autonomous system name for the IP address, for example: "AS8948".
 
         :type as_owner: ``str``
-        :param as_owner:
+        :param as_owner: The autonomous system owner of the IP.
 
         :type region: ``str``
-        :param region:
+        :param region: The region in which the IP is located.
 
         :type port: ``str``
-        :param port:
+        :param port: Ports that are associated with the IP.
 
-        :type internal: ``str``
-        :param internal:
+        :type internal: ``bool``
+        :param internal: Whether or not the IP is internal or external.
 
-        :type updated_date: ``str``
-        :param updated_date:
+        :type updated_date: ``date``
+        :param updated_date: The date that the IP was last updated.
 
         :type registrar_abuse_name: ``str``
-        :param registrar_abuse_name:
+        :param registrar_abuse_name: The name of the contact for reporting abuse.
 
         :type registrar_abuse_address: ``str``
-        :param registrar_abuse_address:
+        :param registrar_abuse_address: The address of the contact for reporting abuse.
 
         :type registrar_abuse_country: ``str``
-        :param registrar_abuse_country:
+        :param registrar_abuse_country: The country of the contact for reporting abuse.
 
         :type registrar_abuse_network: ``str``
-        :param registrar_abuse_network:
+        :param registrar_abuse_network: The network of the contact for reporting abuse.
 
         :type registrar_abuse_phone: ``str``
-        :param registrar_abuse_phone:
+        :param registrar_abuse_phone: The phone number of the contact for reporting abuse.
 
         :type registrar_abuse_email: ``str``
-        :param registrar_abuse_email:
+        :param registrar_abuse_email: The email address of the contact for reporting abuse.
 
         :type campaign: ``str``
-        :param campaign:
+        :param campaign: The campaign associated with the IP.
 
         :type traffic_light_protocol: ``str``
-        :param traffic_light_protocol:
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the IP.
 
         :type community_notes: ``CommunityNotes``
-        :param community_notes:
+        :param community_notes: Notes on the IP that were given by the community.
 
         :type publications: ``Publications``
-        :param publications:
+        :param publications: Publications on the ip that was published.
 
-        :type threat_types: ``str``
-        :param threat_types:
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
 
         :type hostname: ``str``
         :param hostname: The hostname that is mapped to this IP address.
@@ -2478,7 +2478,10 @@ class Common(object):
                 ip_context['Publications'] = publications
 
             if self.threat_types:
-                ip_context['ThreatTypes'] = self.threat_types
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                ip_context['ThreatTypes'] = threat_types
 
             if self.hostname:
                 ip_context['Hostname'] = self.hostname
@@ -2610,10 +2613,10 @@ class Common(object):
          Implements Subject Community Notes of a indicator
 
         :type note: ``str``
-        :param note:
+        :param note: Notes on the indicator that were given by the community.
 
         :type timestamp: ``Timestamp``
-        :param timestamp: .
+        :param timestamp: The time in which the note was published.
 
         :return: None
         :rtype: ``None``
@@ -2636,16 +2639,16 @@ class Common(object):
          Implements Subject Publications of a indicator
 
         :type source: ``str``
-        :param source:
+        :param source: The source in which the article was published.
 
         :type title: ``str``
-        :param title:
+        :param title: The name of the article.
 
         :type link: ``str``
-        :param link:
+        :param link: A link to the original article.
 
         :type timestamp: ``Timestamp``
-        :param timestamp: .
+        :param timestamp: The time in which the article was published.
 
         :return: None
         :rtype: ``None``
@@ -2680,7 +2683,7 @@ class Common(object):
         :rtype: ``None``
         """
 
-        def __init__(self, details=None, action=None, link=None, timestamp=None):
+        def __init__(self, details=None, action=None):
             self.details = details
             self.action = action
 
@@ -2688,6 +2691,31 @@ class Common(object):
             return {
                 'details': self.details,
                 'title': self.action,
+            }
+
+    class ThreatTypes(object):
+        """
+        ThreatTypes class
+         Implements Subject ThreatTypes of a indicator
+
+        :type threat_category: ``str``
+        :param threat_category:
+
+        :type threat_category_confidence: ``str``
+        :param threat_category_confidence:
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, threat_category=None, threat_category_confidence=None):
+            self.threat_category = threat_category
+            self.threat_category_confidence = threat_category_confidence
+
+        def to_context(self):
+            return {
+                'threatcategory': self.threat_category,
+                'threatcategoryconfidence': self.threat_category_confidence,
             }
 
     class File(Indicator):
@@ -2760,28 +2788,28 @@ class Common(object):
         :param traffic_light_protocol:
 
         :type community_notes: ``CommunityNotes``
-        :param community_notes:
+        :param community_notes:  Notes on the file that were given by the community.
 
         :type publications: ``Publications``
-        :param publications:
+        :param publications: Publications on the file that was published.
 
-        :type threat_types: ``str``
-        :param threat_types:
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
 
         :type imphash: ``str``
-        :param imphash:
+        :param imphash: The Imphash hash of the file.
 
-        :type quarantined: ``str``
-        :param quarantined:
+        :type quarantined: ``bool``
+        :param quarantined: Is the file quarantined or not.
 
         :type organization: ``str``
-        :param organization:
+        :param organization: The organization of the file.
 
         :type associated_file_names: ``str``
-        :param associated_file_names:
+        :param associated_file_names: File names that are known as associated to the file.
 
         :type behaviors: ``Behaviors``
-        :param behaviors:
+        :param behaviors: list of behaviors associated with the file.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
@@ -2900,7 +2928,10 @@ class Common(object):
                     publications.append(publication.to_context())
                 file_context['Publications'] = publications
             if self.threat_types:
-                file_context['ThreatTypes'] = self.threat_types
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                file_context['ThreatTypes'] = threat_types
             if self.imphash:
                 file_context['Imphash'] = self.imphash
             if self.quarantined:
@@ -3050,37 +3081,37 @@ class Common(object):
         :param tags: Tags of the URL.
 
         :type port: ``str``
-        :param port:
+        :param port: Ports that are associated with the URL.
 
-        :type internal: ``str``
-        :param internal:
+        :type internal: ``bool``
+        :param internal: Whether or not the URL is internal or external.
 
         :type campaign: ``str``
-        :param campaign:
+        :param campaign: The campaign associated with the URL.
 
         :type traffic_light_protocol: ``str``
-        :param traffic_light_protocol:
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the URL.
 
-        :type threat_types: ``str``
-        :param threat_types:
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
 
         :type asn: ``str``
-        :param asn:
+        :param asn: The autonomous system name for the URL, for example: 'AS8948'.
 
         :type as_owner: ``str``
-        :param as_owner:
+        :param as_owner: The autonomous system owner of the URL.
 
         :type geo_country: ``str``
-        :param geo_country:
+        :param geo_country: The country in which the URL is located.
 
         :type organization: ``str``
-        :param organization:
+        :param organization: The organization of the URL.
 
         :type community_notes: ``CommunityNotes``
-        :param community_notes:
+        :param community_notes:  List of notes on the URL that were given by the community.
 
         :type publications: ``Publications``
-        :param publications:
+        :param publications: List of publications on the URL that was published.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
@@ -3151,7 +3182,10 @@ class Common(object):
             if self.traffic_light_protocol:
                 url_context['TrafficLightProtocol'] = self.traffic_light_protocol
             if self.threat_types:
-                url_context['threat_types'] = self.threat_types
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                url_context['ThreatTypes'] = threat_types
             if self.asn:
                 url_context['ASN'] = self.asn
             if self.as_owner:
@@ -3198,7 +3232,7 @@ class Common(object):
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
                      admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None,
-                     domain_idn_name=None, domain_referring_ips=None, domain_referring_subnets=None, port=None,
+                     domain_idn_name=None, port=None,
                      internal=None, category=None, campaign=None, traffic_light_protocol=None, threat_types=None,
                      community_notes=None, publications=None, geo_location=None, geo_country=None,
                      geo_description=None, tech_country=None, tech_name=None, tech_email=None, tech_organization=None,
@@ -3235,8 +3269,6 @@ class Common(object):
             self.feed_related_indicators = feed_related_indicators
             self.malware_family = malware_family
             self.domain_idn_name = domain_idn_name
-            self.domain_referring_ips = domain_referring_ips
-            self.domain_referring_subnets = domain_referring_subnets
             self.port = port
             self.internal = internal
             self.category = category
@@ -3342,10 +3374,6 @@ class Common(object):
                 }
             if self.domain_idn_name:
                 domain_context['DomainIDNName'] = self.domain_idn_name
-            if self.domain_referring_ips:
-                domain_context['DomainReferringIPs'] = self.domain_referring_ips
-            if self.domain_referring_subnets:
-                domain_context['DomainReferringSubnets'] = self.domain_referring_subnets
             if self.port:
                 domain_context['Port'] = self.port
             if self.internal:
@@ -3357,7 +3385,10 @@ class Common(object):
             if self.traffic_light_protocol:
                 domain_context['TrafficLightProtocol'] = self.traffic_light_protocol
             if self.threat_types:
-                domain_context['ThreatTypes'] = self.threat_types
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                domain_context['ThreatTypes'] = threat_types
             if self.community_notes:
                 community_notes = []
                 for community_note in self.community_notes:

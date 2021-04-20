@@ -3533,7 +3533,26 @@ class TestCommonTypes:
                 value='8.8.8.8',
                 indicator_type="IP",
                 description='test'
-            )]
+            )],
+            domain_idn_name='domain_idn_name',
+            port='port',
+            internal=False,
+            category='category',
+            campaign='campaign',
+            traffic_light_protocol='traffic_light_protocol',
+            threat_types=[Common.ThreatTypes(threat_category='threat_category',
+                                             threat_category_confidence='threat_category_confidence')],
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            publications=[Common.Publications(title='title', source='source', timestamp='2019-01-01T00:00:00',
+                                              link='link')],
+            geo_location='geo_location',
+            geo_country='geo_country',
+            geo_description='geo_description',
+            tech_country='tech_country',
+            tech_name='tech_name',
+            tech_organization='tech_organization',
+            tech_email='tech_email',
+            billing='billing'
         )
 
         results = CommandResults(
@@ -3613,7 +3632,39 @@ class TestCommonTypes:
                                 "PNS31.CLOUDNS.NET",
                                 "PNS32.CLOUDNS.NET"
                             ]
-                        }
+                        },
+                        "DomainIDNName": "domain_idn_name",
+                        "Port": "port",
+                        "Internal": False,
+                        "Category": "category",
+                        "Campaign": "campaign",
+                        "TrafficLightProtocol": "traffic_light_protocol",
+                        "ThreatTypes": {
+                            "threatcategory": "threat_category",
+                            "threatcategoryconfidence": "threat_category_confidence"
+                        },
+                        "Geo": {
+                            "Location": "geo_location",
+                            "Country": "geo_country",
+                            "Description": "geo_description"
+                        },
+                        "Tech": {
+                            "Country": "tech_country",
+                            "Name": "tech_name",
+                            "Organization": "tech_organization",
+                            "Email": "tech_email"
+                        },
+                        "CommunityNotes": {
+                            "note": "note",
+                            "timestamp": "2019-01-01T00:00:00"
+                        },
+                        "Publications": {
+                            "source": "STRING, The source in which the article was published.",
+                            "title": "title",
+                            "link": "link",
+                            "timestamp": "2019-01-01T00:00:00"
+                        },
+                        "Billing": "billing"
                     }
                 ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
