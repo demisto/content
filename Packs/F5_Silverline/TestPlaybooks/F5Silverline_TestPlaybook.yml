@@ -1,0 +1,257 @@
+id: F5Silverline_TestPlaybook
+version: -1
+name: F5Silverline_TestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d197a9cf-c585-47e8-8966-6c00683d2461
+    type: start
+    task:
+      id: d197a9cf-c585-47e8-8966-6c00683d2461
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d9346eaf-8773-4931-8fd6-645e221480f8
+    type: regular
+    task:
+      id: d9346eaf-8773-4931-8fd6-645e221480f8
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4b26ec81-4060-44fe-899c-24a2f83b198a
+    type: regular
+    task:
+      id: 4b26ec81-4060-44fe-899c-24a2f83b198a
+      version: -1
+      name: Add IP to denylist
+      description: Add IP address in a particular list.
+      script: '|||f5-silverline-ip-object-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      IP:
+        simple: 1.2.3.4
+      list_type:
+        simple: denylist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7a723bfc-57cf-45ba-8b8a-93e00b3e2c3e
+    type: regular
+    task:
+      id: 7a723bfc-57cf-45ba-8b8a-93e00b3e2c3e
+      version: -1
+      name: Get denylist
+      description: Get a particular ip objects list by the list type (allowlist/denylist/bad_actor).
+        For denylist only the proxy list_target can be returned.
+      script: '|||f5-silverline-ip-objects-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      list_type:
+        simple: denylist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4febd6c0-51a8-47de-8c23-97c485ef11b6
+    type: condition
+    task:
+      id: 4febd6c0-51a8-47de-8c23-97c485ef11b6
+      version: -1
+      name: Verify IP added to denylist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: 1.2.3.4
+          right:
+            value:
+              simple: F5Silverline.IPObjectList.data.attributes.ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d93ec981-c36e-49a6-8369-3d7562542781
+    type: regular
+    task:
+      id: d93ec981-c36e-49a6-8369-3d7562542781
+      version: -1
+      name: Delete IP from denylist
+      description: Deleted a particular ip objects list by the list type (allowlist/denylist/bad_actor)
+        and by the object_id.
+      script: '|||f5-silverline-ip-object-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      list_type:
+        simple: denylist
+      object_id:
+        complex:
+          root: ${F5Silverline.IPObjectList.data
+          accessor: id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3e692685-c757-4451-81b9-356c57c993e9
+    type: title
+    task:
+      id: 3e692685-c757-4451-81b9-356c57c993e9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

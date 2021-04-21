@@ -53,15 +53,13 @@ def test_module(client: Client) -> str:
 
 
 def paging_args_to_params(page_size, page_number):
-    params = {}
     try:
         page_size = int(page_size)
         page_number = int(page_number)
     except ValueError:
         raise ValueError("page_number and page_size should be numbers")
 
-    params['page[size]'] = page_size
-    params['page[number]'] = page_number
+    params = {'page[size]': page_size, 'page[number]': page_number}
     return params
 
 
@@ -104,6 +102,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     page_size = args.get('page_size')
     url_suffix = f'{list_type}/ip_objects'
     params = {}
+
     is_paging = False
     if page_number and page_size:
         params = paging_args_to_params(page_size, page_number)
