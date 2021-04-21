@@ -25,8 +25,6 @@ USE_SSL = not PARAMS.get('insecure', False)
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
 VENDOR_NAME = 'AutoFocus V2'
-VERSION_MISMATCH_ERROR = 'This command is not supported for your server version. Please update your server version to ' \
-                         '6.2.0 or later.'
 
 # Headers to be sent in requests
 HEADERS = {
@@ -1097,10 +1095,9 @@ def search_samples_command():
 
 
 def search_samples_with_results_command():
-    if not is_demisto_version_ge('6.2.0'):
-        raise DemistoException(VERSION_MISMATCH_ERROR)
+    Common.PollingConfiguration.raise_error_if_not_supported()
     args = demisto.args()
-    interval_in_secs = args.get('interval_in_seconds', '60')
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
     # start query
     if 'af_cookie' not in args:
         if 'scope' not in args:
@@ -1112,10 +1109,11 @@ def search_samples_with_results_command():
                 'af_cookie': af_cookie,
                 'interval_in_seconds': interval_in_secs
             }
+            polling_config = Common.PollingConfiguration(command='autofocus-search-samples-with-results',
+                                                         next_run_in_seconds=interval_in_secs,
+                                                         args=polling_args, timeout_in_seconds=600)
             return_results(CommandResults(outputs_prefix=ctx_prefix, outputs_key_field=af_ctx_path,
-                                          outputs=info, readable_output=md, polling_next_run=interval_in_secs,
-                                          polling_command='autofocus-search-samples-with-results',
-                                          polling_timeout='600', polling_args=polling_args))
+                                          outputs=info, readable_output=md, polling_config=polling_config))
             return
         else:
             # continue search command
@@ -1127,9 +1125,10 @@ def search_samples_with_results_command():
             'af_cookie': args.get('af_cookie'),
             'interval_in_seconds': interval_in_secs
         }
-        command_results.append(CommandResults(polling_next_run=interval_in_secs, polling_timeout='600',
-                                              polling_command='autofocus-search-samples-with-results',
-                                              polling_args=polling_args))
+        polling_config = Common.PollingConfiguration(command='autofocus-search-samples-with-results',
+                                                     next_run_in_seconds=interval_in_secs,
+                                                     args=polling_args, timeout_in_seconds=600)
+        command_results.append(CommandResults(polling_config=polling_config))
     return_results(command_results)
 
 
@@ -1162,10 +1161,9 @@ def search_sessions_command():
 
 
 def search_sessions_with_results_command():
-    if not is_demisto_version_ge('6.2.0'):
-        raise DemistoException(VERSION_MISMATCH_ERROR)
+    Common.PollingConfiguration.raise_error_if_not_supported()
     args = demisto.args()
-    interval_in_secs = args.get('interval_in_seconds', '60')
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
     if 'af_cookie' not in args:
         md, info, ctx_prefix, af_ctx_path = search_sessions_helper(args)
         af_cookie = info.get(af_ctx_path)
@@ -1174,10 +1172,11 @@ def search_sessions_with_results_command():
                 'af_cookie': af_cookie,
                 'interval_in_seconds': interval_in_secs
             }
+            polling_config = Common.PollingConfiguration(command='autofocus-search-sessions-with-results',
+                                                         next_run_in_seconds=interval_in_secs,
+                                                         args=polling_args, timeout_in_seconds=600)
             return_results(CommandResults(outputs_prefix=ctx_prefix, outputs_key_field=af_ctx_path,
-                                          outputs=info, readable_output=md, polling_next_run=interval_in_secs,
-                                          polling_command='autofocus-search-sessions-with-results',
-                                          polling_timeout='600', polling_args=polling_args))
+                                          outputs=info, readable_output=md, polling_config=polling_config))
             return
         else:
             # continue search command
@@ -1189,10 +1188,10 @@ def search_sessions_with_results_command():
             'af_cookie': args.get('af_cookie'),
             'interval_in_seconds': interval_in_secs
         }
-        command_results.polling_timeout = '600'
-        command_results.polling_command = 'autofocus-search-sessions-with-results'
-        command_results.polling_args = polling_args
-        command_results.polling_next_run = interval_in_secs
+        polling_config = Common.PollingConfiguration(command='autofocus-search-sessions-with-results',
+                                                     next_run_in_seconds=interval_in_secs,
+                                                     args=polling_args, timeout_in_seconds=600)
+        command_results.polling_config = polling_config
     return_results(command_results)
 
 

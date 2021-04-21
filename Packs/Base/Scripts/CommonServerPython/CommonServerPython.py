@@ -4199,6 +4199,61 @@ class Common(object):
 
             return ret_value
 
+    class PollingConfiguration:
+        """
+        PollingConfiguration class
+        Holds the polling configuration for the command result - managing the way the command should be polled.
+
+        :type command: ``str``
+        :param command: The command that'll run after next_run_in_seconds has passed.
+
+        :type next_run_in_seconds: ``int``
+        :param next_run_in_seconds: How long to wait before executing the command.
+
+        :type args: ``Optional[Dict[str, Any]]``
+        :param args: Arguments to use when executing the command.
+
+        :type timeout_in_seconds: ``int``
+        :param timeout_in_seconds: Number of seconds until the polling sequence will timeout.
+
+        :return: None
+        :rtype: ``None``
+        """
+        VERSION_MISMATCH_ERROR = 'This command is not supported for your server version. Please update your server ' \
+                                 'version to 6.2.0 or later.'
+        def __init__(
+                self,
+                command,  # type: str
+                next_run_in_seconds,  # type: int
+                args=None,  # type: Optional[Dict[str, Any]]
+                timeout_in_seconds=None,  # type: Optional[int]
+        ):
+            self._command = command
+            if next_run_in_seconds < 10:
+                demisto.info(f'PollingConfiguration provided value for next_run_in_seconds: {next_run_in_seconds} is '
+                             'too small - minimum interval is 10 seconds. next_run_in_seconds was set to 10 seconds.')
+                next_run_in_seconds = 10
+            self._next_run = str(next_run_in_seconds)
+            self._args = args
+            self._timeout = str(timeout_in_seconds) if timeout_in_seconds else None
+
+        @staticmethod
+        def raise_error_if_not_supported():
+            if not is_demisto_version_ge('6.2.0'):
+                raise DemistoException(Common.PollingConfiguration.VERSION_MISMATCH_ERROR)
+
+        def to_result(self):
+            """
+            Returns the result dictionary of the polling command
+            """
+            self.raise_error_if_not_supported()
+            return assign_params(
+                PollingCommand=self._command,
+                NextRun=self._next_run,
+                PollingArgs=self._args,
+                Timeout=self._timeout
+            )
+
 
 def camelize_string(src_str, delim='_'):
     """
@@ -4433,14 +4488,17 @@ class CommandResults:
     :type mark_as_note: ``bool``
     :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
 
+    :type polling_config: ``PollingConfiguration``
+    :param polling_config: Class to manage the way the command should be polled
+
     :return: None
     :rtype: ``None``
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False, mark_as_note=False,
-                 polling_command=None, polling_args=None, polling_timeout=None, polling_next_run=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, str, dict, str, str) -> None  # noqa: E501
+                 polling_config=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, object) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -4472,10 +4530,7 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
-        self.polling_command = polling_command
-        self.polling_args = polling_args
-        self.polling_timeout = polling_timeout
-        self.polling_next_run = polling_next_run
+        self.polling_config = polling_config  # type: Optional[PollingConfiguration]
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -4542,13 +4597,8 @@ class CommandResults:
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
             'Note': mark_as_note,
         }
-        if self.polling_command and self.polling_next_run:
-            return_entry.update({
-                'PollingCommand': self.polling_command,
-                'PollingArgs': self.polling_args,
-                'Timeout': self.polling_timeout,
-                'NextRun': self.polling_next_run
-            })
+        if self.polling_config:
+            return_entry.update(self.polling_config.to_result())
         return return_entry
 
 
