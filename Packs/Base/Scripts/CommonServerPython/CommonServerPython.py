@@ -4433,21 +4433,30 @@ class CommandResults:
     :type mark_as_note: ``bool``
     :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
 
+    :type entry_type: ``int`` code of EntryType
+    :param entry_type: type of return value, see EntryType
+
     :return: None
     :rtype: ``None``
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False, mark_as_note=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool) -> None
+                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
+                 mark_as_note=False,
+                 entry_type=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, EntryType) -> None
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
             raise ValueError('outputs_prefix is missing')
         if indicators and indicator:
             raise ValueError('indicators is DEPRECATED, use only indicator')
+        if entry_type is None:
+            entry_type = EntryType.NOTE
+
         self.indicators = indicators  # type: Optional[List[Common.Indicator]]
         self.indicator = indicator  # type: Optional[Common.Indicator]
+        self.entry_type = entry_type  # type: EntryType
 
         self.outputs_prefix = outputs_prefix
 
@@ -4528,7 +4537,7 @@ class CommandResults:
             content_format = EntryFormat.TEXT
 
         return_entry = {
-            'Type': EntryType.NOTE,
+            'Type': self.entry_type,
             'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
