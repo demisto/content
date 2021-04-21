@@ -6,6 +6,9 @@ description: |-
   - Search for the Security Notice email sent from Codecov.
   - Collect indicators to be used in your threat hunting process.
   - Query network logs to detect related activity.
+  - Query Panorama to search for logs with related anti-spyware signatures
+      - Data Exfiltration Traffic Detection
+      - Malicious Modified Shell Script Detection
   Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
   More information:
@@ -324,17 +327,24 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 54ff6e36-7560-42cd-80c1-23e80a1bf31e
+    taskid: ef392ad7-52b6-4bd7-8ecf-0169f82fdcf6
     type: playbook
     task:
-      id: 54ff6e36-7560-42cd-80c1-23e80a1bf31e
+      id: ef392ad7-52b6-4bd7-8ecf-0169f82fdcf6
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
+      description: "This is a multipurpose playbook used for hunting and threat detection.\
+        \ The playbook receives inputs based on hashes, IP addresses, or domain names\
+        \ provided manually or from outputs by other playbooks. \nWith the received\
+        \ indicators, the playbook leverages data received by PANW products including,\
+        \ Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host\
+        \ names and users related to the provided indicators.\nThe output provided\
+        \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
+        \ or users."
       playbookName: Palo Alto Networks - Hunting And Threat Detection
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -567,6 +577,7 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
+      - "28"
     separatecontext: false
     view: |-
       {
@@ -800,6 +811,56 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "28":
+    id: "28"
+    taskid: 85040bc3-ccf8-4ba8-85e4-232a4883733b
+    type: playbook
+    task:
+      id: 85040bc3-ccf8-4ba8-85e4-232a4883733b
+      version: -1
+      name: Panorama Query Logs
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip: {}
+      log_type:
+        simple: threat
+      port-dst: {}
+      query:
+        simple: (threatid eq 86353) or (threatid eq 86355)
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1400,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -815,8 +876,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2835,
-        "width": 1550,
-        "x": -950,
+        "width": 2000,
+        "x": -1400,
         "y": -760
       }
     }
@@ -845,6 +906,11 @@ inputs:
     simple: "50"
   required: false
   description: The limit of results to return from the search
+  playbookInputQuery:
+- key: ThreatIDs
+  value: {}
+  required: false
+  description: ""
   playbookInputQuery:
 outputs: []
 tests:
