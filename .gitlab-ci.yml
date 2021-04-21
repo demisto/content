@@ -66,8 +66,8 @@ variables:
   SERVER_VERSION: "6.0.0"
   GIT_SHA1: "6fee942518c6b2275a6cb61c1824574171cf58f9" # guardrails-disable-line disable-secrets-detection
   DONT_CACHE_LAST_RESPONSE: "true"
-  GCS_MARKET_BUCKET: "marketplace-dist"
-  SLACK_CHANNEL: "dmst-content-team"
+  GCS_MARKET_BUCKET: "marketplace-dist-dev"
+  SLACK_CHANNEL: "upload-flow-testing"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
   BASH_ENV: "/builds/xsoar/content/artifacts/bash_env"
@@ -280,7 +280,7 @@ run-validations:
         # ./Tests/scripts/validate.sh
       fi
     - echo "====Check Spelling===="
-    - pip freeze | grep pyspellchecker
+    - pip3 freeze | grep pyspellchecker
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
     - echo "====Check Build Files Are Up To Date===="
     - |
@@ -322,3 +322,37 @@ run-validations:
       if [ -n "${BUCKET_UPLOAD}" ]; then
         ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
       fi
+
+install-packs-in-server6_0:
+  stage: run-instances
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - /builds/xsoar/content/artifacts/*
+    when: always
+  varaibles:
+    INSTANCE_ROLE: Server 6.0
+    INSTANCE_CREATED: "true"
+  script:
+    - echo "=====Start Tunnel====="
+    - echo "Open an ssh tunnel to the demisto servers and wait until the tunnels are established"
+    - echo "Add ssh configurations"
+    - |
+      if [ -z $INSTANCE_WAS_CREATED ]; then
+        echo "Skipping - instance was not created"
+      else
+        # Modifying ssh config file
+        echo "Host 10.0.*
+          StrictHostKeyChecking no
+          LogLevel ERROR
+          ProxyJump content-build@content-build-lb.demisto.works  # disable-secrets-detection
+        Host content-build-lb.demisto.works
+          Port 43567
+          UserKnownHostsFile /dev/null
+          StrictHostKeyChecking no
+          LogLevel ERROR" >> ~/.ssh/config
+      fi
+    - echo "=====Wait Until Server Ready====="
+    - echo "=====Install Packs====="
+    - echo "=====Notify Slack====="
+    - echo "=====Destroy Instances====="
