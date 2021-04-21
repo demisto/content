@@ -23,6 +23,10 @@
                     "complex": null,
                     "simple": "progress"
                 },
+                "Rubrik CDM Cluster ID": {
+                    "complex": null,
+                    "simple": "cluster.id"
+                },
                 "Rubrik Polaris CDM Cluster ID": {
                     "complex": null,
                     "simple": "cluster.id"
