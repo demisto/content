@@ -17,24 +17,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * tenable-io-get-vulnerabilities-by-asset
 
 ## Playbook Inputs
-
 ---
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| Tenable.io Enabled | Identifies whether the integration of Tenable.io is enabled | modules.brand Equals Tenable.io, modules.state Equals active | Optional |
-| IP | IP to identify asset | incident.labels.ip | Optional |
-| FQDN | FQDN to identify asset | incident.labels.domain | Optional |
-| Vulnerability Exist | Identifies whether in the last 30 days a vulnerability exists in Tenable.io for the associated asset within the last 30 days | TenableIO.Vulnerabilities | Optional |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
-
 ---
-
-| **Logic** | **Name** | **Description** | **Default Value** |
-| --- | --- | --- | --- |
-| Y - Finds Vulnerability | Prints vulnerability summary | Shows user the related information of the identified vulnerability for the asset | N/A |
-| N - Does not find Vulnerability | Manual VM scan | Initiates a task for the user to kick of a manual VM scan of the identified asset | N/A |
+There are no outputs for this playbook.
 
 ## Playbook Image
 
