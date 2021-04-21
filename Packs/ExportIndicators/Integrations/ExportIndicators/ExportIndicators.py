@@ -315,7 +315,7 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
         iocs.extend(fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
-    return iocs, next_page
+    return iocs, search_indicators.page
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
