@@ -280,6 +280,7 @@ run-validations:
         # ./Tests/scripts/validate.sh
       fi
     - echo "====Check Spelling===="
+    - pip freeze | grep pyspellchecker
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
     - echo "====Check Build Files Are Up To Date===="
     - |
