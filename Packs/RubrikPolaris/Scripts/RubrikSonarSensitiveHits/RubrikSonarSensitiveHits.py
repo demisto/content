@@ -43,7 +43,7 @@ def main() -> None:
                 },
             ]
 
-            markdown = tableToMarkdown('Hit Summary', hit_summary)
+            markdown = tableToMarkdown('Hit Summary', hit_summary, headers=['stat', 'result'])
 
             for policy, analyzer in sonar_context["policy_hits"].items():
                 analyzer_details = []
