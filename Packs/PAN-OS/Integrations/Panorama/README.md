@@ -1,16 +1,8 @@
 This integration supports both Palo Alto Networks Panorama and Palo Alto Networks Firewall. You can create separate instances of each integration, and they are not necessarily related or dependent on one another.
 
-This integration enables you to manage teh Palo Alto Networks Firewall and Panorama. For more information see the Panorama documentation.
+This integration enables you to manage the Palo Alto Networks Firewall and Panorama. For more information see the [PAN-OS documentation](https://docs.paloaltonetworks.com/pan-os.html).
 This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama.
 
-## Panorama Playbooks
-* **PanoramaCommitConfiguration** : Based on the playbook input, the playbook commits the configuration to Palo Alto Firewall, or pushes the configuration from Panorama to predefined device groups of firewalls. The integration is available from Demisto v3.0, but the playbook uses the GenericPooling sub-playbook, which is only available from Demisto v4.0.
-* **Panorama Query Logs** : Wraps several commands (listed below) with GenericPolling to enable a complete flow to query the following log types: traffic, threat, URL, data-filtering, and Wildfire.
-   * [panorama-query-logs](#panorama-query-logs)
-   * [panorama-check-logs-status](#panorama-check-logs-status)
-   * [panorama-get-logs](#panorama-get-logs)
-* PAN-OS DAG Configuration
-* PAN-OS EDL Setup
 
 ## Use Cases
 * Create custom security rules in Palo Alto Networks PAN-OS.
