@@ -40,6 +40,7 @@
         },
         {
             "integrations": "AzureWAF",
+            "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -3258,26 +3259,23 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "AzureWAF",
             "playbookID": "DbotPredictOufOfTheBoxTest",
-            "instance_names": [
-                "ml_dummy_prod"
-            ],
             "fromversion": "4.5.0",
             "timeout": 1000
         },
         {
-            "integrations": "AzureWAF",
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
-            "instance_names": [
-                "ml_dummy_prod"
-            ],
             "fromversion": "5.5.0",
             "timeout": 1000
         },
         {
             "integrations": "VirusTotal - Premium (API v3)",
             "playbookID": "VirusTotal Premium v3 TestPlaybook",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Armis",
+            "playbookID": "Armis-Test",
             "fromversion": "5.5.0"
         }
     ],
@@ -3445,6 +3443,7 @@
         "Akamai WAF": "Issue 32318",
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
+        "Armis": "No instance - developed by SOAR Experts",
         
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
