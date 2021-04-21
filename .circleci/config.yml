@@ -827,7 +827,6 @@ jobs:
               rm $GCS_PATH
 
               zip -r -P $PSWD $CIRCLE_ARTIFACTS/Bucket.zip BucketPacks
-              mv BucketPacks $CIRCLE_ARTIFACTS
 
               exit 1
 
