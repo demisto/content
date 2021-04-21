@@ -42,7 +42,7 @@ def main():
                       + str(demisto.get(pwd_generation_script_output[0], 'Contents'))
                 if '5003' in err:
                     err += "\nPlease make sure that the \"PasswordGenerationScriptName\" playbook input complies " \
-                       "with your domain's password complexity policy."
+                           "with your domain's password complexity policy."
             else:
                 enable_outputs = demisto.executeCommand("ad-enable-account", ad_create_user_arguments)
                 if is_error(enable_outputs):
@@ -66,7 +66,7 @@ def main():
 
         if not success:
             outputs['errorDetails'] = err
-            readable_output = err
+            readable_output = str(err)
         if not sent_mail:
             outputs['sendMailError'] = str(demisto.get(send_mail_outputs[0], 'Contents'))
             if readable_output:
