@@ -224,9 +224,9 @@ run-unittests-and-lint:
     - echo "====Run Slack Notifier===="
     - |
       if [ -n "${BUCKET_UPLOAD}" ]; then
-        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
+        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
       else
-        ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+        ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json '' 'gitlab'
       fi
 
 
@@ -254,7 +254,7 @@ run-validations:
         echo "Download private ID set"
         gsutil cp "gs://marketplace-dist/content/private_id_set.json" $ARTIFACTS_FOLDER/unified_id_set.json
         echo "successfully downloaded private ID set"
-        gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME | grep 'WARNING\|ERROR'
+        gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
 
         echo "Merge public and private ID sets"
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
