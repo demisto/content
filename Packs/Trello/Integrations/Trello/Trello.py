@@ -637,41 +637,41 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'list-boards':
+        elif demisto.command() == 'trello-list-boards':
             return_results(list_boards(client))
-        elif demisto.command() == 'list-lists':
+        elif demisto.command() == 'trello-list-lists':
             board_id = get_board_id()
             return_results(list_lists(client, board_id))
-        elif demisto.command() == 'list-labels':
+        elif demisto.command() == 'trello-list-labels':
             board_id = get_board_id()
             return_results(list_labels(client, board_id))
-        elif demisto.command() == 'create-label':
+        elif demisto.command() == 'trello-create-label':
             board_id = get_board_id()
             return_results(create_label(client, board_id, demisto.args()))
-        elif demisto.command() == 'list-actions':
+        elif demisto.command() == 'trello-list-actions':
             board_id = get_board_id()
             filter_str = demisto.args().get("filter", None)
             since = demisto.args().get("since", None)
             before = demisto.args().get("before", None)
             return_results(list_actions(client, board_id, filter_str, since, before))
-        elif demisto.command() == 'create-card':
+        elif demisto.command() == 'trello-create-card':
             list_id = demisto.args().get("list_id")
             return_results(create_card(client, list_id, demisto.args()))
-        elif demisto.command() == 'list-cards':
+        elif demisto.command() == 'trello-list-cards':
             list_id = demisto.args().get("list_id")
             return_results(list_cards(client, list_id))
-        elif demisto.command() == 'update-card':
+        elif demisto.command() == 'trello-update-card':
             card_id = demisto.args().get("card_id")
             return_results(update_card(client, card_id, demisto.args()))
-        elif demisto.command() == 'add-comment':
+        elif demisto.command() == 'trello-add-comment':
             card_id = demisto.args().get("card_id")
             return_results(add_comment(client, card_id, demisto.args()))
-        elif demisto.command() == 'delete-card':
+        elif demisto.command() == 'trello-delete-card':
             card_id = demisto.args().get("card_id")
             return_results(delete_card(client, card_id))
-        elif demisto.command() == 'get-mapping-fields':
+        elif demisto.command() == 'trello-get-mapping-fields':
             demisto.results(get_mapping_fields())
-        elif demisto.command() == 'get-remote-data':
+        elif demisto.command() == 'trello-get-remote-data':
             demisto.results(get_remote_data(client, demisto.args()))
 
     # Log exceptions

@@ -218,7 +218,7 @@ tasks:
       id: 52b39299-d69d-4ac5-89d3-4e8286f6a6fe
       iscommand: true
       name: Add Comment With Indicators
-      script: '|||add-comment'
+      script: '|||trello-add-comment'
       type: regular
       version: -1
     taskid: 52b39299-d69d-4ac5-89d3-4e8286f6a6fe
@@ -300,7 +300,7 @@ tasks:
       id: 4f492048-469e-4ffd-8c07-568f6b5999b0
       iscommand: true
       name: Add Comment without Indicaotrs
-      script: '|||add-comment'
+      script: '|||trello-add-comment'
       type: regular
       version: -1
     taskid: 4f492048-469e-4ffd-8c07-568f6b5999b0
@@ -374,7 +374,7 @@ tasks:
       id: 144702e9-a123-41fe-8741-f774cbd9bae2
       iscommand: true
       name: Move to list
-      script: '|||update-card'
+      script: '|||trello-update-card'
       type: regular
       version: -1
     taskid: 144702e9-a123-41fe-8741-f774cbd9bae2

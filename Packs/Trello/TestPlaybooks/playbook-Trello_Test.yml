@@ -39,7 +39,7 @@ tasks:
       version: -1
       name: List Boards
       description: List the boards available to the provided API Key
-      script: '|||list-boards'
+      script: '|||trello-list-boards'
       type: regular
       iscommand: true
       brand: ""
@@ -108,7 +108,7 @@ tasks:
       version: -1
       name: List Lists
       description: List all the lists associated with the trello board.
-      script: '|||list-lists'
+      script: '|||trello-list-lists'
       type: regular
       iscommand: true
       brand: ""
@@ -190,7 +190,7 @@ tasks:
       version: -1
       name: Create Card
       description: Create a new card.
-      script: '|||create-card'
+      script: '|||trello-create-card'
       type: regular
       iscommand: true
       brand: ""
@@ -318,7 +318,7 @@ tasks:
       name: List Actions
       description: List all actions on a board, such as card updates, additions, and
         deletes.
-      script: '|||list-actions'
+      script: '|||trello-list-actions'
       type: regular
       iscommand: true
       brand: ""
@@ -395,7 +395,7 @@ tasks:
       id: e924a589-463c-4dcc-8b1f-87c7b625b8c4
       version: -1
       name: List Labels
-      script: '|||list-labels'
+      script: '|||trello-list-labels'
       type: regular
       iscommand: true
       brand: ""
@@ -471,7 +471,7 @@ tasks:
       id: 82501b57-9f04-4af3-88e2-d4683ee971ef
       version: -1
       name: Create Label
-      script: '|||create-label'
+      script: '|||trello-create-label'
       type: regular
       iscommand: true
       brand: ""
@@ -547,7 +547,7 @@ tasks:
       version: -1
       name: Update Card
       description: Update an existing card
-      script: '|||update-card'
+      script: '|||trello-update-card'
       type: regular
       iscommand: true
       brand: ""
@@ -622,7 +622,7 @@ tasks:
       version: -1
       name: Add Comment
       description: Add a comment to a Trello card
-      script: '|||add-comment'
+      script: '|||trello-add-comment'
       type: regular
       iscommand: true
       brand: ""

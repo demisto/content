@@ -29,7 +29,7 @@ configuration:
   required: false
   type: 9
 - additionalinfo: Optional - If specified, incidents will only be fetched when cards
-    are created in this specific list. Use list-lists command to display IDs of available
+    are created in this specific list. Use trello-list-lists command to display IDs of available
     lists in Board.
   display: List to Fetch Incidents from
   hidden: false
@@ -48,7 +48,7 @@ script:
   - deprecated: false
     description: List the boards available to the provided API Key
     execution: false
-    name: list-boards
+    name: trello-list-boards
     outputs:
     - contextPath: Trello.Boards.Id
       description: The board ID
@@ -73,7 +73,7 @@ script:
     deprecated: false
     description: List all the lists associated with the trello board.
     execution: false
-    name: list-lists
+    name: trello-list-lists
     outputs:
     - contextPath: Trello.Lists.Id
       description: List ID
@@ -107,7 +107,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: CSV list of Labels (by ID) to add to the card. Use list-labels
+      description: CSV list of Labels (by ID) to add to the card. Use trello-list-labels
         command to display.
       isArray: false
       name: idLabels
@@ -116,7 +116,7 @@ script:
     deprecated: false
     description: Create a new card.
     execution: false
-    name: create-card
+    name: trello-create-card
     outputs:
     - contextPath: Trello.CreatedCard.Id
       description: ID of created card
@@ -162,7 +162,7 @@ script:
     deprecated: false
     description: Update an existing card
     execution: false
-    name: update-card
+    name: trello-update-card
     outputs:
     - contextPath: Trello.UpdatedCard.Id
       description: ID of Updated Card
@@ -180,7 +180,7 @@ script:
     deprecated: false
     description: Delete a card
     execution: false
-    name: delete-card
+    name: trello-delete-card
   - arguments:
     - default: false
       description: 'Optional - the ID of  the board to query, if not provided will
@@ -348,7 +348,7 @@ script:
     description: List all actions on a board, such as card updates, additions, and
       deletes.
     execution: false
-    name: list-actions
+    name: trello-list-actions
     outputs:
     - contextPath: Trello.Actions.Id
       description: Action ID
@@ -384,7 +384,7 @@ script:
     deprecated: false
     description: Used by mirroring
     execution: false
-    name: get-remote-data
+    name: trello-get-remote-data
   - arguments:
     - default: false
       description: Optional - Board ID
@@ -395,7 +395,7 @@ script:
     deprecated: false
     description: List all the labels in a given board
     execution: false
-    name: list-labels
+    name: trello-list-labels
     outputs:
     - contextPath: Trello.Labels.Id
       description: Label ID
@@ -440,7 +440,7 @@ script:
     deprecated: false
     description: Create a new trello label
     execution: false
-    name: create-label
+    name: trello-create-label
     outputs:
     - contextPath: Trello.CreatedLabel.Id
       description: ID Of created label
@@ -464,7 +464,7 @@ script:
     deprecated: false
     description: Add a comment to a Trello card
     execution: false
-    name: add-comment
+    name: trello-add-comment
     outputs:
     - contextPath: Trello.AddedComment.Id
       description: ID Of comment action
@@ -482,7 +482,7 @@ script:
     deprecated: false
     description: List all the trello cards
     execution: false
-    name: list-cards
+    name: trello-list-cards
     outputs:
     - contextPath: Trello.Cards.Id
       description: Card ID

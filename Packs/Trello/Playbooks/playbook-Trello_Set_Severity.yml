@@ -156,7 +156,7 @@ tasks:
       id: 6a3aae7c-d0b0-4177-8e34-d068121ce905
       iscommand: true
       name: Create Unknown Label
-      script: '|||create-label'
+      script: '|||trello-create-label'
       type: regular
       version: -1
     taskid: 6a3aae7c-d0b0-4177-8e34-d068121ce905
@@ -188,7 +188,7 @@ tasks:
       id: 8d944857-b8fc-4bb7-8588-aae322992c4c
       iscommand: true
       name: Update Card
-      script: '|||update-card'
+      script: '|||trello-update-card'
       type: regular
       version: -1
     taskid: 8d944857-b8fc-4bb7-8588-aae322992c4c
@@ -223,7 +223,7 @@ tasks:
       id: bca5d7c8-6882-472a-8ebf-c09f11eaffc0
       iscommand: true
       name: Create Low Label
-      script: '|||create-label'
+      script: '|||trello-create-label'
       type: regular
       version: -1
     taskid: bca5d7c8-6882-472a-8ebf-c09f11eaffc0
@@ -258,7 +258,7 @@ tasks:
       id: 105ecd74-c985-407c-837d-49eb9ce53bb2
       iscommand: true
       name: Create Informational Label;
-      script: '|||create-label'
+      script: '|||trello-create-label'
       type: regular
       version: -1
     taskid: 105ecd74-c985-407c-837d-49eb9ce53bb2
@@ -293,7 +293,7 @@ tasks:
       id: b774aa2f-0ae9-4c1b-871d-4ba3dab9fde1
       iscommand: true
       name: Create Medium Label
-      script: '|||create-label'
+      script: '|||trello-create-label'
       type: regular
       version: -1
     taskid: b774aa2f-0ae9-4c1b-871d-4ba3dab9fde1
@@ -328,7 +328,7 @@ tasks:
       id: 15b67a4a-d0f2-45ad-8f0b-7b9be222f15b
       iscommand: true
       name: Create High Label
-      script: '|||create-label'
+      script: '|||trello-create-label'
       type: regular
       version: -1
     taskid: 15b67a4a-d0f2-45ad-8f0b-7b9be222f15b
@@ -363,7 +363,7 @@ tasks:
       id: 5742394b-a672-41bd-8628-0fc9cdc602e2
       iscommand: true
       name: Create Critical Label
-      script: '|||create-label'
+      script: '|||trello-create-label'
       type: regular
       version: -1
     taskid: 5742394b-a672-41bd-8628-0fc9cdc602e2

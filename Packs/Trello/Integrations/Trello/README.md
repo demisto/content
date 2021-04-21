@@ -13,21 +13,21 @@ This integration was integrated and tested with version 1.0.0 of Trello
     | Use system proxy settings |  | False |
     | Default and Fetch Board ID | ID of Trello board used both to fetch incidents and as the default for all integration commands. | False |
     | API Key |  | False |
-    | List to Fetch Incidents from | Optional - If specified, incidents will only be fetched when cards are created in this specific list. Use list-lists command to display IDs of available lists in Board. | False |
+    | List to Fetch Incidents from | Optional - If specified, incidents will only be fetched when cards are created in this specific list. Use trello-list-lists command to display IDs of available lists in Board. | False |
     | Incident type |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### list-boards
+### trello-list-boards
 ***
 List the boards available to the provided API Key
 
 
 #### Base Command
 
-`list-boards`
+`trello-list-boards`
 #### Input
 
 There are no input arguments for this command.
@@ -43,7 +43,7 @@ There are no input arguments for this command.
 
 
 #### Command Example
-```!list-boards```
+```!trello-list-boards```
 
 #### Context Example
 ```json
@@ -94,14 +94,14 @@ There are no input arguments for this command.
 >| 5f0fc9c1e1ca6e3eef34913d | XSOAR | 2021-03-29T00:28:52.283Z |
 
 
-### list-lists
+### trello-list-lists
 ***
 List all the lists associated with the trello board.
 
 
 #### Base Command
 
-`list-lists`
+`trello-list-lists`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -120,7 +120,7 @@ List all the lists associated with the trello board.
 
 
 #### Command Example
-```!list-lists```
+```!trello-list-lists```
 
 #### Context Example
 ```json
@@ -167,14 +167,14 @@ List all the lists associated with the trello board.
 >| false | 605ac66f9f37c20f9f3205d9 | 602f2f91cc8a4e23e393556a | Completed List | 196607 |  | false |
 
 
-### create-card
+### trello-create-card
 ***
 Create a new card.
 
 
 #### Base Command
 
-`create-card`
+`trello-create-card`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -182,7 +182,7 @@ Create a new card.
 | name | Card name. | Required | 
 | desc | Card Description - Markdown Compatible. | Optional | 
 | list_id | ID of list to create card within. | Required | 
-| idLabels | CSV list of Labels (by ID) to add to the card. Use list-labels command to display. | Optional | 
+| idLabels | CSV list of Labels (by ID) to add to the card. Use trello-list-labels command to display. | Optional | 
 
 
 #### Context Output
@@ -202,14 +202,14 @@ Create a new card.
 
 
 
-### update-card
+### trello-update-card
 ***
 Update an existing card
 
 
 #### Base Command
 
-`update-card`
+`trello-update-card`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -235,14 +235,14 @@ Update an existing card
 
 
 
-### delete-card
+### trello-delete-card
 ***
 Delete a card
 
 
 #### Base Command
 
-`delete-card`
+`trello-delete-card`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -261,14 +261,14 @@ There is no context output for this command.
 
 
 
-### list-actions
+### trello-list-actions
 ***
 List all actions on a board, such as card updates, additions, and deletes.
 
 
 #### Base Command
 
-`list-actions`
+`trello-list-actions`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -292,7 +292,7 @@ List all actions on a board, such as card updates, additions, and deletes.
 
 
 #### Command Example
-```!list-actions filter="createCard" since="2021-03-29T00:53:21.972Z"```
+```!trello-list-actions filter="createCard" since="2021-03-29T00:53:21.972Z"```
 
 #### Context Example
 ```json
@@ -352,14 +352,14 @@ There is no context output for this command.
 
 
 
-### get-remote-data
+### trello-get-remote-data
 ***
 Used by mirroring
 
 
 #### Base Command
 
-`get-remote-data`
+`trello-get-remote-data`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -379,14 +379,14 @@ There is no context output for this command.
 
 
 
-### list-labels
+### trello-list-labels
 ***
 List all the labels in a given board
 
 
 #### Base Command
 
-`list-labels`
+`trello-list-labels`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -404,7 +404,7 @@ List all the labels in a given board
 
 
 #### Command Example
-```!list-labels```
+```!trello-list-labels```
 
 #### Context Example
 ```json
@@ -501,14 +501,14 @@ List all the labels in a given board
 >|  | 606162c31caee583b35a0772 | 602f2f91cc8a4e23e393556a | Test label |
 
 
-### create-label
+### trello-create-label
 ***
 Create a new trello label
 
 
 #### Base Command
 
-`create-label`
+`trello-create-label`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -533,14 +533,14 @@ Create a new trello label
 
 
 
-### add-comment
+### trello-add-comment
 ***
 Add a comment to a Trello card
 
 
 #### Base Command
 
-`add-comment`
+`trello-add-comment`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -564,14 +564,14 @@ Add a comment to a Trello card
 
 
 
-### list-cards
+### trello-list-cards
 ***
 List all the trello cards
 
 
 #### Base Command
 
-`list-cards`
+`trello-list-cards`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -594,7 +594,7 @@ List all the trello cards
 
 
 #### Command Example
-```!list-cards list_id=605d2a706398646de27a1f8f```
+```!trello-list-cards list_id=605d2a706398646de27a1f8f```
 
 #### Context Example
 ```json
