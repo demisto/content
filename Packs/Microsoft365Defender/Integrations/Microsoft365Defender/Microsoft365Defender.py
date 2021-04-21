@@ -15,6 +15,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 MAX_ENTRIES = '100'
 TIMEOUT = 30
+
 ''' CLIENT CLASS '''
 
 
@@ -29,7 +30,7 @@ class Client(BaseClient):
             'token_retrieval_url': 'https://login.windows.net/organizations/oauth2/v2.0/token',
             'grant_type': DEVICE_CODE,
             'base_url': 'https://api.security.microsoft.com',
-            'verify': verify,
+            'verify': verify,  # Todo fix
             'proxy': proxy,
             'scope': 'offline_access https://security.microsoft.com/mtp/.default',
             'ok_codes': (200, 201, 202, 204),
@@ -55,8 +56,6 @@ class Client(BaseClient):
         Returns: list of incidents
 
         """
-        # todo cant use assign params because the key starts with $
-        # todo is it required to write test for this function? if so how?
         params = {'$top': limit}
         if status:
             params['$filter'] = 'status eq ' + status
@@ -70,14 +69,12 @@ class Client(BaseClient):
         return response.get('value')
 
 
-# todo ask roy why not put this in client
 @logger
 def start_auth(client: Client) -> CommandResults:
-    result = client.ms_client.start_auth('!ms-365-defender-auth-complete')
+    result = client.ms_client.start_auth('!microsoft-365-defender-auth-complete')
     return CommandResults(readable_output=result)
 
 
-# todo ask roy is it not better for the client to just do this for every command he calls?
 @logger
 def complete_auth(client: Client) -> CommandResults:
     client.ms_client.get_access_token()
@@ -88,7 +85,7 @@ def complete_auth(client: Client) -> CommandResults:
 def reset_auth() -> CommandResults:
     set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!ms-365-defender-auth-start** and **!ms-365-defender-auth-complete**.')
+                                          '**!microsoft-365-defender-auth-start** and **!microsoft-365-defender-auth-complete**.')
 
 
 @logger
@@ -122,7 +119,7 @@ def test_module(client: Client) -> str:
         # This  should validate all the inputs given in the integration configuration panel,
         # either manually or by using an API that uses them.
 
-        test_connection()
+        test_connection(client)
 
         message = 'ok'
 
@@ -135,30 +132,40 @@ def test_module(client: Client) -> str:
     return message
 
 
-def convert_incident(raw_incident: Dict) -> Dict:
+def convert_incident_to_readable(raw_incident: Dict) -> Dict:
     """
-    Converts incident received from microsoft 365 defender to local incident
+    Converts incident received from microsoft 365 defender to readable format
     Args:
-        raw_incident: The incident as recieved from microsoft 365 defender
+        raw_incident: The incident as received from microsoft 365 defender
 
     Returns: new dictionary with new mapping.
 
     """
     if not raw_incident:
         raw_incident = {}
+    alerts_list = raw_incident.get('alerts', [])
 
+    alerts_status = [alert.get('status') for alert in alerts_list]
     return {
-        'ID': raw_incident.get('incidentId'),
-        'Display Name': raw_incident.get('incidentName'),
-        'Assigned User': raw_incident.get('assignedTo'),
-        'Classification': raw_incident.get('classification'),
-        'Event Type': raw_incident.get('determination'),
-        'Occurred': raw_incident.get('createdTime'),
-        'Updated': raw_incident.get('lastUpdateTime'),
-        'Status': raw_incident.get('status'),
-        'Severity': raw_incident.get('severity'),
+        'Incident name': raw_incident.get('incidentName'),
         'Tags': raw_incident.get('tags'),
-        'RawJSON': json.dumps(raw_incident)
+        'Severity': raw_incident.get('severity'),
+        'Incident ID': raw_incident.get('incidentId'),
+        # investigation state - relevant only for alerts.
+        'Categories': ', '.join({alert.get('category') for alert in alerts_list}),
+        'Impacted entities': ', '.join({entity.get('accountName') for alert in alerts_list
+                                        for entity in alert.get('entities') if entity.get('entityType') == 'User'}),
+        'Active alerts': f'{alerts_status.count("Active")} / {len(alerts_status)}',
+        'Service sources': ', '.join({alert.get('serviceSource') for alert in alerts_list}),
+        'Detection sources': ', '.join({alert.get('detectionSource') for alert in alerts_list}),
+        # Data sensitivity - is not relevant
+        'First activity': alerts_list[0].get('firstActivity') if alerts_list else '',
+        'Last activity': alerts_list[-1].get('lastActivity') if alerts_list else '',
+        'Status': raw_incident.get('status'),
+        'Assigned to': raw_incident.get('assignedTo', 'Unassigned'),
+        'Classification': raw_incident.get('classification', 'Not set'),
+        'Device groups': ', '.join({device.get('deviceDnsName') for alert in alerts_list
+                                    for device in alert.get('devices')})
     }
 
 
@@ -178,19 +185,20 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     Returns: CommandResults
 
     """
-    # todo help building test functions
     limit = arg_to_number(args.get('limit', MAX_ENTRIES), arg_name='limit', required=True)
     status = args.get('status')
     assigned_to = args.get('assigned_to')
 
     raw_incidents = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to)
 
-    incidents = [convert_incident(incident) for incident in raw_incidents]
+    readable_incidents = [convert_incident_to_readable(incident) for incident in raw_incidents]
+    # the table headers are the incident keys. creates dummy incident to manage a situation of empty list.
+    headers = list(convert_incident_to_readable({}).keys())
+    human_readable_table = tableToMarkdown(name="Incidents:", t=readable_incidents, headers=headers)
 
-    headers = ['ID', 'Display Name', 'Assigned User', 'Classification', 'Event Type', 'Occurred', 'Updated', 'Status',
-               'Severity', 'Tags']
-    human_readable = tableToMarkdown(name="Incidents:", t=incidents, headers=headers)
-    return CommandResults(readable_output=human_readable, raw_response=incidents)
+    return CommandResults(outputs_prefix='Microsoft365Defender.Incident', outputs_key_field='incidentId',
+                          outputs=raw_incidents,
+                          readable_output=human_readable_table)
 
 
 @logger
@@ -314,36 +322,34 @@ def main() -> None:
             return_results(result)
 
         elif command == 'microsoft-365-defender-auth-start':
-            return_results(client.start_auth())
+            return_results(start_auth(client))
 
         elif command == 'microsoft-365-defender-auth-complete':
-            return_results(client.complete_auth())
+            return_results(complete_auth(client))
 
         elif command == 'microsoft-365-defender-auth-reset':
-            return_results(client.reset_auth())
+            return_results(reset_auth())
 
         elif command == 'microsoft-365-defender-auth-test':
-            return_results(client.test_connection())
+            return_results(test_connection(client))
 
         elif command == 'microsoft-365-defender-incidents-list':
 
             # Debugging
-            # client.start_auth()
-            # client.complete_auth()
+            # start_auth(client)
+            # complete_auth(client)
             # context = {
-            #     'device_code': 'CAQABAAEAAAD--DLA3VO7QrddgJg7Wevr_SR05SpbKXTXINGcnJjWk_Y7zP837_Yv855tH4Ys24IvRE6VJZIun-1lgfMpSRAw-H0uaSwHLXHT4VloTSG4niC2KHLL_vUHctz7QGzo-fO0I0kh351-3lF6TLg35ve06obpSMY6ppvRSpueM0Q0p33R2CDGWk6ON9gcCRixUcIgAA',
-            #     'access_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im5PbzNaRHJPRFhFSzFqS1doWHNsSFJfS1hFZyIsImtpZCI6Im5PbzNaRHJPRFhFSzFqS1doWHNsSFJfS1hFZyJ9.eyJhdWQiOiJodHRwczovL3NlY3VyaXR5Lm1pY3Jvc29mdC5jb20vbXRwIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvZWJhYzFhMTYtODFiZi00NDliLThkNDMtNTczMmMzYzFkOTk5LyIsImlhdCI6MTYxODgzMTU2NywibmJmIjoxNjE4ODMxNTY3LCJleHAiOjE2MTg4MzU0NjcsImFjciI6IjEiLCJhaW8iOiJBVFFBeS84VEFBQUFFTHpDOVZHUnd0dEg4aWZ2MnFlWmlOejgyUGJPSExmTHdWbE9TaUpHSTg5S0ROSlRSbmcrTzdCTU9WR2JGNzhNIiwiYW1yIjpbInB3ZCJdLCJhcHBpZCI6IjkwOTNjMzU0LTYzMGEtNDdmMS1iMDg3LTY3NjhlYjk0MjdlNiIsImFwcGlkYWNyIjoiMCIsImZhbWlseV9uYW1lIjoiQnJhbmRlaXMiLCJnaXZlbl9uYW1lIjoiQXZpc2hhaSIsImlwYWRkciI6IjMxLjE1NC4xNjYuMTQ4IiwibmFtZSI6IkF2aXNoYWkgQnJhbmRlaXMiLCJvaWQiOiIzZmE5ZjI4Yi1lYjBlLTQ2M2EtYmE3Yi04MDg5ZmU5OTkxZTIiLCJwdWlkIjoiMTAwMzAwMDA5QUJDMjg3OCIsInJoIjoiMC5BWE1BRmhxczY3LUJtMFNOUTFjeXc4SFptVlREazVBS1lfRkhzSWRuYU91VUotWnpBSEEuIiwic2NwIjoiQWR2YW5jZWRIdW50aW5nLlJlYWQgSW5jaWRlbnQuUmVhZFdyaXRlIiwic3ViIjoiZWpRcDJqVlVualg3S2FSdWpsVWZrWTdCYlRycmNPUjktYVpJWE9kM0RlMCIsInRlbmFudF9yZWdpb25fc2NvcGUiOiJFVSIsInRpZCI6ImViYWMxYTE2LTgxYmYtNDQ5Yi04ZDQzLTU3MzJjM2MxZDk5OSIsInVuaXF1ZV9uYW1lIjoiYXZpc2hhaUBkZW1pc3RvZGV2Lm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6ImF2aXNoYWlAZGVtaXN0b2Rldi5vbm1pY3Jvc29mdC5jb20iLCJ1dGkiOiJkazVsNk9idlhVZXpHaElvWjBFM0FBIiwidmVyIjoiMS4wIiwid2lkcyI6WyIzYTJjNjJkYi01MzE4LTQyMGQtOGQ3NC0yM2FmZmVlNWQ5ZDUiLCI2MmU5MDM5NC02OWY1LTQyMzctOTE5MC0wMTIxNzcxNDVlMTAiLCJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXX0.duqu6Ut-JRhmDMRGN7rUiuDP4Tk9pn1Ir8Kt3CYzjhtNKZMHTkJVn7mtlyUsg_pcDtnA97sCtTb0QYOdTMjnnG9ZEt51J0eSeIa-brVzmRV8DthwPnjQ4usdaa3A3v7bXuvltGuE0YmOYZcVbAFq21JokMXLdrcNJV9ZZAhth8FPKbrxTDxjdpcgyTzS7tGR2_O1Puk4atb2wRhwSR7GTVdzWxl4PEW5p9vfTl3OFVcHNhDCzPs9vqT5C_mmzjyJEXER8LBSHx3XDFMHRYzFr4InHVYJmxgc-XNMpxQP4hI29i0bkVbHHXVodCC0lUtDsg_NcL3nlQfJvYqizhmDwg',
-            #     'valid_until': 1618835461,
-            #     'current_refresh_token': '0.AXMAFhqs67-Bm0SNQ1cyw8HZmVTDk5AKY_FHsIdnaOuUJ-ZzAHA.AgABAAAAAAD--DLA3VO7QrddgJg7WevrAgDs_wQA9P9CBGSsfUPHOrDdp2MEEJjTaaMiTP75WHk825iNRWT9uKUeUNxYlo8vRqaJvWioBQOXf4AI0oh-3QIGGVZYn0y3XNxIlfRQOmJ56CuhmkyqJlmQz6BQukO5_smqV9E4sCed5IzBkZmahq2gw5EFC7icgDf_sCB-GwFbP3AxlUturk9dMwp8s96XuEUii1VDzXCU6ryuisHGAobRmHKDOeEQdsguPc_dYpukC6MAINK-Q89eK5plC1P7qYOzr2rQsGDGlAfze1LjN63TXdduN5Shkk0M4yU5BUnvmJX1NbHPJT5H4qJeqUYT4jS73fJzPWIPYYaCd-XlpA9IdYA7iy33vLnvNqIAHRqJxiVr6VKn__PzONbbxP5VyGYyHVDG1cG6V8kqaYp6FEj-CtlKW5m3qODA2PItLEvPCmxnypFkJccsG37voO7HOARWilcRyFOwASCIEm-anXzcWZJH4oUKahb-vic4EggA23-YNx2eGecesZ7IJKyJn3HTTkGn9vQ_IcbyFU-C87skEKTjbE0nxLlZaj7YMvOH7bc1jwlqmbzN6IaJtDNU5uidAIMPJNlmVVaw2DgQq2ahcdmHuJaxnJ6qxrMlnVQ8K_xrfH9QuhO6llP2MFyP_XDpf_zw3IJ5qeJl65wMnTBUAyy6RInwZ0Dafj3hkArKsvlutGZaQlzTKm7t6FmZlaN2w77EyeTXfeQWkmvm9G71lGOSZIWCHJhchup5KdMKjfjb8tP32AagMyovx3V0kXdw6kliwW5Jpov8idSuHmALxS0ZNkac-cVu-g0_x_C7Gfii5NwW6aKfd4mfASNiHgR5QqDzLLzzjs1A6Q4sv0IDQlB0yEU2HrBWM-9rTYxn_EbB-0thbUTLce23PjL8ctGeRzLfJngTN1auWNl1UK6oS98goqz1SpbjlzH_o_pcyFZdNfL6U-eHlq1nUiY'}
+            #     'device_code': 'DAQABAAEAAAD--DLA3VO7QrddgJg7Wevr4tsrU37JvtuJ_g0YozW5PbHybfgLteR0z6WHvIamyFmtoCPKXL2rKgWDGPExAWJ3M0892FglrbooD3dqSNMySaMAN1DJUlb1tCcwF9hYKhc9Gvd1nsoQ92FTNJWf0rD0PnA5bsE1fZQwWCVgK0Nt-oqqJxk0AeMPOzluTtLBWO4gAA',
+            #     'access_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im5PbzNaRHJPRFhFSzFqS1doWHNsSFJfS1hFZyIsImtpZCI6Im5PbzNaRHJPRFhFSzFqS1doWHNsSFJfS1hFZyJ9.eyJhdWQiOiJodHRwczovL3NlY3VyaXR5Lm1pY3Jvc29mdC5jb20vbXRwIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvZWJhYzFhMTYtODFiZi00NDliLThkNDMtNTczMmMzYzFkOTk5LyIsImlhdCI6MTYxODk3ODA4MSwibmJmIjoxNjE4OTc4MDgxLCJleHAiOjE2MTg5ODE5ODEsImFjciI6IjEiLCJhaW8iOiJBVFFBeS84VEFBQUFuZis0STJnaXFFRUpIWHlMVHRzVWE1TXArMytZUGl0NHcybVZsby9ybVhYS3FTYkxjdG8zMk9EbWpNVTdOZlBuIiwiYW1yIjpbInB3ZCJdLCJhcHBpZCI6IjkwOTNjMzU0LTYzMGEtNDdmMS1iMDg3LTY3NjhlYjk0MjdlNiIsImFwcGlkYWNyIjoiMCIsImZhbWlseV9uYW1lIjoiQnJhbmRlaXMiLCJnaXZlbl9uYW1lIjoiQXZpc2hhaSIsImlwYWRkciI6IjE5OS4yMDMuMTYyLjIxMyIsIm5hbWUiOiJBdmlzaGFpIEJyYW5kZWlzIiwib2lkIjoiM2ZhOWYyOGItZWIwZS00NjNhLWJhN2ItODA4OWZlOTk5MWUyIiwicHVpZCI6IjEwMDMwMDAwOUFCQzI4NzgiLCJyaCI6IjAuQVhNQUZocXM2Ny1CbTBTTlExY3l3OEhabVZURGs1QUtZX0ZIc0lkbmFPdVVKLVp6QUhBLiIsInNjcCI6IkFkdmFuY2VkSHVudGluZy5SZWFkIEluY2lkZW50LlJlYWRXcml0ZSIsInN1YiI6ImVqUXAyalZVbmpYN0thUnVqbFVma1k3QmJUcnJjT1I5LWFaSVhPZDNEZTAiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiRVUiLCJ0aWQiOiJlYmFjMWExNi04MWJmLTQ0OWItOGQ0My01NzMyYzNjMWQ5OTkiLCJ1bmlxdWVfbmFtZSI6ImF2aXNoYWlAZGVtaXN0b2Rldi5vbm1pY3Jvc29mdC5jb20iLCJ1cG4iOiJhdmlzaGFpQGRlbWlzdG9kZXYub25taWNyb3NvZnQuY29tIiwidXRpIjoiek1KTHRQNGt6VTZrZ09yZ2NwMXBBQSIsInZlciI6IjEuMCIsIndpZHMiOlsiM2EyYzYyZGItNTMxOC00MjBkLThkNzQtMjNhZmZlZTVkOWQ1IiwiNjJlOTAzOTQtNjlmNS00MjM3LTkxOTAtMDEyMTc3MTQ1ZTEwIiwiYjc5ZmJmNGQtM2VmOS00Njg5LTgxNDMtNzZiMTk0ZTg1NTA5Il19.Dk-agXqrtxgwsSEyeQtiiRbQLN3WEF38HXhqt7MoZ5t9pvJt8KKp6kgSx0JA-Bl_lEci82qUHN7r_pzRoPRgrQaiMIW2LdxV6bip6eoiVdAc0l5RR3vQM-zrixSNZ6I8Fjf5YX1CRljuYO2XmFHseqD1JIqK_M-xAHm8EUwi4FftzCZthYtESxFR70A7vQEam2NXQaWcI8CQ8tAJ6X_nXQizcGmDAsX4H3PeIFdZhwtfB-xX5Zbq4Oaypr--Kwp9z74H1wcqCs99vQCbwytTVp5QCujB3MMVYOPkT_7bH6qqlYpD7ce9eEWWOqGygvY1AePlSeafzKov_gllYLT_Mg',
+            #     'valid_until': 1618981975,
+            #     'current_refresh_token': '0.AXMAFhqs67-Bm0SNQ1cyw8HZmVTDk5AKY_FHsIdnaOuUJ-ZzAHA.AgABAAAAAAD--DLA3VO7QrddgJg7WevrAgDs_wQA9P-x217XtA0x0zKDcRf5nhhDxLArgRFuZ6kFeKGvyLJnv0r0DC7qm3d1xnSvUtMUgq6XrLsKq7HvHMxdojE5ZyL_U1_xn-lihq6e1pKEp2bgPbxL4PhLOvZfa-W25B8YH7GZS4t71WBT_xehzfI2rdAAiwNDCYGPlrfLXlaXKpzKC0e7kK24v6bEtUDMiqNPcxYMQL4RXsePdNBgqd4K1-dNFgoKGAc-kXiOGJT4UdB4GWQQrGNqtLr5tvOCdoj60--FAJ1lFx8UquhE80uM6cqT13yJOKbzjaI9V4iAmo_E0Ovko6_-AlvyvIqgfzf0gSp4NyIyhpU4JCTwEA9D1-tV8SZmdLX0h_OG4I4FwLb3-pKCqJirq48KlxfB9P68rCmfPETlAhih_419ik3fFh9ItOTQ-uC1oDsP-uLr2CP-aG5YlRuTyuR03O8cPxm7NGLRNRtrkf9jaq-AgouJ_hpa1XQ86AifzEJz2sbRW-d9m0d-cOg7F-41ijV5rngPFSH1LhYGGRq5tJECsaJUsFgearrAw2S41uWAGQlowfIMMQuR4tmk7iPj_yShBLlE67vHXdnglyDYSa0EgzTyEchltaMnKIiEQsaehkQMeHkKwO9tT9cz-emqTcBy_wW3XxSsnWVZG9-HYwYodRypUd-U6eNUsfLbMtwBfbQHQu2HX-rA78CL-OvhPcNsAQbKD6QyGktYm8LfEHaTIJzJtLONoN1qBSf6GV9VxGuLv0-Ql1w2eWpXkCYdkip78HO9MGjWk0zuJwdRp9-I9keboDubqaQEwZHqWZswk-GKnyWdbhof-VyZLEslRFnkJNxxezAzGG-kg6TfnEawXI4zj2x7ANNHyZ1sDfZhWyJyVKE1cRPUAMb7ODh9zG2_3DaQIv-oNZV5unipir9duX-YUI5w01DelE7oYRUM3doVlv6UH7JqslKJK5Mc'}
             # set_integration_context(context)
             # Debugging
 
-            results = microsoft_365_defender_incidents_list_command(client, args)
-            return_results(results)
+            return_results(microsoft_365_defender_incidents_list_command(client, args))
 
         elif command == 'microsoft-365-defender-incident-update':
-            results = microsoft_365_defender_incident_update_command(client, args)
-            return_results(results)
+            return_results(microsoft_365_defender_incident_update_command(client, args))
 
         elif command == 'microsoft-365-defender-advanced-hunting':
             results = microsoft_365_defender_advanced_hunting_command(client, args)
