@@ -1,4 +1,3 @@
-import uuid
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -75,13 +74,13 @@ def main():
     if is_error(res):
         return_error(get_error(res))
 
-
     incidents_df = pd.DataFrame(incidents)
     predictions_df = pd.DataFrame(res[0]['Contents'])
     df = pd.concat([incidents_df, predictions_df], axis=1)
     df.rename(columns={"Label": "Prediction"}, inplace=True)
     file_name = 'predictions.csv'
-    file_columns = ['id', subject_field_name, body_field_name, html_field_name, tag_field_name, 'Prediction', 'Probability',
+    file_columns = ['id', subject_field_name, body_field_name, html_field_name, tag_field_name, 'Prediction',
+                    'Probability',
                     'Exception']
     file_columns = [c for c in file_columns if c in df.columns]
     filtered_df = df[file_columns]
