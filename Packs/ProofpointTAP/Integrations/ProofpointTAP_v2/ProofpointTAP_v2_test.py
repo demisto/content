@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 
 import pytest
+from freezegun import freeze_time
 from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
 
 MOCK_URL = "http://123-fake-api.com"
@@ -331,6 +332,20 @@ def test_get_fetch_times(mocker, mock_past, mock_now, expected):
     from ProofpointTAP_v2 import get_fetch_times
     mocker.patch('ProofpointTAP_v2.get_now', return_value=datetime.strptime(mock_now, "%Y-%m-%dT%H:%M:%SZ"))
     times = get_fetch_times(mock_past)
+    assert len(times) == expected
+
+
+FETCH_FREEZE_TIMES = [
+    ("2010-01-01T23:00:59Z", 2),
+    ("2010-01-01T23:00:58Z", 3)
+]
+
+
+@freeze_time("2010-01-02T00:00:00Z")
+@pytest.mark.parametrize('freeze_pest, expected', FETCH_FREEZE_TIMES)
+def test_get_fetch_freeze_times(freeze_pest, expected):
+    from ProofpointTAP_v2 import get_fetch_times
+    times = get_fetch_times(freeze_pest)
     assert len(times) == expected
 
 

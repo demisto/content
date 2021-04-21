@@ -32,7 +32,7 @@ def get_now():
     Returns:
         datetime: time right now
     """
-    return datetime.now()
+    return datetime.now() - timedelta(seconds=1)
 
 
 def get_fetch_times(last_fetch):
