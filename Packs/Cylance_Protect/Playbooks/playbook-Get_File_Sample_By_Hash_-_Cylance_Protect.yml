@@ -1,12 +1,7 @@
 id: get_file_sample_by_hash_-_cylance_protect
-version: 3
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: Cylance_Protect
-    itemVersion: 1.0.2
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Get File Sample By Hash - Cylance Protect
 description: Returns to the war-room a file sample correlating to SHA256 hashes in
   the inputs using Cylance Protect integration
@@ -22,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -102,6 +98,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -377,6 +374,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -692,14 +690,18 @@ inputs:
       accessor: SHA256
   required: false
   description: The SHA256 hash of the file we want to download
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZipPassword
   value:
     simple: infected
   required: true
   description: The password for the zip file
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File
   description: The sample file
   type: unknown
+tests:
+- Cylance Protect v2 Test
+- get_file_sample_by_hash_-_cylance_protect_-_test
+fromversion: 5.0.0
