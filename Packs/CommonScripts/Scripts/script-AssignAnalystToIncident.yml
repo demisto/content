@@ -64,7 +64,7 @@ script: >
               pickRandomUser(usersRes);
               break;
           default:
-              res = executeCommand("getOwnerSuggestion", { shiftOnly: onCallArg })[0].Contents;
+              res = executeCommand("getOwnerSuggestion", { roles: args.roles, shiftOnly: onCallArg })[0].Contents;
 
               switch (assignBy) {
                   case 'machine-learning':
@@ -123,7 +123,7 @@ enabled: true
 args:
 - name: roles
   default: true
-  description: The optional list of roles we want to assign users from. Can accept arrays or comma separated list. Leave empty to fetch all users.
+  description: The optional list of roles we want to assign users from. Can accept arrays or comma separated list. Leave empty to fetch all users. Not relevant when assignBy="current" is used.
 - name: assignBy
   auto: PREDEFINED
   predefined:
