@@ -703,5 +703,4 @@ outputs:
   type: unknown
 tests:
 - Cylance Protect v2 Test
-- get_file_sample_by_hash_-_cylance_protect_-_test
 fromversion: 5.0.0
