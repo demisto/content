@@ -42,7 +42,7 @@ def submit_sample(client: Client, **args) -> CommandResults:
         for i in args.get("profiles", "").split(","):
             profiles_data.append({"profile": i, "pick": "sample"})
         data["profiles"] = profiles_data
-    
+
     if data["kind"] == "url":
         data.update({"url": args.get("data")})
         r = client._http_request("POST", "samples", json_data=data)
