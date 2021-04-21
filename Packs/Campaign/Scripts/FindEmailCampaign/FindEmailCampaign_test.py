@@ -31,6 +31,8 @@ text = "Imagine there's no countries It isn't hard to do Nothing to kill or die 
 text2 = "Love of my life, you've hurt me You've broken my heart and now you leave me Love of my life, can't you see?\
       Bring it back, bring it back Don't take it away from me, because you don't know What it means to me"
 
+INCIDENTS_CONTEXT_KEY = 'EmailCampaign.' + INCIDENTS_CONTEXT_TD
+
 
 def create_incident(subject=None, body=None, html=None, emailfrom=None, created=None, id_=None,
                     similarity=0, sender='a@phishing.com', emailto='a@paloaltonetwork.com', emailcc='',
@@ -93,7 +95,7 @@ def test_return_campaign_details_entry(mocker):
     context = res['EntryContext']
     assert context['EmailCampaign.isCampaignFound']
     assert context['EmailCampaign.involvedIncidentsCount'] == len(data)
-    for original_incident, context_incident in zip(incidents_list, context['EmailCampaign.incidents']):
+    for original_incident, context_incident in zip(incidents_list, context[INCIDENTS_CONTEXT_KEY]):
         for k in ['id', 'similarity', 'emailfrom']:
             assert original_incident[k] == context_incident[k]
         assert original_incident['emailto'] in context_incident['recipients']
@@ -114,7 +116,7 @@ def test_return_campaign_details_entry_comma_seperated_recipients(mocker):
     context = res['EntryContext']
     assert context['EmailCampaign.isCampaignFound']
     assert context['EmailCampaign.involvedIncidentsCount'] == len(data)
-    for original_incident, context_incident in zip(incidents_list, context['EmailCampaign.incidents']):
+    for original_incident, context_incident in zip(incidents_list, context[INCIDENTS_CONTEXT_KEY]):
         for k in ['id', 'similarity', 'emailfrom']:
             assert original_incident[k] == context_incident[k]
         for recipient in original_incident['emailto'].split(','):
@@ -136,7 +138,7 @@ def test_return_campaign_details_entry_list_dumped_recipients(mocker):
     context = res['EntryContext']
     assert context['EmailCampaign.isCampaignFound']
     assert context['EmailCampaign.involvedIncidentsCount'] == len(data)
-    for original_incident, context_incident in zip(incidents_list, context['EmailCampaign.incidents']):
+    for original_incident, context_incident in zip(incidents_list, context[INCIDENTS_CONTEXT_KEY]):
         for k in ['id', 'similarity', 'emailfrom']:
             assert original_incident[k] == context_incident[k]
         for recipient in json.loads(original_incident['emailto']):
@@ -158,7 +160,7 @@ def test_return_campaign_details_entry_list_dumped_recipients_cc(mocker):
     context = res['EntryContext']
     assert context['EmailCampaign.isCampaignFound']
     assert context['EmailCampaign.involvedIncidentsCount'] == len(data)
-    for original_incident, context_incident in zip(incidents_list, context['EmailCampaign.incidents']):
+    for original_incident, context_incident in zip(incidents_list, context[INCIDENTS_CONTEXT_KEY]):
         for k in ['id', 'similarity', 'emailfrom']:
             assert original_incident[k] == context_incident[k]
         for recipient in json.loads(original_incident['emailcc']):
@@ -213,7 +215,7 @@ def test_context_populated_with_requested_fields_happy_path(mocker, fields_to_st
     context = res['EntryContext']
 
     # assert
-    for context_incident in context['EmailCampaign.incidents']:
+    for context_incident in context[INCIDENTS_CONTEXT_KEY]:
         for field in fields_to_store_in_context:
             assert field in context_incident, f'the field "{field}" is expected to be stored in context'
 
@@ -228,7 +230,7 @@ def test_context_not_populated_with_invalid_fields(mocker):
         - Get the campaign details entry
 
     Then:
-        - Assert that the invalid fields aren't stored in the context
+        - Assert that the invalid fields aren't stored in the context and there is Warning entry
 
     """
     invalid_fields = ['name_', 'email_from', 'emailTo', 'Severity', 'statuses', 'create']
@@ -236,11 +238,13 @@ def test_context_not_populated_with_invalid_fields(mocker):
 
     # run
     return_campaign_details_entry(data, fields_to_display=invalid_fields)
-    res = RESULTS[0]
-    context = res['EntryContext']
 
-    # assert that valid expected keys are in the context
-    # and invalid keys aren't in the context
-    for context_incident in context['EmailCampaign.incidents']:
+    # assert RESULTS have 2 entries, Warning entry about the invalid fields and context entry
+    assert len(RESULTS) == 2
+    assert 'Warning: ' in RESULTS[0]['Contents']
+
+    # assert that invalid keys aren't in the context
+    context = RESULTS[1]['EntryContext']
+    for context_incident in context[INCIDENTS_CONTEXT_KEY]:
         for field in invalid_fields:
             assert field not in context_incident, f'the field "{field}" should not be stored in context'

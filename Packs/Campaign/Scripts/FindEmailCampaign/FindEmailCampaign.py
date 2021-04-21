@@ -70,6 +70,13 @@ STATUS_DICT = {
 }
 
 
+INVALID_KEY_WARNING = 'Warning: the fields {fields} was not found in the phishing incidents. Please make sure that '\
+                      'you\'ve specified the machine-name of the fields. The machine name can be found in the '\
+                      'settings of the incident field you are trying to search '
+
+INCIDENTS_CONTEXT_TD = 'incidents(obj.id == val.id)'
+
+
 def return_outputs_custom(readable_output, outputs=None, tag=None):
     return_entry = {
         "Type": entryTypes["note"],
@@ -126,10 +133,16 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         incidents_df['recipients'] = incidents_df.apply(lambda row: get_recipients(row), axis=1)
         incidents_df['recipientsdomain'] = incidents_df.apply(lambda row: extract_domain_from_recipients(row), axis=1)
         context_keys = {'id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain'}
+        invalid_context_keys = set()
         if additional_context_fields is not None:
             for key in additional_context_fields:
                 if key in incidents_df.columns:
                     context_keys.add(key)
+                else:
+                    invalid_context_keys.add(key)
+
+        if invalid_context_keys:
+            return_warning(INVALID_KEY_WARNING.format(fields=invalid_context_keys))
 
         incident_df = incidents_df[context_keys]  # lgtm [py/hash-unhashable-value]
         incident_df = incident_df[incident_df['id'] != incident_id]
@@ -138,7 +151,7 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         return {
             'isCampaignFound': campaign_found,
             'involvedIncidentsCount': len(incidents_df) if incidents_df is not None else 0,
-            'incidents': incidents_context
+            INCIDENTS_CONTEXT_TD: incidents_context
         }
 
 
