@@ -47,26 +47,23 @@ def test_send_email_to_reviewers(mocker, capsys):
        Then
        - validating that message was sent sucessfully, and information printed out
     """
-    class ServiceMock:
-        def client(self):
+
+    class SgMock:
+        def __init__(self):
+            self.client = self
+            self.mail = self
+            self.send = self
+            self.status_code = 202
+
+        def post(self, request_body):
             return self
 
-        def mail(self):
-            return self
+    sg_mock = SgMock()
 
-        def send(self, userId, body):
-            return self
+    mocker.patch('Utils.request_contributor_review.sendgrid.SendGridAPIClient', return_value=sg_mock)
 
-        def post(self):
-            return self
-
-
-    service_mock = ServiceMock()
-
-    mocker.patch('Utils.request_contributor_review.sendgrid.SendGridAPIClient', return_value=service_mock)
-
-    send_email_to_reviewers(
-        reviewers_emails='reviewer1@mail.com, reviewer2@mail.com',  # disable-secrets-detection
+    mail_sent = send_email_to_reviewers(
+        reviewers_emails=['reviewer1@mail.com', 'reviewer2@mail.com'],  # disable-secrets-detection
         api_token='email_api_token',
         pack_name='TestPack',
         pr_number='1',
@@ -75,3 +72,4 @@ def test_send_email_to_reviewers(mocker, capsys):
     captured = capsys.readouterr()
     assert 'Email sent to' in captured.out
     assert 'contributors of pack TestPack' in captured.out
+    assert mail_sent
