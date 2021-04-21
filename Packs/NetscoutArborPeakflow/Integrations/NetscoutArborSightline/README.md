@@ -323,8 +323,7 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
 | NASightline.Mitigation.ip_version | Number | IP version of the traffic that is being mitigated. | 
 | NASightline.Mitigation.is_automitigation | Boolean | Whether the mitigation is an auto-mitigation or not. | 
 | NASightline.Mitigation.name | String | Mitigation name. | 
-| NASightline.Mitigation.ongoing | Boolean | Whether the mitigation is currently running or not. | 
-| NASightline.Mitigation.subobject.action.type | String | Type of the returned object. | 
+| NASightline.Mitigation.ongoing | Boolean | Whether the mitigation is currently running or not. |  
 | NASightline.Mitigation.subobject | Unknown | Subobject data \(only visible when extending data\). | 
 | NASightline.Mitigation.subtype | String | The type of mitigation. One of the following: blackhole, flowspec, tms. | 
 | NASightline.Mitigation.type | String | Type of the returned object. | 

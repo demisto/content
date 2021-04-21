@@ -14,7 +14,6 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-API_VERSION = 'v7'
 IMPORTANCE_DICTIONARY = {
     'Low': '1',
     'Medium': '2',
@@ -660,7 +659,7 @@ def main() -> None:
 
         if not (api_token := params.get('api_token', {}).get('password')):
             raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
-        base_url = urljoin(params['url'], f'api/sp/{API_VERSION}')
+        base_url = urljoin(params['url'], 'api/sp')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
