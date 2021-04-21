@@ -250,7 +250,7 @@ def send_email_to_reviewers(reviewers_emails: list, api_token: str, pack_name: s
     modified_files_comment = ''.join([f'<li>{file}</li>' for file in pack_files])
     email_subject = f'Cortex XSOAR: Changes made to {pack_name} content pack'
     email_content = f"Hi,<br><br>Your contributed <b>{pack_name}</b> pack has been modified on files:<br>" \
-                    f"<ul>{modified_files_comment}</ul><br>Please review the changes " \
+                    f"<ul>{modified_files_comment}</ul>Please review the changes " \
                     f"<a href=\"https://github.com/demisto/content/pull/{pr_number}/files\">here</a>.<br><br>Thank you," \
                     f" Cortex XSOAR Content Team."
 
