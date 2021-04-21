@@ -121,7 +121,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets an alert that is associated a resource group or a subscription. The subscription_id argument is
+    description: Gets an alert that is associated with a resource group or a subscription. The subscription_id argument is
       required in case it was not defined in the integration's credentials.
     execution: false
     name: azure-sc-get-alert
