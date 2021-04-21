@@ -16,8 +16,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers,\
-    url_to_clickable_markdown, WarningsHandler
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
+    url_to_clickable_markdown, WarningsHandler, DemistoException
 
 try:
     from StringIO import StringIO
@@ -4123,6 +4123,57 @@ class TestIndicatorsSearcher:
 
         assert search_indicators_obj_search_after._search_after_param == 5
         assert search_indicators_obj_search_after._page == 0
+
+
+class TestAutoFocusKeyRetriever:
+    def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
+        """
+        Given:
+            - giving the api_key parameter
+        When:
+            - Mocking getAutoFocusApiKey
+            - Mocking server version to be 6.2.0
+        Then:
+            - The Auto Focus API Key is the one given to the class
+        """
+        from CommonServerPython import AutoFocusKeyRetriever
+        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
+        auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='1234')
+        assert auto_focus_key_retriever.key == '1234'
+
+    def test_instantiate_class_pre_6_2_failed(self, mocker, clear_version_cache):
+        """
+        Given:
+            - not giving the api_key parameter
+        When:
+            - Mocking getAutoFocusApiKey
+            - Mocking server version to be 6.1.0
+        Then:
+            - Validate an exception with appropriate error message is raised.
+        """
+        from CommonServerPython import AutoFocusKeyRetriever
+        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.1.0', 'buildNumber': '61000'})
+        with raises(DemistoException, match='For versions earlier than 6.2.0, configure an API Key.'):
+            AutoFocusKeyRetriever(api_key='')
+
+    def test_instantiate_class_without_param_key(self, mocker, clear_version_cache):
+        """
+        Given:
+            - not giving the api_key parameter
+        When:
+            - Mocking getAutoFocusApiKey
+            - Mocking server version to be 6.2.0
+        Then:
+            - The Auto Focus API Key is the one given by the getAutoFocusApiKey method
+        """
+        from CommonServerPython import AutoFocusKeyRetriever
+        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
+        auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='')
+        assert auto_focus_key_retriever.key == 'test'
+
 
 
 class TestEntityRelation:
