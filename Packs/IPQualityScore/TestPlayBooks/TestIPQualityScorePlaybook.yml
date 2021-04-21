@@ -1,0 +1,304 @@
+id: 261c457c-b92a-4ad6-8927-2aaa53c28ad3
+version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: TestIPQualityScorePlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4a202d73-2e51-41ae-8cb9-db8bf7fdfbf1
+    type: start
+    task:
+      id: 4a202d73-2e51-41ae-8cb9-db8bf7fdfbf1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 21c863c6-7532-4c7a-8473-ebbdf7ed432a
+    type: regular
+    task:
+      id: 21c863c6-7532-4c7a-8473-ebbdf7ed432a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 27d34efa-8b59-491f-83dc-6e5031ab8db0
+    type: regular
+    task:
+      id: 27d34efa-8b59-491f-83dc-6e5031ab8db0
+      version: -1
+      name: ip
+      description: Runs reputation on IPs.
+      script: IPQualityScore|||ip
+      type: regular
+      iscommand: true
+      brand: IPQualityScore
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9e90a9c2-3af3-49a5-8295-448b2d0a7eb2
+    type: condition
+    task:
+      id: 9e90a9c2-3af3-49a5-8295-448b2d0a7eb2
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7fee2896-568c-4be2-84d1-9b842c7e8bb8
+    type: title
+    task:
+      id: 7fee2896-568c-4be2-84d1-9b842c7e8bb8
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d5850fd1-9c66-4183-801d-583352de7379
+    type: regular
+    task:
+      id: d5850fd1-9c66-4183-801d-583352de7379
+      version: -1
+      name: email
+      description: Runs reputation on email addresses.
+      script: IPQualityScore|||email
+      type: regular
+      iscommand: true
+      brand: IPQualityScore
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      email: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 794d6e22-53bb-464e-8c2a-8de240a50bf4
+    type: condition
+    task:
+      id: 794d6e22-53bb-464e-8c2a-8de240a50bf4
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IPQualityScore.Email.address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: cb88949c-203b-4855-8d55-3040167b6c3d
+    type: regular
+    task:
+      id: cb88949c-203b-4855-8d55-3040167b6c3d
+      version: -1
+      name: url
+      description: Runs reputation on URLs.
+      script: IPQualityScore|||url
+      type: regular
+      iscommand: true
+      brand: IPQualityScore
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      url: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 888682d2-584f-45f1-8199-6b486ac5730f
+    type: condition
+    task:
+      id: 888682d2-584f-45f1-8199-6b486ac5730f
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IPQualityScore.Email.address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
