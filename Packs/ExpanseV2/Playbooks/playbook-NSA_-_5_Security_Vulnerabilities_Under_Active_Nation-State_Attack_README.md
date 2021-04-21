@@ -2,7 +2,7 @@ Russian Foreign Intelligence Service (SVR) actors (also known as APT29, Cozy Bea
 This playbook should be trigger manually and includes the following tasks:
 - Enrich related known CVEs used by the SVR.
 - Search for unpatched endpoints vulnerable to the exploits.
-- Search network facing system using Expanse for relevant connection.
+- Search for vulnerable assets facing the internet using Expanse.
 
 Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve. 
 
