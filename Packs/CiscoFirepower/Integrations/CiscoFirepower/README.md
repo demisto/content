@@ -4743,7 +4743,15 @@ Updates the ID of a group of url objects.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.URLGroups.Addresses.Type | string | The addresse type in the group object. | 
+| CiscoFP.URLGroups.Addresses.URL | string | The addresse url in the group object. | 
+| CiscoFP.URLGroups.Description | string | The group description. | 
+| CiscoFP.URLGroups.ID | string | The group ID. | 
+| CiscoFP.URLGroups.Name | string | The group Name. | 
+| CiscoFP.URLGroups.Objects | string | The group object name. | 
+| CiscoFP.URLGroups.Overridable | string | Boolean indicating whether objects can be overridden. | 
 
 #### Command Example
 ``` !ciscofp-update-url-groups-objects id=00224867-78A7-0ed3-0000-004294969111 name=XXX_Proactive_Response_URL url_list=1.1.1.1 ```
