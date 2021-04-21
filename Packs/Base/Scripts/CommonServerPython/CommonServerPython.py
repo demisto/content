@@ -4468,200 +4468,6 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
 # -------------------------------- Relations----------------------------------- #
 
 
-class RelationsTypes(object):
-    """
-    Relations Types objects.
-
-    :return: None
-    :rtype: ``None``
-    """
-    # dict which keys is a relationship type and the value is the reverse type.
-    RELATIONSHIP_TYPES = ['indicatorToIndicator']
-
-    @staticmethod
-    def is_valid_type(_type):
-        # type: (str) -> bool
-
-        return _type in RelationsTypes.RELATIONSHIP_TYPES
-
-
-class RelationsFamily(object):
-    """
-    Relations Family object list.
-
-    :return: None
-    :rtype: ``None``
-
-    """
-
-    INDICATOR = ["Indicator"]
-
-    @staticmethod
-    def is_valid_type(_type):
-        # type: (str) -> bool
-
-        return _type in RelationsFamily.INDICATOR
-
-
-class Relations(object):
-
-    """
-    Enum: Relations names and their reverse
-
-    :return: None
-    :rtype: ``None``
-    """
-    APPLIED = 'applied'
-    ATTACHEMENT_OF = 'attachement-of'
-    ATTACHES = 'attaches'
-    ATTRIBUTE_OF = 'attribute-of'
-    ATTRIBUTED_BY = 'attributed-by'
-    ATTRIBUTED_TO = 'attributed-to'
-    AUTHORED_BY = 'authored-by'
-    BEACONS_TO = 'beacons-to'
-    BUNDELED_IN = 'bundeled-in'
-    BUNDLES = 'bundles'
-    COMMUNICATED_WITH = 'communicated-with'
-    COMMUNICATED_BY = 'communicated-by'
-    COMMUNICATES_WITH = 'communicates-with'
-    COMPROMISES = 'compromises'
-    CONTAINS = 'contains'
-    CONTROLS = 'controls'
-    CREATED_BY = 'created-by'
-    CREATES = 'creates'
-    DELIVERED_BY = 'delivered-by'
-    DELIVERS = 'delivers'
-    DOWNLOADS = 'downloads'
-    DOWNLOADS_FROM = 'downloads-from'
-    DROPPED_BY = 'dropped-by'
-    DROPS = 'drops'
-    DUPLICATE_OF = 'duplicate-of'
-    EMBBEDED_IN = 'embbeded-in'
-    EMBEDS = 'embeds'
-    EXECUTED = 'executed'
-    EXECUTED_BY = 'executed-by'
-    EXFILTRATES_TO = 'exfiltrates-to'
-    EXPLOITS = 'exploits'
-    HAS = 'has'
-    HOSTED_ON = 'hosted-on'
-    HOSTS = 'hosts'
-    IMPERSONATES = 'impersonates'
-    INDICATED_BY = 'indicated-by'
-    INDICATOR_OF = 'indicator-of'
-    INJECTED_FROM = 'injected-from'
-    INJECTS_INTO = 'injects-into'
-    INVESTIGATES = 'investigates'
-    IS_ALSO = 'is-also'
-    MITIGATED_BY = 'mitigated-by'
-    MITIGATES = 'mitigates'
-    ORIGINATED_FROM = 'originated-from'
-    OWNED_BY = 'owned-by'
-    OWNS = 'owns'
-    PART_OF = 'part-of'
-    RELATED_TO = 'related-to'
-    REMEDIATES = 'remediates'
-    RESOLVED_BY = 'resolved-by'
-    RESOLVED_FROM = 'resolved-from'
-    RESOLVES_TO = 'resolves-to'
-    SEEN_ON = 'seen-on'
-    SENT = 'sent'
-    SENT_BY = 'sent-by'
-    SENT_FROM = 'sent-from'
-    SENT_TO = 'sent-to'
-    SIMILAR_TO = 'similar-to'
-    SUB_DOMAIN_OF = 'sub-domain-of'
-    SUPRA_DOMAIN_OF = 'supra-domain-of'
-    TARGETED_BY = 'targeted-by'
-    TARGETS = 'targets'
-    TYPES = 'Types'
-    UPLOADED_TO = 'uploaded-to'
-    USED_BY = 'used-by'
-    USED_ON = 'used-on'
-    USES = 'uses'
-    VARIANT_OF = 'variant-of'
-
-    RELATIONS_NAMES = {'applied': 'applied-on',
-                       'attachement-of': 'attaches',
-                       'attaches': 'attachement-of',
-                       'attribute-of': 'owns',
-                       'attributed-by': 'attributed-to',
-                       'attributed-to': 'attributed-by',
-                       'authored-by': 'author-of',
-                       'beacons-to': 'communicated-by',
-                       'bundeled-in': 'bundles',
-                       'bundles': 'bundeled-in',
-                       'communicated-with': 'communicated-by',
-                       'communicated-by': 'communicates-with',
-                       'communicates-with': 'communicated-by',
-                       'compromises': 'compromised-by',
-                       'contains': 'part-of',
-                       'controls': 'controlled-by',
-                       'created-by': 'creates',
-                       'creates': 'created-by',
-                       'delivered-by': 'delivers',
-                       'delivers': 'delivered-by',
-                       'downloads': 'downloaded-by',
-                       'downloads-from': 'hosts',
-                       'dropped-by': 'drops',
-                       'drops': 'dropped-by',
-                       'duplicate-of': 'duplicate-of',
-                       'embbeded-in': 'embeds',
-                       'embeds': 'embedded-on',
-                       'executed': 'executed-by',
-                       'executed-by': 'executes',
-                       'exfiltrates-to': 'exfiltrated-from',
-                       'exploits': 'exploited-by',
-                       'has': 'seen-on',
-                       'hosted-on': 'hosts',
-                       'hosts': 'hosted-on',
-                       'impersonates': 'impersonated-by',
-                       'indicated-by': 'indicator-of',
-                       'indicator-of': 'indicated-by',
-                       'injected-from': 'injects-into',
-                       'injects-into': 'injected-from',
-                       'investigates': 'investigated-by',
-                       'is-also': 'is-also',
-                       'mitigated-by': 'mitigates',
-                       'mitigates': 'mitigated-by',
-                       'originated-from': 'source-of',
-                       'owned-by': 'owns',
-                       'owns': 'owned-by',
-                       'part-of': 'contains',
-                       'related-to': 'related-to',
-                       'remediates': 'remediated-by',
-                       'resolved-by': 'resolves-to',
-                       'resolved-from': 'resolves-to',
-                       'resolves-to': 'resolved-from',
-                       'seen-on': 'has',
-                       'sent': 'attached-to',
-                       'sent-by': 'sent',
-                       'sent-from': 'received-by',
-                       'sent-to': 'received-by',
-                       'similar-to': 'similar-to',
-                       'sub-domain-of': 'supra-domain-of',
-                       'supra-domain-of': 'sub-domain-of',
-                       'targeted-by': 'targets',
-                       'targets': 'targeted-by',
-                       'Types': 'Reverse',
-                       'uploaded-to': 'hosts',
-                       'used-by': 'uses',
-                       'used-on': 'targeted-by',
-                       'uses': 'used-by',
-                       'variant-of': 'variant-of'}
-
-    @staticmethod
-    def is_valid(_type):
-        # type: (str) -> bool
-
-        return _type in Relations.RELATIONS_NAMES.keys()
-
-    @staticmethod
-    def get_reverse(name):
-        # type: (str) -> str
-
-        return Relations.RELATIONS_NAMES[name]
-
-
 class EntityRelation:
     """
     XSOAR entity relation.
@@ -4678,8 +4484,8 @@ class EntityRelation:
     :type entity_a_family: ``str``
     :param entity_a_family: Entity family of type A, A aka Source of the relation. (e.g. IP/URL/...).
 
-    :type object_type_a: ``str``
-    :param object_type_a: Entity type B, B aka Source of the relation. (For future use).
+    :type entity_type_a: ``str``
+    :param entity_type_a: Entity type B, B aka Source of the relation. (For future use).
 
     :type entity_b: ``str``
     :param entity_b: B value, B aka Source of the relation.
@@ -4687,8 +4493,8 @@ class EntityRelation:
     :type entity_b_family: ``str``
     :param entity_b_family: Entity family of type B, B aka Source of the relation. (e.g. IP/URL/...)
 
-    :type object_type_b: ``str``
-    :param object_type_b: Entity type B, B aka Source of the relation. (For future use).
+    :type entity_type_b: ``str``
+    :param entity_type_b: Entity type B, B aka Source of the relation. (For future use).
 
     :type source_reliability: ``str``
     :param source_reliability: Source_reliability.
@@ -4703,36 +4509,227 @@ class EntityRelation:
     :rtype: ``None``
     """
 
-    def __init__(self, name, entity_a, object_type_a, entity_b, object_type_b,
-                 relation_type='indicatorToIndicator', entity_a_family='Indicator', entity_b_family='Indicator',
+    class RelationsTypes(object):
+        """
+        Relations Types objects.
+
+        :return: None
+        :rtype: ``None``
+        """
+        # dict which keys is a relationship type and the value is the reverse type.
+        RELATIONSHIP_TYPES = ['IndicatorToIndicator']
+
+        @staticmethod
+        def is_valid_type(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelation.RelationsTypes.RELATIONSHIP_TYPES
+
+    class RelationsFamily(object):
+        """
+        Relations Family object list.
+
+        :return: None
+        :rtype: ``None``
+
+        """
+
+        INDICATOR = ["Indicator"]
+
+        @staticmethod
+        def is_valid_type(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelation.RelationsFamily.INDICATOR
+
+    class Relations(object):
+
+        """
+        Enum: Relations names and their reverse
+
+        :return: None
+        :rtype: ``None``
+        """
+        APPLIED = 'applied'
+        ATTACHEMENT_OF = 'attachement-of'
+        ATTACHES = 'attaches'
+        ATTRIBUTE_OF = 'attribute-of'
+        ATTRIBUTED_BY = 'attributed-by'
+        ATTRIBUTED_TO = 'attributed-to'
+        AUTHORED_BY = 'authored-by'
+        BEACONS_TO = 'beacons-to'
+        BUNDELED_IN = 'bundeled-in'
+        BUNDLES = 'bundles'
+        COMMUNICATED_WITH = 'communicated-with'
+        COMMUNICATED_BY = 'communicated-by'
+        COMMUNICATES_WITH = 'communicates-with'
+        COMPROMISES = 'compromises'
+        CONTAINS = 'contains'
+        CONTROLS = 'controls'
+        CREATED_BY = 'created-by'
+        CREATES = 'creates'
+        DELIVERED_BY = 'delivered-by'
+        DELIVERS = 'delivers'
+        DOWNLOADS = 'downloads'
+        DOWNLOADS_FROM = 'downloads-from'
+        DROPPED_BY = 'dropped-by'
+        DROPS = 'drops'
+        DUPLICATE_OF = 'duplicate-of'
+        EMBBEDED_IN = 'embbeded-in'
+        EMBEDS = 'embeds'
+        EXECUTED = 'executed'
+        EXECUTED_BY = 'executed-by'
+        EXFILTRATES_TO = 'exfiltrates-to'
+        EXPLOITS = 'exploits'
+        HAS = 'has'
+        HOSTED_ON = 'hosted-on'
+        HOSTS = 'hosts'
+        IMPERSONATES = 'impersonates'
+        INDICATED_BY = 'indicated-by'
+        INDICATOR_OF = 'indicator-of'
+        INJECTED_FROM = 'injected-from'
+        INJECTS_INTO = 'injects-into'
+        INVESTIGATES = 'investigates'
+        IS_ALSO = 'is-also'
+        MITIGATED_BY = 'mitigated-by'
+        MITIGATES = 'mitigates'
+        ORIGINATED_FROM = 'originated-from'
+        OWNED_BY = 'owned-by'
+        OWNS = 'owns'
+        PART_OF = 'part-of'
+        RELATED_TO = 'related-to'
+        REMEDIATES = 'remediates'
+        RESOLVED_BY = 'resolved-by'
+        RESOLVED_FROM = 'resolved-from'
+        RESOLVES_TO = 'resolves-to'
+        SEEN_ON = 'seen-on'
+        SENT = 'sent'
+        SENT_BY = 'sent-by'
+        SENT_FROM = 'sent-from'
+        SENT_TO = 'sent-to'
+        SIMILAR_TO = 'similar-to'
+        SUB_DOMAIN_OF = 'sub-domain-of'
+        SUPRA_DOMAIN_OF = 'supra-domain-of'
+        TARGETED_BY = 'targeted-by'
+        TARGETS = 'targets'
+        TYPES = 'Types'
+        UPLOADED_TO = 'uploaded-to'
+        USED_BY = 'used-by'
+        USED_ON = 'used-on'
+        USES = 'uses'
+        VARIANT_OF = 'variant-of'
+
+        RELATIONS_NAMES = {'applied': 'applied-on',
+                           'attachement-of': 'attaches',
+                           'attaches': 'attachement-of',
+                           'attribute-of': 'owns',
+                           'attributed-by': 'attributed-to',
+                           'attributed-to': 'attributed-by',
+                           'authored-by': 'author-of',
+                           'beacons-to': 'communicated-by',
+                           'bundeled-in': 'bundles',
+                           'bundles': 'bundeled-in',
+                           'communicated-with': 'communicated-by',
+                           'communicated-by': 'communicates-with',
+                           'communicates-with': 'communicated-by',
+                           'compromises': 'compromised-by',
+                           'contains': 'part-of',
+                           'controls': 'controlled-by',
+                           'created-by': 'creates',
+                           'creates': 'created-by',
+                           'delivered-by': 'delivers',
+                           'delivers': 'delivered-by',
+                           'downloads': 'downloaded-by',
+                           'downloads-from': 'hosts',
+                           'dropped-by': 'drops',
+                           'drops': 'dropped-by',
+                           'duplicate-of': 'duplicate-of',
+                           'embbeded-in': 'embeds',
+                           'embeds': 'embedded-on',
+                           'executed': 'executed-by',
+                           'executed-by': 'executes',
+                           'exfiltrates-to': 'exfiltrated-from',
+                           'exploits': 'exploited-by',
+                           'has': 'seen-on',
+                           'hosted-on': 'hosts',
+                           'hosts': 'hosted-on',
+                           'impersonates': 'impersonated-by',
+                           'indicated-by': 'indicator-of',
+                           'indicator-of': 'indicated-by',
+                           'injected-from': 'injects-into',
+                           'injects-into': 'injected-from',
+                           'investigates': 'investigated-by',
+                           'is-also': 'is-also',
+                           'mitigated-by': 'mitigates',
+                           'mitigates': 'mitigated-by',
+                           'originated-from': 'source-of',
+                           'owned-by': 'owns',
+                           'owns': 'owned-by',
+                           'part-of': 'contains',
+                           'related-to': 'related-to',
+                           'remediates': 'remediated-by',
+                           'resolved-by': 'resolves-to',
+                           'resolved-from': 'resolves-to',
+                           'resolves-to': 'resolved-from',
+                           'seen-on': 'has',
+                           'sent': 'attached-to',
+                           'sent-by': 'sent',
+                           'sent-from': 'received-by',
+                           'sent-to': 'received-by',
+                           'similar-to': 'similar-to',
+                           'sub-domain-of': 'supra-domain-of',
+                           'supra-domain-of': 'sub-domain-of',
+                           'targeted-by': 'targets',
+                           'targets': 'targeted-by',
+                           'Types': 'Reverse',
+                           'uploaded-to': 'hosts',
+                           'used-by': 'uses',
+                           'used-on': 'targeted-by',
+                           'uses': 'used-by',
+                           'variant-of': 'variant-of'}
+
+        @staticmethod
+        def is_valid(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelation.Relations.RELATIONS_NAMES.keys()
+
+        @staticmethod
+        def get_reverse(name):
+            # type: (str) -> str
+
+            return EntityRelation.Relations.RELATIONS_NAMES[name]
+
+    def __init__(self, name, entity_a, entity_a_type, entity_b, entity_b_type,
+                 relation_type='IndicatorToIndicator', entity_a_family='Indicator', entity_b_family='Indicator',
                  source_reliability="", fields=None, brand=""):
 
         # Relation
-        if not Relations.is_valid(name):
+        if not EntityRelation.Relations.is_valid(name):
             raise ValueError("Invalid relation: " + name)
         self._name = str(name)
 
-        self._reverse_name = Relations.get_reverse(str(name))
+        self._reverse_name = EntityRelation.Relations.get_reverse(str(name))
 
-        if not RelationsTypes.is_valid_type(relation_type):
+        if not EntityRelation.RelationsTypes.is_valid_type(relation_type):
             raise ValueError("Invalid relation type: " + relation_type)
         self._relation_type = str(relation_type)
 
         # Entity A - Source
         self._entity_a = str(entity_a)
 
-        self._object_type_a = str(object_type_a)
+        self._entity_a_type = str(entity_a_type)
 
-        if not RelationsFamily.is_valid_type(entity_a_family):
+        if not EntityRelation.RelationsFamily.is_valid_type(entity_a_family):
             raise ValueError("Invalid entity A Family type: " + entity_a_family)
         self._entity_a_family = str(entity_a_family)
 
         # Entity B - Destination
         self._entity_b = str(entity_b)
 
-        self._object_type_b = str(object_type_b)
+        self._entity_b_type = str(entity_b_type)
 
-        if not RelationsFamily.is_valid_type(entity_b_family):
+        if not EntityRelation.RelationsFamily.is_valid_type(entity_b_family):
             raise ValueError("Invalid entity B Family type: " + entity_b_family)
         self._entity_b_family = str(entity_b_family)
 
@@ -4764,10 +4761,10 @@ class EntityRelation:
             "type": self._relation_type,
             "entityA": self._entity_a,
             "entityAFamily": self._entity_a_family,
-            "objectTypeA": self._object_type_a,
+            "entityAType": self._entity_a_type,
             "entityB": self._entity_b,
             "entityBFamily": self._entity_b_family,
-            "objectTypeB": self._object_type_b,
+            "entityBType": self._entity_b_type,
             "fields": self._fields,
             "reliability": self._source_reliability
         }
@@ -4786,10 +4783,10 @@ class EntityRelation:
             "type": self._relation_type,
             "entityA": self._entity_a,
             "entityAFamily": self._entity_a_family,
-            "objectTypeA": self._object_type_a,
+            "entityAType": self._entity_a_type,
             "entityB": self._entity_b,
             "entityBFamily": self._entity_b_family,
-            "objectTypeB": self._object_type_b,
+            "entityBType": self._entity_b_type,
             "fields": self._fields,
         }
         return indicator_relation
@@ -4802,9 +4799,9 @@ class EntityRelation:
         indicator_relation_context = {
             "Relationship": self._name,
             "EntityA": self._entity_a,
-            "ObjectTypeA": self._object_type_a,
+            "EntityAType": self._entity_a_type,
             "EntityB": self._entity_b,
-            "ObjectTypeB": self._object_type_b,
+            "EntityBType": self._entity_b_type,
         }
         return indicator_relation_context
 
