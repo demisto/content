@@ -247,7 +247,7 @@ def send_email_to_reviewers(reviewers_emails: list, api_token: str, pack_name: s
     pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
                   and Path(file).parts[1] == pack_name}
 
-    modified_files_comment = ','.join([f'<li>{file}</li>' for file in pack_files])
+    modified_files_comment = ''.join([f'<li>{file}</li>' for file in pack_files])
     email_subject = f'Cortex XSOAR: Changes made to {pack_name} content pack'
     email_content = f"Hi,<br><br>Your contributed <b>{pack_name}</b> pack has been modified on files:<br>" \
                     f"<ul>{modified_files_comment}</ul><br>Please review the changes " \
