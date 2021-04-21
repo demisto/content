@@ -306,6 +306,7 @@ run-validations:
             exit 1
           fi
         }
+      fi
     - echo "====Validate landingPageSections.json===="
     - echo "Download index.zip"
     - INDEX_PATH=$(mktemp)
