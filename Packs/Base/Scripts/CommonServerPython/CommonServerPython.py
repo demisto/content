@@ -6529,4 +6529,3 @@ class AutoFocusKeyRetriever:
             except ValueError as err:
                 raise DemistoException('AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
         self.key = api_key
-
