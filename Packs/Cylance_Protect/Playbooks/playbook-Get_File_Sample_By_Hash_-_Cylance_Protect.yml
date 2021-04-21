@@ -2,8 +2,7 @@ id: get_file_sample_by_hash_-_cylance_protect
 version: -1
 name: get_file_sample_by_hash_-_cylance_protect
 fromversion: 5.0.0
-description: |-
-  DEPRECATED. Use "Get File Sample By Hash - Cylance Protect v2" playbook instead.
+description: DEPRECATED. Use "Get File Sample By Hash - Cylance Protect v2" playbook instead.
 starttaskid: "0"
 hidden: true
 tasks:
