@@ -296,7 +296,7 @@ class DemistoObject {
         }
         $integration_context = $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ refresh = $Refresh } })
 
-        return $integration_context.context
+        return $integration_context
     }
 
     SetIntegrationContextVersioned ($Value, $Version, $Sync) {
@@ -716,10 +716,17 @@ function ParseDateRange{
 function GetIntegrationContext {
     [CmdletBinding()]
     param (
-        [bool]$refresh = $true
+        [bool]$refresh = $true,
+        [bool]$withVersion = $false
     )
     if (DemistoVersionGreaterEqualThen -version "6.0.0") {
-        return $demisto.getIntegrationContextVersioned($refresh)
+        $integration_context = $demisto.getIntegrationContextVersioned($refresh)
+
+        if ($withVersion -eq $true) {
+            return $integration_context
+        }
+        return $integration_context.context
+
     }
     return $demisto.GetIntegrationContext()
 }
