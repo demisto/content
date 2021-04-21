@@ -6507,3 +6507,25 @@ class IndicatorsSearcher:
     @property
     def page(self):
         return self._page
+
+
+class AutoFocusKeyRetriever:
+    """AutoFocus API Key management class
+    :type api_key: ``str``
+    :param api_key: Auto Focus API key coming from the integration parameters
+    :type override_default_credentials: ``bool``
+    :param override_default_credentials: Whether to override the default credentials and use the
+     Cortex XSOAR given AutoFocus API Key
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, api_key):
+        # demisto.getAutoFocusApiKey() is available from version 6.2.0
+        if not api_key:
+            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
+                raise DemistoException('For versions earlier than 6.2.0, configure an API Key.')
+            try:
+                api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
+            except ValueError as err:
+                raise DemistoException('AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
+        self.key = api_key
