@@ -36,6 +36,12 @@ args:
   name: inc_id
   required: false
   secret: false
+- default: false
+  description: The subject of the email sent to IT.
+  isArray: false
+  name: email_subject
+  required: false
+  secret: false
 comment: |-
   Generates password,
   Set an AD user account with this password.
