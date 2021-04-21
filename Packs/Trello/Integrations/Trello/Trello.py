@@ -569,7 +569,6 @@ def get_remote_data(client, args):
 
     new_incident_data['dbotMirrorInstance'] = demisto.integrationInstance()
 
-    # demisto.info(json.dumps(new_incident_data, indent=4, sort_keys=True))
     # If the card is closed/archived, add a closeIncident entry
     entries = []
     if new_incident_data.get("closed"):
