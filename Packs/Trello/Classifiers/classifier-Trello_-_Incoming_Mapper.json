@@ -1,7 +1,17 @@
 {
+	"brands": null,
+	"defaultIncidentType": "",
 	"description": "",
 	"feed": false,
-	"id": "Trello - Incoming Mapper",
+	"fromServerVersion": "",
+	"id": "a1be1481-cc66-4b81-8491-6fb6e9a7b9e5",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 6,
 	"mapping": {
 		"Trello": {
 			"dontMapEventToLabels": true,
@@ -16,7 +26,7 @@
 				},
 				"Trello Card ID": {
 					"complex": null,
-					"simple": "ID"
+					"simple": "id"
 				},
 				"Trello Card URL": {
 					"complex": null,
@@ -29,6 +39,10 @@
 				"Trello Details": {
 					"complex": null,
 					"simple": "desc"
+				},
+				"Trello ID": {
+					"complex": null,
+					"simple": "id"
 				},
 				"Trello List ID": {
 					"complex": null,
@@ -50,12 +64,24 @@
 		},
 		"dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": false,
-			"internalMapping": {
-			}
+			"internalMapping": {}
 		}
 	},
 	"name": "Trello - Incoming Mapper",
+	"nameRaw": "Trello - Incoming Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
 	"type": "mapping-incoming",
-	"version": -1,
-	"fromVersion": "6.0.0"
+	"unclassifiedCases": null,
+	"version": -1
 }
