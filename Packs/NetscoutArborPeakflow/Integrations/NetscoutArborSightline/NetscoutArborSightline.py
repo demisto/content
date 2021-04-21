@@ -467,14 +467,14 @@ def fetch_incidents_command(client: NetscoutClient):
     demisto.setLastRun({'LastFetchTime': last_start_time})
 
 
-def list_alerts_command(client: NetscoutClient, args: Dict[str, str]):
+def list_alerts_command(client: NetscoutClient, args: dict):
     limit = arg_to_number(args.get('limit'))
     page = arg_to_number(args.get('page'))
     alert_id = args.get('alert_id')
     alert_class = args.get('alert_class')
     alert_type = args.get('alert_type')
     classification = args.get('classification')
-    importance = IMPORTANCE_DICTIONARY.get(args.get('importance'))
+    importance = IMPORTANCE_DICTIONARY.get(args.get('importance', ''))
     importance_operator = args.get('importance_operator')
     ongoing = args.get('ongoing') if args.get('ongoing') else None
     start_time = args.get('start_time')
