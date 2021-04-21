@@ -63,7 +63,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a particular ip objects list by the list type (allowlist/denylist/bad_actor).
+    description: Get a particular ip objects list by the list type (allowlist/denylist/bad_actor). For denylist only the proxy list_target can be returned.
     execution: false
     name: f5-silverline-ip-objects-list
     outputs:
@@ -106,7 +106,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The list type can be one of allowlist or denylist or bad_actor.
+      description: The list type can be one of allowlist or denylist or bad_actor. Allwlist is DDoS IP Allowlists.
       isArray: false
       name: list_type
       predefined:
@@ -115,21 +115,12 @@ script:
       - bad_actor
       required: true
       secret: false
-    - default: false
-      description: 'Comma separated list of IP object IDs. If this argument is given,
-        only this particular IP object will be returned. Otherwise, all of the IP
-        objects that match list_type will be returned. '
-      isArray: true
-      name: object_id
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       description: The list target can be one of proxy or routed or proxy-routed.
         This param limits the denylist type but is ignored for the other list types.
         An optional list_target parameter can be supplied to target either the proxy
-        OR routed denylist. If list_target is not specified it will assume both proxy
-        and routed are requested.
+        or routed denylist. If list_target is not specified proxy will be the default.
       isArray: false
       name: list_target
       predefined:
@@ -139,31 +130,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to return. The first page number is 1.
-      isArray: false
-      name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: Number of results in a page.
-      isArray: false
-      name: page_size
-      required: false
-      secret: false
-    - default: false
       description: The IP address of the IP object to set.
       isArray: false
       name: IP
-      required: false
+      required: true
       secret: false
     - default: false
-      description: The mask address of the IP object to set.
+      description: The mask address of the IP object to set. Default is 32.
       isArray: false
       name: mask
       required: false
       secret: false
     - default: false
-      description: The duration of the IP object to set.
+      description: The duration of the IP object to set. Setting the duration to 0 (default) means the denylist entry will never expire.
       isArray: false
       name: mask
       required: false
@@ -175,7 +154,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Tags of the IP object to set.
+      description: Comma separated list of tags.
       isArray: true
       name: tags
       required: false
@@ -194,27 +173,27 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add IP addresses in a particular list.
+    description: Add IP address in a particular list.
     execution: false
     name: f5-silverline-ip-object-add
     outputs:
-    - contextPath: F5Silverline.IPObjectList.ID
-      description: List object ID
+    - contextPath: F5Silverline.IPObjectList.id
+      description: Job creation ID
       type: String
     - contextPath: F5Silverline.IPObjectList.type
-      description: List object type
+      description: Job creation type
       type: String
-    - contextPath: F5Silverline.IPObjectList.attributes.IP
-      description: IP address
+    - contextPath: F5Silverline.IPObjectList.attributes.status
+      description: Job creation status
       type: String
-    - contextPath: F5Silverline.IPObjectList.attributes.mask
-      description: Mask - change
+    - contextPath: F5Silverline.IPObjectList.attributes.updated_at
+      description: Last update date (timestamp)
       type: String
-    - contextPath: F5Silverline.IPObjectList.attributes.duration
-      description: Duration - change
-      type: String
-    - contextPath: F5Silverline.IPObjectList.attributes.expires_at
-      description: Expiration date (timestamp)
+    - contextPath: F5Silverline.IPObjectList.attributes.messages
+      description: Job creation messages
+      type: Unknown
+    - contextPath: F5Silverline.IPObjectList.attributes.created_at
+      description: Creation date (timestamp)
       type: String
     - contextPath: F5Silverline.IPObjectList.attributes.list_target
       description: List target of this object (proxy) - change
@@ -222,18 +201,27 @@ script:
     - contextPath: F5Silverline.IPObjectList.links.self
       description: Url link to this specific IP object
       type: String
-    - contextPath: F5Silverline.IPObjectList.meta.note
-      description: IP object notes
-      type: String
-    - contextPath: F5Silverline.IPObjectList.meta.tags
-      description: ' IP object tags'
-      type: Unknown
-    - contextPath: F5Silverline.IPObjectList.meta.created_at
-      description: IP object creation timestamp
-      type: String
-    - contextPath: F5Silverline.IPObjectList.meta.updated_at
-      description: IP object laast update timestamp
-      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The list type can be one of allowlist or denylist or bad_actor.
+      isArray: false
+      name: list_type
+      predefined:
+      - allowlist
+      - denylist
+      - bad_actor
+      required: true
+      secret: false
+    - default: false
+      description: IP object ID to be deleted.
+      name: object_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deleted a particular ip objects list by the list type (allowlist/denylist/bad_actor) and by the object_id.
+    execution: false
+    name: f5-silverline-ip-object-delete
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true

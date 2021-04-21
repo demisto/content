@@ -30,18 +30,13 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._headers = headers
 
-    def request_ip_objects(self, body: dict, method: str, url_suffix: str, params: dict) -> Dict:
+    def request_ip_objects(self, body: dict, method: str, url_suffix: str, params: dict, resp_type='json') -> Dict:
         """Returns a
         """
-        response = self._http_request(method=method, json_data=body, url_suffix=url_suffix, params=params)
+        response = self._http_request(method=method, json_data=body, url_suffix=url_suffix, params=params,
+                                      headers=self._headers, resp_type=resp_type)
         return response
 
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
-
-''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
 ''' COMMAND FUNCTIONS '''
 
@@ -88,28 +83,51 @@ def paging_args_to_params(page_size, page_number):
 
 
 def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    # TODO handle the bad_actor list_type
     list_type = args.get('list_type')
-    object_ids = argToList(args.get('object_id'))
-    list_target = args.get('list_target')
-    ip_address = args.get('ip')
-    mask = args.get('mask')
-    duration = args.get('duration')
+    list_target = args.get('list_target', 'proxy')
+    ip_address = args.get('IP')
+    mask = args.get('mask', '32')
+    duration = args.get('duration', 0)
     note = args.get('note')
     tags = argToList(args.get('tags'))
-    page_number = args.get('page_number')
-    page_size = args.get('page_size')
     url_suffix = f'ip_lists/{list_type}/ip_objects'
-    defer_validation = argToBoolean(args.get('defer_validation', False))
-
-
+    defer_validation = argToBoolean(args.get('defer_validation', 'false'))
     params = {}
-    is_paging = False
-    if page_number and page_size:
-        params = paging_args_to_params(page_size, page_number)
-        is_paging = True
+    params.update({'defer_validation': defer_validation})
+    body = {"list_target": list_target, "data": {"id": "", "type": "ip_objects",
+                                                 "attributes": {"mask": mask, "ip": ip_address, "duration": duration},
+                                                 "meta": {"note": note, "tags": tags}}}
+    human_readable = f"IP object with IP address: {ip_address} created successfully."
+
+    if list_type == 'allowlist':
+        client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params=params, resp_type='content')
+        return CommandResults(readable_output=human_readable)
+
+    else:
+        response = client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params=params)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs=response.get('data', ""),
+        outputs_prefix='F5Silverline.IPObjectList',
+        outputs_key_field='id'
+    )
+
+
+def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    # TODO handle the bad_actor list_type
+    list_type = args.get('list_type')
+    object_id = args.get('object_id')
+    url_suffix = f'ip_lists/{list_type}/ip_objects/{object_id}'
+
+    client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
+    human_readable = f"IP object with ID: {object_id} deleted successfully."
+    return CommandResults(readable_output=human_readable)
 
 
 def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    # TODO handle the bad_actor list_type
     list_type = args.get('list_type')
     object_ids = argToList(args.get('object_id'))
     page_number = args.get('page_number')
@@ -191,7 +209,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        headers: Dict = {"X-Authorization-Token": access_token}
+        headers: Dict = {"X-Authorization-Token": access_token, "Content-Type": 'application/json'}
 
         client = Client(
             base_url=base_url,
@@ -209,6 +227,9 @@ def main() -> None:
 
         elif demisto.command() == 'f5-silverline-ip-object-add':
             return_results(add_ip_objects_command(client, demisto.args()))
+
+        elif demisto.command() == 'f5-silverline-ip-object-delete':
+            return_results(delete_ip_objects_command(client, demisto.args()))
 
 
     except Exception as e:
