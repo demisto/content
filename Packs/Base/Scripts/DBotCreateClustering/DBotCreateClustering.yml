@@ -1,0 +1,72 @@
+args:
+- default: false
+  isArray: false
+  name: fieldsForClustering
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: fieldForClusterName
+  required: false
+  secret: false
+- default: false
+  defaultValue: toDate
+  isArray: false
+  name: fromDate
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: toDate
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: maxNumberOfCluster
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: incidentType
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3'
+  isArray: false
+  name: minNumberofIncidentinCluster
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: modelName
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  isArray: false
+  name: storeModel
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+commonfields:
+  id: 3621593a-3641-4b26-90dc-a660f4b4e68c
+  version: -1
+enabled: false
+name: DBotCreateClustering
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
