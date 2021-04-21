@@ -330,10 +330,10 @@ install-packs-in-server6_0:
     paths:
       - /builds/xsoar/content/artifacts/*
     when: always
-  varaibles:
-    INSTANCE_ROLE: Server 6.0
-    INSTANCE_CREATED: "true"
   script:
+    - echo "=====Set Instance Variables====="
+    - export INSTANCE_ROLE="Server 6.0"
+    - export INSTANCE_CREATED="true"
     - echo "=====Start Tunnel====="
     - echo "Open an ssh tunnel to the demisto servers and wait until the tunnels are established"
     - echo "Add ssh configurations"
