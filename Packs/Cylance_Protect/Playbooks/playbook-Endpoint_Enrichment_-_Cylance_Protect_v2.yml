@@ -337,6 +337,5 @@ outputs:
   description: The device information about the hostname that was enriched.
   type: unknown
 tests:
-- Cylance Protect v2 Test
-- get_file_sample_by_hash_-_cylance_protect_-_test
+- No test
 fromversion: 5.0.0

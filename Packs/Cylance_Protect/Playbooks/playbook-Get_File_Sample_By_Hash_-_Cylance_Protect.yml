@@ -5,6 +5,7 @@ fromversion: 5.0.0
 description: |-
   DEPRECATED. Use "Get File Sample By Hash - Cylance Protect v2" playbook instead.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"

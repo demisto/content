@@ -239,6 +239,5 @@ outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
   description: Last block sensor ID
 tests:
-- Cylance Protect v2 Test
-- get_file_sample_by_hash_-_cylance_protect_-_test
+- No test
 fromversion: 5.0.0

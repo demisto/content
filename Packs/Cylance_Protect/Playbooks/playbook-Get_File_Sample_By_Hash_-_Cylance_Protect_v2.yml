@@ -242,6 +242,5 @@ outputs:
 - contextPath: File.MD5
   description: MD5 hash of the file.
 tests:
-- Cylance Protect v2 Test
-- get_file_sample_by_hash_-_cylance_protect_-_test
+- No test
 fromversion: 5.0.0

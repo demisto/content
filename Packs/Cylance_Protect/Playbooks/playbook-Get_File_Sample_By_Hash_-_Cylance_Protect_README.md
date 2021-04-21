@@ -35,4 +35,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Get File Sample By Hash - Cylance Protect](https://raw.githubusercontent.com/demisto/content/22f953929c45f43cda2f692855fa4a652bc3eb44/Packs/Cylance_Protect/doc_files/Get_File_Sample_By_Hash_-_Cylance_Protect.png)
+![Get File Sample By Hash - Cylance Protect]
