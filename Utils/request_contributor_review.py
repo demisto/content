@@ -19,7 +19,7 @@ PACK_METADATA_GITHUB_USER_FIELD = "githubUser"
 PR_COMMENT_PREFIX = "pack has been modified on files:\n"
 PACK_METADATA_SUPPORT_EMAIL_FIELD = "email"
 PACK_METADATA_DEV_EMAIL_FIELD = "devEmail"
-EMAIL_FROM = "do-not-reply@xsoar-contrib.pan.dev"
+EMAIL_FROM = "do-not-reply@xsoar-contrib.pan.dev"  # disable-secrets-detection
 
 
 def check_if_user_exists(github_user, github_token=None, verify_ssl=True):

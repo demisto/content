@@ -1,7 +1,4 @@
 import pytest
-import os
-from oauth2client.client import AccessTokenCredentials
-
 from Utils.request_contributor_review import check_reviewers, send_email_to_reviewers
 
 
