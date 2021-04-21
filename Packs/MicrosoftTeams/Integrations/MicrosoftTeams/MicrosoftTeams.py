@@ -668,7 +668,6 @@ def validate_auth_header(headers: dict) -> bool:
         return False
 
     public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
-    demisto.info('HERE')
     options = {
         'verify_aud': False,
         'verify_exp': True,
