@@ -1,4 +1,4 @@
-Returns to the war-room a file sample correlating to SHA256 hashes in the inputs using Cylance Protect integration
+DEPRECATED. Use "Get File Sample By Hash - Cylance Protect v2" playbook instead.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
