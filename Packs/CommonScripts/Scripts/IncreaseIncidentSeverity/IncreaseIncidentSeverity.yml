@@ -7,7 +7,7 @@ type: python
 tags: []
 comment: |-
   Increases the incident severity in the following manner:
-  If no argument is specified - increases the current incident severity by 1, or by 0.5 if the current severity is 0.5 (informational).
+  If no argument is specified - increases the current incident severity by 1, or by 0.5 if the current severity is 0.5 (Informational).
   If an argument is specified - the incident severity will not be increased above the severity that was specified.
 enabled: true
 args:
@@ -27,8 +27,8 @@ args:
   - "3"
   - "4"
   description: The highest incident severity to increase the incident to. If no severity
-    is specified, the severity will be increased by 1 unless it's already at 4. In
-    the case that the severity is 0.5 (informational) - the seveirty will be increased
+    is specified, the severity will be increased by 1 unless it's already at 4. 
+    If the severity is 0.5 (Informational) - the severity will be increased
     by 0.5 (to low).
 scripttarget: 0
 subtype: python3
