@@ -29,8 +29,8 @@ configuration:
   required: false
   type: 9
 - additionalinfo: Optional - If specified, incidents will only be fetched when cards
-    are created in this specific list. Use trello-list-lists command to display IDs of available
-    lists in Board.
+    are created in this specific list. Use trello-list-lists command to display IDs
+    of available lists in Board.
   display: List to Fetch Incidents from
   hidden: false
   name: list_id
@@ -368,23 +368,6 @@ script:
     - contextPath: Trello.Actions.BoardId
       description: Board ID
       type: Unknown
-  - arguments:
-    - default: false
-      description: ID to get
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - default: false
-      description: Last update
-      isArray: false
-      name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
-    description: Used by mirroring
-    execution: false
-    name: trello-get-remote-data
   - arguments:
     - default: false
       description: Optional - Board ID
