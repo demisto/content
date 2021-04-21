@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 from datetime import datetime
 
+
 def main() -> None:
     integrationInstance = demisto.integrationInstance()
     demisto.debug(f'Command being called is {demisto.command()}')
