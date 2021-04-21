@@ -2201,8 +2201,13 @@ def fetch_last_emails(
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by("datetime_received")
 
-    result = qs.all()
-    result = [x for x in result if isinstance(x, Message)]
+    result = []
+    for item in qs:
+        if isinstance(item, Message):
+            result.append(item)
+            if len(result) >= client.max_fetch:
+                break
+
     if exclude_ids and len(exclude_ids) > 0:
         exclude_ids = set(exclude_ids)
         result = [x for x in result if x.message_id not in exclude_ids]

@@ -916,13 +916,17 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
     qs = qs.filter().order_by('datetime_received')
 
-    result = qs.all()
-    try:
-        result = [item for item in result if isinstance(item, Message)]
-    except ValueError as exc:
-        future_utils.raise_from(ValueError(
-            'Got an error when pulling incidents. You might be using the wrong exchange version.'
-        ), exc)
+    result = []
+    for item in qs:
+        try:
+            if isinstance(item, Message):
+                result.append(item)
+                if len(result) >= MAX_FETCH:
+                    break
+        except ValueError as exc:
+            future_utils.raise_from(ValueError(
+                'Got an error when pulling incidents. You might be using the wrong exchange version.'
+            ), exc)
 
     if exclude_ids and len(exclude_ids) > 0:
         exclude_ids = set(exclude_ids)
