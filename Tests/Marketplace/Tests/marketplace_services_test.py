@@ -72,8 +72,8 @@ class TestMetadataParsing:
         dummy_pack._server_min_version = Metadata.SERVER_DEFAULT_MIN_VERSION
         dummy_pack._downloads_count = 10
         dummy_pack._enhance_pack_attributes(
-            user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False, author_image="",
-            integration_images=[], dependencies_data={}, statistics_handler=None
+            user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
+            dependencies_data={}, statistics_handler=None
         )
         parsed_metadata = dummy_pack._parse_pack_metadata(
             user_metadata=dummy_pack_metadata, build_number="dummy_build_number", commit_hash="dummy_commit"
@@ -111,8 +111,8 @@ class TestMetadataParsing:
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
         dummy_pack._enhance_pack_attributes(
-            user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False, author_image="",
-            integration_images=[], dependencies_data={}, statistics_handler=None
+            user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
+            dependencies_data={}, statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -137,7 +137,7 @@ class TestMetadataParsing:
 
         dummy_pack._enhance_pack_attributes(
             user_metadata={}, index_folder_path="", pack_was_modified=False,
-            author_image="", integration_images=[], dependencies_data={}, statistics_handler=None
+            dependencies_data={}, statistics_handler=None
         )
 
         assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
@@ -960,11 +960,11 @@ class TestImagesUpload:
         dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
-        task_status, integration_images = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file], True)
+        task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file], True)
 
         assert task_status
-        assert len(expected_result) == len(integration_images)
-        assert integration_images == expected_result
+        assert len(dummy_pack._displayed_integration_images) == len(expected_result)
+        assert dummy_pack._displayed_integration_images == expected_result
 
     @pytest.mark.parametrize("integration_name,expected_result", [
         ("Integration Name",
@@ -995,11 +995,11 @@ class TestImagesUpload:
         dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
-        task_status, integration_images = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file], True)
+        task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file], True)
 
         assert task_status
-        assert len(expected_result) == len(integration_images)
-        assert integration_images == expected_result
+        assert len(dummy_pack._displayed_integration_images) == len(expected_result)
+        assert dummy_pack._displayed_integration_images == expected_result
 
     @pytest.mark.parametrize("display_name", [
         'Integration Name (Developer Contribution)',

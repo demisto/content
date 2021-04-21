@@ -81,7 +81,8 @@ class Pack(object):
         self._author = None  # initialized in enhance_pack_attributes function
         self._certification = None  # initialized in enhance_pack_attributes function
         self._legacy = None  # initialized in enhance_pack_attributes function
-        self._author_image = None  # initialized in enhance_pack_attributes function
+        self._author_image = None  # initialized in upload_author_image function
+        self._displayed_integration_images = None  # initialized in upload_integration_images function
         self._price = 0  # initialized in enhance_pack_attributes function
         self._is_private_pack = False  # initialized in enhance_pack_attributes function
         self._is_premium = False  # initialized in enhance_pack_attributes function
@@ -1442,14 +1443,12 @@ class Pack(object):
 
         return tags
 
-    def _enhance_pack_attributes(self, user_metadata, index_folder_path, pack_was_modified, author_image,
-                                 integration_images, dependencies_data, statistics_handler=None):
+    def _enhance_pack_attributes(self, user_metadata, index_folder_path, pack_was_modified,
+                                 dependencies_data, statistics_handler=None):
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
             user_metadata (dict): user metadata that was created in pack initialization.
-            integration_images (list): list of gcs uploaded integration images.
-            author_image (str): gcs uploaded author image
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
 
         Returns:
@@ -1467,7 +1466,6 @@ class Pack(object):
             support_type=self._support_type, certification=user_metadata.get('certification')
         )
         self._legacy = user_metadata.get('legacy', True)
-        self._author_image = author_image
         self._create_date = self._get_pack_creation_date(index_folder_path)
         self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
         self._use_cases = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
@@ -1502,19 +1500,17 @@ class Pack(object):
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )
         self._related_integration_images = self._get_all_pack_images(
-            integration_images, user_metadata.get('displayedImages', []), dependencies_data
+            self._displayed_integration_images, user_metadata.get('displayedImages', []), dependencies_data
         )
 
-    def format_metadata(self, user_metadata, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash, pack_was_modified, statistics_handler):
+    def format_metadata(self, user_metadata, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
+                        pack_was_modified, statistics_handler):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
         Args:
             user_metadata (dict): user defined pack_metadata, prior the parsing process.
-            integration_images (list): list of uploaded integration images with integration display name and image gcs
             public url.
-            author_image (str): uploaded public gcs path to author image.
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
             build_number (str): circleCI build number.
@@ -1539,8 +1535,7 @@ class Pack(object):
                                                              user_metadata.get('displayedImages', []))
 
             self._enhance_pack_attributes(
-                user_metadata, index_folder_path, pack_was_modified, author_image, integration_images,
-                dependencies_data, statistics_handler
+                user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler
             )
             formatted_metadata = self._parse_pack_metadata(user_metadata, build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
@@ -1843,7 +1838,7 @@ class Pack(object):
             pack_local_images = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
 
             if not pack_local_images:
-                return integration_images  # return empty list if no images were found
+                return True  # return empty list if no images were found
 
             pack_storage_root_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name)
 
@@ -1887,7 +1882,8 @@ class Pack(object):
             task_status = False
             logging.exception(f"Failed to upload {self._pack_name} pack integration images. Additional Info: {str(e)}")
         finally:
-            return task_status, integration_images
+            self._displayed_integration_images = integration_images
+            return task_status
 
     def copy_integration_images(self, production_bucket, build_bucket, images_data):
         """ Copies all pack's integration images from the build bucket to the production bucket
@@ -2002,7 +1998,8 @@ class Pack(object):
             task_status = False
             author_image_storage_path = ""
         finally:
-            return task_status, author_image_storage_path
+            self._author_image = author_image_storage_path
+            return task_status
 
     def copy_author_image(self, production_bucket, build_bucket, images_data):
         """ Copies pack's author image from the build bucket to the production bucket

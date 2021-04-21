@@ -993,19 +993,19 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, pack_content_items = pack.collect_content_items()
+        task_status = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
             continue
 
-        task_status, integration_images = pack.upload_integration_images(storage_bucket, diff_files_list, True)
+        task_status = pack.upload_integration_images(storage_bucket, diff_files_list, True)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status, author_image = pack.upload_author_image(storage_bucket, diff_files_list, True)
+        task_status = pack.upload_author_image(storage_bucket, diff_files_list, True)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
@@ -1018,13 +1018,8 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.format_metadata(user_metadata=user_metadata,
-                                           integration_images=integration_images, author_image=author_image,
-                                           index_folder_path=index_folder_path,
-                                           packs_dependencies_mapping=packs_dependencies_mapping,
-                                           build_number=build_number, commit_hash=current_commit_hash,
-                                           pack_was_modified=pack_was_modified,
-                                           statistics_handler=statistics_handler)
+        task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
+                                           current_commit_hash, pack_was_modified, statistics_handler)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
@@ -1059,10 +1054,8 @@ def main():
             pack.cleanup()
             continue
 
-        (task_status, skipped_pack_uploading, full_pack_path) = \
-            pack.upload_to_storage(zip_pack_path, pack.latest_version,
-                                   storage_bucket, override_all_packs
-                                   or pack_was_modified)
+        task_status, skipped_upload, _ = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
+                                                                override_all_packs or pack_was_modified)
 
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
@@ -1089,7 +1082,7 @@ def main():
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_pack_uploading and exists_in_index:
+        if skipped_upload and exists_in_index:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue

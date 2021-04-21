@@ -219,26 +219,25 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status, pack_content_items = pack.collect_content_items()
+    task_status = pack.collect_content_items()
     if not task_status:
         pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
         pack.cleanup()
         return
 
-    task_status, integration_images = pack.upload_integration_images(storage_bucket)
+    task_status = pack.upload_integration_images(storage_bucket)
     if not task_status:
         pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
         pack.cleanup()
         return
 
-    task_status, author_image = pack.upload_author_image(storage_bucket)
+    task_status = pack.upload_author_image(storage_bucket)
     if not task_status:
         pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
         pack.cleanup()
         return
 
     task_status = pack.format_metadata(user_metadata=user_metadata,
-                                       integration_images=integration_images, author_image=author_image,
                                        index_folder_path=index_folder_path,
                                        packs_dependencies_mapping=packs_dependencies_mapping,
                                        build_number=build_number, commit_hash=current_commit_hash,
