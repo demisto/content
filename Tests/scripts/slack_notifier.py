@@ -358,7 +358,7 @@ def main():
     test_type = options.test_type
     env_results_file_name = options.env_results_file_name
     bucket_upload = options.bucket_upload
-    circle_artifacts_path = options.circle_artifacts
+    ci_artifacts_path = options.ci_artifacts
     job_name = options.job_name
     slack_channel = options.slack_channel or CONTENT_CHANNEL
     if nightly:
@@ -366,7 +366,7 @@ def main():
     elif bucket_upload:
         slack_notifier(url, slack, test_type,
                        packs_results_file=os.path.join(
-                           circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name,
+                           ci_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name,
                        slack_channel=slack_channel)
     elif test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(url, slack, test_type)
