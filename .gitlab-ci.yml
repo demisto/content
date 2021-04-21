@@ -61,6 +61,7 @@ default:
     - npm --version
     - demisto-sdk --version
 
+
 variables:
   CONTENT_VERSION: "21.3.2"
   SERVER_VERSION: "6.0.0"
@@ -77,6 +78,7 @@ variables:
 # See here for more about that https://docs.gitlab.com/ee/ci/pipelines/settings.html#git-shallow-clone  # disable-secrets-detection
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
+
 
 stages:
   - unittests-and-validations
