@@ -1,0 +1,11 @@
+{
+  "id": "detcount",
+  "name": "Detections Count",
+  "dataType": "scripts",
+  "widgetType": "number",
+  "query": "DetectionsCount",
+  "version": -1,
+  "description": "Logs detections count",
+  "isPredefined": true,
+  "fromVersion": "5.0.0"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "progressioncount",
+  "name": "Progressions Count",
+  "dataType": "scripts",
+  "widgetType": "number",
+  "query": "ProgressionsCount",
+  "version": -1,
+  "description": "Logs progressions count",
+  "isPredefined": true,
+  "fromVersion": "5.0.0"
+}

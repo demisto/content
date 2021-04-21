@@ -1,0 +1,46 @@
+[
+  {
+    "agentId": "prod_0_7_.agent-7",
+    "allowListId": "null",
+    "attackIdList": [
+      1561190
+    ],
+    "iocDetail": "MODIFIES file (/var/lib/apt/periodic/download-upgradeable-stamp) ",
+    "iocHash": "CreateModify-d596b00c51bc196d83a1c09736067986-1618187993765144524",
+    "iocSummary": "modifies file (/var/lib/apt/periodic/download-upgradeable-stamp) ",
+    "iocTactic": "Defense Evasion",
+    "ruleid": 0,
+    "scoreContribution": 0,
+    "seenTime": 1618187993765144600,
+    "trailId": "3343680",
+    "trailIocInfoType": "DETECTION",
+    "trailList": [
+      "prod_0_7_.agent-7:3343680"
+    ],
+    "trailStateList": [
+      "ACTIVE"
+    ]
+  },
+  {
+    "agentId": "prod_0_7_.agent-7",
+    "allowListId": "null",
+    "attackIdList": [
+      1561190
+    ],
+    "iocDetail": "CREATES file (/tmp/fileutl.message.f9ZBRG) ",
+    "iocHash": "CreateModify-3a46fad59032e3456e1c5bbf4fbc139e-1618187993710159633",
+    "iocSummary": "creates file (/tmp/fileutl.message.f9ZBRG) ",
+    "iocTactic": "Defense Evasion",
+    "ruleid": 0,
+    "scoreContribution": 0,
+    "seenTime": 1618187993710159600,
+    "trailId": "3343680",
+    "trailIocInfoType": "DETECTION",
+    "trailList": [
+      "prod_0_7_.agent-7:3343680"
+    ],
+    "trailStateList": [
+      "ACTIVE"
+    ]
+  }
+]

@@ -1,0 +1,762 @@
+{
+    "id": "8a040494-97dd-4780-8c43-3693c8d557d2",
+    "modified": "2021-02-19T10:59:23.522454614Z",
+    "startDate": "0001-01-01T00:00:00Z",
+    "times": 0,
+    "recurrent": false,
+    "endingDate": "0001-01-01T00:00:00Z",
+    "timezoneOffset": 0,
+    "cronView": false,
+    "scheduled": false,
+    "name": "IQ-Hub Report",
+    "description": "Confluera Iqhub report",
+    "tags": [
+
+    ],
+    "createdBy": "DBot",
+    "type": "pdf",
+    "system": false,
+    "locked": false,
+    "sections": [
+        {
+            "type": "table",
+            "data": null,
+            "layout": {
+                "classes": "striped stackable small compact",
+                "columnPos": 0,
+                "h": 2,
+                "i": "55b437a0-72a0-11eb-b965-a5983290cff6",
+                "readableHeaders": {
+                    "Count": "Count",
+                    "URL": "URL"
+                },
+                "rowPos": 0,
+                "tableColumns": [
+                    "Count",
+                    "URL"
+                ],
+                "w": 12
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IqHub_Log",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "IQ-HUB Log",
+            "titleStyle": null
+        },
+        {
+            "type": "number",
+            "data": null,
+            "layout": {
+                "columnPos": 0,
+                "h": 2,
+                "i": "5d4e52c0-72a0-11eb-b965-a5983290cff6",
+                "layout": "horizontal",
+                "rowPos": 2,
+                "sign": "",
+                "signAlignment": "left",
+                "style": {
+
+                },
+                "w": 6
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "Detections_Count",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Detections Count",
+            "titleStyle": null
+        },
+        {
+            "type": "number",
+            "data": null,
+            "layout": {
+                "columnPos": 6,
+                "h": 2,
+                "i": "61fe1f30-72a0-11eb-b965-a5983290cff6",
+                "layout": "horizontal",
+                "rowPos": 2,
+                "sign": "",
+                "signAlignment": "left",
+                "style": {
+
+                },
+                "w": 6
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "Progressions_Count",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Progressions Count",
+            "titleStyle": null
+        },
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "cx": 341.415,
+                    "cy": 135,
+                    "innerRadius": 101.25,
+                    "layout": "horizontal",
+                    "maxRadius": 270,
+                    "outerRadius": 135
+                },
+                "chartType": "pie",
+                "columnPos": 0,
+                "dimensions": {
+                    "height": 300,
+                    "width": 1049
+                },
+                "h": 3,
+                "i": "67e75600-72a0-11eb-b965-a5983290cff6",
+                "legendStyle": {
+                    "align": "left",
+                    "hideLegend": false,
+                    "iconType": "circle",
+                    "layout": "vertical",
+                    "verticalAlign": "top",
+                    "width": 346.17
+                },
+                "rowPos": 4,
+                "w": 12
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "Detections_Summary",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Detections Summary",
+            "titleStyle": null
+        },
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "barSize": 15,
+                    "format": "DD MMM Y",
+                    "isDatesChart": false,
+                    "layout": "vertical"
+                },
+                "chartType": "bar",
+                "columnPos": 0,
+                "dimensions": {
+                    "height": 420,
+                    "width": 1049
+                },
+                "h": 4,
+                "i": "6f38cf60-72a0-11eb-b965-a5983290cff6",
+                "legendStyle": {
+                    "align": "center",
+                    "hideLegend": false,
+                    "iconType": "square",
+                    "layout": "horizontal",
+                    "verticalAlign": "top",
+                    "wrapperStyle": {
+                        "maxHeight": 120,
+                        "top": 5,
+                        "width": "100%"
+                    }
+                },
+                "rowPos": 7,
+                "w": 12
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "Progressions_Data",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Progressions Data",
+            "titleStyle": null
+        },
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "barSize": 35,
+                    "format": "DD MMM Y",
+                    "isDatesChart": false,
+                    "layout": "horizontal"
+                },
+                "chartType": "column",
+                "columnPos": 0,
+                "dimensions": {
+                    "height": 300,
+                    "width": 1049
+                },
+                "h": 3,
+                "i": "78a56090-72a0-11eb-b965-a5983290cff6",
+                "legendStyle": {
+                    "align": "right",
+                    "hideLegend": false,
+                    "iconType": "circle",
+                    "layout": "vertical",
+                    "verticalAlign": "top",
+                    "wrapperStyle": {
+                        "top": 5
+                    }
+                },
+                "rowPos": 11,
+                "w": 12
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "Detections_Data",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Detections Data",
+            "titleStyle": null
+        }
+    ],
+    "recipients": [
+
+    ],
+    "orientation": "landscape",
+    "paperSize": "A4",
+    "runOnce": false,
+    "latestReportTime": "0001-01-01T00:00:00Z",
+    "latestScheduledReportTime": "0001-01-01T00:00:00Z",
+    "nextScheduledTime": "0001-01-01T00:00:00Z",
+    "decoder": {
+        "evidences.fetched": {
+            "type": "date",
+            "value": "02/01/06 3:04:05 PM"
+        },
+        "evidences.markedDate": {
+            "type": "date",
+            "value": "02/01/06 3:04:05 PM"
+        },
+        "evidences.occurred": {
+            "type": "date",
+            "value": "02/01/06 3:04:05 PM"
+        },
+        "incident.activated": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.closed": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.created": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.dbotStatus.0": {
+            "type": "string",
+            "value": "Pending"
+        },
+        "incident.dbotStatus.1": {
+            "type": "string",
+            "value": "Active"
+        },
+        "incident.dbotStatus.2": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.dbotStatus.3": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.dbotStatus.4": {
+            "type": "string",
+            "value": "On Hold"
+        },
+        "incident.dueDate": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.modified": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.occurred": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.openDuration": {
+            "type": "duration",
+            "value": ""
+        },
+        "incident.phase.": {
+            "type": "string",
+            "value": "Unassigned"
+        },
+        "incident.reminder": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.roles.": {
+            "type": "string",
+            "value": "Unassigned"
+        },
+        "incident.severity.0": {
+            "type": "string",
+            "value": "Unknown"
+        },
+        "incident.severity.0.5": {
+            "type": "string",
+            "value": "Informational"
+        },
+        "incident.severity.1": {
+            "type": "string",
+            "value": "Low"
+        },
+        "incident.severity.2": {
+            "type": "string",
+            "value": "Medium"
+        },
+        "incident.severity.3": {
+            "type": "string",
+            "value": "High"
+        },
+        "incident.severity.4": {
+            "type": "string",
+            "value": "Critical"
+        },
+        "incident.status.0": {
+            "type": "string",
+            "value": "Pending"
+        },
+        "incident.status.1": {
+            "type": "string",
+            "value": "Active"
+        },
+        "incident.status.2": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.status.3": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.status.4": {
+            "type": "string",
+            "value": "On Hold"
+        },
+        "incident.totalTime": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "indicators.firstSeen": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "indicators.lastSeen": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "indicators.score.0": {
+            "type": "string",
+            "value": "None"
+        },
+        "indicators.score.1": {
+            "type": "string",
+            "value": "Good"
+        },
+        "indicators.score.2": {
+            "type": "string",
+            "value": "suspicious"
+        },
+        "indicators.score.3": {
+            "type": "string",
+            "value": "Bad"
+        },
+        "investigation.closed": {
+            "type": "date",
+            "value": "02 Jan 2006"
+        },
+        "investigation.created": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "investigation.openDuration": {
+            "type": "duration",
+            "value": ""
+        },
+        "investigation.status.0": {
+            "type": "string",
+            "value": "Active"
+        },
+        "investigation.status.1": {
+            "type": "string",
+            "value": "Done"
+        },
+        "investigation.type.0": {
+            "type": "string",
+            "value": "Standard"
+        },
+        "investigation.type.1": {
+            "type": "string",
+            "value": "Restricted"
+        },
+        "investigation.type.9": {
+            "type": "string",
+            "value": "Playground"
+        }
+    },
+    "sensitive": false,
+    "disableHeader": false,
+    "dashboard": {
+        "id": "",
+        "version": 0,
+        "modified": "0001-01-01T00:00:00Z",
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "name": "IQ-Hub Report",
+        "layout": [
+            {
+                "id": "55b437a0-72a0-11eb-b965-a5983290cff6",
+                "forceRange": false,
+                "x": 0,
+                "y": 0,
+                "i": "55b437a0-72a0-11eb-b965-a5983290cff6",
+                "w": 12,
+                "h": 2,
+                "widget": {
+                    "id": "Iq hub log",
+                    "version": 1,
+                    "modified": "2021-02-19T10:42:59.427316944Z",
+                    "name": "IQ-HUB Log",
+                    "dataType": "scripts",
+                    "widgetType": "table",
+                    "query": "IqHub_Log",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "5d4e52c0-72a0-11eb-b965-a5983290cff6",
+                "forceRange": false,
+                "x": 0,
+                "y": 2,
+                "i": "5d4e52c0-72a0-11eb-b965-a5983290cff6",
+                "w": 6,
+                "h": 2,
+                "widget": {
+                    "id": "detcount",
+                    "version": 1,
+                    "modified": "2021-02-19T10:42:48.788551907Z",
+                    "name": "Detections Count",
+                    "dataType": "scripts",
+                    "widgetType": "number",
+                    "query": "Detections_Count",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "days",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": {
+                        "colors": {
+                            "isEnabled": true,
+                            "items": {
+                                "#1DB846": {
+                                    "value": 0
+                                },
+                                "#D13C3C": {
+                                    "value": 40
+                                },
+                                "#EF9700": {
+                                    "value": 25
+                                }
+                            },
+                            "type": "above"
+                        },
+                        "tableColumns": [
+
+                        ]
+                    },
+                    "size": 0
+                }
+            },
+            {
+                "id": "61fe1f30-72a0-11eb-b965-a5983290cff6",
+                "forceRange": false,
+                "x": 6,
+                "y": 2,
+                "i": "61fe1f30-72a0-11eb-b965-a5983290cff6",
+                "w": 6,
+                "h": 2,
+                "widget": {
+                    "id": "progressioncount",
+                    "version": 1,
+                    "modified": "2021-02-19T10:43:08.538560027Z",
+                    "name": "Progressions Count",
+                    "dataType": "scripts",
+                    "widgetType": "number",
+                    "query": "Progressions_Count",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "days",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": {
+                        "colors": {
+                            "isEnabled": true,
+                            "items": {
+                                "#1DB846": {
+                                    "value": 0
+                                },
+                                "#D13C3C": {
+                                    "value": 25
+                                },
+                                "#EF9700": {
+                                    "value": 10
+                                }
+                            },
+                            "type": "above"
+                        },
+                        "tableColumns": [
+
+                        ]
+                    },
+                    "size": 0
+                }
+            },
+            {
+                "id": "67e75600-72a0-11eb-b965-a5983290cff6",
+                "forceRange": false,
+                "x": 0,
+                "y": 4,
+                "i": "67e75600-72a0-11eb-b965-a5983290cff6",
+                "w": 12,
+                "h": 3,
+                "widget": {
+                    "id": "detsummary",
+                    "version": 1,
+                    "modified": "2021-02-19T10:42:52.685236329Z",
+                    "name": "Detections Summary",
+                    "dataType": "scripts",
+                    "widgetType": "pie",
+                    "query": "Detections_Summary",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "6f38cf60-72a0-11eb-b965-a5983290cff6",
+                "forceRange": false,
+                "x": 0,
+                "y": 7,
+                "i": "6f38cf60-72a0-11eb-b965-a5983290cff6",
+                "w": 12,
+                "h": 4,
+                "widget": {
+                    "id": "progressionchart",
+                    "version": 1,
+                    "modified": "2021-02-19T10:43:04.154277084Z",
+                    "name": "Progressions Data",
+                    "dataType": "scripts",
+                    "widgetType": "bar",
+                    "query": "Progressions_Data",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "78a56090-72a0-11eb-b965-a5983290cff6",
+                "forceRange": false,
+                "x": 0,
+                "y": 11,
+                "i": "78a56090-72a0-11eb-b965-a5983290cff6",
+                "w": 12,
+                "h": 3,
+                "widget": {
+                    "id": "detchart",
+                    "version": 1,
+                    "modified": "2021-02-19T10:42:44.147326546Z",
+                    "name": "Detections Data",
+                    "dataType": "scripts",
+                    "widgetType": "column",
+                    "query": "Detections_Data",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            }
+        ]
+    },
+    "fromVersion": "5.0.0"
+}

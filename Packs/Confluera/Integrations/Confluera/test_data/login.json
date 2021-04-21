@@ -1,0 +1,10 @@
+{
+  "message": "Logged in as admin@confluera.com",
+  "firstname": "Admin",
+  "lastname": "Admin",
+  "email": "admin@confluera.com",
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTgyMzkzNjQsIm5iZiI6MTYxODIzO...",
+  "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTgyMzkzNjQsIm5iZiI6MTYxODIz...",
+  "expires": 1618240264,
+  "onboard": {}
+}

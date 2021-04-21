@@ -1,0 +1,17 @@
+{
+    "name": "Confluera",
+    "description": "Confluera-Cortex XSOAR integration pack",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "confluera",
+    "url": "https://www.confluera.com",
+    "email": "",
+    "created": "2021-01-01T10:21:07Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}

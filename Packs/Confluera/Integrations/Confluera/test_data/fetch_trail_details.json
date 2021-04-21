@@ -1,0 +1,127 @@
+{
+  "attackId": 7164528,
+  "fingerprint": "c15ca700c08839b1b26ef8bfdb7599cb52d68307845e4317b355b080fb989170",
+  "hostList": [
+    "prod_0_3_.agent-35"
+  ],
+  "influenceeList": [],
+  "influencerList": [],
+  "lastMitigatedTime": 0,
+  "lateralMovementEdges": [],
+  "markedIocs": [],
+  "numberOfDetections": 1,
+  "numberOfHosts": 1,
+  "numberOfLateralMovements": 0,
+  "riskScore": 10,
+  "similarTrails": [
+    "prod_0_3_.agent-35:10002087"
+  ],
+  "startTime": 1618216658903757800,
+  "state": "ACTIVE",
+  "trailIocInfoList": [
+    {
+      "actionMap": null,
+      "agentId": "prod_0_3_.agent-35",
+      "attackIdList": [],
+      "containerId": null,
+      "iocDetail": "Incoming traffic from malicious external IP address (Greynoise)",
+      "iocEventsList": [
+        {
+          "agentId": "prod_0_3_.agent-35",
+          "artifactPath": "",
+          "artifactScore": 0,
+          "clonedPid": "8652",
+          "clonedPidHash": "agent-35-p-8652-1618246163438993400",
+          "edgeName": "TcpAcceptListenerComplete",
+          "edgeType": "ACCEPTS",
+          "exefilehash": "agent-35-f-1753326844-562949953725973-1563567751620348100",
+          "externalIPIntelMetadata": {
+            "city": "Xinpu",
+            "country": "CN",
+            "latitude": 34.5997,
+            "longitude": 119.1594,
+            "subdivision": "JS"
+          },
+          "localHost": "172.31.14.50",
+          "localPort": 22,
+          "os": "Windows",
+          "parentBinaryName": "",
+          "parentBinaryScore": 0,
+          "parentProcessName": "services.exe",
+          "parentSessionid": 0,
+          "parentSid": "",
+          "parentVertexHash": "agent-35-p-780-1614631840327003000",
+          "remoteHost": "218.92.0.207",
+          "remotePort": 16037,
+          "ret": 0,
+          "score": "HIGH",
+          "socketFamily": 2,
+          "sourceBinaryName": "/device/harddiskvolume1/windows/system32/openssh/sshd.exe",
+          "sourceBinaryScore": 0,
+          "sourceCommandLine": "/device/harddiskvolume1/windows/system32/openssh/sshd.exe",
+          "sourcePid": 2752,
+          "sourcePpid": 780,
+          "sourceProcessName": "sshd.exe",
+          "sourceSessionid": 0,
+          "sourceSid": "S-1-5-18",
+          "sourceVertexHash": "agent-35-p-2752-1614631842699633100",
+          "spawnedBinaryName": "/device/harddiskvolume1/windows/system32/openssh/sshd.exe",
+          "spawnedCommandLine": "/device/harddiskvolume1/windows/system32/openssh/sshd.exe",
+          "spawnedPid": 2752,
+          "spawnedPpid": 780,
+          "spawnedProcessName": "sshd.exe",
+          "spawnedSessionid": 0,
+          "taintedFile": false,
+          "targetSid": "S-1-5-18",
+          "targetVertexHash": "agent-35-p-2752-1614631842699633100",
+          "technique": "T1190",
+          "threatIntelMetadata": {
+            "actor": "unknown",
+            "classification": "malicious",
+            "first_seen": "2019-03-22",
+            "ip": "218.92.0.207",
+            "last_seen_timestamp": "2021-02-26 13:08:40",
+            "metadata": {
+              "asn": "AS4134",
+              "category": "isp",
+              "city": "Shanghai",
+              "country": "China",
+              "organization": "CHINANET-BACKBONE",
+              "os": "Linux 3.11+"
+            },
+            "seen": true,
+            "spoofable": "false",
+            "tags": [
+              "SSH Bruteforcer",
+              "SSH Scanner",
+              "ZMap Client"
+            ],
+            "vpn": "false"
+          },
+          "timestamp": 1618216658903757800,
+          "trailScore": 10,
+          "trailScoreAndMomentum": 10
+        }
+      ],
+      "iocHash": "Edge-33cc15406f131e0b5d5030a23de7f5af-1618216658903757800",
+      "iocSummary": "Incoming traffic from malicious external IP address (Greynoise)",
+      "iocTactic": "INITIAL_ACCESS",
+      "occurrence": 1,
+      "recommendation": [
+        {
+          "action": "kill-process@@@agent-35-p-2752-1614631842699633100",
+          "compatibleAgent": true,
+          "duplicate": false,
+          "index": 0,
+          "justification": "The process /device/harddiskvolume1/windows/system32/openssh/sshd.exe has been involved in an indicator of compromise. The process should be terminated to prevent further execution\n",
+          "priority": "medium",
+          "recommendation": "Kill process /device/harddiskvolume1/windows/system32/openssh/sshd.exe with pid 2752",
+          "valid": false
+        }
+      ],
+      "trailTacticSet": [
+        "initial_access"
+      ]
+    }
+  ]
+}

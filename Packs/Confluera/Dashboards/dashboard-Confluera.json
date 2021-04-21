@@ -1,0 +1,353 @@
+{
+    "id": "Confluera Dashboard",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 7,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Confluera Dashboard",
+    "description": "Confluera Iqhub Dashboard",
+    "layout": [
+        {
+            "id": "444aa040-729f-11eb-b965-a5983290cff6",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "444aa040-729f-11eb-b965-a5983290cff6",
+            "w": 2,
+            "h": 3,
+            "widget": {
+                "id": "detcount",
+                "version": 1,
+                "modified": "2021-02-19T10:42:48.788551907Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "Widget imported",
+                "shouldCommit": true,
+                "name": "Detections Count",
+                "prevName": "Detections Count",
+                "dataType": "scripts",
+                "widgetType": "number",
+                "query": "Detections_Count",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 40
+                            },
+                            "#EF9700": {
+                                "value": 25
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "4c856830-729f-11eb-b965-a5983290cff6",
+            "forceRange": false,
+            "x": 0,
+            "y": 5,
+            "i": "4c856830-729f-11eb-b965-a5983290cff6",
+            "w": 12,
+            "h": 3,
+            "widget": {
+                "id": "detchart",
+                "version": 1,
+                "modified": "2021-02-19T10:42:44.147326546Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "Widget imported",
+                "shouldCommit": true,
+                "name": "Detections Data",
+                "prevName": "Detections Data",
+                "dataType": "scripts",
+                "widgetType": "column",
+                "query": "Detections_Data",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": null,
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "54669e70-729f-11eb-b965-a5983290cff6",
+            "forceRange": false,
+            "x": 2,
+            "y": 2,
+            "i": "54669e70-729f-11eb-b965-a5983290cff6",
+            "w": 10,
+            "h": 3,
+            "widget": {
+                "id": "detsummary",
+                "version": 1,
+                "modified": "2021-02-19T10:42:52.685236329Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "Widget imported",
+                "shouldCommit": true,
+                "name": "Detections Summary",
+                "prevName": "Detections Summary",
+                "dataType": "scripts",
+                "widgetType": "pie",
+                "query": "Detections_Summary",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": null,
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "5992c6d0-729f-11eb-b965-a5983290cff6",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "5992c6d0-729f-11eb-b965-a5983290cff6",
+            "w": 12,
+            "h": 2,
+            "widget": {
+                "id": "Iq hub log",
+                "version": 1,
+                "modified": "2021-02-19T10:42:59.427316944Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "Widget imported",
+                "shouldCommit": true,
+                "name": "IQ-HUB Log",
+                "prevName": "IQ-HUB Log",
+                "dataType": "scripts",
+                "widgetType": "table",
+                "query": "IqHub_Log",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": null,
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "5e9ff580-729f-11eb-b965-a5983290cff6",
+            "forceRange": false,
+            "x": 0,
+            "y": 8,
+            "i": "5e9ff580-729f-11eb-b965-a5983290cff6",
+            "w": 2,
+            "h": 4,
+            "widget": {
+                "id": "progressioncount",
+                "version": 1,
+                "modified": "2021-02-19T10:43:08.538560027Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "Widget imported",
+                "shouldCommit": true,
+                "name": "Progressions Count",
+                "prevName": "Progressions Count",
+                "dataType": "scripts",
+                "widgetType": "number",
+                "query": "Progressions_Count",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 25
+                            },
+                            "#EF9700": {
+                                "value": 10
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "5f979bf0-729f-11eb-b965-a5983290cff6",
+            "forceRange": false,
+            "x": 2,
+            "y": 8,
+            "i": "5f979bf0-729f-11eb-b965-a5983290cff6",
+            "w": 10,
+            "h": 4,
+            "widget": {
+                "id": "progressionchart",
+                "version": 1,
+                "modified": "2021-02-19T10:43:04.154277084Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "Widget imported",
+                "shouldCommit": true,
+                "name": "Progressions Data",
+                "prevName": "Progressions Data",
+                "dataType": "scripts",
+                "widgetType": "bar",
+                "query": "Progressions_Data",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": null,
+                "size": 0,
+                "category": ""
+            }
+        }
+    ],
+    "isPredefined": true,
+    "fromVersion": "5.0.0"
+}
