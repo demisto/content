@@ -408,6 +408,7 @@ exampleDemistoUrls = {
     "warRoom": "https://test-address:8443/#/WarRoom/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
+exampleAutoFocusApiKey = '1234'
 
 callingContext = {}  # type: dict
 
@@ -812,6 +813,19 @@ def demistoUrls():
 
     """
     return exampleDemistoUrls
+
+
+def getAutoFocusApiKey():
+    """Retrieves the AutoFocus API Key related to this Cortex XSOAR License.
+    You can use this API Key in all AutoFocus integrations and Feeds.
+    This command is not available on tenants.
+
+
+    Returns:
+      str: String containing the API Key
+
+    """
+    return exampleAutoFocusApiKey
 
 
 def dt(obj=None, trnsfrm=None):
