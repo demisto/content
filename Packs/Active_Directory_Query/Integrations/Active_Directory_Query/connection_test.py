@@ -246,7 +246,7 @@ def test_unseccsseful_create_user_iam_missing_ou(mocker):
     assert outputs.get('action') == IAMActions.CREATE_USER
     assert outputs.get('success') is False
     assert outputs.get('email') == 'test@paloaltonetworks.com'
-    assert 'User must have ou, please provide a valid value' in outputs.get('errorMessage')
+    assert 'User must have an Organizational Unit (OU)' in outputs.get('errorMessage')
 
 
 def test_unseccsseful_create_user_iam_missing_samaccountname(mocker):
@@ -289,4 +289,4 @@ def test_unseccsseful_create_user_iam_missing_samaccountname(mocker):
     assert outputs.get('action') == IAMActions.CREATE_USER
     assert outputs.get('success') is False
     assert outputs.get('email') == 'test@paloaltonetworks.com'
-    assert 'User must have SAMAccountName' in outputs.get('errorMessage')
+    assert 'User must have a sAMAccountName' in outputs.get('errorMessage')
