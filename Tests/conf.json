@@ -3658,7 +3658,7 @@
                 "memory_threshold": 200
             },
             "demisto/boto3": {
-                "memory_threshold": 85
+                "memory_threshold": 90
             }
         }
     }
