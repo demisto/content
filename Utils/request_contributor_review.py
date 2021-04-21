@@ -263,7 +263,7 @@ def send_email_to_reviewers(reviewers_emails: list, api_token: str, pack_name: s
     try:
         response = sg.client.mail.send.post(request_body=mail.get())
         if response.status_code in range(200, 209):
-            print(f'Email sent to {reviewers_emails} contributors of pack {pack_name}')
+            print(f'Email sent to {",".join(reviewers_emails)} contributors of pack {pack_name}')
             return True
         else:
             print('An error occurred during sending emails to contributors.')
