@@ -123,7 +123,6 @@ function evaluate(operator, lhs, rhs, options) {
             throw `Unknown operator: ${operator}`;
         }
     }
-    return false;
 }
 
 const condition = args.condition.trim();
