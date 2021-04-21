@@ -238,7 +238,7 @@ run-validations:
       - /builds/xsoar/content/artifacts/*
     when: always
   script:
-    - echo "[0K\e[0K\e[36;1m====Look For Secrets====\e[0m"
+    - echo "====Look For Secrets===="
     - demisto-sdk secrets --post-commit --ignore-entropy
     - echo "====Create id set===="
     - demisto-sdk create-id-set -o ./Tests/id_set.json
@@ -248,14 +248,13 @@ run-validations:
       if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
           echo "Skipping, Should not run on contributor's branch."
       else
-        echo "DDD1"
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out
         echo "successfully activated google cloud service account"
 
         echo "Download private ID set"
         gsutil cp "gs://marketplace-dist/content/private_id_set.json" $ARTIFACTS_FOLDER/unified_id_set.json
         echo "successfully downloaded private ID set"
-        gcloud auth revoke --all | grep 'WARNING\|ERROR'
+        gcloud auth revoke $GCS_CREDENTAILS_ACCOUNT
 
         echo "Merge public and private ID sets"
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
