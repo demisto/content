@@ -766,7 +766,7 @@ tasks:
       id: c785fcca-4b96-455a-82ef-da7d1d5a4236
       version: -1
       name: Found related Expanse issues in XSOAR?
-      description: Checks if found related Expanse issues in XSOAR
+      description: Checks if found related Expanse issues in XSOAR.
       type: condition
       iscommand: false
       brand: ""
