@@ -2411,9 +2411,7 @@ class Common(object):
                 }
 
             if self.relations:
-                relations_context = []
-                for relation in self.relations:
-                    relations_context.append(relation.to_context())
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
                 ip_context['Relations'] = relations_context
 
             ret_value = {
@@ -2656,9 +2654,7 @@ class Common(object):
                 }
 
             if self.relations:
-                relations_context = []
-                for relation in self.relations:
-                    relations_context.append(relation.to_context())
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
                 file_context['Relations'] = relations_context
 
             ret_value = {
@@ -2724,9 +2720,7 @@ class Common(object):
                 cve_context['Description'] = self.description
 
             if self.relations:
-                relations_context = []
-                for relation in self.relations:
-                    relations_context.append(relation.to_context())
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
                 cve_context['Relations'] = relations_context
 
             ret_value = {
@@ -2772,9 +2766,7 @@ class Common(object):
                 email_context['Blocked'] = self.blocked
 
             if self.relations:
-                relations_context = []
-                for relation in self.relations:
-                    relations_context.append(relation.to_context())
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
                 email_context['Relations'] = relations_context
 
             ret_value = {
@@ -2865,9 +2857,7 @@ class Common(object):
                 }
 
             if self.relations:
-                relations_context = []
-                for relation in self.relations:
-                    relations_context.append(relation.to_context())
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
                 url_context['Relations'] = relations_context
 
             ret_value = {
@@ -3014,9 +3004,7 @@ class Common(object):
                 domain_context['WHOIS'] = whois_context
 
             if self.relations:
-                relations_context = []
-                for relation in self.relations:
-                    relations_context.append(relation.to_context())
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
                 domain_context['Relations'] = relations_context
 
             ret_value = {
@@ -3094,9 +3082,7 @@ class Common(object):
                 endpoint_context['Processor'] = self.processor
 
             if self.relations:
-                relations_context = []
-                for relation in self.relations:
-                    relations_context.append(relation.to_context())
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
                 endpoint_context['Relations'] = relations_context
 
             ret_value = {
@@ -3171,9 +3157,7 @@ class Common(object):
                 }
 
             if self.relations:
-                relations_context = []
-                for relation in self.relations:
-                    relations_context.append(relation.to_context())
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
                 account_context['Relations'] = relations_context
 
             ret_value = {
@@ -4707,31 +4691,35 @@ class EntityRelation:
         # Relation
         if not EntityRelation.Relations.is_valid(name):
             raise ValueError("Invalid relation: " + name)
-        self._name = str(name)
+        self._name = name
 
-        self._reverse_name = EntityRelation.Relations.get_reverse(str(name))
+        self._reverse_name = EntityRelation.Relations.get_reverse(name)
 
         if not EntityRelation.RelationsTypes.is_valid_type(relation_type):
             raise ValueError("Invalid relation type: " + relation_type)
-        self._relation_type = str(relation_type)
+        self._relation_type = relation_type
 
         # Entity A - Source
-        self._entity_a = str(entity_a)
+        self._entity_a = entity_a
 
-        self._entity_a_type = str(entity_a_type)
+        self._entity_a_type = entity_a_type
 
         if not EntityRelation.RelationsFamily.is_valid_type(entity_a_family):
             raise ValueError("Invalid entity A Family type: " + entity_a_family)
-        self._entity_a_family = str(entity_a_family)
+        self._entity_a_family = entity_a_family
 
         # Entity B - Destination
-        self._entity_b = str(entity_b)
+        if not entity_b:
+            demisto.debug(
+                "WARNING: Invalid entity B - Relationships will not be created to entity A {} with relation name {}".format(
+                    str(entity_a), str(name)))
+        self._entity_b = entity_b
 
-        self._entity_b_type = str(entity_b_type)
+        self._entity_b_type = entity_b_type
 
         if not EntityRelation.RelationsFamily.is_valid_type(entity_b_family):
             raise ValueError("Invalid entity B Family type: " + entity_b_family)
-        self._entity_b_family = str(entity_b_family)
+        self._entity_b_family = entity_b_family
 
         # Custom fields
         if fields:
@@ -4755,21 +4743,24 @@ class EntityRelation:
         :rtype: ``dict``
         :return: XSOAR entry representation.
         """
-        entry = {
-            "name": self._name,
-            "reverseName": self._reverse_name,
-            "type": self._relation_type,
-            "entityA": self._entity_a,
-            "entityAFamily": self._entity_a_family,
-            "entityAType": self._entity_a_type,
-            "entityB": self._entity_b,
-            "entityBFamily": self._entity_b_family,
-            "entityBType": self._entity_b_type,
-            "fields": self._fields,
-            "reliability": self._source_reliability
-        }
-        if self._brand:
-            entry["brand"] = self._brand
+        entry = {}
+
+        if self._entity_b:
+            entry = {
+                "name": self._name,
+                "reverseName": self._reverse_name,
+                "type": self._relation_type,
+                "entityA": self._entity_a,
+                "entityAFamily": self._entity_a_family,
+                "entityAType": self._entity_a_type,
+                "entityB": self._entity_b,
+                "entityBFamily": self._entity_b_family,
+                "entityBType": self._entity_b_type,
+                "fields": self._fields,
+                "reliability": self._source_reliability
+            }
+            if self._brand:
+                entry["brand"] = self._brand
         return entry
 
     def to_indicator(self):
@@ -4777,18 +4768,21 @@ class EntityRelation:
         :rtype: ``dict``
         :return: XSOAR entry representation.
         """
-        indicator_relation = {
-            "name": self._name,
-            "reverseName": self._reverse_name,
-            "type": self._relation_type,
-            "entityA": self._entity_a,
-            "entityAFamily": self._entity_a_family,
-            "entityAType": self._entity_a_type,
-            "entityB": self._entity_b,
-            "entityBFamily": self._entity_b_family,
-            "entityBType": self._entity_b_type,
-            "fields": self._fields,
-        }
+        indicator_relation = {}
+
+        if self._entity_b:
+            indicator_relation = {
+                "name": self._name,
+                "reverseName": self._reverse_name,
+                "type": self._relation_type,
+                "entityA": self._entity_a,
+                "entityAFamily": self._entity_a_family,
+                "entityAType": self._entity_a_type,
+                "entityB": self._entity_b,
+                "entityBFamily": self._entity_b_family,
+                "entityBType": self._entity_b_type,
+                "fields": self._fields,
+            }
         return indicator_relation
 
     def to_context(self):
@@ -4796,13 +4790,17 @@ class EntityRelation:
         :rtype: ``dict``
         :return: XSOAR context representation.
         """
-        indicator_relation_context = {
-            "Relationship": self._name,
-            "EntityA": self._entity_a,
-            "EntityAType": self._entity_a_type,
-            "EntityB": self._entity_b,
-            "EntityBType": self._entity_b_type,
-        }
+        indicator_relation_context = {}
+
+        if self._entity_b:
+            indicator_relation_context = {
+                "Relationship": self._name,
+                "EntityA": self._entity_a,
+                "EntityAType": self._entity_a_type,
+                "EntityB": self._entity_b,
+                "EntityBType": self._entity_b_type,
+            }
+
         return indicator_relation_context
 
 
@@ -4945,7 +4943,7 @@ class CommandResults:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
 
         if self.relations:
-            relations = [relation.to_entry() for relation in self.relations]
+            relations = [relation.to_entry() for relation in self.relations if relation.to_entry()]
 
         content_format = EntryFormat.JSON
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):

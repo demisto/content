@@ -254,6 +254,9 @@ def create_list_relationships(scans_dict, url, reliability):
             relation_dict = RELATIONSHIP_TYPE.get(scan_name, {}).get(field, {})
             indicator_type = relation_dict.get('indicator_type', '')
             for indicator in indicators:
+                # For a case where the destination side does not exist
+                if not indicator:
+                    pass
                 # For a case where the type of the IP indicator should be detected, whether its IPv6/IP
                 if not indicator_type and relation_dict.get('detect_type'):
                     indicator_type = detect_ip_type(indicator)
