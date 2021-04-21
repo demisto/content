@@ -4438,8 +4438,9 @@ class CommandResults:
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False, mark_as_note=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool) -> None
+                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False, mark_as_note=False,
+                 polling_command=None, polling_args=None, polling_timeout=None, polling_next_run=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, str, dict, str, str) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -4471,6 +4472,10 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
+        self.polling_command = polling_command
+        self.polling_args = polling_args
+        self.polling_timeout = polling_timeout
+        self.polling_next_run = polling_next_run
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -4535,8 +4540,15 @@ class CommandResults:
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
-            'Note': mark_as_note
+            'Note': mark_as_note,
         }
+        if self.polling_command and self.polling_next_run:
+            return_entry.update({
+                'PollingCommand': self.polling_command,
+                'PollingArgs': self.polling_args,
+                'Timeout': self.polling_timeout,
+                'NextRun': self.polling_next_run
+            })
         return return_entry
 
 
@@ -4657,10 +4669,11 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
-    is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
-                                                                              'fetch-credentials',
-                                                                              'long-running-execution',
-                                                                              'fetch-indicators')
+    is_command = hasattr(demisto, 'command')
+    is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                             'fetch-credentials',
+                                                             'long-running-execution',
+                                                             'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
         message = "{}\n\n{}".format(message, traceback.format_exc())
 
@@ -4671,6 +4684,10 @@ def return_error(message, error='', outputs=None):
     LOG.print_log()
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+
+    if is_command and demisto.command() == 'get-modified-remote-data':
+        if (error and not isinstance(error, NotImplementedError)) or sys.exc_info()[0] != NotImplementedError:
+            message = 'skip update. error: ' + message
 
     if is_server_handled:
         raise Exception(message)
@@ -6432,3 +6449,83 @@ class TableOrListWidget(BaseWidget):
             'total': len(self.data),
             'data': self.data
         })
+
+
+class IndicatorsSearcher:
+    """Used in order to search indicators by the paging or serachAfter param
+     :type page: ``int``
+    :param page: the number of page from which we start search indicators from.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, page=0):
+        # searchAfter is available in searchIndicators from version 6.1.0
+        self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        self._search_after_title = 'searchAfter'
+        self._search_after_param = None
+        self._page = page
+
+    def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
+        """There are 2 cases depends on the sever version:
+        1. Search indicators using paging, raise the page number in each call.
+        2. Search indicators using searchAfter param, update the _search_after_param in each call.
+
+        :type from_date: ``str``
+        :param from_date: the start date to search from.
+
+        :type query: ``str``
+        :param query: indicator search query
+
+        :type size: ``size``
+        :param size: limit the number of returned results.
+
+        :type to_date: ``str``
+        :param to_date: the end date to search until to.
+
+        :type value: ``str``
+        :param value: the indicator value to search.
+
+        :return: object contains the search results
+        :rtype: ``dict``
+        """
+        if self._can_use_search_after:
+            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
+                                           searchAfter=self._search_after_param)
+            if self._search_after_title in res and res[self._search_after_title] is not None:
+                self._search_after_param = res[self._search_after_title]
+            else:
+                demisto.log('Elastic search using searchAfter was not found in searchIndicators')
+
+        else:
+            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page,
+                                           value=value)
+            self._page += 1
+
+        return res
+
+    @property
+    def page(self):
+        return self._page
+
+
+class AutoFocusKeyRetriever:
+    """AutoFocus API Key management class
+    :type api_key: ``str``
+    :param api_key: Auto Focus API key coming from the integration parameters
+    :type override_default_credentials: ``bool``
+    :param override_default_credentials: Whether to override the default credentials and use the
+     Cortex XSOAR given AutoFocus API Key
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, api_key):
+        # demisto.getAutoFocusApiKey() is available from version 6.2.0
+        if not api_key:
+            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
+                raise DemistoException('For versions earlier than 6.2.0, configure an API Key.')
+            try:
+                api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
+            except ValueError as err:
+                raise DemistoException('AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
+        self.key = api_key

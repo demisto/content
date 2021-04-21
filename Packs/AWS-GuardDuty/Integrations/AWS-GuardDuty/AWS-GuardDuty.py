@@ -1,5 +1,5 @@
 import boto3
-
+from datetime import datetime, date
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -70,11 +70,7 @@ def parse_finding_ids(finding_ids):
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):  # pylint: disable=E0202
-        if isinstance(obj, datetime.datetime):  # type: ignore  # pylint: disable=E1101
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, datetime.date):  # type: ignore
-            return obj.strftime('%Y-%m-%d')
-        elif isinstance(obj, datetime):  # type: ignore
+        if isinstance(obj, datetime):  # type: ignore
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
         elif isinstance(obj, date):  # type: ignore  # pylint: disable=E0602
             return obj.strftime('%Y-%m-%d')
@@ -678,6 +674,48 @@ def update_findings_feedback(args):
         return raise_error(e)
 
 
+def list_members(args):
+    try:
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        response = client.list_members(DetectorId=args.get('detectorId'))
+
+        ec = {"AWS.GuardDuty.Members(val.AccountId === obj.AccountId)": response['Members']}
+        return create_entry('AWS GuardDuty Members', response['Members'], ec)
+
+    except Exception as e:
+        return raise_error(e)
+
+
+def get_members(args):
+    try:
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        accountId_list = []
+        accountId_list.append(args.get('accountIds'))
+
+        response = client.get_members(
+            DetectorId=args.get('detectorId'),
+            AccountIds=accountId_list
+        )
+
+        ec = {"AWS.GuardDuty.Members(val.AccountId === obj.AccountId)": response['Members']}
+        return create_entry('AWS GuardDuty Members', response['Members'], ec)
+
+    except Exception as e:
+        return raise_error(e)
+
+
 def test_function():
     try:
         client = aws_session()
@@ -756,6 +794,12 @@ if demisto.command() == 'aws-gd-unarchive-findings':
 
 if demisto.command() == 'aws-gd-update-findings-feedback':
     result = update_findings_feedback(demisto.args())
+
+if demisto.command() == 'aws-gd-list-members':
+    result = list_members(demisto.args())
+
+if demisto.command() == 'aws-gd-get-members':
+    result = get_members(demisto.args())
 
 if demisto.command() == 'fetch-incidents':
     fetch_incidents()
