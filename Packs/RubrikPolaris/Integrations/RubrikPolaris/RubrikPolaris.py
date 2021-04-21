@@ -7,6 +7,7 @@ import traceback
 from typing import Tuple, List, Dict
 from datetime import date
 import dateparser
+import re
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -236,13 +237,19 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
 
                         })
 
+                        #Check if message includes the File Change attributes
+                        file_changes_match = re.search(r'File Change: ([0-9]+) Added, ([0-9]+) Modified, ([0-9]+) Removed', m["message"])
+                        if file_changes_match != None:
+                            try:
+                                process_incident["radar_files_added"] = file_changes_match.group(1)
+                                process_incident["radar_files_modified"] = file_changes_match.group(2)
+                                process_incident["radar_files_deleted"] = file_changes_match.group(3)
+
+                            except:
+                                demisto.info("Error Parsing Radar Anomaly File Change attributes")
+
                 else:
                     process_incident[key] = value
-
-            if process_incident["lastActivityStatus"] == "Success":
-                process_incident["eventCompleted"] = "True"
-            else:
-                process_incident["eventCompleted"] = "False"
 
             incidents.append({
                 "name": f'Rubrik Radar Anomaly - {process_incident["objectName"]}',
