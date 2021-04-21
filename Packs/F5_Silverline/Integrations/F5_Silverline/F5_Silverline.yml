@@ -159,48 +159,10 @@ script:
       name: tags
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: When set to false (default), the inputs will be validated during
-        request processing and errors are reported in the response. When set to true,
-        the inputs will be accepted for processing but some may be skipped if they
-        don’t meet the validation criteria.
-      isArray: false
-      name: defer_validation
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     deprecated: false
     description: Add IP address in a particular list.
     execution: false
     name: f5-silverline-ip-object-add
-    outputs:
-    - contextPath: F5Silverline.IPObjectList.id
-      description: Job creation ID
-      type: String
-    - contextPath: F5Silverline.IPObjectList.type
-      description: Job creation type
-      type: String
-    - contextPath: F5Silverline.IPObjectList.attributes.status
-      description: Job creation status
-      type: String
-    - contextPath: F5Silverline.IPObjectList.attributes.updated_at
-      description: Last update date (timestamp)
-      type: String
-    - contextPath: F5Silverline.IPObjectList.attributes.messages
-      description: Job creation messages
-      type: Unknown
-    - contextPath: F5Silverline.IPObjectList.attributes.created_at
-      description: Creation date (timestamp)
-      type: String
-    - contextPath: F5Silverline.IPObjectList.attributes.list_target
-      description: List target of this object (proxy) - change
-      type: String
-    - contextPath: F5Silverline.IPObjectList.links.self
-      description: Url link to this specific IP object
-      type: String
   - arguments:
     - auto: PREDEFINED
       default: false

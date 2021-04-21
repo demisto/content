@@ -12,7 +12,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-BASE_URL = "/api/v1"
+BASE_URL = "/api/v1/ip_lists"
+TABLE_HEADERS_GET_OBJECTS = ['ID', 'IP', 'Expires At', 'List Target', 'Created At', 'Updated At']
 ''' CLIENT CLASS '''
 
 
@@ -33,36 +34,18 @@ class Client(BaseClient):
     def request_ip_objects(self, body: dict, method: str, url_suffix: str, params: dict, resp_type='json') -> Dict:
         """Returns a
         """
-        response = self._http_request(method=method, json_data=body, url_suffix=url_suffix, params=params,
-                                      headers=self._headers, resp_type=resp_type)
-        return response
-
-
-''' COMMAND FUNCTIONS '''
+        return self._http_request(method=method, json_data=body, url_suffix=url_suffix, params=params,
+                                  headers=self._headers, resp_type=resp_type)
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
     """
-
-    message: str = ''
+    """
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
+        client.request_ip_objects(body={}, method='GET', url_suffix='denylist/ip_objects', params={})
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Unauthorized' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
@@ -89,37 +72,24 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     ip_address = args.get('IP')
     mask = args.get('mask', '32')
     duration = args.get('duration', 0)
-    note = args.get('note')
-    tags = argToList(args.get('tags'))
-    url_suffix = f'ip_lists/{list_type}/ip_objects'
-    defer_validation = argToBoolean(args.get('defer_validation', 'false'))
-    params = {}
-    params.update({'defer_validation': defer_validation})
+    note = args.get('note', "")
+    tags = argToList(args.get('tags', []))
+    url_suffix = f'{list_type}/ip_objects'
+
     body = {"list_target": list_target, "data": {"id": "", "type": "ip_objects",
                                                  "attributes": {"mask": mask, "ip": ip_address, "duration": duration},
                                                  "meta": {"note": note, "tags": tags}}}
     human_readable = f"IP object with IP address: {ip_address} created successfully."
 
-    if list_type == 'allowlist':
-        client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params=params, resp_type='content')
-        return CommandResults(readable_output=human_readable)
-
-    else:
-        response = client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params=params)
-
-    return CommandResults(
-        readable_output=human_readable,
-        outputs=response.get('data', ""),
-        outputs_prefix='F5Silverline.IPObjectList',
-        outputs_key_field='id'
-    )
+    client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
+    return CommandResults(readable_output=human_readable)
 
 
 def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     # TODO handle the bad_actor list_type
     list_type = args.get('list_type')
     object_id = args.get('object_id')
-    url_suffix = f'ip_lists/{list_type}/ip_objects/{object_id}'
+    url_suffix = f'{list_type}/ip_objects/{object_id}'
 
     client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
     human_readable = f"IP object with ID: {object_id} deleted successfully."
@@ -132,7 +102,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     object_ids = argToList(args.get('object_id'))
     page_number = args.get('page_number')
     page_size = args.get('page_size')
-    url_suffix = f'ip_lists/{list_type}/ip_objects'
+    url_suffix = f'{list_type}/ip_objects'
     params = {}
     is_paging = False
     if page_number and page_size:
@@ -147,8 +117,8 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     else:
         human_results, outputs = get_ip_objects_by_ids(client, object_ids, list_type, params)
 
-    table_headers = ['ID', 'IP', 'Expires At', 'List Target', 'Created At', 'Updated At']
-    human_readable = tableToMarkdown('F5 Silverline IP Objects', human_results, table_headers, removeNull=True)
+    human_readable = tableToMarkdown('F5 Silverline IP Objects', human_results, TABLE_HEADERS_GET_OBJECTS,
+                                     removeNull=True)
 
     if not human_results and is_paging:
         human_readable = "No results were found. Please try to run the command without page_number and page_size to " \
@@ -166,7 +136,7 @@ def get_ip_objects_by_ids(client, object_ids, list_type, params):
     human_results = []
     outputs = []
     for object_id in object_ids:
-        url_suffix = f'ip_lists/{list_type}/ip_objects'
+        url_suffix = f'{list_type}/ip_objects'
         url_suffix = '/'.join([url_suffix, object_id])
         res = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
         human_results.append(parse_results_for_specific_ip_object(res)[0])
