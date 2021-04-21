@@ -333,10 +333,10 @@ install-packs-in-server6_0:
     paths:
       - /builds/xsoar/content/artifacts/*
     when: always
+  variables:
+    INSTANCE_ROLE: "Server 6.0"
+    INSTANCE_CREATED: "true"
   script:
-    - echo "=====Set Instance Variables====="
-    - export INSTANCE_ROLE="Server 6.0"
-    - export INSTANCE_CREATED="true"
     - <<:*install_packs_in_server
 
 install-packs-in-server-master:
@@ -346,13 +346,49 @@ install-packs-in-server-master:
     paths:
       - /builds/xsoar/content/artifacts/*
     when: always
+  variables:
+    INSTANCE_ROLE: "Server Master"
+    INSTANCE_CREATED: "true"
   script:
-    - echo "=====Set Instance Variables====="
-    - export INSTANCE_ROLE="Server Master"
-    - export INSTANCE_CREATED="true"
     - <<:*install_packs_in_server
 
 .install_packs_in_server: &install_packs_in_server
+  - <<:*start_tunnel
+  - echo "=====Get Instance Variables====="
+  - echo INSTANCE_ROLE="$INSTANCE_ROLE"
+  - echo INSTANCE_CREATED="$INSTANCE_CREATED"
+  - echo "=====Wait Until Server Ready====="
+  - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+  - echo "=====Install Packs====="
+  - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
+  - echo "=====Notify Slack====="
+  - |
+    if [ -n "${BUCKET_UPLOAD}" ]; then
+      ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
+    fi
+  - echo "=====Destroy Instances====="
+  - |
+    if [ -n "${CONTRIB_BRANCH}" ]; then
+      echo "Skipping - not running in contribution instance"
+    else
+      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER ./env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+
+      export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+      zip -P $PSWD -j $ARTIFACTS_FOLDER/Logs.zip $ARTIFACTS_FOLDER/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
+      rm -f $ARTIFACTS_FOLDER/server*.log
+    fi
+
+upload-packs-to-marketplace:
+  stage: upload-to-marketplace
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - /builds/xsoar/content/artifacts/*
+    when: always
+  script:
+    - echo "=====Set Instance Variables====="
+
+.start_tunnel: &start_tunnel
   - echo "=====Start Tunnel====="
   - echo "Open an ssh tunnel to the demisto servers and wait until the tunnels are established"
   - echo "Add ssh configurations"
@@ -398,24 +434,4 @@ install-packs-in-server-master:
           sleep 1
         done
       done
-    fi
-  - echo "=====Wait Until Server Ready====="
-  - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
-  - echo "=====Install Packs====="
-  - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
-  - echo "=====Notify Slack====="
-  - |
-    if [ -n "${BUCKET_UPLOAD}" ]; then
-      ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
-    fi
-  - echo "=====Destroy Instances====="
-  - |
-    if [ -n "${CONTRIB_BRANCH}" ]; then
-      echo "Skipping - not running in contribution instance"
-    else
-      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER ./env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
-
-      export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
-      zip -P $PSWD -j $ARTIFACTS_FOLDER/Logs.zip $ARTIFACTS_FOLDER/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
-      rm -f $ARTIFACTS_FOLDER/server*.log
     fi
