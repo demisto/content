@@ -1,6 +1,9 @@
 commonfields:
   id: If-Then-Else
   version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
 name: If-Then-Else
 script: ''
 type: javascript
@@ -11,17 +14,22 @@ comment: A transformer for simple if-then-else logic.
 enabled: true
 args:
 - name: value
-  required: true
   description: The value to evaluate
 - name: equals
-  required: true
-  description: If value equals this
+  description: The value to compare in the condition
 - name: then
-  required: true
-  description: Return this value if 'equals' is true
+  description: Return this value if 'condition' is true
 - name: else
-  required: true
-  description: Return this value if 'equals' is false
+  description: Return this value if 'condition' is false
+- name: condition
+  description: The condition expression to evaluate
+  defaultValue: value==equals
+- name: optional_value
+  description: The value to compare in the condition
+- name: options
+  description: 'Option flags (comma separated list): available options are `case_insensitive`,
+    `regex_dot_all`, `regex_multiline`, `regex_full_match`, `input_data_type:then=<type>`,
+    `input_data_type:else=<type>`, `input_data_type:equals=<type>` and `input_data_type:optional_value=<type>`.'
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
