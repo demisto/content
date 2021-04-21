@@ -8422,7 +8422,7 @@ def ip_command(ips, reliability):
         )
         related_feed = Common.FeedRelatedIndicators(
             value=response.get('network', {}).get('cidr'),
-            indicator_type='IP'
+            indicator_type='CIDR'
         )
         ip_output = Common.IP(
             ip=ip,
