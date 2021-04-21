@@ -142,8 +142,8 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
             notified_by_email = False
             # Notify contributors by emailing them on dev email:
             if reviewers_emails := pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD):
-                reviewers_emails = ','.join(reviewers_emails) if isinstance(reviewers_emails,
-                                                                            list) else reviewers_emails
+                reviewers_emails = reviewers_emails.split(',') if isinstance(reviewers_emails,
+                                                                             str) else reviewers_emails
                 notified_by_email = send_email_to_reviewers(
                     reviewers_emails=reviewers_emails,
                     api_token=email_api_token,
@@ -175,8 +175,8 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                 # Notify contributors by emailing them on support email:
                 if (reviewers_emails := pack_metadata.get(
                         PACK_METADATA_SUPPORT_EMAIL_FIELD)) and not notified_by_github and not notified_by_email:
-                    reviewers_emails = ','.join(reviewers_emails) if isinstance(reviewers_emails,
-                                                                                list) else reviewers_emails
+                    reviewers_emails = reviewers_emails.split(',') if isinstance(reviewers_emails,
+                                                                                 str) else reviewers_emails
                     send_email_to_reviewers(
                         reviewers_emails=reviewers_emails,
                         api_token=email_api_token,
@@ -229,13 +229,13 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
         return False
 
 
-def send_email_to_reviewers(reviewers_emails: str, api_token: str, pack_name: str,
+def send_email_to_reviewers(reviewers_emails: list, api_token: str, pack_name: str,
                             pr_number: str, modified_files: list) -> bool:
     """ Compose mail and send it to the reviewers_emails, to review the changes in their pack
 
     Args:
         modified_files(list): modified files on pr
-        reviewers_emails(str): reviewers of the pack to send mail to them
+        reviewers_emails(list(str)): reviewers of the pack to send mail to them
         api_token(str): refresh token to send mails using gmail API
         pack_name(str): pack that was modified
         pr_number(str): github pr number
@@ -258,7 +258,7 @@ def send_email_to_reviewers(reviewers_emails: str, api_token: str, pack_name: st
 
     sg = sendgrid.SendGridAPIClient(api_token)
     email_from = Email(EMAIL_FROM)
-    to_email = To(reviewers_emails)
+    to_email = reviewers_emails
     content = Content("text/html", email_content)
     mail = Mail(email_from, to_email, email_subject, content)
 
@@ -268,7 +268,7 @@ def send_email_to_reviewers(reviewers_emails: str, api_token: str, pack_name: st
             print(f'Email sent to {reviewers_emails} contributors of pack {pack_name}')
             return True
         else:
-            print(f'An error occurred during sending emails to contributors: {response.text}')
+            print(f'An error occurred during sending emails to contributors: {response}')
             return False
     except Exception as e:
         print(f'An error occurred during sending emails to contributors: {str(e)}')
