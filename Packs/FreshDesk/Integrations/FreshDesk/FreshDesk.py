@@ -786,7 +786,8 @@ def fetch_incidents():
     updated_since = timestamp_to_datestring(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
     args = {'updated_since': updated_since, 'order_type': 'asc'}
 
-    tickets = search_tickets(args)
+    response = search_tickets(args)  # page 1
+    tickets = handle_search_tickets_pagination(args, response)
     # convert the ticket/events to demisto incidents
     incidents = []
     for ticket in tickets:
