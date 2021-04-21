@@ -4129,13 +4129,13 @@ class TestEntityRelation:
     """Global vars for all of the tests"""
     name = 'related-to'
     reverse_name = 'related-to'
-    relation_type = 'indicatorToIndicator'
+    relation_type = 'IndicatorToIndicator'
     entity_a = 'test1'
     entity_a_family = 'Indicator'
-    object_type_a = 'Domain'
+    entity_a_type = 'Domain'
     entity_b = 'test2'
     entity_b_family = 'Indicator'
-    object_type_b = 'Domain'
+    entity_b_type = 'Domain'
     source_reliability = 'F - Reliability cannot be judged'
 
     def test_entity_relations_context(self):
@@ -4151,22 +4151,22 @@ class TestEntityRelation:
         """
         from CommonServerPython import EntityRelation
         relation = EntityRelation(name='related-to',
-                                  relation_type='indicatorToIndicator',
+                                  relation_type='IndicatorToIndicator',
                                   entity_a='test1',
                                   entity_a_family='Indicator',
-                                  object_type_a='Domain',
+                                  entity_a_type='Domain',
                                   entity_b='test2',
                                   entity_b_family='Indicator',
-                                  object_type_b='Domain',
+                                  entity_b_type='Domain',
                                   source_reliability='F - Reliability cannot be judged',
                                   brand='test')
 
         expected_context = {
             "Relationship": 'related-to',
             "EntityA": 'test1',
-            "ObjectTypeA": 'Domain',
+            "EntityAType": 'Domain',
             "EntityB": 'test2',
-            "ObjectTypeB": 'Domain',
+            "EntityBType": 'Domain',
         }
         assert relation.to_context() == expected_context
 
@@ -4186,10 +4186,10 @@ class TestEntityRelation:
                                   relation_type=TestEntityRelation.relation_type,
                                   entity_a=TestEntityRelation.entity_a,
                                   entity_a_family=TestEntityRelation.entity_a_family,
-                                  object_type_a=TestEntityRelation.object_type_a,
+                                  entity_a_type=TestEntityRelation.entity_a_type,
                                   entity_b=TestEntityRelation.entity_b,
                                   entity_b_family=TestEntityRelation.entity_b_family,
-                                  object_type_b=TestEntityRelation.object_type_b,
+                                  entity_b_type=TestEntityRelation.entity_b_type,
                                   source_reliability=TestEntityRelation.source_reliability
                                   )
 
@@ -4199,10 +4199,10 @@ class TestEntityRelation:
             "type": TestEntityRelation.relation_type,
             "entityA": TestEntityRelation.entity_a,
             "entityAFamily": TestEntityRelation.entity_a_family,
-            "objectTypeA": TestEntityRelation.object_type_a,
+            "entityAType": TestEntityRelation.entity_a_type,
             "entityB": TestEntityRelation.entity_b,
             "entityBFamily": TestEntityRelation.entity_b_family,
-            "objectTypeB": TestEntityRelation.object_type_b,
+            "entityBType": TestEntityRelation.entity_b_type,
             "fields": {},
             "reliability": TestEntityRelation.source_reliability
         }
@@ -4224,10 +4224,10 @@ class TestEntityRelation:
                                   relation_type=TestEntityRelation.relation_type,
                                   entity_a=TestEntityRelation.entity_a,
                                   entity_a_family=TestEntityRelation.entity_a_family,
-                                  object_type_a=TestEntityRelation.object_type_a,
+                                  entity_a_type=TestEntityRelation.entity_a_type,
                                   entity_b=TestEntityRelation.entity_b,
                                   entity_b_family=TestEntityRelation.entity_b_family,
-                                  object_type_b=TestEntityRelation.object_type_b,
+                                  entity_b_type=TestEntityRelation.entity_b_type,
                                   )
 
         expected_to_indicator = {
@@ -4236,10 +4236,10 @@ class TestEntityRelation:
             "type": TestEntityRelation.relation_type,
             "entityA": TestEntityRelation.entity_a,
             "entityAFamily": TestEntityRelation.entity_a_family,
-            "objectTypeA": TestEntityRelation.object_type_a,
+            "entityAType": TestEntityRelation.entity_a_type,
             "entityB": TestEntityRelation.entity_b,
             "entityBFamily": TestEntityRelation.entity_b_family,
-            "objectTypeB": TestEntityRelation.object_type_b,
+            "entityBType": TestEntityRelation.entity_b_type,
             "fields": {},
         }
         assert relation.to_indicator() == expected_to_indicator
@@ -4261,10 +4261,10 @@ class TestEntityRelation:
                            relation_type=TestEntityRelation.relation_type,
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family=TestEntityRelation.entity_a_family,
-                           object_type_a=TestEntityRelation.object_type_a,
+                           entity_a_type=TestEntityRelation.entity_a_type,
                            entity_b=TestEntityRelation.entity_b,
                            entity_b_family=TestEntityRelation.entity_b_family,
-                           object_type_b=TestEntityRelation.object_type_b
+                           entity_b_type=TestEntityRelation.entity_b_type
                             )
         except ValueError as exception:
             assert "Invalid relation: ilegal" in str(exception)
@@ -4286,10 +4286,10 @@ class TestEntityRelation:
                            relation_type='TestRelationType',
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family=TestEntityRelation.entity_a_family,
-                           object_type_a=TestEntityRelation.object_type_a,
+                           entity_a_type=TestEntityRelation.entity_a_type,
                            entity_b=TestEntityRelation.entity_b,
                            entity_b_family=TestEntityRelation.entity_b_family,
-                           object_type_b=TestEntityRelation.object_type_b
+                           entity_b_type=TestEntityRelation.entity_b_type
                            )
         except ValueError as exception:
             assert "Invalid relation type: TestRelationType" in str(exception)
@@ -4311,10 +4311,10 @@ class TestEntityRelation:
                            relation_type=TestEntityRelation.relation_type,
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family='IndicatorIlegal',
-                           object_type_a=TestEntityRelation.object_type_a,
+                           entity_a_type=TestEntityRelation.entity_a_type,
                            entity_b=TestEntityRelation.entity_b,
                            entity_b_family=TestEntityRelation.entity_b_family,
-                           object_type_b=TestEntityRelation.object_type_b
+                           entity_b_type=TestEntityRelation.entity_b_type
                             )
         except ValueError as exception:
             assert "Invalid entity A Family type: IndicatorIlegal" in str(exception)
@@ -4336,10 +4336,10 @@ class TestEntityRelation:
                            relation_type=TestEntityRelation.relation_type,
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family=TestEntityRelation.entity_a_family,
-                           object_type_a='DomainTest',
+                           entity_a_type='DomainTest',
                            entity_b=TestEntityRelation.entity_b,
                            entity_b_family=TestEntityRelation.entity_b_family,
-                           object_type_b=TestEntityRelation.object_type_b
+                           entity_b_type=TestEntityRelation.entity_b_type
                             )
         except ValueError as exception:
             assert "Invalid entity A type: DomainTest" in str(exception)
@@ -4361,10 +4361,10 @@ class TestEntityRelation:
                            relation_type=TestEntityRelation.relation_type,
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family=TestEntityRelation.entity_a_family,
-                           object_type_a=TestEntityRelation.object_type_a,
+                           entity_a_type=TestEntityRelation.entity_a_type,
                            entity_b=TestEntityRelation.entity_b,
                            entity_b_family='IndicatorIlegal',
-                           object_type_b=TestEntityRelation.object_type_b
+                           entity_b_type=TestEntityRelation.entity_b_type
                             )
         except ValueError as exception:
             assert "Invalid entity B Family type: IndicatorIlegal" in str(exception)
@@ -4386,10 +4386,10 @@ class TestEntityRelation:
                            relation_type=TestEntityRelation.relation_type,
                            entity_a=TestEntityRelation.entity_a,
                            entity_a_family=TestEntityRelation.entity_a_family,
-                           object_type_a=TestEntityRelation.object_type_a,
+                           entity_a_type=TestEntityRelation.entity_a_type,
                            entity_b=TestEntityRelation.entity_b,
                            entity_b_family=TestEntityRelation.entity_b_family,
-                           object_type_b='DomainTest'
+                           entity_b_type='DomainTest'
                             )
         except ValueError as exception:
             assert "Invalid entity B type: DomainTest" in str(exception)
