@@ -46,12 +46,12 @@ EMAIL_HTML_FIELD = 'emailbodyhtml'
 EMAIL_HEADERS_FIELD = 'emailheaders'
 EMAIL_ATTACHMENT_FIELD = 'attachment'
 
-GLOVE_50_PATH = '/var/glove_50_top_20k.p'
-GLOVE_100_PATH = '/var/glove_100_top_20k.p'
-FASTTEXT_PATH = '/var/fasttext_top_20k.p'
-DOMAIN_TO_RANK_PATH = '/var/domain_to_rank.p'
-WORD_TO_NGRAM_PATH = '/var/word_to_ngram.p'
-WORD_TO_REGEX_PATH = '/var/word_to_regex.p'
+GLOVE_50_PATH = '/ml/glove_50_top_20k.p'
+GLOVE_100_PATH = '/ml/glove_100_top_20k.p'
+FASTTEXT_PATH = '/ml/fasttext_top_20k.p'
+DOMAIN_TO_RANK_PATH = '/ml/domain_to_rank.p'
+WORD_TO_NGRAM_PATH = '/ml/word_to_ngram.p'
+WORD_TO_REGEX_PATH = '/ml/word_to_regex.p'
 
 EMBEDDING_DICT_GLOVE_50 = None
 EMBEDDING_DICT_GLOVE_100 = None
