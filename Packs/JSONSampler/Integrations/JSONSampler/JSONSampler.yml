@@ -25,9 +25,7 @@ configuration:
   required: false
   type: 0
 description: |-
-  This is a JSON Sampler.  Save a string of a JSON object into the integration and then fetch or simulate running the sampler command to receive the response.
-
-  Currently supports only single JSON object as sample.
+  A utility for testing incident fetching with mock JSON data.
 display: JSONSampler
 name: JSONSampler
 script:
