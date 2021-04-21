@@ -4710,7 +4710,7 @@ class EntityRelation:
 
         # Entity B - Destination
         if not entity_b:
-            demisto.debug(
+            demisto.info(
                 "WARNING: Invalid entity B - Relationships will not be created to entity A {} with relation name {}".format(
                     str(entity_a), str(name)))
         self._entity_b = entity_b
