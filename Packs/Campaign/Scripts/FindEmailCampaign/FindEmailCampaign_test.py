@@ -215,7 +215,7 @@ def test_context_populated_with_requested_fields_happy_path(mocker, fields_to_st
     # assert
     for context_incident in context['EmailCampaign.incidents']:
         for field in fields_to_store_in_context:
-            assert field in context_incident, 'the field "{}" is expected to be stored in context'.format(field)
+            assert field in context_incident, f'the field "{field}" is expected to be stored in context'
 
 
 def test_context_not_populated_with_invalid_fields(mocker):
@@ -243,4 +243,4 @@ def test_context_not_populated_with_invalid_fields(mocker):
     # and invalid keys aren't in the context
     for context_incident in context['EmailCampaign.incidents']:
         for field in invalid_fields:
-            assert field not in context_incident, 'the field "{}" should not be stored in context'.format(field)
+            assert field not in context_incident, f'the field "{field}" should not be stored in context'

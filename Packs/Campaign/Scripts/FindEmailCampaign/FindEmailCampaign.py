@@ -344,8 +344,11 @@ def create_email_summary_hr(incidents_df, fields_to_display):
     hr_email_summary += '\n ##### ' + email_summary
     context = add_context_key(
         create_context_for_campaign_details(
-            campaign_found=True, incidents_df=incidents_df,
-            additional_context_fields=fields_to_display))
+            campaign_found=True,
+            incidents_df=incidents_df,
+            additional_context_fields=fields_to_display,
+        )
+    )
     return context, hr_email_summary
 
 
