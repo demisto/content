@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 from datetime import datetime
-import time
-
 
 def main() -> None:
     integrationInstance = demisto.integrationInstance()
