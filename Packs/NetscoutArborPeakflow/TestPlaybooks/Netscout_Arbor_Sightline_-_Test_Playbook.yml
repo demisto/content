@@ -346,7 +346,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1240
         }
       }
     note: false
@@ -413,7 +413,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1415
         }
       }
     note: false
@@ -914,10 +914,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 02f4db55-4602-4260-8913-d15ce8dd2959
+    taskid: 10bd9a97-5535-489e-809f-8dd571cf40b4
     type: regular
     task:
-      id: 02f4db55-4602-4260-8913-d15ce8dd2959
+      id: 10bd9a97-5535-489e-809f-8dd571cf40b4
       version: -1
       name: na-sightline-mitigation-delete
       description: Delete a given mitigation.
@@ -932,15 +932,22 @@ tasks:
       mitigation_id:
         complex:
           root: NASightline.Mitigation
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NASightline.Mitigation.ongoing
+                iscontext: true
+              right:
+                value:
+                  simple: "false"
           accessor: id
-          transformers:
-          - operator: LastArrayElement
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1590
         }
       }
     note: false
