@@ -5,7 +5,7 @@ import json
 import urllib3
 import traceback
 from typing import Tuple, List, Dict
-from datetime import date
+from datetime import date, datetime
 import dateparser
 import re
 
@@ -230,11 +230,17 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                 # Simplify the message data
                 if key == "activityConnection":
                     for m in value["nodes"]:
+
+                        #Convert time to friendly display format
+                        demisto.info("ENTERING DATETIME")
+                        display_time = datetime.strptime(m["time"], "%Y-%m-%dT%H:%M:%S.%fZ")
+                        display_time = display_time.strftime('%b %d, %Y at %I:%M:%S %p')
+                        demisto.info("DISPLAY TIME IS: " + display_time)
+
                         process_incident["message"].append({  # type: ignore
                             "message": m["message"],
                             "id": m["id"],
-                            "time": m["time"]
-
+                            "time": display_time
                         })
 
                         #Check if message includes the File Change attributes
