@@ -2316,7 +2316,10 @@ class Common(object):
         :param malware_family: The malware family associated with the IP.
 
         :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: Indicators that are associated with the IP.
+        :param feed_related_indicators: List of indicators that are associated with the IP.
+
+        :type relations: ``list of EntityRelation``
+        :param relations: List of relations of the indicator.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
@@ -2329,7 +2332,7 @@ class Common(object):
         def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
                      geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
                      organization_name=None, organization_type=None, feed_related_indicators=None, tags=None,
-                     malware_family=None):
+                     malware_family=None, relations=None):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -2344,6 +2347,7 @@ class Common(object):
             self.feed_related_indicators = feed_related_indicators
             self.tags = tags
             self.malware_family = malware_family
+            self.relations = relations
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2389,7 +2393,10 @@ class Common(object):
                 ip_context['PositiveDetections'] = self.positive_engines
 
             if self.feed_related_indicators:
-                ip_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                ip_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.tags:
                 ip_context['Tags'] = self.tags
@@ -2402,6 +2409,10 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relations:
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
+                ip_context['Relations'] = relations_context
 
             ret_value = {
                 Common.IP.CONTEXT_PATH: ip_context
@@ -2537,10 +2548,13 @@ class Common(object):
         :param tags: Tags of the file.
 
         :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: Indicators that are associated with the file.
+        :param feed_related_indicators: List of indicators that are associated with the file.
 
         :type malware_family: ``str``
         :param malware_family: The malware family associated with the File.
+
+        :type relations: ``list of EntityRelation``
+        :param relations: List of relations of the indicator.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
@@ -2556,7 +2570,7 @@ class Common(object):
         def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
                      sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
                      product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
-                     feed_related_indicators=None, malware_family=None):
+                     feed_related_indicators=None, malware_family=None, relations=None):
 
             self.name = name
             self.entry_id = entry_id
@@ -2578,6 +2592,7 @@ class Common(object):
             self.tags = tags
             self.feed_related_indicators = feed_related_indicators
             self.malware_family = malware_family
+            self.relations = relations
 
             self.dbot_score = dbot_score
 
@@ -2622,8 +2637,12 @@ class Common(object):
                 file_context['Actor'] = self.actor
             if self.tags:
                 file_context['Tags'] = self.tags
+
             if self.feed_related_indicators:
-                file_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                file_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.malware_family:
                 file_context['MalwareFamily'] = self.malware_family
@@ -2633,6 +2652,10 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relations:
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
+                file_context['Relations'] = relations_context
 
             ret_value = {
                 Common.File.CONTEXT_PATH: file_context
@@ -2656,12 +2679,14 @@ class Common(object):
         :param modified: The timestamp of when the CVE was last modified.
         :type description: ``str``
         :param description: A description of the CVE.
+        :type relations: ``list of EntityRelation``
+        :param relations: List of relations of the indicator.
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, cvss, published, modified, description):
+        def __init__(self, id, cvss, published, modified, description, relations=None):
             # type (str, str, str, str, str) -> None
 
             self.id = id
@@ -2675,6 +2700,7 @@ class Common(object):
                 integration_name=None,
                 score=Common.DBotScore.NONE
             )
+            self.relations = relations
 
         def to_context(self):
             cve_context = {
@@ -2692,6 +2718,10 @@ class Common(object):
 
             if self.description:
                 cve_context['Description'] = self.description
+
+            if self.relations:
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
+                cve_context['Relations'] = relations_context
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -2711,17 +2741,20 @@ class Common(object):
         :param domain: The domain of the Email.
         :type blocked: ``bool``
         :param blocked: Whether the email address is blocked.
+        :type relations: ``list of EntityRelation``
+        :param relations: List of relations of the indicator.
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'EMAIL(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, address, dbot_score, domain=None, blocked=None):
+        def __init__(self, address, dbot_score, domain=None, blocked=None, relations=None):
             # type (str, str, bool) -> None
             self.address = address
             self.domain = domain
             self.blocked = blocked
             self.dbot_score = dbot_score
+            self.relations = relations
 
         def to_context(self):
             email_context = {
@@ -2731,6 +2764,11 @@ class Common(object):
                 email_context['Domain'] = self.domain
             if self.blocked:
                 email_context['Blocked'] = self.blocked
+
+            if self.relations:
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
+                email_context['Relations'] = relations_context
+
             ret_value = {
                 Common.EMAIL.CONTEXT_PATH: email_context
             }
@@ -2754,13 +2792,16 @@ class Common(object):
         :param category: The category associated with the indicator.
 
         :type feed_related_indicators: ``FeedRelatedIndicators``
-        :param feed_related_indicators: Indicators that are associated with the URL.
+        :param feed_related_indicators: List of indicators that are associated with the URL.
 
         :type malware_family: ``str``
         :param malware_family: The malware family associated with the URL.
 
         :type tags: ``str``
         :param tags: Tags of the URL.
+
+        :type relations: ``list of EntityRelation``
+        :param relations: List of relations of the indicator.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
@@ -2771,7 +2812,7 @@ class Common(object):
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
         def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
-                     feed_related_indicators=None, tags=None, malware_family=None):
+                     feed_related_indicators=None, tags=None, malware_family=None, relations=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
@@ -2779,6 +2820,7 @@ class Common(object):
             self.feed_related_indicators = feed_related_indicators
             self.tags = tags
             self.malware_family = malware_family
+            self.relations = relations
 
             self.dbot_score = dbot_score
 
@@ -2797,7 +2839,10 @@ class Common(object):
                 url_context['Category'] = self.category
 
             if self.feed_related_indicators:
-                url_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                url_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.tags:
                 url_context['Tags'] = self.tags
@@ -2810,6 +2855,10 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relations:
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
+                url_context['Relations'] = relations_context
 
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
@@ -2831,7 +2880,8 @@ class Common(object):
                      domain_status=None, name_servers=None, feed_related_indicators=None, malware_family=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None,
+                     relations=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2861,6 +2911,7 @@ class Common(object):
             self.name_servers = name_servers
             self.feed_related_indicators = feed_related_indicators
             self.malware_family = malware_family
+            self.relations = relations
 
             self.dbot_score = dbot_score
 
@@ -2935,7 +2986,10 @@ class Common(object):
                 domain_context['Tags'] = self.tags
 
             if self.feed_related_indicators:
-                domain_context['FeedRelatedIndicators'] = self.feed_related_indicators.to_context()
+                feed_related_indicators = []
+                for feed_related_indicator in self.feed_related_indicators:
+                    feed_related_indicators.append(feed_related_indicator.to_context())
+                domain_context['FeedRelatedIndicators'] = feed_related_indicators
 
             if self.malware_family:
                 domain_context['MalwareFamily'] = self.malware_family
@@ -2948,6 +3002,10 @@ class Common(object):
 
             if whois_context:
                 domain_context['WHOIS'] = whois_context
+
+            if self.relations:
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
+                domain_context['Relations'] = relations_context
 
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context
@@ -2966,7 +3024,7 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None):
+                     memory=None, processors=None, processor=None, relations=None):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
@@ -2980,6 +3038,7 @@ class Common(object):
             self.memory = memory
             self.processors = processors
             self.processor = processor
+            self.relations = relations
 
         def to_context(self):
             endpoint_context = {
@@ -3022,6 +3081,10 @@ class Common(object):
             if self.processor:
                 endpoint_context['Processor'] = self.processor
 
+            if self.relations:
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
+                endpoint_context['Relations'] = relations_context
+
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
             }
@@ -3043,7 +3106,7 @@ class Common(object):
         def __init__(self, id, type=None, username=None, display_name=None, groups=None,
                      domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
                      department=None, country=None, state=None, city=None, street=None, is_enabled=None,
-                     dbot_score=None):
+                     dbot_score=None, relations=None):
             self.id = id
             self.type = type
             self.username = username
@@ -3060,6 +3123,7 @@ class Common(object):
             self.city = city
             self.street = street
             self.is_enabled = is_enabled
+            self.relations = relations
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -3091,6 +3155,10 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relations:
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
+                account_context['Relations'] = relations_context
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
@@ -4381,6 +4449,361 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
         raise ValueError('"{}" is not a valid date'.format(arg))
 
 
+# -------------------------------- Relations----------------------------------- #
+
+
+class EntityRelation:
+    """
+    XSOAR entity relation.
+
+    :type name: ``str``
+    :param name: Relation name.
+
+    :type relation_type: ``str``
+    :param relation_type: Relation type.
+
+    :type entity_a: ``str``
+    :param entity_a: A value, A aka Source of the relation.
+
+    :type entity_a_family: ``str``
+    :param entity_a_family: Entity family of type A, A aka Source of the relation. (e.g. IP/URL/...).
+
+    :type entity_type_a: ``str``
+    :param entity_type_a: Entity type B, B aka Source of the relation. (For future use).
+
+    :type entity_b: ``str``
+    :param entity_b: B value, B aka Source of the relation.
+
+    :type entity_b_family: ``str``
+    :param entity_b_family: Entity family of type B, B aka Source of the relation. (e.g. IP/URL/...)
+
+    :type entity_type_b: ``str``
+    :param entity_type_b: Entity type B, B aka Source of the relation. (For future use).
+
+    :type source_reliability: ``str``
+    :param source_reliability: Source_reliability.
+
+    :type fields: ``dict``
+    :param fields: Custom fields.
+
+    :type brand: ``str``
+    :param brand: Source brand name. (Optional)
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    class RelationsTypes(object):
+        """
+        Relations Types objects.
+
+        :return: None
+        :rtype: ``None``
+        """
+        # dict which keys is a relationship type and the value is the reverse type.
+        RELATIONSHIP_TYPES = ['IndicatorToIndicator']
+
+        @staticmethod
+        def is_valid_type(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelation.RelationsTypes.RELATIONSHIP_TYPES
+
+    class RelationsFamily(object):
+        """
+        Relations Family object list.
+
+        :return: None
+        :rtype: ``None``
+
+        """
+
+        INDICATOR = ["Indicator"]
+
+        @staticmethod
+        def is_valid_type(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelation.RelationsFamily.INDICATOR
+
+    class Relations(object):
+
+        """
+        Enum: Relations names and their reverse
+
+        :return: None
+        :rtype: ``None``
+        """
+        APPLIED = 'applied'
+        ATTACHEMENT_OF = 'attachement-of'
+        ATTACHES = 'attaches'
+        ATTRIBUTE_OF = 'attribute-of'
+        ATTRIBUTED_BY = 'attributed-by'
+        ATTRIBUTED_TO = 'attributed-to'
+        AUTHORED_BY = 'authored-by'
+        BEACONS_TO = 'beacons-to'
+        BUNDELED_IN = 'bundeled-in'
+        BUNDLES = 'bundles'
+        COMMUNICATED_WITH = 'communicated-with'
+        COMMUNICATED_BY = 'communicated-by'
+        COMMUNICATES_WITH = 'communicates-with'
+        COMPROMISES = 'compromises'
+        CONTAINS = 'contains'
+        CONTROLS = 'controls'
+        CREATED_BY = 'created-by'
+        CREATES = 'creates'
+        DELIVERED_BY = 'delivered-by'
+        DELIVERS = 'delivers'
+        DOWNLOADS = 'downloads'
+        DOWNLOADS_FROM = 'downloads-from'
+        DROPPED_BY = 'dropped-by'
+        DROPS = 'drops'
+        DUPLICATE_OF = 'duplicate-of'
+        EMBBEDED_IN = 'embbeded-in'
+        EMBEDS = 'embeds'
+        EXECUTED = 'executed'
+        EXECUTED_BY = 'executed-by'
+        EXFILTRATES_TO = 'exfiltrates-to'
+        EXPLOITS = 'exploits'
+        HAS = 'has'
+        HOSTED_ON = 'hosted-on'
+        HOSTS = 'hosts'
+        IMPERSONATES = 'impersonates'
+        INDICATED_BY = 'indicated-by'
+        INDICATOR_OF = 'indicator-of'
+        INJECTED_FROM = 'injected-from'
+        INJECTS_INTO = 'injects-into'
+        INVESTIGATES = 'investigates'
+        IS_ALSO = 'is-also'
+        MITIGATED_BY = 'mitigated-by'
+        MITIGATES = 'mitigates'
+        ORIGINATED_FROM = 'originated-from'
+        OWNED_BY = 'owned-by'
+        OWNS = 'owns'
+        PART_OF = 'part-of'
+        RELATED_TO = 'related-to'
+        REMEDIATES = 'remediates'
+        RESOLVED_BY = 'resolved-by'
+        RESOLVED_FROM = 'resolved-from'
+        RESOLVES_TO = 'resolves-to'
+        SEEN_ON = 'seen-on'
+        SENT = 'sent'
+        SENT_BY = 'sent-by'
+        SENT_FROM = 'sent-from'
+        SENT_TO = 'sent-to'
+        SIMILAR_TO = 'similar-to'
+        SUB_DOMAIN_OF = 'sub-domain-of'
+        SUPRA_DOMAIN_OF = 'supra-domain-of'
+        TARGETED_BY = 'targeted-by'
+        TARGETS = 'targets'
+        TYPES = 'Types'
+        UPLOADED_TO = 'uploaded-to'
+        USED_BY = 'used-by'
+        USED_ON = 'used-on'
+        USES = 'uses'
+        VARIANT_OF = 'variant-of'
+
+        RELATIONS_NAMES = {'applied': 'applied-on',
+                           'attachement-of': 'attaches',
+                           'attaches': 'attachement-of',
+                           'attribute-of': 'owns',
+                           'attributed-by': 'attributed-to',
+                           'attributed-to': 'attributed-by',
+                           'authored-by': 'author-of',
+                           'beacons-to': 'communicated-by',
+                           'bundeled-in': 'bundles',
+                           'bundles': 'bundeled-in',
+                           'communicated-with': 'communicated-by',
+                           'communicated-by': 'communicates-with',
+                           'communicates-with': 'communicated-by',
+                           'compromises': 'compromised-by',
+                           'contains': 'part-of',
+                           'controls': 'controlled-by',
+                           'created-by': 'creates',
+                           'creates': 'created-by',
+                           'delivered-by': 'delivers',
+                           'delivers': 'delivered-by',
+                           'downloads': 'downloaded-by',
+                           'downloads-from': 'hosts',
+                           'dropped-by': 'drops',
+                           'drops': 'dropped-by',
+                           'duplicate-of': 'duplicate-of',
+                           'embbeded-in': 'embeds',
+                           'embeds': 'embedded-on',
+                           'executed': 'executed-by',
+                           'executed-by': 'executes',
+                           'exfiltrates-to': 'exfiltrated-from',
+                           'exploits': 'exploited-by',
+                           'has': 'seen-on',
+                           'hosted-on': 'hosts',
+                           'hosts': 'hosted-on',
+                           'impersonates': 'impersonated-by',
+                           'indicated-by': 'indicator-of',
+                           'indicator-of': 'indicated-by',
+                           'injected-from': 'injects-into',
+                           'injects-into': 'injected-from',
+                           'investigates': 'investigated-by',
+                           'is-also': 'is-also',
+                           'mitigated-by': 'mitigates',
+                           'mitigates': 'mitigated-by',
+                           'originated-from': 'source-of',
+                           'owned-by': 'owns',
+                           'owns': 'owned-by',
+                           'part-of': 'contains',
+                           'related-to': 'related-to',
+                           'remediates': 'remediated-by',
+                           'resolved-by': 'resolves-to',
+                           'resolved-from': 'resolves-to',
+                           'resolves-to': 'resolved-from',
+                           'seen-on': 'has',
+                           'sent': 'attached-to',
+                           'sent-by': 'sent',
+                           'sent-from': 'received-by',
+                           'sent-to': 'received-by',
+                           'similar-to': 'similar-to',
+                           'sub-domain-of': 'supra-domain-of',
+                           'supra-domain-of': 'sub-domain-of',
+                           'targeted-by': 'targets',
+                           'targets': 'targeted-by',
+                           'Types': 'Reverse',
+                           'uploaded-to': 'hosts',
+                           'used-by': 'uses',
+                           'used-on': 'targeted-by',
+                           'uses': 'used-by',
+                           'variant-of': 'variant-of'}
+
+        @staticmethod
+        def is_valid(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelation.Relations.RELATIONS_NAMES.keys()
+
+        @staticmethod
+        def get_reverse(name):
+            # type: (str) -> str
+
+            return EntityRelation.Relations.RELATIONS_NAMES[name]
+
+    def __init__(self, name, entity_a, entity_a_type, entity_b, entity_b_type,
+                 relation_type='IndicatorToIndicator', entity_a_family='Indicator', entity_b_family='Indicator',
+                 source_reliability="", fields=None, brand=""):
+
+        # Relation
+        if not EntityRelation.Relations.is_valid(name):
+            raise ValueError("Invalid relation: " + name)
+        self._name = name
+
+        self._reverse_name = EntityRelation.Relations.get_reverse(name)
+
+        if not EntityRelation.RelationsTypes.is_valid_type(relation_type):
+            raise ValueError("Invalid relation type: " + relation_type)
+        self._relation_type = relation_type
+
+        # Entity A - Source
+        self._entity_a = entity_a
+
+        self._entity_a_type = entity_a_type
+
+        if not EntityRelation.RelationsFamily.is_valid_type(entity_a_family):
+            raise ValueError("Invalid entity A Family type: " + entity_a_family)
+        self._entity_a_family = entity_a_family
+
+        # Entity B - Destination
+        if not entity_b:
+            demisto.info(
+                "WARNING: Invalid entity B - Relationships will not be created to entity A {} with relation name {}".format(
+                    str(entity_a), str(name)))
+        self._entity_b = entity_b
+
+        self._entity_b_type = entity_b_type
+
+        if not EntityRelation.RelationsFamily.is_valid_type(entity_b_family):
+            raise ValueError("Invalid entity B Family type: " + entity_b_family)
+        self._entity_b_family = entity_b_family
+
+        # Custom fields
+        if fields:
+            self._fields = fields
+        else:
+            self._fields = {}
+
+        # Source
+        if brand:
+            self._brand = brand
+        else:
+            self._brand = ''
+
+        if source_reliability:
+            if not DBotScoreReliability.is_valid_type(source_reliability):
+                raise ValueError("Invalid source reliability value", source_reliability)
+            self._source_reliability = source_reliability
+
+    def to_entry(self):
+        """ Convert object to XSOAR entry
+        :rtype: ``dict``
+        :return: XSOAR entry representation.
+        """
+        entry = {}
+
+        if self._entity_b:
+            entry = {
+                "name": self._name,
+                "reverseName": self._reverse_name,
+                "type": self._relation_type,
+                "entityA": self._entity_a,
+                "entityAFamily": self._entity_a_family,
+                "entityAType": self._entity_a_type,
+                "entityB": self._entity_b,
+                "entityBFamily": self._entity_b_family,
+                "entityBType": self._entity_b_type,
+                "fields": self._fields,
+                "reliability": self._source_reliability
+            }
+            if self._brand:
+                entry["brand"] = self._brand
+        return entry
+
+    def to_indicator(self):
+        """ Convert object to XSOAR entry
+        :rtype: ``dict``
+        :return: XSOAR entry representation.
+        """
+        indicator_relation = {}
+
+        if self._entity_b:
+            indicator_relation = {
+                "name": self._name,
+                "reverseName": self._reverse_name,
+                "type": self._relation_type,
+                "entityA": self._entity_a,
+                "entityAFamily": self._entity_a_family,
+                "entityAType": self._entity_a_type,
+                "entityB": self._entity_b,
+                "entityBFamily": self._entity_b_family,
+                "entityBType": self._entity_b_type,
+                "fields": self._fields,
+            }
+        return indicator_relation
+
+    def to_context(self):
+        """ Convert object to XSOAR context
+        :rtype: ``dict``
+        :return: XSOAR context representation.
+        """
+        indicator_relation_context = {}
+
+        if self._entity_b:
+            indicator_relation_context = {
+                "Relationship": self._name,
+                "EntityA": self._entity_a,
+                "EntityAType": self._entity_a_type,
+                "EntityB": self._entity_b,
+                "EntityBType": self._entity_b_type,
+            }
+
+        return indicator_relation_context
+
+
 class CommandResults:
     """
     CommandResults class - use to return results to warroom
@@ -4425,8 +4848,10 @@ class CommandResults:
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False, mark_as_note=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool) -> None
+                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
+                 mark_as_note=False, polling_command=None, polling_args=None, polling_timeout=None,
+                 polling_next_run=None, relations=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool,str, dict, str, str, list) -> None # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -4458,9 +4883,16 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
+        self.polling_command = polling_command
+        self.polling_args = polling_args
+        self.polling_timeout = polling_timeout
+        self.polling_next_run = polling_next_run
+
+        self.relations = relations
 
     def to_context(self):
         outputs = {}  # type: dict
+        relations = []  # type: list
         if self.readable_output:
             human_readable = self.readable_output
         else:
@@ -4510,6 +4942,9 @@ class CommandResults:
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
 
+        if self.relations:
+            relations = [relation.to_entry() for relation in self.relations if relation.to_entry()]
+
         content_format = EntryFormat.JSON
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
             content_format = EntryFormat.TEXT
@@ -4522,8 +4957,16 @@ class CommandResults:
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
-            'Note': mark_as_note
+            'Note': mark_as_note,
+            'Relationships': relations,
         }
+        if self.polling_command and self.polling_next_run:
+            return_entry.update({
+                'PollingCommand': self.polling_command,
+                'PollingArgs': self.polling_args,
+                'Timeout': self.polling_timeout,
+                'NextRun': self.polling_next_run
+            })
         return return_entry
 
 
@@ -4644,10 +5087,11 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
-    is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
-                                                                              'fetch-credentials',
-                                                                              'long-running-execution',
-                                                                              'fetch-indicators')
+    is_command = hasattr(demisto, 'command')
+    is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                             'fetch-credentials',
+                                                             'long-running-execution',
+                                                             'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
         message = "{}\n\n{}".format(message, traceback.format_exc())
 
@@ -4658,6 +5102,10 @@ def return_error(message, error='', outputs=None):
     LOG.print_log()
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+
+    if is_command and demisto.command() == 'get-modified-remote-data':
+        if (error and not isinstance(error, NotImplementedError)) or sys.exc_info()[0] != NotImplementedError:
+            message = 'skip update. error: ' + message
 
     if is_server_handled:
         raise Exception(message)
@@ -5637,7 +6085,8 @@ if 'requests' in sys.modules:
                 address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
-                self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                if retries:
+                    self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 # Execute
                 res = self._session.request(
                     method,
@@ -6418,3 +6867,83 @@ class TableOrListWidget(BaseWidget):
             'total': len(self.data),
             'data': self.data
         })
+
+
+class IndicatorsSearcher:
+    """Used in order to search indicators by the paging or serachAfter param
+     :type page: ``int``
+    :param page: the number of page from which we start search indicators from.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, page=0):
+        # searchAfter is available in searchIndicators from version 6.1.0
+        self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        self._search_after_title = 'searchAfter'
+        self._search_after_param = None
+        self._page = page
+
+    def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
+        """There are 2 cases depends on the sever version:
+        1. Search indicators using paging, raise the page number in each call.
+        2. Search indicators using searchAfter param, update the _search_after_param in each call.
+
+        :type from_date: ``str``
+        :param from_date: the start date to search from.
+
+        :type query: ``str``
+        :param query: indicator search query
+
+        :type size: ``size``
+        :param size: limit the number of returned results.
+
+        :type to_date: ``str``
+        :param to_date: the end date to search until to.
+
+        :type value: ``str``
+        :param value: the indicator value to search.
+
+        :return: object contains the search results
+        :rtype: ``dict``
+        """
+        if self._can_use_search_after:
+            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
+                                           searchAfter=self._search_after_param)
+            if self._search_after_title in res and res[self._search_after_title] is not None:
+                self._search_after_param = res[self._search_after_title]
+            else:
+                demisto.log('Elastic search using searchAfter was not found in searchIndicators')
+
+        else:
+            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page,
+                                           value=value)
+            self._page += 1
+
+        return res
+
+    @property
+    def page(self):
+        return self._page
+
+
+class AutoFocusKeyRetriever:
+    """AutoFocus API Key management class
+    :type api_key: ``str``
+    :param api_key: Auto Focus API key coming from the integration parameters
+    :type override_default_credentials: ``bool``
+    :param override_default_credentials: Whether to override the default credentials and use the
+     Cortex XSOAR given AutoFocus API Key
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, api_key):
+        # demisto.getAutoFocusApiKey() is available from version 6.2.0
+        if not api_key:
+            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
+                raise DemistoException('For versions earlier than 6.2.0, configure an API Key.')
+            try:
+                api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
+            except ValueError as err:
+                raise DemistoException('AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
+        self.key = api_key
