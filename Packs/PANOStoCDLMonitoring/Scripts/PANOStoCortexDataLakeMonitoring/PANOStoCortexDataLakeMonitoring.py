@@ -66,9 +66,9 @@ def query_cdl(fw_monitor_list: list) -> CommandResults:
 
         if query_result:
             if query_result[0]['HumanReadable'] == no_logs_str:
-                firewalls_with_logs.append(current_fw)
-            else:
                 firewalls_without_logs.append(current_fw)
+            else:
+                firewalls_with_logs.append(current_fw)
 
     all_results = [{'FirewallsWithLogsSent': firewalls_with_logs,
                     'FirewallsWithoutLogsSent': firewalls_without_logs}]
