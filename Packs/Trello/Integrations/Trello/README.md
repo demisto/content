@@ -2,6 +2,9 @@ Interact with the Trello task manager
 This integration was integrated and tested with version 1.0.0 of Trello
 ## Configure Trello on Cortex XSOAR
 
+First, retrieve an API key from the trello API page, by following [this link](https://trello.com/app-key)
+For more information, see the following [Trello documentation](https://developer.atlassian.com/cloud/trello/guides/rest-api/api-introduction/)
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Trello.
 3. Click **Add instance** to create and configure a new integration instance.
