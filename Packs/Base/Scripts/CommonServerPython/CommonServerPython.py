@@ -3024,8 +3024,8 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None, vendor=None, status=None, is_isolated=None,
-                     relations=None):
+                     memory=None, processors=None, processor=None, relations=None, vendor=None, status=None,
+                     is_isolated=None):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
