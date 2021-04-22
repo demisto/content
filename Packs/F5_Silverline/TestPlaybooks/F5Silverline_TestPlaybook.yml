@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 29772a23-f485-44e8-86d4-3f2f72e94569
+    taskid: d6547c1d-3b7c-448f-84e5-6d6e59298023
     type: regular
     task:
-      id: 29772a23-f485-44e8-86d4-3f2f72e94569
+      id: d6547c1d-3b7c-448f-84e5-6d6e59298023
       version: -1
       name: Add IP to denylist
       description: Add IP address in a particular list.
@@ -84,8 +84,6 @@ tasks:
     scriptarguments:
       IP:
         simple: 1.2.3.4
-      duration:
-        simple: "3600"
       list_target:
         simple: proxy
       list_type:
@@ -107,10 +105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 799d2a80-8b9e-4c2e-8f17-8cc96ba3028f
+    taskid: 6ffe21a4-0cf6-4f71-8af7-5d8a77b629b9
     type: regular
     task:
-      id: 799d2a80-8b9e-4c2e-8f17-8cc96ba3028f
+      id: 6ffe21a4-0cf6-4f71-8af7-5d8a77b629b9
       version: -1
       name: Get denylist
       description: Get a particular ip objects list by the list type (allowlist/denylist/bad_actor).
@@ -142,10 +140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: d53fbaf6-af6d-49e6-816e-58de15d4ee14
+    taskid: b0494cf1-6094-4df0-8ca0-23997e255143
     type: condition
     task:
-      id: d53fbaf6-af6d-49e6-816e-58de15d4ee14
+      id: b0494cf1-6094-4df0-8ca0-23997e255143
       version: -1
       name: Verify IP added to denylist
       type: condition
@@ -164,7 +162,7 @@ tasks:
               simple: 1.2.3.4
           right:
             value:
-              simple: F5Silverline.IPObjectList.data.attributes.ip
+              simple: F5Silverline.IPObjectList.attributes.ip
             iscontext: true
     view: |-
       {
@@ -182,10 +180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 7a9fa35f-b18d-440a-85ad-add67177d7eb
+    taskid: 54ac005a-2b14-460c-8c3b-fb03850ed8db
     type: regular
     task:
-      id: 7a9fa35f-b18d-440a-85ad-add67177d7eb
+      id: 54ac005a-2b14-460c-8c3b-fb03850ed8db
       version: -1
       name: Delete IP from denylist
       description: Deleted a particular ip objects list by the list type (allowlist/denylist/bad_actor)
@@ -202,12 +200,12 @@ tasks:
         simple: denylist
       object_id:
         complex:
-          root: ${F5Silverline.IPObjectList.data
+          root: ${F5Silverline.IPObjectList
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: ${F5Silverline.IPObjectList.data.attributes.ip}
+                  simple: ${F5Silverline.IPObjectList.attributes.ip}
                 iscontext: true
               right:
                 value:

@@ -107,7 +107,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
 
     if not object_ids:
         response = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
-        outputs = [response]
+        outputs = response.get('data')
         human_results = parse_results_for_specific_ip_object(response)
 
     else:

@@ -67,13 +67,13 @@ script:
     execution: false
     name: f5-silverline-ip-objects-list
     outputs:
-    - contextPath: F5Silverline.IPObjectList.ID
+    - contextPath: F5Silverline.IPObjectList.id
       description: List object ID
       type: String
     - contextPath: F5Silverline.IPObjectList.type
       description: List object type
       type: String
-    - contextPath: F5Silverline.IPObjectList.attributes.IP
+    - contextPath: F5Silverline.IPObjectList.attributes.ip
       description: IP address
       type: String
     - contextPath: F5Silverline.IPObjectList.attributes.mask
@@ -95,7 +95,7 @@ script:
       description: IP object notes
       type: String
     - contextPath: F5Silverline.IPObjectList.meta.tags
-      description: ' IP object tags'
+      description: IP object tags
       type: Unknown
     - contextPath: F5Silverline.IPObjectList.meta.created_at
       description: IP object creation timestamp
