@@ -1,5 +1,5 @@
 Use the integration to get statistics from the O365 service on Safe Links clicks
-This integration was integrated and tested with version xx of Microsoft SafeLinks Statistics
+This integration was integrated and tested with Microsoft Office 365
 ## Configure Microsoft SafeLinks Statistics on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
