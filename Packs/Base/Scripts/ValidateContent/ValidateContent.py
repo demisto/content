@@ -1,4 +1,5 @@
 import io
+import json
 import traceback
 import types
 import zipfile
@@ -11,7 +12,7 @@ from tempfile import TemporaryDirectory
 from typing import Any, Dict, List, Optional, Tuple
 
 import git
-from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION
+from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
 from demisto_sdk.commands.common.content import Content
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.init.contribution_converter import (
@@ -221,16 +222,22 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     prefix = '-'.join(filename.split('-')[:-1])
     containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
     containing_dir.mkdir(exist_ok=True)
+    is_json = filename.casefold().endswith('.json')
     data_as_string = data.decode()
-    loaded_data = yaml.load(data_as_string)
-    buff = io.StringIO()
-    yaml.dump(loaded_data, buff)
-    data_as_string = buff.getvalue()
-    # write yaml integration file to file system
+    loaded_data = json.loads(data_as_string) if is_json else yaml.load(data_as_string)
+    if is_json:
+        data_as_string = json.dumps(loaded_data)
+    else:
+        buff = io.StringIO()
+        yaml.dump(loaded_data, buff)
+        data_as_string = buff.getvalue()
+    # write content item file to file system
     file_path = containing_dir / filename
     file_path.write_text(data_as_string)
     file_type = find_type(str(file_path))
     file_type = file_type.value if file_type else file_type
+    if is_json or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
+        return str(file_path), {}
     extractor = Extractor(
         input=str(file_path), file_type=file_type, output=containing_dir,
         no_logging=True, no_pipenv=True, no_basic_fmt=True
