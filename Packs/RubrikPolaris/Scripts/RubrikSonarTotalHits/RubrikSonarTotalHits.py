@@ -3,12 +3,22 @@ import demistomock as demisto  # noqa: F401
 
 def main() -> None:
 
+    ORANGE_HTML_STYLE = "color:#FF9000;display:flex;text-align:center;align-items:center;justify-content:center;font-size:200%;height:100%>"
+    GREEN_HTML_STYLE = "color:#00CD33;text-align:center;vertical-align:middle;font-size:200%;>"
+
     try:
         sonar_total_hits = demisto.context()["Rubrik"]["Sonar"]["totalHits"]
+
+        if not sonar_total_hits:
+            html = f"<h1 style={GREEN_HTML_STYLE}{str(sonar_total_hits)} Total Hits</h1>"
+
+        else:
+            html = f"<h1 style={ORANGE_HTML_STYLE}{str(sonar_total_hits)} Total Hits</h1>"
 
     except KeyError:
 
         sonar_total_hits = -1
+    """
     if sonar_total_hits == -1:
         data = {
                     "Type": 17,
@@ -63,7 +73,15 @@ def main() -> None:
                         }
                     }
                 }
-    demisto.results(data)
+    """
+
+    #demisto.results(data)
+
+    demisto.results({
+        'ContentsFormat': formats['html'],
+        'Type': entryTypes['note'],
+        'Contents': html
+    })
 
 
 # python2 uses __builtin__ python3 uses builtins
