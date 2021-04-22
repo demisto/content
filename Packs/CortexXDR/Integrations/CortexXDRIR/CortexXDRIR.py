@@ -2611,8 +2611,8 @@ def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
 
     if remote_args.delta:
-            demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
-                          f'incident {remote_args.remote_incident_id}')
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
+                      f'incident {remote_args.remote_incident_id}')
     try:
         if remote_args.incident_changed:
             update_args = get_update_args(remote_args.delta, remote_args.inc_status)
