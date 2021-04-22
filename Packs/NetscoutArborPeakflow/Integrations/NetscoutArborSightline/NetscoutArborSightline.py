@@ -61,7 +61,6 @@ class NetscoutClient(BaseClient):
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
     """
 
     OPERATOR_NAME_DICTIONARY = {
