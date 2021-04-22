@@ -7,12 +7,12 @@ configuration:
   name: api_key
   required: true
   type: 4
-- defaultvalue: https://api.polyswarm.network/v1
+- defaultvalue: https://api.polyswarm.network/v2
   display: The base URL to connect to
   name: base_url
   required: true
   type: 0
-- defaultvalue: lima
+- defaultvalue: default
   display: PolySwarm community
   name: polyswarm_community
   required: true
@@ -133,7 +133,7 @@ script:
     - contextPath: PolySwarm.Scan_UUID
       description: The PolySwarm scan UUID.
       type: String
-    - contextPath: PolySwarm.Artifact
+    - contextPath: PolySwarm.Artifact/
       description: The artifact queried.
       type: String
   - arguments:
@@ -295,6 +295,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
+  dockerimage: demisto/polyswarm:1.0.0.18926
 fromversion: 5.0.0
+
