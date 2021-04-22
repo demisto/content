@@ -3115,7 +3115,7 @@ Release on demand dedicated host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | Comma-seperated of IDs of the Dedicated Hosts to release. | Required | 
+| host_id | A comma-separated list of IDs of the Dedicated Hosts to release. | Required | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
