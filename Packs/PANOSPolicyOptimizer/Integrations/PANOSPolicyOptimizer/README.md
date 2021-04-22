@@ -1,5 +1,5 @@
 Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama.
-This integration was integrated and tested with version xx of PAN-OS Policy Optimizer
+This integration was integrated and tested with version 0.1 of PAN-OS Policy Optimizer
 ## Configure PAN-OS Policy Optimizer on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -43,10 +43,35 @@ There are no input arguments for this command.
 
 
 #### Command Example
-``` ```
+```!pan-os-po-get-stats```
+
+#### Context Example
+```json
+{
+    "PanOS": {
+        "PolicyOptimizer": {
+            "Stats": {
+                "no_app_specified": "1",
+                "unused": "8",
+                "unused_apps": "0",
+                "unused_in_30_days": "13",
+                "unused_in_90_days": "12"
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Policy Optimizer Statistics:
+>|@name|text|
+>|---|---|
+>| no_app_specified | 1 |
+>| unused_apps | 0 |
+>| unused_in_30_days | 13 |
+>| unused_in_90_days | 12 |
+>| unused | 8 |
 
 
 ### pan-os-po-no-apps
@@ -69,10 +94,89 @@ There are no input arguments for this command.
 
 
 #### Command Example
-``` ```
+```!pan-os-po-no-apps```
+
+#### Context Example
+```json
+{
+    "PanOS": {
+        "PolicyOptimizer": {
+            "NoApps": {
+                "@__recordInfo": "{\"permission\":\"readonly\",\"xpathId\":\"panorama\",\"vsysName\":\"vsys1\",\"position\":\"pre\"}",
+                "@loc": "Lab-Devices",
+                "@name": "pano_rule",
+                "@panorama": "true",
+                "@uuid": "uuid",
+                "action": "allow",
+                "application": {
+                    "member": [
+                        "any"
+                    ]
+                },
+                "apps-allowed-count": "0",
+                "apps-seen-count": "72",
+                "bytes": "84800223916",
+                "category": {
+                    "member": [
+                        "any"
+                    ]
+                },
+                "days-no-new-app-count": "193",
+                "description": "a test rule for the move function",
+                "destination": {
+                    "member": [
+                        "any"
+                    ]
+                },
+                "first-hit-timestamp": "1602403843",
+                "from": {
+                    "member": [
+                        "any"
+                    ]
+                },
+                "hip-profiles": {
+                    "member": [
+                        "any"
+                    ]
+                },
+                "hit-count": "32193134",
+                "last-app-seen-since-count": "193",
+                "last-hit-timestamp": "1602468975",
+                "last-reset-timestamp": "0",
+                "rule-creation-timestamp": "1575916248",
+                "rule-modification-timestamp": "1614045009",
+                "service": {
+                    "member": [
+                        "application-default"
+                    ]
+                },
+                "source": {
+                    "member": [
+                        "any"
+                    ]
+                },
+                "source-user": {
+                    "member": [
+                        "any"
+                    ]
+                },
+                "to": {
+                    "member": [
+                        "any"
+                    ]
+                }
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Policy Optimizer No App Specified:
+>|@name|@uuid|action|description|source|destination|
+>|---|---|---|---|---|---|
+>| pano_rule | uuid | allow | a test rule for the move function | member: any | member: any |
 
 
 ### pan-os-po-unused-apps
@@ -95,11 +199,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
-``` ```
+```!pan-os-po-unused-apps```
 
 #### Human Readable Output
 
-
+>No Rules with unused apps were found.
 
 ### pan-os-po-get-rules
 ***
@@ -128,10 +232,90 @@ Gets unused, used, or any rules
 
 
 #### Command Example
-``` ```
+```!pan-os-po-get-rules usage=Any```
+
+#### Context Example
+```json
+{
+    "PanOS": {
+        "PolicyOptimizer": {
+            "AnyRules": [
+                {
+                    "@__recordInfo": "{\"permission\":\"readonly\",\"xpathId\":\"panorama\",\"vsysName\":\"vsys1\",\"position\":\"pre\"}",
+                    "@loc": "Lab-Devices",
+                    "@name": "tip rule",
+                    "@panorama": "true",
+                    "@uuid": "uuid",
+                    "action": "allow",
+                    "application": {
+                        "member": [
+                            "any"
+                        ]
+                    },
+                    "apps-allowed-count": "0",
+                    "apps-seen-count": "0",
+                    "bytes": "0",
+                    "category": {
+                        "member": [
+                            "any"
+                        ]
+                    },
+                    "days-no-new-app-count": [],
+                    "destination": {
+                        "member": [
+                            "any"
+                        ]
+                    },
+                    "first-hit-timestamp": "0",
+                    "from": {
+                        "member": [
+                            "any"
+                        ]
+                    },
+                    "hip-profiles": {
+                        "member": [
+                            "any"
+                        ]
+                    },
+                    "hit-count": "0",
+                    "last-app-seen-since-count": [],
+                    "last-hit-timestamp": "0",
+                    "last-reset-timestamp": "0",
+                    "rule-creation-timestamp": "1575925916",
+                    "rule-modification-timestamp": "1614045009",
+                    "service": {
+                        "member": [
+                            "application-default"
+                        ]
+                    },
+                    "source": {
+                        "member": [
+                            "tip"
+                        ]
+                    },
+                    "source-user": {
+                        "member": [
+                            "any"
+                        ]
+                    },
+                    "to": {
+                        "member": [
+                            "any"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### PolicyOptimizer AnyRules:
+>|@name|@uuid|action|description|source|destination|
+>|---|---|---|---|---|---|
+>| tip rule | uuid | allow |  | member: tip | member: any |
 
 
 ### pan-os-po-app-and-usage
@@ -157,11 +341,11 @@ Gets the app usage statistics for a specific security rule.
 
 
 #### Command Example
-``` ```
+```!pan-os-po-app-and-usage rule_uuid=uuid```
 
 #### Human Readable Output
 
-
+>Rule with UUID:{uuid} does not use apps.
 
 ### pan-os-get-dag
 ***
