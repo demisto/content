@@ -3656,6 +3656,9 @@
             "demisto/powershell-ubuntu": {
                 "pid_threshold": 40,
                 "memory_threshold": 200
+            },
+            "demisto/boto3": {
+                "memory_threshold": 90
             }
         }
     }
