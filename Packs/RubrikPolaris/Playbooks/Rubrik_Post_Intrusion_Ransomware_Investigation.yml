@@ -1,8 +1,3 @@
-id: Rubrik Post Intrusion Ransomware Investigation
-version: -1
-contentitemexportablefields:
-  contentitemfields: {}
-name: Rubrik Post Intrusion Ransomware Investigation
 description: |+
   Provides the first step in the investigation of ransomware attacks.
    The playbook requires the ransom note and an example of an encrypted file (<1MB) to try to identify the ransomware and find a recovery tool via the online database.
@@ -21,23 +16,54 @@ description: |+
 
 
 
+id: Rubrik Post Intrusion Ransomware Investigation
+inputs:
+- description: "Determines whether to perform auto-isolation and remediation for the\
+    \ infected endpoint and indicators.\nValues:\n- True\n- False. This is the default. "
+  key: AutoRemediation
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: |-
+    The email addresses to notify if there is a possibility of the malware spreading and infecting other endpoints.
+    Can be a CSV list.
+  key: NotificationEmail
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The malware notification message content.
+  key: EmailBody
+  playbookInputQuery:
+  required: false
+  value:
+    simple: |-
+      During an endpoint investigation in XSOAR, other infected endpoints were found, indicating the malware is spreading in your organization and requires your attention.
+      To get more information, go to this incident in XSOAR: ${incident.id}.
+name: Rubrik Post Intrusion Ransomware Investigation
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cc248270-27db-4597-8e8f-637d3ee6913a
-    type: start
-    task:
-      id: cc248270-27db-4597-8e8f-637d3ee6913a
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "5"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a3026348-22c7-4f87-8cfd-c2444ebd3336
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: a3026348-22c7-4f87-8cfd-c2444ebd3336
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -45,46 +71,46 @@ tasks:
           "y": -3000
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: 90fb1d1d-6c6f-4ea8-8060-b2ba30d8cf32
-    type: playbook
-    task:
-      id: 90fb1d1d-6c6f-4ea8-8060-b2ba30d8cf32
-      version: -1
-      name: Isolate Endpoint - Generic
-      description: |-
-        This playbook isolates a given endpoint using the following integrations:
-        - Carbon Black Enterprise Response
-        - Palo Alto Networks Traps
-      playbookName: Isolate Endpoint - Generic
-      type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ""
       iscommand: false
-      brand: ""
+      max: 0
+      wait: 1
     nexttasks:
       '#none#':
       - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       EndpointId: {}
       Hostname:
         complex:
-          root: incident
           accessor: hosts
+          root: incident
       xdr_endpoint_id:
         complex:
-          root: PaloAltoNetworksXDR
           accessor: Endpoint.endpoint_id
+          root: PaloAltoNetworksXDR
     separatecontext: true
-    loop:
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This playbook isolates a given endpoint using the following integrations:
+        - Carbon Black Enterprise Response
+        - Palo Alto Networks Traps
+      id: c8f8dd5c-d7f3-48b8-8568-1b7cdc68072f
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
+      name: Isolate Endpoint - Generic
+      playbookId: Isolate Endpoint - Generic
+      type: playbook
+      version: -1
+    taskid: c8f8dd5c-d7f3-48b8-8568-1b7cdc68072f
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -92,27 +118,28 @@ tasks:
           "y": -2110
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: de1544f5-3d6f-4a65-8a02-6d19aac0a2fd
-    type: title
-    task:
-      id: de1544f5-3d6f-4a65-8a02-6d19aac0a2fd
-      version: -1
-      name: Identification
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "66"
+      - "109"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f6d281bb-c631-4b35-8d51-75cfca16855b
+      iscommand: false
+      name: Identification
+      type: title
+      version: -1
+      description: ''
+    taskid: f6d281bb-c631-4b35-8d51-75cfca16855b
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -120,19 +147,18 @@ tasks:
           "y": -2850
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
-    taskid: e0a889fb-c378-459b-8ab0-ae27282ce50d
-    type: regular
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "104"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: e0a889fb-c378-459b-8ab0-ae27282ce50d
-      version: -1
-      name: Upload ransomware files
+      brand: ""
       description: "Ransomware creates unique files that can help identify the ransomware\
         \ strain that you are dealing with. \nSome of the special features that we\
         \ can look for are: \n1. File extension of the encrypted files created by\
@@ -147,13 +173,14 @@ tasks:
         \ files that are visible and can be related to the incident.\nNote: Keep in\
         \ mind that you can use XSOAR CLI to run commands in the context of the incident\
         \ on enabled integrations to assist in this task. "
-      type: regular
+      id: 20980d31-c6fc-45bd-8b05-c0bc324edb11
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "104"
-    separatecontext: false
+      name: Upload ransomware files
+      type: regular
+      version: -1
+    taskid: 20980d31-c6fc-45bd-8b05-c0bc324edb11
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -161,19 +188,71 @@ tasks:
           "y": -1630
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "9":
+    form:
+      description: Ransomware Enrichment
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Ransomware Strain
+        options: []
+        optionsarg: []
+        placeholder: Ryuk (or leave empty if not identified)
+        readonly: false
+        required: false
+        tooltip: 'Result of the enrichment from ID-Ransomware '
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Was a recovery tool found?
+        options:
+        - Not Available
+        - Available
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: Result of the enrichment from ID-Ransomware
+        type: singleSelect
+      sender: ""
+      title: Ransomware Enrichment
+      totalanswers: 0
     id: "9"
-    taskid: ccdc6cea-8781-47af-8afc-f64476ab741a
-    type: collection
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Enrich the ransomware according to the task details and update the
+          results
+      cc:
+      format: ""
+      methods: []
+      subject:
+        simple: Ransomware Enrichment
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Analyst
+    nexttasks:
+      '#none#':
+      - "99"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: ccdc6cea-8781-47af-8afc-f64476ab741a
-      version: -1
-      name: Ransomware enrichment
+      brand: ""
       description: "For enrichment, it is recommended to use the community ransomware\
         \ identification service: \nhttps://id-ransomware.malwarehunterteam.com/ made\
         \ by malware hunter team.\nThis free service can identify more than 1,000\
@@ -184,13 +263,14 @@ tasks:
         \ note.\n2. Encrypted file <1MB. \n3. Email address or links. \nPlease refer\
         \ to the service FAQ to understand the terms of service and the confidentiality\
         \ of the uploaded data."
-      type: collection
+      id: 31e5bdfb-e64f-4c13-8994-37a6553f0cf3
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "99"
-    separatecontext: false
+      name: Ransomware enrichment
+      type: collection
+      version: -1
+    taskid: 31e5bdfb-e64f-4c13-8994-37a6553f0cf3
+    timertriggers: []
+    type: collection
     view: |-
       {
         "position": {
@@ -198,80 +278,14 @@ tasks:
           "y": -260
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-        simple: Analyst
-      subject:
-        simple: Ransomware Enrichment
-      body:
-        simple: Enrich the ransomware according to the task details and update the
-          results
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Ransomware Strain
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: Ryuk (or leave empty if not identified)
-        tooltip: 'Result of the enrichment from ID-Ransomware '
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: Was a recovery tool found?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options:
-        - Not Available
-        - Available
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Result of the enrichment from ID-Ransomware
-        readonly: false
-      title: Ransomware Enrichment
-      description: Ransomware Enrichment
-      sender: ""
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
-    taskid: 058f6f3e-89f7-40ac-8dce-9fb2573b1bbb
-    type: regular
-    task:
-      id: 058f6f3e-89f7-40ac-8dce-9fb2573b1bbb
-      version: -1
-      name: Send ransomware notification to relevant stakeholders
-      description: Sends an email using EWS.
-      script: '|||send-mail'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "12"
+    note: false
+    quietmode: 0
     scriptarguments:
       attachCIDs: {}
       attachIDs: {}
@@ -289,6 +303,19 @@ tasks:
         complex:
           root: inputs.NotificationEmail
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using EWS.
+      id: 365dd9f9-436f-47c8-8a7c-04f9566934cb
+      iscommand: true
+      name: Send ransomware notification to relevant stakeholders
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 365dd9f9-436f-47c8-8a7c-04f9566934cb
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -296,27 +323,27 @@ tasks:
           "y": 490
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
     id: "12"
-    taskid: 596a5595-3403-4ec0-841f-eecad201e414
-    type: title
-    task:
-      id: 596a5595-3403-4ec0-841f-eecad201e414
-      version: -1
-      name: Investigation
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "64"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 878c2c5d-0a43-490b-84b5-f0a2c7ee0589
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+      description: ''
+    taskid: 878c2c5d-0a43-490b-84b5-f0a2c7ee0589
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -324,19 +351,61 @@ tasks:
           "y": 660
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
+    form:
+      description: Retrieve and update the owner of the encrypted file.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Who is the file owner?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: 'The owner of the encrypted files can provide an indication of a
+          user or the source user who encrypts the files across the domain. This action
+          can help to determine the following: 1. User/account which have been compromised
+          by the attacker and is responsible for the encryption 2. Level of the privileges
+          the attacker was able to compromise. 3. Indicates a source endpoint to further
+          investigate. To verify file ownership on windows OS, right click on one
+          of the encrypted files, under security tab click advanced. in the popup
+          window you will able to see the file owner on the top left corner.'
+        type: shortText
+      sender: ""
+      title: Ransomware file owner investigation
+      totalanswers: 0
     id: "13"
-    taskid: 35185970-7407-4063-84d4-8dd515616fec
-    type: collection
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Retrieve and update encrypted file owner
+      cc:
+      format: ""
+      methods: []
+      subject:
+        simple: Ransomware file owner investigation
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Analyst
+    nexttasks:
+      '#none#':
+      - "88"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 35185970-7407-4063-84d4-8dd515616fec
-      version: -1
-      name: File owner investigation
+      brand: ""
       description: "The owner of encrypted files can provide an indication of a user\
         \ whose activity should be investigated. This user may have encrypted the\
         \ files across the domain. \nThis action can help to determine the following:\n\
@@ -346,13 +415,14 @@ tasks:
         \nVerify file ownership on Windows OS by right-clicking one of the encrypted\
         \ files > Security tab > Advanced. In the pop-up window you will see the file\
         \ owner in the top left corner.\n"
-      type: collection
+      id: c115d5d4-ed6c-4f5b-808b-6ec6fc8629cb
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "88"
-    separatecontext: false
+      name: File owner investigation
+      type: collection
+      version: -1
+    taskid: c115d5d4-ed6c-4f5b-808b-6ec6fc8629cb
+    timertriggers: []
+    type: collection
     view: |-
       {
         "position": {
@@ -360,71 +430,28 @@ tasks:
           "y": 975
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-        simple: Analyst
-      subject:
-        simple: Ransomware file owner investigation
-      body:
-        simple: Retrieve and update encrypted file owner
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Who is the file owner?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: 'The owner of the encrypted files can provide an indication of a
-          user or the source user who encrypts the files across the domain. This action
-          can help to determine the following: 1. User/account which have been compromised
-          by the attacker and is responsible for the encryption 2. Level of the privileges
-          the attacker was able to compromise. 3. Indicates a source endpoint to further
-          investigate. To verify file ownership on windows OS, right click on one
-          of the encrypted files, under security tab click advanced. in the popup
-          window you will able to see the file owner on the top left corner.'
-        readonly: false
-      title: Ransomware file owner investigation
-      description: Retrieve and update the owner of the encrypted file.
-      sender: ""
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
   "15":
     id: "15"
-    taskid: 92579c0c-6cc4-4ba3-892f-0f6a0a8a26d2
-    type: playbook
-    task:
-      id: 92579c0c-6cc4-4ba3-892f-0f6a0a8a26d2
-      version: -1
-      name: Detonate File - Generic
-      playbookName: Detonate File - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "107"
+    note: false
+    quietmode: 0
     separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dcf05f47-2331-47b0-896a-26de07815eaa
+      iscommand: false
+      name: Detonate File - Generic
+      playbookId: Detonate File - Generic
+      type: playbook
+      version: -1
+      description: ''
+    taskid: dcf05f47-2331-47b0-896a-26de07815eaa
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -432,30 +459,30 @@ tasks:
           "y": -1290
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "29":
     id: "29"
-    taskid: 289d8295-1458-4621-8365-d038a3ef55dc
-    type: regular
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 289d8295-1458-4621-8365-d038a3ef55dc
-      version: -1
-      name: Test the ransomware recovery tool.
+      brand: ""
       description: |
         If a recovery tool was found, it is recommended to test it prior to using it on all of the encrypted files.
         Test the tool on a low-impact endpoint to verify that it can decrypt the data without causing permanent data loss of the encrypted files.
         If the tool decrypted the files successfully, make sure to deploy the tool only after applying all the necessary countermeasures to clean everything related to the breach from your environment.
-      type: regular
+      id: 5683c1d1-1249-4ad9-850b-0dcd49b0e5d8
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "38"
-    separatecontext: false
+      name: Test the ransomware recovery tool.
+      type: regular
+      version: -1
+    taskid: 5683c1d1-1249-4ad9-850b-0dcd49b0e5d8
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -463,27 +490,27 @@ tasks:
           "y": 2540
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "38":
     id: "38"
-    taskid: 2f4f5773-27fc-42f7-8894-fcf52694a1ad
-    type: title
-    task:
-      id: 2f4f5773-27fc-42f7-8894-fcf52694a1ad
-      version: -1
-      name: 'Containment '
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "103"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 78ef9294-8b8f-41bf-8bcd-c5ae89bc8a5a
+      iscommand: false
+      name: 'Containment '
+      type: title
+      version: -1
+      description: ''
+    taskid: 78ef9294-8b8f-41bf-8bcd-c5ae89bc8a5a
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -491,52 +518,57 @@ tasks:
           "y": 2720
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "42":
+    fieldMapping:
+    - incidentfield: Note
+      output:
+        complex:
+          root: FileData
     id: "42"
-    taskid: 245643d3-4a2f-4215-8a1b-87316ed6684e
-    type: regular
-    task:
-      id: 245643d3-4a2f-4215-8a1b-87316ed6684e
-      version: -1
-      name: Read ransom note
-      description: Load the content of a file into context.
-      scriptName: ReadFile
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "90"
+    note: false
+    quietmode: 0
     scriptarguments:
       encoding: {}
       entryID:
         complex:
-          root: File
+          accessor: EntryID
           filters:
-          - - operator: isEqualString
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: File.Extension
-                iscontext: true
+              operator: isEqualString
               right:
                 value:
                   simple: txt
-            - operator: isEqualString
-              left:
+            - left:
+                iscontext: true
                 value:
                   simple: File.Extension
-                iscontext: true
+              operator: isEqualString
               right:
                 value:
                   simple: html
-          accessor: EntryID
+          root: File
       maxFileSize: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Load the content of a file into context.
+      id: 659d46c1-456b-446e-8aa6-675f6bd96d5b
+      iscommand: false
+      name: Read ransom note
+      script: ReadFile
+      type: regular
+      version: -1
+    taskid: 659d46c1-456b-446e-8aa6-675f6bd96d5b
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -544,33 +576,28 @@ tasks:
           "y": -1290
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: Note
-      output:
-        complex:
-          root: FileData
-    skipunavailable: false
-    quietmode: 0
   "50":
     id: "50"
-    taskid: 9421b826-4b9f-4caa-8d51-ca88fc1455cb
-    type: playbook
-    task:
-      id: 9421b826-4b9f-4caa-8d51-ca88fc1455cb
-      version: -1
-      name: Detonate File - Generic
-      description: Detonate the file using active integrations that support file detonation.
-      playbookName: Detonate File - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "86"
+    note: false
+    quietmode: 0
     separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Detonate the file using active integrations that support file detonation.
+      id: c2092312-d431-4236-8cb4-a8e02a63349f
+      iscommand: false
+      name: Detonate File - Generic
+      playbookId: Detonate File - Generic
+      type: playbook
+      version: -1
+    taskid: c2092312-d431-4236-8cb4-a8e02a63349f
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -578,43 +605,42 @@ tasks:
           "y": 2130
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "52":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: Endpoint Forensics Data Collection.Answers
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
     id: "52"
-    taskid: 75d041fc-0e41-4748-8405-006285459e53
-    type: condition
-    task:
-      id: 75d041fc-0e41-4748-8405-006285459e53
-      version: -1
-      name: Were binary files retrieved?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "86"
       "yes":
       - "50"
       - "108"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Endpoint Forensics Data Collection.Answers
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: "Yes"
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2fd6b2ec-b9ab-4a0e-8877-99968e708d18
+      iscommand: false
+      name: Were binary files retrieved?
+      type: condition
+      version: -1
+    taskid: 2fd6b2ec-b9ab-4a0e-8877-99968e708d18
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -622,24 +648,24 @@ tasks:
           "y": 1960
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "62":
     id: "62"
-    taskid: 71136de3-bdb6-4ed5-82d9-446ce52bc89f
-    type: title
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 71136de3-bdb6-4ed5-82d9-446ce52bc89f
-      version: -1
+      brand: ""
+      id: 4cbc7527-a464-4319-80ca-27cf7fd4dcf6
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
+      version: -1
       description: ''
-    separatecontext: false
+    taskid: 4cbc7527-a464-4319-80ca-27cf7fd4dcf6
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -647,32 +673,32 @@ tasks:
           "y": 3200
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "64":
     id: "64"
-    taskid: 559c1220-9b8d-4c97-8c6d-909d196ced5f
-    type: regular
-    task:
-      id: 559c1220-9b8d-4c97-8c6d-909d196ced5f
-      version: -1
-      name: Fetch related incidents
-      description: Fetches incidents that are related/close to the given incident.
-      script: Builtin|||relatedIncidents
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "13"
+    note: false
+    quietmode: 0
     scriptarguments:
       incidentId: {}
       maxDistance: {}
       threshold: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Fetches incidents that are related/close to the given incident.
+      id: 1a3b5dbd-034c-45d1-8c75-76d474e3509e
+      iscommand: true
+      name: Fetch related incidents
+      script: Builtin|||relatedIncidents
+      type: regular
+      version: -1
+    taskid: 1a3b5dbd-034c-45d1-8c75-76d474e3509e
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -680,42 +706,41 @@ tasks:
           "y": 800
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "65":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AutoRemediation
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "True"
     id: "65"
-    taskid: 4250d6fa-6e87-49f4-8a22-b6f1aa88eb25
-    type: condition
-    task:
-      id: 4250d6fa-6e87-49f4-8a22-b6f1aa88eb25
-      version: -1
-      name: Auto Remediation?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "6"
       "True":
       - "1"
       - "82"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "True"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoRemediation
-            iscontext: true
-          right:
-            value:
-              simple: "True"
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a931d651-1ba8-4011-8f7d-b44a1977e995
+      iscommand: false
+      name: Auto Remediation?
+      type: condition
+      version: -1
+    taskid: a931d651-1ba8-4011-8f7d-b44a1977e995
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -723,19 +748,28 @@ tasks:
           "y": -2310
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "66":
     id: "66"
-    taskid: 43bf5d03-32ae-4701-8070-22481db94a89
-    type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "67"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Hostname:
+        complex:
+          accessor: hostnames
+          root: incident
+    separatecontext: true
+    skipunavailable: false
     task:
-      id: 43bf5d03-32ae-4701-8070-22481db94a89
-      version: -1
-      name: Endpoint Enrichment - Generic v2.1
+      brand: ""
       description: |-
         Enrich an endpoint by hostname using one or more integrations.
         Supported integrations:
@@ -745,24 +779,15 @@ tasks:
         - Cylance Protect v2
         - CrowdStrike Falcon Host
         - ExtraHop Reveal(x)
-      playbookName: Endpoint Enrichment - Generic v2.1
+      id: 7a242c41-8d55-4267-8118-f99a506dcf4d
+      iscommand: false
+      name: Endpoint Enrichment - Generic v2.1
+      playbookId: Endpoint Enrichment - Generic v2.1
       type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "67"
-    scriptarguments:
-      Hostname:
-        complex:
-          root: incident
-          accessor: hostnames
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
+      version: -1
+    taskid: 7a242c41-8d55-4267-8118-f99a506dcf4d
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -770,43 +795,43 @@ tasks:
           "y": -2690
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "67":
     id: "67"
-    taskid: 0d266dbf-0fdf-4150-8aa6-a37cf75ad967
-    type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "65"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Username:
+        complex:
+          accessor: usernames
+          root: incident
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: false
     task:
-      id: 0d266dbf-0fdf-4150-8aa6-a37cf75ad967
-      version: -1
-      name: Account Enrichment - Generic v2.1
+      brand: ""
       description: |-
         Enrich accounts using one or more integrations.
         Supported integrations:
         - Active Directory
-      playbookName: Account Enrichment - Generic v2.1
+      id: 4f111906-3511-44d4-84d3-8c44e17d2f36
+      iscommand: false
+      name: Account Enrichment - Generic v2.1
+      playbookId: Account Enrichment - Generic v2.1
       type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "65"
-    scriptarguments:
-      Username:
-        complex:
-          root: incident
-          accessor: usernames
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
+      version: -1
+    taskid: 4f111906-3511-44d4-84d3-8c44e17d2f36
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -814,34 +839,34 @@ tasks:
           "y": -2510
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "68":
     id: "68"
-    taskid: 1851cc04-6bf2-453c-8f5e-cb27afb2fda9
-    type: regular
-    task:
-      id: 1851cc04-6bf2-453c-8f5e-cb27afb2fda9
-      version: -1
-      name: 'Active Directory - disable user account '
-      description: Disables an Active Directory user account.
-      script: Active Directory Query v2|||ad-disable-account
-      type: regular
-      iscommand: true
-      brand: Active Directory Query v2
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       base-dn: {}
       username:
         complex:
-          root: incident
           accessor: users
+          root: incident
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Active Directory Query v2
+      description: Disables an Active Directory user account.
+      id: 513e72ee-9830-4549-82fb-57d3bc4f775e
+      iscommand: true
+      name: 'Active Directory - disable user account '
+      script: Active Directory Query v2|||ad-disable-account
+      type: regular
+      version: -1
+    taskid: 513e72ee-9830-4549-82fb-57d3bc4f775e
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -849,36 +874,36 @@ tasks:
           "y": -1820
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "77":
     id: "77"
-    taskid: 05064b46-20be-4963-801f-a589fdaf10c5
-    type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "83"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
     task:
-      id: 05064b46-20be-4963-801f-a589fdaf10c5
-      version: -1
-      name: Active Directory Investigation
+      brand: ""
       description: |-
         Active Directory Investigation playbook provides tools and guidance to investigate changes and manipulation in Active Directory containers, ACLs, Schema, and objects.
         This playbook uses a 3rd party tool provided by Microsoft to scan the Active Directory access list, trees, and objects.
         Additional investigative information is provided for manual investigation.
-      playbookName: Active Directory Investigation
+      id: 4d815591-fa5a-4d40-85a6-5e58bb9eb8c6
+      iscommand: false
+      name: Active Directory Investigation
+      playbookId: Active Directory Investigation
       type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "83"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      version: -1
+    taskid: 4d815591-fa5a-4d40-85a6-5e58bb9eb8c6
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -886,34 +911,19 @@ tasks:
           "y": 1490
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
   "78":
     id: "78"
-    taskid: 7e5a473a-4251-4eed-87fc-06df65de0eb8
-    type: playbook
-    task:
-      id: 7e5a473a-4251-4eed-87fc-06df65de0eb8
-      version: -1
-      name: Block Indicators - Generic v2
-      description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, and the following sub-playbooks:
-
-        - Block URL - Generic
-        - Block Account - Generic
-        - Block IP - Generic v2
-        - Block File - Generic v2
-
-      playbookName: Block Indicators - Generic v2
-      type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ""
       iscommand: false
-      brand: ""
+      max: 0
+      wait: 1
     nexttasks:
       '#none#':
       - "62"
+    note: false
+    quietmode: 0
     scriptarguments:
       AutoCommit:
         simple: "No"
@@ -925,26 +935,26 @@ tasks:
       EDLServerIP: {}
       IP:
         complex:
-          root: DBotScore
+          accessor: Indicator
           filters:
-          - - operator: isEqualString
+          - - ignorecase: true
               left:
+                iscontext: true
                 value:
                   simple: DBotScore.Type
-                iscontext: true
+              operator: isEqualString
               right:
                 value:
                   simple: ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: DBotScore.Score
-                iscontext: true
+              operator: greaterThanOrEqual
               right:
                 value:
                   simple: "3"
-          accessor: Indicator
+          root: DBotScore
           transformers:
           - operator: uniq
       IPBlacklistMiner: {}
@@ -952,35 +962,35 @@ tasks:
       LogForwarding: {}
       MD5:
         complex:
-          root: File
           accessor: MD5
+          root: File
       SHA256:
         complex:
-          root: File
           accessor: SHA256
+          root: File
       StaticAddressGroup: {}
       URL:
         complex:
-          root: DBotScore
+          accessor: Indicator
           filters:
-          - - operator: isEqualString
+          - - ignorecase: true
               left:
+                iscontext: true
                 value:
                   simple: DBotScore.Type
-                iscontext: true
+              operator: isEqualString
               right:
                 value:
                   simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: DBotScore.Score
-                iscontext: true
+              operator: greaterThanOrEqual
               right:
                 value:
                   simple: "3"
-          accessor: Indicator
+          root: DBotScore
           transformers:
           - operator: uniq
       URLBlacklistMiner: {}
@@ -988,35 +998,50 @@ tasks:
         simple: Demisto Remediation - URL EDL
       Username:
         complex:
-          root: DBotScore
+          accessor: Indicator
           filters:
-          - - operator: isEqualString
+          - - ignorecase: true
               left:
+                iscontext: true
                 value:
                   simple: DBotScore.Type
-                iscontext: true
+              operator: isEqualString
               right:
                 value:
                   simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: DBotScore.Score
-                iscontext: true
+              operator: greaterThanOrEqual
               right:
                 value:
                   simple: "3"
-          accessor: Indicator
+          root: DBotScore
       categories: {}
       device-group: {}
       type: {}
     separatecontext: true
-    loop:
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, and the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+
+      id: 2e403e84-506a-453a-8aa6-5eba8bd53421
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
+      name: Block Indicators - Generic v2
+      playbookId: Block Indicators - Generic v2
+      type: playbook
+      version: -1
+    taskid: 2e403e84-506a-453a-8aa6-5eba8bd53421
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -1024,58 +1049,57 @@ tasks:
           "y": 3030
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "82":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.name
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isEqualString
+          right:
+            value:
+              simple: Active Directory Query v2
+      label: "yes"
     id: "82"
-    taskid: bbc5aa42-ce7c-4f14-8612-171c91e74ce8
-    type: condition
-    task:
-      id: bbc5aa42-ce7c-4f14-8612-171c91e74ce8
-      version: -1
-      name: Is Active Directory enabled?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "68"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active Directory Query v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value:
-              simple: Active Directory Query v2
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5f5ee85a-bfe2-45a7-830d-32243f893908
+      iscommand: false
+      name: Is Active Directory enabled?
+      type: condition
+      version: -1
+    taskid: 5f5ee85a-bfe2-45a7-830d-32243f893908
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -1083,19 +1107,68 @@ tasks:
           "y": -2110
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "83":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: 'Were binary files retrieved? '
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: What is the total number of encrypted endpoints?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Endpoint Forensics Data Collection
+      totalanswers: 0
     id: "83"
-    taskid: 6d947ea4-43a3-49da-8d2c-a8840f7d3d59
-    type: collection
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Endpoint Forensics Data Collection
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "89"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 6d947ea4-43a3-49da-8d2c-a8840f7d3d59
-      version: -1
-      name: Advanced forensic investigation
+      brand: ""
       description: "Single endpoint forensics - if possible, use the file owner endpoint.\n\
         \n1. Behavioral Signature:\nas a first step, it is required to gain a behavioral\
         \ signature that is used to discover encrypted endpoints across the domain.\n\
@@ -1119,13 +1192,14 @@ tasks:
         \ to investigate and identify lateral movement in the domain.\n5. Look for\
         \ suspicious activity or known vulnerabilities on external-facing applications\
         \ and services like web servers/VPN/RDP.\n\n\n\n"
-      type: collection
+      id: 679172bc-7e60-4109-84cb-71539ccbb12d
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "89"
-    separatecontext: false
+      name: Advanced forensic investigation
+      type: collection
+      version: -1
+    taskid: 679172bc-7e60-4109-84cb-71539ccbb12d
+    timertriggers: []
+    type: collection
     view: |-
       {
         "position": {
@@ -1133,92 +1207,41 @@ tasks:
           "y": 1650
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-        simple: Endpoint Forensics Data Collection
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: 'Were binary files retrieved? '
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: "Yes"
-        - simple: "No"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: What is the total number of encrypted endpoints?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      title: Endpoint Forensics Data Collection
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
   "86":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Answers.1
+                root: Ransomware Enrichment
+          operator: isEqualString
+          right:
+            value:
+              simple: Available
+      label: "yes"
     id: "86"
-    taskid: 62f9e35a-6c75-4695-8c5e-b74541d7d039
-    type: condition
-    task:
-      id: 62f9e35a-6c75-4695-8c5e-b74541d7d039
-      version: -1
-      name: Was a Recovery tool found?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "38"
       "Yes":
       - "29"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Ransomware Enrichment
-                accessor: Answers.1
-            iscontext: true
-          right:
-            value:
-              simple: Available
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 77beae3c-27cb-4925-897e-1502164b7f7d
+      iscommand: false
+      name: Was a Recovery tool found?
+      type: condition
+      version: -1
+    taskid: 77beae3c-27cb-4925-897e-1502164b7f7d
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -1226,27 +1249,14 @@ tasks:
           "y": 2325
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "88":
     id: "88"
-    taskid: d29e4095-262a-46e6-8b61-a923b1ece1eb
-    type: regular
-    task:
-      id: d29e4095-262a-46e6-8b61-a923b1ece1eb
-      version: -1
-      name: Set file owner field
-      description: Updates the file owner field for the incident.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "94"
+    note: false
+    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -1435,8 +1445,8 @@ tasks:
       employeemanageremail: {}
       encryptedfileowner:
         complex:
-          root: Ransomware file owner investigation
           accessor: Answers.0
+          root: Ransomware file owner investigation
       escalation: {}
       eventaction: {}
       eventid: {}
@@ -1642,8 +1652,8 @@ tasks:
       ransomwareemail: {}
       ransomwareencryptedfileowner:
         complex:
-          root: Ransomware file owner investigation.Answers
           accessor: "0"
+          root: Ransomware file owner investigation.Answers
       ransomwarenote: {}
       ransomwareonionurl: {}
       ransomwarerecoverytool: {}
@@ -1796,6 +1806,19 @@ tasks:
       xdrusercount: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Updates the file owner field for the incident.
+      id: 90d30946-a6e9-4644-81a1-b0813f648727
+      iscommand: true
+      name: Set file owner field
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 90d30946-a6e9-4644-81a1-b0813f648727
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1803,27 +1826,14 @@ tasks:
           "y": 1150
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "89":
     id: "89"
-    taskid: f243007b-60bc-480f-8c28-8731b96535e3
-    type: regular
-    task:
-      id: f243007b-60bc-480f-8c28-8731b96535e3
-      version: -1
-      name: Count
-      description: Sets the number of affected endpoints.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "52"
+    note: false
+    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -1851,8 +1861,8 @@ tasks:
       approximatenumberofaffecteddatasubjects: {}
       approximatenumberofencryptedendpoints:
         complex:
-          root: Total Number of encrypted endpoints?
           accessor: Answers.0
+          root: Total Number of encrypted endpoints?
       assetid: {}
       assigneduser: {}
       assignmentgroup: {}
@@ -2289,8 +2299,8 @@ tasks:
       quarantined: {}
       ransomwareapproximatenumberofencryptedendpoints:
         complex:
-          root: Endpoint Forensics Data Collection.Answers
           accessor: "1"
+          root: Endpoint Forensics Data Collection.Answers
       ransomwarecryptocurrencyaddress: {}
       ransomwarecryptocurrencyaddresstype: {}
       ransomwaredataencryptionstatus: {}
@@ -2476,6 +2486,19 @@ tasks:
       xsoarReadOnlyRoles: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Sets the number of affected endpoints.
+      id: 9ffc9145-8aca-40b6-864e-f4a36fa947f4
+      iscommand: true
+      name: Count
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 9ffc9145-8aca-40b6-864e-f4a36fa947f4
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -2483,29 +2506,14 @@ tasks:
           "y": 1800
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "90":
     id: "90"
-    taskid: 588f9504-feec-4011-8b38-6f3581604979
-    type: regular
-    task:
-      id: 588f9504-feec-4011-8b38-6f3581604979
-      version: -1
-      name: Display ransom note
-      description: Converts the body of an email to an image file or a PDF file.
-      tags:
-      - RansomwareNote
-      script: Rasterize|||rasterize-email
-      type: regular
-      iscommand: true
-      brand: Rasterize
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "98"
+    note: false
+    quietmode: 0
     scriptarguments:
       height:
         simple: "800"
@@ -2517,6 +2525,21 @@ tasks:
       width:
         simple: "600"
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Rasterize
+      description: Converts the body of an email to an image file or a PDF file.
+      id: 075bc153-411e-42b7-83cf-3afc7a9ced95
+      iscommand: true
+      name: Display ransom note
+      script: Rasterize|||rasterize-email
+      tags:
+      - RansomwareNote
+      type: regular
+      version: -1
+    taskid: 075bc153-411e-42b7-83cf-3afc7a9ced95
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -2524,27 +2547,14 @@ tasks:
           "y": -1090
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "91":
     id: "91"
-    taskid: cd343302-1066-4e82-8bc2-1cc8b2162616
-    type: regular
-    task:
-      id: cd343302-1066-4e82-8bc2-1cc8b2162616
-      version: -1
-      name: Set attacker information fields
-      description: Updates the incident with attacker information.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "101"
+    note: false
+    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -2578,16 +2588,16 @@ tasks:
       attachmenttype: {}
       attackeremail:
         complex:
-          root: Account
           accessor: Email.Address
+          root: Account
           transformers:
           - operator: uniq
       attackerhostisolated: {}
       attackeripblocked: {}
       attackerurl:
         complex:
-          root: Onion
           accessor: URL
+          root: Onion
           transformers:
           - operator: uniq
       attackerusername: {}
@@ -3007,39 +3017,39 @@ tasks:
       ransomwaredataencryptionstatus: {}
       ransomwareemail:
         complex:
-          root: Account
           accessor: Email.Address
+          root: Account
           transformers:
           - operator: uniq
-          - operator: join
-            args:
+          - args:
               separator:
                 value:
                   simple: ','
+            operator: join
       ransomwareencryptedfileowner: {}
       ransomwarenote: {}
       ransomwareonionaddress:
         complex:
-          root: Onion
           accessor: Address
+          root: Onion
           transformers:
           - operator: uniq
-          - operator: join
-            args:
+          - args:
               separator:
                 value:
                   simple: ','
+            operator: join
       ransomwareonionurl:
         complex:
-          root: Onion
           accessor: Address
+          root: Onion
           transformers:
           - operator: uniq
-          - operator: join
-            args:
+          - args:
               separator:
                 value:
                   simple: ','
+            operator: join
       ransomwarerecoverytool: {}
       ransomwarestrain: {}
       rating: {}
@@ -3205,6 +3215,19 @@ tasks:
       xdrusercount: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Updates the incident with attacker information.
+      id: ac9bb93b-c771-4520-8e4e-5acc8f59e81b
+      iscommand: true
+      name: Set attacker information fields
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ac9bb93b-c771-4520-8e4e-5acc8f59e81b
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -3212,41 +3235,41 @@ tasks:
           "y": -740
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "94":
     id: "94"
-    taskid: f617287b-9aee-421a-86ae-dd0a09536f3f
-    type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "77"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Username:
+        complex:
+          accessor: encryptedfileowner
+          root: incident
+    separatecontext: true
+    skipunavailable: false
     task:
-      id: f617287b-9aee-421a-86ae-dd0a09536f3f
-      version: -1
-      name: Account Enrichment - Generic v2.1
+      brand: ""
       description: |-
         Enrich accounts using one or more integrations.
         Supported integrations:
         - Active Directory
-      playbookName: Account Enrichment - Generic v2.1
+      id: eab7c635-fce9-4e9e-8e2a-56b4851cea8c
+      iscommand: false
+      name: Account Enrichment - Generic v2.1
+      playbookId: Account Enrichment - Generic v2.1
       type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "77"
-    scriptarguments:
-      Username:
-        complex:
-          root: incident
-          accessor: encryptedfileowner
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
+      version: -1
+    taskid: eab7c635-fce9-4e9e-8e2a-56b4851cea8c
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -3254,44 +3277,43 @@ tasks:
           "y": 1335
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "95":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.NotificationEmail
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.EmailBody
+          operator: isNotEmpty
+      label: "yes"
     id: "95"
-    taskid: 5b2a96ee-e342-47af-8386-d488f87fdaa6
-    type: condition
-    task:
-      id: 5b2a96ee-e342-47af-8386-d488f87fdaa6
-      version: -1
-      name: Send ransomware notification?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "12"
       "yes":
       - "11"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.NotificationEmail
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.EmailBody
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a97b3aa5-a51a-4610-87e5-5a41c800aca0
+      iscommand: false
+      name: Send ransomware notification?
+      type: condition
+      version: -1
+    taskid: a97b3aa5-a51a-4610-87e5-5a41c800aca0
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -3299,27 +3321,27 @@ tasks:
           "y": 280
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "97":
     id: "97"
-    taskid: 8582bffd-fda6-46c6-8872-da0acecbbba1
-    type: regular
-    task:
-      id: 8582bffd-fda6-46c6-8872-da0acecbbba1
-      version: -1
-      name: Manual containment
-      description: Block the indicators extracted during the investigation manually.
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "62"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Block the indicators extracted during the investigation manually.
+      id: 5fa98d0e-051b-4cc8-8572-9f4c5229cb32
+      iscommand: false
+      name: Manual containment
+      type: regular
+      version: -1
+    taskid: 5fa98d0e-051b-4cc8-8572-9f4c5229cb32
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -3327,28 +3349,28 @@ tasks:
           "y": 3030
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "98":
     id: "98"
-    taskid: 0e50b5d3-40d2-47c4-8026-aeb396604802
-    type: playbook
-    task:
-      id: 0e50b5d3-40d2-47c4-8026-aeb396604802
-      version: -1
-      name: Extract Indicators From File - Generic v2
-      playbookName: Extract Indicators From File - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "91"
+    note: false
+    quietmode: 0
     separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4c473a69-82d1-44be-8f30-c919ed952035
+      iscommand: false
+      name: Extract Indicators From File - Generic v2
+      playbookId: Extract Indicators From File - Generic v2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 4c473a69-82d1-44be-8f30-c919ed952035
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -3356,27 +3378,14 @@ tasks:
           "y": -910
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "99":
     id: "99"
-    taskid: d95c6ee9-5b61-471e-8bae-bc4a05963d38
-    type: regular
-    task:
-      id: d95c6ee9-5b61-471e-8bae-bc4a05963d38
-      version: -1
-      name: Set Ransomware information
-      description: Updates the incident with ransomware information.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "100"
+    note: false
+    quietmode: 0
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -3542,19 +3551,19 @@ tasks:
       ransomwareapproximatenumberofencryptedendpoints: {}
       ransomwarecryptocurrencyaddress:
         complex:
-          root: Cryptocurrency
           accessor: Address
+          root: Cryptocurrency
           transformers:
           - operator: uniq
-          - operator: join
-            args:
+          - args:
               separator:
                 value:
                   simple: ','
+            operator: join
       ransomwarecryptocurrencyaddresstype:
         complex:
-          root: Cryptocurrency
           accessor: AddressType
+          root: Cryptocurrency
           transformers:
           - operator: uniq
       ransomwaredataencryptionstatus:
@@ -3565,12 +3574,12 @@ tasks:
       ransomwareonionurl: {}
       ransomwarerecoverytool:
         complex:
-          root: Ransomware Enrichment.Answers
           accessor: "1"
+          root: Ransomware Enrichment.Answers
       ransomwarestrain:
         complex:
-          root: Ransomware Enrichment.Answers
           accessor: "0"
+          root: Ransomware Enrichment.Answers
       rating: {}
       region: {}
       regionid: {}
@@ -3627,6 +3636,19 @@ tasks:
       workphone: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Updates the incident with ransomware information.
+      id: fd219733-c2c9-494a-855c-1989b91aec91
+      iscommand: true
+      name: Set Ransomware information
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: fd219733-c2c9-494a-855c-1989b91aec91
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -3634,27 +3656,14 @@ tasks:
           "y": -80
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "100":
     id: "100"
-    taskid: 8c8a6c82-ed87-4575-850b-16ea33c5acc1
-    type: regular
-    task:
-      id: 8c8a6c82-ed87-4575-850b-16ea33c5acc1
-      version: -1
-      name: 'Set cryptocurrency indicators as malicious '
-      description: Updates the severity of the cryptocurrency indicators to malicious.
-      script: Builtin|||setIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "95"
+    note: false
+    quietmode: 0
     scriptarguments:
       accounttype: {}
       actor: {}
@@ -3711,8 +3720,8 @@ tasks:
       indicatorsIDs: {}
       indicatorsValues:
         complex:
-          root: Cryptocurrency
           accessor: Address
+          root: Cryptocurrency
       internal: {}
       ipaddress: {}
       jobcode: {}
@@ -3802,6 +3811,19 @@ tasks:
       xdrstatus: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Updates the severity of the cryptocurrency indicators to malicious.
+      id: 3893bc1b-6dae-4344-8de1-b4736d30e910
+      iscommand: true
+      name: 'Set cryptocurrency indicators as malicious '
+      script: Builtin|||setIndicators
+      type: regular
+      version: -1
+    taskid: 3893bc1b-6dae-4344-8de1-b4736d30e910
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -3809,27 +3831,14 @@ tasks:
           "y": 90
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "101":
     id: "101"
-    taskid: ada85671-9ebc-48d2-81f2-b7ca23c4bdac
-    type: regular
-    task:
-      id: ada85671-9ebc-48d2-81f2-b7ca23c4bdac
-      version: -1
-      name: 'Set onion addresses indicators as malicious '
-      description: Updates the severity of the onion address indicators to malicious.
-      script: Builtin|||setIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "102"
+    note: false
+    quietmode: 0
     scriptarguments:
       accounttype: {}
       actor: {}
@@ -3886,8 +3895,8 @@ tasks:
       indicatorsIDs: {}
       indicatorsValues:
         complex:
-          root: Onion
           accessor: Address
+          root: Onion
       internal: {}
       ipaddress: {}
       jobcode: {}
@@ -3977,6 +3986,19 @@ tasks:
       xdrstatus: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Updates the severity of the onion address indicators to malicious.
+      id: 7098f106-69ce-45b7-8c88-72fc20f30e13
+      iscommand: true
+      name: 'Set onion addresses indicators as malicious '
+      script: Builtin|||setIndicators
+      type: regular
+      version: -1
+    taskid: 7098f106-69ce-45b7-8c88-72fc20f30e13
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -3984,28 +4006,14 @@ tasks:
           "y": -580
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "102":
     id: "102"
-    taskid: e81b5502-8775-4ada-82d3-2b1f4e0f7559
-    type: regular
-    task:
-      id: e81b5502-8775-4ada-82d3-2b1f4e0f7559
-      version: -1
-      name: 'Set attacker email addresses indicators as malicious '
-      description: Updates the severity of the attacker email address indicators to
-        malicious.
-      script: Builtin|||setIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "9"
+    note: false
+    quietmode: 0
     scriptarguments:
       accounttype: {}
       actor: {}
@@ -4062,8 +4070,8 @@ tasks:
       indicatorsIDs: {}
       indicatorsValues:
         complex:
-          root: Account.Email
           accessor: Address
+          root: Account.Email
       internal: {}
       ipaddress: {}
       jobcode: {}
@@ -4153,6 +4161,20 @@ tasks:
       xdrstatus: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Updates the severity of the attacker email address indicators to
+        malicious.
+      id: 78e3bd19-e2ec-473d-8cf8-1a2b67271621
+      iscommand: true
+      name: 'Set attacker email addresses indicators as malicious '
+      script: Builtin|||setIndicators
+      type: regular
+      version: -1
+    taskid: 78e3bd19-e2ec-473d-8cf8-1a2b67271621
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -4160,41 +4182,40 @@ tasks:
           "y": -430
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "103":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AutoRemediation
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "True"
     id: "103"
-    taskid: 43f76b1a-a347-49ff-84b8-2839dfa3a08e
-    type: condition
-    task:
-      id: 43f76b1a-a347-49ff-84b8-2839dfa3a08e
-      version: -1
-      name: Auto Remediation?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "97"
       "True":
       - "78"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "True"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoRemediation
-            iscontext: true
-          right:
-            value:
-              simple: "True"
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d9369470-869e-46e9-89e6-0c468fe69934
+      iscommand: false
+      name: Auto Remediation?
+      type: condition
+      version: -1
+    taskid: d9369470-869e-46e9-89e6-0c468fe69934
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -4202,23 +4223,46 @@ tasks:
           "y": 2850
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "104":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: File..Extension
+          operator: isEqualString
+          right:
+            value:
+              simple: txt
+        - left:
+            iscontext: true
+            value:
+              simple: File.Extension
+          operator: isEqualString
+          right:
+            value:
+              simple: html
+      label: Note
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: File.Extension
+          operator: isNotEqualString
+          right:
+            value:
+              simple: txt
+        - left:
+            iscontext: true
+            value:
+              simple: File.Extension
+          operator: isEqualString
+          right:
+            value:
+              simple: html
+      label: Binary
     id: "104"
-    taskid: f10ea50f-2081-494b-8327-f11cb0315d7e
-    type: condition
-    task:
-      id: f10ea50f-2081-494b-8327-f11cb0315d7e
-      version: -1
-      name: Handle ransomware files
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "95"
@@ -4226,44 +4270,20 @@ tasks:
       - "15"
       Note:
       - "42"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: Note
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File..Extension
-            iscontext: true
-          right:
-            value:
-              simple: txt
-        - operator: isEqualString
-          left:
-            value:
-              simple: File.Extension
-            iscontext: true
-          right:
-            value:
-              simple: html
-    - label: Binary
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: File.Extension
-            iscontext: true
-          right:
-            value:
-              simple: txt
-        - operator: isEqualString
-          left:
-            value:
-              simple: File.Extension
-            iscontext: true
-          right:
-            value:
-              simple: html
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 14bd065c-7d00-4e99-8cbe-707b8a9f06da
+      iscommand: false
+      name: Handle ransomware files
+      type: condition
+      version: -1
+    taskid: 14bd065c-7d00-4e99-8cbe-707b8a9f06da
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -4271,28 +4291,28 @@ tasks:
           "y": -1460
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "107":
     id: "107"
-    taskid: 38543939-4f14-400b-8826-2b6f8fb1f616
-    type: playbook
-    task:
-      id: 38543939-4f14-400b-8826-2b6f8fb1f616
-      version: -1
-      name: File Enrichment - File reputation
-      playbookName: File Enrichment - File reputation
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "95"
+    note: false
+    quietmode: 0
     separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1fbbadee-e0d5-44d1-83b3-907301efa685
+      iscommand: false
+      name: file_enrichment_-_file_reputation
+      playbookId: file_enrichment_-_file_reputation
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 1fbbadee-e0d5-44d1-83b3-907301efa685
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -4300,46 +4320,46 @@ tasks:
           "y": -1100
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "108":
     id: "108"
-    taskid: 4f0b92e8-6179-4382-8aac-a3541d0f125b
-    type: playbook
-    task:
-      id: 4f0b92e8-6179-4382-8aac-a3541d0f125b
-      version: -1
-      name: File Enrichment - File reputation
-      playbookName: File Enrichment - File reputation
-      type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ""
       iscommand: false
-      brand: ""
-      description: ''
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
       - "86"
+    note: false
+    quietmode: 0
     scriptarguments:
       MD5:
         complex:
-          root: File
           accessor: MD5
+          root: File
       SHA1:
         complex:
-          root: File
           accessor: SHA1
+          root: File
       SHA256:
         complex:
-          root: File
           accessor: SHA256
+          root: File
     separatecontext: true
-    loop:
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 27ed2f20-02c3-45a8-81a6-786b3b6a20ea
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      name: file_enrichment_-_file_reputation
+      playbookId: file_enrichment_-_file_reputation
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 27ed2f20-02c3-45a8-81a6-786b3b6a20ea
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -4347,12 +4367,33 @@ tasks:
           "y": 2130
         }
       }
-    note: false
-    timertriggers: []
+  "109":
+    id: "109"
     ignoreworker: false
-    skipunavailable: false
+    note: false
     quietmode: 0
-system: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Shows the Rubrik Polaris Sonar data classification results.
+      id: 6e64eb31-51ab-4bfd-87ff-fe1d974252de
+      iscommand: false
+      name: RubrikSonarSensitiveHits
+      script: RubrikSonarSensitiveHits
+      type: regular
+      version: -1
+    taskid: 6e64eb31-51ab-4bfd-87ff-fe1d974252de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": -2690
+        }
+      }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {
@@ -4377,36 +4418,12 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 6265,
-        "width": 880,
+        "width": 1050,
         "x": 190,
         "y": -3000
       }
     }
   }
-inputs:
-- key: AutoRemediation
-  value:
-    simple: "False"
-  required: false
-  description: "Determines whether to perform auto-isolation and remediation for the\
-    \ infected endpoint and indicators.\nValues:\n- True\n- False. This is the default. "
-  playbookInputQuery:
-- key: NotificationEmail
-  value: {}
-  required: false
-  description: |-
-    The email addresses to notify if there is a possibility of the malware spreading and infecting other endpoints.
-    Can be a CSV list.
-  playbookInputQuery:
-- key: EmailBody
-  value:
-    simple: |-
-      During an endpoint investigation in XSOAR, other infected endpoints were found, indicating the malware is spreading in your organization and requires your attention.
-      To get more information, go to this incident in XSOAR: ${incident.id}.
-  required: false
-  description: The malware notification message content.
-  playbookInputQuery:
-outputs: []
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
