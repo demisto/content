@@ -370,16 +370,15 @@ class Client(BaseClient):
         return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers)
 
     # The events API
-    def get_events(self, alert_category: List[str] = None, blocked_hash: List[str] = None,
-                   device_external_ip: List[str] = None, device_id: List[int] = None,
-                   device_internal_ip: List[str] = None, device_name: List[str] = None, device_os: List[str] = None,
-                   event_type: List[str] = None, parent_hash: List[str] = None, parent_name: List[str] = None,
+    def get_events(self, alert_category: List[str] = None, hash: List[str] = None, device_external_ip: List[str] = None,
+                   device_id: List[int] = None, device_internal_ip: List[str] = None, device_name: List[str] = None,
+                   device_os: List[str] = None, event_type: List[str] = None, parent_name: List[str] = None,
                    parent_reputation: List[str] = None, process_cmdline: List[str] = None,
-                   process_guid: List[str] = None, process_hash: List[str] = None, process_name: List[str] = None,
-                   process_pid: List[int] = None, process_reputation: List[str] = None,
-                   process_start_time: List[str] = None, process_terminated: List[bool] = None,
-                   process_username: List[str] = None, sensor_action: List[str] = None, query: str = None,
-                   rows: int = 10, start: int = 0, time_range: str = "{}"):
+                   process_guid: List[str] = None, process_name: List[str] = None, process_pid: List[int] = None,
+                   process_reputation: List[str] = None, process_start_time: List[str] = None,
+                   process_terminated: List[bool] = None, process_username: List[str] = None,
+                   sensor_action: List[str] = None, query: str = None, rows: int = 10, start: int = 0,
+                   time_range: str = "{}"):
         """Searches for Carbon Black events
             using the 'api/investigate/v2/orgs/{self.organization_key}/enriched_events/search_jobs' API endpoint
 
@@ -389,8 +388,10 @@ class Client(BaseClient):
         :param alert_category: The Carbon Black Cloud classification for events tagged to an alert indicating.
             Options are: 'threat' or 'observed'.
 
-        :type blocked_hash: ``Optional[List[str]]``
-        :param blocked_hash: The SHA-256, hash of the child process binary; for any process terminated by the sensor.
+        :type hash: ``Optional[List[str]]``
+        :param hash: Searchable. Aggregate set of MD5 and SHA-256 hashes associated with the process
+            (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash);
+            enables one-step search for any matches on the specified hashes
 
         :type device_external_ip: ``Optional[List[str]]``
         :param device_external_ip: The IP address of the endpoint according to the Carbon Black Cloud;
@@ -414,9 +415,6 @@ class Client(BaseClient):
         :type event_type: ``Optional[List[str]]``
         :param event_type: The type of enriched event observed. (Requires Endpoint Standard).
 
-        :type parent_hash: ``Optional[List[str]]``
-        :param parent_hash: The MD5 and/or SHA-256 hash of the parent process binary.
-
         :type parent_name: ``Optional[List[str]]``
         :param parent_name: The Filesystem path of the parent process binary.
 
@@ -431,10 +429,6 @@ class Client(BaseClient):
 
         :type process_guid: ``Optional[List[str]]``
         :param process_guid: The Unique process identifier for the actor process.
-
-        :type process_hash: ``Optional[List[str]]``
-        :param process_hash: The MD5 and/or SHA-256 hash of the actor process binary;
-            order may vary when two hashes are reported.
 
         :type process_name ``Optional[List[str]]``
         :param process_name: The Filesystem path of the actor process binary.
@@ -491,19 +485,17 @@ class Client(BaseClient):
         body = assign_params(
             criteria=assign_params(  # one of the arguments (query or criteria) is required
                 alert_category=argToList(alert_category),
-                blocked_hash=argToList(blocked_hash),
+                hash=argToList(hash),
                 device_external_ip=argToList(device_external_ip),
                 device_id=argToList(device_id),
                 device_internal_ip=argToList(device_internal_ip),
                 device_name=argToList(device_name),
                 device_os=argToList(device_os),
                 event_type=argToList(event_type),
-                parent_hash=argToList(parent_hash),
                 parent_name=argToList(parent_name),
                 parent_reputation=argToList(parent_reputation),
                 process_cmdline=argToList(process_cmdline),
                 process_guid=argToList(process_guid),
-                process_hash=argToList(process_hash),
                 process_name=argToList(process_name),
                 process_pid=argToList(process_pid),
                 process_reputation=argToList(process_reputation),
@@ -568,13 +560,12 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
     # Processes API
-    def get_processes(self, alert_category: List[str] = None, blocked_hash: List[str] = None,
+    def get_processes(self, alert_category: List[str] = None, hash: List[str] = None,
                       device_external_ip: List[str] = None, device_id: List[int] = None,
                       device_internal_ip: List[str] = None, device_name: List[str] = None, device_os: List[str] = None,
-                      device_timestamp: List[str] = None, event_type: List[str] = None, parent_hash: List[str] = None,
-                      parent_name: List[str] = None, parent_reputation: List[str] = None,
-                      process_cmdline: List[str] = None, process_guid: List[str] = None, process_hash: List[str] = None,
-                      process_name: List[str] = None, process_pid: List[int] = None,
+                      device_timestamp: List[str] = None, event_type: List[str] = None, parent_name: List[str] = None,
+                      parent_reputation: List[str] = None, process_cmdline: List[str] = None,
+                      process_guid: List[str] = None, process_name: List[str] = None, process_pid: List[int] = None,
                       process_reputation: List[str] = None, process_start_time: List[str] = None,
                       process_terminated: List[bool] = None, process_username: List[str] = None,
                       sensor_action: List[str] = None, query: str = None, rows: int = 10, start: int = 0,
@@ -588,8 +579,10 @@ class Client(BaseClient):
         :param alert_category: The Carbon Black Cloud classification for events tagged to an alert indicating.
             Options are: 'threat' or 'observed'.
 
-        :type blocked_hash: ``Optional[List[str]]``
-        :param blocked_hash: The SHA-256, hash of the child process binary; for any process terminated by the sensor.
+        :type hash: ``Optional[List[str]]``
+        :param hash: Searchable. Aggregate set of MD5 and SHA-256 hashes associated with the process
+            (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash);
+            enables one-step search for any matches on the specified hashes
 
         :type device_external_ip: ``Optional[List[str]]``
         :param device_external_ip: The IP address of the endpoint according to the Carbon Black Cloud;
@@ -617,9 +610,6 @@ class Client(BaseClient):
         :type event_type: ``Optional[List[str]]``
         :param event_type: The type of enriched event observed. (Requires Endpoint Standard).
 
-        :type parent_hash: ``Optional[List[str]]``
-        :param parent_hash: The MD5 and/or SHA-256 hash of the parent process binary.
-
         :type parent_name: ``Optional[List[str]]``
         :param parent_name: The Filesystem path of the parent process binary.
 
@@ -634,10 +624,6 @@ class Client(BaseClient):
 
         :type process_guid: ``Optional[List[str]]``
         :param process_guid: The Unique process identifier for the actor process.
-
-        :type process_hash: ``Optional[List[str]]``
-        :param process_hash: The MD5 and/or SHA-256 hash of the actor process binary;
-            order may vary when two hashes are reported.
 
         :type process_name ``Optional[List[str]]``
         :param process_name: The Filesystem path of the actor process binary.
@@ -694,7 +680,7 @@ class Client(BaseClient):
         body = assign_params(
             criteria=assign_params(  # one of the arguments (query or criteria) is required
                 alert_category=argToList(alert_category),
-                blocked_hash=argToList(blocked_hash),
+                hash=argToList(hash),
                 device_external_ip=argToList(device_external_ip),
                 device_id=argToList(device_id),
                 device_internal_ip=argToList(device_internal_ip),
@@ -702,12 +688,10 @@ class Client(BaseClient):
                 device_os=argToList(device_os),
                 device_timestamp=argToList(device_timestamp),
                 event_type=argToList(event_type),
-                parent_hash=argToList(parent_hash),
                 parent_name=argToList(parent_name),
                 parent_reputation=argToList(parent_reputation),
                 process_cmdline=argToList(process_cmdline),
                 process_guid=argToList(process_guid),
-                process_hash=argToList(process_hash),
                 process_name=argToList(process_name),
                 process_pid=argToList(process_pid),
                 process_reputation=argToList(process_reputation),
@@ -1073,8 +1057,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_fetched_alert_create_time:
         last_fetched_alert_create_time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.000Z')
-    # else:
-        # fetch_limit += 1  # We skip the first alert
+    else:
+        fetch_limit += 1  # We skip the first alert
     alert_create_date = last_fetched_alert_create_time
     alert_id = last_fetched_alert_id
 
@@ -1668,7 +1652,7 @@ def main() -> None:
             return_results(test_module(client, params))
         elif command == 'fetch-incidents':
             fetch_time = params.get('first_fetch', '7 days')
-            fetch_limit = params.get('max_fetch', 50)
+            fetch_limit = int(params.get('max_fetch', 50))
             filters = fetch_incident_filters(params)
             # Set and define the fetch incidents command to run after activated via integration settings.
             incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun(),
