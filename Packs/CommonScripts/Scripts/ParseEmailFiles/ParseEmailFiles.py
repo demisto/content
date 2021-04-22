@@ -193,6 +193,10 @@ class DataModel(object):
                 res = chardet.detect(data_value)
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
                 if enc != 'ascii':
+                    if enc.lower() == 'windows-1252' and res['confidence'] < 0.9:
+                        demisto.debug('encoding detection confidence below threshold {}, '
+                                      'switching encoding to "windows-1250"'.format(res))
+                        enc = 'windows-1250'
                     data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
                 elif '\x00' not in data_value:
                     data_value = data_value.decode("ascii", errors="ignore").replace('\x00', '')
@@ -2928,12 +2932,18 @@ class Message(object):
         property_name = property_details.get("name")
         property_type = property_details.get("data_type")
         if not property_type:
+            demisto.info('could not parse property type, skipping property "{}"'.format(property_details))
             return None
 
         try:
             raw_content = ole_file.openstream(stream_name).read()
         except IOError:
-            raw_content = None
+            raw_content = ''
+        if not raw_content:
+            demisto.debug('Could not read raw content from stream "{}", '
+                          'skipping property "{}"'.format(stream_name, property_details))
+            return None
+
         property_value = self._data_model.get_value(raw_content, data_type=property_type)
         if property_value:
             property_detail = {property_name: property_value}
@@ -3609,7 +3619,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attachment_file_name = indiv_msg.get_filename()
                             try:
                                 # In some cases the body content is empty and cannot be decoded.
-                                msg_info = base64.b64decode(msg).decode('utf-8')
+                                msg_info = base64.b64decode(msg).decode('utf-8', errors='ignore')
                             except TypeError:
                                 msg_info = str(msg)
                             attached_emails.append(msg_info)
