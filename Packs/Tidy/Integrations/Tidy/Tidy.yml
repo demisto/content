@@ -3246,7 +3246,7 @@ script:
     description: Install python environment.
     execution: false
     name: tidy-python-env
-  dockerimage: demisto/tidy:1.0.0.16979
+  dockerimage: demisto/tidy:1.0.0.19163
   feed: false
   isfetch: false
   longRunning: false
