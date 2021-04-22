@@ -333,10 +333,10 @@ class NetscoutClient(BaseClient):
             json_data=data
         )
 
-    def delete_mitigation(self, mitigation_id: Optional[str]):
+    def delete_mitigation(self, mitigation_id: str):
         self.http_request(
             method='DELETE',
-            url_suffix='mitigations/{mitigation_id}' if mitigation_id else 'mitigations',
+            url_suffix=f'mitigations/{mitigation_id}',
             return_empty_response=True
         )
 
