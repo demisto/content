@@ -12,7 +12,7 @@ inputs:
     simple: ${incident.fwserials}
 - description: Name of the Panorama integration to gather the list of monitored FWs.
     If none specified, the list of serials must be provided manually as "fw_serials".
-  key: panorama_integration
+  key: panosintegrationinstancename
   playbookInputQuery:
   required: false
   value:
