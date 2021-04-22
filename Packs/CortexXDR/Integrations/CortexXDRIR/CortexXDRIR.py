@@ -2593,9 +2593,9 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason'))
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))  # default value in case the customer didn't supply a close reason
         demisto.debug(f"Closing Remote XDR incident with status {update_args['status']}")
-        update_args['resolve_comment'] = update_args.get('closeNotes')
+        update_args['resolve_comment'] = update_args.get('closeNotes', '')
 
 
 def get_update_args(delta, inc_status):
@@ -2609,10 +2609,12 @@ def get_update_args(delta, inc_status):
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
-    try:
-        if remote_args.delta and remote_args.incident_changed:
+
+    if remote_args.delta:
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
                           f'incident {remote_args.remote_incident_id}')
+    try:
+        if remote_args.incident_changed:
             update_args = get_update_args(remote_args.delta, remote_args.inc_status)
 
             update_args['incident_id'] = remote_args.remote_incident_id
