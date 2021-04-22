@@ -4,7 +4,7 @@ import json
 import numpy as np
 import pandas as pd
 
-from DBotCreateClustering import demisto, main, HDBSCAN_PARAMS
+from DBotTrainClustering import demisto, main, HDBSCAN_PARAMS
 
 
 FETCHED_INCIDENT_NOT_EMPTY = [
@@ -12,10 +12,13 @@ FETCHED_INCIDENT_NOT_EMPTY = [
      'entityname': 'powershell'},
     {'id': '2', 'created': "2021-01-30", 'commandline': 'nmap IP=2.2.2.2', 'commandline1': 'powershell IP=1.1.1.1',
      'entityname': 'nmap'},
-    {'id': '3', 'created': "2021-01-30", 'commandline': 'powershell -k -u IP=1.1.1.1', 'commandline1': 'powershell IP=1.1.1.1',
+    {'id': '3', 'created': "2021-01-30", 'commandline': 'powershell  IP=1.1.1.1', 'commandline1': 'powershell IP=1.1.1.1',
      'entityname': 'nmap'},
     {'id': '4', 'created': "2021-01-30", 'commandline': 'nmap  IP=1.1.1.1', 'commandline1': 'powershell IP=1.1.1.1',
-     'entityname': 'powershell'}
+     'entityname': 'powershell'},
+    {'id': '5', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1',
+     'commandline1': 'powershell IP=1.1.1.1',
+     'entityname': 'powershell'},
 ]
 
 def executeCommand(command, args):

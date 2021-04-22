@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 import pandas as pd
 import numpy as np
 import collections
+import pickle
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn import cluster
@@ -38,7 +39,7 @@ class PostProcessing(object):
    Class to analyze the clustering
    """
 
-   def __init__(self, model, threshold):
+   def __init__(self, model, threshold, max_number_cluster):
        """
        Instiantiate class object for visualization
        :param clustering: Object Clustering
@@ -46,6 +47,7 @@ class PostProcessing(object):
        self.model = model
        self.clustering = model.named_steps['clustering']
        self.threshold = threshold
+       self.max_number_cluster = max_number_cluster
        self.stats = {}
        self.silhouette = None
        self.statistics()
@@ -134,8 +136,8 @@ class Clustering(object):
 
         self.create_model(parameters=params)
 
-    def __repr__(self):
-        return f'Clustering: model:{self.model_name}, number cluster:{self.number_clusters}'
+    # def __repr__(self):
+    #     return f'Clustering: model:{self.model_name}, number cluster:{self.number_clusters}'
 
     @classmethod
     def hdbscan(cls, params):
@@ -207,6 +209,11 @@ class Clustering(object):
             self.centers[cluster] = center
 
 
+def extract_fields_from_args(arg: List[str]) -> List[str]:
+    fields_list = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in arg if x]
+    return list(dict.fromkeys(fields_list))
+
+
 def preprocess_incidents_field(incidents_field: str, prefix_to_remove: List[str]) -> str:
     """
     Remove prefixe from incident fields
@@ -219,12 +226,6 @@ def preprocess_incidents_field(incidents_field: str, prefix_to_remove: List[str]
         if incidents_field.startswith(prefix):
             incidents_field = incidents_field[len(prefix):]
     return incidents_field
-
-
-def extract_fields_from_args(arg: List[str]) -> List[str]:
-    fields_list = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in arg if x]
-    return list(dict.fromkeys(fields_list))
-
 
 def get_args():  # type: ignore
     """
@@ -245,13 +246,15 @@ def get_args():  # type: ignore
     query = demisto.args().get('query')
     incident_type = demisto.args().get('incidentType')
 
-    max_number_of_cluster = int(demisto.args().get('maxNumberOfCluster'))
+    max_number_of_clusters = int(demisto.args().get('maxNumberOfCluster'))
     min_number_of_incident_in_cluster = int(demisto.args().get('minNumberofIncidentinCluster'))
     model_name = demisto.args().get('modelName')
     store_model = demisto.args().get('storeModel')
+    model_override = demisto.args().get('overrideExistingModel', 'False') == 'True'
 
     return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-           max_number_of_cluster, min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster
+           max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
+           min_homogeneity_cluster,model_override
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query_sup, limit, type):
@@ -379,7 +382,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
         :param normalize_function: Normalize function to apply on each sample of the corpus before the vectorization
         """
         self.normalize_function = normalize_function
-        self.vec = TfidfVectorizer(**{'analyzer': 'char', 'max_features': 2000, 'ngram_range': (2, 5)})
+        self.vec = TfidfVectorizer(**{'analyzer': 'word', 'max_features': 1000, 'ngram_range': (2, 4)})
 
     def fit(self, x, y=None):
         """
@@ -406,6 +409,15 @@ class Tfidf(BaseEstimator, TransformerMixin):
             x = x[feature_name]
         return self.vec.transform(x).toarray()
 
+def store_model_in_demisto(model, model_name, model_override):
+    model_data = base64.b64encode(pickle.dumps(model))
+    res = demisto.executeCommand('createMLModel', {'modelData': model_data,
+                                                   'modelName': model_name,
+                                                   'modelOverride': model_override,
+                                                   })
+    if is_error(res):
+        return_error(get_error(res))
+
 
 def is_clustering_valid(clustering_model):
     n_labels = len(set(clustering_model.model.labels_))
@@ -415,13 +427,60 @@ def is_clustering_valid(clustering_model):
     return True
 
 
+def create_clusters_json(model_processed, incidents_df):
+    clustering = model_processed.clustering.named_steps['clustering']
+    data = {}
+    data['data'] = []
+    color = ['0048BA', '#B0BF1A	', '#7CB9E8	', '#B284BE	', '#E52B50', '#FFBF00', '#665D1E', '#8DB600', '#D0FF14']
+    for cluster, coordinates in clustering.centers.items():
+        d = {}
+        d['x'] = coordinates[0]
+        d['y'] = coordinates[1]
+        d['name'] = "clusterid" + str(cluster)
+        d['dataType'] = 'incident'
+        d['color'] = color[divmod(cluster, len(color))[1]]
+        d['pivot'] = ' OR '.join(['id: ' + str(x) for x in incidents_df[clustering.model.labels_ == cluster].id.values.tolist()])
+        d['query'] = 'type:Phishing'
+        d['data'] = [int(model_processed.stats[cluster]['number_samples'])]
+        data['data'].append(d)
+
+    pretty_json = json.dumps(data, indent=4, sort_keys=True)
+    return pretty_json
+
+
+def create_summary(model_processed):
+    clustering = model_processed.clustering
+    summary = {
+        'Total number of samples ': str(model_processed.stats["General"]["Nb sample"]),
+        'Total number of cluster: ': str(model_processed.stats["General"]["Nb cluster"]),
+        'Minimun number of sample per cluster: ': str(model_processed.stats["General"]["min_samples"]) ,
+        'Maximun number of cluster': str(model_processed.max_number_cluster),
+        'Total number of non clusterized element': + str(sum(clustering.model.labels_ == -1))
+    }
+    return summary
+
+
+
+def return_entry_clustering(readable_output, output_clustering, tag=None):
+    return_entry = {
+        "Type": entryTypes["note"],
+        "HumanReadable": readable_output,
+        "ContentsFormat": formats['json'],
+        "Contents": output_clustering,
+        "EntryContext": {'DBotTrainClustering': output_clustering},
+    }
+    if tag is not None:
+        return_entry["Tags"] = ['Clustering_{}'.format(tag)]
+    demisto.results(return_entry)
+
+
 def main():
     global_msg = ""
 
-    # Get argument of the automation
+    # Get argument of the automation`
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-    max_number_of_cluster, min_number_of_incident_in_cluster, model_name, store_model,\
-    min_homogeneity_cluster = get_args()
+    max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model,\
+    min_homogeneity_cluster, model_override = get_args()
 
     # Get all the incidents from query, date and field similarity and field family
     populate_fields = fields_for_clustering + field_for_cluster_name
@@ -429,24 +488,21 @@ def main():
     global_msg += "%s \n" % msg
 
     if not incidents:
-        pass
+        demisto
 
     incidents_df = pd.DataFrame(incidents)
     incidents_df.index = incidents_df.id
 
+    # Create data for training
     X = incidents_df[fields_for_clustering]
     labels = incidents_df[field_for_cluster_name].rename(columns={field_for_cluster_name[0]: 'label'})
 
     ## Model
-    # transformers
     tfidf_params = {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (2,5)}
 
     tfidf_pipe = Pipeline(steps=[
         ('tfidf', Tfidf(normalize_function=normalize_global))
     ])
-
-
-    #create transformer list
 
     # preprocessor
     #transformers_list = create_transformers_list(fields_for_clustering)
@@ -475,7 +531,18 @@ def main():
         #write actions if clustering not valid
     #model.named_steps['clustering'].reduce_dimension()
     #model.named_steps['clustering'].compute_centers()
-    p = PostProcessing(model, min_homogeneity_cluster)
+    model_processed = PostProcessing(model, min_homogeneity_cluster, max_number_of_clusters)
+
+    #store model
+    if store_model:
+        store_model_in_demisto(model_processed, model_name, model_override)
+
+    #return Entry and summary
+    output_clustering_json = create_clusters_json(model_processed, incidents_df)
+    summary = create_summary(model_processed)
+    return_entry_clustering(readable_output=summary, output_clustering=output_clustering_json, tag="trained")
+
+
 
 
 

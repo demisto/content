@@ -61,9 +61,18 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '0.3'
+  defaultValue: '0.4'
   isArray: false
   name: minHomogeneityCluster
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  isArray: false
+  name: overrideExistingModel
+  predefined:
+  - 'True'
+  - 'False'
   required: false
   secret: false
 commonfields:
