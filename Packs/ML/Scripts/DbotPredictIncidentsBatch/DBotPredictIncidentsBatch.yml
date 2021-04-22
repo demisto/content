@@ -90,9 +90,16 @@ args:
   name: emailbodyhtml
   required: false
   secret: false
-comment: 'Apply a trained ML model on multiple incidents at once, to compare incidents
-  how the incidents were labeled by analysts, to the predictions of the model. This script
-   is aimed to help evaluate a trained model using past incidents.'
+- default: false
+  defaultValue: dbotprediction,dbotpredictionprobability
+  description: A comma-separated list of fields in the object to poplulate.
+  isArray: false
+  name: populateFields
+  required: false
+  secret: false
+comment: Apply a trained ML model on multiple incidents at once, to compare incidents
+  how the incidents were labeled by analysts, to the predictions of the model. This
+  script is aimed to help evaluate a trained model using past incidents.
 commonfields:
   id: DBotPredictIncidentsBatch
   version: -1
@@ -101,9 +108,9 @@ name: DBotPredictIncidentsBatch
 script: '-'
 subtype: python3
 system: false
-timeout: '0'
-type: python
-dockerimage: demisto/ml:1.0.0.19023
 tags:
 - phishing
 - ml
+timeout: '0'
+type: python
+dockerimage: demisto/ml:1.0.0.19023

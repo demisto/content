@@ -43,20 +43,23 @@ def main():
 
     get_incidents_by_query_args = copy.deepcopy(d_args)
     get_incidents_by_query_args['NonEmptyFields'] = d_args['tagField']
-    fields_names_to_populate = ['tagField', 'emailsubject', 'emailbody', "emailbodyhtml"]
-    fields_to_populate = [get_incidents_by_query_args.get(x, None) for x in fields_names_to_populate]
-    fields_to_populate = [x for x in fields_to_populate if x is not None] + ['id']
-    get_incidents_by_query_args['populateFields'] = ','.join(fields_to_populate)
+    subject_field_name = d_args.get('emailsubject').strip()
+    body_field_name = d_args.get('emailbody').strip()
+    html_field_name = d_args.get('emailbodyhtml').strip()
+    tag_field_name = d_args.get('tagField').strip()
+    additional_populate_fields = d_args.get('populateFields')
+    populate_fields = [subject_field_name, body_field_name, html_field_name, tag_field_name, 'id']
+    get_incidents_by_query_args['populateFields'] = ','.join([x.strip() for x in populate_fields if x is not None])
+    if additional_populate_fields is not None and additional_populate_fields.strip() != '':
+        get_incidents_by_query_args['populateFields'] = ','.join([get_incidents_by_query_args['populateFields'],
+                                                                 additional_populate_fields.strip()])
+    non_empty_fields = [subject_field_name, tag_field_name]
+    get_incidents_by_query_args['NonEmptyFields'] = ','.join([x.strip() for x in non_empty_fields if x is not None])
     get_incidents_by_query_args = build_query_in_respect_to_phishing_labels(get_incidents_by_query_args)
     res = demisto.executeCommand("GetIncidentsByQuery", get_incidents_by_query_args)
     if is_error(res):
         return_error(get_error(res))
     incidents = json.loads(res[-1]['Contents'])
-
-    subject_field_name = d_args.get('emailsubject')
-    body_field_name = d_args.get('emailbody')
-    html_field_name = d_args.get('emailbodyhtml')
-    tag_field_name = d_args.get('tagField')
 
     email_subject_list = [i.get(subject_field_name, '') for i in incidents]
     email_body_list = [i.get(body_field_name, '') for i in incidents]
@@ -79,15 +82,17 @@ def main():
     df = pd.concat([incidents_df, predictions_df], axis=1)
     df.rename(columns={"Label": "Prediction"}, inplace=True)
     file_name = 'predictions.csv'
-    file_columns = ['id', subject_field_name, body_field_name, html_field_name, tag_field_name, 'Prediction',
+    file_columns = ['id', tag_field_name, 'Prediction',
                     'Probability',
                     'Exception']
+    if additional_populate_fields is not None and additional_populate_fields.strip() != '':
+        file_columns += [x.strip() for x in additional_populate_fields.split(',') if x.strip() != '']
     file_columns = [c for c in file_columns if c in df.columns]
     filtered_df = df[file_columns]
     csv_data = filtered_df.to_csv()
     entry = fileResult(file_name, csv_data)
     entry['Contents'] = filtered_df.to_json(orient='records')
-    entry['HumanReadable'] = 'File contains prediction of {} incidents'.format(len(incidents))
+    entry['HumanReadable'] = 'File contains predictions of {} incidents'.format(len(incidents))
     return entry
 
 
