@@ -21,7 +21,6 @@ SORT_DICTIONARY = {'most_recent': 'desc',
                    'least_recent': 'asc'}
 
 
-
 class Client(BaseClient):
     """
     API Client to communicate with QualysFIM.
