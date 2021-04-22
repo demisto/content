@@ -328,7 +328,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                         'type': indicator_type,
                         'rawJSON': raw_json,
                         'fields': fields_mapping,
-                        'relationships': relationships_of_indicator
+                        'relationships': relationships_of_indicator,
                     }
                     indicator['fields']['tags'] = client.tags
 
