@@ -343,9 +343,6 @@ List the CarbonBlack sensors
 | Endpoint.Hostname | unknown | Sensor Hostname | 
 | Endpoint.OS | unknown | Sensor OS | 
 | Endpoint.IPAddresses | unknown | Sensor IP Addresses | 
-| Endpoint.ID | unknown | Sensor ID | 
-| Endpoint.Status | unknown | Sensor Status | 
-| Endpoint.IPAddress | unknown | Sensor IP Address | 
 
 
 #### Command Example
@@ -468,11 +465,6 @@ Display information about the given sensor
 | CbResponse.Sensors.Isolated | unknown | Sensor Isolated | 
 | CbResponse.Sensors.IPAddresses | unknown | Sensor IP Addresses | 
 | CbResponse.Sensors.OS | unknown | Sensor OS | 
-| Endpoint.Hostname | unknown | Sensor Hostname | 
-| Endpoint.OS | unknown | Sensor OS | 
-| Endpoint.IPAddress | unknown | Sensor IP Addresses | 
-| Endpoint.ID | unknown | Sensor ID | 
-| Endpoint.Status | unknown | Sensor Status | 
 
 
 #### Command Example
@@ -801,38 +793,6 @@ Retrieve a binary from CarbonBlack based on hash. Returns a .zip file containing
 | File.Signature.InternalName | unknown | The file's internal name. | 
 | File.Signature.FileVersion | unknown | The file version. | 
 | File.Signature.Description | unknown | The description of the signature. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
-### cb-binary-download
-***
-Retrieve a binary from CarbonBlack based on hash. Returns a .zip file containing the requested file and it's metadata.
-
-
-#### Base Command
-
-`Endpoint`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Endpoint ID. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Endpoint.Hostname | String | Endpoint Hostname | 
-| Endpoint.OS | String | Endpoint OS | 
-| Endpoint.IPAddress | String | Endpoint IP Addresses | 
-| Endpoint.ID | String | Endpoint ID | 
-| Endpoint.Status | String | Endpoint Status | 
 
 
 #### Command Example
