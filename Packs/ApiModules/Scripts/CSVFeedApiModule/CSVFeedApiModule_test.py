@@ -261,3 +261,104 @@ def test_create_fields_mapping():
         'Country': 'United States',
         'Count': 'Low'
     }
+
+
+def test_get_indicators_with_relations():
+    """
+    Given:
+    - Raw json of the csv row extracted
+
+    When:
+    - Fetching indicators from csv rows
+    - create_relationships param is set to True
+
+    Then:
+    - Validate the returned list of indicators have relations.
+    """
+
+    feed_url_to_config = {
+        'https://ipstack.com': {
+            'fieldnames': ['value', 'a'],
+            'indicator_type': 'IP',
+            'relation_entity_b_type': 'IP',
+            'relation_name': 'resolved-from',
+            'mapping': {
+                'AAA': 'a',
+                'relation_entity_b': 'a'
+            }
+        }
+    }
+    expected_res = [{'value': 'jlgkryapwhkpijdhf.com', 'type': 'IP',
+                     'rawJSON': {'value': 'jlgkryapwhkpijdhf.com', 'a': 'Domain used by dircrypt',
+                                 None: ['2021-04-22 06:03',
+                                        'http://osint.bambenekconsulting.com/manual/dircrypt-iplist.txt'],
+                                 'type': 'IP'},
+                     'fields': {'AAA': 'Domain used by dircrypt', 'relation_entity_b': 'Domain used by dircrypt',
+                                'tags': []},
+                     'relationships': [
+                         {'name': 'resolved-from', 'reverseName': 'resolves-to', 'type': 'IndicatorToIndicator',
+                          'entityA': 'jlgkryapwhkpijdhf.com', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
+                          'entityB': 'Domain used by dircrypt', 'entityBFamily': 'Indicator', 'entityBType': 'IP',
+                          'fields': {}}]}]
+
+    ip_ranges = 'jlgkryapwhkpijdhf.com,Domain used by dircrypt,2021-04-22 06:03,http:' \
+                '//osint.bambenekconsulting.com/manual/dircrypt-iplist.txt'
+
+    with requests_mock.Mocker() as m:
+        itype = 'IP'
+        m.get('https://ipstack.com', content=ip_ranges.encode('utf8'))
+        client = Client(
+            url="https://ipstack.com",
+            feed_url_to_config=feed_url_to_config
+        )
+        indicators = fetch_indicators_command(client, default_indicator_type=itype, auto_detect=False,
+                                              limit=35, create_relationships=True)
+        assert indicators == expected_res
+
+
+def test_get_indicators_without_relations():
+    """
+    Given:
+    - Raw json of the csv row extracted
+
+    When:
+    - Fetching indicators from csv rows
+    - create_relationships param is set to False
+
+    Then:
+    - Validate the returned list of indicators dont return relationships.
+    """
+
+    feed_url_to_config = {
+        'https://ipstack.com': {
+            'fieldnames': ['value', 'a'],
+            'indicator_type': 'IP',
+            'relation_entity_b_type': 'IP',
+            'relation_name': 'resolved-from',
+            'mapping': {
+                'AAA': 'a',
+                'relation_entity_b': 'a'
+            }
+        }
+    }
+    expected_res = [{'value': 'jlgkryapwhkpijdhf.com', 'type': 'IP',
+                     'rawJSON': {'value': 'jlgkryapwhkpijdhf.com', 'a': 'Domain used by dircrypt',
+                                 None: ['2021-04-22 06:03',
+                                        'http://osint.bambenekconsulting.com/manual/dircrypt-iplist.txt'],
+                                 'type': 'IP'},
+                     'fields': {'AAA': 'Domain used by dircrypt', 'relation_entity_b': 'Domain used by dircrypt',
+                                'tags': []}, 'relationships': []}]
+
+    ip_ranges = 'jlgkryapwhkpijdhf.com,Domain used by dircrypt,2021-04-22 06:03,http:' \
+                '//osint.bambenekconsulting.com/manual/dircrypt-iplist.txt'
+
+    with requests_mock.Mocker() as m:
+        itype = 'IP'
+        m.get('https://ipstack.com', content=ip_ranges.encode('utf8'))
+        client = Client(
+            url="https://ipstack.com",
+            feed_url_to_config=feed_url_to_config
+        )
+        indicators = fetch_indicators_command(client, default_indicator_type=itype, auto_detect=False,
+                                              limit=35, create_relationships=False)
+        assert indicators == expected_res

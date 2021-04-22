@@ -352,7 +352,7 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
     except ValueError:
         raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
-    relationships = demisto.params().get('relationships', False)
+    relationships = demisto.params().get('create_relationships', False)
     indicators_list = fetch_indicators_command(client, itype, auto_detect, limit, relationships)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
