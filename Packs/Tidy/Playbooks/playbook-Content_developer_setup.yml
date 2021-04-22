@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Content developer setup
-description: Setup content working environment.
+description: Install content working environment.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2732.5,
-          "y": -50
+          "x": 1892.5,
+          "y": 50
         }
       }
     note: false
@@ -60,8 +60,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2732.5,
-          "y": 115
+          "x": 1892.5,
+          "y": 195
         }
       }
     note: false
@@ -71,10 +71,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 3a4c6a82-8ca4-42c8-87b5-ac3b9a829530
+    taskid: 3ccb75c8-f1a9-400d-897e-fe7079cfc099
     type: regular
     task:
-      id: 3a4c6a82-8ca4-42c8-87b5-ac3b9a829530
+      id: 3ccb75c8-f1a9-400d-897e-fe7079cfc099
       version: -1
       name: Install basic packages using homebrew
       description: Install and configure homebrew, Install additional homebrew/-cask
@@ -90,7 +90,7 @@ tasks:
       apps:
         simple: git,zsh,libxmlsec1,protobuf,jq,protoc-gen-go,protoc-gen-go,elastic/tap/elasticsearch-full
       cask_apps:
-        simple: pycharm-ce,goland,webstorm,visual-studio-code,iterm2,postman,google-chrome,slack,docker
+        simple: pycharm-ce,goland,webstorm,visual-studio-code,iterm2,postman,docker
       execution-timeout:
         simple: "7182"
       homebrew_taps:
@@ -99,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2732.5,
-          "y": 360
+          "x": 275,
+          "y": 1070
         }
       }
     note: false
@@ -133,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2250,
-          "y": 360
+          "x": 2537.5,
+          "y": 370
         }
       }
     note: false
@@ -167,8 +167,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 350
+          "x": 2060,
+          "y": 370
         }
       }
     note: false
@@ -193,12 +193,13 @@ tasks:
       '#none#':
       - "7"
       - "8"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3880,
-          "y": 360
+          "x": 4810,
+          "y": 370
         }
       }
     note: false
@@ -208,10 +209,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0a7051b6-072c-4e05-8ab5-5cccf2f49305
+    taskid: 37fbae59-8bf0-46d1-8d1b-5722e830b823
     type: regular
     task:
-      id: 0a7051b6-072c-4e05-8ab5-5cccf2f49305
+      id: 37fbae59-8bf0-46d1-8d1b-5722e830b823
       version: -1
       name: GitHub deploy public ssh key
       description: Generate private/public key, Configure ssh client, and deploy keys
@@ -224,15 +225,13 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      access_token:
-        simple: ""
       user:
         simple: ${inputs.user}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 2537.5,
           "y": 545
         }
       }
@@ -270,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3880,
-          "y": 845
+          "x": 4575,
+          "y": 895
         }
       }
     note: false
@@ -308,7 +307,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4320,
+          "x": 5005,
           "y": 1070
         }
       }
@@ -344,7 +343,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3880,
+          "x": 4575,
           "y": 1070
         }
       }
@@ -376,7 +375,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1462.5,
           "y": 910
         }
       }
@@ -407,7 +406,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 3397.5,
           "y": 910
         }
       }
@@ -445,7 +444,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 705,
           "y": 1070
         }
       }
@@ -480,7 +479,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1135,
           "y": 1070
         }
       }
@@ -515,7 +514,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1565,
           "y": 1070
         }
       }
@@ -550,7 +549,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1995,
           "y": 1070
         }
       }
@@ -585,7 +584,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 2425,
           "y": 1070
         }
       }
@@ -623,7 +622,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 2855,
           "y": 1070
         }
       }
@@ -658,7 +657,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 3285,
           "y": 1070
         }
       }
@@ -696,7 +695,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3060,
+          "x": 3715,
           "y": 1070
         }
       }
@@ -707,10 +706,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 43ddb945-4207-4368-8ce0-50035c9febd2
+    taskid: a450d5f0-14dd-48ca-8a12-6d90c38f0f77
     type: regular
     task:
-      id: 43ddb945-4207-4368-8ce0-50035c9febd2
+      id: a450d5f0-14dd-48ca-8a12-6d90c38f0f77
       version: -1
       name: Install server
       description: Set demisto developement server.
@@ -718,11 +717,14 @@ tasks:
       type: regular
       iscommand: true
       brand: Tidy
+    scriptarguments:
+      execution-timeout:
+        simple: "7200"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3880,
+          "x": 3715,
           "y": 1245
         }
       }
@@ -753,7 +755,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2845,
+          "x": 4575,
           "y": 1245
         }
       }
@@ -770,7 +772,7 @@ tasks:
       id: ccee89fe-ca5d-47ee-8972-f2d51b8ff2bb
       version: -1
       name: Enable github SSO
-      description: Check if the user has enabled SSO
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -782,8 +784,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 710
+          "x": 2537.5,
+          "y": 720
         }
       }
     note: false
@@ -857,7 +859,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3470,
+          "x": 4145,
           "y": 1070
         }
       }
@@ -883,8 +885,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1270
+          "x": 500,
+          "y": 1245
         }
       }
     note: false
@@ -897,17 +899,17 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1415,
-        "width": 4650,
-        "x": 50,
-        "y": -50
+        "height": 1290,
+        "width": 5110,
+        "x": 275,
+        "y": 50
       }
     }
   }
 inputs:
 - key: user
   value:
-    simple: ec2-user
+    simple: ${incident.tidyuser}
   required: true
   description: User to configure as git user.
   playbookInputQuery:
