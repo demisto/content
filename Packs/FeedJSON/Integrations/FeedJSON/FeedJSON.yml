@@ -98,7 +98,8 @@ configuration:
   type: 0
 - additionalinfo: "Send specified data in a POST request. When specified, by default\
     \ will add the header: 'Content-Type: application/x-www-form-urlencoded'. To specify\
-    \ a different Content-Type (for example: application/json) use the Header config param."
+    \ a different Content-Type (for example: application/json) use the Header config\
+    \ param."
   display: POST Data
   name: data
   required: false
@@ -147,7 +148,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: json-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.12410
+  dockerimage: demisto/jmespath:1.0.0.19143
   feed: true
   isfetch: false
   longRunning: false
