@@ -60,6 +60,12 @@ args:
   - 'False'
   required: false
   secret: false
+- default: false
+  defaultValue: '0.3'
+  isArray: false
+  name: minHomogeneityCluster
+  required: false
+  secret: false
 commonfields:
   id: 3621593a-3641-4b26-90dc-a660f4b4e68c
   version: -1

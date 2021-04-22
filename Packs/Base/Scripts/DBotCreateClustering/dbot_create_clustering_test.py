@@ -8,14 +8,14 @@ from DBotCreateClustering import demisto, main, HDBSCAN_PARAMS
 
 
 FETCHED_INCIDENT_NOT_EMPTY = [
-    {'id': '1', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1',
+    {'id': '1', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1', 'commandline1': 'powershell IP=1.1.1.1',
      'entityname': 'powershell'},
-    {'id': '2', 'created': "2021-01-30", 'commandline': 'nmap IP=2.2.2.2',
+    {'id': '2', 'created': "2021-01-30", 'commandline': 'nmap IP=2.2.2.2', 'commandline1': 'powershell IP=1.1.1.1',
      'entityname': 'nmap'},
-    {'id': '3', 'created': "2021-01-30", 'commandline': 'powershell -k -u IP=1.1.1.1',
+    {'id': '3', 'created': "2021-01-30", 'commandline': 'powershell -k -u IP=1.1.1.1', 'commandline1': 'powershell IP=1.1.1.1',
      'entityname': 'nmap'},
-    {'id': '4', 'created': "2021-01-30", 'commandline': 'nmap  IP=1.1.1.1',
-     'entityname': 'nmap'}
+    {'id': '4', 'created': "2021-01-30", 'commandline': 'nmap  IP=1.1.1.1', 'commandline1': 'powershell IP=1.1.1.1',
+     'entityname': 'powershell'}
 ]
 
 def executeCommand(command, args):
@@ -40,7 +40,8 @@ def test_main_regular(mocker):
                             'maxNumberOfCluster': '1000',
                             'minNumberofIncidentinCluster': '2',
                             'modelName': 'model',
-                            'storeModel': 'True'
+                            'storeModel': 'True',
+                            'minHomogeneityCluster': 0.3
 
                         })
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)

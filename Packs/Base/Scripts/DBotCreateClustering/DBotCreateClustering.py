@@ -4,11 +4,13 @@ from CommonServerUserPython import *
 
 import pandas as pd
 import numpy as np
+import collections
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn import cluster
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn import metrics
 import hdbscan
 #from MulticoreTSNE import MulticoreTSNE as TSNE
 
@@ -21,6 +23,8 @@ MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, plea
 PREFIXES_TO_REMOVE = ['incident.']
 REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
                       re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
+REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
+
 
 HDBSCAN_PARAMS = {
     'algorithm': 'best',
@@ -28,6 +32,76 @@ HDBSCAN_PARAMS = {
     'prediction_data': True
 }
 
+
+class PostProcessing(object):
+   """
+   Class to analyze the clustering
+   """
+
+   def __init__(self, model, threshold):
+       """
+       Instiantiate class object for visualization
+       :param clustering: Object Clustering
+       """
+       self.model = model
+       self.clustering = model.named_steps['clustering']
+       self.threshold = threshold
+       self.stats = {}
+       self.silhouette = None
+       self.statistics()
+       self.compute_dist()
+
+   def statistics(self):
+       """
+       Compute statistics of the clusters
+       """
+       plot_silhouette = self.com_silhouette()
+       self.stats['General'] = {}
+       self.stats['General']['Nb sample'] = self.clustering.raw_data.shape[0]
+       self.stats['General']['Nb cluster'] = self.clustering.number_clusters
+       self.stats['General']['min_samples'] = self.clustering.model.min_samples
+       self.stats['General']['min_cluster_size'] = self.clustering.model.min_cluster_size
+       for number_cluster in range(0, self.clustering.number_clusters):
+           self.stats[number_cluster] = {}
+           self.stats[number_cluster]['number_samples'] = sum(self.clustering.model.labels_ == number_cluster)
+           ind = np.where(self.clustering.model.labels_ == number_cluster)[0]
+           selected_data = [x for x in self.clustering.raw_data.iloc[ind].label]
+           #flat_list = [item for sublist in selected_data for item in sublist]
+           counter = collections.Counter(selected_data)
+           total = sum(dict(counter).values(), 0.0)
+           dist = {k : v * 100 / total for k, v in counter.items()}
+           dist = dict((k, v) for k, v in dist.items() if v >= 1)
+           self.stats[number_cluster]['distribution sample'] = dist
+
+
+   def com_silhouette(self):
+       """
+       Compute the silhouette for the trained model.
+       """
+       plot_silhouette = []
+       print("Silhouette Coefficient:")
+       self.silhouette = metrics.silhouette_samples(self.clustering.data, self.clustering.results, metric='euclidean')
+       print(np.mean(self.silhouette))
+       for number_cluster in range(-1, self.clustering.number_clusters):
+           plot_silhouette.append(
+               np.mean([self.silhouette[i] for i in range(len(self.silhouette)) if self.clustering.results[i] == number_cluster])
+           )
+       return plot_silhouette
+
+
+   def compute_dist(self):
+        """
+        :param cluster: the number of the chosen cluster
+        :param threshols: the threshold used to select the family(ies)
+        :return:
+        """
+        dist_total={}
+        for cluster in range(0, self.clustering.number_clusters):
+            chosen = {k: v for k, v in self.stats[cluster]['distribution sample'].items() if v >= self.threshold*100}
+            total = sum(dict(chosen).values(), 0.0)
+            dist = {k: v * 100 / total for k, v in chosen.items()}
+            dist_total[cluster] = dist
+        self.clus_names = dist_total
 
 class Clustering(object):
     """
@@ -96,18 +170,20 @@ class Clustering(object):
     def get_data(self, X, y):
         """
         Load X and y
-        :type value: DataFrame with SHA1 as index and features as colums
+        :type value: DataFrame with SHA1 as index and features as columns
 
         """
-        self.raw_data = X.join(y, how='right')
+        X = pd.DataFrame(X, index= y.index)
+        self.raw_data = pd.DataFrame(X).join(y, how='right')
         self.data = X
         self.label = y
 
-    def fit(self, X):
+    def fit(self, X, y=None):
         """
         Fit the model with the self.data set.
         The self.data set should be a numpy.array
         """
+        self.get_data(X, y)
         if hasattr(self.model, 'fit_predict'):
             self.results = self.model.fit_predict(X)
         else:
@@ -161,6 +237,8 @@ def get_args():  # type: ignore
     field_for_cluster_name = demisto.args().get('fieldForClusterName', '').split(',')
     field_for_cluster_name = extract_fields_from_args(field_for_cluster_name)
 
+    min_homogeneity_cluster = float(demisto.args().get('minHomogeneityCluster'))
+
     from_date = demisto.args().get('fromDate')
     to_date = demisto.args().get('toDate')
     limit = int(demisto.args()['limit'])
@@ -173,7 +251,7 @@ def get_args():  # type: ignore
     store_model = demisto.args().get('storeModel')
 
     return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-           max_number_of_cluster, min_number_of_incident_in_cluster, model_name, store_model
+           max_number_of_cluster, min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query_sup, limit, type):
@@ -248,6 +326,12 @@ def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List, *field
     return item
 
 
+def normalize_global(obj):
+    if isinstance(obj, str):
+        return normalize_command_line(obj)
+    else:
+        return normalize_json(obj)
+
 def normalize_json(obj) -> str:  # type: ignore
     """
     Normalize json from removing unwantd regex pattern or stop word
@@ -269,6 +353,20 @@ def normalize_json(obj) -> str:  # type: ignore
     my_string = my_string.lower()
     return my_string
 
+def normalize_command_line(command: str) -> str:
+    """
+    Normalize command line
+    :param command: command line
+    :return: Normalized command line
+    """
+    if command and isinstance(command, str):
+        my_string = command.lower()
+        my_string = "".join([REPLACE_COMMAND_LINE.get(c, c) for c in my_string])
+        my_string = my_string.strip()
+        return my_string
+    else:
+        return ''
+
 
 class Tfidf(BaseEstimator, TransformerMixin):
     """
@@ -281,16 +379,17 @@ class Tfidf(BaseEstimator, TransformerMixin):
         :param normalize_function: Normalize function to apply on each sample of the corpus before the vectorization
         """
         self.normalize_function = normalize_function
-        self.vec = TfidfVectorizer({'analyzer': 'char', 'max_features': 2000, 'ngram_range': (2, 5)})
+        self.vec = TfidfVectorizer(**{'analyzer': 'char', 'max_features': 2000, 'ngram_range': (2, 5)})
 
-    def fit(self, x):
+    def fit(self, x, y=None):
         """
         Fit TFIDF transformer
         :param x: incident on which we want to fit the transfomer
         :return: self
         """
+        feature_name = x.columns[0]
         if self.normalize_function:
-            x = x.apply(self.normalize_function)
+            x = x[feature_name].apply(self.normalize_function)
         self.vec.fit(x)
         return self
 
@@ -300,18 +399,29 @@ class Tfidf(BaseEstimator, TransformerMixin):
         :param x: DataFrame or np.array
         :return:
         """
+        feature_name = x.columns[0]
         if self.normalize_function:
-            x = x.apply(self.normalize_function)
+            x = x[feature_name].apply(self.normalize_function)
         else:
-            x = x
+            x = x[feature_name]
         return self.vec.transform(x).toarray()
+
+
+def is_clustering_valid(clustering_model):
+    n_labels = len(set(clustering_model.model.labels_))
+    n_samples = len(clustering_model.raw_data)
+    if not 1 < n_labels < n_samples:
+        return False
+    return True
+
 
 def main():
     global_msg = ""
 
     # Get argument of the automation
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-    max_number_of_cluster, min_number_of_incident_in_cluster, model_name, store_model = get_args()
+    max_number_of_cluster, min_number_of_incident_in_cluster, model_name, store_model,\
+    min_homogeneity_cluster = get_args()
 
     # Get all the incidents from query, date and field similarity and field family
     populate_fields = fields_for_clustering + field_for_cluster_name
@@ -325,21 +435,32 @@ def main():
     incidents_df.index = incidents_df.id
 
     X = incidents_df[fields_for_clustering]
-    labels = incidents_df[field_for_cluster_name]
+    labels = incidents_df[field_for_cluster_name].rename(columns={field_for_cluster_name[0]: 'label'})
 
     ## Model
-
     # transformers
-    tfidf_params = {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (2, 5)}
+    tfidf_params = {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (2,5)}
+
     tfidf_pipe = Pipeline(steps=[
-        ('tfidf', Tfidf(normalize_function=normalize_json))
+        ('tfidf', Tfidf(normalize_function=normalize_global))
     ])
 
+
+    #create transformer list
+
     # preprocessor
+    #transformers_list = create_transformers_list(fields_for_clustering)
+    transformers_list = [('tfidf', tfidf_pipe, ['commandline']) for field in fields_for_clustering]
     preprocessor = ColumnTransformer(
-        transformers=[
-            ('tfidf', tfidf_pipe, fields_for_clustering),
-        ])
+        transformers=transformers_list)
+
+
+
+
+    # preprocessor = ColumnTransformer(
+    #     transformers=[
+    #         ('tfidf', tfidf_pipe_text, ['commandline']),
+    #     ])
 
     # pipeline
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
@@ -348,13 +469,13 @@ def main():
                             ('clustering', Clustering(HDBSCAN_PARAMS))
                             ])
 
-    # Vectorize the data
-    df_vectorized = model.fit(incidents_df)
+    model.fit(incidents_df, labels)
+    if not is_clustering_valid(model.named_steps['clustering']):
+        a=1
+        #write actions if clustering not valid
+    #model.named_steps['clustering'].reduce_dimension()
+    #model.named_steps['clustering'].compute_centers()
+    p = PostProcessing(model, min_homogeneity_cluster)
 
-    # Cluster the data
 
-    # Postprocess the clusters
 
-    # Outputs
-    # json of clustering (demo)
-    # model
