@@ -124,10 +124,10 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
         is_paging = True
 
     if not object_ids:
+        # in case the user wants to get all the IP objects and not specific ones
         response = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
         outputs = response.get('data')
         human_results = parse_get_ip_object_list_results(response)
-
     else:
         human_results, outputs = get_ip_objects_by_ids(client, object_ids, list_type, params)
 
@@ -136,7 +136,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
 
     if not human_results and is_paging:
         human_readable = "No results were found. Please try to run the command without page_number and page_size to " \
-                         "get all the data."
+                         "get all the IP objects that exist."
 
     return CommandResults(
         readable_output=human_readable,
@@ -147,6 +147,10 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def get_ip_objects_by_ids(client, object_ids, list_type, params):
+    """
+    In case the user requests one or more specific IP objects (by their object_id). For each id we make a separate
+    HTTP request (the API does not support list of ids).
+    """
     human_results = []
     outputs = []
     for object_id in object_ids:
@@ -154,18 +158,20 @@ def get_ip_objects_by_ids(client, object_ids, list_type, params):
         url_suffix = '/'.join([url_suffix, object_id])
         res = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
         outputs.append(res.get('data'))
-        human_result, _ = parse_get_ip_object_list_results(res)
-        human_results.append(human_result)
+        human_results.append(parse_get_ip_object_list_results(res)[0])
     return human_results, outputs
 
 
 def parse_get_ip_object_list_results(results: Dict):
     """
-    Parsing the API response after requesting the ip object list
+    Parsing the API response after requesting the IP object list. Parsing maps the important fields that will appear
+    as the human readable output.
     """
     parsed_results = []
     results_data = results.get('data')
     if isinstance(results_data, dict):
+        # in case the response consist only single ip object, the result is a dict and not a list, so we want to handle
+        # those cases in the same way
         results_data = [results_data]
     for ip_object in results_data:
         if ip_object:
