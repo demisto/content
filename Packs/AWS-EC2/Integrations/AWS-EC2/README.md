@@ -1621,6 +1621,7 @@ Launches the specified number of instances using an AMI for which you have permi
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| host_id | The dedicated host ID. | Optional |
 
 
 #### Context Output
