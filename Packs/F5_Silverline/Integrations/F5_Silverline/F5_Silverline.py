@@ -105,7 +105,7 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandRe
     object_id = args.get('object_id')
     url_suffix = f'{list_type}/ip_objects/{object_id}'
     client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
-    human_readable = f"IP object with ID: {object_id} deleted successfully."
+    human_readable = f"IP object with ID: {object_id} deleted successfully from the {list_type} list."
     return CommandResults(readable_output=human_readable)
 
 
@@ -146,7 +146,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def get_ip_objects_by_ids(client, object_ids, list_type, params):
+def get_ip_objects_by_ids(client: Client, object_ids: list, list_type: str, params: dict):
     """
     In case the user requests one or more specific IP objects (by their object_id). For each id we make a separate
     HTTP request (the API does not support list of ids).
@@ -168,12 +168,12 @@ def parse_get_ip_object_list_results(results: Dict):
     as the human readable output.
     """
     parsed_results = []
-    results_data = results.get('data')
+    results_data = results.get('data')  # type: ignore
     if isinstance(results_data, dict):
         # in case the response consist only single ip object, the result is a dict and not a list, so we want to handle
         # those cases in the same way
         results_data = [results_data]
-    for ip_object in results_data:
+    for ip_object in results_data:  # type: ignore
         if ip_object:
             parsed_results.append({
                 'ID': ip_object.get('id'),
@@ -214,6 +214,8 @@ def main() -> None:
 
         elif demisto.command() == 'f5-silverline-ip-object-delete':
             return_results(delete_ip_objects_command(client, demisto.args()))
+        else:
+            raise NotImplementedError(f'{demisto.command()} is not an existing F5 Silverline command')
 
     except Exception as e:
         demisto.error(traceback.format_exc())
