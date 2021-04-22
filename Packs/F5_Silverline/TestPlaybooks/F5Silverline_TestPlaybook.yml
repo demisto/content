@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 4b26ec81-4060-44fe-899c-24a2f83b198a
+    taskid: 29772a23-f485-44e8-86d4-3f2f72e94569
     type: regular
     task:
-      id: 4b26ec81-4060-44fe-899c-24a2f83b198a
+      id: 29772a23-f485-44e8-86d4-3f2f72e94569
       version: -1
       name: Add IP to denylist
       description: Add IP address in a particular list.
@@ -80,10 +80,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "7"
     scriptarguments:
       IP:
         simple: 1.2.3.4
+      duration:
+        simple: "3600"
+      list_target:
+        simple: proxy
       list_type:
         simple: denylist
     separatecontext: false
@@ -103,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7a723bfc-57cf-45ba-8b8a-93e00b3e2c3e
+    taskid: 799d2a80-8b9e-4c2e-8f17-8cc96ba3028f
     type: regular
     task:
-      id: 7a723bfc-57cf-45ba-8b8a-93e00b3e2c3e
+      id: 799d2a80-8b9e-4c2e-8f17-8cc96ba3028f
       version: -1
       name: Get denylist
       description: Get a particular ip objects list by the list type (allowlist/denylist/bad_actor).
@@ -126,7 +130,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -138,10 +142,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 4febd6c0-51a8-47de-8c23-97c485ef11b6
+    taskid: d53fbaf6-af6d-49e6-816e-58de15d4ee14
     type: condition
     task:
-      id: 4febd6c0-51a8-47de-8c23-97c485ef11b6
+      id: d53fbaf6-af6d-49e6-816e-58de15d4ee14
       version: -1
       name: Verify IP added to denylist
       type: condition
@@ -166,7 +170,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -178,10 +182,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d93ec981-c36e-49a6-8369-3d7562542781
+    taskid: 7a9fa35f-b18d-440a-85ad-add67177d7eb
     type: regular
     task:
-      id: d93ec981-c36e-49a6-8369-3d7562542781
+      id: 7a9fa35f-b18d-440a-85ad-add67177d7eb
       version: -1
       name: Delete IP from denylist
       description: Deleted a particular ip objects list by the list type (allowlist/denylist/bad_actor)
@@ -199,13 +203,22 @@ tasks:
       object_id:
         complex:
           root: ${F5Silverline.IPObjectList.data
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ${F5Silverline.IPObjectList.data.attributes.ip}
+                iscontext: true
+              right:
+                value:
+                  simple: 1.2.3.4
           accessor: id}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -231,7 +244,41 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 278ef600-6878-4bcc-8881-0ba373ab6aa0
+    type: regular
+    task:
+      id: 278ef600-6878-4bcc-8881-0ba373ab6aa0
+      version: -1
+      name: Wait until IP appears in the IPs list
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -246,7 +293,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50

@@ -144,7 +144,7 @@ script:
     - default: false
       description: The duration of the IP object to set. Setting the duration to 0 (default) means the denylist entry will never expire.
       isArray: false
-      name: mask
+      name: duration
       required: false
       secret: false
     - default: false

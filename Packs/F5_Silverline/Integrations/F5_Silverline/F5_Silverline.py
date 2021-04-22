@@ -69,7 +69,7 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     list_target = args.get('list_target', 'proxy')
     ip_address = args.get('IP')
     mask = args.get('mask', '32')
-    duration = args.get('duration', 0)
+    duration = int(args.get('duration', 0))
     note = args.get('note', "")
     tags = argToList(args.get('tags', []))
     url_suffix = f'{list_type}/ip_objects'
@@ -77,6 +77,8 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     body = {"list_target": list_target, "data": {"id": "", "type": "ip_objects",
                                                  "attributes": {"mask": mask, "ip": ip_address, "duration": duration},
                                                  "meta": {"note": note, "tags": tags}}}
+    print(body)
+    print(type(duration))
     human_readable = f"IP object with IP address: {ip_address} created successfully."
 
     client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
