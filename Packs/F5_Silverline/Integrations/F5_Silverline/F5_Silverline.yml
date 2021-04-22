@@ -21,9 +21,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
-defaultclassifier: 'null'
 description: '[Enter a comprehensive, yet concise, description of what the integration
   does, what use cases it is designed for, etc.]'
 display: F5_Silverline
@@ -184,7 +181,7 @@ script:
     description: Deleted a particular ip objects list by the list type (allowlist/denylist/bad_actor) and by the object_id.
     execution: false
     name: f5-silverline-ip-object-delete
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: true
   longRunning: false
@@ -194,5 +191,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
-fromversion: 5.5.0
+- F5Silverline_TestPlaybook
+fromversion: 6.0.0
