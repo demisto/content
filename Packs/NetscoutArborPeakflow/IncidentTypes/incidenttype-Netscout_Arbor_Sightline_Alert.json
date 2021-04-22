@@ -23,5 +23,6 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
+    "preProcessingScript": "",
     "fromVersion": "5.0.0"
 }

@@ -1,5 +1,11 @@
 {
-    "detailsV2": {
+    "kind": "detailsV2",
+    "layout": {
+        "id": "Netscout Arbor Sightline Incident",
+        "name": "Netscout Arbor Sightline Incident",
+        "version": -1,
+        "kind": "detailsV2",
+        "typeId": "Netscout Arbor Sightline Alert",
         "tabs": [
             {
                 "id": "summary",
@@ -439,11 +445,8 @@
             }
         ]
     },
-    "group": "incident",
-    "id": "Netscout Arbor Sightline Incident",
-    "name": "Netscout Arbor Sightline Incident",
-    "system": false,
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "4.1.0",
+    "toVersion": "5.9.9",
+    "typeId": "Netscout Arbor Sightline Alert",
+    "version": -1
 }
