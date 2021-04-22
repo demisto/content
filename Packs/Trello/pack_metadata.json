@@ -7,7 +7,9 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2021-03-29T07:34:09Z",
-    "categories": [],
+    "categories": [
+        "Case Management"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": []
