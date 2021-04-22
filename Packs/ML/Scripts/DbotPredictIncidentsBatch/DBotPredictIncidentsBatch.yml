@@ -115,3 +115,5 @@ timeout: '0'
 type: python
 dockerimage: demisto/ml:1.0.0.19023
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
