@@ -2,6 +2,7 @@ import boto3
 from datetime import datetime, date
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from botocore.config import Config
 
 AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
 AWS_roleArn = demisto.params()['roleArn']
@@ -9,6 +10,15 @@ AWS_roleSessionName = demisto.params()['roleSessionName']
 AWS_roleSessionDuration = demisto.params()['sessionDuration']
 AWS_rolePolicy = None
 AWS_GD_SEVERITY = demisto.params()['gs_severity']
+VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+config = Config(
+    connect_timeout=1,
+    retries=dict(
+        max_attempts=5
+    ),
+    proxies=proxies
+)
 
 
 def aws_session(service='guardduty', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None, rolePolicy=None):
@@ -35,7 +45,8 @@ def aws_session(service='guardduty', region=None, roleArn=None, roleSessionName=
         kwargs.update({'Policy': AWS_rolePolicy})
 
     if kwargs:
-        sts_client = boto3.client('sts')
+        sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
+                                  region_name=AWS_DEFAULT_REGION)
         sts_response = sts_client.assume_role(**kwargs)
         if region is not None:
             client = boto3.client(
