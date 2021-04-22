@@ -297,23 +297,23 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'action': api_action,
         'key': API_KEY,
         'element': add_argument_open(action, 'action', False)
-        + add_argument_target(target, 'target')
-        + add_argument_open(description, 'description', False)
-        + add_argument_list(source, 'source', True, True)
-        + add_argument_list(destination, 'destination', True, True)
-        + add_argument_list(application, 'application', True)
-        + add_argument_list(category, 'category', True)
-        + add_argument_open(source_user, 'source-user', True)
-        + add_argument_list(from_, 'from', True, True)  # default from will always be any
-        + add_argument_list(to, 'to', True, True)  # default to will always be any
-        + add_argument_list(service, 'service', True, True)
-        + add_argument_yes_no(negate_source, 'negate-source')
-        + add_argument_yes_no(negate_destination, 'negate-destination')
-        + add_argument_yes_no(disable, 'disabled')
-        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-        + add_argument(log_forwarding, 'log-setting', False)
-        + add_argument_list(tags, 'tag', True)
-        + add_argument_profile_setting(profile_setting, 'profile-setting')
+                   + add_argument_target(target, 'target')
+                   + add_argument_open(description, 'description', False)
+                   + add_argument_list(source, 'source', True, True)
+                   + add_argument_list(destination, 'destination', True, True)
+                   + add_argument_list(application, 'application', True)
+                   + add_argument_list(category, 'category', True)
+                   + add_argument_open(source_user, 'source-user', True)
+                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
+                   + add_argument_list(to, 'to', True, True)  # default to will always be any
+                   + add_argument_list(service, 'service', True, True)
+                   + add_argument_yes_no(negate_source, 'negate-source')
+                   + add_argument_yes_no(negate_destination, 'negate-destination')
+                   + add_argument_yes_no(disable, 'disabled')
+                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+                   + add_argument(log_forwarding, 'log-setting', False)
+                   + add_argument_list(tags, 'tag', True)
+                   + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
     if DEVICE_GROUP:
         if not PRE_POST:
@@ -6848,7 +6848,8 @@ def list_configured_user_id_agents_command(args):
     raw_response = list_configured_user_id_agents_request(args, version)
     if raw_response:
         formatted_results = prettify_configured_user_id_agents(raw_response)
-        headers = ['Name', 'Disabled', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth', 'IpUserMapping']
+        headers = ['Name', 'Disabled', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth',
+                   'IpUserMapping']
 
         return_results(
             CommandResults(
@@ -6933,16 +6934,10 @@ def panorama_upload_content_update_file_command(args: dict):
     entry_id = args.get('entryID')
     file_path = demisto.getFilePath(entry_id)['path']
     file_name = demisto.getFilePath(entry_id)['name']
-
-    try:
-        shutil.copy(file_path, file_name)
-    except Exception:
-        raise Exception('Failed to prepare file for upload.')
-
+    shutil.copy(file_path, file_name)
     with open(file_name, 'rb') as file:
-        files = {'file': file}
         params = {'type': 'import', 'category': category, 'key': API_KEY}
-        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files=files)
+        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={'file': file})
         human_readble = tableToMarkdown("Results", t=response.get('response'))
         content_upload_info = {
             'Message': response['response']['msg'],
