@@ -91,12 +91,17 @@ USECASE_HTML_DOCUMENT_TEMPLATE = """
     td {
         font-size: small;
     }
-
+    .border-cortex {
+        border-color: #fa582d!important;
+    }
+    .text-cortex {
+        color: #fa582d!important;
+    }
 
 </style>
 <body>
 <div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom border-cortex">
         <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"
              style="min-width:500px;">
             <span class="fs-4">{{ playbook_name }}</span>
@@ -119,7 +124,7 @@ USECASE_HTML_DOCUMENT_TEMPLATE = """
     </div>
     <div class="row mb-2">
         <div class="col">
-            <h1 class="text-primary">Purpose</h1>
+            <h1 class="text-cortex">Purpose</h1>
             <p>This Document covers all of the custom configuration and content that has been deployed following
                 the engagement of Palo Alto professional services.<br><br>
                 This document specifically covers the implementation of the provided use case/playbook, and collates
@@ -132,19 +137,19 @@ USECASE_HTML_DOCUMENT_TEMPLATE = """
                 <li>Incident Classifiers</li>
                 <li>Incident Mappers</li>
             </ul>
-            <h1 class="text-primary">Document Overview</h1>
+            <h1 class="text-cortex">Document Overview</h1>
             <p>
                 This document has been auto-generated using the XSOAR Automation <i>!GenerateAsBuilt</i>, with a
                 specific
                 playbook ({{ playbook_name }}) provided.
             </p>
-            <h1 class="text-primary">
+            <h1 class="text-cortex">
                 Project Details
             </h1>
             <textarea style="width:100%;border:none;"
                       placeholder="Click here to complete this section with any relevant details, for example customer
 contat details, project scope, etc."></textarea>
-            <h1 class="text-primary">
+            <h1 class="text-cortex">
                 Contact Details
             </h1>
             <p>
@@ -180,7 +185,7 @@ contat details, project scope, etc."></textarea>
     </p>
     <p style="page-break-after: always;"></p>
     {% endif %}
-    
+
     {% if data.automations %}
     {{ data.automations.as_html(["name","pack"]) }}
     <p>
@@ -210,14 +215,19 @@ HTML_DOCUMENT_TEMPLATE = """
     td {
         font-size: small;
     }
-
+    .border-cortex {
+        border-color: #fa582d!important;
+    }
+    .text-cortex {
+        color: #fa582d!important;
+    }
 </style>
 <body>
 <div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom border-cortex">
         <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"
              style="min-width:500px;">
-            <span class="fs-4">XSOAR as built</span>
+            <span class="fs-4 display-1">XSOAR as built</span>
         </div>
         <div>
             <img src="https://www.paloaltonetworks.com/content/dam/pan/en_US/images/logos/brand/primary-company-logo/PANW_Parent_Brand_Primary_Logo_RGB.png?imbypass=on"
@@ -237,21 +247,21 @@ HTML_DOCUMENT_TEMPLATE = """
     </div>
     <div class="row mb-2">
         <div class="col">
-            <h1 class="text-primary">Purpose</h1>
+            <h1 class="text-cortex">Purpose</h1>
             <p>This Document covers all of the custom configuration and content that has been deployed following
                 the engagement of Palo Alto professional services.<br>
             </p>
-            <h1 class="text-primary">Document Overview</h1>
+            <h1 class="text-cortex">Document Overview</h1>
             <p>
                 This document has been auto-generated using the XSOAR Automation <i>!GenerateAsBuilt</i>.
             </p>
-            <h1 class="text-primary">
+            <h1 class="text-cortex">
                 Project Details
             </h1>
             <textarea style="width:100%;border:none;"
                       placeholder="Click here to complete this section with any relevant details, for example customer
 contat details, project scope, etc."></textarea>
-            <h1 class="text-primary">
+            <h1 class="text-cortex">
                 Contact Details
             </h1>
             <p>
@@ -264,12 +274,12 @@ contat details, project scope, etc."></textarea>
     </div>
     <p style="page-break-after: always;"></p>
 
-    <h1 class="text-primary text-center">Project Statistics Summary</h1>
+    <h1 class="text-cortex text-center">Project Statistics Summary</h1>
     <div class="row mb-2">
-        <div class="col text-center p-2 border-bottom">
+        <div class="col text-center p-2 border-bottom border-cortex">
             {{ open_incidents }}
         </div>
-        <div class="col text-center p-2 border-bottom">
+        <div class="col text-center p-2 border-bottom border-cortex">
             {{ closed_incidents }}
         </div>
     </div>
@@ -283,8 +293,8 @@ contat details, project scope, etc."></textarea>
     </p>
     <p style="page-break-after: always;"></p>
 
-    <h1 class="text-primary text-center">All Installed Content</h1>
-    
+    <h1 class="text-cortex text-center">All Installed Content</h1>
+
     {{ integrations_table }}
     <p>The system configuration above represents the server configuration of XSOAR, including advanced
         server config parameters such as HTTP proxy. This configuration is accessible via
