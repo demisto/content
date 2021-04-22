@@ -13,7 +13,7 @@ from taxii2client.v20 import Server, Collection, ApiRoot
 # are mapped into the indicator. Generally, fields of type
 # "list" will be joined with a "\n". Types of "dict" and
 # "str" will be mapped as is.
-mitre_field_mapping = {
+MITRE_FIELD_MAPPING = {
     "mitrealiases": {"name": "aliases", "type": "list"},
     "mitrecontributors": {"name": "x_mitre_contributors", "type": "list"},
     "mitredatasources": {"name": "x_mitre_data_sources", "type": "str"},
@@ -34,6 +34,19 @@ mitre_field_mapping = {
     "mitretype": {"name": "type", "type": "str"},
     "mitrecreated": {"name": "created", "type": "str"},
     "mitremodified": {"name": "modified", "type": "str"}
+}
+
+MAPPING_BY_TYPE = {
+
+}
+
+MITRE_TYPE_TO_DEMISTO_TYPE = {
+    "attack-pattern": "STIX Attack Pattern",
+    "course-of-action": "Course of Action",
+    "intrusion-set": "Intrusion Set",
+    "malware": "STIX Malware",
+    "tool": "STIX Tool",
+    "relationship": "" # TODO
 }
 
 # Disable insecure warnings
@@ -94,8 +107,6 @@ class Client:
         # For each collection
         for collection in self.collections:
 
-            # print(f'self.collections: {self.collections}')
-
             # Stop when we have reached the limit defined
             if 0 < limit <= counter:
                 break
@@ -104,12 +115,8 @@ class Client:
             collection_url = urljoin(self.base_url, f'stix/collections/{collection.id}/')
             collection_data = Collection(collection_url, verify=self.verify, proxies=self.proxies)
 
-            # print(f'collection_data: {collection_data}')
-
             # Supply the collection to TAXIICollection
             tc_source = TAXIICollectionSource(collection_data)
-
-            # print(f'tc_source: {tc_source}')
 
             # Create filters to retrieve content
             filter_objs = {
@@ -136,89 +143,25 @@ class Client:
                     continue
 
                 # For each item in the MITRE list, add an indicator to the indicators list
-                for mitreItem in mitre_data:
+                for mitre_item in mitre_data:
 
-                    # Stop when we have reached the limit defined
                     if 0 < limit <= counter:
                         break
 
-                    mitre_item_json = json.loads(str(mitreItem))
-                    print(f'mitre_item_json: {mitre_item_json}')
-                    value = None
-
-                    # Try and map a friendly name to the value before the real ID
-                    try:
-                        externals = [x['external_id'] for x in mitre_item_json.get('external_references', []) if
-                                     x['source_name'] == 'mitre-attack' and x['external_id']]
-                        value = externals[0]
-                    except Exception:
-                        value = None
-                    if not value:
-                        value = mitre_item_json.get('x_mitre_old_attack_id', None)
-                    if not value:
-                        value = mitre_item_json.get('id')
+                    mitre_item_json = json.loads(str(mitre_item))
+                    value = mitre_item_json.get('name')
 
                     if mitre_item_json.get('id') not in mitre_id_list:
 
-                        # If the indicator already exists, then append the new data
-                        # to the existing indicator.
+                        # If the indicator already exists, then append the new data to the existing indicator.
                         if value in indicator_values_list:
-
-                            # Append data to the original item
-                            original_item = [x for x in indicators if x.get('value') == value][0]
-                            if original_item['rawJSON'].get('id', None):
-                                try:
-                                    original_item['rawJSON']['id'] += f"\n{mitre_item_json.get('id', '')}"
-                                except Exception:
-                                    pass
-                            if original_item['rawJSON'].get('created', None):
-                                try:
-                                    original_item['rawJSON']['created'] += f"\n{mitre_item_json.get('created', '')}"
-                                except Exception:
-                                    pass
-                            if original_item['rawJSON'].get('modified', None):
-                                try:
-                                    original_item['rawJSON']['modified'] += f"\n{mitre_item_json.get('modified', '')}"
-                                except Exception:
-                                    pass
-                            if original_item['rawJSON'].get('description', None):
-                                try:
-                                    if not original_item['rawJSON'].get('description').startswith("###"):
-                                        original_item['rawJSON']['description'] = \
-                                            f"### {original_item['rawJSON'].get('type')}\n" \
-                                            f"{original_item['rawJSON']['description']}"
-                                    original_item['rawJSON']['description'] += \
-                                        f"\n\n_____\n\n### {mitre_item_json.get('type')}\n" \
-                                        f"{mitre_item_json.get('description', '')}"
-                                except Exception:
-                                    pass
-                            if original_item['rawJSON'].get('external_references', None):
-                                try:
-                                    original_item['rawJSON']['external_references'].extend(
-                                        mitre_item_json.get('external_references', [])
-                                    )
-                                except Exception:
-                                    pass
-                            if original_item['rawJSON'].get('kill_chain_phases', None):
-                                try:
-                                    original_item['rawJSON']['kill_chain_phases'].extend(
-                                        mitre_item_json.get('kill_chain_phases', [])
-                                    )
-                                except Exception:
-                                    pass
-                            if original_item['rawJSON'].get('aliases', None):
-                                try:
-                                    original_item['rawJSON']['aliases'].extend(
-                                        mitre_item_json.get('aliases', [])
-                                    )
-                                except Exception:
-                                    pass
+                            add_data_to_existing_indicator(indicators, value, mitre_item_json)
 
                         else:
                             indicator_obj = {
                                 "value": value,
                                 "score": self.reputation,
-                                "type": "MITRE ATT&CK",
+                                "type": MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type')),
                                 "rawJSON": mitre_item_json,
                                 "fields": {
                                     "tags": self.tags,
@@ -260,7 +203,7 @@ class Client:
         # rawjson to the fields in the indicator
         for indicator in indicators:
             indicator['fields'] = dict()
-            for field, value in mitre_field_mapping.items():
+            for field, value in MITRE_FIELD_MAPPING.items():
                 try:
                     # Try and map the field
                     value_type = value['type']
@@ -278,12 +221,95 @@ class Client:
                             indicator['fields'][field] = indicator['rawJSON'][value_name]
 
                 except KeyError:
-                    # If the field does not exist in the indicator
-                    # then move on
+                    # If the field does not exist in the indicator then move on
                     pass
                 except Exception as err:
                     demisto.error(f"Error when mapping Mitre Fields - {err}")
         return indicators
+
+
+def add_data_to_existing_indicator(indicators, value, mitre_item_json):
+    original_item = [x for x in indicators if x.get('value') == value][0]
+    if original_item['rawJSON'].get('id', None):
+        try:
+            original_item['rawJSON']['id'] += f"\n{mitre_item_json.get('id', '')}"
+        except Exception:
+            pass
+    if original_item['rawJSON'].get('created', None):
+        try:
+            original_item['rawJSON']['created'] += f"\n{mitre_item_json.get('created', '')}"
+        except Exception:
+            pass
+    if original_item['rawJSON'].get('modified', None):
+        try:
+            original_item['rawJSON']['modified'] += f"\n{mitre_item_json.get('modified', '')}"
+        except Exception:
+            pass
+    if original_item['rawJSON'].get('description', None):
+        try:
+            if not original_item['rawJSON'].get('description').startswith("###"):
+                original_item['rawJSON']['description'] = \
+                    f"### {original_item['rawJSON'].get('type')}\n" \
+                    f"{original_item['rawJSON']['description']}"
+            original_item['rawJSON']['description'] += \
+                f"\n\n_____\n\n### {mitre_item_json.get('type')}\n" \
+                f"{mitre_item_json.get('description', '')}"
+        except Exception:
+            pass
+    if original_item['rawJSON'].get('external_references', None):
+        try:
+            original_item['rawJSON']['external_references'].extend(
+                mitre_item_json.get('external_references', [])
+            )
+        except Exception:
+            pass
+    if original_item['rawJSON'].get('kill_chain_phases', None):
+        try:
+            original_item['rawJSON']['kill_chain_phases'].extend(
+                mitre_item_json.get('kill_chain_phases', [])
+            )
+        except Exception:
+            pass
+    if original_item['rawJSON'].get('aliases', None):
+        try:
+            original_item['rawJSON']['aliases'].extend(
+                mitre_item_json.get('aliases', [])
+            )
+        except Exception:
+            pass
+
+
+def map_fields_by_type(indicator_type: str, indicator_json: dict):
+    generic_mapping_fields = {
+        'stixid': indicator_json.get('id'),
+        'creationdate': indicator_json.get('created'),  # creation?
+        'modified': indicator_json.get('modified'),  # does not exist
+        'value': indicator_json.get('name'),  # does not exist
+        'description': indicator_json.get('description'),
+        'communitynotes': [url.get('url') for url in indicator_json.get('external_references', {})],  # grid
+        'communitynotes': [desc.get('description') for desc in indicator_json.get('external_references', {})], # duplicates
+    }
+    mapping_by_type = {
+        "STIX Attack Pattern": {
+            'mitretactics': [tactic.get('phase_name') for tactic in indicator_json.get('kill_chain_phases', {})],  # string / list
+            'operatingsystem': indicator_json.get('x_mitre_platforms')  # operatingsystemref ? list?
+        },
+        "Intrusion Set": {
+            'stixaliases': indicator_json.get('aliases')  # stix?
+        },
+        "STIX Malware": {
+            'tags': indicator_json.get('labels'),  # tags duplicate?
+            'stixaliases': indicator_json.get('x_mitre_aliases'),  # stix?
+            'operatingsystem': indicator_json.get('x_mitre_platforms')  # operatingsystemref ? list?
+
+        },
+        "STIX Tool": {
+            'tags': indicator_json.get('labels'),  # tags duplicate?
+            'stixaliases': indicator_json.get('x_mitre_aliases'),  # stix?
+            'operatingsystem': indicator_json.get('x_mitre_platforms')  # operatingsystemref ? list?
+        }
+    }
+    return generic_mapping_fields.update(mapping_by_type.get(indicator_type))
 
 
 def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
