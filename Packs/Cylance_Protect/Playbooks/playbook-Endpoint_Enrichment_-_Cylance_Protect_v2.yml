@@ -98,9 +98,7 @@ tasks:
       id: 79a6eab0-7d4b-49d2-8348-7abcfbec8bb5
       version: -1
       name: Get all Cylance Protect devices
-      description: Allows a caller to request a page with a list of Console device
-        resources that belongings to a tenant, sorted by registration (created) date
-        in descending order (most recent device registered listed first).
+      description: Gets information about all devices that are available in Cylance Protect.
       script: '|||cylance-protect-get-devices'
       type: regular
       iscommand: true
