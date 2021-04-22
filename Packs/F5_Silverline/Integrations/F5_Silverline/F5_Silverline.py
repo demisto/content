@@ -16,19 +16,26 @@ TABLE_HEADERS_GET_OBJECTS = ['ID', 'IP', 'Expires At', 'List Target', 'Created A
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, headers: dict, proxy: bool):
         """
-        Client for CyberInt RESTful API.
+        Client to use in the F5_Silverline integration. Overrides BaseClient.
 
         Args:
-            base_url (str): URL to access when getting alerts.
-            access_token (str): Access token for authentication.
-            verify_ssl (bool): specifies whether to verify the SSL certificate or not.
-            proxy (bool): specifies if to use XSOAR proxy settings.
+            base_url (str): URL to access when doing an http request.
+            verify (bool): Whether to check for SSL certificate validity.
+            headers (dict): Headers to set when when doing an http request.
+            proxy (bool): Whether the client should use proxies.
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._headers = headers
 
     def request_ip_objects(self, body: dict, method: str, url_suffix: str, params: dict, resp_type='json') -> Dict:
-        """Returns a
+        """
+        Makes an HTTP request to F5 Silverline API by the given arguments.
+        Args:
+            body (dict): The dictionary to send in a 'POST' request.
+            method (str): HTTP request method (GET/POST/DELETE).
+            url_suffix (str): The API endpoint.
+            params (dict): URL parameters to specify the query.
+            resp_type (str): Determines which data format to return from the HTTP request. The default is 'json'.
         """
         return self._http_request(method=method, json_data=body, url_suffix=url_suffix, params=params,
                                   headers=self._headers, resp_type=resp_type)
@@ -36,6 +43,7 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
     """
+    Tests API connectivity and authentication. Does a GET request for this purpose.
     """
     try:
         client.request_ip_objects(body={}, method='GET', url_suffix='denylist/ip_objects', params={})
@@ -49,6 +57,9 @@ def test_module(client: Client) -> str:
 
 
 def paging_args_to_params(page_size, page_number):
+    """
+    Returns the parameters to the HTTP request when using paging.
+    """
     try:
         page_size = int(page_size)
         page_number = int(page_number)
@@ -61,6 +72,11 @@ def paging_args_to_params(page_size, page_number):
 
 def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     # TODO handle the bad_actor list_type
+    """
+    Adds a new IP object to the requested list type (denylist or allowlist).
+    IP object includes an IP address (mandatory). Other fields are optional and have default values.
+    Note: Human readable appears only if the HTTP request did not fail.
+    """
     list_type = args.get('list_type')
     list_target = args.get('list_target', 'proxy')
     ip_address = args.get('IP')
@@ -74,18 +90,20 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
                                                  "attributes": {"mask": mask, "ip": ip_address, "duration": duration},
                                                  "meta": {"note": note, "tags": tags}}}
 
-    human_readable = f"IP object with IP address: {ip_address} created successfully."
-
+    human_readable = f"IP object with IP address: {ip_address} created successfully to the {list_type} list."
     client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
     return CommandResults(readable_output=human_readable)
 
 
 def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     # TODO handle the bad_actor list_type
+    """
+    Deletes an exist IP object from the requested list type (denylist or allowlist) by its object id (mandatory).
+    Note: Human readable appears only if the HTTP request did not fail.
+    """
     list_type = args.get('list_type')
     object_id = args.get('object_id')
     url_suffix = f'{list_type}/ip_objects/{object_id}'
-
     client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
     human_readable = f"IP object with ID: {object_id} deleted successfully."
     return CommandResults(readable_output=human_readable)
@@ -108,7 +126,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     if not object_ids:
         response = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
         outputs = response.get('data')
-        human_results = parse_results_for_specific_ip_object(response)
+        human_results = parse_get_ip_object_list_results(response)
 
     else:
         human_results, outputs = get_ip_objects_by_ids(client, object_ids, list_type, params)
@@ -135,38 +153,34 @@ def get_ip_objects_by_ids(client, object_ids, list_type, params):
         url_suffix = f'{list_type}/ip_objects'
         url_suffix = '/'.join([url_suffix, object_id])
         res = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
-        human_results.append(parse_results_for_specific_ip_object(res)[0])
         outputs.append(res.get('data'))
+        human_result, _ = parse_get_ip_object_list_results(res)
+        human_results.append(human_result)
     return human_results, outputs
 
 
-def parse_results_for_specific_ip_object(results: Dict):
+def parse_get_ip_object_list_results(results: Dict):
+    """
+    Parsing the API response after requesting the ip object list
+    """
     parsed_results = []
     results_data = results.get('data')
     if isinstance(results_data, dict):
         results_data = [results_data]
-    for data in results_data:
-        if data:
+    for ip_object in results_data:
+        if ip_object:
             parsed_results.append({
-                'ID': data.get('id'),
-                'IP': data.get('attributes').get('ip'),
-                'Expires At': data.get('attributes').get('expires_at'),
-                'List Target': data.get('attributes').get('list_target'),
-                'Created At': data.get('meta').get('created_at'),
-                'Updated At': data.get('meta').get('updated_at')
+                'ID': ip_object.get('id'),
+                'IP': ip_object.get('attributes').get('ip'),
+                'Expires At': ip_object.get('attributes').get('expires_at'),
+                'List Target': ip_object.get('attributes').get('list_target'),
+                'Created At': ip_object.get('meta').get('created_at'),
+                'Updated At': ip_object.get('meta').get('updated_at')
             })
     return parsed_results
 
 
-''' MAIN FUNCTION '''
-
-
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
     params = demisto.params()
     access_token = params.get('token')
     base_url = urljoin(params.get('url'), BASE_URL)
@@ -184,9 +198,7 @@ def main() -> None:
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module(client))
 
         elif demisto.command() == 'f5-silverline-ip-objects-list':
             return_results(get_ip_objects_list_command(client, demisto.args()))
@@ -197,13 +209,10 @@ def main() -> None:
         elif demisto.command() == 'f5-silverline-ip-object-delete':
             return_results(delete_ip_objects_command(client, demisto.args()))
 
-
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
-
-''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
