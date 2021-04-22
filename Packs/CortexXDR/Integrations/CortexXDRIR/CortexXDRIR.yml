@@ -1655,56 +1655,56 @@ script:
   - arguments:
     - default: false
       description: List of endpoint IDs.
-      isArray: false
+      isArray: true
       name: endpoint_id_list
       required: false
       secret: false
     - default: false
       description: Name of the distribution list.
-      isArray: false
+      isArray: true
       name: dist_name
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds.
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: gte_first_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds.
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: gte_last_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: lte_first_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: lte_last_seen
       required: false
       secret: false
     - default: false
       description: List of IP addresses.
-      isArray: false
+      isArray: true
       name: ip_list
       required: false
       secret: false
     - default: false
       description: Name of the endpoint group.
-      isArray: false
+      isArray: true
       name: group_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Type of operating system.
-      isArray: false
+      isArray: true
       name: platform
       predefined:
       - windows
@@ -1715,7 +1715,7 @@ script:
       secret: false
     - default: false
       description: Endpoint alias name.
-      isArray: false
+      isArray: true
       name: alias
       required: false
       secret: false
@@ -1731,7 +1731,7 @@ script:
       secret: false
     - default: false
       description: Name of the host.
-      isArray: false
+      isArray: true
       name: hostname
       required: false
       secret: false
@@ -1751,6 +1751,122 @@ script:
       command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
+      description: The action ID of the scan request.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
+      description: Was the scan aborted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: List of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the distribution list.
+      isArray: true
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: gte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: gte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: lte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: lte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: List of IP addresses.
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the endpoint group.
+      isArray: true
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of operating system.
+      isArray: true
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint alias name.
+      isArray: true
+      name: alias
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
+      isArray: false
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: Name of the host.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to scan all of the endpoints or not. Default is false.
+        Note that scanning all of the endpoints may cause performance issues and latency.
+      isArray: false
+      name: all
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Cancel the scan of selected endpoints. A scan can only be aborted
+      if the selected endpoints are Pending or In Progress. To scan all
+      endpoints, run the command with the argument all=true. Note that scanning all
+      of the endpoints may cause performance issues and latency.
+    execution: true
+    name: xdr-endpoint-scan-abort
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
+      description: The action id of the abort scan request.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
+      description: Was the scan aborted.
+      type: Boolean
   - deprecated: false
     description: Get mapping fields from remote incident. Please note that this method
       will not update the current incident, it's here for debugging purposes.
@@ -2628,14 +2744,14 @@ script:
   dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: true
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   type: python
 tests:
 - Test XDR Playbook

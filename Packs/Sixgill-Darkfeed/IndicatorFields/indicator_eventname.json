@@ -1,0 +1,31 @@
+{
+ "id": "indicator_eventname",
+ "version": -1,
+ "modified": "2021-03-10T06:53:32.723591681Z",
+ "name": "Sixgill_Event Name",
+ "ownerOnly": false,
+ "description": "Event Name",
+ "cliName": "eventname",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "CVE"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}
