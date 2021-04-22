@@ -40,6 +40,7 @@
         },
         {
             "integrations": "AzureWAF",
+            "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -2956,11 +2957,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "DbotPredictOufOfTheBoxTest",
-            "fromversion": "4.5.0",
-            "timeout": 1000
-        },
-        {
             "integrations": "AlienVault OTX TAXII Feed",
             "playbookID": "playbook-feedalienvaultotx_test",
             "fromversion": "5.5.0"
@@ -3263,8 +3259,23 @@
             "fromversion": "6.0.0"
         },
         {
+            "playbookID": "DbotPredictOufOfTheBoxTest",
+            "fromversion": "4.5.0",
+            "timeout": 1000
+        },
+        {
+            "playbookID": "DbotPredictOufOfTheBoxTestV2",
+            "fromversion": "5.5.0",
+            "timeout": 1000
+        },
+        {
             "integrations": "VirusTotal - Premium (API v3)",
             "playbookID": "VirusTotal Premium v3 TestPlaybook",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Armis",
+            "playbookID": "Armis-Test",
             "fromversion": "5.5.0"
         }
     ],
@@ -3432,6 +3443,7 @@
         "Akamai WAF": "Issue 32318",
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
+        "Armis": "No instance - developed by SOAR Experts",
         
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -3644,6 +3656,9 @@
             "demisto/powershell-ubuntu": {
                 "pid_threshold": 40,
                 "memory_threshold": 200
+            },
+            "demisto/boto3": {
+                "memory_threshold": 90
             }
         }
     }
