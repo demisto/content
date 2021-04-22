@@ -1,0 +1,17 @@
+{
+    "name": "Microsoft SafeLinks Statistics",
+    "description": "Enables querying the O365 Safe Links statistics from O365",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Harri Ruuttila",
+    "url": "",
+    "email": "",
+    "created": "2021-04-22T11:19:46Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Hruuttila"
+    ]
+}
