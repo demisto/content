@@ -6,15 +6,11 @@ import requests
 import traceback
 from typing import Dict, Any
 
-# Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
-''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 BASE_URL = "/api/v1/ip_lists"
 TABLE_HEADERS_GET_OBJECTS = ['ID', 'IP', 'Expires At', 'List Target', 'Created At', 'Updated At']
-''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
@@ -77,8 +73,7 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     body = {"list_target": list_target, "data": {"id": "", "type": "ip_objects",
                                                  "attributes": {"mask": mask, "ip": ip_address, "duration": duration},
                                                  "meta": {"note": note, "tags": tags}}}
-    print(body)
-    print(type(duration))
+
     human_readable = f"IP object with IP address: {ip_address} created successfully."
 
     client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
