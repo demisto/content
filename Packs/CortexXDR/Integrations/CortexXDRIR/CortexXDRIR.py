@@ -21,6 +21,8 @@ API_KEY_LENGTH = 128
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
+ENDPOINT_CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
+INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
@@ -1680,9 +1682,16 @@ def get_endpoints_command(client, args):
             sort_by_first_seen=sort_by_first_seen,
             sort_by_last_seen=sort_by_last_seen
         )
+
+    standard_endpoints = generate_endpoint_by_contex_standart(endpoints)
+    endpoint_context_list = []
+    for endpoint in standard_endpoints:
+        endpoint_context = endpoint.to_context().get(ENDPOINT_CONTEXT_PATH)
+        endpoint_context_list.append(endpoint_context)
+
     context = {
         f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-        Common.Endpoint.CONTEXT_PATH: return_endpoint_standard_context(endpoints)
+        Common.Endpoint.CONTEXT_PATH: endpoint_context_list
     }
     account_context = create_account_context(endpoints)
     if account_context:
@@ -1714,42 +1723,64 @@ def get_trasnformed_dict(old_dict, transformation_dict):
     return new_dict
 
 
+def generate_endpoint_by_contex_standart(endpoints):
+    standart_endpoints = []
+    for single_endpoint in endpoints:
+        status = 'Online' if single_endpoint.get('endpoint_status') == 'connected' else 'Offline'
+        is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
+        hostname = single_endpoint['host_name'] if single_endpoint.get('host_name', '') else single_endpoint.get(
+            'endpoint_name')
+        # in this command we wish IPAddress will be a string and not a list
+        ip = single_endpoint.get('ip')[0] if isinstance(single_endpoint.get('ip'), list) else single_endpoint.get('ip')
+        endpoint = Common.Endpoint(
+            id=single_endpoint.get('endpoint_id'),
+            hostname=hostname,
+            ip_address=ip,
+            os=single_endpoint.get('os_type'),
+            status=status,
+            is_isolated=is_isolated,
+            mac_address=single_endpoint.get('mac_address'),
+            domain=single_endpoint.get('domain'),
+            vendor=INTEGRATION_NAME)
+
+        standart_endpoints.append(endpoint)
+    return standart_endpoints
+
+
 def endpoint_command(client, args):
     endpoint_id_list = argToList(args.get('id'))
+    endpoint_ip_list = argToList(args.get('ip'))
+    endpoint_hostname_list = argToList(args.get('hostname'))
 
     endpoints = client.get_endpoints(
         endpoint_id_list=endpoint_id_list,
+        ip_list=endpoint_ip_list,
+        hostname=endpoint_hostname_list,
         page_number=0,
         limit=30,
     )
-    endpoint_context_standart = return_endpoint_standard_context(endpoints)
-    # in this command we wish IPAddress will be a string and not a list
-    for endpoint in endpoint_context_standart:
-        endpoint['IPAddress'] = \
-            endpoint.get('IPAddress')[0] if isinstance(endpoint.get('IPAddress'), list) else endpoint.get('IPAddress')
+    standard_endpoints = generate_endpoint_by_contex_standart(endpoints)
+    command_results = []
+    if standard_endpoints:
+        for endpoint in standard_endpoints:
+            endpoint_context = endpoint.to_context().get(ENDPOINT_CONTEXT_PATH)
+            hr = tableToMarkdown('Cortex XDR Endpoint', endpoint_context)
 
-    endpoint_context = {
-        Common.Endpoint.CONTEXT_PATH: endpoint_context_standart
-    }
-    return (
-        tableToMarkdown('Endpoints', endpoint_context_standart),
-        endpoint_context,
-        endpoints
-    )
+            command_results.append(CommandResults(
+                readable_output=hr,
+                raw_response=endpoints,
+                indicator=endpoint
+            ))
+
+    else:
+        command_results.append(CommandResults(
+            readable_output="No endpoints were found",
+            raw_response=endpoints,
+        ))
+    return command_results
 
 
-def return_endpoint_standard_context(endpoints):
-    endpoints_context_list = []
-    for endpoint in endpoints:
-        endpoints_context_list.append(assign_params(**{
-            "Hostname": (endpoint['host_name'] if endpoint.get('host_name', '') else endpoint.get('endpoint_name')),
-            "ID": endpoint.get('endpoint_id'),
-            "IPAddress": endpoint.get('ip'),
-            "Domain": endpoint.get('domain'),
-            "OS": endpoint.get('os_type'),
-            "Status": endpoint.get('endpoint_status'),
-        }))
-    return endpoints_context_list
+
 
 
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
@@ -3265,7 +3296,7 @@ def main():
             return_results(run_script_kill_process_command(client, args))
 
         elif demisto.command() == 'endpoint':
-            return_outputs(*endpoint_command(client, args))
+            return_results(endpoint_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':

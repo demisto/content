@@ -17,7 +17,7 @@ from threading import Timer
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-
+INTEGRATION_NAME = 'CrowdStrike Falcon'
 CLIENT_ID = demisto.params().get('client_id')
 SECRET = demisto.params().get('secret')
 # Remove trailing slash to prevent wrong URL path to service
@@ -1565,7 +1565,8 @@ def search_device_command():
             os_version=single_device.get('os_version'),
             status=status,
             is_isolated=is_isolated,
-            mac_address=single_device.get('mac_address'))
+            mac_address=single_device.get('mac_address'),
+            vendor=INTEGRATION_NAME)
 
         entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
         headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
@@ -1612,6 +1613,24 @@ def generate_status_fields(endpoint_status):
     return status, is_isolated
 
 
+def generate_endpoint_by_contex_standart(devices):
+    standart_endpoints = []
+    for single_device in devices:
+        status, is_isolated = generate_status_fields(single_device.get('status'))
+        endpoint = Common.Endpoint(
+            id=single_device.get('device_id'),
+            hostname=single_device.get('hostname'),
+            ip_address=single_device.get('local_ip'),
+            os=single_device.get('platform_name'),
+            os_version=single_device.get('os_version'),
+            status=status,
+            is_isolated=is_isolated,
+            mac_address=single_device.get('mac_address'),
+            vendor=INTEGRATION_NAME)
+        standart_endpoints.append(endpoint)
+    return standart_endpoints
+
+
 def get_endpoint_command():
     args = demisto.args()
     if 'id' in args.keys():
@@ -1628,21 +1647,13 @@ def get_endpoint_command():
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
 
+    standard_endpoints = generate_endpoint_by_contex_standart(devices)
+
     command_results = []
-    for single_device in devices:
-        status, is_isolated = generate_status_fields(single_device.get('status'))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=status,
-            is_isolated=is_isolated,
-            mac_address=single_device.get('mac_address'))
+    for endpoint in standard_endpoints:
 
         endpoint_context = endpoint.to_context().get(ENDPOINT_CONTEXT_PATH)
-        hr = tableToMarkdown('CrowdStrike Falcon Endpoints', endpoint_context)
+        hr = tableToMarkdown('CrowdStrike Falcon Endpoint', endpoint_context)
 
         command_results.append(CommandResults(
             readable_output=hr,
