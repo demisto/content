@@ -17,7 +17,19 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 640
+            "width": 900
+        },
+        {
+            "displayName": "severity",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "severity",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 200
         },
         {
             "displayName": "time",
@@ -29,7 +41,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 113
+            "width": 200
         }
     ],
     "content": true,

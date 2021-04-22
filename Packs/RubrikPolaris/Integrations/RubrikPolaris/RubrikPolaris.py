@@ -173,6 +173,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                                     nodes {
                                         id
                                         message
+                                        severity
                                         time
                                     }
                                 }
@@ -238,6 +239,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                         process_incident["message"].append({  # type: ignore
                             "message": m["message"],
                             "id": m["id"],
+                            "severity": m["severity"],
                             "time": display_time
                         })
 
