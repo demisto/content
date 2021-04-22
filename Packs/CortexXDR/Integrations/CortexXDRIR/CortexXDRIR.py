@@ -2593,7 +2593,8 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))  # default value in case the customer didn't supply a close reason
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))  # default
+        # value in case the customer didn't supply a close reason
         demisto.debug(f"Closing Remote XDR incident with status {update_args['status']}")
         update_args['resolve_comment'] = update_args.get('closeNotes', '')
 
