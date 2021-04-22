@@ -13,8 +13,8 @@ def main():
                 "regex": r"^.+,\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
                 "transform": "\\1"
             },
-            'relation_name': Relations.INDICATOR_OF,
-            'entity_b_type': 'STIX Malware',
+            'relation_name': EntityRelation.Relations.INDICATOR_OF,
+            'relation_entity_b_type': 'STIX Malware',
             "fields": [{
                 'firstseenbysource': {
                     "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
@@ -60,7 +60,6 @@ def main():
         "malwarefamily": "malwarefamily",
         "relation_entity_b": "relation_entity_b"
     }
-    params['create_relationships'] = demisto.params().get('create_relationships')
 
     # Call the main execution of the HTTP API module.
     feed_main('Feodo Tracker IP Blocklist Feed', params, 'feodotracker-ipblocklist-')
