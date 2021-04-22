@@ -51,7 +51,7 @@ def query_cdl(fw_monitor_list: list) -> CommandResults:
     :param fw_monitor_list: list of FWs serials
     :return: CommandResults object containing the serials which sent logs and that did not.
     """
-    no_logs_str = "### Logs table\n**No entries.**\n"
+    no_logs_str = "### Logs traffic table\n**No entries.**\n"
     firewalls_with_logs = []
     firewalls_without_logs = []
     start_time = datetime.utcnow() - timedelta(hours=12)  # Looking for the last 12 hours of logs
