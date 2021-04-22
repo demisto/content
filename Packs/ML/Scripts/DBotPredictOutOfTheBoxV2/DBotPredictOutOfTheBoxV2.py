@@ -6,8 +6,8 @@ import traceback
 TARGET_PRECISION = 0.97
 THRESHOLD = 0.9
 OUT_OF_THE_BOX_MODEL_NAME = 'demisto_out_of_the_box_model_v2'
-OUT_OF_THE_BOX_MODEL_PATH = '/var/encrypted_model.b'
-EVALUATION_PATH = '/var/oob_evaluation.txt'
+OUT_OF_THE_BOX_MODEL_PATH = '/ml/encrypted_model.b'
+EVALUATION_PATH = '/ml/oob_evaluation.txt'
 
 
 def oob_model_exists():
