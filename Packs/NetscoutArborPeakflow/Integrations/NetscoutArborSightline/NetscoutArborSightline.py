@@ -580,7 +580,7 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
 
 
 def mitigation_delete_command(client: NetscoutClient, args: Dict[str, str]):
-    mitigation_id = args.get('mitigation_id')
+    mitigation_id: str = args.get('mitigation_id')   # type: ignore
     client.delete_mitigation(mitigation_id)
     hr = f'### Mitigation {mitigation_id} was deleted'
     return CommandResults(readable_output=hr)
@@ -693,7 +693,7 @@ def main() -> None:
             importance_operator=importance_operator,
             ongoing=ongoing
         )
-        args = demisto.args()
+        args: dict = demisto.args()
 
         result = ''
         if command == 'test-module':
