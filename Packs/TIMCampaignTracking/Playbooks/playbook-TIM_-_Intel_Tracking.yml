@@ -64,6 +64,7 @@ tasks:
       brand: ""
       id: 8a8a621e-2f96-40d3-8630-e2283a56ab41
       iscommand: false
+      description: Check for threat detected flag
       name: Was  the campaign or actor detected in the environment?
       type: condition
       version: -1
@@ -283,6 +284,7 @@ tasks:
       brand: ""
       id: c2df97df-9219-43f6-873a-223910a8e79e
       iscommand: false
+      description: Check for CVEs in incident context
       name: Are there CVE's?
       type: condition
       version: -1
@@ -906,6 +908,7 @@ tasks:
     task:
       brand: ""
       id: 32ff038f-9fc4-4cae-8b36-e8a1678c0c3b
+      description: Check for related incidents
       iscommand: false
       name: Related Incidents?
       type: condition
@@ -990,6 +993,7 @@ tasks:
       brand: ""
       id: 5d884727-f7c0-4535-8f8f-92f48045b715
       iscommand: false
+      description: Check for bad indicators
       name: Bad or Suspicious Indicators?
       type: condition
       version: -1

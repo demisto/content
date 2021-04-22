@@ -112,24 +112,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "alias",
-                                "height": 22,
-                                "id": "1030d870-a2e1-11eb-9d37-c9986135a434",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "threattype",
-                                "height": 22,
-                                "id": "1030d871-a2e1-11eb-9d37-c9986135a434",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "threatalias",
                                 "height": 22,
                                 "id": "1030d872-a2e1-11eb-9d37-c9986135a434",
