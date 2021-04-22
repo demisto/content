@@ -109,8 +109,9 @@ configuration:
   required: true
   type: 0
 - defaultvalue: 'true'
-  display: Create Relationships
-  name: relationships
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
   required: false
   type: 8
 description: Use the Bambenek Consulting feed integration to fetch indicators from
@@ -137,7 +138,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.4.18682
   feed: true
   isfetch: false
   longRunning: false

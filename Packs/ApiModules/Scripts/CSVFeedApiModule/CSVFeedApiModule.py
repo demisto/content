@@ -291,7 +291,7 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
 
 
 def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, limit: int = 0,
-                             relations_types: bool = False, **kwargs):
+                             create_relationships: bool = False, **kwargs):
     iterator = client.build_iterator(**kwargs)
     relationships_of_indicator = []
     indicators = []
@@ -312,15 +312,16 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                                                               value)
                     raw_json['type'] = indicator_type
                     # if relations param is True and also the url returns relations
-                    if relations_types and config.get('relation_name', ''):
-                        relationships_lst = EntityRelation(
-                            name=config.get(url, {}).get('relation_name'),
-                            entity_a=value,
-                            object_type_a=indicator_type,
-                            entity_b=fields_mapping.get('relation_object_b'),
-                            object_type_b=config.get(url, {}).get('object_type_b'),
-                        )
-                        relationships_of_indicator = [relationships_lst.to_indicator()]
+                    if create_relationships and config.get(url, {}).get('relation_name'):
+                        if fields_mapping.get('relation_entity_b'):
+                            relationships_lst = EntityRelation(
+                                name=config.get(url, {}).get('relation_name'),
+                                entity_a=value,
+                                entity_a_type=indicator_type,
+                                entity_b=fields_mapping.get('relation_entity_b'),
+                                entity_b_type=config.get(url, {}).get('relation_entity_b_type'),
+                            )
+                            relationships_of_indicator = [relationships_lst.to_indicator()]
 
                     indicator = {
                         'value': value,
@@ -380,6 +381,7 @@ def feed_main(feed_name, params=None, prefix=''):
                 params.get('indicator_type'),
                 params.get('auto_detect_type'),
                 params.get('limit'),
+                params.get('create_relationships')
             )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
