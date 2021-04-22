@@ -6736,7 +6736,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Comma-seperated of IDs of the Dedicated Hosts to release.
+      description: A comma-separated list of IDs of the Dedicated Hosts to release.
       isArray: true
       name: host_id
       required: true
