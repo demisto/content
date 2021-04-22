@@ -28,13 +28,13 @@ configuration:
   required: false
   type: 8
 description: Automate your AppID Adoption by using this integration together with
-  your Palo Alto Networks Next-Generation Firewall or Panorama
+  your Palo Alto Networks Next-Generation Firewall or Panorama.
 display: PAN-OS Policy Optimizer
 name: PAN-OS Policy Optimizer
 script:
   commands:
   - deprecated: false
-    description: Gets the Policy Optimizer statistics
+    description: Gets the Policy Optimizer statistics.
     execution: false
     name: pan-os-po-get-stats
     outputs:
@@ -47,7 +47,7 @@ script:
     - contextPath: PanOS.PolicyOptimizer.Stats.unused_apps
       description: Number of unused apps in security policies.
       type: Number
-    - contextPath: "PanOS.PolicyOptimizer.Stats.unused_in_30_days\t"
+    - contextPath: PanOS.PolicyOptimizer.Stats.unused_in_30_days
       description: Number of unused security policies in 30 days.
       type: Number
     - contextPath: PanOS.PolicyOptimizer.Stats.unused_in_90_days
@@ -59,8 +59,8 @@ script:
     name: pan-os-po-no-apps
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
-      description: Contains informatios about the rules that have no apps specified.
-        i.e Source, Destination etc.
+      description: Contains information about the rules that have no apps specified.
+        i.e., Source, Destination, etc.
       type: Unknown
   - deprecated: false
     description: Gets the unused apps.
@@ -73,7 +73,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '30'
-      description: The timeframe in days to show the unused rules for. Default is 30.
+      description: The time frame in days for which to show the unused rules. Default is 30.
       isArray: false
       name: timeframe
       required: false
@@ -81,7 +81,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Unused
-      description: Rule usage type. Which values you want to filter by.
+      description: Rule usage type. The values by which you want to filter.
       isArray: false
       name: usage
       predefined:
@@ -92,7 +92,7 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Exclude rules reset during the last x days. It will not exclude by default.
+      description: Whether to exclude rules reset during the last x days, where x is the value defined in the timeframe argument. It will not exclude rules by default.
       isArray: false
       name: exclude
       predefined:
@@ -101,7 +101,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets unused, used or any rules
+    description: Gets unused, used, or any rules
     execution: false
     name: pan-os-po-get-rules
     outputs:
@@ -122,7 +122,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the App usage statistics for a specific security rule.
+    description: Gets the app usage statistics for a specific security rule.
     execution: false
     name: pan-os-po-app-and-usage
     outputs:
