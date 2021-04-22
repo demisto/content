@@ -6,9 +6,8 @@ Using this pack, you can monitor and prevent phishing attacks by controlling the
 - Create and manage address objects, address-groups, custom URL categories, URL filtering objects.
 - Use the URL Filtering category information to enrich URLs.
 - Commit configurations to Palo Alto Firewall and to Panorama, and push configurations from Panorama to Pre-Defined Device-Groups of Firewalls.
-- Block or allow traffic to or from an object. 
 - Upgrade the version and content of the firewall. 
-- Query the following Panorama or PAN-OS log types: traffic, threat, url, data-filtering, and Wildfire.
+- Query the following PAN-OS log types: traffic, threat, url, data-filtering, and Wildfire.
 - Manage External Dynamic Lists (EDLs).
 
 As part of this pack, you will get several playbooks to facilitate your workflows. 
