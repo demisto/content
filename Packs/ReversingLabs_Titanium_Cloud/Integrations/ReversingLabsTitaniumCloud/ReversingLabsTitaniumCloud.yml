@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ReversingLabs Titanium Cloud
+  id: ReversingLabs TitaniumCloud
   version: -1
 configuration:
 - defaultvalue: https://data.reversinglabs.com
