@@ -56,7 +56,7 @@
     "id": "incident_rubrikpolarismessage",
     "isReadOnly": false,
     "locked": false,
-    "name": "Rubrik Polaris Message",
+    "name": "Rubrik Polaris Analysis Pipeline",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
