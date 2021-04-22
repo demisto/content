@@ -1044,6 +1044,15 @@ script:
     - contextPath: Endpoint.Status
       description: The endpoint's status.
       type: String
+    - contextPath: Endpoint.IsIsolated
+      description: Endpoint isolation status.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint MAC Address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: Endpoint Vendor, the integration name.
+      type: String
   - deprecated: false
     description: Gets a list of all the agent versions to use for creating a distribution
       list.
@@ -2782,6 +2791,15 @@ script:
       type: String
     - contextPath: Endpoint.Status
       description: The endpoint's status.
+      type: String
+    - contextPath: Endpoint.IsIsolated
+      description: Endpoint isolation status.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint MAC Address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: Endpoint Vendor, the integration name.
       type: String
   dockerimage: demisto/python3:3.9.4.18682
   feed: false

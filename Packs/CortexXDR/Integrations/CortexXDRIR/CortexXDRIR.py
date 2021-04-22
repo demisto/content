@@ -1684,7 +1684,7 @@ def get_endpoints_command(client, args):
             sort_by_last_seen=sort_by_last_seen
         )
 
-    standard_endpoints = generate_endpoint_by_contex_standart(endpoints)
+    standard_endpoints = generate_endpoint_by_contex_standart(endpoints, False)
     endpoint_context_list = []
     for endpoint in standard_endpoints:
         endpoint_context = endpoint.to_context().get(ENDPOINT_CONTEXT_PATH)
@@ -1724,20 +1724,37 @@ def get_trasnformed_dict(old_dict, transformation_dict):
     return new_dict
 
 
-def generate_endpoint_by_contex_standart(endpoints):
+def convert_os_to_standart(endpoint_os):
+    os_type = ''
+    if 'windows' in endpoint_os.lower():
+        os_type = "Windows"
+    elif 'linux' in endpoint_os.lower():
+        os_type = "Linux"
+    elif 'macos' in endpoint_os.lower():
+        os_type = "Macos"
+    elif 'android' in endpoint_os.lower():
+        os_type = "Android"
+    return os_type
+
+
+def generate_endpoint_by_contex_standart(endpoints, ip_as_string):
     standart_endpoints = []
     for single_endpoint in endpoints:
         status = 'Online' if single_endpoint.get('endpoint_status') == 'connected' else 'Offline'
         is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
         hostname = single_endpoint['host_name'] if single_endpoint.get('host_name', '') else single_endpoint.get(
             'endpoint_name')
-        # in this command we wish IPAddress will be a string and not a list
-        ip = single_endpoint.get('ip')[0] if isinstance(single_endpoint.get('ip'), list) else single_endpoint.get('ip')
+        ip = single_endpoint.get('ip')
+        # in the `xdr-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
+        # in the `endpoint` command we use  the standart
+        if ip_as_string and isinstance(ip, list):
+            ip = ip[0]
+        os_type = convert_os_to_standart(single_endpoint.get('os_type', ''))
         endpoint = Common.Endpoint(
             id=single_endpoint.get('endpoint_id'),
             hostname=hostname,
             ip_address=ip,
-            os=single_endpoint.get('os_type'),
+            os=os_type,
             status=status,
             is_isolated=is_isolated,
             mac_address=single_endpoint.get('mac_address'),
@@ -1760,7 +1777,7 @@ def endpoint_command(client, args):
         page_number=0,
         limit=30,
     )
-    standard_endpoints = generate_endpoint_by_contex_standart(endpoints)
+    standard_endpoints = generate_endpoint_by_contex_standart(endpoints, True)
     command_results = []
     if standard_endpoints:
         for endpoint in standard_endpoints:

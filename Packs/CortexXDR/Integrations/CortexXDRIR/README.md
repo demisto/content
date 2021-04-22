@@ -887,11 +887,15 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 | PaloAltoNetworksXDR.Endpoint.endpoint_version | String | Endpoint version. | 
 | PaloAltoNetworksXDR.Endpoint.is_isolated | String | Whether the endpoint is isolated. | 
 | PaloAltoNetworksXDR.Endpoint.group_name | String | The name of the group to which the endpoint belongs. | 
-| Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
-| Endpoint.ID | String | The unique ID within the tool retrieving the endpoint. | 
-| Endpoint.IPAddress | String | The IP address of the endpoint. | 
-| Endpoint.Domain | String | The domain of the endpoint. | 
+| Endpoint.Hostname | String | Endpoint Hostname. | 
 | Endpoint.OS | String | Endpoint OS. | 
+| Endpoint.IPAddress | String | Endpoint IP Addresses. | 
+| Endpoint.ID | String | Endpoint ID. | 
+| Endpoint.Status | String | Endpoint Status. | 
+| Endpoint.IsIsolated | String | Endpoint isolation status. | 
+| Endpoint.MACAddress | String | Endpoint MAC Address. | 
+| Endpoint.Vendor | String | Endpoint Vendor, the integration name. | 
+
 
 ##### Command Example
 ```!xdr-get-endpoints isolate="unisolated" first_seen_gte="3 month" page="0" limit="30" sort_order="asc"```
@@ -907,7 +911,10 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
             "IPAddress": [
                 "172.31.11.11"
             ],
-            "OS": "AGENT_OS_WINDOWS"
+            "OS": "Windows",
+            "Status" : "Online",
+            "IsIsolated" : "No",
+            "Vendor": "Cortex XDR - IR"
         },
         {
             "Domain": "WORKGROUP",
@@ -916,7 +923,10 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
             "IPAddress": [
                 "2.2.2.2"
             ],
-            "OS": "AGENT_OS_WINDOWS"
+            "OS": "Windows",
+            "Status" : "Online",
+            "IsIsolated" : "No",
+            "Vendor": "Cortex XDR - IR"
         }
     ],
     "PaloAltoNetworksXDR.Endpoint": [
@@ -2629,7 +2639,7 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 
 #### Base Command
 
-`Endpoint`
+`endpoint`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2640,15 +2650,17 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | unknown | Endpoint Hostname | 
-| Endpoint.OS | unknown | Endpoint OS | 
-| Endpoint.IPAddress| unknown | Endpoint IP Addresses | 
-| Endpoint.ID | unknown | Endpoint ID | 
-| Endpoint.Status | unknown | Endpoint Status | 
-
+| Endpoint.Hostname | String | Endpoint Hostname. | 
+| Endpoint.OS | String | Endpoint OS. | 
+| Endpoint.IPAddress | String | Endpoint IP Addresses. | 
+| Endpoint.ID | String | Endpoint ID. | 
+| Endpoint.Status | String | Endpoint Status. | 
+| Endpoint.IsIsolated | String | Endpoint isolation status. | 
+| Endpoint.MACAddress | String | Endpoint MAC Address. | 
+| Endpoint.Vendor | String | Endpoint Vendor, the integration name. | 
 
 #### Command Example
-```!Endpoint id=15dbb9d5fe9f61eb46e829d986```
+```!endpoint id=15dbb9d5fe9f61eb46e829d986```
 
 #### Context Example
 ```json
@@ -2658,8 +2670,11 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
       "Hostname": "Hostname",
       "ID": "15dbb9d5fe9f61eb46e829d986",
       "IPAddress": "1.1.1.1",
-      "OS": "Windows Server 2019",
-      "Status": "normal"
+      "OS": "Windows",
+      "Status": "Online",
+      "Domain": "WORK",
+      "IsIsolated" : "No",
+      "Vendor": "Cortex XDR - IR"
     }
 }
 ```
@@ -2667,7 +2682,7 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 #### Human Readable Output
 
 >### Endpoints
->|ID|IP|OS|Hostname|Status|
->|---|---|---|---|---|
->| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows Server 2019 | Hostname | normal |\n"
+>|ID|IP|OS|Hostname|Status|Domain|IsIsolated|Vendor|
+>|---|---|---|---|---|---|---|---|
+>| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows | Hostname | Online | WORK | No | Cortex XDR - IR |\n"
 
