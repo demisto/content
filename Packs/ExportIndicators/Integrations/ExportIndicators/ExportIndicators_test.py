@@ -201,8 +201,6 @@ class TestHelperFunctions:
                 ip = ioc.get('value')
                 if ip:
                     assert ip in ei_vals
-                else:
-                    assert ip not in ei_vals
 
     @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_2(self, mocker):
