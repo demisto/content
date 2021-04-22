@@ -3362,7 +3362,8 @@
         "TestTOPdeskPlaybook": "Issue 35412",
         "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "Issue 31032",
-        "PAN-OS EDL Setup v3 Test": "Issue 35386"
+        "PAN-OS EDL Setup v3 Test": "Issue 35386",
+        "Google-Vault-Generic-Test": "Issue 24347"
     },
     "skipped_integrations": {
         
