@@ -1774,8 +1774,6 @@ def endpoint_command(client, args):
         endpoint_id_list=endpoint_id_list,
         ip_list=endpoint_ip_list,
         hostname=endpoint_hostname_list,
-        page_number=0,
-        limit=30,
     )
     standard_endpoints = generate_endpoint_by_contex_standart(endpoints, True)
     command_results = []
