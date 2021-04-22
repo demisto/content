@@ -46,7 +46,7 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {
     "intrusion-set": "Intrusion Set",
     "malware": "STIX Malware",
     "tool": "STIX Tool",
-    "relationship": "" # TODO
+    "relationship": "Relationship"
 }
 
 # Disable insecure warnings
@@ -101,7 +101,8 @@ class Client:
         indicators: List[Dict] = list()
         mitre_id_list: Set[str] = set()
         indicator_values_list: Set[str] = set()
-        external_refs: Set[str] = set()
+        # external_refs: Set[str] = set()
+        relationships_list = []
         counter = 0
 
         # For each collection
@@ -150,6 +151,7 @@ class Client:
 
                     mitre_item_json = json.loads(str(mitre_item))
                     value = mitre_item_json.get('name')
+                    indicator_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))
 
                     if mitre_item_json.get('id') not in mitre_id_list:
 
@@ -158,73 +160,52 @@ class Client:
                             add_data_to_existing_indicator(indicators, value, mitre_item_json)
 
                         else:
-                            indicator_obj = {
-                                "value": value,
-                                "score": self.reputation,
-                                "type": MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type')),
-                                "rawJSON": mitre_item_json,
-                                "fields": {
-                                    "tags": self.tags,
+                            indicator_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))
+                            if indicator_type == 'Relationship':
+                                relationships_list.append(create_relationship(mitre_item_json))
+
+                            else:
+                                indicator_obj = {
+                                    "value": value,
+                                    "score": self.reputation,
+                                    "type": indicator_type,
+                                    "rawJSON": mitre_item_json,
+                                    "fields": map_fields_by_type(indicator_type, mitre_item_json)
                                 }
-                            }
+                                indicator_obj['fields']['tags'] = self.tags
 
-                            if self.tlp_color:
-                                indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+                                if self.tlp_color:
+                                    indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
-                            indicators.append(indicator_obj)
-                            indicator_values_list.add(value)
-                            counter += 1
+                                indicators.append(indicator_obj)
+                                indicator_values_list.add(value)
+                                counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
 
                         # Create a duplicate indicator using the "external_id" from the
                         # original indicator, if the user has selected "includeAPT" as True
-                        if self.include_apt:
-                            ext_refs = [x.get('external_id') for x in mitre_item_json.get('external_references')
-                                        if x.get('external_id') and x.get('source_name') != "mitre-attack"]
-                            for x in ext_refs:
-                                if x not in external_refs:
-                                    indicator_obj = {
-                                        "value": x,
-                                        "score": self.reputation,
-                                        "type": "MITRE ATT&CK",
-                                        "rawJSON": mitre_item_json,
-                                        "fields": {
-                                            "tags": self.tags,
-                                        }
-                                    }
-
-                                    if self.tlp_color:
-                                        indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
-
-                                    indicators.append(indicator_obj)
-                                    external_refs.add(x)
-
-        # Finally, map all the fields from the indicator
-        # rawjson to the fields in the indicator
-        for indicator in indicators:
-            indicator['fields'] = dict()
-            for field, value in MITRE_FIELD_MAPPING.items():
-                try:
-                    # Try and map the field
-                    value_type = value['type']
-                    value_name = value['name']
-
-                    if value_type == "list":
-                        indicator['fields'][field] = "\n".join(indicator['rawJSON'][value_name])
-                    else:
-                        if value_name in ['created', 'modified']:
-                            indicator['fields'][field] = handle_multiple_dates_in_one_field(
-                                value_name, indicator['rawJSON'][value_name]
-                            )
-
-                        else:
-                            indicator['fields'][field] = indicator['rawJSON'][value_name]
-
-                except KeyError:
-                    # If the field does not exist in the indicator then move on
-                    pass
-                except Exception as err:
-                    demisto.error(f"Error when mapping Mitre Fields - {err}")
+                        # if self.include_apt:
+                        #     ext_refs = [x.get('external_id') for x in mitre_item_json.get('external_references')
+                        #                 if x.get('external_id') and x.get('source_name') != "mitre-attack"]
+                        #     for x in ext_refs:
+                        #         if x not in external_refs:
+                        #             indicator_obj = {
+                        #                 "value": x,
+                        #                 "score": self.reputation,
+                        #                 "type": "MITRE ATT&CK",
+                        #                 "rawJSON": mitre_item_json,
+                        #                 "fields": map_fields_by_type()
+                        #             }
+                        #             indicator_obj['fields']['tags'] = self.tags
+                        #
+                        #             if self.tlp_color:
+                        #                 indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+                        #
+                        #             indicators.append(indicator_obj)
+                        #             external_refs.add(x)
+        CommandResults(
+            relations=relationships_list
+        )
         return indicators
 
 
@@ -249,32 +230,24 @@ def add_data_to_existing_indicator(indicators, value, mitre_item_json):
         try:
             if not original_item['rawJSON'].get('description').startswith("###"):
                 original_item['rawJSON']['description'] = \
-                    f"### {original_item['rawJSON'].get('type')}\n" \
-                    f"{original_item['rawJSON']['description']}"
+                    f"### {original_item['rawJSON'].get('type')}\n{original_item['rawJSON']['description']}"
             original_item['rawJSON']['description'] += \
-                f"\n\n_____\n\n### {mitre_item_json.get('type')}\n" \
-                f"{mitre_item_json.get('description', '')}"
+                f"\n\n_____\n\n### {mitre_item_json.get('type')}\n{mitre_item_json.get('description', '')}"
         except Exception:
             pass
     if original_item['rawJSON'].get('external_references', None):
         try:
-            original_item['rawJSON']['external_references'].extend(
-                mitre_item_json.get('external_references', [])
-            )
+            original_item['rawJSON']['external_references'].extend(mitre_item_json.get('external_references', []))
         except Exception:
             pass
     if original_item['rawJSON'].get('kill_chain_phases', None):
         try:
-            original_item['rawJSON']['kill_chain_phases'].extend(
-                mitre_item_json.get('kill_chain_phases', [])
-            )
+            original_item['rawJSON']['kill_chain_phases'].extend(mitre_item_json.get('kill_chain_phases', []))
         except Exception:
             pass
     if original_item['rawJSON'].get('aliases', None):
         try:
-            original_item['rawJSON']['aliases'].extend(
-                mitre_item_json.get('aliases', [])
-            )
+            original_item['rawJSON']['aliases'].extend(mitre_item_json.get('aliases', []))
         except Exception:
             pass
 
@@ -282,8 +255,8 @@ def add_data_to_existing_indicator(indicators, value, mitre_item_json):
 def map_fields_by_type(indicator_type: str, indicator_json: dict):
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
-        'creationdate': indicator_json.get('created'),  # creation?
-        'modified': indicator_json.get('modified'),  # does not exist
+        'creationdate': handle_multiple_dates_in_one_field(indicator_json.get('created'), 'created'),  # creation?
+        'modified': handle_multiple_dates_in_one_field(indicator_json.get('modified'), 'modified'),  # does not exist
         'value': indicator_json.get('name'),  # does not exist
         'description': indicator_json.get('description'),
         'communitynotes': [url.get('url') for url in indicator_json.get('external_references', {})],  # grid
@@ -310,6 +283,24 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         }
     }
     return generic_mapping_fields.update(mapping_by_type.get(indicator_type))
+
+
+def create_relationship(item_json):
+    """
+    Create a single relation with the given arguments.
+    """
+    a_type = item_json.get('source_ref').split('--')[0]
+    a_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(a_type)
+
+    b_type = item_json.get('target_ref').split('--')[0]
+    b_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(b_type)
+
+    return EntityRelation(name=item_json.get('relationship_type'),
+                          entity_a=item_json.get('source_ref'),
+                          entity_a_type=a_type,
+                          entity_b=item_json.get('target_ref'),
+                          entity_b_type=b_type)
+
 
 
 def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
