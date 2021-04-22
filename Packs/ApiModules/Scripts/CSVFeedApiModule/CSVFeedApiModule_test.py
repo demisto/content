@@ -288,21 +288,20 @@ def test_get_indicators_with_relations():
             }
         }
     }
-    expected_res = [{'value': 'jlgkryapwhkpijdhf.com', 'type': 'IP',
-                     'rawJSON': {'value': 'jlgkryapwhkpijdhf.com', 'a': 'Domain used by dircrypt',
+    expected_res = [{'value': 'test.com', 'type': 'IP',
+                     'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test',
                                  None: ['2021-04-22 06:03',
-                                        'http://osint.bambenekconsulting.com/manual/dircrypt-iplist.txt'],
+                                        'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by dircrypt', 'relation_entity_b': 'Domain used by dircrypt',
+                     'fields': {'AAA': 'Domain used by Test', 'relation_entity_b': 'Domain used by Test',
                                 'tags': []},
                      'relationships': [
                          {'name': 'resolved-from', 'reverseName': 'resolves-to', 'type': 'IndicatorToIndicator',
-                          'entityA': 'jlgkryapwhkpijdhf.com', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
-                          'entityB': 'Domain used by dircrypt', 'entityBFamily': 'Indicator', 'entityBType': 'IP',
+                          'entityA': 'test.com', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
+                          'entityB': 'Domain used by Test', 'entityBFamily': 'Indicator', 'entityBType': 'IP',
                           'fields': {}}]}]
 
-    ip_ranges = 'jlgkryapwhkpijdhf.com,Domain used by dircrypt,2021-04-22 06:03,http:' \
-                '//osint.bambenekconsulting.com/manual/dircrypt-iplist.txt'
+    ip_ranges = 'test.com,Domain used by Test,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 
     with requests_mock.Mocker() as m:
         itype = 'IP'
@@ -341,16 +340,15 @@ def test_get_indicators_without_relations():
             }
         }
     }
-    expected_res = [{'value': 'jlgkryapwhkpijdhf.com', 'type': 'IP',
-                     'rawJSON': {'value': 'jlgkryapwhkpijdhf.com', 'a': 'Domain used by dircrypt',
+    expected_res = [{'value': 'test.com', 'type': 'IP',
+                     'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test',
                                  None: ['2021-04-22 06:03',
-                                        'http://osint.bambenekconsulting.com/manual/dircrypt-iplist.txt'],
+                                        'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by dircrypt', 'relation_entity_b': 'Domain used by dircrypt',
+                     'fields': {'AAA': 'Domain used by Test', 'relation_entity_b': 'Domain used by Test',
                                 'tags': []}, 'relationships': []}]
 
-    ip_ranges = 'jlgkryapwhkpijdhf.com,Domain used by dircrypt,2021-04-22 06:03,http:' \
-                '//osint.bambenekconsulting.com/manual/dircrypt-iplist.txt'
+    ip_ranges = 'test.com,Domain used by Test,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 
     with requests_mock.Mocker() as m:
         itype = 'IP'
