@@ -60,15 +60,15 @@ def query_cdl(fw_monitor_list: list) -> CommandResults:
     for current_fw in fw_monitor_list:
         query['query'] = f'log_source_id = \'{current_fw}\''
 
-        query_result = demisto.executeCommand("cdl-query-logs", query)
+        query_result = demisto.executeCommand("cdl-query-traffic-logs", query)
         if is_error(query_result):
             raise Exception(f'Querying logs in Cortex Data Lake failed. {query_result[0]["Contents"]}')
 
         if query_result:
             if query_result[0]['HumanReadable'] == no_logs_str:
-                firewalls_with_logs.append(current_fw)
-            else:
                 firewalls_without_logs.append(current_fw)
+            else:
+                firewalls_with_logs.append(current_fw)
 
     all_results = [{'FirewallsWithLogsSent': firewalls_with_logs,
                     'FirewallsWithoutLogsSent': firewalls_without_logs}]
