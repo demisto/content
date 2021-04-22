@@ -66,121 +66,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: pull a specific incident from Respond into XSOAR. Incidents can be pulled in regardless of closure status
+    description: pull data for a specific incident from MAD. This command will only return an output of the incident data. it does not create a new incident
     execution: false
-    name: respond-get-incident
-    outputs:
-      - contextPath: RespondAnalyst.Incident.URL
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.accounts.domain
-        description: ''
-        type: Unknown
-      - contextPath: RespondAnalyst.Incident.accounts.name
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.assetCount
-        description: ''
-        type: Number
-      - contextPath: RespondAnalyst.Incident.assetCriticality
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.assets.hostname
-        description: ''
-        type: Unknown
-      - contextPath: RespondAnalyst.Incident.assets.ipaddress
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.assets.isinternal
-        description: ''
-        type: Boolean
-      - contextPath: RespondAnalyst.Incident.assignedUsers
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.attackStage
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.attackTactic
-        description: ''
-        type: Unknown
-      - contextPath: RespondAnalyst.Incident.closeURL
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.dbotMirrorDirection
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.dbotMirrorInstance
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.description
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.domains
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.escalationReasons.label
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.eventCount
-        description: ''
-        type: Number
-      - contextPath: RespondAnalyst.Incident.externalSystems.hostname
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.externalSystems.ipaddress
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.externalSystems.isinternal
-        description: ''
-        type: Boolean
-      - contextPath: RespondAnalyst.Incident.feedback.comments
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.feedback.outcome
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.feedback.timeUpdated
-        description: ''
-        type: Date
-      - contextPath: RespondAnalyst.Incident.feedback.userId
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.firstEventTime
-        description: ''
-        type: Date
-      - contextPath: RespondAnalyst.Incident.incidentId
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.lastEventTime
-        description: ''
-        type: Date
-      - contextPath: RespondAnalyst.Incident.owner
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.probability
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.respondRemoteId
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.severity
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.status
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.tenantId
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.tenantIdRespond
-        description: ''
-        type: String
-      - contextPath: RespondAnalyst.Incident.timeGenerated
-        description: ''
-        type: Date
-      - contextPath: RespondAnalyst.Incident.title
-        description: ''
-        type: String
+    name: mad-get-incident
   - arguments:
     - default: false
       description: ID of the Tenant in which the incident resides in Respond
@@ -214,7 +102,7 @@ script:
     deprecated: false
     description: close an incident in Respond and provide feedback on that incident. If the incident is already closed, feedback can still be updated. Additional comments and an updated closure code are viable options for updates on an incident that has already been closed (and on incidents that have not been closed yet as well)
     execution: false
-    name: respond-close-incident
+    name: mad-close-incident
   - arguments:
     - default: false
       description: respond incident id
@@ -237,7 +125,7 @@ script:
     deprecated: false
     description: assign a user to a Respond incident
     execution: false
-    name: respond-assign-user
+    name: mad-assign-user
   - arguments:
     - default: false
       description: incident id
@@ -260,7 +148,7 @@ script:
     deprecated: false
     description: unassign a user from a Respond incident
     execution: false
-    name: respond-remove-user
+    name: mad-remove-user
   - arguments:
     - default: false
       isArray: false
@@ -277,7 +165,7 @@ script:
     deprecated: false
     description: Get escalation data associated with incident. In Respond, an 'escalation' is a specific event derived from a cybersecurity telemetry. Escalations are compiled together to form Incidents in Respond.
     execution: false
-    name: respond-get-escalations
+    name: mad-get-escalations
   dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true

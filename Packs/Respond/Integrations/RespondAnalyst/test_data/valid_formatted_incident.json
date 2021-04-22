@@ -1,107 +1,99 @@
 {
-   "URL":"https://qa5-onprem.respond-software.com//secure/incidents/700?tenantId=qa5",
-   "accounts":[
-      {
-         "domain":"pmcorp",
-         "name":"tchapman"
-      },
-      {
-         "domain":"pmcorp",
-         "name":"laugustson"
-      },
-      {
-         "domain":null,
-         "name":"Unknown"
-      }
-   ],
-   "assetCount":3,
-   "assetCriticality":"Critical",
-   "assets":[
-      {
-         "hostname":null,
-         "ipaddress":"10.150.15.10",
-         "isinternal":true
-      },
-      {
-         "hostname":null,
-         "ipaddress":"10.150.15.7",
-         "isinternal":true
-      },
-      {
-         "hostname":null,
-         "ipaddress":"10.150.15.8",
-         "isinternal":true
-      }
-   ],
-   "assignedUsers":[
-      "danno@respond-software.com"
-   ],
-   "attackStage":"AttackObjective",
-   "attackTactic":null,
-   "closeURL":"https://qa5-onprem.respond-software.com//secure/incidents/feedback/700?tenantId=qa5",
-   "dbotMirrorDirection":"Both",
-   "dbotMirrorInstance":"Respond_Analyst_instance_1",
-   "description":"Click%20_on_%20%5Bthis%5D(http://www.yahoo.com)%20.",
-   "domains":[
-      "thyrsi.com"
-   ],
-   "escalationReasons":[
-      {
-         "label":"External System on Threat Intel List"
-      },
-      {
-         "label":"Repeated Suspicious Communications"
-      },
-      {
-         "label":"Mismatch in File Type Requested and Type Returned"
-      },
-      {
-         "label":"External Systems Observed in Past Incidents"
-      }
-   ],
-   "eventCount":6,
-   "externalSystems":[
-      {
-         "hostname":"acroipm2.adobe.com",
-         "ipaddress":"23.193.44.58",
-         "isinternal":false
-      },
-      {
-         "hostname":"thyrsi.com",
-         "ipaddress":"52.4.209.67",
-         "isinternal":false
-      },
-      {
-         "hostname":"thyrsi.com",
-         "ipaddress":"151.101.70.49",
-         "isinternal":false
-      }
-   ],
-   "feedback":{
-      "comments":"additional feedback\n",
-      "outcome":"Confirmed Incident",
-      "timeUpdated":"1604448789216",
-      "userId":"danno@respond-software.com"
-   },
-   "firstEventTime":"2020-10-20T03:59:07Z",
-   "hashes":[
-
-   ],
-   "incidentId":"700",
-   "lastEventTime":"2020-10-21T05:21:32Z",
-   "malware":[
-
-   ],
-   "owner":"danno",
-   "probability":"Low",
-   "respondRemoteId":"QA 5:700",
-   "severity":"Medium",
-   "signatures":[
-
-   ],
-   "status":"Closed",
-   "tenantId":"QA 5",
-   "tenantIdRespond":"qa5",
-   "timeGenerated":"2020-10-19T21:59:34Z",
-   "title":"Suspicious Repeated Connections"
+  "incidentId": "6",
+  "timeGenerated": "2020-06-05T16:20:21Z",
+  "eventCount": 24,
+  "firstEventTime": "2019-12-21T13:05:31Z",
+  "lastEventTime": "2020-06-05T08:20:17Z",
+  "URL": "https://localhost:6078/secure/incidents/6?tenantId=dev1",
+  "closeURL": "https://localhost:6078/secure/incidents/feedback/6?tenantId=dev1",
+  "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
+  "description": "description of the incident",
+  "status": "Closed",
+  "severity": "Critical",
+  "probability": "VeryHigh",
+  "attackStage": "LateralMovement",
+  "attackTactic": null,
+  "assetCriticality": "Critical",
+  "assetCount": 1,
+  "assets": [
+    {
+      "hostname": "host1",
+      "ipaddress": "10.150.0.11",
+      "isinternal": true
+    }
+  ],
+  "externalsystems": [
+    {
+      "hostname": "host2",
+      "ipaddress": "10.150.0.22",
+      "isinternal": false
+    }
+  ],
+  "accounts": [
+    {
+      "domain": null,
+      "name": "svc_adminscom3"
+    },
+    {
+      "domain": null,
+      "name": "svc_adminscom"
+    },
+    {
+      "domain": "test",
+      "name": "svc_adminscom2"
+    },
+    {
+      "domain": null,
+      "name": "svc_adminscom2"
+    },
+    {
+      "domain": "test",
+      "name": "svc_adminscom3"
+    },
+    {
+      "domain": "test",
+      "name": "svc_adminscom"
+    },
+    {
+      "name": "Unknown",
+      "domain": null
+    }
+  ],
+  "domains": [],
+  "hashes": [
+    "44d88612fea8a8f36de82e1278abb02f"
+  ],
+  "malware": [
+    {
+      "name": "Ransom.Win32.CRYSIS.SM",
+      "type": "Ransomware",
+      "vendor": "McAfee"
+    },
+    {
+      "name": "RAT.Win32.CRYSIS.SM",
+      "type": "RAT",
+      "vendor": "McAfee"
+    }
+  ],
+  "signatures": [],
+  "escalationreasons": [
+    {
+      "label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"
+    }
+  ],
+  "assignedUsers": [
+    "user1"
+  ],
+  "tenantIdRespond": "dev1",
+  "tenantId": "Tenant 1",
+  "respondRemoteId": "Tenant 1:6",
+  "dbotMirrorDirection": "Both",
+  "dbotMirrorInstance": "respond_test",
+  "owner": "user1",
+  "feedback": {
+    "timeUpdated": "1593469076049",
+    "userId": "qa-user@respond-software.com",
+    "outcome": "Non-Actionable",
+    "comments": "blah blah blah"
+  }
 }

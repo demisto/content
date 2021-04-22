@@ -631,13 +631,13 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
         'assetCriticality': raw_incident.get('assetClass'),
         'assetCount': raw_incident.get('internalSystemsCount'),
         'assets': lc_assets,
-        'externalSystems': lc_external_systems,
+        'externalsystems': lc_external_systems,
         'accounts': accounts,
         'domains': domains,
         'hashes': hashes,
         'malware': raw_incident.get('avMalwareNames'),
         'signatures': raw_incident.get('nidsSignatures'),
-        'escalationReasons': raw_incident.get('tags'),
+        'escalationreasons': raw_incident.get('tags'),
         'assignedUsers': raw_incident.get('userIds'),
         'tenantIdRespond': internal_tenant_id,
         'tenantId': external_tenant_id,
@@ -844,22 +844,10 @@ def close_incident_command(rest_client, args):
 
 def get_incident_command(rest_client, args):
     formatted_incident = get_formatted_incident(rest_client, args)
-    # return formatted_incident
-    # new_incident = {
-    #     'name': formatted_incident['tenantId'] + ': ' + formatted_incident['incidentId'],
-    #     'occurred': formatted_incident.get('timeGenerated'),
-    #     'rawJSON': json.dumps(formatted_incident)
-    # }
-    # return new_incident
     readable_output = tableToMarkdown(f'Mandiant Automated Defense Alert, '
                                       f'{formatted_incident["tenantId"]} : {formatted_incident["incidentId"]}',
                                       formatted_incident)
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='RespondSoftware.Incident',
-        outputs_key_field='incidentId',
-        outputs=formatted_incident
-    )
+    return readable_output
 
 def get_escalations_command(rest_client, args):
     start = datetime.now().timestamp()
@@ -1121,42 +1109,36 @@ def main():
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
-            demisto.debug('respond fetch incidents')
             # get all tenant ids
             next_run, incidents = fetch_incidents(rest_client, demisto.getLastRun())
-            demisto.createIncidents(incidents, lastRun=next_run)
-            # demisto.setLastRun(next_run)
-            # demisto.incidents(incidents)
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
 
-        elif demisto.command() == 'respond-close-incident':
+        elif demisto.command() == 'mad-close-incident':
             return_outputs(close_incident_command(rest_client, demisto.args()))
 
-        elif demisto.command() == 'respond-assign-user':
+        elif demisto.command() == 'mad-assign-user':
             return_outputs(assign_user_command(rest_client, demisto.args()))
 
-        elif demisto.command() == 'respond-remove-user':
+        elif demisto.command() == 'mad-remove-user':
             return_outputs(remove_user_command(rest_client, demisto.args()))
 
-        elif demisto.command() == 'respond-get-incident':
+        elif demisto.command() == 'mad-get-incident':
             return_outputs(get_incident_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'update-remote-system':
-            demisto.debug('in update-remote-system')
             return_results(update_remote_system_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'get-mapping-fields':
-            demisto.debug('get-mapping-fields called')
             return_results(get_mapping_fields_command())
 
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(rest_client, demisto.args()))
 
-        elif demisto.command() == 'respond-get-escalations':
+        elif demisto.command() == 'mad-get-escalations':
             return_results(get_escalations_command(rest_client, demisto.args()))
 
     except Exception as err:
-        demisto.debug('error in respond integration ' + str(err))
-        demisto.debug(traceback.format_exc())
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(err)}')
 

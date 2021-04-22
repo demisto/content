@@ -38,7 +38,7 @@
       "filters": [
 
       ],
-      "root": "escalationReasons",
+      "root": "escalationreasons",
       "transformers": [
        {
         "args": {
