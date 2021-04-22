@@ -954,11 +954,14 @@ def get_last_update_in_splunk_time(last_update):
     """
     last_update_utc_datetime = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
     params = demisto.params()
-    splunk_timezone = params.get('timezone')
-    if not splunk_timezone:
+
+    try:
+        splunk_timezone = int(params['timezone'])
+    except (KeyError, ValueError):
         raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
                         'timezone of the Splunk server being used in the integration configuration.')
-    dt = last_update_utc_datetime + timedelta(minutes=int(splunk_timezone))
+
+    dt = last_update_utc_datetime + timedelta(minutes=splunk_timezone)
     return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
 
@@ -1984,10 +1987,11 @@ def kv_store_collection_add_entries(service):
     kv_store_data = args.get('kv_store_data', '').encode('utf-8')
     kv_store_collection_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
-    service.kvstore[kv_store_collection_name].data.insert(kv_store_data)
+    service.kvstore[kv_store_collection_name].data.batch_save(kv_store_data)
     timeline = None
     if indicator_path:
-        indicator = extract_indicator(indicator_path, [json.loads(kv_store_data)])
+        kv_store_data = json.loads(kv_store_data)
+        indicator = extract_indicator(indicator_path, [kv_store_data] if not isinstance(kv_store_data, List) else kv_store_data)
         timeline = {
             'Value': indicator,
             'Message': 'Indicator added to {} store in Splunk'.format(kv_store_collection_name),
