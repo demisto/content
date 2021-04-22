@@ -967,13 +967,13 @@ def update_remote_system_command(rest_client, args):
                                                                      remote_args.delta[
                                                                          'title'])
 
-            if remote_args.delta.get('responddescription'):
+            if remote_args.delta.get('description'):
                 demisto.debug(
-                    f'changed description for {remote_args.remote_incident_id}: {remote_args.delta["responddescription"]}')
+                    f'changed description for {remote_args.remote_incident_id}: {remote_args.delta["description"]}')
                 rest_client.construct_and_send_update_description_mutation(internal_tenant_id,
                                                                            incident_id,
                                                                            remote_args.delta[
-                                                                               'responddescription'])
+                                                                               'description'])
 
             if remote_args.delta.get('closeReason'):
                 # todo do we want to map xsoar close reasons to respond incident outcomes
