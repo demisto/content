@@ -1,8 +1,4 @@
-from typing import Optional
-
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
@@ -17,7 +13,9 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
-API_KEY = PARAMS.get('api_key')
+
+API_KEY = AutoFocusKeyRetriever(PARAMS.get('api_key')).key
+
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = 'https://autofocus.paloaltonetworks.com'
 # Should we use SSL
@@ -257,7 +255,6 @@ if PARAMS.get('mark_as_malicious'):
     verdicts = argToList(PARAMS.get('mark_as_malicious'))
     for verdict in verdicts:
         VERDICTS_TO_DBOTSCORE[verdict] = 3
-
 
 ''' HELPER FUNCTIONS '''
 

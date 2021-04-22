@@ -254,15 +254,6 @@
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "message",
-                                "height": 22,
-                                "id": "67e6eb50-49e4-11eb-9947-8d85de9a3115",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxH": null,
