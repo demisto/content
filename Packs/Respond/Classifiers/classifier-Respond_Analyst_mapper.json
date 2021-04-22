@@ -1,116 +1,153 @@
 {
- "description": "",
- "feed": false,
- "id": "respond-analyst-mapper",
- "mapping": {
-  "Respond Software Incident": {
-   "dontMapEventToLabels": false,
-   "internalMapping": {
-    "Asset Criticality": {
-     "complex": null,
-     "simple": "assetCriticality"
+    "brands": null,
+    "defaultIncidentType": "",
+    "description": "",
+    "feed": false,
+    "fromServerVersion": "",
+    "id": "respond-analyst-mapper",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "instanceIds": null,
+    "itemVersion": "",
+    "keyTypeMap": {},
+    "locked": false,
+    "logicalVersion": 4,
+    "mapping": {
+        "Respond Software Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Accounts": {
+                    "complex": null,
+                    "simple": "accounts"
+                },
+                "Asset Criticality": {
+                    "complex": null,
+                    "simple": "assetCriticality"
+                },
+                "Assets": {
+                    "complex": null,
+                    "simple": "assets"
+                },
+                "Assigned Users": {
+                    "complex": null,
+                    "simple": "assignedUsers"
+                },
+                "Attack Stage": {
+                    "complex": null,
+                    "simple": "attackStage"
+                },
+                "Attack Tactic": {
+                    "complex": null,
+                    "simple": "attackTactic"
+                },
+                "Close URL": {
+                    "complex": null,
+                    "simple": "closeURL"
+                },
+                "Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "Escalation Reasons": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "escalationreasons",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "External Systems": {
+                    "complex": null,
+                    "simple": "externalsystems"
+                },
+                "Feedback Comments": {
+                    "complex": null,
+                    "simple": "feedback.comments"
+                },
+                "Feedback Outcome": {
+                    "complex": null,
+                    "simple": "feedback.outcome"
+                },
+                "Feedback Time Updated": {
+                    "complex": null,
+                    "simple": "feedback.timeUpdated"
+                },
+                "Feedback User Id": {
+                    "complex": null,
+                    "simple": "feedback.userId"
+                },
+                "File Hashes": {
+                    "complex": null,
+                    "simple": "hashes"
+                },
+                "First Event Time": {
+                    "complex": null,
+                    "simple": "firstEventTime"
+                },
+                "Incident Id": {
+                    "complex": null,
+                    "simple": "incidentId"
+                },
+                "Internal Asset Count": {
+                    "complex": null,
+                    "simple": "assetCount"
+                },
+                "Last Event Time": {
+                    "complex": null,
+                    "simple": "lastEventTime"
+                },
+                "Mandiant Status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "Probability": {
+                    "complex": null,
+                    "simple": "probability"
+                },
+                "Respond Tenant Id": {
+                    "complex": null,
+                    "simple": "tenantIdRespond"
+                },
+                "Signatures": {
+                    "complex": null,
+                    "simple": "signatures"
+                },
+                "Tenant Id": {
+                    "complex": null,
+                    "simple": "tenantId"
+                },
+                "Time Generated": {
+                    "complex": null,
+                    "simple": "timeGenerated"
+                },
+                "Title": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "URL": {
+                    "complex": null,
+                    "simple": "URL"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "severity"
+                }
+            }
+        }
     },
-    "Assigned Users": {
-     "complex": null,
-     "simple": "assignedUsers"
+    "name": "Respond Analyst (mapper)",
+    "nameRaw": "Respond Analyst (mapper)",
+    "packID": "",
+    "sourceClassifierId": "",
+    "system": false,
+    "toServerVersion": "",
+    "transformer": {
+        "complex": null,
+        "simple": ""
     },
-    "Attack Stage": {
-     "complex": null,
-     "simple": "attackStage"
-    },
-    "Attack Tactic": {
-     "complex": null,
-     "simple": "attackTactic"
-    },
-    "Close URL": {
-     "complex": null,
-     "simple": "closeURL"
-    },
-    "Escalation Reasons": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "escalationreasons",
-      "transformers": [
-       {
-        "args": {
-         "field": {
-          "isContext": false,
-          "value": {
-           "complex": null,
-           "simple": "label"
-          }
-         }
-        },
-        "operator": "getField"
-       }
-      ]
-     },
-     "simple": ""
-    },
-    "Feedback Comments": {
-     "complex": null,
-     "simple": "feedback.comments"
-    },
-    "Feedback Outcome": {
-     "complex": null,
-     "simple": "feedback.outcome"
-    },
-    "Feedback Time Updated": {
-     "complex": null,
-     "simple": "feedback.timeUpdated"
-    },
-    "Feedback User Id": {
-     "complex": null,
-     "simple": "feedback.userId"
-    },
-    "First Event Time": {
-     "complex": null,
-     "simple": "firstEventTime"
-    },
-    "Incident Id": {
-     "complex": null,
-     "simple": "incidentId"
-    },
-    "Internal Assets": {
-     "complex": null,
-     "simple": "internalSystems"
-    },
-    "Last Event Time": {
-     "complex": null,
-     "simple": "lastEventTime"
-    },
-    "Probability": {
-     "complex": null,
-     "simple": "probability"
-    },
-    "Respond Tenant Id": {
-     "complex": null,
-     "simple": "tenantIdRespond"
-    },
-    "Tenant Id": {
-     "complex": null,
-     "simple": "tenantId"
-    },
-    "Time Generated": {
-     "complex": null,
-     "simple": "timeGenerated"
-    },
-    "Title": {
-     "complex": null,
-     "simple": "title"
-    },
-    "URL": {
-     "complex": null,
-     "simple": "URL"
-    }
-   }
-  }
- },
- "name": "Respond Analyst (mapper)",
- "type": "mapping-incoming",
- "version": -1,
- "fromVersion": "6.0.0"
+    "type": "mapping-incoming",
+    "unclassifiedCases": null,
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

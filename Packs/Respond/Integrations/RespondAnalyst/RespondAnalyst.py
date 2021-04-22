@@ -600,7 +600,7 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
     # collect hashes
     hashes = []
     for hash_map in raw_incident.get('avFileHashes'):
-        hashes.append(hash_map.get('hash'))
+        hashes.append({'hash': hash_map.get('hash')})
 
     # collect domains
     domains = []
