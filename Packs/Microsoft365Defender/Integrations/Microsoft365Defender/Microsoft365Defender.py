@@ -40,7 +40,7 @@ class Client(BaseClient):
 
     @logger
     def incidents_list(self, limit: int = MAX_ENTRIES, status: Optional[str] = None, assigned_to: Optional[str] = None,
-                       timeout: int = TIMEOUT, from_date: Optional[datetime] = None) -> List[Dict]:
+                       timeout: int = TIMEOUT, from_date: Optional[datetime] = None) -> Dict:
         """
         GET request from the client using OData operators:
             - $top: how many incidents to receive, maximum value is 100
@@ -56,7 +56,11 @@ class Client(BaseClient):
             from_date: get incident with creation date more recent than from_date
 
 
-        Returns: list of incidents
+        Returns: request results as dict:
+                    { '@odata.context',
+                      'value': list of incidents,
+                      '@odata.nextLink'
+                    }
 
         """
         params = {'$top': limit}
@@ -76,9 +80,8 @@ class Client(BaseClient):
 
         if filter_query:
             params['$filter'] = filter_query
-        response = self.ms_client.http_request(method='GET', url_suffix='api/incidents', timeout=timeout,
-                                               params=params)
-        return response.get('value')
+        return self.ms_client.http_request(method='GET', url_suffix='api/incidents', timeout=timeout,
+                                           params=params)
 
     # def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_status: str, max_incidents: str = '50') \
     #         -> Dict:
@@ -179,36 +182,36 @@ def test_connection(client: Client) -> CommandResults:
 
 
 # todo ask roy
-# def test_module(client: Client) -> str:
-#     """Tests API connectivity and authentication'
-#
-#     Returning 'ok' indicates that the integration works like it is supposed to.
-#     Connection to the service is successful.
-#     Raises exceptions if something goes wrong.
-#
-#     :type client: ``Client``
-#     :param Client: client to use
-#
-#     :return: 'ok' if test passed, anything else will fail the test.
-#     :rtype: ``str``
-#     """
-#     message: str = ''
-#     try:
-#         # TODO: ADD HERE some code to test connectivity and authentication to your service.
-#         # This  should validate all the inputs given in the integration configuration panel,
-#         # either manually or by using an API that uses them.
-#
-#         test_connection(client)
-#
-#         message = 'ok'
-#
-#     except DemistoException as e:
-#         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-#             message = 'Authorization Error: make sure API Key is correctly set'
-#         else:
-#             raise e
-#
-#     return message
+def test_module(client: Client) -> str:
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``Client``
+    :param Client: client to use
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+    message: str = ''
+    try:
+        # TODO: ADD HERE some code to test connectivity and authentication to your service.
+        # This  should validate all the inputs given in the integration configuration panel,
+        # either manually or by using an API that uses them.
+
+        test_connection(client)
+
+        message = 'ok'
+
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+            message = 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+
+    return message
 
 
 def convert_incident_to_readable(raw_incident: Dict) -> Dict:
@@ -268,8 +271,8 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     status = args.get('status')
     assigned_to = args.get('assigned_to')
 
-    raw_incidents = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to)
-
+    response = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to)
+    raw_incidents = response.get('value')
     readable_incidents = [convert_incident_to_readable(incident) for incident in raw_incidents]
     # the table headers are the incident keys. creates dummy incident to manage a situation of empty list.
     headers = list(convert_incident_to_readable({}).keys())
@@ -319,7 +322,7 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
 
 
 @logger
-def fetch_incidents(client: Client, first_fetch_time: str) -> List[Dict]:
+def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int) -> List[Dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -336,19 +339,22 @@ def fetch_incidents(client: Client, first_fetch_time: str) -> List[Dict]:
         last_run = dateparser.parse(first_fetch_time)
     else:
         last_run = dateparser.parse(last_run)
-
+    # todo time zone
     incidents = list()
-    raw_incidents = client.incidents_list(from_date=last_run.strftime(DATE_FORMAT))
+
+    raw_incidents = client.incidents_list(from_date=last_run.strftime(DATE_FORMAT), limit=fetch_limit)
     for incident in raw_incidents:
         created_time = dateparser.parse(incident.get('createdTime'))
         demisto_incident = {
-            'name': incident.get('incidentId'),
-            'occurred': created_time.strftime(DATE_FORMAT),
-            'rawJSON': json.dumps(incident)
+            "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
+            "occurred": created_time.strftime(DATE_FORMAT),
+            "rawJSON": json.dumps(incident)
         }
+
         incidents.append(demisto_incident)
         last_run = created_time
-    demisto.setLastRun({'last_run': last_run})
+
+    demisto.setLastRun({'last_run': last_run.strftime(DATE_FORMAT)})
     return incidents
 
 
@@ -396,7 +402,7 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
     app_id = demisto.params().get('app_id')
     first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
-
+    fetch_limit = demisto.params().get('fetch_limit', 10)
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()
@@ -411,7 +417,7 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             # todo ask roy
-            return_results(test_connection())
+            return_results(test_connection(client))
 
         elif command == 'microsoft-365-defender-auth-start':
             return_results(start_auth(client))
@@ -435,14 +441,14 @@ def main() -> None:
             return_results(microsoft_365_defender_advanced_hunting_command(client, args))
 
         elif command == 'fetch-incidents':
-            demisto.debug("---------------------------------fetch--------------------------------------")
-
-            incidents = fetch_incidents(client, first_fetch_time)
-            demisto.debug("-----------------------------------------------------------------------")
-            demisto.debug(incidents)
-
+            # todo add auth-test check?
+            # todo add fetch limit arg
+            # start_auth(client)
+            # complete_auth(client)
+            context = {'device_code': 'CAQABAAEAAAD--DLA3VO7QrddgJg7WevrFaANEQkqpZkGX8IZhLMLMWTfYfWRvhywWU3sH_Qlo__QA0vKoBT63dBrSVVRLmjDRGAtHFHlWcDgmO3-tXUob5PRmsEfZ4Qx7yAYzBAi7Ig3-A1uZP2iCRrAHk1QP6jQGd8-3f77peeSB8tz1pwuhK6U8w7DMS5I97lqQkdWknUgAA', 'access_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im5PbzNaRHJPRFhFSzFqS1doWHNsSFJfS1hFZyIsImtpZCI6Im5PbzNaRHJPRFhFSzFqS1doWHNsSFJfS1hFZyJ9.eyJhdWQiOiJodHRwczovL3NlY3VyaXR5Lm1pY3Jvc29mdC5jb20vbXRwIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvZWJhYzFhMTYtODFiZi00NDliLThkNDMtNTczMmMzYzFkOTk5LyIsImlhdCI6MTYxOTA5NDIwNiwibmJmIjoxNjE5MDk0MjA2LCJleHAiOjE2MTkwOTgxMDYsImFjciI6IjEiLCJhaW8iOiJBVFFBeS84VEFBQUFyVmNvS1kraVFoQWZIenFVTDV5cFBMcGZYQXJubnMvYzFsZFJMOFlpZDB1VDN4WGt0L1o4TTRwLzdTdGRiOWs5IiwiYW1yIjpbInB3ZCJdLCJhcHBpZCI6IjkwOTNjMzU0LTYzMGEtNDdmMS1iMDg3LTY3NjhlYjk0MjdlNiIsImFwcGlkYWNyIjoiMCIsImZhbWlseV9uYW1lIjoiQnJhbmRlaXMiLCJnaXZlbl9uYW1lIjoiQXZpc2hhaSIsImlwYWRkciI6IjMxLjE1NC4xNjYuMTQ4IiwibmFtZSI6IkF2aXNoYWkgQnJhbmRlaXMiLCJvaWQiOiIzZmE5ZjI4Yi1lYjBlLTQ2M2EtYmE3Yi04MDg5ZmU5OTkxZTIiLCJwdWlkIjoiMTAwMzAwMDA5QUJDMjg3OCIsInJoIjoiMC5BWE1BRmhxczY3LUJtMFNOUTFjeXc4SFptVlREazVBS1lfRkhzSWRuYU91VUotWnpBSEEuIiwic2NwIjoiQWR2YW5jZWRIdW50aW5nLlJlYWQgSW5jaWRlbnQuUmVhZFdyaXRlIiwic3ViIjoiZWpRcDJqVlVualg3S2FSdWpsVWZrWTdCYlRycmNPUjktYVpJWE9kM0RlMCIsInRlbmFudF9yZWdpb25fc2NvcGUiOiJFVSIsInRpZCI6ImViYWMxYTE2LTgxYmYtNDQ5Yi04ZDQzLTU3MzJjM2MxZDk5OSIsInVuaXF1ZV9uYW1lIjoiYXZpc2hhaUBkZW1pc3RvZGV2Lm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6ImF2aXNoYWlAZGVtaXN0b2Rldi5vbm1pY3Jvc29mdC5jb20iLCJ1dGkiOiIzdm80TXVIRTAwQy16QnE3bTM0YkFBIiwidmVyIjoiMS4wIiwid2lkcyI6WyIzYTJjNjJkYi01MzE4LTQyMGQtOGQ3NC0yM2FmZmVlNWQ5ZDUiLCI2MmU5MDM5NC02OWY1LTQyMzctOTE5MC0wMTIxNzcxNDVlMTAiLCJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXX0.Xot3PplUU2rednMM1IC5tAXt5JicXg9S9w6ZNOvlv7XP0ERV0CA8VzOyd6xGbQuI7_Siu3vJJrcbVjHK09-KFId2qNo8-2_2sS0yr5q2WGQgTI4WPb_tTY0Oglmd1r3OavDgVIQ_N-8pghGjDogkEXNpzuuCgPDxiCcFc_6Y0VwyQLd9VMwasEYyIQLBwPdHg4MZDF60WhvyCPbPAqqeGzDF1DupZeZlBIApA0JdPzCDc3_sEr94RGWNEz5pc-tgl5OYTCADjkerhhHHVqhzJ-l5MOzXuJLM2hKt6N-x-_ni0X-DFa274iWSm89hUdhd7ONc0kEkMaZpENPNiwtCfw', 'valid_until': 1619098100, 'current_refresh_token': '0.AXMAFhqs67-Bm0SNQ1cyw8HZmVTDk5AKY_FHsIdnaOuUJ-ZzAHA.AgABAAAAAAD--DLA3VO7QrddgJg7WevrAgDs_wQA9P-5AmwwN_zlezd--pFRut9nCgnAzGHoD51E07kN3nf_WPzUyNX6xnivJf0X-9ny9D74qDFlmBHlpeHwlDRUufY5NcWR_5QJZ2TLAVHJ4JxyKZnhut2IshMS3yuwRxx3eUUbGaJwUrzKLVdL0PInULJrmSjVGciecKHxsLyxYNLGab_VJcK--B_qUXI6OjluGHVlGSmeaOwgh9aWMvVbnFFverAdg0cZXfJ1xM1Ae6rnrd_auaJgoovh1tl_Oqb9zba7WGyCENP-OKaVVp7UoyahGN523ZFBiZZcWizorO2lSSNM1hlr4MKEnwlWhjfFvlAGEP-nNS71dxJXAbApPtpSjPw5ppoGV91CBgp7TP8YbSuijWJhrbjCOGOZs3A62wz1kWBDa4Az-nIQ_wfBli86EYmGqu0Pr7tnvjn5Jpzg0f7GAYOLXExprqsXDwuAwt4XiJgF3YKW-IYZ7RpSLN4aViSpH5lqrzv5tEPgGlkxyWpslejiv-nxqWDoUTzWSSHTIe4MVRFonxwVb2fgdd7tOns2jhT2_7x2mIxv_6FV7XvN9925T22P93g4CbDqg8NFymk1r8fQAS-IQK9yyCg5xuwlgsXBwMd9-ow8K9IXK6oxwVHXHIESPPnJFkG4fKaEkbilpYf0Q9XaUDd6pjl_3z13q7euJ-zhG34S5a6pnwiOxSiv4Uouvzoa14aV5MVlCEkGu2I8aGKs9mGr6HwPmUenL-gpPV-LIXpEYOphc1CzusP64eZXkAt1r4zn69OLPXomud7FhQKFRX1erAvGefBojhHSG1znfYGWQ-siBbdaCeMwCcqSutJga87AFsNKyysOr7I5q0ZmXNvjKTPzFvL-63YASQHhOF5rS3Uy4wWkZIdgMZhW74PD-kKWCmT1lUaTFBo9gTmHdP4qQ5XT8U3cRl7MuEjADLiBoDIZwEvUw2Pj6oI'}
+            set_integration_context(context)
+            incidents = fetch_incidents(client, first_fetch_time, fetch_limit)
             demisto.incidents(incidents)
-            demisto.debug("---------------------------------/fetch--------------------------------------")
 
 
     # Log exceptions and return errors
