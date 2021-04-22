@@ -291,6 +291,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         # application always must be specified and the default should be any
         application = ['any']
 
+    # flake8: noqa
     rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
     params = {
         'type': 'config',
@@ -6955,6 +6956,10 @@ def panorama_upload_content_update_file_command(args: dict):
 
 @logger
 def panorama_install_file_content_update(version: str, category: str, validity: str):
+    """
+    More information about the API endpoint of that request can see here:
+    https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/run-operational-mode-commands-api.html#idb894d5f5-091f-4e08-b051-4c22cc9c660d
+    """
     if category == "content":
         params = {
             'type': 'op',
