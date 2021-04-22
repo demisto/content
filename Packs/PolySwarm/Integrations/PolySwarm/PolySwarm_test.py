@@ -2,7 +2,7 @@ import pytest
 from mock import patch, mock_open
 
 import demistomock as demisto
-import requests_mock
+
 from PolySwarm import PolyswarmConnector, POLYSWARM_URL_RESULTS
 
 TEST_SCAN_UUID = 'eda6fbd6-b1c6-4e97-8126-01f936460fe5'
