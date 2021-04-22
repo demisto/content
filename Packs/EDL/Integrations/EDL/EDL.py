@@ -214,13 +214,14 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         (tuple): The iocs and the last page
     """
     iocs: List[dict] = []
+    search_indicators = IndicatorsSearcher(page=next_page)
     if last_found_len is None:
         last_found_len = PAGE_SIZE
     if not last_found_len:
         last_found_len = total_fetched
     # last_found_len should be PAGE_SIZE (or PAGE_SIZE - 1, as observed for some users) for full pages
     while last_found_len in (PAGE_SIZE, PAGE_SIZE - 1) and limit and total_fetched < limit:
-        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
         # In case the result from searchIndicators includes the key `iocs` but it's value is None
         fetched_iocs = fetched_iocs or []
 
@@ -229,8 +230,7 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
                     for ioc in fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
-        next_page += 1
-    return iocs, next_page
+    return iocs, search_indicators.page
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
