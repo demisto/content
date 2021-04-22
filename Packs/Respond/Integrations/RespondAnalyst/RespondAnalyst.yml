@@ -16,6 +16,7 @@ configuration:
   type: 15
 - display: Base Url
   name: base_url
+  additionalinfo: https://<Respond Analyst Server> (either hostname or IP address)
   required: true
   type: 0
 - display: Trust any certificate (not secure)
@@ -31,10 +32,12 @@ configuration:
   required: false
   type: 8
 - display: API Token
+  additionalinfo: steps to generate an API token here -> https://knowledge-base.respond-software.com/knowledge/api-token
   name: token
   required: true
   type: 4
 - defaultvalue: '500'
+  display: Max Fetch
   name: max_fetch
   required: false
   type: 0
@@ -44,8 +47,8 @@ configuration:
   required: false
   type: 0
 
-description: Respond Software Integration - fetches incidents with mirroring api enabled
-display: Respond Analyst
+description: Use the Mandiant Automated Defense integration to fetch and update incidents from Mandiant Automated Defense. Mandiant Automated Defense fetches open incidents and updates them every minute. Changes made within XSOAR are reflected in Mandiant Automated Defense platform with bi-directional mirroring capabilities enabled.
+display: Mandiant Automated Defense (Formerly Respond Software)
 name: Respond_Analyst
 script:
   commands:
@@ -63,13 +66,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: pull a specific incident from Respond into XSOAR. Incidents can be pulled in regardless of closure status
+    description: pull data for a specific incident from MAD. This command will only return an output of the incident data. it does not create a new incident
     execution: false
-    name: respond-get-incident
-    outputs:
-    - contextPath: temp
-      description: temp
-      type: Unknown
+    name: mad-get-incident
   - arguments:
     - default: false
       description: ID of the Tenant in which the incident resides in Respond
@@ -103,7 +102,7 @@ script:
     deprecated: false
     description: close an incident in Respond and provide feedback on that incident. If the incident is already closed, feedback can still be updated. Additional comments and an updated closure code are viable options for updates on an incident that has already been closed (and on incidents that have not been closed yet as well)
     execution: false
-    name: respond-close-incident
+    name: mad-close-incident
   - arguments:
     - default: false
       description: respond incident id
@@ -126,7 +125,7 @@ script:
     deprecated: false
     description: assign a user to a Respond incident
     execution: false
-    name: respond-assign-user
+    name: mad-assign-user
   - arguments:
     - default: false
       description: incident id
@@ -149,7 +148,7 @@ script:
     deprecated: false
     description: unassign a user from a Respond incident
     execution: false
-    name: respond-remove-user
+    name: mad-remove-user
   - arguments:
     - default: false
       isArray: false
@@ -166,7 +165,7 @@ script:
     deprecated: false
     description: Get escalation data associated with incident. In Respond, an 'escalation' is a specific event derived from a cybersecurity telemetry. Escalations are compiled together to form Incidents in Respond.
     execution: false
-    name: respond-get-escalations
+    name: mad-get-escalations
   dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true

@@ -631,13 +631,13 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
         'assetCriticality': raw_incident.get('assetClass'),
         'assetCount': raw_incident.get('internalSystemsCount'),
         'assets': lc_assets,
-        'externalSystems': lc_external_systems,
+        'externalsystems': lc_external_systems,
         'accounts': accounts,
         'domains': domains,
         'hashes': hashes,
         'malware': raw_incident.get('avMalwareNames'),
         'signatures': raw_incident.get('nidsSignatures'),
-        'escalationReasons': raw_incident.get('tags'),
+        'escalationreasons': raw_incident.get('tags'),
         'assignedUsers': raw_incident.get('userIds'),
         'tenantIdRespond': internal_tenant_id,
         'tenantId': external_tenant_id,
@@ -844,13 +844,10 @@ def close_incident_command(rest_client, args):
 
 def get_incident_command(rest_client, args):
     formatted_incident = get_formatted_incident(rest_client, args)
-    new_incident = {
-        'name': formatted_incident['tenantId'] + ': ' + formatted_incident['incidentId'],
-        'occurred': formatted_incident.get('timeGenerated'),
-        'rawJSON': json.dumps(formatted_incident)
-    }
-    return new_incident
-
+    readable_output = tableToMarkdown(f'Mandiant Automated Defense Alert, '
+                                      f'{formatted_incident["tenantId"]} : {formatted_incident["incidentId"]}',
+                                      formatted_incident)
+    return readable_output
 
 def get_escalations_command(rest_client, args):
     start = datetime.now().timestamp()
@@ -1042,7 +1039,10 @@ def fetch_incidents(rest_client, last_run):
     next_run = last_run
 
     max_fetch = int(demisto.params()['max_fetch'])
-    max_fetch_per_tenant = floor(len(tenant_mappings) / max_fetch) if len(tenant_mappings) > max_fetch else 1
+    if(len(tenant_mappings) > max_fetch):
+        demisto.error('Max Fetch may not be less than total number of tenants')
+        raise Exception('Max Fetch may not be less than total number of tenants')
+    max_fetch_per_tenant = floor(max_fetch / len(tenant_mappings))
     # get incidents for each tenant
     for internal_tenant_id, external_tenant_id in tenant_mappings.items():
         # Get the last fetch time for tenant, if exists, which will be used as the 'search from here onward' time
@@ -1067,6 +1067,7 @@ def fetch_incidents(rest_client, last_run):
                                                          internal_tenant_id)
                 new_incident = {
                     'name': external_tenant_id + ': ' + raw_incident['id'],
+                    'type': 'Respond Software Incident',
                     'occurred': formatted_incident.get('timeGenerated'),
                     'rawJSON': json.dumps(formatted_incident)
                 }
@@ -1074,10 +1075,11 @@ def fetch_incidents(rest_client, last_run):
                 if latest_time is None or raw_incident['dateCreated'] > latest_time:
                     latest_time = raw_incident['dateCreated']
             except Exception as err:
-                demisto.error(
+                demisto.error('Exception thrown collecting specific incident for tenant: ' + external_tenant_id + str(
+                    err) + '\n incident: ' + str(raw_incident))
+                raise Exception(
                     'Exception thrown collecting specific incident for tenant: ' + external_tenant_id + str(
                         err) + '\n incident: ' + str(raw_incident))
-                break
         # store
         if external_tenant_id in next_run:
             next_run[external_tenant_id]['time'] = latest_time
@@ -1112,30 +1114,28 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'respond-close-incident':
+        elif demisto.command() == 'mad-close-incident':
             return_outputs(close_incident_command(rest_client, demisto.args()))
 
-        elif demisto.command() == 'respond-assign-user':
+        elif demisto.command() == 'mad-assign-user':
             return_outputs(assign_user_command(rest_client, demisto.args()))
 
-        elif demisto.command() == 'respond-remove-user':
+        elif demisto.command() == 'mad-remove-user':
             return_outputs(remove_user_command(rest_client, demisto.args()))
 
-        elif demisto.command() == 'respond-get-incident':
+        elif demisto.command() == 'mad-get-incident':
             return_outputs(get_incident_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'update-remote-system':
-            demisto.debug('in update-remote-system')
             return_results(update_remote_system_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'get-mapping-fields':
-            demisto.debug('get-mapping-fields called')
             return_results(get_mapping_fields_command())
 
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(rest_client, demisto.args()))
 
-        elif demisto.command() == 'respond-get-escalations':
+        elif demisto.command() == 'mad-get-escalations':
             return_results(get_escalations_command(rest_client, demisto.args()))
 
     except Exception as err:
