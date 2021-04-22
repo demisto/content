@@ -3083,7 +3083,7 @@ class Common(object):
                 endpoint_context['Processors'] = self.processors
 
             if self.processor:
-                endpoint_context['ProcessorCommon.File.CONTEXT_PATH:'] = self.processor
+                endpoint_context['Processor'] = self.processor
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
