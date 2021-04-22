@@ -2784,7 +2784,6 @@ script:
       description: The endpoint's status.
       type: String
   dockerimage: demisto/python3:3.9.4.18682
-  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: true
   longRunning: false

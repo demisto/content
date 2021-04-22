@@ -2653,6 +2653,10 @@ class Common(object):
                     'Description': self.dbot_score.malicious_description
                 }
 
+            if self.relations:
+                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
+                file_context['Relations'] = relations_context
+
             ret_value = {
                 Common.File.CONTEXT_PATH: file_context
             }
@@ -3079,7 +3083,7 @@ class Common(object):
                 endpoint_context['Processors'] = self.processors
 
             if self.processor:
-                endpoint_context['Processor'] = self.processor
+                endpoint_context['ProcessorCommon.File.CONTEXT_PATH:'] = self.processor
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
