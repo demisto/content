@@ -390,8 +390,8 @@
 		]
 	},
 	"group": "incident",
-	"id": "a1b1b03c-7f05-43ae-8384-232da58053d0",
-	"name": "Trello Layout",
+	"id": "Trello",
+	"name": "Trello",
 	"system": false,
 	"version": -1,
 	"fromVersion": "6.0.0",
