@@ -43,10 +43,10 @@ def main():
 
     get_incidents_by_query_args = copy.deepcopy(d_args)
     get_incidents_by_query_args['NonEmptyFields'] = d_args['tagField']
-    subject_field_name = d_args.get('emailsubject').strip()
-    body_field_name = d_args.get('emailbody').strip()
-    html_field_name = d_args.get('emailbodyhtml').strip()
-    tag_field_name = d_args.get('tagField').strip()
+    subject_field_name = d_args.get('emailsubject').strip()  # type: ignore
+    body_field_name = d_args.get('emailbody').strip()  # type: ignore
+    html_field_name = d_args.get('emailbodyhtml').strip()  # type: ignore
+    tag_field_name = d_args.get('tagField').strip()  # type: ignore
     additional_populate_fields = d_args.get('populateFields')
     populate_fields = [subject_field_name, body_field_name, html_field_name, tag_field_name, 'id']
     get_incidents_by_query_args['populateFields'] = ','.join([x.strip() for x in populate_fields if x is not None])
