@@ -1,6 +1,5 @@
 import json
 import io
-
 import pytest
 from F5_Silverline import get_ip_objects_list_command, add_ip_objects_command, delete_ip_objects_command, Client
 
@@ -35,6 +34,17 @@ IP_OBJECT_GET_LIST = [({'list_type': 'denylist', 'object_id': ['id1']}, 'ip_obje
 
 @pytest.mark.parametrize('args,expected_output', IP_ADDRESSES_TO_ADD)
 def test_add_ip_objects_command(mocker, args, expected_output):
+    """
+    Given:
+        - Got IP address of a new IP object to add to a list_type.
+
+    When:
+        - After asked for f5-silverline-ip-object-add command.
+
+    Then:
+        - Validating that the object was created successfully.
+        - Validating the returned human readable.
+    """
     mocker.patch.object(Client, "request_ip_objects")
     client = create_client(base_url='https://portal.f5silverline.com/api/v1/ip_lists', verify=False, headers={},
                            proxy=False)
@@ -44,6 +54,17 @@ def test_add_ip_objects_command(mocker, args, expected_output):
 
 @pytest.mark.parametrize('args,expected_output', IP_ADDRESSES_TO_DELETE)
 def test_delete_ip_objects_command(mocker, args, expected_output):
+    """
+    Given:
+        - Got id of an IP object to delete from a list_type.
+
+    When:
+        - After asked for f5-silverline-ip-object-delete command.
+
+    Then:
+        - Validating that the object was deleted successfully.
+        - Validating the returned human readable.
+    """
     mocker.patch.object(Client, "request_ip_objects")
     client = create_client(base_url='https://portal.f5silverline.com/api/v1/ip_lists', verify=False, headers={},
                            proxy=False)
@@ -53,6 +74,17 @@ def test_delete_ip_objects_command(mocker, args, expected_output):
 
 @pytest.mark.parametrize('args, response_json', IP_OBJECT_GET_LIST)
 def test_get_ip_objects_list_command(mocker, args, response_json):
+    """
+    Given:
+        - Got list_type in order to get the data from.
+
+    When:
+        - After asked for f5-silverline-ip-object-list command
+
+    Then:
+        - Validating that the list returned successfully to the right context path.
+        - If the user gave unique ids, validating that they returned as expected.
+    """
     client = create_client(base_url='https://portal.f5silverline.com/api/v1/ip_lists', verify=False, headers={},
                            proxy=False)
     response = util_load_json(f"test_data/{response_json}")
