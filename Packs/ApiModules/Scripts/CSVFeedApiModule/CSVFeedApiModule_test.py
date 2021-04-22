@@ -284,24 +284,24 @@ def test_get_indicators_with_relations():
             'relation_name': 'resolved-from',
             'mapping': {
                 'AAA': 'a',
-                'relation_entity_b': 'a'
+                'relation_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
             }
         }
     }
     expected_res = [{'value': 'test.com', 'type': 'IP',
-                     'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test',
+                     'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test c&c',
                                  None: ['2021-04-22 06:03',
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by Test', 'relation_entity_b': 'Domain used by Test',
+                     'fields': {'AAA': 'Domain used by Test c&c', 'relation_entity_b': 'Test',
                                 'tags': []},
                      'relationships': [
                          {'name': 'resolved-from', 'reverseName': 'resolves-to', 'type': 'IndicatorToIndicator',
                           'entityA': 'test.com', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
-                          'entityB': 'Domain used by Test', 'entityBFamily': 'Indicator', 'entityBType': 'IP',
+                          'entityB': 'Test', 'entityBFamily': 'Indicator', 'entityBType': 'IP',
                           'fields': {}}]}]
 
-    ip_ranges = 'test.com,Domain used by Test,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
+    ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 
     with requests_mock.Mocker() as m:
         itype = 'IP'
@@ -336,19 +336,19 @@ def test_get_indicators_without_relations():
             'relation_name': 'resolved-from',
             'mapping': {
                 'AAA': 'a',
-                'relation_entity_b': 'a'
+                'relation_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
             }
         }
     }
     expected_res = [{'value': 'test.com', 'type': 'IP',
-                     'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test',
+                     'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test c&c',
                                  None: ['2021-04-22 06:03',
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by Test', 'relation_entity_b': 'Domain used by Test',
+                     'fields': {'AAA': 'Domain used by Test c&c', 'relation_entity_b': 'Test',
                                 'tags': []}, 'relationships': []}]
 
-    ip_ranges = 'test.com,Domain used by Test,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
+    ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 
     with requests_mock.Mocker() as m:
         itype = 'IP'
