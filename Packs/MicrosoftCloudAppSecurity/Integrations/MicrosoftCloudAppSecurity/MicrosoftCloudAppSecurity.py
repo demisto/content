@@ -314,6 +314,7 @@ def set_alerts_is_open(alerts: List[dict]):
             alert['is_open'] = True
     return alerts
 
+
 def list_alerts_command(client: Client, args: dict):
     url_suffix = '/alerts/'
     alert_id = args.get('alert_id')
