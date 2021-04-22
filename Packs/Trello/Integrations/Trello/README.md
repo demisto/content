@@ -332,56 +332,6 @@ List all actions on a board, such as card updates, additions, and deletes.
 >| 6061628bedda298c34aa588e | createCard | 2021-03-29T05:15:55.706Z |
 
 
-### get-mapping-data
-***
-Used for mirroring
-
-
-#### Base Command
-
-`get-mapping-data`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
-### trello-get-remote-data
-***
-Used by mirroring
-
-
-#### Base Command
-
-`trello-get-remote-data`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | ID to get. | Optional | 
-| lastUpdate | Last update. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### trello-list-labels
 ***
 List all the labels in a given board
@@ -636,4 +586,3 @@ List all the trello cards
 >|---|---|---|
 >| 6061628bedda298c34aa588d | Temp card | https://trello.com/c/oq5kliob/99-temp-card |
 >| 606163113a492b52f69c40de | This is a test card from XSOAR! | https://trello.com/c/63F5dXGw/100-this-is-a-test-card-from-xsoar |
-
