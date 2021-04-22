@@ -66,7 +66,7 @@ args:
   secret: false
 - default: false
   defaultValue: emailfrom
-  description: 'The name of the field that contains the email sender.'
+  description: The name of the field that contains the email sender.
   isArray: false
   name: emailFrom
   required: false
@@ -150,6 +150,15 @@ outputs:
 - contextPath: EmailCampaign.incidents.emailfromdomain
   description: The domains of the email senders involved in the campaign.
   type: Unknown
+- contextPath: EmailCampaign.incidents.recipients
+  description: A list of email addresses of recipients involved in the campaign. The
+    list is comprised of the following fields, "Email To", "Email CC", "Email BCC".
+  type: Unknown
+- contextPath: EmailCampaign.incidents.recipientsdomain
+  description: A list of the domains of the email addresses of recipients involved
+    in the campaign. The list is comprised of the following fields, "Email To", "Email
+    CC", "Email BCC".
+  type: Unknown
 - contextPath: EmailCampaign.indicators.id
   description: The IDs of the mututal indicators of the incidents invovled in the
     campaign.
@@ -166,7 +175,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.17163
+dockerimage: demisto/sklearn:1.0.0.17983
 tests:
 - No tests (auto formatted)
 runonce: true

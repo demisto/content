@@ -246,7 +246,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
 
             incidents.append({
                 "name": f'Rubrik Radar Anomaly - {process_incident["objectName"]}',
-                "occurred": current_time.strftime(DATE_TIME_FORMAT),
+                "occurred": process_incident["lastUpdated"],
                 "rawJSON": json.dumps(process_incident)
             })
 
