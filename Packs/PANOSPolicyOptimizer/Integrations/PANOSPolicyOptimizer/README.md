@@ -23,7 +23,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### pan-os-po-getstats
 ***
-Gets the Policy Optimizer statistics
+Gets the Policy Optimizer statistics.
 
 
 #### Base Command
@@ -42,7 +42,7 @@ Gets the Policy Optimizer statistics
 | PanOS.PolicyOptimizer.Stats.no_app_specified | Number | Number of rules with no apps specified | 
 | PanOS.PolicyOptimizer.Stats.unused | Number | Number of unused security policies | 
 | PanOS.PolicyOptimizer.Stats.unused_apps | Number | Number of unused apps in security policies | 
-| PanOS.PolicyOptimizer.Stats.unused_in_30_days	 | Number | Number of unused security policies in 30 days | 
+| PanOS.PolicyOptimizer.Stats.unused_in_30_days | Number | Number of unused security policies in 30 days | 
 | PanOS.PolicyOptimizer.Stats.unused_in_90_days | Number | Number of unused security policies in 90 days | 
 
 
@@ -60,7 +60,7 @@ Shows all security policies with no apps specified
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PanOS.PolicyOptimizer.NoApps | Unknown | Contains informatios about the rules that have no apps specified. i.e Source, Destination etc. | 
+| PanOS.PolicyOptimizer.NoApps | Unknown | Contains information about the rules that have no apps specified. i.e., Source, Destination, etc. | 
 #### Command Example
 ``` ```
 #### Human Readable Output
@@ -81,15 +81,15 @@ Shows all security policies with no apps specified
 #### Human Readable Output
 ### pan-os-po-getrules
 ***
-Gets unused, used or any rules
+Gets unused, used, or any rules
 #### Base Command
 `pan-os-po-getrules`
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| timeframe | The timeframe in days to show the unused rules for. Default is 30. | Required | 
-| usage | Rule usage type. Which values you want to filter by. Possible values are: Unused, Used, Any. Default is unused. | Required | 
-| exclude | Exclude rules reset during the last x days. It will not exclude if argument is empty. | Optional | 
+| timeframe | The time frame in days for which to show the unused rules for. Default is 30. | Required | 
+| usage | Rule usage type. The values by which to filter by. Possible values are: Unused, Used, Any. Default is unused. | Required | 
+| exclude | Whether to exclude rules reset during the last x days, where x is the value defined in the timeframe argument. It will not exclude rules by default. | Optional | 
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -101,7 +101,7 @@ Gets unused, used or any rules
 #### Human Readable Output
 ### pan-os-po-appandusage
 ***
-Gets the App usage statistics for a specific security policy
+Gets the app usage statistics for a specific security policy
 #### Base Command
 `pan-os-po-appandusage`
 #### Input
@@ -126,6 +126,3 @@ Gets the App usage statistics for a specific security policy
 | dag | Dynamic Address Group Name. | Required | 
 #### Context Output
 There is no context output for this command.
-#### Command Example
-``` ```
-#### Human Readable Output
