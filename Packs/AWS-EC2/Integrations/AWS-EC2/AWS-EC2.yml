@@ -2626,6 +2626,12 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      description: The dedicated Host ID.
+      isArray: false
+      name: host_id
+      required: false
+      secret: false
     deprecated: false
     description: Launches the specified number of instances using an AMI for which
       you have permissions. You can create a launch template , which is a resource

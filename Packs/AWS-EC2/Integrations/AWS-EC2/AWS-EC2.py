@@ -1267,6 +1267,10 @@ def run_instances_command(args):
                 'ResourceType': 'instance',
                 'Tags': parse_tag_field(args.get('tags'))}]
         })
+    if args.get('host_id'):
+        kwargs.update({'Placement': {
+            'HostId': args.get('host_id')
+        }})
 
     response = client.run_instances(**kwargs)
     data = []
