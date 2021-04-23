@@ -82,6 +82,16 @@ script:
     - contextPath: Rubrik.Radar.ActivitySeriesId
       description: The ID of the Rubrik Polaris Activity Series.
       type: String
+  - arguments:
+    - description: |
+        The id of the CDM cluster.  When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.
+      name: clusterId
+    description: Find the CDM GeoLocation of a CDM Cluster.
+    name: rubrik-cdm-cluster-location
+    outputs:
+    - contextPath: Rubrik.CDM.Cluster.Location
+      description: The GeoLocation of the Rubrik CDM Cluster.
+      type: String
   dockerimage: demisto/python3:3.9.4.18682
   isfetch: true
   runonce: false
