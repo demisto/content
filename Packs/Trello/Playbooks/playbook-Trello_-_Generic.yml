@@ -428,4 +428,4 @@ view: |-
 tests:
 - No tests
 fromversion: 6.0.0
-description: Input LIST
+description: A generic extract and enrichment playbook for incidents based on Trello Card data.
