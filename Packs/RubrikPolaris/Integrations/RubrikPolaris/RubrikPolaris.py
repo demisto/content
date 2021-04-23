@@ -523,6 +523,68 @@ def rubrik_cdm_cluster_location_command(client: Client, args: Dict[str, Any]) ->
         outputs=context
     )
 
+def rubrik_cdm_cluster_connection_state_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    incident = demisto.incident().get("CustomFields")
+
+    # clusterId is an optional value for the command. When not set,
+    # look up the value in the incident custom fields
+    clusterId = args.get('clusterId', None)
+    if not clusterId:
+        try:
+            clusterId = incident.get("rubrikcdmclusterid")
+        except AttributeError as e:
+            # if still not found return an error message about it being
+            # required
+            return_error(
+                message="The objectName value is required. Either manually provide or run this command"
+                        " in a 'Rubrik Radar Anomaly' incident where it will automatically looked up "
+                        "using the incident context.",
+                error=e)
+
+    cluster_details = {}
+
+    operation_name_object_list = f"{OPERATION_NAME_PREFIX}CDMClusterConnectionStateQuery"
+
+    cdm_connection_query = """query %s($filter: ClusterFilterInput) {
+                                clusterConnection(filter: $filter) {
+                                    nodes {
+                                        state {
+                                            connectedState
+                                        }
+                                    }
+                                }
+                            }
+                    """ % operation_name_object_list
+
+
+    cdm_connection_variable = {
+        "filter": {
+                "id": [clusterId]
+            }
+    }
+
+    cdm_connection_detail = client.gql_query(operation_name_object_list, cdm_connection_query, cdm_connection_variable,
+                                           False)
+
+    context = {}
+
+    try:
+        context["ConnectionState"] = cdm_connection_detail["data"]["clusterConnection"]["nodes"][0]["state"]["connectedState"]
+
+    except KeyError:
+        #Return blank context if key error
+        return CommandResults(
+        outputs_prefix='Rubrik.CDM.Cluster',
+        outputs_key_field='ConnectionState',
+        outputs={}
+    )   
+
+    return CommandResults(
+        outputs_prefix='Rubrik.CDM.Cluster',
+        outputs_key_field='ConnectionState',
+        outputs=context
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -576,6 +638,8 @@ def main() -> None:
             return_results(rubrik_sonar_sensitive_hits_command(client, demisto.args()))
         elif demisto.command() == 'rubrik-cdm-cluster-location':
             return_results(rubrik_cdm_cluster_location_command(client, demisto.args()))
+        elif demisto.command() == 'rubrik-cdm-cluster-connection-state':
+            return_results(rubrik_cdm_cluster_connection_state_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
