@@ -10,7 +10,7 @@ These fields also support the use of API key headers. To use API key headers, sp
 the [JMESPath site](http://jmespath.org/) to verify this expression will return the following array of objects.
 * **JSON Indicator Attribute** - JSON attribute whose value is the indicator. Default is 'indicator'.
 * **Headers** - Headers to add to the http request. Specify each header on a single line in the format: 'Name: Value'. For example: 
-* **POST Data** - Send specified data in a POST request. When specified, by default will add the header: 'Content-Type: application/x-www-form-urlencoded'. To specify a different Content-Type (for example: application/json) use the **Header** config param.
+* **POST Data** - Send specified data in a POST request. When specified, by default will add the header: 'Content-Type: application/x-www-form-urlencoded'. To specify a different Content-Type (for example: application/json) use the **Headers** config param.
   ```
   User-Agent: XSOAR Feed
   Pragma: no-cache
