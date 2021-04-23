@@ -470,23 +470,28 @@ def check_file(file_hash):
             md_list.append(md_obj)
 
         # Building entry
-        ec = {
+        outputs = {
             outputPaths.get('file'): file_list,
             outputPaths.get('dbotscore'): dbot_list
         }
-
         md = tableToMarkdown(f'Results found in MISP for hash: {file_hash}', md_list)
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': misp_response,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': md,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': ec
-        })
     else:
-        demisto.results(f"No events found in MISP for hash {file_hash}")
+        md = f"No events found in MISP for hash {file_hash}"
+        outputs = {
+            outputPaths.get('dbotscore'): {
+                'Indicator': file_hash,
+                'Type': 'hash',
+                'Vendor': 'MISP V2',
+                'Score': Common.DBotScore.NONE,
+            },
+        }
+
+    return_results(CommandResults(
+        readable_output=md,
+        outputs=outputs,
+        raw_response=misp_response,
+    ))
 
 
 def get_ips_events():
@@ -538,23 +543,29 @@ def check_ip(ip):
             dbot_list.append(dbot_obj)
             md_list.append(md_obj)
 
-        ec = {
+        outputs = {
             outputPaths.get('ip'): ip_list,
             outputPaths.get('dbotscore'): dbot_list,
             MISP_PATH: build_context(misp_response)
         }
-
         md = tableToMarkdown(f'Results found in MISP for IP: {ip}', md_list)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': misp_response,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': md,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': ec
-        })
+
     else:
-        demisto.results(f'No events found in MISP for IP: {ip}')
+        md = f'No events found in MISP for IP: {ip}'
+        outputs = {
+            outputPaths.get('dbotscore'): {
+                'Indicator': ip,
+                'Type': DBotScoreType.IP,
+                'Vendor': 'MISP V2',
+                'Score': Common.DBotScore.NONE,
+            },
+        }
+
+    return_results(CommandResults(
+        readable_output=md,
+        outputs=outputs,
+        raw_response=misp_response,
+    ))
 
 
 def upload_sample():
@@ -799,22 +810,29 @@ def check_url(url):
             dbot_list.append(dbot_obj)
             md_list.append(md_obj)
             url_list.append(url_obj)
-        ec = {
+        outputs = {
             outputPaths.get('url'): url_list,
             outputPaths.get('dbotscore'): dbot_list,
             MISP_PATH: build_context(response)
         }
         md = tableToMarkdown(f'MISP Reputation for URL: {url}', md_list)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': md,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': ec
-        })
+
     else:
-        demisto.results(f'No events found in MISP for URL: {url}')
+        md = f'No events found in MISP for URL: {url}'
+        outputs = {
+            outputPaths.get('dbotscore'): {
+                'Indicator': url,
+                'Type': DBotScoreType.URL,
+                'Vendor': 'MISP V2',
+                'Score': Common.DBotScore.NONE,
+            },
+        }
+
+    return_results(CommandResults(
+        readable_output=md,
+        outputs=outputs,
+        raw_response=response,
+    ))
 
 
 def build_misp_complex_filter(demisto_query: str) -> str:
