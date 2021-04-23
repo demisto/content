@@ -29,7 +29,7 @@ def main() -> None:
             incidents.append(incident)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'sampler':
+        elif demisto.command() == 'json-sample-incident-generator-command':
             key = demisto.args().get("key", None)
             value = demisto.args().get("value", None)
 

@@ -1,11 +1,9 @@
-Save the string of a JSON object for simulating the fetching of incidents.
-This can also be used to test classifiers and mappers on static incoming data.
-Currently supports only single JSON object as sample.
-
-## Configure JSONSampler on Cortex XSOAR
+A utility for testing incident fetching with mock JSON data.
+This integration was integrated and tested with version xx of JSONSampleIncidentGenerator
+## Configure JSON Sample Incident Generator on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for JSONSampler.
+2. Search for JSONSampleIncidentGenerator.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -20,14 +18,14 @@ Currently supports only single JSON object as sample.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### sampler
+### json-sample-incident-generator-command
 ***
-Sample the provided JSON and return the results to the Context and Warroom.  Can use key and value arg to change a JSON values if desired.
+Read the provided JSON and return the results to the Context and Warroom.  Can use key and value arg to change a JSON values if desired.
 
 
 #### Base Command
 
-`sampler`
+`json-sample-incident-generator-command`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,17 +39,16 @@ Sample the provided JSON and return the results to the Context and Warroom.  Can
 There is no context output for this command.
 
 #### Command Example
-```!sampler key="somekey" value="somevalue"```
+```!json-sample-incident-generator-command key="somekey" value="somevalue"```
 
 #### Context Example
 ```json
 {
     "JSON": {
         "Sample": {
-            "IP": "8.8.8.8",
-            "Name": "Suspected Web Monitoring",
-            "Type": "Malware",
-            "somekey": "somevalue"
+            "description": "something bad happened",
+            "somekey": "somevalue",
+            "type": "Malware"
         }
     }
 }
@@ -60,7 +57,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Results
->|IP|Name|Type|somekey|
->|---|---|---|---|
->| 8.8.8.8 | Suspected Web Monitoring | Malware | somevalue |
+>|description|somekey|type|
+>|---|---|---|
+>| something bad happened | somevalue | Malware |
 

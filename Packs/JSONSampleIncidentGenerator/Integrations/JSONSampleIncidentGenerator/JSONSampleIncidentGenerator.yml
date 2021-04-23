@@ -26,7 +26,7 @@ configuration:
   type: 0
 description: |-
   A utility for testing incident fetching with mock JSON data.
-display: JSONSampleIncidentGenerator
+display: JSON Sample Incident Generator
 name: JSONSampleIncidentGenerator
 script:
   commands:
