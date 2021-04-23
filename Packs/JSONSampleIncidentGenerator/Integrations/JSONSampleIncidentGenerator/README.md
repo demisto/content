@@ -1,5 +1,5 @@
 A utility for testing incident fetching with mock JSON data.
-This integration was integrated and tested with version xx of JSONSampleIncidentGenerator
+
 ## Configure JSON Sample Incident Generator on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
