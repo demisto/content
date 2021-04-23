@@ -56,12 +56,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7a7c6ec2-cb6c-48f3-8a7c-8408a461b88a
+      id: 616cc925-198d-4819-838c-1affd4ed32ce
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 7a7c6ec2-cb6c-48f3-8a7c-8408a461b88a
+    taskid: 616cc925-198d-4819-838c-1affd4ed32ce
     timertriggers: []
     type: start
     view: |-
@@ -102,13 +102,13 @@ tasks:
         This playbook isolates a given endpoint using the following integrations:
         - Carbon Black Enterprise Response
         - Palo Alto Networks Traps
-      id: 34444750-b68b-4ed3-8ce1-de675239103e
+      id: f1d8f476-ce50-4d13-8a01-c5524928f420
       iscommand: false
       name: Isolate Endpoint - Generic
       playbookId: Isolate Endpoint - Generic
       type: playbook
       version: -1
-    taskid: 34444750-b68b-4ed3-8ce1-de675239103e
+    taskid: f1d8f476-ce50-4d13-8a01-c5524928f420
     timertriggers: []
     type: playbook
     view: |-
@@ -131,13 +131,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 40cde700-075a-4b1b-8866-f7951a82d1dd
+      id: 7f5d7968-09de-40c9-803e-b54fa5ba678e
       iscommand: false
       name: Identification
       type: title
       version: -1
       description: ''
-    taskid: 40cde700-075a-4b1b-8866-f7951a82d1dd
+    taskid: 7f5d7968-09de-40c9-803e-b54fa5ba678e
     timertriggers: []
     type: title
     view: |-
@@ -173,12 +173,12 @@ tasks:
         \ files that are visible and can be related to the incident.\nNote: Keep in\
         \ mind that you can use XSOAR CLI to run commands in the context of the incident\
         \ on enabled integrations to assist in this task. "
-      id: 797eebad-71dd-4d33-8348-458258cd76a0
+      id: 00d28cba-5f79-43f1-8fe7-58e71abb4247
       iscommand: false
       name: Upload ransomware files
       type: regular
       version: -1
-    taskid: 797eebad-71dd-4d33-8348-458258cd76a0
+    taskid: 00d28cba-5f79-43f1-8fe7-58e71abb4247
     timertriggers: []
     type: regular
     view: |-
@@ -263,12 +263,12 @@ tasks:
         \ note.\n2. Encrypted file <1MB. \n3. Email address or links. \nPlease refer\
         \ to the service FAQ to understand the terms of service and the confidentiality\
         \ of the uploaded data."
-      id: 484a1214-9483-41a5-8a88-a250cae8e4b2
+      id: 4e4bdbac-f1e0-4bb7-8a41-fb7e42cd48b7
       iscommand: false
       name: Ransomware enrichment
       type: collection
       version: -1
-    taskid: 484a1214-9483-41a5-8a88-a250cae8e4b2
+    taskid: 4e4bdbac-f1e0-4bb7-8a41-fb7e42cd48b7
     timertriggers: []
     type: collection
     view: |-
@@ -307,13 +307,13 @@ tasks:
     task:
       brand: ""
       description: Sends an email using EWS.
-      id: 7c1ff68d-d671-4454-83eb-f279d153298e
+      id: 033bc15f-0c45-4c84-8870-6cf7ce69162a
       iscommand: true
       name: Send ransomware notification to relevant stakeholders
       script: '|||send-mail'
       type: regular
       version: -1
-    taskid: 7c1ff68d-d671-4454-83eb-f279d153298e
+    taskid: 033bc15f-0c45-4c84-8870-6cf7ce69162a
     timertriggers: []
     type: regular
     view: |-
@@ -335,13 +335,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c1175798-4ce9-4f2f-888a-79ab3f1b8d65
+      id: a76af24a-8602-4e14-8462-2e0eda61ca61
       iscommand: false
       name: Investigation
       type: title
       version: -1
       description: ''
-    taskid: c1175798-4ce9-4f2f-888a-79ab3f1b8d65
+    taskid: a76af24a-8602-4e14-8462-2e0eda61ca61
     timertriggers: []
     type: title
     view: |-
@@ -415,12 +415,12 @@ tasks:
         \nVerify file ownership on Windows OS by right-clicking one of the encrypted\
         \ files > Security tab > Advanced. In the pop-up window you will see the file\
         \ owner in the top left corner.\n"
-      id: 13857fab-9357-4273-8166-cf359098a32b
+      id: 118c6418-80a1-407d-8a6d-8438c0b1f8ab
       iscommand: false
       name: File owner investigation
       type: collection
       version: -1
-    taskid: 13857fab-9357-4273-8166-cf359098a32b
+    taskid: 118c6418-80a1-407d-8a6d-8438c0b1f8ab
     timertriggers: []
     type: collection
     view: |-
@@ -442,14 +442,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: aeb0d6b4-5448-4b37-89e9-000f8b0037ba
+      id: dde9a45a-b521-44cf-85c4-e090baac317c
       iscommand: false
       name: Detonate File - Generic
       playbookId: Detonate File - Generic
       type: playbook
       version: -1
       description: ''
-    taskid: aeb0d6b4-5448-4b37-89e9-000f8b0037ba
+    taskid: dde9a45a-b521-44cf-85c4-e090baac317c
     timertriggers: []
     type: playbook
     view: |-
@@ -475,12 +475,12 @@ tasks:
         If a recovery tool was found, it is recommended to test it prior to using it on all of the encrypted files.
         Test the tool on a low-impact endpoint to verify that it can decrypt the data without causing permanent data loss of the encrypted files.
         If the tool decrypted the files successfully, make sure to deploy the tool only after applying all the necessary countermeasures to clean everything related to the breach from your environment.
-      id: 17672cee-daac-4b38-8eff-6d05bf80dce1
+      id: 64cd015f-7b0c-418c-8827-86fa401b9a2d
       iscommand: false
       name: Test the ransomware recovery tool.
       type: regular
       version: -1
-    taskid: 17672cee-daac-4b38-8eff-6d05bf80dce1
+    taskid: 64cd015f-7b0c-418c-8827-86fa401b9a2d
     timertriggers: []
     type: regular
     view: |-
@@ -502,13 +502,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2780e1e1-2a63-4db0-83e6-14afbb7cb2d6
+      id: 04b4a0ea-f81b-4a37-80b3-ff6d36caa789
       iscommand: false
       name: 'Containment '
       type: title
       version: -1
       description: ''
-    taskid: 2780e1e1-2a63-4db0-83e6-14afbb7cb2d6
+    taskid: 04b4a0ea-f81b-4a37-80b3-ff6d36caa789
     timertriggers: []
     type: title
     view: |-
@@ -560,13 +560,13 @@ tasks:
     task:
       brand: ""
       description: Load the content of a file into context.
-      id: e6263ea1-cc1e-4fd0-8d26-9d3b7a240a74
+      id: 6b42030c-9f1a-48d1-8776-3c46ce9016a4
       iscommand: false
       name: Read ransom note
       script: ReadFile
       type: regular
       version: -1
-    taskid: e6263ea1-cc1e-4fd0-8d26-9d3b7a240a74
+    taskid: 6b42030c-9f1a-48d1-8776-3c46ce9016a4
     timertriggers: []
     type: regular
     view: |-
@@ -589,13 +589,13 @@ tasks:
     task:
       brand: ""
       description: Detonate the file using active integrations that support file detonation.
-      id: 0e081b1c-4962-4d27-8afa-13a5de1c41b1
+      id: c9c8b266-7b4f-4b48-8bd2-26babd44c0bf
       iscommand: false
       name: Detonate File - Generic
       playbookId: Detonate File - Generic
       type: playbook
       version: -1
-    taskid: 0e081b1c-4962-4d27-8afa-13a5de1c41b1
+    taskid: c9c8b266-7b4f-4b48-8bd2-26babd44c0bf
     timertriggers: []
     type: playbook
     view: |-
@@ -634,12 +634,12 @@ tasks:
     task:
       brand: ""
       description: ""
-      id: c1ed7000-d625-485d-8804-9e568e561676
+      id: a4954ae8-7942-4306-8136-82378c2ebf8a
       iscommand: false
       name: Were binary files retrieved?
       type: condition
       version: -1
-    taskid: c1ed7000-d625-485d-8804-9e568e561676
+    taskid: a4954ae8-7942-4306-8136-82378c2ebf8a
     timertriggers: []
     type: condition
     view: |-
@@ -658,13 +658,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9c3476a6-0d62-4aaf-83af-6c164b51f8b5
+      id: d427fdf1-0eff-47b6-8e41-d5b146318b49
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 9c3476a6-0d62-4aaf-83af-6c164b51f8b5
+    taskid: d427fdf1-0eff-47b6-8e41-d5b146318b49
     timertriggers: []
     type: title
     view: |-
@@ -691,13 +691,13 @@ tasks:
     task:
       brand: Builtin
       description: Fetches incidents that are related/close to the given incident.
-      id: 4170a742-326b-4948-877b-7f2929f2bbe0
+      id: fa5fe52f-4792-4c5d-8480-e015e7a45cf4
       iscommand: true
       name: Fetch related incidents
       script: Builtin|||relatedIncidents
       type: regular
       version: -1
-    taskid: 4170a742-326b-4948-877b-7f2929f2bbe0
+    taskid: fa5fe52f-4792-4c5d-8480-e015e7a45cf4
     timertriggers: []
     type: regular
     view: |-
@@ -735,12 +735,12 @@ tasks:
     task:
       brand: ""
       description: ""
-      id: a3f16d8e-167e-4c1a-8389-9a25eb326722
+      id: 7c94fa30-3242-4ed8-8737-ab86f036616d
       iscommand: false
       name: Auto Remediation?
       type: condition
       version: -1
-    taskid: a3f16d8e-167e-4c1a-8389-9a25eb326722
+    taskid: 7c94fa30-3242-4ed8-8737-ab86f036616d
     timertriggers: []
     type: condition
     view: |-
@@ -781,13 +781,13 @@ tasks:
         - Cylance Protect v2
         - CrowdStrike Falcon Host
         - ExtraHop Reveal(x)
-      id: e92b9254-65db-4155-8cc5-63fe7ab8fa30
+      id: fc65d346-d13b-442a-896f-b4217b69758f
       iscommand: false
       name: Endpoint Enrichment - Generic v2.1
       playbookId: Endpoint Enrichment - Generic v2.1
       type: playbook
       version: -1
-    taskid: e92b9254-65db-4155-8cc5-63fe7ab8fa30
+    taskid: fc65d346-d13b-442a-896f-b4217b69758f
     timertriggers: []
     type: playbook
     view: |-
@@ -825,13 +825,13 @@ tasks:
         Enrich accounts using one or more integrations.
         Supported integrations:
         - Active Directory
-      id: e0865102-606c-4629-8ac9-785cfc491c85
+      id: cb02dac9-a708-4608-8803-befc2ff8580b
       iscommand: false
       name: Account Enrichment - Generic v2.1
       playbookId: Account Enrichment - Generic v2.1
       type: playbook
       version: -1
-    taskid: e0865102-606c-4629-8ac9-785cfc491c85
+    taskid: cb02dac9-a708-4608-8803-befc2ff8580b
     timertriggers: []
     type: playbook
     view: |-
@@ -860,13 +860,13 @@ tasks:
     task:
       brand: Active Directory Query v2
       description: Disables an Active Directory user account.
-      id: ae4333eb-c26b-4a9f-8415-6593151de781
+      id: e4c40214-8660-4fee-89eb-9e583fa4bd14
       iscommand: true
       name: 'Active Directory - disable user account '
       script: Active Directory Query v2|||ad-disable-account
       type: regular
       version: -1
-    taskid: ae4333eb-c26b-4a9f-8415-6593151de781
+    taskid: e4c40214-8660-4fee-89eb-9e583fa4bd14
     timertriggers: []
     type: regular
     view: |-
@@ -897,13 +897,13 @@ tasks:
         Active Directory Investigation playbook provides tools and guidance to investigate changes and manipulation in Active Directory containers, ACLs, Schema, and objects.
         This playbook uses a 3rd party tool provided by Microsoft to scan the Active Directory access list, trees, and objects.
         Additional investigative information is provided for manual investigation.
-      id: 3faea22e-a9e3-464a-8897-c278ef5676bf
+      id: ef3dd335-2be9-4b50-8120-e2f53661667b
       iscommand: false
       name: Active Directory Investigation
       playbookId: Active Directory Investigation
       type: playbook
       version: -1
-    taskid: 3faea22e-a9e3-464a-8897-c278ef5676bf
+    taskid: ef3dd335-2be9-4b50-8120-e2f53661667b
     timertriggers: []
     type: playbook
     view: |-
@@ -1035,13 +1035,13 @@ tasks:
         - Block IP - Generic v2
         - Block File - Generic v2
 
-      id: 04059dd8-6a1d-4955-8c24-4b5f4a9b1111
+      id: 0789da6f-7eab-4540-86ac-2e282529cea1
       iscommand: false
       name: Block Indicators - Generic v2
       playbookId: Block Indicators - Generic v2
       type: playbook
       version: -1
-    taskid: 04059dd8-6a1d-4955-8c24-4b5f4a9b1111
+    taskid: 0789da6f-7eab-4540-86ac-2e282529cea1
     timertriggers: []
     type: playbook
     view: |-
@@ -1095,12 +1095,12 @@ tasks:
     task:
       brand: ""
       description: ""
-      id: 1fa39890-8ede-4ef9-83fa-4a4419ecae37
+      id: a0598aa6-0796-40eb-81d3-935dfb55a1e4
       iscommand: false
       name: Is Active Directory enabled?
       type: condition
       version: -1
-    taskid: 1fa39890-8ede-4ef9-83fa-4a4419ecae37
+    taskid: a0598aa6-0796-40eb-81d3-935dfb55a1e4
     timertriggers: []
     type: condition
     view: |-
@@ -1195,12 +1195,12 @@ tasks:
         \ to investigate and identify lateral movement in the domain.\n5. Look for\
         \ suspicious activity or known vulnerabilities on external-facing applications\
         \ and services like web servers/VPN/RDP.\n\n\n\n"
-      id: 431f616a-ea1e-4694-84fc-fff75341b70b
+      id: 959d41aa-ba8f-4f5b-8674-764026d46662
       iscommand: false
       name: Advanced forensic investigation
       type: collection
       version: -1
-    taskid: 431f616a-ea1e-4694-84fc-fff75341b70b
+    taskid: 959d41aa-ba8f-4f5b-8674-764026d46662
     timertriggers: []
     type: collection
     view: |-
@@ -1238,12 +1238,12 @@ tasks:
     task:
       brand: ""
       description: ""
-      id: 0d96a6ce-713d-4338-85a8-8d82158f66e0
+      id: 83f3f5b6-64ea-4ac6-8cde-adfc5a1bbab0
       iscommand: false
       name: Was a Recovery tool found?
       type: condition
       version: -1
-    taskid: 0d96a6ce-713d-4338-85a8-8d82158f66e0
+    taskid: 83f3f5b6-64ea-4ac6-8cde-adfc5a1bbab0
     timertriggers: []
     type: condition
     view: |-
@@ -1814,13 +1814,13 @@ tasks:
     task:
       brand: Builtin
       description: Updates the file owner field for the incident.
-      id: 01f735a6-33bc-413b-8778-acc5b41c0356
+      id: f25b7742-023e-4e06-8558-a3d172e3eb08
       iscommand: true
       name: Set file owner field
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: 01f735a6-33bc-413b-8778-acc5b41c0356
+    taskid: f25b7742-023e-4e06-8558-a3d172e3eb08
     timertriggers: []
     type: regular
     view: |-
@@ -2494,13 +2494,13 @@ tasks:
     task:
       brand: Builtin
       description: Sets the number of affected endpoints.
-      id: d7263535-595f-4440-8fe0-96e8bbfae0b8
+      id: da9bbdf6-0ba4-4521-8bd8-b7f91cbecf11
       iscommand: true
       name: Count
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: d7263535-595f-4440-8fe0-96e8bbfae0b8
+    taskid: da9bbdf6-0ba4-4521-8bd8-b7f91cbecf11
     timertriggers: []
     type: regular
     view: |-
@@ -2533,7 +2533,7 @@ tasks:
     task:
       brand: Rasterize
       description: Converts the body of an email to an image file or a PDF file.
-      id: b7ae4cc4-cb3e-4157-8dc9-65fc23c8ca00
+      id: 22b757c7-7dba-447d-8d82-045c6691dfb4
       iscommand: true
       name: Display ransom note
       script: Rasterize|||rasterize-email
@@ -2541,7 +2541,7 @@ tasks:
       - RansomwareNote
       type: regular
       version: -1
-    taskid: b7ae4cc4-cb3e-4157-8dc9-65fc23c8ca00
+    taskid: 22b757c7-7dba-447d-8d82-045c6691dfb4
     timertriggers: []
     type: regular
     view: |-
@@ -3223,13 +3223,13 @@ tasks:
     task:
       brand: Builtin
       description: Updates the incident with attacker information.
-      id: ae2778f5-a49b-4111-8c5f-ad0cc256c1b3
+      id: 99ba7087-33f6-41dc-88a3-ae9f870226e5
       iscommand: true
       name: Set attacker information fields
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: ae2778f5-a49b-4111-8c5f-ad0cc256c1b3
+    taskid: 99ba7087-33f6-41dc-88a3-ae9f870226e5
     timertriggers: []
     type: regular
     view: |-
@@ -3265,13 +3265,13 @@ tasks:
         Enrich accounts using one or more integrations.
         Supported integrations:
         - Active Directory
-      id: 269a3fde-bf35-4969-817a-5d98a0e77a98
+      id: 7d12c793-6bfa-4838-8b2f-aa40a9ba26d4
       iscommand: false
       name: Account Enrichment - Generic v2.1
       playbookId: Account Enrichment - Generic v2.1
       type: playbook
       version: -1
-    taskid: 269a3fde-bf35-4969-817a-5d98a0e77a98
+    taskid: 7d12c793-6bfa-4838-8b2f-aa40a9ba26d4
     timertriggers: []
     type: playbook
     view: |-
@@ -3311,12 +3311,12 @@ tasks:
     task:
       brand: ""
       description: ""
-      id: 3fc2df2e-f3cd-466a-8689-fda1ecc48281
+      id: 86599289-17f1-445a-8046-54135f55b262
       iscommand: false
       name: Send ransomware notification?
       type: condition
       version: -1
-    taskid: 3fc2df2e-f3cd-466a-8689-fda1ecc48281
+    taskid: 86599289-17f1-445a-8046-54135f55b262
     timertriggers: []
     type: condition
     view: |-
@@ -3339,12 +3339,12 @@ tasks:
     task:
       brand: ""
       description: Block the indicators extracted during the investigation manually.
-      id: 0745b36e-d517-42a5-8103-a54f2f5d1ade
+      id: f421571e-1c3e-42d3-803d-9b3de1a8f5de
       iscommand: false
       name: Manual containment
       type: regular
       version: -1
-    taskid: 0745b36e-d517-42a5-8103-a54f2f5d1ade
+    taskid: f421571e-1c3e-42d3-803d-9b3de1a8f5de
     timertriggers: []
     type: regular
     view: |-
@@ -3366,14 +3366,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8c5e4c4e-4f93-4b8d-8c6a-af447274364f
+      id: 97cf6ba7-e5cb-4d0e-88cb-766b6fee2106
       iscommand: false
       name: Extract Indicators From File - Generic v2
       playbookId: Extract Indicators From File - Generic v2
       type: playbook
       version: -1
       description: ''
-    taskid: 8c5e4c4e-4f93-4b8d-8c6a-af447274364f
+    taskid: 97cf6ba7-e5cb-4d0e-88cb-766b6fee2106
     timertriggers: []
     type: playbook
     view: |-
@@ -3645,13 +3645,13 @@ tasks:
     task:
       brand: Builtin
       description: Updates the incident with ransomware information.
-      id: f201c13b-d740-48be-8f46-c4ea74f697ae
+      id: 4af93062-83e9-4ab0-8a76-03e94d45fb96
       iscommand: true
       name: Set Ransomware information
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: f201c13b-d740-48be-8f46-c4ea74f697ae
+    taskid: 4af93062-83e9-4ab0-8a76-03e94d45fb96
     timertriggers: []
     type: regular
     view: |-
@@ -3820,13 +3820,13 @@ tasks:
     task:
       brand: Builtin
       description: Updates the severity of the cryptocurrency indicators to malicious.
-      id: edf10364-083f-4976-8b0e-e44470f9ee4e
+      id: 99b7fb3a-24b6-422b-83cd-c8f7fd2fecc0
       iscommand: true
       name: 'Set cryptocurrency indicators as malicious '
       script: Builtin|||setIndicators
       type: regular
       version: -1
-    taskid: edf10364-083f-4976-8b0e-e44470f9ee4e
+    taskid: 99b7fb3a-24b6-422b-83cd-c8f7fd2fecc0
     timertriggers: []
     type: regular
     view: |-
@@ -3995,13 +3995,13 @@ tasks:
     task:
       brand: Builtin
       description: Updates the severity of the onion address indicators to malicious.
-      id: 61ecccfd-849e-430d-8cd2-8dc40b0ad55e
+      id: 9ca68c52-4b9b-4cef-816c-de55dbf3cc3a
       iscommand: true
       name: 'Set onion addresses indicators as malicious '
       script: Builtin|||setIndicators
       type: regular
       version: -1
-    taskid: 61ecccfd-849e-430d-8cd2-8dc40b0ad55e
+    taskid: 9ca68c52-4b9b-4cef-816c-de55dbf3cc3a
     timertriggers: []
     type: regular
     view: |-
@@ -4171,13 +4171,13 @@ tasks:
       brand: Builtin
       description: Updates the severity of the attacker email address indicators to
         malicious.
-      id: 189f2cb1-f108-41d9-8725-c6f70501d22c
+      id: cf41f9bb-1d24-4afd-840e-25bea9827dbd
       iscommand: true
       name: 'Set attacker email addresses indicators as malicious '
       script: Builtin|||setIndicators
       type: regular
       version: -1
-    taskid: 189f2cb1-f108-41d9-8725-c6f70501d22c
+    taskid: cf41f9bb-1d24-4afd-840e-25bea9827dbd
     timertriggers: []
     type: regular
     view: |-
@@ -4214,12 +4214,12 @@ tasks:
     task:
       brand: ""
       description: ""
-      id: 889bbcda-5a5d-414d-8d20-86ab679ab72e
+      id: 385651b4-5a88-46bf-8f9e-1f4c4ad349a1
       iscommand: false
       name: Auto Remediation?
       type: condition
       version: -1
-    taskid: 889bbcda-5a5d-414d-8d20-86ab679ab72e
+    taskid: 385651b4-5a88-46bf-8f9e-1f4c4ad349a1
     timertriggers: []
     type: condition
     view: |-
@@ -4283,12 +4283,12 @@ tasks:
     task:
       brand: ""
       description: ""
-      id: af466fc5-2dc2-4fcd-87e9-2bb8a514579e
+      id: fdc16ae6-4f00-454f-863a-35e7a7c21767
       iscommand: false
       name: Handle ransomware files
       type: condition
       version: -1
-    taskid: af466fc5-2dc2-4fcd-87e9-2bb8a514579e
+    taskid: fdc16ae6-4f00-454f-863a-35e7a7c21767
     timertriggers: []
     type: condition
     view: |-
@@ -4310,14 +4310,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 030dec83-158b-42ed-89e7-5aab6a226936
+      id: df9fa3d3-a0af-4e60-8920-635a4b97b058
       iscommand: false
       name: file_enrichment_-_file_reputation
       playbookId: file_enrichment_-_file_reputation
       type: playbook
       version: -1
       description: ''
-    taskid: 030dec83-158b-42ed-89e7-5aab6a226936
+    taskid: df9fa3d3-a0af-4e60-8920-635a4b97b058
     timertriggers: []
     type: playbook
     view: |-
@@ -4357,14 +4357,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3ec6f173-e359-4ae6-800a-ea532944f485
+      id: 689df673-bb19-4b79-8ec1-913e84b01435
       iscommand: false
       name: file_enrichment_-_file_reputation
       playbookId: file_enrichment_-_file_reputation
       type: playbook
       version: -1
       description: ''
-    taskid: 3ec6f173-e359-4ae6-800a-ea532944f485
+    taskid: 689df673-bb19-4b79-8ec1-913e84b01435
     timertriggers: []
     type: playbook
     view: |-
@@ -4377,6 +4377,9 @@ tasks:
   "109":
     id: "109"
     ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "110"
     note: false
     quietmode: 0
     scriptarguments:
@@ -4387,13 +4390,13 @@ tasks:
     task:
       brand: RubrikPolaris
       description: Find data classification hits on an object.
-      id: 4d9dd577-3036-4859-8f2c-c5a6e720607b
+      id: 79d0d1d4-cc6c-4602-8570-3ccb18757923
       iscommand: true
       name: rubrik-sonar-sensitive-hits
       script: RubrikPolaris|||rubrik-sonar-sensitive-hits
       type: regular
       version: -1
-    taskid: 4d9dd577-3036-4859-8f2c-c5a6e720607b
+    taskid: 79d0d1d4-cc6c-4602-8570-3ccb18757923
     timertriggers: []
     type: regular
     view: |-
@@ -4401,6 +4404,39 @@ tasks:
         "position": {
           "x": 860,
           "y": -2690
+        }
+      }
+  "110":
+    fieldMapping:
+    - incidentfield: Rubrik CDM Cluster Location
+      output:
+        simple: ${Rubrik.CDM.Cluster.location}
+    id: "110"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      clusterId:
+        simple: ${incident.rubrikcdmclusterid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RubrikPolaris
+      description: Find the CDM GeoLocation of a CDM Cluster.
+      id: 6c4921d8-fe6b-4fb9-8e6e-d8e9cd2c8f5b
+      iscommand: true
+      name: rubrik-cdm-cluster-location
+      script: RubrikPolaris|||rubrik-cdm-cluster-location
+      type: regular
+      version: -1
+    taskid: 6c4921d8-fe6b-4fb9-8e6e-d8e9cd2c8f5b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": -2510
         }
       }
 version: -1
