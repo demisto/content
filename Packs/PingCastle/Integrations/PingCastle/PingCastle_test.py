@@ -10,16 +10,28 @@ import demistomock as demisto
 
 
 def test_get_report_no_report_available():
-    from Packs.PingCastle.Integrations.PingCastle.PingCastle import get_report_command
+    from PingCastle import get_report_command
     demisto.setIntegrationContext({})
-    result = get_report_command()
+    result = get_report_command({'delete_report': 'No'})
     assert result == 'No report available'
 
 
-def test_get_report():
+def test_get_report_delete():
     report = '<example>report</example>'
-    from Packs.PingCastle.Integrations.PingCastle.PingCastle import get_report_command
+    from PingCastle import get_report_command
     demisto.setIntegrationContext({'report': report})
-    result: CommonServerPython.CommandResults = get_report_command()
+    result: CommonServerPython.CommandResults = get_report_command({'delete_report': 'Yes'})
     assert result.raw_response == report
     assert result.outputs == {'report': report}
+    print(demisto.getIntegrationContext())
+    assert demisto.getIntegrationContext().get('report') is None
+
+
+def test_get_report_no_delete():
+    report = '<example>report</example>'
+    from PingCastle import get_report_command
+    demisto.setIntegrationContext({'report': report})
+    result: CommonServerPython.CommandResults = get_report_command({'delete_report': 'No'})
+    assert result.raw_response == report
+    assert result.outputs == {'report': report}
+    assert demisto.getIntegrationContext().get('report') is not None
