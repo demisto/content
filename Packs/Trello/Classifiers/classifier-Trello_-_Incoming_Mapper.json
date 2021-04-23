@@ -30,10 +30,6 @@
 					"complex": null,
 					"simple": "desc"
 				},
-				"Trello ID": {
-					"complex": null,
-					"simple": "id"
-				},
 				"Trello List ID": {
 					"complex": null,
 					"simple": "create_action.list_id"
