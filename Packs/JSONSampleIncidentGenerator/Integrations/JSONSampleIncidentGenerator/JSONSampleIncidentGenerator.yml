@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: JSONSampler
+  id: JSONSampleIncidentGenerator
   version: -1
 configuration:
 - display: Fetch incidents
@@ -26,8 +26,8 @@ configuration:
   type: 0
 description: |-
   A utility for testing incident fetching with mock JSON data.
-display: JSONSampler
-name: JSONSampler
+display: JSONSampleIncidentGenerator
+name: JSONSampleIncidentGenerator
 script:
   commands:
   - arguments:
@@ -37,9 +37,9 @@ script:
     - description: The new key value. Must also set key argument. Can be comma separated
         to support changing multiple values.
       name: value
-    description: Sample the provided JSON and return the results to the Context and
+    description: Read the provided JSON and return the results to the Context and
       Warroom.  Can use key and value arg to change a JSON values if desired.
-    name: sampler
+    name: json-sample-incident-generator-command
   dockerimage: demisto/python3:3.9.4.18682
   isfetch: true
   runonce: false
