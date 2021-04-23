@@ -124,6 +124,15 @@ contat details, project scope, etc."></textarea>
         <p style="page-break-after: always;"></p>
     {% endif %}
 
+    {% if dashboards %}
+        {{ dashboards }}
+        <p>
+            Custom dashboards are a dynamic way to visualize statistics within XSOAR.<br><br>
+            XSOAR ships with a number of Out Of the Box dashboards, the above respresent only
+            those that have been created as part of this PS engagement.
+        </p>
+        <p style="page-break-after: always;"></p>
+    {% endif %}
 
     {{ system_config }}
     <p>
