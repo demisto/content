@@ -4,7 +4,6 @@ from datetime import datetime
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
-from requests.auth import HTTPBasicAuth
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,7 +13,7 @@ if URL[-1] != '/':
     URL += '/'
 ACCESS_ID = demisto.getParam('access_id')
 ACCESS_KEY = demisto.getParam('access_key')
-FETCH_LIMIT_PARAM = int(demisto.params().get('fetchLimit', 20))
+FETCH_LIMIT_PARAM = int(demisto.params().get('max_fetch', 20))
 FETCH_LIMIT = 20 if FETCH_LIMIT_PARAM > 20 else FETCH_LIMIT_PARAM
 USE_SSL = not demisto.params().get('insecure', False)
 DEFAULT_HEADERS = {
@@ -40,7 +39,7 @@ def req(method, path, query=None, data=None, headers=None):
                          auth=(ACCESS_ID, ACCESS_KEY)
                          )
     if r.status_code != requests.codes.ok:
-        print('Error in API call to Sumo Logic service - {}'.format(r.text))
+        return 'Error in API call to Sumo Logic service - {}'.format(r.text)
     if not r.text:
         return {}
     return r.json()
@@ -174,7 +173,8 @@ def search_insights():
     - ruleId
     - records
 
-    For example, the query `timestamp:>2021-03-18T12:00:00+00:00 severity:"HIGH` will return insights of high severity created after 12 PM UTC time on March 18th, 2021.
+    For example, the query `timestamp:>2021-03-18T12:00:00+00:00 severity:"HIGH` will return insights of high severity
+    created after 12 PM UTC time on March 18th, 2021.
     '''
     query = {}
     query['q'] = demisto.getArg('query')
@@ -256,7 +256,7 @@ def search_entities():
         'Contents': resp_json['data'],
         'EntryContext': ec,
         'HumanReadable': tableToMarkdown('Entities:', entities, ['Id', 'Name', 'FirstSeen', 'LastSeen',
-                                                                'Hostname', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem'])
+                                         'Hostname', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem'])
     })
 
 
@@ -284,7 +284,7 @@ def fetch_incidents():
     else:
         # How much time before the first fetch to retrieve incidents
         first_fetch_time = arg_to_datetime(
-            arg=demisto.params().get('firstFetch', '1 day'),
+            arg=demisto.params().get('first_fetch', '1 days'),
             arg_name='First fetch time',
             required=True
         )
@@ -301,8 +301,8 @@ def fetch_incidents():
         q = q + ' status:in("new", "inprogress")'
     query = {}
     query['q'] = q
-    query['offset'] = 0
-    query['limit'] = FETCH_LIMIT
+    query['offset'] = '0'
+    query['limit'] = str(FETCH_LIMIT)
     resp_json = req('GET', 'sec/v1/insights', query)
     incidents = []
     for a in resp_json['data']['objects']:
@@ -554,8 +554,6 @@ def main():
             add_to_threat_intel_source()
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
-        else:
-            return_error('Unrecognized command: ' + demisto.command())
     except Exception as e:
         LOG(e)
         LOG.print_log(False)

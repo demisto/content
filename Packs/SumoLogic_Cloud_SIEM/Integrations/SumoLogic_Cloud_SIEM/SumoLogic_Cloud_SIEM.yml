@@ -1,7 +1,6 @@
 commonfields:
   id: SumoLogicSEC
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: SumoLogicSEC
 display: Sumo Logic Cloud SIEM
 category: Analytics & SIEM
@@ -28,15 +27,14 @@ configuration:
   name: access_key
   type: 4
   required: true
-  hiddenpassword: true
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
   required: false
 - display: Fetch Limit
-  name: fetchLimit
-  defaultvalue: "20"
+  name: max_fetch
+  defaultvalue: '20'
   type: 0
   required: false
   additionalinfo: Fetch limit must not be greater than 20
@@ -46,8 +44,8 @@ configuration:
   required: false
   additionalinfo: Default fetch query is status:in("new", "inprogress")
 - display: First fetch time
-  name: firstFetch
-  defaultvalue: 1 day
+  name: first_fetch
+  defaultvalue: 1 days
   type: 0
   required: false
 script:
@@ -131,7 +129,6 @@ script:
       required: true
       description: The insight to change status for
     - name: status
-      default: true
       auto: PREDEFINED
       predefined:
       - new
@@ -140,7 +137,6 @@ script:
       description: The desired Insight status
       defaultValue: in-progress
     - name: resolution
-      default: true
       auto: PREDEFINED
       predefined:
       - Resolved
@@ -248,7 +244,10 @@ script:
       required: true
       description: Indicator value
     description: Add Threat Intel Indicator to Threat Intel Source
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.4.18682
   isfetch: true
   runonce: false
   subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
