@@ -19,6 +19,7 @@ DEMISTO_CONFIG_PATH = "/system/config"
 DEMISTO_INCIDENTS_PATH = "/incidents/search"
 DEMISTO_INCIDENT_TYPE_PATH = "/incidenttype"
 DEMISTO_DEPENDENCIES_PATH = "/itemsdependencies"
+DEMISTO_REPORTS_PATH = "/reports"
 MAX_REQUEST_SIZE = demisto.args().get("size", 1000)
 MAX_DAYS = demisto.args().get("days", 7)
 HTML_TABLE_TEMPLATE = """
@@ -68,6 +69,9 @@ MD_DOCUMENT_TEMPLATE = """
 
 {{ closed_incidents }}
 
+{{ reports }} 
+
+
 {{ playbook_stats }}
 
 {{ integrations_table }}
@@ -78,7 +82,7 @@ MD_DOCUMENT_TEMPLATE = """
 
 {{ automations_table }}
 
-{{ system_config }} 
+{{ system_config }}
 """
 
 USECASE_HTML_DOCUMENT_TEMPLATE = """
@@ -323,6 +327,16 @@ contat details, project scope, etc."></textarea>
         <p style="page-break-after: always;"></p>
     {% endif %}
 
+    {% if reports %}
+        {{ reports }}
+        <p>
+            Custom reports can be scheduled or manually initiated reports that report any statistic available through
+            XSOAR.
+        </p>
+        <p style="page-break-after: always;"></p>
+    {% endif %}
+
+
     {{ system_config }}
     <p>
         The system configuration changes the behavior of the XSOAR server/application itself, including
@@ -447,7 +461,8 @@ class Document:
             system_config,
             open_incidents,
             closed_incidents,
-            playbook_stats
+            playbook_stats,
+            reports
     ):
         self.template = template
         self.integrations_table = integrations_table
@@ -461,6 +476,7 @@ class Document:
         self.author = demisto.args().get("author")
         self.date = datetime.now().strftime("%m/%d/%Y")
         self.customer = demisto.args().get("customer")
+        self.reports = reports
 
     def html(self):
         template = jinja2.Template(HTML_DOCUMENT_TEMPLATE)
@@ -475,7 +491,8 @@ class Document:
             author=self.author,
             date=self.date,
             customer=self.customer,
-            playbook_stats=self.playbook_stats.as_html(headers=["playbook", "incidents"])
+            playbook_stats=self.playbook_stats.as_html(headers=["playbook", "incidents"]),
+            reports=self.reports.as_html(headers=["name", "type"])
         )
 
     def markdown(self):
@@ -488,7 +505,8 @@ class Document:
             system_config=self.system_config.as_markdown(),
             open_incidents=self.open_incidents.as_markdown(),
             closed_incidents=self.closed_incidents.as_markdown(),
-            playbook_stats=self.playbook_stats.as_markdown(headers=["playbook", "incidents"])
+            playbook_stats=self.playbook_stats.as_markdown(headers=["playbook", "incidents"]),
+            reports=self.reports.as_markdown(headers=["name", "type"])
         )
 
 
@@ -648,6 +666,19 @@ def get_custom_playbooks():
     rd = TableData(r, "Custom Playbooks")
     return rd
 
+def get_custom_reports():
+    """
+    Return all the custom reports installed in XSOAR.
+    :return: TableData
+    """
+    r = get_api_request(DEMISTO_REPORTS_PATH)
+    reports = []
+    for report in r:
+        # Check it's not an inbuilt (system) report
+        if not report.get("system"):
+            reports.append(report)
+    rd = TableData(reports, "Custom Reports")
+    return rd
 
 def get_all_playbooks():
     """
@@ -779,6 +810,9 @@ def main():
     playbooks = get_custom_playbooks()
     automations = get_custom_automations()
     playbook_stats = get_playbook_stats(playbooks, MAX_DAYS, MAX_REQUEST_SIZE)
+
+    reports = get_custom_reports()
+
     d = Document(
         MD_DOCUMENT_TEMPLATE,
         system_config=system_config,
@@ -788,7 +822,8 @@ def main():
         automations_table=automations,
         open_incidents=open_incidents,
         closed_incidents=closed_incidents,
-        playbook_stats=playbook_stats
+        playbook_stats=playbook_stats,
+        reports=reports
     )
     fr = fileResult("asbuilt.html", d.html())
     return_results(CommandResults(
