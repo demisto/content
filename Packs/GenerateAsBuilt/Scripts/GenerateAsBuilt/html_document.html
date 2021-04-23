@@ -115,6 +115,16 @@ contat details, project scope, etc."></textarea>
         <p style="page-break-after: always;"></p>
     {% endif %}
 
+    {% if reports %}
+        {{ reports }}
+        <p>
+            Custom reports can be scheduled or manually initiated reports that report any statistic available through
+            XSOAR.
+        </p>
+        <p style="page-break-after: always;"></p>
+    {% endif %}
+
+
     {{ system_config }}
     <p>
         The system configuration changes the behavior of the XSOAR server/application itself, including
