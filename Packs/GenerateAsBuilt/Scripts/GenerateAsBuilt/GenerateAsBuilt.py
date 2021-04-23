@@ -20,6 +20,7 @@ DEMISTO_INCIDENTS_PATH = "/incidents/search"
 DEMISTO_INCIDENT_TYPE_PATH = "/incidenttype"
 DEMISTO_DEPENDENCIES_PATH = "/itemsdependencies"
 DEMISTO_REPORTS_PATH = "/reports"
+DEMISTO_DASHBOARDS_PATH = "/dashboards"
 MAX_REQUEST_SIZE = demisto.args().get("size", 1000)
 MAX_DAYS = demisto.args().get("days", 7)
 HTML_TABLE_TEMPLATE = """
@@ -71,6 +72,7 @@ MD_DOCUMENT_TEMPLATE = """
 
 {{ reports }} 
 
+{{ dashboards }}
 
 {{ playbook_stats }}
 
@@ -336,6 +338,15 @@ contat details, project scope, etc."></textarea>
         <p style="page-break-after: always;"></p>
     {% endif %}
 
+    {% if dashboards %}
+        {{ dashboards }}
+        <p>
+            Custom dashboards are a dynamic way to visualize statistics within XSOAR.<br><br>
+            XSOAR ships with a number of Out Of the Box dashboards, the above respresent only
+            those that have been created as part of this PS engagement. 
+        </p>
+        <p style="page-break-after: always;"></p>
+    {% endif %}
 
     {{ system_config }}
     <p>
@@ -462,7 +473,8 @@ class Document:
             open_incidents,
             closed_incidents,
             playbook_stats,
-            reports
+            reports,
+            dashboards
     ):
         self.template = template
         self.integrations_table = integrations_table
@@ -477,6 +489,7 @@ class Document:
         self.date = datetime.now().strftime("%m/%d/%Y")
         self.customer = demisto.args().get("customer")
         self.reports = reports
+        self.dashboards = dashboards
 
     def html(self):
         template = jinja2.Template(HTML_DOCUMENT_TEMPLATE)
@@ -492,7 +505,8 @@ class Document:
             date=self.date,
             customer=self.customer,
             playbook_stats=self.playbook_stats.as_html(headers=["playbook", "incidents"]),
-            reports=self.reports.as_html(headers=["name", "type"])
+            reports=self.reports.as_html(headers=["name", "type"]),
+            dashboards=self.dashboards.as_html(headers=["name", "shared"])
         )
 
     def markdown(self):
@@ -506,7 +520,8 @@ class Document:
             open_incidents=self.open_incidents.as_markdown(),
             closed_incidents=self.closed_incidents.as_markdown(),
             playbook_stats=self.playbook_stats.as_markdown(headers=["playbook", "incidents"]),
-            reports=self.reports.as_markdown(headers=["name", "type"])
+            reports=self.reports.as_markdown(headers=["name", "type"]),
+            dashboards=self.dashboards.as_markdown(headers=["name", "shared"]),
         )
 
 
@@ -680,6 +695,21 @@ def get_custom_reports():
     rd = TableData(reports, "Custom Reports")
     return rd
 
+def get_custom_dashboards():
+    """
+    Return all the custom dashboards configured in XSOAR
+    :return: TableData
+    """
+    r = get_api_request(DEMISTO_DASHBOARDS_PATH)
+    dashboards = []
+    for dashboard in r.values():
+        # Check it's not an inbuilt (system) dashboard
+        if not dashboard.get("system"):
+            dashboards.append(dashboard)
+    rd = TableData(dashboards, "Custom dashboards")
+    return rd
+
+
 def get_all_playbooks():
     """
     Return all the custom playbooks installed in XSOAR>
@@ -812,6 +842,7 @@ def main():
     playbook_stats = get_playbook_stats(playbooks, MAX_DAYS, MAX_REQUEST_SIZE)
 
     reports = get_custom_reports()
+    dashboards = get_custom_dashboards()
 
     d = Document(
         MD_DOCUMENT_TEMPLATE,
@@ -823,7 +854,8 @@ def main():
         open_incidents=open_incidents,
         closed_incidents=closed_incidents,
         playbook_stats=playbook_stats,
-        reports=reports
+        reports=reports,
+        dashboards=dashboards
     )
     fr = fileResult("asbuilt.html", d.html())
     return_results(CommandResults(
