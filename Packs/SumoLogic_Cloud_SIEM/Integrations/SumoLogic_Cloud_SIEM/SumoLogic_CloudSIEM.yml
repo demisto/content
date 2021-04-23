@@ -1,0 +1,254 @@
+commonfields:
+  id: SumoLogicSEC
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: SumoLogicSEC
+display: Sumo Logic Cloud SIEM
+category: Analytics & SIEM
+description: Freeing the analyst with autonomous decisions
+configuration:
+- display: Sumo Logic API Endpoint
+  name: api_endpoint
+  type: 0
+  required: true
+  additionalinfo: https://api.<deployment>.sumologic.com/api/
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Access ID
+  name: access_id
+  type: 0
+  required: true
+- display: Access Key
+  name: access_key
+  type: 4
+  required: true
+  hiddenpassword: true
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Fetch Limit
+  name: fetchLimit
+  defaultvalue: "20"
+  type: 0
+  required: false
+  additionalinfo: Fetch limit must not be greater than 20
+- display: Override default fetch query
+  name: fetchQuery
+  type: 0
+  required: false
+  additionalinfo: Default fetch query is status:in("new", "inprogress")
+- display: First fetch time
+  name: firstFetch
+  defaultvalue: 1 day
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: sumologic-sec-insight-get-details
+    arguments:
+    - name: insight-id
+      required: true
+      default: true
+      description: The insight to retrieve details for
+    outputs:
+    - contextPath: Insight.Id
+      description: The insight ID
+    description: Get Insight details for a specific Insight ID.
+  - name: sumologic-sec-insight-get-comments
+    arguments:
+    - name: insight-id
+      required: true
+      description: 'The insight ID for which to retrieve comments. '
+    description: Get comments for a specific Insight ID. (Users can post and update
+      comments on the Sumo Logic Cloud SIEM portal for any Insight ID.)
+  - name: sumologic-sec-signal-get-details
+    arguments:
+    - name: signal-id
+      required: true
+      default: true
+      description: The signal to retrieve details for
+    description: Get Signal details for a specific Signal ID. Signal details command
+      references signals in Sumo Logic Cloud SIEM which are created when records exhibit
+      suspicious properties and mate with patterns or other detection logic.
+  - name: sumologic-sec-entity-get-details
+    arguments:
+    - name: entity-id
+      required: true
+      default: true
+      description: The entity to retrieve details for
+    description: Get entity details for a specific entity ID
+  - name: sumologic-sec-insight-search
+    arguments:
+    - name: query
+      default: true
+      description: The query string to search
+    - name: offset
+      description: The number of items to skip before starting to collect the result
+        set
+      defaultValue: "0"
+    - name: limit
+      description: The maximum number of items to return
+      defaultValue: "10"
+    description: Search insights using available filters
+  - name: sumologic-sec-signal-search
+    arguments:
+    - name: query
+      description: The query string to search
+    - name: offset
+      description: The number of items to skip before starting to collect the result
+        set
+      defaultValue: "0"
+    - name: limit
+      description: The maximum number of items to return
+      defaultValue: "10"
+    description: Search signals using available filters
+  - name: sumologic-sec-entity-search
+    arguments:
+    - name: query
+      default: true
+      description: The query string to search
+    - name: offset
+      description: The number of items to skip before starting to collect the result
+        set
+      defaultValue: "0"
+    - name: limit
+      description: The maximum number of items to return
+      defaultValue: "10"
+    description: Search entities using the available filters
+  - name: sumologic-sec-insight-set-status
+    arguments:
+    - name: insight-id
+      required: true
+      description: The insight to change status for
+    - name: status
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - new
+      - inprogress
+      - closed
+      description: The desired Insight status
+      defaultValue: in-progress
+    - name: resolution
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - Resolved
+      - False_Positive
+      - No_Action
+      - Duplicate
+      description: 'Resolution for closing Insight. Valid values are: "Resolved",
+        "False Positive", "No Action", "Duplicate"'
+      defaultValue: Resolved
+    description: Change status of Insight
+  - name: sumologic-sec-match-list-get
+    arguments:
+    - name: offset
+      description: The number of items to skip before starting to collect the result
+        set
+      defaultValue: "0"
+    - name: limit
+      default: true
+      description: Number of match lists returned
+      defaultValue: "10"
+    - name: sort
+      description: Sort expression
+      defaultValue: name
+    - name: sortDir
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+      description: Sort direction
+      defaultValue: ASC
+    description: Get match lists
+  - name: sumologic-sec-match-list-update
+    arguments:
+    - name: match-list-id
+      required: true
+      description: ID of match list
+    - name: active
+      required: true
+      description: Item active or disabled
+    - name: description
+      required: true
+      description: Description of match list item
+    - name: expiration
+      required: true
+      description: Expiration of match list item, e.g. "2021-03-25T23:52:23.508Z"
+    - name: value
+      required: true
+      description: Value of match list item
+    description: Add item to match list
+  - name: sumologic-sec-threat-intel-search-indicators
+    arguments:
+    - name: q
+      description: A query string used to filter results
+    - name: value
+      description: The value to search for
+      required: true
+    - name: offset
+      description: The number of items to skip before starting to collect the result
+        set
+      defaultValue: "0"
+    - name: limit
+      description: The numbers of items to return
+      defaultValue: "10"
+    - name: sourceIds
+      required: true
+      description: Comma separated list of threat intelligence source IDs to search,
+        e.g. 1,2,3
+    description: Search Threat Intel Indicators
+  - name: sumologic-sec-threat-intel-get-sources
+    arguments:
+    - name: offset
+      description: The number of items to skip before starting to collect the result
+        set
+      defaultValue: "0"
+    - name: limit
+      description: The numbers of items to return
+      defaultValue: "10"
+    - name: sort
+      description: Sort expression
+      defaultValue: name
+    - name: sortDir
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+      description: Sort direction
+      defaultValue: ASC
+    description: Get Threat Intel Sources
+  - name: sumologic-sec-threat-intel-update-source
+    arguments:
+    - name: threat-intel-source-id
+      required: true
+      description: ID of Threat Intel Source
+    - name: active
+      required: true
+      description: Indicator active or disabled
+      defaultValue: "true"
+    - name: description
+      required: true
+      description: Description of indicator
+    - name: expiration
+      required: true
+      description: Expiration of match list item, e.g. "2021-03-25T23:52:23.508Z"
+    - name: value
+      required: true
+      description: Indicator value
+    description: Add Threat Intel Indicator to Threat Intel Source
+  dockerimage: demisto/python3:3.9.1.14969
+  isfetch: true
+  runonce: false
+  subtype: python3
