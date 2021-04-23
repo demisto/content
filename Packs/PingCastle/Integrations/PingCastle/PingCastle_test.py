@@ -23,7 +23,6 @@ def test_get_report_delete():
     result: CommonServerPython.CommandResults = get_report_command({'delete_report': 'Yes'})
     assert result.raw_response == report
     assert result.outputs == {'report': report}
-    print(demisto.getIntegrationContext())
     assert demisto.getIntegrationContext().get('report') is None
 
 
