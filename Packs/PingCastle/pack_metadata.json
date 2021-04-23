@@ -7,9 +7,9 @@
   "url": "www.soarxperts.com",
   "email": "support@soarxperts.com",
   "categories": ["Vulnerability Management"],
-  "tags": ["PingCastle", "Active Directory", "AD Audit"],
+  "tags": [],
   "created": "2021-01-02T18:00:53Z",
-  "useCases": ["Get PingCastle Active Directory audit report"],
+  "useCases": [],
   "keywords": ["Active Directory", "Active Directory Audit"],
   "dependencies": {}
 }

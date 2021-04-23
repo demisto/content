@@ -1,5 +1,5 @@
 This integration will run a server that will listen for PingCastle XML reports.
-This integration was integrated and tested with version xx of PingCastle
+This integration was integrated and tested with version 6.0.0 of PingCastle
 ## Configure PingCastle on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
