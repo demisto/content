@@ -21,7 +21,7 @@
 								"fieldId": "owner",
 								"height": 22,
 								"id": "incident-owner-field",
-								"index": 1,
+								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -30,7 +30,7 @@
 								"fieldId": "dbotsource",
 								"height": 22,
 								"id": "incident-source-field",
-								"index": 2,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -39,7 +39,7 @@
 								"fieldId": "type",
 								"height": 22,
 								"id": "incident-type-field",
-								"index": 3,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -48,7 +48,7 @@
 								"fieldId": "sourcebrand",
 								"height": 22,
 								"id": "incident-sourceBrand-field",
-								"index": 4,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -57,7 +57,7 @@
 								"fieldId": "sourceinstance",
 								"height": 22,
 								"id": "incident-sourceInstance-field",
-								"index": 5,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -66,7 +66,7 @@
 								"fieldId": "severity",
 								"height": 22,
 								"id": "incident-severity-field",
-								"index": 6,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -75,7 +75,7 @@
 								"fieldId": "playbookid",
 								"height": 22,
 								"id": "incident-playbookId-field",
-								"index": 7,
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -89,7 +89,7 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 2
+						"y": 0
 					},
 					{
 						"displayType": "ROW",
@@ -105,7 +105,7 @@
 						"type": "workplan",
 						"w": 1,
 						"x": 2,
-						"y": 2
+						"y": 4
 					},
 					{
 						"displayType": "ROW",
@@ -122,7 +122,7 @@
 						"type": "linkedIncidents",
 						"w": 1,
 						"x": 0,
-						"y": 4
+						"y": 2
 					},
 					{
 						"displayType": "CARD",
@@ -184,20 +184,22 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
-						"y": 2
+						"y": 4
 					},
 					{
-						"displayType": "ROW",
+						"displayType": "CARD",
 						"h": 2,
 						"hideName": false,
 						"i": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
 						"items": [
 							{
+								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "rubrikpolarisobjectname",
 								"height": 22,
 								"id": "fca80bf0-6fd9-11eb-befe-85443460d735",
 								"index": 0,
+								"listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -224,20 +226,40 @@
 								"fieldId": "rubrikpolarisobjecttype",
 								"height": 22,
 								"id": "181f24e0-6fda-11eb-befe-85443460d735",
-								"index": 3,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "rubrikcdmclusterid",
+								"height": 22,
+								"id": "62032d90-a44b-11eb-82ca-4d054531f5f7",
+								"index": 0,
+								"listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "rubrikcdmclusterlocation",
+								"height": 22,
+								"id": "6658a500-a44b-11eb-82ca-4d054531f5f7",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 2
 							}
 						],
 						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
+						"minW": 2,
 						"moved": false,
-						"name": "Object Details",
+						"name": "Rubrik Basic Information",
 						"static": false,
-						"w": 1,
-						"x": 0,
+						"w": 2,
+						"x": 1,
 						"y": 0
 					},
 					{
@@ -256,7 +278,7 @@
 						"type": "dynamic",
 						"w": 1,
 						"x": 1,
-						"y": 0
+						"y": 2
 					},
 					{
 						"h": 2,
@@ -274,7 +296,7 @@
 						"type": "dynamic",
 						"w": 1,
 						"x": 2,
-						"y": 0
+						"y": 2
 					}
 				],
 				"type": "custom"
