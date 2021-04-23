@@ -24,7 +24,7 @@ Use the JSON feed integration to fetch indicators from a JSON feed. This integra
     | Username + Password | The credentials used to access feeds that require basic authentication. These fields also support the use of API key headers. To use API key headers, specify the header name and value in the following format: `_header:<header_name>` in the **Username** field and the header value in the **Password** field. | 
     | JMESPath Extractor | The JMESPath expression for extracting the indicators from. You can check the expression in the [JMESPath site](http://jmespath.org/) to verify this expression will return the following array of objects. |    
     | JSON Indicator Attribute | The JSON attribute whose value is the indicator. The default is "indicator". |
-    | POST Data | Send specified data in a POST request. When specified, by default will add the header: `Content-Type: application/x-www-form-urlencoded`. To specify a different Content-Type (for example: application/json) use the **Header** config param. | 
+    | POST Data | Send specified data in a POST request. When specified, by default will add the header: `Content-Type: application/x-www-form-urlencoded`. To specify a different Content-Type (for example: application/json) use the **Headers** config param. | 
     | Headers | Headers to add to the http request. Specify each header on a single line in the format: `Name: Value`.
     | Bypass exclusion list | Whether the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. |
 
@@ -85,4 +85,3 @@ There is no context output for this command.
             type="video/mp4"/>
     Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedJSON/Json_generic_feed_demo.mp4 
 </video>
-
