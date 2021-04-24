@@ -3,67 +3,27 @@ import json
 
 def main() -> None:
 
-    try:
-        radar_files_added = demisto.context()["incident"]["labels"]["radar_files_added"]
-        
-    except KeyError:
+    ORANGE_HTML_STYLE = "color:#FF9000;>"
+    GREEN_HTML_STYLE = "color:#00CD33;>"
+    DIV_HTML_STYLE = "display:block;text-align:center;padding:15%;"
 
-        radar_files_added = -1
-    if radar_files_added == -1:
-        data = {
-                    "Type": 17,
-                    "ContentsFormat": "number",
-                    "Contents": {
-                        "stats": 0,
-                        "params": {
-                            "layout": "horizontal",
-                            "name": "No Results Found",
-                            "sign": "",
-                            "colors": {
-                                "items": {
-                                    "#00CD33": {
-                                        "value": -1
-                                    },
-                                    "#00CD33": {
-                                        "value": 0
-                                    },
-                                    "#ff1744": {
-                                        "value": 3
-                                    }
-                                }
-                            },
-                            "type": "above"
-                        }
-                    }
-                }
-    else:
-        data = {
-                    "Type": 17,
-                    "ContentsFormat": "number",
-                    "Contents": {
-                        "stats": int(radar_files_added),
-                        "params": {
-                            "layout": "horizontal",
-                            "name": "Files Added",
-                            "sign": "",
-                            "colors": {
-                                "items": {
-                                    "#00CD33": {
-                                        "value": -1
-                                    },
-                                    "#FF9000": {
-                                        "value": 0
-                                    },
-                                    "#ff1744": {
-                                        "value": 3
-                                    }
-                                }
-                            },
-                            "type": "above"
-                        }
-                    }
-                }
-    demisto.results(data)
+    try:
+        radar_files_added = demisto.executeCommand("Print", {"value": "${incident.labels.radar_files_added}"})
+        radar_files_added = radar_files_added[0]["Contents"]
+        
+        if not radar_files_added:
+            html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(radar_files_added)} Files Added</h1></div>"
+        else:
+            html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}{str(radar_files_added)} Files Added</h1></div>"
+
+    except KeyError:
+        html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}No Results Found</h1></div>"
+        
+    demisto.results({
+        'ContentsFormat': formats['html'],
+        'Type': entryTypes['note'],
+        'Contents': html
+    })
 
 
 # python2 uses __builtin__ python3 uses builtins
