@@ -8,7 +8,7 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "message",
+            "displayName": "analysis stage",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
