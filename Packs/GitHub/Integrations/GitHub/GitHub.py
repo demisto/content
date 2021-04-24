@@ -1453,15 +1453,16 @@ def main():
     global PULLS_SUFFIX
     global HEADERS
 
-    USER = demisto.params().get('user')
-    TOKEN = demisto.params().get('token', '')
-    creds: dict = demisto.params().get('credentials', {})
+    params = demisto.params()
+    USER = params.get('user')
+    TOKEN = params.get('token', '')
+    creds: dict = params.get('credentials', {})
     PRIVATE_KEY = creds.get('sshkey', '') if creds else ''
-    INTEGRATION_ID = demisto.params().get('integration_id')
-    INSTALLATION_ID = demisto.params().get('installation_id')
-    REPOSITORY = demisto.params().get('repository')
-    USE_SSL = not demisto.params().get('insecure', False)
-    FETCH_TIME = demisto.params().get('fetch_time', '3')
+    INTEGRATION_ID = params.get('integration_id')
+    INSTALLATION_ID = params.get('installation_id')
+    REPOSITORY = params.get('repository')
+    USE_SSL = not params.get('insecure', False)
+    FETCH_TIME = params.get('fetch_time', '3')
 
     USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
     ISSUE_SUFFIX = USER_SUFFIX + '/issues'
