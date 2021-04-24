@@ -213,7 +213,8 @@ Creates a new issue in Jira.
 | dueDate | The due date for the issue (in the format: 2018-03-11). | Optional | 
 | assignee | The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, please provide the assignee_id argument instead. | Optional | 
 | assignee_id | The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional | 
-| reporter | The account ID of the reporter. | Optional | 
+| reporter | The name of the reporter. | Optional | 
+| reporter_id | The account ID of the reporter. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional | 
 | parentIssueKey | The parent issue key (if you're creating a sub-task). | Optional | 
 | parentIssueId | The parent issue ID (if you're creating a sub-task). | Optional | 
 
