@@ -80,6 +80,7 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
+        handle_proxy()
         client = Client(params)
 
         if command == 'test-module':
