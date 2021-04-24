@@ -1,4 +1,4 @@
-Shows the Rubrik Polaris Radar Files Modified Count under the File Change attributes.
+Shows the Rubrik Polaris Radar Files Deleted Count under the File Change attributes.
 
 ## Script Data
 ---
