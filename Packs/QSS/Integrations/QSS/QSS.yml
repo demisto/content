@@ -49,17 +49,6 @@ configuration:
   - "Yes"
   required: false
   type: 15
-- defaultvalue: "48"
-  display: Back time duration of cases to fetch (Hours)
-  name: duration
-  options:
-  - "2"
-  - "6"
-  - "12"
-  - "24"
-  - "48"
-  required: true
-  type: 15
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch

@@ -25,19 +25,17 @@ QSS_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 class Client(BaseClient):
 
     def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
-                      alert_type: Optional[str], max_results: Optional[int]) -> List[Dict[str, Any]]:
+                      alert_type: Optional[str], max_results: Optional[int], start_time: Optional[int]) -> List[Dict[str, Any]]:
 
         request_params: Dict[str, Any] = {}
 
         api_key = demisto.params().get('apikey')
 
         if api_key:
-
             request_params['apikey'] = api_key
 
-        duration = demisto.params().get('duration')
-        if duration:
-            request_params['duration'] = duration
+        if start_time:
+            request_params['start_time'] = start_time
 
         severity = demisto.params().get('severity')
         if severity:
@@ -46,6 +44,9 @@ class Client(BaseClient):
         status = demisto.params().get('status')
         if status:
             request_params['status'] = status
+        
+        if max_results:
+            request_params['max_fetch'] = max_results
 
         false_positive = demisto.params().get('false_positive')
         if false_positive:
@@ -111,7 +112,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 
 def test_module(client: Client, first_fetch_time: int) -> str:
     try:
-        client.search_alerts(max_results=1, alert_status=None, alert_type=None, severity=None)
+        client.search_alerts(max_results=1, alert_status=None, alert_type=None, severity=None, start_time=first_fetch_time)
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -138,6 +139,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         alert_type=alert_type,
         alert_status=alert_status,
         max_results=max_results,
+        start_time=last_fetch,
         severity=''
     )
 
