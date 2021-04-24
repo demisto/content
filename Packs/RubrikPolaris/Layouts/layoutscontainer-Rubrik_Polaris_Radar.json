@@ -315,7 +315,7 @@
 				"sections": [
 					{
 						"displayType": "ROW",
-						"h": 5,
+						"h": 3,
 						"hideName": false,
 						"i": "rubrikPolaris-35620770-a14e-11eb-a966-5fbb5aa7e80a",
 						"items": [
@@ -356,7 +356,7 @@
 						"type": "dynamic",
 						"w": 3,
 						"x": 0,
-						"y": 5
+						"y": 3
 					}
 				],
 				"type": "custom"
