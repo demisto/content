@@ -39,7 +39,6 @@ TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 # Remove proxy if not set to true in params
 handle_proxy()
-ENDPOINT_CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
 
 ''' KEY DICTIONARY '''
 
@@ -1613,8 +1612,8 @@ def generate_status_fields(endpoint_status):
     return status, is_isolated
 
 
-def generate_endpoint_by_contex_standart(devices):
-    standart_endpoints = []
+def generate_endpoint_by_contex_standard(devices):
+    standard_endpoints = []
     for single_device in devices:
         status, is_isolated = generate_status_fields(single_device.get('status'))
         endpoint = Common.Endpoint(
@@ -1627,8 +1626,8 @@ def generate_endpoint_by_contex_standart(devices):
             is_isolated=is_isolated,
             mac_address=single_device.get('mac_address'),
             vendor=INTEGRATION_NAME)
-        standart_endpoints.append(endpoint)
-    return standart_endpoints
+        standard_endpoints.append(endpoint)
+    return standard_endpoints
 
 
 def get_endpoint_command():
@@ -1640,6 +1639,7 @@ def get_endpoint_command():
     raw_res = search_device()
 
     if ip := args.get('ip'):
+
         # there is no option to filter by ip, in this case we'll get all the devices
         raw_res = search_device_by_ip(raw_res, ip)
 
@@ -1647,12 +1647,12 @@ def get_endpoint_command():
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
 
-    standard_endpoints = generate_endpoint_by_contex_standart(devices)
+    standard_endpoints = generate_endpoint_by_contex_standard(devices)
 
     command_results = []
     for endpoint in standard_endpoints:
 
-        endpoint_context = endpoint.to_context().get(ENDPOINT_CONTEXT_PATH)
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
         hr = tableToMarkdown('CrowdStrike Falcon Endpoint', endpoint_context)
 
         command_results.append(CommandResults(

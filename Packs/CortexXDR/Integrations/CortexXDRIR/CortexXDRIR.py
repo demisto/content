@@ -21,7 +21,6 @@ API_KEY_LENGTH = 128
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
-ENDPOINT_CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
 INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
@@ -1684,10 +1683,10 @@ def get_endpoints_command(client, args):
             sort_by_last_seen=sort_by_last_seen
         )
 
-    standard_endpoints = generate_endpoint_by_contex_standart(endpoints, False)
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False)
     endpoint_context_list = []
     for endpoint in standard_endpoints:
-        endpoint_context = endpoint.to_context().get(ENDPOINT_CONTEXT_PATH)
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
         endpoint_context_list.append(endpoint_context)
 
     context = {
@@ -1704,41 +1703,22 @@ def get_endpoints_command(client, args):
     )
 
 
-def get_trasnformed_dict(old_dict, transformation_dict):
-    """
-        Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
-
-        :type old_dict: ``dict``
-        :param old_dict: Old dictionary to pull values from
-
-        :type transformation_dict: ``dict``
-        :param transformation_dict: Transformation dictionary that contains oldkeys:newkeys
-
-        :return Transformed dictionart (according to transformation_dict values)
-        :rtype ``dict``
-    """
-    new_dict = {}
-    for k in list(old_dict.keys()):
-        if k in transformation_dict:
-            new_dict[transformation_dict[k]] = old_dict[k]
-    return new_dict
-
-
-def convert_os_to_standart(endpoint_os):
+def convert_os_to_standard(endpoint_os):
     os_type = ''
-    if 'windows' in endpoint_os.lower():
+    endpoint_os = endpoint_os.lower()
+    if 'windows' in endpoint_os:
         os_type = "Windows"
-    elif 'linux' in endpoint_os.lower():
+    elif 'linux' in endpoint_os:
         os_type = "Linux"
-    elif 'macos' in endpoint_os.lower():
+    elif 'macos' in endpoint_os:
         os_type = "Macos"
-    elif 'android' in endpoint_os.lower():
+    elif 'android' in endpoint_os:
         os_type = "Android"
     return os_type
 
 
-def generate_endpoint_by_contex_standart(endpoints, ip_as_string):
-    standart_endpoints = []
+def generate_endpoint_by_contex_standard(endpoints, ip_as_string):
+    standard_endpoints = []
     for single_endpoint in endpoints:
         status = 'Online' if single_endpoint.get('endpoint_status') == 'connected' else 'Offline'
         is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
@@ -1746,10 +1726,10 @@ def generate_endpoint_by_contex_standart(endpoints, ip_as_string):
             'endpoint_name')
         ip = single_endpoint.get('ip')
         # in the `xdr-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
-        # in the `endpoint` command we use  the standart
+        # in the `endpoint` command we use the standard
         if ip_as_string and isinstance(ip, list):
             ip = ip[0]
-        os_type = convert_os_to_standart(single_endpoint.get('os_type', ''))
+        os_type = convert_os_to_standard(single_endpoint.get('os_type', ''))
         endpoint = Common.Endpoint(
             id=single_endpoint.get('endpoint_id'),
             hostname=hostname,
@@ -1761,8 +1741,8 @@ def generate_endpoint_by_contex_standart(endpoints, ip_as_string):
             domain=single_endpoint.get('domain'),
             vendor=INTEGRATION_NAME)
 
-        standart_endpoints.append(endpoint)
-    return standart_endpoints
+        standard_endpoints.append(endpoint)
+    return standard_endpoints
 
 
 def endpoint_command(client, args):
@@ -1775,11 +1755,11 @@ def endpoint_command(client, args):
         ip_list=endpoint_ip_list,
         hostname=endpoint_hostname_list,
     )
-    standard_endpoints = generate_endpoint_by_contex_standart(endpoints, True)
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True)
     command_results = []
     if standard_endpoints:
         for endpoint in standard_endpoints:
-            endpoint_context = endpoint.to_context().get(ENDPOINT_CONTEXT_PATH)
+            endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
             hr = tableToMarkdown('Cortex XDR Endpoint', endpoint_context)
 
             command_results.append(CommandResults(
