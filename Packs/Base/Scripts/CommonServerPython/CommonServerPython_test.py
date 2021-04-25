@@ -3671,10 +3671,10 @@ class TestCommonTypes:
                         "Category": "category",
                         "Campaign": "campaign",
                         "TrafficLightProtocol": "traffic_light_protocol",
-                        "ThreatTypes": {
+                        "ThreatTypes": [{
                             "threatcategory": "threat_category",
                             "threatcategoryconfidence": "threat_category_confidence"
-                        },
+                        }],
                         "Geo": {
                             "Location": "geo_location",
                             "Country": "geo_country",
@@ -3686,16 +3686,16 @@ class TestCommonTypes:
                             "Organization": "tech_organization",
                             "Email": "tech_email"
                         },
-                        "CommunityNotes": {
+                        "CommunityNotes": [{
                             "note": "note",
                             "timestamp": "2019-01-01T00:00:00"
-                        },
-                        "Publications": {
+                        }],
+                        "Publications": [{
                             "source": "STRING, The source in which the article was published.",
                             "title": "title",
                             "link": "link",
                             "timestamp": "2019-01-01T00:00:00"
-                        },
+                        }],
                         "Billing": "billing"
                     }
                 ],
