@@ -120,6 +120,57 @@ TAGS_DETAILS_RES = {
     'description': '<h1>xxx</h1>'
 }
 
+RAW_TAGS = [
+    {
+        "support_id": 1,
+        "tag_name": "Upatre1",
+        "public_tag_name": "Unit42.Upatre",
+        "tag_definition_scope_id": 4,
+        "tag_definition_status_id": 1,
+        "count": 7692947,
+        "lasthit": "2019-12-11 02:29:45",
+        "source": "Unit 42",
+        "tag_class_id": 1,
+        "tag_definition_id": 29449
+    },
+    {
+        "support_id": 1,
+        "tag_name": "Upatre2",
+        "public_tag_name": "Unit42.Upatre",
+        "tag_definition_scope_id": 4,
+        "tag_definition_status_id": 1,
+        "count": 7692947,
+        "lasthit": "2019-12-11 02:29:45",
+        "source": "Unit 42",
+        "tag_class_id": 2,
+        "tag_definition_id": 29449
+    },
+    {
+        "support_id": 1,
+        "tag_name": "Upatre3",
+        "public_tag_name": "Unit42.Upatre",
+        "tag_definition_scope_id": 4,
+        "tag_definition_status_id": 1,
+        "count": 7692947,
+        "lasthit": "2019-12-11 02:29:45",
+        "source": "Unit 42",
+        "tag_class_id": 3,
+        "tag_definition_id": 29449
+    },
+    {
+        "support_id": 1,
+        "tag_name": "Upatre5",
+        "public_tag_name": "Unit42.Upatre",
+        "tag_definition_scope_id": 4,
+        "tag_definition_status_id": 1,
+        "count": 7692947,
+        "lasthit": "2019-12-11 02:29:45",
+        "source": "Unit 42",
+        "tag_class_id": 5,
+        "tag_definition_id": 29449
+    }
+]
+
 TAGS_FROM_FILE_RES = [
     {
         'PublicTagName': 'Commodity.Sivis',
@@ -322,3 +373,27 @@ TAGS_FROM_RESPONSE = [
         "upVotes": 3
     }
 ]
+
+
+def test_create_relationships_list():
+    """
+     Given:
+         - A tags list of the existing kinds of tags from the api.
+     When:
+         - When running create relationships.
+     Then:
+         - The relationships that are created contain the expected types and names.
+     """
+    from AutofocusV2 import create_relationships_list
+    expected_entity_b_types = ['STIX Threat Actor', 'Campaign', 'STIX Malware', 'STIX Attack Pattern' ]
+    expected_name = 'indicator-of'
+    expected_name_entity_b = ['Upatre1', 'Upatre2', 'Upatre3', 'Upatre5']
+    
+    relationships = create_relationships_list(entity_a='Test', entity_a_type='IP', tags=RAW_TAGS, reliability='B - Usually reliable')
+    relation_entry = [relation.to_entry() for relation in relationships]
+    
+    for relation, i in zip(relation_entry, range(len(relation_entry))):
+        assert relation.get('name') == expected_name
+        assert relation.get('entityA') == 'Test'
+        assert relation.get('entityB') == expected_name_entity_b[i]
+        assert relation.get('entityBType') == expected_entity_b_types[i]
