@@ -26,19 +26,12 @@ Starts the OAuth2.0 authorization process.
 `o365-safelinks-stats-auth-start`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### o365-safelinks-stats-auth-complete
@@ -51,19 +44,12 @@ Completes the OAuth2.0 authorization process.
 `o365-safelinks-stats-auth-complete`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### o365-safelinks-stats-auth-test
@@ -75,21 +61,11 @@ Tests the OAuth2.0 authorization process.
 
 `o365-safelinks-stats-auth-test`
 #### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### o365-safelinks-stats-search
 ***
@@ -122,11 +98,4 @@ Use the to search safelinks statistics in o365
 | O365SafeLinksStats.ClickAction | string | Click Action: The action of a specific click. Possible values are: • None: We were unable to capture the verdict for the URL. The user might have clicked through the URL. • Allowed: The user was allowed to navigate to the URL. • Blocked: The User was blocked from navigating to the URL. • Pending verdict: The user was presented with the detonation pending page. • Blocked overridden: The user was blocked from navigating to the URL; however, the user overrode the block to navigate to the URL. • Pending verdict bypassed: The user presented with the detonation page; however, the user overrode the page to navigate to the URL. • Error: The user was presented with the error page. This can also mean there was an error in capturing the verdict. • Failure: There was unknown exception while capturing the verdict. The user might have clicked through the URL. | 
 | O365SafeLinksStats.Workload | string | Workload of the link being delivered | 
 | O365SafeLinksStats.AppName | string | Application Name | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
