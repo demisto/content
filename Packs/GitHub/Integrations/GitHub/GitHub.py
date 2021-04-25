@@ -898,9 +898,17 @@ def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
 
 
 def get_team_members(organization: str, team_slug: str) -> dict:
-    suffix = f'/orgs/{organization}/teams/{team_slug}/members'
-    response = http_request('GET', url_suffix=suffix)
-    return response
+    page = 1
+    results = []
+    while True:
+        suffix = f'/orgs/{organization}/teams/{team_slug}/members?page={page}'
+        response = http_request('GET', url_suffix=suffix)
+        if not response:
+            break
+        results.extend(response)
+        page += 1
+
+    return results
 
 
 def get_team_membership_command():
@@ -1393,5 +1401,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == '__main__':
     main()
