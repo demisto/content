@@ -7,14 +7,14 @@ args:
   secret: false
 - default: false
   defaultValue: Phishing
-  description: A common-separatetd list of incident types by which to filter.
+  description: A comma-separated list of incident types by which to filter.
   isArray: false
   name: incidentTypes
   required: false
   secret: false
 - default: false
   description: 'The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+    same as in the incidents query page (valid strings example: "3 days ago", ""2019-01-01T00:00:00
     +0200")'
   isArray: false
   name: fromDate
@@ -22,7 +22,7 @@ args:
   secret: false
 - default: false
   description: 'The end date by which to filter incidents. Date format will be the
-    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+    same as in the incidents query page (valid strings example: "3 days ago", ""2019-01-01T00:00:00
     +0200")'
   isArray: false
   name: toDate
@@ -66,7 +66,7 @@ args:
   secret: false
 - default: false
   defaultValue: '15'
-  description: Sample text of which the total number words are less than or equal
+  description: Sample text of which the total number of words are less than or equal
     to this number will be ignored.
   isArray: false
   name: removeShortTextThreshold
@@ -74,7 +74,7 @@ args:
   secret: false
 - default: false
   defaultValue: '0.99'
-  description: Remove emails with similarity greater then this threshold, range 0-1,
+  description: Remove emails with similarity greater than this threshold, range 0-1,
     where 1 is completly identical.
   isArray: false
   name: dedupThreshold
@@ -95,11 +95,11 @@ args:
 - default: false
   defaultValue: '*'
   description: 'A comma-separated list of email tags values and mapping. The script
-    considers only the tags specified in this field. You can map label to another
+    considers only the tags specified in this field. You can map a label to another
     value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email
     tag: malicious, credentials harvesting, inner communitcation, external legit email,
     unclassified. While training, we want to ignore "unclassified" tag, and refer
-    to "credentials harvesting" as "malicious" too. Also, we want to     merge "inner
+    to "credentials harvesting" as "malicious" too. Also, we want to merge "inner
     communitcation" and "external legit email" to one tag called "non-malicious".
     The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
     external legit email:non-malicious'
