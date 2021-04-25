@@ -764,10 +764,10 @@ script:
     - contextPath: IP.Relations.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: IP.Relations.ObjectTypeA
+    - contextPath: IP.Relations.EntityAType
       description: The type of the source of the relationship.
       type: string
-    - contextPath: IP.Relations.ObjectTypeB
+    - contextPath: IP.Relations.EntityBType
       description: The type of the destination of the relationship.
       type: string
     - contextPath: AutoFocus.IP.IndicatorValue
@@ -856,10 +856,10 @@ script:
     - contextPath: URL.Relations.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: URL.Relations.ObjectTypeA
+    - contextPath: URL.Relations.EntityAType
       description: The type of the source of the relationship.
       type: string
-    - contextPath: URL.Relations.ObjectTypeB
+    - contextPath: URL.Relations.EntityBType
       description: The type of the destination of the relationship.
       type: string
     - contextPath: AutoFocus.URL.IndicatorValue
@@ -948,10 +948,10 @@ script:
     - contextPath: File.Relations.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: File.Relations.ObjectTypeA
+    - contextPath: File.Relations.EntityAType
       description: The type of the source of the relationship.
       type: string
-    - contextPath: File.Relations.ObjectTypeB
+    - contextPath: File.Relations.EntityBType
       description: The type of the destination of the relationship.
       type: string
     - contextPath: File.Tags.TagGroups.TagGroupName
@@ -1121,10 +1121,10 @@ script:
     - contextPath: Domain.Relations.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: Domain.Relations.ObjectTypeA
+    - contextPath: Domain.Relations.EntityAType
       description: The type of the source of the relationship.
       type: string
-    - contextPath: Domain.Relations.ObjectTypeB
+    - contextPath: Domain.Relations.EntityBType
       description: The type of the destination of the relationship.
       type: string
     - contextPath: Domain.Tags

@@ -1373,7 +1373,8 @@ def search_ip_command(ip, reliability, create_relationships):
             outputs=autofocus_ip_output,
             readable_output=md,
             raw_response=raw_res,
-            indicator=ip
+            indicator=ip,
+            relations=relationships
         ))
 
     return command_results
@@ -1451,7 +1452,8 @@ def search_domain_command(domain, reliability, create_relationships):
             outputs=autofocus_domain_output,
             readable_output=md,
             raw_response=raw_res,
-            indicator=domain
+            indicator=domain,
+            relations=relationships
         ))
     return command_results
 
@@ -1511,7 +1513,8 @@ def search_url_command(url, reliability, create_relationships):
             outputs=autofocus_url_output,
             readable_output=md,
             raw_response=raw_res,
-            indicator=url
+            indicator=url,
+            relations=relationships
         ))
 
     return command_results
@@ -1571,7 +1574,8 @@ def search_file_command(file, reliability, create_relationships):
 
             readable_output=md,
             raw_response=raw_res,
-            indicator=file
+            indicator=file,
+            relations=relationships
         ))
 
     return command_results
@@ -1620,7 +1624,7 @@ def create_relationships_list(entity_a, entity_a_type, tags, reliability):
     entity_a (str): the entity a of the relation which is the current indicator.
     entity_a_type (str): the entity a type which is the type of the current indicator (IP/Domain/URL/File)
     tags (list): list of tags returned from the api.
-    reliability (str): reliablitiy of the source.
+    reliability (str): reliability of the source.
 
     return:
     list of EntityRelation objects containing all the relations from the enricher.
@@ -1631,14 +1635,15 @@ def create_relationships_list(entity_a, entity_a_type, tags, reliability):
     for tag in tags:
         tag_class = tag.get('tag_class_id')
         entity_b = tag.get('tag_name')
-        relation_by_type = RELATIONSHIP_TYPE_BY_TAG_CLASS_ID.get(tag_class)
-        relationships.append(EntityRelation(relation_by_type.get('name'),
-                                            entity_a=entity_a,
-                                            object_type_a=entity_a_type,
-                                            entity_b=entity_b,
-                                            object_type_b=relation_by_type.get('entity_b_type'),
-                                            source_reliability=reliability,
-                                            brand=VENDOR_NAME))
+        if entity_b:
+            relation_by_type = RELATIONSHIP_TYPE_BY_TAG_CLASS_ID.get(tag_class)
+            relationships.append(EntityRelation(relation_by_type.get('name'),
+                                                entity_a=entity_a,
+                                                entity_a_type=entity_a_type,
+                                                entity_b=entity_b,
+                                                entity_b_type=relation_by_type.get('entity_b_type'),
+                                                source_reliability=reliability,
+                                                brand=VENDOR_NAME))
 
     return relationships
 
