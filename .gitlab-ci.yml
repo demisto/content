@@ -332,7 +332,7 @@ run-validations:
   - echo "Open an ssh tunnel to the demisto servers and wait until the tunnels are established"
   - echo "Add ssh configurations"
   - |
-    if [ -z $INSTANCE_WAS_CREATED ]; then
+    if [ -z $INSTANCE_CREATED ]; then
       echo "Skipping - instance was not created"
     else
       # Modifying ssh config file
@@ -348,7 +348,7 @@ run-validations:
     fi
   - echo "Open SSH Tunnel"
   - |
-    if [ -z $INSTANCE_WAS_CREATED ]; then
+    if [ -z $INSTANCE_CREATED ]; then
       echo "Skipping - instance was not created"
     else
       echo "Generating the ips and ports"
