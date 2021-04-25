@@ -15,3 +15,5 @@ This Content Pack packs heat:
 Let’s see Siri or Alexa top that!  
 
 Channel the power of positive posturing today.  Grab this content pack from our Cortex XSOAR Marketplace where you will find hundreds of content packs to help you automate and drastically reduce time spent handling your security incidents! 
+
+Published as part of April fool's.
