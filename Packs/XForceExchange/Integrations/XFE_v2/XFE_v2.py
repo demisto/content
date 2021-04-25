@@ -412,15 +412,13 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
         dbot_score = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
                                       integration_name='XFE', score=scores.get(report['risk'], 0),
                                       reliability=client.reliability)
-        hash_type = get_hash_type(file_hash)
+        hash_type = get_hash_type(file_hash)  # if file_hash found, has to be md5, sha1 or sha256
         if hash_type == 'md5':
             file = Common.File(md5=file_hash, dbot_score=dbot_score)
         elif hash_type == 'sha1':
             file = Common.File(sha1=file_hash, dbot_score=dbot_score)
         elif hash_type == 'sha256':
             file = Common.File(sha256=file_hash, dbot_score=dbot_score)
-        else:
-            raise
         report_data = report['origins'].get('external', {})
         family_value = report_data.get('family')
         hash_info = {**report['origins'], 'Family': family_value,
