@@ -68,9 +68,16 @@ class Client(BaseClient):
                                       url_suffix=suffix,
                                       params=params,
                                       timeout=30)
-        return self._http_request('GET',
-                                  url_suffix=suffix,
-                                  params=params)
+        try:
+            result = self._http_request('GET',
+                                        url_suffix=suffix,
+                                        params=params)
+        except DemistoException as e:
+            if e.res.status_code == 404:
+                result = 404
+            else:
+                raise
+        return result
 
 
 ''' HELPER FUNCTIONS '''
@@ -350,6 +357,8 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
         raw_response = client.query(section='url',
                                     argument=args)
         if raw_response:
+            if raw_response == 404:
+                return f'No matches for URL {args}', {}, {}
             raws.append(raw_response)
             url_ec.append({
                 'Data': raw_response.get('indicator')
@@ -657,12 +666,10 @@ def main():
     demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': test_module_command,
-        'ip': ip_command,
         'domain': domain_command,
         'file': file_command,
         'url': url_command,
         f'{INTEGRATION_COMMAND_NAME}-search-hostname': alienvault_search_hostname_command,
-        f'{INTEGRATION_COMMAND_NAME}-search-ipv6': ip_command,
         f'{INTEGRATION_COMMAND_NAME}-search-cve': alienvault_search_cve_command,
         f'{INTEGRATION_COMMAND_NAME}-get-related-urls-by-indicator': alienvault_get_related_urls_by_indicator_command,
         f'{INTEGRATION_COMMAND_NAME}-get-related-hashes-by-indicator': alienvault_get_related_hashes_by_indicator_command,
@@ -672,13 +679,13 @@ def main():
     }
     try:
         if command == f'{INTEGRATION_COMMAND_NAME}-search-ipv6':
-            readable_output, outputs, raw_response = commands[command](client=client,
-                                                                       ip_address=demisto.args().get('ip'),
-                                                                       ip_version='IPv6')
+            readable_output, outputs, raw_response = ip_command(client=client,
+                                                                ip_address=demisto.args().get('ip'),
+                                                                ip_version='IPv6')
         elif command == 'ip':
-            readable_output, outputs, raw_response = commands[command](client=client,
-                                                                       ip_address=demisto.args().get('ip'),
-                                                                       ip_version='IPv4')
+            readable_output, outputs, raw_response = ip_command(client=client,
+                                                                ip_address=demisto.args().get('ip'),
+                                                                ip_version='IPv4')
         else:
             readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
         return_outputs(readable_output, outputs, raw_response)

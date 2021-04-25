@@ -234,16 +234,18 @@ function ParseResults([string]$results, [int]$limit = -1, [string]$type = "Previ
         }
    }
     if ($type -eq "Purge"){
-        $results_matches_purge = (Select-String -AllMatches "\{?Location: (.*); Item count: (.*); Total size: (.*); Failed count: (.*)[},]"  -InputObject $results).Matches
+        $results_matches_purge = (Select-String -AllMatches "\{?Location: (.*); Item count: (.*); Total size: (.*); Failed count: (.*); [},]"  -InputObject $results).Matches
         $parsed_results = New-Object System.Collections.Generic.List[System.Object]
         foreach ($match in $results_matches_purge)
         {
             if ($parsed_results.Count -ge $limit -and $limit -ne -1){
                 break
             }
-
             $parsed_results.Add(@{
                 "Location" = $match.Groups[1].Value
+                "ItemCount" = $match.Groups[2].Value
+                "TotalSize" = $match.Groups[3].Value
+                "FailedCount" = $match.Groups[4].Value
             })
         }
     }
