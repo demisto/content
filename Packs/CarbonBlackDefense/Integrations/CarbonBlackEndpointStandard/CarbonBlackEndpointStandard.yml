@@ -8,42 +8,16 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Custom Api Key
+- display: Custom Api Key (using for API version 6)
   hidden: false
   name: custom_credentials
   required: false
   type: 9
-#- additionalinfo: This API key is required for all use cases except the policy use
-#    cases.
-#  display: Custom API Key
-#  hidden: false
-#  name: api_key
-#  required: false
-#  type: 0
-#- additionalinfo: This API secret key is required for all use cases except the policy
-#    use cases.
-#  display: Custom API Secret Key
-#  hidden: false
-#  name: api_secret_key
-#  required: false
-#  type: 4
-- display: Live Response Api Key
+- display: Api Key (Api/Live Response key using for API version 3)
   hidden: false
   name: live_response_credentials
   required: false
   type: 9
-#- additionalinfo: This custom API key is required only for the policy use cases.
-#  display: Live Response API Key
-#  hidden: false
-#  name: policy_api_key
-#  required: false
-#  type: 0
-#- additionalinfo: This custom API secret key is required only for the policy use cases.
-#  display: Live Response API Secret Key
-#  hidden: false
-#  name: policy_api_secret_key
-#  required: false
-#  type: 4
 - additionalinfo: The organization unique key. This is required for all use cases
     (and for fetching incidents) except the policy use cases.
   display: Organization Key

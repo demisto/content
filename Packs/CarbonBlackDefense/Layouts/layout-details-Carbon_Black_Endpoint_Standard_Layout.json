@@ -1,5 +1,13 @@
 {
-    "detailsV2": {
+    "TypeName": "Carbon Black Endpoint Standard Layout",
+    "kind": "details",
+    "layout": {
+        "TypeName": "",
+        "id": "Carbon Black Endpoint Standard Layout",
+        "kind": "details",
+        "modified": "2021-04-25T12:58:14.164004893+05:30",
+        "name": "Carbon Black Endpoint Standard Layout",
+        "system": false,
         "tabs": [
             {
                 "id": "summary",
@@ -598,13 +606,13 @@
                 "name": "Canvas",
                 "type": "canvas"
             }
-        ]
+        ],
+        "typeId": "Carbon Black Endpoint Standard Layout",
+        "version": -1
     },
-    "group": "incident",
-    "id": "Carbon Black Endpoint Standard Layout",
-    "name": "Carbon Black Endpoint Standard Layout",
-    "system": false,
+    "typeId": "Carbon Black Endpoint Standard Layout",
     "version": -1,
-    "fromVersion": "6.0.0",
+    "toVersion": "5.9.9",
+    "fromVersion": "5.5.0",
     "description": "The Carbon Black Endpoint Standard Layout"
 }

@@ -3377,7 +3377,7 @@
         "Google-Vault-Generic-Test": "Issue 24347"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",

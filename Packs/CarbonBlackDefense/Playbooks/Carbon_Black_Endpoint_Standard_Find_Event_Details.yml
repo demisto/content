@@ -197,7 +197,7 @@ view: |-
 inputs:
 - key: event_ids
   value:
-    simple: 31b7d1137b6711eb8facebf4f00683df, 560a03037b6211ebbb20a5e827610140
+    simple:
   required: false
   description: |
     A list of event ids to fetch. (comma separated)

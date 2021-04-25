@@ -298,7 +298,7 @@ inputs:
   playbookInputQuery:
 - key: device_id
   value:
-    simple: "3925348"
+    simple:
   required: false
   description: The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique
     across all Carbon Black Cloud environments.

@@ -3,7 +3,7 @@
 Cyber attackers are developing and innovating faster than traditional defenses can withstand. VMware Carbon Black Endpoint Standard (formerly known as Carbon Black Defense) analyzes endpoint data and uncovers malicious activity to stop all types of attacks before they reach critical systems.
 
 ## What does this pack do?
-The **Carbon Black Defense V2** integration provides commands that enable you to:
+The **Carbon Black Endpoint Standard** integration provides commands that enable you to:
 
 - Get details about the events that led to an alert.
 - Search devices in your organization.

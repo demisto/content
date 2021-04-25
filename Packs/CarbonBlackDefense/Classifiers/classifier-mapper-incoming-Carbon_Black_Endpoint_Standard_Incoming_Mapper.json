@@ -1,22 +1,11 @@
 {
-    "brandName": "Carbon Black Endpoint Standard",
-    "custom": true,
-    "defaultIncidentType": "Carbon Black Endpoint Standard",
+    "name": "Carbon Black Endpoint Standard Incoming Mapper",
+    "description": "Maps incoming Carbon Black alert fields.",
     "feed": false,
-    "isDefault": false,
-    "id": "Carbon Black Endpoint Standard",
-    "keyTypeMap": {
-        "High": "Carbon Black Endpoint Standard",
-        "Low": "Carbon Black Endpoint Standard",
-        "Normal": "Carbon Black Endpoint Standard"
-    },
-    "transformer": {
-        "complex": null,
-        "simple": "importance"
-    },
+    "id": "Carbon Black Endpoint Standard-mapper",
+    "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "5.5.0",
-    "toVersion": "5.9.9",
+    "fromVersion": "6.0.0",
     "mapping": {
         "Carbon Black Endpoint Standard": {
             "dontMapEventToLabels": true,
