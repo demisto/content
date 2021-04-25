@@ -9,13 +9,12 @@ args:
   name: fieldForClusterName
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: toDate
+- default: false
+  defaultValue: 1 month ago
   isArray: false
   name: fromDate
   predefined:
-  - 1 month ago
+  - ''
   required: false
   secret: false
 - default: false

@@ -21,6 +21,7 @@ MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, plea
                             "fieldExactMatch, enlarge the time period or increase the limit argument " \
                             "to more than %s."
 MESSAGE_CLUSTERING_NOT_VALID = "Clustering cannot be created with this dataset"
+MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents."
 
 PREFIXES_TO_REMOVE = ['incident.']
 REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
@@ -272,7 +273,7 @@ def get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_da
         'fromDate': from_date,
         'toDate': to_date,
         'limit': str(limit),
-        'type': type
+        'type': incident_type
     })
     if is_error(res):
         return_error(res)
@@ -396,6 +397,8 @@ class Tfidf(BaseEstimator, TransformerMixin):
         feature_name = x.columns[0]
         if self.normalize_function:
             x = x[feature_name].apply(self.normalize_function)
+        # demisto.results(x)
+        # sys.exit(0)
         self.vec.fit(x)
         return self
 
@@ -453,6 +456,31 @@ def create_clusters_json(model_processed, incidents_df, type):
     return pretty_json
 
 
+def find_incorrect_field(populate_fields: List[str], incidents_df: pd.DataFrame, global_msg: str):
+    """
+    Check Field that appear in populate_fields but are not in the incidents_df and return message
+    :param populate_fields: List of fields
+    :param incidents_df: DataFrame of the incidents with fields in columns
+    :param global_msg: global_msg
+    :return: global_msg, incorrect_fields
+    """
+    incorrect_fields = [i for i in populate_fields if i not in incidents_df.columns.tolist()]
+    if incorrect_fields:
+        global_msg += "%s \n" % MESSAGE_INCORRECT_FIELD % ' , '.join(
+            incorrect_fields)
+    return global_msg, incorrect_fields
+
+
+def remove_fields_not_in_incident(*args, incorrect_fields):
+    """
+    Return list without field in incorrect_fields
+    :param args: *List of fields
+    :param incorrect_fields: fields that we don't want
+    :return:
+    """
+    return [[x for x in field_type if x not in incorrect_fields] for field_type in args]
+
+
 def create_summary(model_processed):
     clustering = model_processed.clustering
     summary = {
@@ -500,6 +528,15 @@ def main():
     incidents_df = pd.DataFrame(incidents)
     incidents_df.index = incidents_df.id
 
+    populate_fields = fields_for_clustering + field_for_cluster_name
+    incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
+
+    fields_for_clustering, field_for_cluster_name= \
+        remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, incorrect_fields=incorrect_fields)
+    if fields_for_clustering is None or field_for_cluster_name is None:
+        return None, msg
+
+
     # Create data for training
     X = incidents_df[fields_for_clustering]
     labels = incidents_df[field_for_cluster_name].rename(columns={field_for_cluster_name[0]: 'label'})
@@ -511,7 +548,7 @@ def main():
 
     # preprocessor
     #transformers_list = create_transformers_list(fields_for_clustering)
-    transformers_list = [('tfidf', tfidf_pipe, ['commandline']) for field in fields_for_clustering]
+    transformers_list = [('tfidf', tfidf_pipe, fields_for_clustering) for field in fields_for_clustering]
     preprocessor = ColumnTransformer(
         transformers=transformers_list)
 
@@ -526,18 +563,18 @@ def main():
     model = Pipeline(steps=[('preprocessor', preprocessor),
                             ('clustering', Clustering(HDBSCAN_PARAMS))
                             ])
-
     model.fit(incidents_df, labels)
 
     if not is_clustering_valid(model.named_steps['clustering']):
         demisto.results(MESSAGE_CLUSTERING_NOT_VALID)
+        return None, MESSAGE_CLUSTERING_NOT_VALID
 
     model.named_steps['clustering'].reduce_dimension()
     model.named_steps['clustering'].compute_centers()
     model_processed = PostProcessing(model, min_homogeneity_cluster, max_number_of_clusters)
 
     #store model
-    if store_model=='True':
+    if store_model == 'True':
         store_model_in_demisto(model_processed, model_name, model_override)
 
     #return Entry and summary
