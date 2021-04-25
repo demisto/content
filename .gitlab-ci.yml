@@ -445,8 +445,8 @@ upload-packs-to-marketplace:
     - *start_tunnel
     - echo "=====Check User Permissions to Upload Packs=====" # if bucket upload and uploading to marketplace-dist
     - |
-      if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
-        "CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H 'Authorization: token ${GITHUB_TOKEN}')"
+      if true; then #  if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
+        'CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")'
         echo "$CONTENT_LEADERS"
         LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
         LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
