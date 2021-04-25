@@ -31,8 +31,8 @@ RELEASE_SUFFIX = USER_SUFFIX + '/releases'
 PULLS_SUFFIX = USER_SUFFIX + '/pulls'
 
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
-ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
-                 'Assignees', 'Labels']
+ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at',
+                 'Closed_by', 'Assignees', 'Labels']
 FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'DownloadUrl']
 
 # Headers to be sent in requests
