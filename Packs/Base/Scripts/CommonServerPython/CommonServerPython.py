@@ -337,7 +337,6 @@ class FeedIndicatorType(object):
     Registry = "Registry Key"
     SSDeep = "ssdeep"
     URL = "URL"
-    Malware = "Malware"
 
     @staticmethod
     def is_valid_type(_type):
@@ -355,8 +354,7 @@ class FeedIndicatorType(object):
             FeedIndicatorType.IPv6CIDR,
             FeedIndicatorType.Registry,
             FeedIndicatorType.SSDeep,
-            FeedIndicatorType.URL,
-            FeedIndicatorType.Malware
+            FeedIndicatorType.URL
         )
 
     @staticmethod

@@ -411,7 +411,7 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
                                               entity_a=file_hash,
                                               entity_a_type=FeedIndicatorType.File,
                                               entity_b=malware,
-                                              entity_b_type=FeedIndicatorType.Malware,
+                                              entity_b_type="STIX Malware",
                                               source_reliability=client.reliability,
                                               brand='XFE')]
 
