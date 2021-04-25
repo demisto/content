@@ -50,6 +50,7 @@ configuration:
 description: URLhaus has the goal of sharing malicious URLs that are being used for
   malware distribution.
 display: URLhaus
+fromversion: 5.0.0
 name: URLhaus
 script:
   commands:
@@ -287,7 +288,7 @@ script:
     - contextPath: File.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
   longRunning: false
@@ -298,4 +299,3 @@ script:
   type: python
 tests:
 - Test_URLhaus
-fromversion: 5.0.0
