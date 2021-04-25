@@ -401,7 +401,7 @@ run-validations:
     - echo "=====Wait Until Server Ready====="
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" "$ARTIFACTS_FOLDER" "gitlab"
     - echo "=====Install Packs====="
-    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" "$ARTIFACTS_FOLDER" "gitlab"
+    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" "gitlab"
     - echo "=====Notify Slack====="
     - |
       if [ -n "${BUCKET_UPLOAD}" ]; then
