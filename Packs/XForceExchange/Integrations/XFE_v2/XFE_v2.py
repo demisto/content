@@ -407,13 +407,13 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
         if client.create_relationships:
             malware = dict_safe_get(hash_info, ['external', 'family'], [])[0]
             if malware:
-                relationship = EntityRelation(name=EntityRelation.Relations.RELATED_TO,
+                relationship = [EntityRelation(name=EntityRelation.Relations.RELATED_TO,
                                               entity_a=file_hash,
                                               entity_a_type=FeedIndicatorType.File,
                                               entity_b=malware,
                                               entity_b_type=FeedIndicatorType.Malware,
                                               source_reliability=client.reliability,
-                                              brand='XFE')
+                                              brand='XFE')]
 
         hash_type = get_hash_type(file_hash)  # if file_hash found, has to be md5, sha1 or sha256
         if hash_type == 'md5':
@@ -441,7 +441,6 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
             raw_response=report,
             relations=relationship
         ))
-    # return markdown, context, reports
     return command_results
 
 
