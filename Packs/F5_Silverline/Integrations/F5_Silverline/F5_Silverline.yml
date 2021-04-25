@@ -21,8 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+description: F5® Silverline® Threat Intelligence is a cloud-based service incorporating external IP
+  reputation and reducing threat-based communications.
 display: F5_Silverline
 name: F5_Silverline
 script:
