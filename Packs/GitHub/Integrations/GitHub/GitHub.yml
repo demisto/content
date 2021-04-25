@@ -164,6 +164,30 @@ script:
       type: String
   - arguments:
     - default: false
+      isArray: false
+      name: organization
+      description: The name of the organiztion
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: team_slug
+      description: Team slug name
+      required: true
+      secret: false
+    deprecated: false
+    description: List team members
+    execution: false
+    name: GitHub-list-team-members
+    outputs:
+      - contextPath: GitHub.TEAMMEMBER.ID
+        description: The ID of the team member
+        type: Number
+      - contextPath: GitHub.TEAMMEMBER.Login
+        description: The login name of the team member
+        type: String
+  - arguments:
+    - default: false
       description: The number of the issue to update.
       isArray: false
       name: ID
