@@ -589,6 +589,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     lock = Lock()
 
     for pack_id in pack_ids:
+        logging.info(f'pack_id: {pack_id}')  # Delete this when done debugging
         thread = Thread(target=search_pack_and_its_dependencies,
                         kwargs={'client': client,
                                 'pack_id': pack_id,
