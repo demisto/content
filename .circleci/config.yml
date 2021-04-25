@@ -647,7 +647,7 @@ references:
       shell: /bin/bash
       when: always
       command: |
-        python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" "$CIRCLE_ARTIFACTS"
+        python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" "$CIRCLE_ARTIFACTS" ""
 
   check_if_instance_was_created: &check_if_instance_was_created
     run:
