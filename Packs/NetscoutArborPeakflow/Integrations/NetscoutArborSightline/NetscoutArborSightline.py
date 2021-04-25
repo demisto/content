@@ -579,7 +579,7 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
 
 
 def mitigation_delete_command(client: NetscoutClient, args: Dict[str, str]):
-    mitigation_id: str = args.get('mitigation_id')   # type: ignore
+    mitigation_id: str = args.get('mitigation_id')  # type: ignore
     client.delete_mitigation(mitigation_id)
     hr = f'### Mitigation {mitigation_id} was deleted'
     return CommandResults(readable_output=hr)
