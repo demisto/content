@@ -247,7 +247,7 @@ run-validations:
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - echo "====Merge public and private id sets===="
     - |
-      if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+      if [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
           echo "Skipping, Should not run on contributor's branch."
       else
         gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out
@@ -286,7 +286,7 @@ run-validations:
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
     - echo "====Check Build Files Are Up To Date===="
     - |
-      if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+      if [[ $$CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
         echo "Skipping, Should not run on contributor's branch."
       else
         ./Tests/scripts/is_file_up_to_date.sh .gitlab-ci.yml
@@ -385,7 +385,7 @@ run-validations:
   - echo INSTANCE_ROLE="$INSTANCE_ROLE"
   - echo INSTANCE_CREATED="$INSTANCE_CREATED"
   - echo "=====Wait Until Server Ready====="
-  - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+  - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" "$ARTIFACTS_FOLDER"
   - echo "=====Install Packs====="
   - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
   - echo "=====Notify Slack====="
@@ -440,7 +440,12 @@ upload-packs-to-marketplace:
     paths:
       - /builds/xsoar/content/artifacts/*
     when: always
+  variables:
+    INSTANCE_ROLE: "Server Master"
+    INSTANCE_CREATED: "true"
+    SSH_TUNNEL_TIMEOUT: 10
   script:
+    - *start_tunnel
     - echo "=====Check User Permissions to Upload Packs=====" # if bucket upload and uploading to marketplace-dist
     - "CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H 'Authorization: token ${GITHUB_TOKEN}')"
     - LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
@@ -454,5 +459,30 @@ upload-packs-to-marketplace:
       fi
     - echo "=====Upload Packs To Marketplace Storage====="
     - if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
-    - echo "just trying something."
+    -   echo "trying something"
+    -   exit 1
+    -   EXTRACT_FOLDER=$(mktemp -d)
+    -   PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+    -   PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+    -   GCS_PATH=$(mktemp)
+    -   CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
+    -   CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
+    -   echo $GCS_MARKET_KEY > $GCS_PATH
+
+    -   GCS_BUILD_BUCKET="marketplace-ci-build"
+    -   if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+    -     STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
+    -   fi
+
+    -   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH"
+    -   rm $GCS_PATH
+    - echo "=====Validate Premium Packs====="
+    - if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
+    -   ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
+    - else
+    -   echo "Skipping Premium Packs Validation"
+    - echo "=====Run Slack Notifier====="
+    - if [ -n "${BUCKET_UPLOAD}" ]; then
+    -   ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
+    - fi
 
