@@ -130,7 +130,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
         outputs = response.get('data')
         human_results = parse_get_ip_object_list_results(response)
     else:
-        human_results, outputs = get_ip_objects_by_ids(client, object_ids, list_type, params)
+        human_results, outputs = get_ip_objects_by_ids(client, object_ids, list_type, params)  # type: ignore
 
     human_readable = tableToMarkdown('F5 Silverline IP Objects', human_results, TABLE_HEADERS_GET_OBJECTS,
                                      removeNull=True)
