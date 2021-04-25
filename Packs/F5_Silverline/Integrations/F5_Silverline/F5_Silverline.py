@@ -37,7 +37,6 @@ class Client(BaseClient):
             params (dict): URL parameters to specify the query.
             resp_type (str): Determines which data format to return from the HTTP request. The default is 'json'.
         """
-        demisto.debug(f'request body is: {body} with url suffix: {url_suffix}')
         demisto.debug(f'current request is: method={method}, body={body}, url suffix={url_suffix},'
                       f'params={params}, resp_type={resp_type}')
         return self._http_request(method=method, json_data=body, url_suffix=url_suffix, params=params,
