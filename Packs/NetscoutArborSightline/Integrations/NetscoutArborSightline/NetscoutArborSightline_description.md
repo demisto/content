@@ -4,9 +4,4 @@
 In order to generate a new API Key in your Slightline UI navigate to **Administartion** > **Arbor API WEB Services** 
 
 ### Configuration params
-**NOTE**: No need to enter a value in the **API Token** field. It can be left blank (visible only on 6.0.2 and lower versions).
-
-
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/netscout-arbor-sightline)
+**NOTE**: If using 6.0.2 or lower version, put your API Key in the **Password** field, leave the **API Token** field empty.
