@@ -447,7 +447,6 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     return command_results
 
 
-
 def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
     Gets information about the given host address.
