@@ -1493,7 +1493,7 @@ def get_last_mirrored_in_time(args):
 
     else:  # handling 6.0 version
         last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
-        last_mirrored_in_timestamp = (last_mirrored_in_time - 120)
+        last_mirrored_in_timestamp = (last_mirrored_in_time - (120 * 1000))
 
     return last_mirrored_in_timestamp
 
