@@ -63,7 +63,7 @@ def get_vms():
                 if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
                     mac_address = dev.macAddress
                     break
-        except:  # noqa
+        except Exception:  # noqa
             pass
 
         data.append({
