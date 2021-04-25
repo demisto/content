@@ -287,5 +287,5 @@ def test_build_relationships(args_dict, expected_json_str):
     - Case B: Assert that start_time uses the '>' operator, stop_time uses the '<' operator and importance uses the '='
         operator.
    """
-    result = client.build_data_attribute_filter(**args_dict)
+    result = client.build_data_attribute_filter(args_dict)
     assert result == expected_json_str

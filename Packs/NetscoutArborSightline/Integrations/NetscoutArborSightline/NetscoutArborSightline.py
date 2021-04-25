@@ -1,4 +1,3 @@
-# import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -143,14 +142,11 @@ class NetscoutClient(BaseClient):
         Returns:
             (int) The amount of pages (incidents) in total in the given query, 0 if none.
         """
-        data_attribute_filter = self.build_data_attribute_filter(start_time=start_time,  # type: ignore
-                                                                 start_time_operator='>',  # type: ignore
-                                                                 alert_class=self.alert_class,
-                                                                 alert_type=self.alert_type,
-                                                                 classification=self.classification,
-                                                                 importance=self.importance,
-                                                                 importance_operator=self.importance_operator,
-                                                                 ongoing=self.ongoing)
+        attributes_dict = assign_params(start_time=start_time, start_time_operator='>', alert_class=self.alert_class,
+                                        alert_type=self.alert_type, classification=self.classification,
+                                        importance=self.importance, importance_operator=self.importance_operator,
+                                        ongoing=self.ongoing)
+        data_attribute_filter = self.build_data_attribute_filter(attributes_dict)
         page_size = 1
         results = self.list_alerts(page_size=page_size, search_filter=data_attribute_filter)
         last_page_link = results.get('links', {}).get('last')
@@ -195,7 +191,7 @@ class NetscoutClient(BaseClient):
                 _type = self.RELATIONSHIP_TO_TYPE.get(key, key)
                 if key == 'routers':
                     relationships[key] = {
-                        'data': [{  # type: ignore[dict-item]
+                        'data': [{
                             'type': _type,
                             'id': val[0]
                         }]
@@ -209,7 +205,7 @@ class NetscoutClient(BaseClient):
                     }
         return relationships
 
-    def build_data_attribute_filter(self, **kwargs: Optional[dict]) -> str:
+    def build_data_attribute_filter(self, attributes_dict: dict) -> str:
         """
         Builds data attribute filter in the NetscoutArbor form. For example: '/data/attributes/importance>1' where
         key=importance operator='>' and value=1.
@@ -218,7 +214,7 @@ class NetscoutClient(BaseClient):
         no relevant operator is present. In case of multiple parameters the attributes are separated with 'AND'.
 
         Args:
-            kwargs (dict): Dict containing key values filter parameters. for example: {'importance': 1}
+            attributes_dict (dict): Dict containing key values filter parameters. for example: {'importance': 1}
 
         Returns:
             (str): Netscout data attribute filter string. For example:
@@ -226,7 +222,7 @@ class NetscoutClient(BaseClient):
         """
         param_list = []
         operator_names = self.OPERATOR_NAME_DICTIONARY.values()
-        for key, val in kwargs.items():
+        for key, val in attributes_dict.items():
 
             # We don't create a filter for operator names
             if key not in operator_names and val:
@@ -235,7 +231,8 @@ class NetscoutClient(BaseClient):
                 # If the current parameter supports a special operator (it appears in the OPERATOR_NAME_DICTIONARY),
                 # we take the operator value using the operator name (that appears in the OPERATOR_NAME_DICTIONARY)
                 if operator_name := self.OPERATOR_NAME_DICTIONARY.get(key):
-                    operator = kwargs.get(operator_name) if kwargs.get(operator_name) else '='  # type: ignore
+                    operator = attributes_dict.get(operator_name) if attributes_dict.get(
+                        operator_name) else '='  # type: ignore
 
                 param_list.append(f'/data/attributes/{key + operator + val}')  # type: ignore
         return ' AND '.join(param_list)
@@ -268,14 +265,13 @@ class NetscoutClient(BaseClient):
         incidents: list = []
 
         if amount_of_incidents:
-            data_attribute_filter = self.build_data_attribute_filter(start_time=now,  # type: ignore
-                                                                     start_time_operator='<',  # type: ignore
-                                                                     alert_class=self.alert_class,
-                                                                     alert_type=self.alert_type,
-                                                                     importance=self.importance,
-                                                                     classification=self.classification,
-                                                                     importance_operator=self.importance_operator,
-                                                                     ongoing=self.ongoing)
+            attributes_dict = assign_params(start_time=now, start_time_operator='<', alert_class=self.alert_class,
+                                            alert_type=self.alert_type, importance=self.importance,
+                                            classification=self.classification,
+                                            importance_operator=self.importance_operator,
+                                            ongoing=self.ongoing)
+
+            data_attribute_filter = self.build_data_attribute_filter(attributes_dict)
             demisto.debug(
                 f'NetscoutArborSightline fetch params are: page_size={amount_of_incidents}, '
                 f'search_filter={data_attribute_filter}')
@@ -485,15 +481,12 @@ def list_alerts_command(client: NetscoutClient, args: dict):
     if alert_id:
         raw_result = client.get_alert(alert_id)
     else:
-        data_attribute_filter = client.build_data_attribute_filter(alert_id=alert_id, alert_class=alert_class,
-                                                                   alert_type=alert_type,  # type: ignore
-                                                                   classification=classification,
-                                                                   importance=importance,  # type: ignore
-                                                                   importance_operator=importance_operator,
-                                                                   ongoing=ongoing, start_time=start_time,
-                                                                   start_time_operator=start_time_operator,
-                                                                   stop_time=stop_time,
-                                                                   stop_time_operator=stop_time_operator)
+        attributes_dict = assign_params(alert_id=alert_id, alert_class=alert_class, alert_type=alert_type,
+                                        classification=classification, importance=importance,
+                                        importance_operator=importance_operator, ongoing=ongoing, start_time=start_time,
+                                        start_time_operator=start_time_operator, stop_time=stop_time,
+                                        stop_time_operator=stop_time_operator)
+        data_attribute_filter = client.build_data_attribute_filter(attributes_dict)
         data_relationships_filter = f'AND /data/relationships/managed_object/data/id={managed_object_id}' if \
             managed_object_id else ''
         search_filter = data_attribute_filter + data_relationships_filter
