@@ -395,19 +395,7 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
             else:
                 raise
 
-        hash_type = report['type']
         scores = {'high': 3, 'medium': 2, 'low': 1}
-
-        # file_context = build_dbot_entry(file_hash, indicator_type=report['type'],
-        #                                 vendor='XFE', score=scores.get(report['risk'], 0))
-        #
-        # if outputPaths['file'] in file_context:
-        #     context[outputPaths['file']].append(file_context[outputPaths['file']])
-        #
-        # if outputPaths['dbotscore'] in file_context:
-        #     context[DBOT_SCORE_KEY].append(file_context[outputPaths['dbotscore']])
-        #
-        # file_key = f'XFE.{outputPaths["file"]}'
 
         dbot_score = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
                                       integration_name='XFE', score=scores.get(report['risk'], 0),
