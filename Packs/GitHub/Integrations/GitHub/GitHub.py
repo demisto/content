@@ -31,8 +31,9 @@ RELEASE_SUFFIX = USER_SUFFIX + '/releases'
 PULLS_SUFFIX = USER_SUFFIX + '/pulls'
 
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
-ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
-                 'Assignees', 'Labels']
+ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at',
+                 'Closed_by', 'Assignees', 'Labels']
+FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'DownloadUrl']
 
 # Headers to be sent in requests
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
@@ -217,9 +218,16 @@ def issue_format(issue):
     if issue.get('closed_by') is not None and issue.get('state') == 'closed':
         closed_by = issue.get('closed_by').get('login')
 
+    org = ''
+    repository_url = issue.get('repository_url').split('/')
+    repo = repository_url[-1]
+    if len(repository_url) > 1:
+        org = repository_url[-2]
+
     form = {
         'ID': issue.get('number'),
-        'Repository': REPOSITORY,
+        'Repository': repo,
+        'Organization': org,
         'Title': issue.get('title'),
         'Body': issue.get('body'),
         'State': issue.get('state'),
@@ -667,8 +675,11 @@ def list_teams_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def get_pull_request(pull_number: Union[int, str]):
-    suffix = PULLS_SUFFIX + f'/{pull_number}'
+def get_pull_request(pull_number: Union[int, str], repository: str = None, organization: str = None):
+    if repository and organization and pull_number:
+        suffix = f'/repos/{organization}/{repository}/pulls/{pull_number}'
+    else:
+        suffix = PULLS_SUFFIX + f'/{pull_number}'
     response = http_request('GET', url_suffix=suffix)
     return response
 
@@ -676,7 +687,9 @@ def get_pull_request(pull_number: Union[int, str]):
 def get_pull_request_command():
     args = demisto.args()
     pull_number = args.get('pull_number')
-    response = get_pull_request(pull_number)
+    organization = args.get('organization')
+    repository = args.get('repository')
+    response = get_pull_request(pull_number, repository, organization)
 
     ec_object = format_pr_outputs(response)
     ec = {
@@ -755,8 +768,11 @@ def list_pr_reviews_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def list_pr_files(pull_number: Union[int, str]) -> list:
-    suffix = PULLS_SUFFIX + f'/{pull_number}/files'
+def list_pr_files(pull_number: Union[int, str], organization: str = None, repository: str = None) -> list:
+    if pull_number and organization and repository:
+        suffix = f'/repos/{organization}/{repository}/pulls/{pull_number}/files'
+    else:
+        suffix = PULLS_SUFFIX + f'/{pull_number}/files'
     response = http_request('GET', url_suffix=suffix)
     return response
 
@@ -764,7 +780,9 @@ def list_pr_files(pull_number: Union[int, str]) -> list:
 def list_pr_files_command():
     args = demisto.args()
     pull_number = args.get('pull_number')
-    response = list_pr_files(pull_number)
+    organization = args.get('organization')
+    repository = args.get('repository')
+    response = list_pr_files(pull_number, organization, repository)
 
     formatted_pr_files = [
         {
@@ -1271,6 +1289,34 @@ def get_file_content_from_repo():
     return_results(results)
 
 
+def list_files_command():
+    args = demisto.args()
+    path = args.get('path', '')
+    organization = args.get('organization')
+    repository = args.get('repository')
+
+    if organization and repository:
+        suffix = f'/repos/{organization}/{repository}/contents/{path}'
+    else:
+        suffix = f'{USER_SUFFIX}/contents/{path}'
+
+    res = http_request(method='GET', url_suffix=suffix)
+
+    ec_object = []
+    for file in res:
+        ec_object.append({
+            'Type': file.get('type'),
+            'Name': file.get('name'),
+            'Size': file.get('size'),
+            'Path': file.get('path'),
+            'DownloadUrl': file.get('download_url')
+        })
+
+    ec = {'GitHub.File(val.Path === obj.Path)': ec_object}
+    human_readable = tableToMarkdown(f'Files in path: {path}', ec_object, removeNull=True, headers=FILE_HEADERS)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1332,6 +1378,7 @@ COMMANDS = {
     'GitHub-is-pr-merged': is_pr_merged_command,
     'GitHub-create-pull-request': create_pull_request_command,
     'Github-get-github-actions-usage': get_github_actions_usage,
+    'Github-list-files': list_files_command,
     'GitHub-get-file-content': get_file_content_from_repo,
 }
 

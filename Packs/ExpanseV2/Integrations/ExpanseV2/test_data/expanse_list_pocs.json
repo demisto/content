@@ -1,0 +1,31 @@
+{
+  "data": [
+    {
+      "id": "f491b7ef-a7b9-4644-af90-36dc0a6b2000",
+      "created": "2019-05-22T00:59:28.919496Z",
+      "modified": "2019-05-22T00:59:28.919937Z",
+      "firstName": "John",
+      "lastName": "Smith",
+      "phone": "5555555555",
+      "email": "analyst@expanseinc.com",
+      "role": "analyst"
+    },
+    {
+      "id": "435ac166-fa02-44a0-9597-cec951740c31",
+      "created": "2020-02-19T21:50:37.010078Z",
+      "modified": "2020-02-19T21:50:37.010635Z",
+      "firstName": "",
+      "lastName": "",
+      "phone": "",
+      "email": "marketing@expanseinc.com",
+      "role": ""
+    }
+  ],
+  "pagination": {
+    "next": null,
+    "prev": null
+  },
+  "meta": {
+    "totalCount": 2
+  }
+}

@@ -938,3 +938,6 @@ def test_PtypString():
 
     data_value = DataModel.PtypString('I\x00P\x00M\x00.\x00N\x00o\x00t\x00e\x00')
     assert data_value == u'IPM.Note'
+
+    data_value = DataModel.PtypString(b'e\x9c\xe6\xb9pe')
+    assert data_value == u'eśćąpe'

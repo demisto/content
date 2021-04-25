@@ -60,6 +60,7 @@ Creates an issue in GitHub.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -67,9 +68,9 @@ Creates an issue in GitHub.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Title|State|Body|Created_at|Updated_at|
-|---|---|---|---|---|---|---|
-|138|Git-Integration|“newbug”|open|“found|2019-06-17T15:14:10Z|2019-06-17T15:14:10Z|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|
+|---|---|---|---|---|---|---|---|
+|138|Git-Integration|demisto|“newbug”|open|“found|2019-06-17T15:14:10Z|2019-06-17T15:14:10Z|
 
 ### GitHub-close-issue
 
@@ -101,6 +102,7 @@ Closes an existing issue.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -108,9 +110,9 @@ Closes an existing issue.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Title|State|Created_at|Updated_at|Closed_at|Closed_by|Labels|
-|--- |--- |--- |--- |--- |--- |--- |--- |--- |
-|136|Git-Integration|new|closed|2019-06-17T14:48:15Z|2019-06-17T15:14:12Z|2019-06-17T15:14:12Z|roysagi|bug, else, new|
+|ID|Repository|Organization|Title|State|Created_at|Updated_at|Closed_at|Closed_by|Labels|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
+|136|Git-Integration|demisto|new|closed|2019-06-17T14:48:15Z|2019-06-17T15:14:12Z|2019-06-17T15:14:12Z|roysagi|bug, else, new|
 
 ### GitHub-update-issue
 
@@ -147,6 +149,7 @@ Updates the parameters of a specified issue.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -154,9 +157,9 @@ Updates the parameters of a specified issue.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Title|State|Body|Created_at|Updated_at|
-|--- |--- |--- |--- |--- |--- |--- |
-|137|Git-Integration|“new_title”|open|“new|2019-06-17T15:09:50Z|2019-06-17T15:14:13Z|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|
+|--- |--- |--- |--- |--- |--- |--- |--- |
+|137|Git-Integration|demisto|“new_title”|open|“new|2019-06-17T15:09:50Z|2019-06-17T15:14:13Z|
 
 
 ### GitHub-list-all-issues
@@ -190,6 +193,7 @@ Lists all issues that the user has access to view.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -197,10 +201,10 @@ Lists all issues that the user has access to view.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Title|State|Body|Created_at|Updated_at|Closed_at|Labels|
-|--- |--- |--- |--- |--- |--- |--- |--- |--- |
-|109|Git-Integration|"new issue"|closed|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|newbug|
-|110|Git-Integration|"new issue"|closed|"new information"|2019-06-04T11:53:19Z|2019-06-04T11:53:22Z|2019-06-04T11:53:22Z|newbug|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|Closed_at|Labels|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
+|109|Git-Integration|demisto|"new issue"|closed|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|newbug|
+|110|Git-Integration|demisto|"new issue"|closed|"new information"|2019-06-04T11:53:19Z|2019-06-04T11:53:22Z|2019-06-04T11:53:22Z|newbug|
 
 
 ### GitHub-search-issues
@@ -234,6 +238,7 @@ Searches for and returns issues that match a given query.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -241,9 +246,9 @@ Searches for and returns issues that match a given query.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Title|State|Body|Created_at|Updated_at|Closed_at|Assignees|Labels|
-|--- |--- |--- |--- |--- |--- |--- |--- |--- | ---|
-|109|Git-Integration|"new issue"|open|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|teizenman|newbug|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|Closed_at|Assignees|Labels|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- | ---|--- |
+|109|Git-Integration|demisto|"new issue"|open|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|teizenman|newbug|
 
 ### GitHub-get-download-count
 
@@ -555,6 +560,8 @@ Lists the pull request files.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | pull_number | The number of the pull request. | Required | 
+| organization | The name of the organization. | Optional | 
+| repository | The repository of the pull request. | Optional | 
 
 #### Context Output
 
@@ -707,6 +714,8 @@ Get a pull request
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | pull_number | The number of the pull request to retrieve. | Required | 
+| organization | The name of the organization. | Optional | 
+| repository | The repository of the pull request. | Optional | 
 
 #### Context Output
 
@@ -1492,3 +1501,40 @@ Gets the content of a file from GitHub.
 |---|---|---|---|
 |branch-test|This is the content of the file|raw|file.json| 
 
+### Github-list-files
+***
+Get list of files from the given path in the repository.
+
+
+#### Base Command
+
+`Github-list-files`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| path | The path in the branch to get the files from. | Optional | 
+| organization | The name of the organization. | Optional | 
+| repository | The name of the repository. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.File.Name | String | The name of the file. | 
+| GitHub.File.Type | String | Whether the item is file or directory. | 
+| GitHub.File.Size | Number | The size of the file in bytes. | 
+| GitHub.File.Path | String | The file path inside the repository. | 
+| GitHub.File.DownloadUrl | String | Link to download the file content. | 
+
+
+#### Command Example
+```!Github-list-files path=Index```
+
+#### Human Readable Output
+## Files in path: Index
+|Name|Path|Type|Size|DownloadUrl|
+|--- |--- |--- |--- |--- |
+|README.md|Index/README.md|file|1500|https://raw.githubusercontent.com/demisto/hello-world/master/index/README.md|
+|images|Index/images|dir|0||
