@@ -3,9 +3,10 @@ commonfields:
   id: DeHashed
   version: -1
 configuration:
-- additionalinfo: |-
-    In the "Username" field enter your email address. In the "Password" field enter your API key.
-    For generating an API key, see https://www.dehashed.com.
+- additionalinfo: 'In the "Username" field enter your email address. In the "Password"
+    field enter your API key.
+
+    For generating an API key, see https://www.dehashed.com.'
   display: Username
   hidden: false
   name: credentials
@@ -31,6 +32,7 @@ configuration:
 description: This integration allows you to check if your personal information such
   as your email, username, or password is being compromised.
 display: DeHashed
+fromversion: 5.5.0
 name: DeHashed
 script:
   commands:
@@ -202,7 +204,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
   longRunning: false
@@ -213,4 +215,3 @@ script:
   type: python
 tests:
 - No tests
-fromversion: 5.5.0
