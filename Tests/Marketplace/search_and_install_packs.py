@@ -332,7 +332,8 @@ def install_packs(client: demisto_client,
     }
     logging.info(f'Installing packs on server {host}')
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-    logging.debug(f'Installing the following packs on server {host}:\n{packs_to_install_str}')
+    # move back to debug when done
+    logging.info(f'Installing the following packs on server {host}:\n{packs_to_install_str}')
 
     # make the pack installation request
     try:
