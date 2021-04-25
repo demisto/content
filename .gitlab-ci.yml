@@ -445,7 +445,7 @@ upload-packs-to-marketplace:
     - *start_tunnel
     - echo "=====Check User Permissions to Upload Packs=====" # if bucket upload and uploading to marketplace-dist
     - |
-      if true; then #  if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
+      if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
         "CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H 'Authorization: token ${GITHUB_TOKEN}')"
         echo "$CONTENT_LEADERS"
         LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
@@ -460,14 +460,12 @@ upload-packs-to-marketplace:
     - echo "=====Upload Packs To Marketplace Storage====="
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
-        echo "trying something"
-        exit 1
         EXTRACT_FOLDER=$(mktemp -d)
         PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
         PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
         GCS_PATH=$(mktemp)
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
-        CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
+        CREATE_INSTANCES_JOB_NUMBER=$(cat $ARTIFACTS_FOLDER/create_instances_build_num.txt)
         echo $GCS_MARKET_KEY > $GCS_PATH
 
         GCS_BUILD_BUCKET="marketplace-ci-build"
