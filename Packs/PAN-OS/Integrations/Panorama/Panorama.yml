@@ -4576,7 +4576,7 @@ script:
       - wildfire
       - anti-virus
       - content
-      description: The file type
+      description: The category of the content.
     outputs:
     - contextPath: Panorama.Content.Upload.Status
       description: Content upload status.
@@ -4597,7 +4597,7 @@ script:
       - wildfire
       - anti-virus
       - content
-      description: The file type
+      description: The category of the content.
     - name: skip_validity_check
       required: true
       auto: PREDEFINED
