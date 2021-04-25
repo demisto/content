@@ -3,24 +3,25 @@ commonfields:
   id: Recorded Future Feed
   version: -1
 configuration:
-- display: Fetch indicators
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
-  defaultvalue: 'true'
+  required: false
   type: 8
-  required: false
-- display: Indicator Reputation
-  name: feedReputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: feedInstanceReputationNotSet
-  type: 18
-  required: false
+  display: Indicator Reputation
+  name: feedReputation
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
-- defaultvalue: A - Completely reliable
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -32,7 +33,6 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-  additionalinfo: Reliability of the source providing the intelligence data
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
   display: Traffic Light Protocol Color
@@ -44,33 +44,34 @@ configuration:
   - WHITE
   required: false
   type: 15
-- display: ""
+- defaultvalue: suddenDeath
+  display: ''
   name: feedExpirationPolicy
-  defaultvalue: suddenDeath
-  type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-- name: feedExpirationInterval
-  defaultvalue: "20160"
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
   required: false
   type: 1
-  display: ""
 - defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
-- display: Bypass exclusion list
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  defaultvalue: ''
+  display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
-  type: 8
   required: false
-  additionalinfo: |-
-    When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -104,20 +105,23 @@ configuration:
   - fusion
   required: true
   type: 16
-- additionalinfo: |-
-    Limit the indicators list to a specific risk rule. To see available
+- additionalinfo: 'Limit the indicators list to a specific risk rule. To see available
+
     risk rules run the rf-feed-get-risk-rules command. This parameter will only be
-    used for the 'connectApi' service.
-    Using the 'large' risk rule is not recommended.
+
+    used for the ''connectApi'' service.
+
+    Using the ''large'' risk rule is not recommended.'
   display: Risk Rule
   hidden: false
   name: risk_rule
   required: false
   type: 0
-- additionalinfo: |-
-    Load a custom risklist from a specified Recorded Future file path.
+- additionalinfo: 'Load a custom risklist from a specified Recorded Future file path.
+
     If no file path is specified, the default risklist file is used. This parameter
-    will only be used for the 'fusion' service.
+
+    will only be used for the ''fusion'' service.'
   display: Fusion File Path
   hidden: false
   name: fusion_file_path
@@ -135,8 +139,9 @@ configuration:
   name: polling_timeout
   required: true
   type: 0
-- additionalinfo: |-
-    The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details.
+- additionalinfo: The minimum score from the feed in order to to determine whether
+    the indicator is malicious. Default is "65". For more information about Recorded
+    Future scoring go to integration details.
   defaultvalue: '65'
   display: Malicious Threshold
   hidden: false
@@ -145,6 +150,7 @@ configuration:
   type: 0
 description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future RiskList Feed
+fromversion: 5.5.0
 name: Recorded Future Feed
 script:
   commands:
@@ -186,9 +192,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Get a list of the risk rules available for an indicator,
-      To limit the 'connectApi' service indicators list.
+    description: 'Get a list of the risk rules available for an indicator,
+
+      To limit the ''connectApi'' service indicators list.'
     execution: false
     name: rf-feed-get-risk-rules
     outputs:
@@ -201,7 +207,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.9.2.17246
+  dockerimage: demisto/python3:3.9.4.18682
   feed: true
   isfetch: false
   longRunning: false
@@ -212,4 +218,3 @@ script:
   type: python
 tests:
 - RecordedFutureFeed - Test
-fromversion: 5.5.0
