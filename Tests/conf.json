@@ -253,6 +253,12 @@
             "instance_names": "JSON Feed_auto_detect"
         },
         {
+            "integrations": "JSON Feed",
+            "playbookID": "JSON_Feed_Test",
+            "fromversion": "5.5.0",
+            "instance_names": "JSON Feed_post"
+        },
+        {
             "integrations": "Google Cloud Functions",
             "playbookID": "test playbook - Google Cloud Functions",
             "fromversion": "5.0.0"
