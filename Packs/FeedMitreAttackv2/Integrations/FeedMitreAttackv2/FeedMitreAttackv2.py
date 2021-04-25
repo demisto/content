@@ -91,13 +91,11 @@ class Client:
         self.get_collections()
 
     def build_iterator(self, limit: int = -1) -> List:
-
         """Retrieves all entries from the feed.
 
         Returns:
             A list of objects, containing the indicators.
         """
-
         indicators: List[Dict] = list()
         mitre_id_list: Set[str] = set()
         indicator_values_list: Set[str] = set()
@@ -203,9 +201,9 @@ class Client:
                         #
                         #             indicators.append(indicator_obj)
                         #             external_refs.add(x)
-        CommandResults(
-            relations=relationships_list
-        )
+        if indicators:
+            indicators[0]['relationships'] = relationships_list
+
         return indicators
 
 
@@ -295,12 +293,18 @@ def create_relationship(item_json):
     b_type = item_json.get('target_ref').split('--')[0]
     b_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(b_type)
 
+    mapping_fields = {
+        'description': item_json.get('description'),
+        'lastseenbysource': item_json.get('modified'),
+        'firstseenbysource': item_json.get('created')
+    }
+
     return EntityRelation(name=item_json.get('relationship_type'),
                           entity_a=item_json.get('source_ref'),
                           entity_a_type=a_type,
                           entity_b=item_json.get('target_ref'),
-                          entity_b_type=b_type)
-
+                          entity_b_type=b_type,
+                          fields=mapping_fields)
 
 
 def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
