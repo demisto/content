@@ -279,7 +279,6 @@ run-validations:
         find ./Tests -maxdepth 1 -type d -not \( -path ./Tests -o -path ./Tests/scripts \) | xargs ./Tests/scripts/pyflake.sh
         ./Tests/scripts/pyflake.sh ./Tests/scripts/*.py
         find ./Tests/scripts -maxdepth 1 -type d -not \( -path ./Tests/scripts -o -path ./Tests/scripts/awsinstancetool \) | xargs ./Tests/scripts/pyflake.sh
-        echo "DO NOT Run validate, uncomment this when merged from master"
         ./Tests/scripts/validate.sh
       fi
     - echo "====Check Spelling===="
