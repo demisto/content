@@ -780,7 +780,7 @@ def return_outputs_similar_incidents(show_actual_incident: bool, current_inciden
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
         "ContentsFormat": formats['json'],
-        "Contents": readable_output,
+        "Contents": similar_incidents_json,
         "EntryContext": {'DBotFindSimilarIncidents': context},
     }
     if tag is not None:

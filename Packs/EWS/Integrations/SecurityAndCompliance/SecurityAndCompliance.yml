@@ -841,8 +841,7 @@ script:
         - 'true'
         - 'false'
     deprecated: false
-    description: Gets compliance search action from the Security & Compliance Center. An additional result will be
-      shown only for "Preview" action type.
+    description: Gets compliance search action from the Security & Compliance Center.
     execution: false
     name: o365-sc-get-search-action
     outputs:
@@ -918,6 +917,15 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Location
       description: Security and compliance search action result location.
       type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.ItemCount
+      description: Security and compliance search action result item count.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.TotalSize
+      description: Security and compliance search action result total size.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.FailedCount
+      description: Security and compliance search action result failed count.
+      type: Number
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Sender
       description: Security and compliance search action result mail sender.
       type: String
