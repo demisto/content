@@ -48,6 +48,10 @@ tasks:
       query:
         complex:
           root: inputs.Query
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
     separatecontext: false
     view: |-
       {
@@ -129,6 +133,10 @@ tasks:
         complex:
           root: EWS
           accessor: ComplianceSearch.Name
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
     separatecontext: false
     view: |-
       {
@@ -185,6 +193,10 @@ tasks:
         complex:
           root: EWS
           accessor: ComplianceSearch.Name
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
     separatecontext: false
     view: |-
       {
@@ -287,6 +299,10 @@ tasks:
         complex:
           root: EWS
           accessor: ComplianceSearch.Name
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
     separatecontext: false
     view: |-
       {
@@ -317,6 +333,10 @@ tasks:
         complex:
           root: EWS
           accessor: ComplianceSearch.Name
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
     separatecontext: false
     view: |-
       {

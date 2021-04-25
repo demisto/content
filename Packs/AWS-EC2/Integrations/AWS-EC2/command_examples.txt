@@ -9,3 +9,5 @@
 !aws-ec2-describe-vpcs
 !aws-ec2-describe-subnets
 !aws-ec2-describe-security-groups
+!aws-ec2-allocate-hosts availability_zone="us-east-1b" quantity=1 instance_type="m5.large"
+!aws-ec2-release-hosts host_id="h-00548908djdsgfs"
