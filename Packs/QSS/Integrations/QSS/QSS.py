@@ -44,7 +44,7 @@ class Client(BaseClient):
         status = demisto.params().get('status')
         if status:
             request_params['status'] = status
-        
+
         if max_results:
             request_params['max_fetch'] = max_results
 
