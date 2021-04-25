@@ -414,17 +414,27 @@ def test_cve_latest(requests_mock):
 
 
 def test_file(requests_mock):
+    """
+     Given:
+         - A hash.
+     When:
+         - When running the file command.
+     Then:
+         - Validate that the file outputs are created properly
+         - Validate that the DbotScore outputs are created properly
+     """
+    dbot_score_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
+                     ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     requests_mock.get(f'{MOCK_BASE_URL}/malware/{MOCK_HASH}', json=MOCK_HASH_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
-    _, outputs, _ = file_command(client, {'file': MOCK_HASH})
-
+    outputs = file_command(client, {'file': MOCK_HASH})[0].to_context()['EntryContext']
     file_key = next(filter(lambda k: 'File' in k, outputs.keys()), 'File')
 
     assert outputs[file_key][0].get('MD5', '') == MOCK_HASH, 'The indicator value is wrong'
-    assert outputs[DBOT_SCORE_KEY][0]['Indicator'] == MOCK_HASH, 'The indicator is not matched'
-    assert outputs[DBOT_SCORE_KEY][0]['Type'] == 'file', 'The indicator type should be file'
-    assert 1 <= outputs[DBOT_SCORE_KEY][0]['Score'] <= 3, 'Invalid indicator score range'
+    assert outputs[dbot_score_key][0]['Indicator'] == MOCK_HASH, 'The indicator is not matched'
+    assert outputs[dbot_score_key][0]['Type'] == 'file', 'The indicator type should be file'
+    assert 1 <= outputs[dbot_score_key][0]['Score'] <= 3, 'Invalid indicator score range'
 
 
 def test_whois(requests_mock):

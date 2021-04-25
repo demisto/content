@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: XFE_v2
+  id: XFE_v22
   version: -1
 configuration:
 - defaultvalue: https://api.xforce.ibmcloud.com
@@ -63,8 +63,8 @@ configuration:
   type: 8
 description: IBM X-Force Exchange lets you receive threat intelligence about applications,
   IP addresses, URls and hashes
-display: IBM X-Force Exchange v2
-name: XFE_v2
+display: IBM X-Force Exchange v22
+name: XFE_v22
 script:
   commands:
   - arguments:
