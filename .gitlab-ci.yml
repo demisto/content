@@ -79,6 +79,7 @@ variables:
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
   BUCKET_UPLOAD: "true"
+  SKIP_PRIVATE_BUILD: "true"
 
 
 stages:
@@ -176,8 +177,8 @@ run-unittests-and-lint:
   script:
     - echo "====Trigger Private Build===="
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]]; then
-        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD]]; then
+        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+  || -n SKIP_PRIVATE_BUILD ]]; then
           echo "Skipping - not running in contribution instance"
         else
           python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
