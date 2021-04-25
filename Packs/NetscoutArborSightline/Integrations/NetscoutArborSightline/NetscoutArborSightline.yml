@@ -9,7 +9,7 @@ configuration:
     required: false
     type: 13
   - defaultvalue: https://example.com/
-    display: Your server URL
+    display: Server URL (e.g., https://....)
     name: url
     required: true
     type: 0
