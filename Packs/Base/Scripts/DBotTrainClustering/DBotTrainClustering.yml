@@ -9,10 +9,13 @@ args:
   name: fieldForClusterName
   required: false
   secret: false
-- default: false
+- auto: PREDEFINED
+  default: false
   defaultValue: toDate
   isArray: false
   name: fromDate
+  predefined:
+  - 1 month ago
   required: false
   secret: false
 - default: false
@@ -21,6 +24,7 @@ args:
   required: false
   secret: false
 - default: false
+  defaultValue: '3000'
   isArray: false
   name: limit
   required: false
@@ -31,19 +35,15 @@ args:
   required: false
   secret: false
 - default: false
+  defaultValue: '100'
   isArray: false
   name: maxNumberOfCluster
   required: false
   secret: false
 - default: false
+  defaultValue: '2'
   isArray: false
-  name: incidentType
-  required: false
-  secret: false
-- default: false
-  defaultValue: '3'
-  isArray: false
-  name: minNumberofIncidentinCluster
+  name: minNumberofIncidentPerCluster
   required: false
   secret: false
 - default: false
@@ -53,6 +53,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
+  defaultValue: 'False'
   isArray: false
   name: storeModel
   predefined:
@@ -75,13 +76,19 @@ args:
   - 'False'
   required: false
   secret: false
+- default: false
+  isArray: false
+  name: incidentType
+  required: false
+  secret: false
 commonfields:
   id: 3621593a-3641-4b26-90dc-a660f4b4e68c
   version: -1
 enabled: false
-name: DBotCreateClustering
+name: DBotTrainClustering
 script: '-'
 subtype: python3
 system: false
 timeout: '0'
 type: python
+dockerimage: demisto/mlclustering:1.0.0.19238

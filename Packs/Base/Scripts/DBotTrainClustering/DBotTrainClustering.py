@@ -11,15 +11,16 @@ from sklearn.compose import ColumnTransformer
 from sklearn import cluster
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.manifold import TSNE
 from sklearn import metrics
 import hdbscan
-#from MulticoreTSNE import MulticoreTSNE as TSNE
 
 
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either add incident fields in " \
                             "fieldExactMatch, enlarge the time period or increase the limit argument " \
                             "to more than %s."
+MESSAGE_CLUSTERING_NOT_VALID = "Clustering cannot be created with this dataset"
 
 PREFIXES_TO_REMOVE = ['incident.']
 REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
@@ -102,8 +103,10 @@ class PostProcessing(object):
             chosen = {k: v for k, v in self.stats[cluster]['distribution sample'].items() if v >= self.threshold*100}
             total = sum(dict(chosen).values(), 0.0)
             dist = {k: v * 100 / total for k, v in chosen.items()}
-            dist_total[cluster] = dist
-        self.clus_names = dist_total
+            dist_total[cluster] = {}
+            dist_total[cluster]['distribution'] = dist
+            dist_total[cluster]['clusterName'] = ' , '.join([x for x in chosen.keys()])
+        self.selected_clusters = dist_total
 
 class Clustering(object):
     """
@@ -197,11 +200,11 @@ class Clustering(object):
         self.number_clusters = len(set(self.results[self.results >= 0]))
         return
 
-    # def reduce_dimension(self, dimension=2):
-    #     if not self.TSNE_:
-    #         tsne = TSNE(n_jobs=32, n_components=dimension)  # TSNE(n_components=2, learning_rate=1000, verbose=2)
-    #         self.data_2d = tsne.fit_transform(self.data)
-    #         self.TSNE_ = True
+    def reduce_dimension(self, dimension=2):
+        if not self.TSNE_:
+            tsne = TSNE(n_jobs=-1, n_components=dimension)  # TSNE(n_components=2, learning_rate=1000, verbose=2)
+            self.data_2d = tsne.fit_transform(self.data)
+            self.TSNE_ = True
 
     def compute_centers(self):
         for cluster in range(self.number_clusters):
@@ -242,12 +245,12 @@ def get_args():  # type: ignore
 
     from_date = demisto.args().get('fromDate')
     to_date = demisto.args().get('toDate')
-    limit = int(demisto.args()['limit'])
+    limit = int(demisto.args().get('limit'))
     query = demisto.args().get('query')
     incident_type = demisto.args().get('incidentType')
 
     max_number_of_clusters = int(demisto.args().get('maxNumberOfCluster'))
-    min_number_of_incident_in_cluster = int(demisto.args().get('minNumberofIncidentinCluster'))
+    min_number_of_incident_in_cluster = int(demisto.args().get('minNumberofIncidentPerCluster'))
     model_name = demisto.args().get('modelName')
     store_model = demisto.args().get('storeModel')
     model_override = demisto.args().get('overrideExistingModel', 'False') == 'True'
@@ -257,7 +260,7 @@ def get_args():  # type: ignore
            min_homogeneity_cluster,model_override
 
 
-def get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query_sup, limit, type):
+def get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query_sup, limit, incident_type):
     msg = ""
     if query_sup:
         query = " %s" % query_sup
@@ -268,7 +271,7 @@ def get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_da
         'populateFields': ' , '.join(populate_fields),
         'fromDate': from_date,
         'toDate': to_date,
-        'limit': limit,
+        'limit': str(limit),
         'type': type
     })
     if is_error(res):
@@ -427,20 +430,22 @@ def is_clustering_valid(clustering_model):
     return True
 
 
-def create_clusters_json(model_processed, incidents_df):
-    clustering = model_processed.clustering.named_steps['clustering']
+def create_clusters_json(model_processed, incidents_df, type):
+    clustering = model_processed.clustering
     data = {}
     data['data'] = []
     color = ['0048BA', '#B0BF1A	', '#7CB9E8	', '#B284BE	', '#E52B50', '#FFBF00', '#665D1E', '#8DB600', '#D0FF14']
     for cluster, coordinates in clustering.centers.items():
+        if cluster not in model_processed.selected_clusters.keys():
+            continue
         d = {}
-        d['x'] = coordinates[0]
-        d['y'] = coordinates[1]
-        d['name'] = "clusterid" + str(cluster)
+        d['x'] = float(coordinates[0])
+        d['y'] = float(coordinates[1])
+        d['name'] = model_processed.selected_clusters[cluster]['clusterName']
         d['dataType'] = 'incident'
         d['color'] = color[divmod(cluster, len(color))[1]]
         d['pivot'] = ' OR '.join(['id: ' + str(x) for x in incidents_df[clustering.model.labels_ == cluster].id.values.tolist()])
-        d['query'] = 'type:Phishing'
+        d['query'] = 'type:%s' % type
         d['data'] = [int(model_processed.stats[cluster]['number_samples'])]
         data['data'].append(d)
 
@@ -455,7 +460,7 @@ def create_summary(model_processed):
         'Total number of cluster: ': str(model_processed.stats["General"]["Nb cluster"]),
         'Minimun number of sample per cluster: ': str(model_processed.stats["General"]["min_samples"]) ,
         'Maximun number of cluster': str(model_processed.max_number_cluster),
-        'Total number of non clusterized element': + str(sum(clustering.model.labels_ == -1))
+        'Total number of non clusterized element':  str(sum(clustering.model.labels_ == -1))
     }
     return summary
 
@@ -484,11 +489,13 @@ def main():
 
     # Get all the incidents from query, date and field similarity and field family
     populate_fields = fields_for_clustering + field_for_cluster_name
-    incidents, msg = get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query, limit, type)
+    incidents, msg = get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query,
+                                                                limit, incident_type)
     global_msg += "%s \n" % msg
 
     if not incidents:
-        demisto
+        demisto.results(global_msg)
+        return None, global_msg
 
     incidents_df = pd.DataFrame(incidents)
     incidents_df.index = incidents_df.id
@@ -498,8 +505,6 @@ def main():
     labels = incidents_df[field_for_cluster_name].rename(columns={field_for_cluster_name[0]: 'label'})
 
     ## Model
-    tfidf_params = {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (2,5)}
-
     tfidf_pipe = Pipeline(steps=[
         ('tfidf', Tfidf(normalize_function=normalize_global))
     ])
@@ -509,9 +514,6 @@ def main():
     transformers_list = [('tfidf', tfidf_pipe, ['commandline']) for field in fields_for_clustering]
     preprocessor = ColumnTransformer(
         transformers=transformers_list)
-
-
-
 
     # preprocessor = ColumnTransformer(
     #     transformers=[
@@ -526,21 +528,25 @@ def main():
                             ])
 
     model.fit(incidents_df, labels)
+
     if not is_clustering_valid(model.named_steps['clustering']):
-        a=1
-        #write actions if clustering not valid
-    #model.named_steps['clustering'].reduce_dimension()
-    #model.named_steps['clustering'].compute_centers()
+        demisto.results(MESSAGE_CLUSTERING_NOT_VALID)
+
+    model.named_steps['clustering'].reduce_dimension()
+    model.named_steps['clustering'].compute_centers()
     model_processed = PostProcessing(model, min_homogeneity_cluster, max_number_of_clusters)
 
     #store model
-    if store_model:
+    if store_model=='True':
         store_model_in_demisto(model_processed, model_name, model_override)
 
     #return Entry and summary
-    output_clustering_json = create_clusters_json(model_processed, incidents_df)
+    output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)
     summary = create_summary(model_processed)
     return_entry_clustering(readable_output=summary, output_clustering=output_clustering_json, tag="trained")
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
 
 
 

@@ -43,9 +43,9 @@ def test_main_regular(mocker):
                             'maxNumberOfCluster': '1000',
                             'minNumberofIncidentinCluster': '2',
                             'modelName': 'model',
-                            'storeModel': 'True',
-                            'minHomogeneityCluster': 0.3
-
+                            'storeModel': 'False',
+                            'minHomogeneityCluster': 0.3,
+                            'incidentType': 'Phishing'
                         })
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     res, msg = main()
