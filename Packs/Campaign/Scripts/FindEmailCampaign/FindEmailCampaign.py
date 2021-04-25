@@ -72,7 +72,7 @@ STATUS_DICT = {
 
 INVALID_KEY_WARNING = 'Warning: the fields {fields} was not found in the phishing incidents. Please make sure that '\
                       'you\'ve specified the machine-name of the fields. The machine name can be found in the '\
-                      'settings of the incident field you are trying to search '
+                      'settings of the incident field you are trying to search.'
 
 INCIDENTS_CONTEXT_TD = 'incidents(obj.id == val.id)'
 
