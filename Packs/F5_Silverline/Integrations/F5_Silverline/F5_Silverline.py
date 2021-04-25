@@ -8,7 +8,6 @@ from typing import Dict, Any
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 BASE_URL = "/api/v1/ip_lists"
 TABLE_HEADERS_GET_OBJECTS = ['ID', 'IP', 'Expires At', 'List Target', 'Created At', 'Updated At']
 
