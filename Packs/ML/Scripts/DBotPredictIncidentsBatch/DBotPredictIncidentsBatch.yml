@@ -14,7 +14,7 @@ args:
   secret: false
 - default: false
   description: 'The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page (valid strings example: "3 days ago", ""2019-01-01T00:00:00
+    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
     +0200")'
   isArray: false
   name: fromDate
@@ -22,7 +22,7 @@ args:
   secret: false
 - default: false
   description: 'The end date by which to filter incidents. Date format will be the
-    same as in the incidents query page (valid strings example: "3 days ago", ""2019-01-01T00:00:00
+    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
     +0200")'
   isArray: false
   name: toDate
@@ -35,28 +35,6 @@ args:
   name: limit
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'false'
-  description: Whether to query and fetch incident context.
-  isArray: false
-  name: includeContext
-  predefined:
-  - 'true'
-  - 'false'
-  required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: created
-  description: The incident field (created or modified) to specify for the date range.
-  isArray: false
-  name: timeField
-  predefined:
-  - created
-  - modified
-  required: false
-  secret: false
 - default: false
   description: The field name with the label. Supports a comma-separated list, the
     first non-empty value will be taken.
@@ -65,31 +43,9 @@ args:
   required: true
   secret: false
 - default: false
-  defaultValue: '15'
-  description: Sample text of which the total number of words are less than or equal
-    to this number will be ignored.
-  isArray: false
-  name: removeShortTextThreshold
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0.99'
-  description: Remove emails with similarity greater than this threshold, range 0-1,
-    where 1 is completly identical.
-  isArray: false
-  name: dedupThreshold
-  required: false
-  secret: false
-- default: false
   description: If non-empty, hash every word with this seed.
   isArray: false
   name: hashSeed
-  required: false
-  secret: false
-- default: false
-  description: The model name to store in the system.
-  isArray: false
-  name: modelName
   required: false
   secret: false
 - default: false
@@ -106,6 +62,12 @@ args:
   isArray: false
   name: phishingLabels
   required: false
+  secret: false
+- default: false
+  description: The model name to store in the system.
+  isArray: false
+  name: modelName
+  required: true
   secret: false
 - default: false
   defaultValue: emailsubject
@@ -128,22 +90,30 @@ args:
   name: emailbodyhtml
   required: false
   secret: false
-comment: Create a phishing classifier using machine learning technique, based on email
-  content.
+- default: false
+  defaultValue: dbotprediction,dbotpredictionprobability
+  description: A comma-separated list of fields in the object to poplulate.
+  isArray: false
+  name: populateFields
+  required: false
+  secret: false
+comment: Apply a trained ML model on multiple incidents at once, to compare incidents
+  how the incidents were labeled by analysts, to the predictions of the model. This
+  script is aimed to help evaluate a trained model using past incidents.
 commonfields:
-  id: DBotBuildPhishingClassifier
+  id: DBotPredictIncidentsBatch
   version: -1
 enabled: false
-name: DBotBuildPhishingClassifier
+name: DBotPredictIncidentsBatch
 script: '-'
 subtype: python3
 system: false
 tags:
+- phishing
 - ml
-timeout: 12µs
+timeout: '0'
 type: python
 dockerimage: demisto/ml:1.0.0.19023
-runonce: true
-tests:
-- Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
