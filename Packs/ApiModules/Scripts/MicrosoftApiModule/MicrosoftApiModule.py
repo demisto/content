@@ -27,6 +27,7 @@ DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 SESSION_STATE = 'session_state'
 
+
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
