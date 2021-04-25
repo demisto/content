@@ -5,7 +5,7 @@ import pytest
 
 # Import local packages
 from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command
-from CommonServerPython import DBotScoreReliability
+from CommonServerPython import *
 
 INTEGRATION_NAME = 'AlienVault OTX v2'
 
@@ -86,9 +86,11 @@ def test_dbot_score(pulse: dict, score: int):
 ])
 def test_file_command(mocker, raw_response_general, raw_response_analysis, expected):
     mocker.patch.object(client, 'query', side_effect=[raw_response_analysis, raw_response_general])
-    results = file_command(client, {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'})
-    # results is tuple (human_readable, context_entry, raw_response).
-    assert expected == results[1]
+    command_results = file_command(client, {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'})
+    # results is CommandResults list
+    context = command_results[0].to_context()['EntryContext']
+    print(context)
+    assert expected == context
 
 
 def test_url_command(mocker):
