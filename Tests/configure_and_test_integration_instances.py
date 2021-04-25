@@ -207,7 +207,8 @@ class Build:
         env_conf = get_env_conf()
         server_to_port_mapping = map_server_to_port(env_conf, ami_env)
         if Build.run_environment == Running.CIRCLECI_RUN:
-            server_numeric_version = get_server_numeric_version(ami_env)
+            server_numeric_version = get_server_numeric_version(ami_env=ami_env,
+                                                                override_env_results_path=Build.env_results_path)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
         return server_to_port_mapping, server_numeric_version

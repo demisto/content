@@ -305,15 +305,19 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def load_env_results_json():
-    if not os.path.isfile(ENV_RESULTS_PATH):
+def load_env_results_json(override_env_results_path=None):
+    env_results_path = ENV_RESULTS_PATH
+    if override_env_results_path:
+        env_results_path = override_env_results_path
+
+    if not os.path.isfile(env_results_path):
         return {}
 
-    with open(ENV_RESULTS_PATH, 'r') as json_file:
+    with open(env_results_path, 'r') as json_file:
         return json.load(json_file)
 
 
-def get_server_numeric_version(ami_env, is_local_run=False):
+def get_server_numeric_version(ami_env, is_local_run=False, override_env_results_path=None):
     """
     Gets the current server version
     Arguments:
@@ -321,6 +325,8 @@ def get_server_numeric_version(ami_env, is_local_run=False):
             AMI version name.
         is_local_run: (bool)
             when running locally, assume latest version.
+        override_env_results_path: (str)
+            path to env_results.json file.
 
     Returns:
         (str) Server numeric version
@@ -330,9 +336,13 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         logging.info(f'Local run, assuming server version is {default_version}')
         return default_version
 
-    env_json = load_env_results_json()
+    env_results_path = ENV_RESULTS_PATH
+    if override_env_results_path:
+        env_results_path = override_env_results_path
+
+    env_json = load_env_results_json(env_results_path)
     if not env_json:
-        logging.warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
+        logging.warning(f'Did not find {env_results_path} file, assuming server version is {default_version}.')
         return default_version
 
     instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}

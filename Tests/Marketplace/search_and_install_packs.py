@@ -332,8 +332,7 @@ def install_packs(client: demisto_client,
     }
     logging.info(f'Installing packs on server {host}')
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-    # move back to debug when done
-    logging.info(f'Installing the following packs on server {host}:\n{packs_to_install_str}')
+    logging.debug(f'Installing the following packs on server {host}:\n{packs_to_install_str}')
 
     # make the pack installation request
     try:
@@ -589,7 +588,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     lock = Lock()
 
     for pack_id in pack_ids:
-        logging.info(f'pack_id: {pack_id}')  # Delete this when done debugging
         thread = Thread(target=search_pack_and_its_dependencies,
                         kwargs={'client': client,
                                 'pack_id': pack_id,
