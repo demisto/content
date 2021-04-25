@@ -431,8 +431,9 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
 def create_json_out_format(iocs: list):
     formatted_indicators = []  # type:List
     for indicator_data in iocs:
-        json_format_indicator = json_format_single_indicator(indicator_data)
-        formatted_indicators.append(json_format_indicator)
+        if indicator_data.get("value"):
+            json_format_indicator = json_format_single_indicator(indicator_data)
+            formatted_indicators.append(json_format_indicator)
 
     return {CTX_VALUES_KEY: json.dumps(formatted_indicators)}
 
@@ -463,7 +464,7 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
     num_of_returned_indicators = 0
 
     for indicator in iocs:
-        if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
+        if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
             indicator_proxysg_category = indicator.get('proxysgcategory')
             # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
             # than list add the indicator to it's category list
@@ -492,6 +493,8 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
 def create_mwg_out_format(iocs: list, mwg_type: str) -> dict:
     formatted_indicators = []  # type:List
     for indicator in iocs:
+        if not indicator.get('value'):
+            continue
         value = "\"" + indicator.get('value') + "\""
         sources = indicator.get('sourceBrands')
         if sources:
