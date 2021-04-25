@@ -917,22 +917,10 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "playbookID": "panorama_content_update_test",
-            "fromversion": "5.5.0",
-            "timeout": 1600
-        },
-        {
-            "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "5.5.0",
             "timeout": 1600
-        },
-        {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.0",
-            "playbookID": "panorama_content_update_test"
         },
         {
             "integrations": "Panorama",
