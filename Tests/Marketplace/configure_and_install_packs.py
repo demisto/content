@@ -1,6 +1,7 @@
 import argparse
 import logging
 import sys
+import os
 
 from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
     Build, Server
@@ -17,6 +18,7 @@ def options_handler():
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build_number', help='CI job number where the instances were created', required=True)
+    parser.add_argument('-af', '--artifacts_folder', help='The artifacts folder. Will look for env_results.json there.')
 
     options = parser.parse_args()
 
@@ -28,6 +30,9 @@ def main():
     options = options_handler()
 
     # Get the host by the ami env
+    if options.artifacts_folder:
+        Build.env_results_path = os.path.join(options.artifacts_folder, Build.env_results_path)
+
     server_to_port_mapping, server_version = Build.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
