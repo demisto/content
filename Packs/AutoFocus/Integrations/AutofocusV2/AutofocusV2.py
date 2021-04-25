@@ -1635,8 +1635,8 @@ def create_relationships_list(entity_a, entity_a_type, tags, reliability):
     for tag in tags:
         tag_class = tag.get('tag_class_id')
         entity_b = tag.get('tag_name')
-        if entity_b:
-            relation_by_type = RELATIONSHIP_TYPE_BY_TAG_CLASS_ID.get(tag_class)
+        relation_by_type = RELATIONSHIP_TYPE_BY_TAG_CLASS_ID.get(tag_class)
+        if entity_b and relation_by_type:
             relationships.append(EntityRelation(relation_by_type.get('name'),
                                                 entity_a=entity_a,
                                                 entity_a_type=entity_a_type,

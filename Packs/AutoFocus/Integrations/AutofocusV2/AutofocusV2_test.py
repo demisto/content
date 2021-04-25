@@ -248,7 +248,7 @@ def test_reliability(mocker):
     mocker.patch.object(AutofocusV2, 'search_indicator', return_value=mock_data)
     mocked_dbot = mocker.patch.object(CommonServerPython.Common, 'DBotScore')
     mocker.patch.object(CommonServerPython.Common, 'IP')
-    AutofocusV2.search_ip_command('1.1.1.1', DBotScoreReliability.B)
+    AutofocusV2.search_ip_command('1.1.1.1', DBotScoreReliability.B, False)
     assert mocked_dbot.call_args[1].get('reliability') == 'B - Usually reliable'
 
 
