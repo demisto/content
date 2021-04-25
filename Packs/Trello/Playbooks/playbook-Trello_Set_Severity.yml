@@ -390,6 +390,6 @@ view: |-
     }
   }
 tests:
-- c98f69a4-1154-49c1-88b8-40330fb8d6c5
+- No tests
 fromversion: 6.0.0
 description: Updates the Severity of a trello card by setting, and creating if required, a Trello Label.
