@@ -383,7 +383,7 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     """
 
     context: dict = defaultdict(list)
-    command_results: CommandResults = []
+    command_results: List[CommandResults] = []
 
     for file_hash in argToList(args.get('file')):
         try:
