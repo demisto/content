@@ -35,7 +35,9 @@ configuration:
   name: partition
   required: false
   type: 0
-- additionalinfo: The initial offset to start fetching from, not including the value set (e.g. if 3 is set, the first event that will be fetched will be with offset 4).
+- additionalinfo: The initial offset to start fetching from, not including the value
+    set (e.g. if 3 is set, the first event that will be fetched will be with offset
+    4).
   display: Offset to fetch messages from (Exclusive)
   name: offset
   required: false
@@ -53,6 +55,15 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: |-
+    The max number of bytes of messages to attempt
+    to fetch with each fetch request.
+  defaultvalue: '1048576'
+  display: Max number of bytes per message
+  hidden: false
+  name: max_bytes_per_message
+  required: false
+  type: 0
 description: The Open source distributed streaming platform
 display: Kafka v2
 name: Kafka V2
