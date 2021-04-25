@@ -1,0 +1,400 @@
+description: Send Content Updates to DFIR
+id: ContentUpdates
+inputs: []
+name: ContentUpdates
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cadd65da-e426-424a-87d7-3939d03a8013
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: cadd65da-e426-424a-87d7-3939d03a8013
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      bucket_name:
+        simple: shula
+      object_name:
+        simple: content/packs/index.zip
+      saved_file_name: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves object data into a file.
+      id: d3362c4d-82e7-45e8-8385-b7b87d86d0d7
+      iscommand: true
+      name: Download Index.zip from marketplace-dist
+      script: '|||gcs-download-file'
+      type: regular
+      version: -1
+    taskid: d3362c4d-82e7-45e8-8385-b7b87d86d0d7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      last_message_time_str:
+        simple: ${LastRun}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Extract the index and gets a list of all new packs since last run
+        into context.
+      id: d4b91e92-f4a1-49a4-88d3-c2231b6868fc
+      iscommand: false
+      name: Build Slack Blocks From Index
+      script: BuildSlackBlocksFromIndex
+      type: regular
+      version: -1
+    taskid: d4b91e92-f4a1-49a4-88d3-c2231b6868fc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Blocks}
+          operator: isNotEqualString
+          right:
+            value:
+              simple: no new packs
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if slack blocks is not "no new packs"
+      id: 24fbed4b-b2e7-4dcd-8234-95e9ecf367a7
+      iscommand: false
+      name: Check If Blocks Exists
+      type: condition
+      version: -1
+    taskid: 24fbed4b-b2e7-4dcd-8234-95e9ecf367a7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocks:
+        simple: ${Blocks}
+      channel:
+        simple: gfr
+      entry: {}
+      ignoreAddURL: {}
+      message: {}
+      threadID: {}
+      to: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a message to a user, group, or channel.
+      id: dd267b47-a940-48b8-8978-dd1b4ea6452e
+      iscommand: true
+      name: Send Slack Message
+      script: '|||send-notification'
+      type: regular
+      version: -1
+    taskid: dd267b47-a940-48b8-8978-dd1b4ea6452e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -217.5,
+          "y": 1420
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listData:
+        simple: ${LastRun.[1]}
+      listName:
+        simple: ContentUpdatesLastRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.set
+      id: e8f0b175-fb1e-4f9c-8af4-e137b156dbae
+      iscommand: true
+      name: Set Last Run
+      script: Builtin|||setList
+      type: regular
+      version: -1
+    taskid: e8f0b175-fb1e-4f9c-8af4-e137b156dbae
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: LastRun=.
+      listName:
+        simple: ContentUpdatesLastRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.get
+      id: 58b9cdeb-7898-4502-8f40-21ff3d619962
+      iscommand: true
+      name: Get Last Run
+      script: Builtin|||getList
+      type: regular
+      version: -1
+    taskid: 58b9cdeb-7898-4502-8f40-21ff3d619962
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3d517fa9-f205-4cf3-82a8-946174daad3b
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 3d517fa9-f205-4cf3-82a8-946174daad3b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "YES":
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listName:
+        simple: ContentUpdatesLastRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if list exist in demisto lists.
+      id: cf01b400-1caa-4b65-8b00-130e84ea249d
+      iscommand: false
+      name: Check If ContentUpdatesLastRun List Exists
+      script: IsListExist
+      type: condition
+      version: -1
+    taskid: cf01b400-1caa-4b65-8b00-130e84ea249d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: iso
+      daysAgo:
+        simple: "7"
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+      yearsAgo: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 04259544-a53d-4541-8e54-180d5af7db6b
+      iscommand: false
+      name: Get Week Ago Time
+      script: GetTime
+      type: regular
+      version: -1
+    taskid: 04259544-a53d-4541-8e54-180d5af7db6b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 542.5,
+          "y": 545
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listData:
+        simple: ${TimeNow}
+      listName:
+        simple: ContentUpdatesLastRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.create
+      id: af175ea3-1f5e-4c9c-897e-bc2c9f7e0016
+      iscommand: true
+      name: Create ContentUpdatesLastRun List
+      script: Builtin|||createList
+      type: regular
+      version: -1
+    taskid: af175ea3-1f5e-4c9c-897e-bc2c9f7e0016
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 542.5,
+          "y": 710
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 1140,
+        "x": -217.5,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
