@@ -228,8 +228,8 @@ Check file reputation
 | File.Relations.EntityA | String | The source of the relationship. |
 | File.Relations.EntityB | String | The destination of the relationship. |
 | File.Relations.Relationship | String | The name of the relationship. |
-| File.Relations.EntityA | String | The type of the source of the relationship. |
-| File.Relations.EntityB | String | The type of the destination of the relationship. |
+| File.Relations.EntityAType | String | The type of the source of the relationship. |
+| File.Relations.EntityBType | String | The type of the destination of the relationship. |
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 

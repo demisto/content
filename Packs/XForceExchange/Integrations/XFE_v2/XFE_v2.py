@@ -381,8 +381,8 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     Returns:
          List of CommandResults.
     """
-
     context: dict = defaultdict(list)
+    relationship: list = []
     command_results: List[CommandResults] = []
 
     for file_hash in argToList(args.get('file')):
@@ -396,21 +396,32 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
                 raise
 
         scores = {'high': 3, 'medium': 2, 'low': 1}
-
         dbot_score = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
                                       integration_name='XFE', score=scores.get(report['risk'], 0),
                                       reliability=client.reliability)
-        hash_type = get_hash_type(file_hash)  # if file_hash found, has to be md5, sha1 or sha256
-        if hash_type == 'md5':
-            file = Common.File(md5=file_hash, dbot_score=dbot_score)
-        elif hash_type == 'sha1':
-            file = Common.File(sha1=file_hash, dbot_score=dbot_score)
-        elif hash_type == 'sha256':
-            file = Common.File(sha256=file_hash, dbot_score=dbot_score)
+
         report_data = report['origins'].get('external', {})
         family_value = report_data.get('family')
         hash_info = {**report['origins'], 'Family': family_value,
                      'FamilyMembers': report_data.get('familyMembers')}
+        if client.create_relationships:
+            malware = dict_safe_get(hash_info, ['external', 'family'], [])[0]
+            if malware:
+                relationship = EntityRelation(name=EntityRelation.Relations.RELATED_TO,
+                                              entity_a=file_hash,
+                                              entity_a_type=FeedIndicatorType.File,
+                                              entity_b=malware,
+                                              entity_b_type=FeedIndicatorType.Malware,
+                                              source_reliability=client.reliability,
+                                              brand='XFE')
+
+        hash_type = get_hash_type(file_hash)  # if file_hash found, has to be md5, sha1 or sha256
+        if hash_type == 'md5':
+            file = Common.File(md5=file_hash, dbot_score=dbot_score, relations=relationship)
+        elif hash_type == 'sha1':
+            file = Common.File(sha1=file_hash, dbot_score=dbot_score, relations=relationship)
+        elif hash_type == 'sha256':
+            file = Common.File(sha256=file_hash, dbot_score=dbot_score, relations=relationship)
 
         context[f'XFE.{outputPaths["file"]}'] = hash_info
 
@@ -420,14 +431,15 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
                  'Source': hash_info.get('external', {}).get('source'),
                  'Created Date': report_data.get('firstSeen'),
                  'Type': hash_info.get('external', {}).get('malwareType')}
-        # markdown += tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
-        #                             f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True)
+        markdown = tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
+                                   f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True)
+
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
-                                            f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True),
+            readable_output=markdown,
             outputs=context,
             indicator=file,
-            raw_response=report
+            raw_response=report,
+            relations=relationship
         ))
     # return markdown, context, reports
     return command_results

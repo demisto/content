@@ -437,6 +437,26 @@ def test_file(requests_mock):
     assert 1 <= outputs[dbot_score_key][0]['Score'] <= 3, 'Invalid indicator score range'
 
 
+def test_file_connections(requests_mock):
+    """
+     Given:
+         - A hash.
+     When:
+         - When running the file command.
+     Then:
+         - Validate that the relationships are crated correctly
+     """
+    requests_mock.get(f'{MOCK_BASE_URL}/malware/{MOCK_HASH}', json=MOCK_HASH_RESP)
+
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
+    relations = file_command(client, {'file': MOCK_HASH})[0].relations.to_context()
+    assert relations.get('Relationship') == 'related-to'
+    assert relations.get('EntityA') == MOCK_HASH
+    assert relations.get('EntityAType') == 'File'
+    assert relations.get('EntityB') == 'badur'
+    assert relations.get('EntityBType') == 'Malware'
+
+
 def test_whois(requests_mock):
     requests_mock.get(f'{MOCK_BASE_URL}/whois/{MOCK_HOST}', json=MOCK_HOST_RESP)
 
