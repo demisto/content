@@ -922,7 +922,6 @@ jobs:
                       echo "Not AMI run, can't run on this version"
                       exit 0
                   fi
-            - *destroy_instances
             - *store_artifacts
   Server 5_5:
     <<: *container_config
