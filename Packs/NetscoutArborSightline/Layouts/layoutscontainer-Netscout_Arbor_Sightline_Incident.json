@@ -440,8 +440,8 @@
         ]
     },
     "group": "incident",
-    "id": "Netscout Arbor Sightline Incident",
-    "name": "Netscout Arbor Sightline Incident",
+    "id": "Netscout Arbor Sightline Alert",
+    "name": "Netscout Arbor Sightline Alert",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

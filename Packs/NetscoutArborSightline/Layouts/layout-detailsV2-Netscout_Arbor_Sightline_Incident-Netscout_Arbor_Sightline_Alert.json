@@ -1,8 +1,8 @@
 {
     "kind": "detailsV2",
     "layout": {
-        "id": "Netscout Arbor Sightline Incident",
-        "name": "Netscout Arbor Sightline Incident",
+        "id": "Netscout Arbor Sightline Alert",
+        "name": "Netscout Arbor Sightline Alert",
         "version": -1,
         "kind": "detailsV2",
         "typeId": "Netscout Arbor Sightline Alert",

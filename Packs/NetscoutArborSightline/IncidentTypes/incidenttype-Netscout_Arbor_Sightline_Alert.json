@@ -13,7 +13,7 @@
     "hours": 0,
     "hoursR": 0,
     "id": "Netscout Arbor Sightline Alert",
-    "layout": "Netscout Arbor Sightline Incident",
+    "layout": "Netscout Arbor Sightline Alert",
     "locked": false,
     "name": "Netscout Arbor Sightline Alert",
     "onChangeRepAlg": 0,
