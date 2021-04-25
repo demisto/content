@@ -26,7 +26,7 @@ SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
 CONTENT_CHANNEL = 'dmst-content-team'
 
 
-def get_faild_steps_list():
+def get_failed_steps_list():
     options = options_handler()
     if options.gitlab_server:
         return get_gitlab_failed_steps(options.ci_token, options.buildNumber, options.gitlab_server,
@@ -58,6 +58,7 @@ def get_circle_failed_steps(ci_token, build_number):
 def get_gitlab_failed_steps(ci_token, build_number, server_url, project_id):
     failed_steps_list = []
     gitlab_client = gitlab.Gitlab(server_url, job_token=ci_token)
+    logging.info(f'project id is {project_id}')
     project = gitlab_client.projects.get(project_id)
     pipeline = project.pipelines.get(build_number)
     jobs = pipeline.jobs.list()
@@ -126,7 +127,7 @@ def get_entities_fields(entity_title, report_file_name=''):
     if 'lint' in report_file_name:  # lint case
         failed_entities = get_failing_unit_tests_file_data()
     else:
-        failed_entities = get_faild_steps_list()
+        failed_entities = get_failed_steps_list()
     entity_fields = []
     if failed_entities:
         entity_fields.append({
