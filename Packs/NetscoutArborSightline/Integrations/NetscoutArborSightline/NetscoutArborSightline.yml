@@ -141,14 +141,14 @@ configuration:
     required: false
     type: 8
 description: DDoS protection and network visibility.
-display: Netscout Arbor Sightline
+display: Netscout Arbor Sightline (Peakflow)
 name: NetscoutArborSightline
 defaultmapperin: Netscout Arbor Sightline - Incoming Mapper
 script:
   commands:
     - arguments:
         - default: true
-          description: Alert ID to list the annotation for.
+          description: Alert ID to list the annotation for. Can be obtained from the na-sightline-alert-list command.
           isArray: false
           name: alert_id
           required: true
@@ -287,8 +287,8 @@ script:
           default: false
           description: 'The operator to apply on the importance argument (''>'' is grater
         than, ''<'' is smaller than, ''=''is equal). For example: if the chosen operator
-        is ''>'' and the chosen importance is ''1'', only alerts with importance grater
-        than 1 will be fetched.'
+        is ''>'' and the chosen importance is ''Low'', only alerts with importance grater
+        than Low will be fetched.'
           isArray: false
           name: importance_operator
           predefined:
@@ -350,7 +350,7 @@ script:
           required: false
           secret: false
         - default: false
-          description: ID of managed object associated with the alert.
+          description: ID of managed object associated with the alert. Can be obtained from the na-sightline-managed-object-list command.
           isArray: false
           name: managed_object_id
           required: false
@@ -365,6 +365,7 @@ script:
           description: Maximal number of alerts to retrieve, will also set the size of
             the returned page.
           isArray: false
+          defaultvalue: '50'
           name: limit
           required: false
           secret: false
@@ -426,7 +427,7 @@ script:
       name: na-sightline-alert-list
     - arguments:
         - default: true
-          description: The mitigation ID to get.
+          description: The mitigation ID to get. Can be obtained from the na-sightline-mitigation-list command
           isArray: false
           name: mitigation_id
           required: false
@@ -441,6 +442,7 @@ script:
           description: Maximal number of mitigations to retrieve, will also set the size
             of the returned page.
           isArray: false
+          defaultvalue: '50'
           name: limit
           required: false
           secret: false
@@ -552,7 +554,7 @@ script:
           required: true
           secret: false
         - default: false
-          description: ID of the alert associated with the mitigation.
+          description: ID of the alert associated with the mitigation. Can be obtained from the na-sightline-alert-list command.
           isArray: false
           name: alert_id
           required: false
@@ -633,7 +635,7 @@ script:
       name: na-sightline-mitigation-create
     - arguments:
         - default: true
-          description: The mitigation ID to delete.
+          description: The mitigation ID to delete. Can be obtained from the na-sightline-mitigation-list command.
           isArray: false
           name: mitigation_id
           required: true
@@ -802,6 +804,7 @@ script:
           description: Maximal number of mitigations to retrieve, will also set the size
             of the returned page.
           isArray: false
+          defaultvalue: '50'
           name: limit
           required: false
           secret: false
