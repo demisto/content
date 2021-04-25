@@ -8,8 +8,8 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Key
-  additionalinfo: The API Key to use for connection
+- additionalinfo: The API Key to use for connection
+  display: API Key
   name: apikey
   required: true
   type: 4
@@ -21,32 +21,164 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: 'Starter Base Integration - Name the integration as it will appear in the XSOAR UI'
+description: '[Enter a comprehensive, yet concise, description of what the integration
+  does, what use cases it is designed for, etc.]'
+display: Starter Base Integration - Name the integration as it will appear in the
+  XSOAR UI
 name: BaseIntegration
 script:
   commands:
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: '[Enter a description of the argument, including any important
+        information users need to know, for example, default values.]'
       isArray: false
       name: dummy
       required: true
       secret: false
     deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    description: '[Enter a description of the command, including any important information
+      users need to know, for example required permissions.]'
     execution: false
     name: baseintegration-dummy
     outputs:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
+  - arguments:
+    - default: false
+      description: The name of the process
+      isArray: false
+      name: process_name
+      required: false
+      secret: false
+    - default: false
+      description: The CB Host group this sensor is assigned to
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: The hostname of the computer for this process
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: The parent process name
+      isArray: false
+      name: parent_name
+      required: false
+      secret: false
+    - default: false
+      description: The process path
+      isArray: false
+      name: process_path
+      required: false
+      secret: false
+    - default: false
+      description: The md5 of the binary image backing the process
+      isArray: false
+      name: md5
+      required: false
+      secret: false
+    - default: false
+      description: Query string. Accepts the same data as the search box on the Process
+        Search page. See the Query overview for the query syntax. If not provided,
+        at least one other search field must be provided.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: group by a field name. For example, if parameter group=id, search
+        will return one result per process. Note that results will still honor sorting
+        specified by the search. Even within group, it will return result that is
+        first in the sort order. Grouping will be slower (sometimes much slower) than
+        regular results.
+      isArray: false
+      name: group_by
+      required: false
+      secret: false
+    - default: false
+      description: Sort rows by this field and order. last_update desc by default.
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: Return facet results. ‘false’ by default, set to ‘true’ for facets.
+      isArray: false
+      name: facet
+      required: false
+      secret: false
+    - default: false
+      description: facet field name to return. Multiple facet.field parameters can
+        be specified in a query.
+      isArray: false
+      name: facet_field
+      required: false
+      secret: false
+    - default: false
+      description: Return this many rows, 10 by default.
+      isArray: false
+      name: rows
+      required: false
+      secret: false
+    - default: false
+      description: Start at this row, 0 by default.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    deprecated: false
+    description: Process search
+    execution: false
+    name: cb-edr-processes-search
+  - arguments:
+    - default: false
+      description: The internal CB process id; this is the id field in search results.
+      isArray: false
+      name: process_id
+      required: true
+      secret: false
+    - default: false
+      description: The process segment id, the segment_id field in search results.
+      isArray: false
+      name: segment_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: 'False'
+      description: Whether to get sibling data for process.
+      isArray: false
+      name: get_related
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets basic process information for segment  of process.
+    execution: false
+    name: cb-edr-process-get
+  - arguments:
+    - default: false
+      description: The internal CB process id; this is the id field in search results.
+      isArray: false
+      name: process_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets segment data for a given process.
+    execution: false
+    name: cb-edr-process-segments-get
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.1.15759
-fromversion: 5.0.0
+  type: python
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
