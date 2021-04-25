@@ -442,7 +442,7 @@ upload-packs-to-marketplace:
     when: always
   script:
     - echo "=====Check User Permissions to Upload Packs=====" # if bucket upload and uploading to marketplace-dist
-    - CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
+    - "CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H 'Authorization: token ${GITHUB_TOKEN}')"
     - LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
     - LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
     - |
@@ -454,5 +454,5 @@ upload-packs-to-marketplace:
       fi
     - echo "=====Upload Packs To Marketplace Storage====="
     - if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
-    - echo just trying something.
+    - echo "just trying something."
 
