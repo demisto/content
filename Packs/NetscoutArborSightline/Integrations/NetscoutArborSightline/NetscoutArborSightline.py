@@ -198,7 +198,7 @@ class NetscoutClient(BaseClient):
                     }
                 else:
                     relationships[key] = {
-                        'data': {  #
+                        'data': {
                             'type': _type,
                             'id': val
                         }
@@ -654,7 +654,7 @@ def main() -> None:
         base_url = urljoin(params['url'], 'api/sp')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
-
+        first_fetch = None
         if first_fetch_dt := arg_to_datetime(params.get('first_fetch', '3 days')):
             first_fetch = first_fetch_dt.isoformat()
         max_fetch = min(arg_to_number(params.get('max_fetch', 50)), 100)
@@ -711,7 +711,7 @@ def main() -> None:
         elif command == 'na-sightline-tms-group-list':
             result = tms_group_list_command(client, args)
         else:
-            raise NotImplementedError('Command: {command} is not implemented')
+            raise NotImplementedError(f'Command: {command} is not implemented')
 
         if result:
             return_results(result)
