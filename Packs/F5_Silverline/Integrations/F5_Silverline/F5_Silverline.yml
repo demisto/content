@@ -29,7 +29,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: F5® Silverline® Threat Intelligence is a cloud-based service incorporating
+description: F5 Silverline Threat Intelligence is a cloud-based service incorporating
   external IP reputation and reducing threat-based communications.
 display: F5_Silverline
 name: F5_Silverline
