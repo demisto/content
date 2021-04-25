@@ -26,6 +26,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -111,6 +112,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -342,32 +344,45 @@ inputs:
   value: {}
   required: true
   description: Panorama Admin Email Address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: smbshare
   value: {}
   required: true
   description: SMB Shared folder name.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: scpwildfire
   value: {}
   required: false
   description: SCP folder for wildfire content update file.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: scpcontents
   value: {}
   required: true
   description: SCP folder for contents content update file.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: scpantivirus
   value: {}
   required: true
   description: SCP folder for Anti-Virus content update file.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: smbpath
   value: {}
   required: true
   description: SMB path to the content files files.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Air Gap - Panorama Content Update Receiver - Internal
 fromversion: 5.0.0
+tests:
+- PAN-OS URL Filtering enrichment - Test
+- Panorama Best Practise - Test
+- PAN-OS - Block IP - Static Address Group Test
+- PAN-OS - Block URL - Custom URL Category Test
+- PAN-OS - Block IP and URL - External Dynamic List v2 Test
+- palo_alto_firewall_test_pb
+- PAN-OS Create Or Edit Rule Test
+- palo_alto_panorama_test_pb
+- PAN-OS EDL Setup v3 Test
+- PAN-OS Query Logs For Indicators Test
+- PAN-OS DAG Configuration Test
+- Panorama Query Logs - Test
+- PAN-OS - Block IP - Custom Block Rule Test
