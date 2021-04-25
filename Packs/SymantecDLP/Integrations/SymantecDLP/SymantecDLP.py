@@ -699,8 +699,9 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 
             incidents.append(incident)
 
-            last_incident_time = incident_creation_time
-            last_incident_id = incident_id
+            if incident_id >= last_incident_id:
+                last_incident_time = incident_creation_time
+                last_incident_id = incident_id
 
         demisto.debug(f'BUG LOG - Setting the following values: last_fetched_event_iso: "{last_incident_time}"'
                       f'last_incident_id: "{last_incident_id}", for a total of {len(incidents)} incidents')
