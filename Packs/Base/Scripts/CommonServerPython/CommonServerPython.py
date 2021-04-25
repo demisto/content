@@ -6952,10 +6952,10 @@ class IndicatorsSearcher:
         if self._can_use_search_after:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
                                            searchAfter=self._search_after_param)
-            if self._search_after_title in res and res[self._search_after_title] is not None:
-                self._search_after_param = res[self._search_after_title]
-            else:
-                demisto.log('Elastic search using searchAfter was not found in searchIndicators')
+            self._search_after_param = res[self._search_after_title]
+
+            if res[self._search_after_title] is None:
+                demisto.info('Elastic search using searchAfter returned all indicators')
 
         else:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page,
