@@ -399,6 +399,7 @@ def create_fetch_incident_attachment(raw_response: Response, attachment_file_nam
     file_result = fileResult(filename=attachment_name, data=raw_response.content)
     # check for error
     if file_result["Type"] == EntryType.ERROR:
+        print("1111111111")
         demisto.error(f'file result type error {file_result["Contents"]}')
 
     return {
@@ -507,6 +508,11 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
                         attachments.append(tmp_attachment)
 
         alert["attachments"] = attachments
+        alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
+        if alert_csv_id:
+            extracted_csv_data = extract_data_from_csv_stream(client, alert_id,  # type: ignore
+                                                              alert_csv_id)
+            alert['alert_data']['csv'] = extracted_csv_data
 
         incident = {
             'name': f'Cyberint alert {alert_id}: {alert_title}',
@@ -517,11 +523,6 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         }
         incidents.append(incident)
 
-        alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
-        if alert_csv_id:
-            extracted_csv_data = extract_data_from_csv_stream(client, alert_id,  # type: ignore
-                                                              alert_csv_id)
-            alert['alert_data']['csv'] = extracted_csv_data
 
     if incidents:
         #  Update the time for the next fetch so that there won't be duplicates.

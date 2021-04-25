@@ -210,8 +210,15 @@ def test_extract_data_from_csv_stream(requests_mock):
 
 def test_cyberint_alerts_analysis_report_command(requests_mock):
     """
-    Adddd docs
-
+        Scenario: Retrieve expert analysis report.
+        Given:
+         - User has provided valid credentials and arguments.
+        When:
+         - A alerts-analysis-report is called and there analysis report reference in the response.
+        Then:
+         - Ensure that the return ContentsFormat of the file is 'text'.
+         - Ensure that the return Type is file.
+         - Ensure the name of the file.
     """
     from Cyberint import Client, cyberint_alerts_get_analysis_report_command
 
@@ -227,9 +234,16 @@ def test_cyberint_alerts_analysis_report_command(requests_mock):
 
 def test_cyberint_alerts_get_attachment_command(requests_mock):
     """
-    Add docs
-
-    """
+         Scenario: Retrieve alert attachment.
+         Given:
+          - User has provided valid credentials and arguments.
+         When:
+          - A alerts-get-attachment called and there attachments reference in the response.
+         Then:
+          - Ensure that the return ContentsFormat of the file is 'text'.
+          - Ensure that the return Type is file.
+          - Ensure the name of the file.
+     """
     from Cyberint import Client, cyberint_alerts_get_attachment_command
 
     png_content_mock = open('test_data/attachment_file_mock.png', 'rb')
