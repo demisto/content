@@ -2,6 +2,11 @@
   - Search for the Security Notice email sent from Codecov.
   - Collect indicators to be used in your threat hunting process.
   - Query network logs to detect related activity.
+  - Query Panorama to search for logs with related anti-spyware signatures
+    - Data Exfiltration Traffic Detection
+    - Malicious Modified Shell Script Detection
+    
+
   Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
   More information:
@@ -35,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Codecov - Bash Uploader Unauthorized Access](https://raw.githubusercontent.com/demisto/content/23a32e2688dd522c9c42d6a0ca5cc4f065b4c23f/Packs/MajorBreachesInvestigationandResponse/doc_files/Codecov_breach_-_Bash_Uploader.png)
+![Codecov - Bash Uploader Unauthorized Access](https://raw.githubusercontent.com/demisto/content/3009cf4aa3e1db8d99c4ea83f1a05bfcc8077230/Packs/MajorBreachesInvestigationandResponse/doc_files/Codecov_breach_-_Bash_Uploader.png)
