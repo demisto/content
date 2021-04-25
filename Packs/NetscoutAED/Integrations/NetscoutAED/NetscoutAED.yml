@@ -34,8 +34,6 @@ script:
         results. Can be retrieved by running the command "netscout-aed-country-code-list".
       isArray: false
       name: country
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
