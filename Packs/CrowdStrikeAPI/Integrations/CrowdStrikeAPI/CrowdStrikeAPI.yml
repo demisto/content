@@ -35,7 +35,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The endpoint in CrowdStrike API to refer.
+      description: The endpoint in CrowdStrike API to refer to.
       isArray: false
       name: endpoint
       required: true
@@ -62,7 +62,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The URL query parameters given in JSON format, e.g. {"limit":1}
+      description: The URL query parameters given in JSON format, e.g., {"limit":1}.
       isArray: false
       name: query_parameters
       required: false
@@ -70,7 +70,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: If "true" will populate the API response to the context data.
+      description: If "true", will populate the API response to the context data.
       isArray: false
       name: populate_context
       predefined:
