@@ -220,7 +220,7 @@ run-unittests-and-lint:
     - echo "====Get Private Build Status===="
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]]; then
-        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+  || -n SKIP_PRIVATE_BUILD ]]; then
           echo "Skipping - not running in contribution instance"
         else
           python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
