@@ -448,45 +448,49 @@ upload-packs-to-marketplace:
   script:
     - *start_tunnel
     - echo "=====Check User Permissions to Upload Packs=====" # if bucket upload and uploading to marketplace-dist
-    - if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
-    -   "CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H 'Authorization: token ${GITHUB_TOKEN}')"
-    -   echo "$CONTENT_LEADERS"
-    -   LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-    -   LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
-    -   |
+    - |
+      if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
+        "CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H 'Authorization: token ${GITHUB_TOKEN}')"
+        echo "$CONTENT_LEADERS"
+        LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
+        LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
         if [[ -z "$GITLAB_USER_NAME" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "$GITLAB_USER_NAME"`" ]]; then
           echo -e "User '$GITLAB_USER_NAME' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
           exit 1
         else
           echo "User '${GITLAB_USER_NAME}' is allowed to upload packs / force upload packs."
         fi
-    - fi
+      fi
     - echo "=====Upload Packs To Marketplace Storage====="
-    - if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
-    -   echo "trying something"
-    -   exit 1
-    -   EXTRACT_FOLDER=$(mktemp -d)
-    -   PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-    -   PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-    -   GCS_PATH=$(mktemp)
-    -   CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
-    -   CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
-    -   echo $GCS_MARKET_KEY > $GCS_PATH
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
+        echo "trying something"
+        exit 1
+        EXTRACT_FOLDER=$(mktemp -d)
+        PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+        PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+        GCS_PATH=$(mktemp)
+        CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
+        CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
+        echo $GCS_MARKET_KEY > $GCS_PATH
 
-    -   GCS_BUILD_BUCKET="marketplace-ci-build"
-    -   if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-    -     STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
-    -   fi
+        GCS_BUILD_BUCKET="marketplace-ci-build"
+        if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
+        fi
 
-    -   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH"
-    -   rm $GCS_PATH
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH"
+        rm $GCS_PATH
     - echo "=====Validate Premium Packs====="
-    - if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
-    -   ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
-    - else
-    -   echo "Skipping Premium Packs Validation"
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
+        ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
+      else
+        echo "Skipping Premium Packs Validation"
+      fi
     - echo "=====Run Slack Notifier====="
-    - if [ -n "${BUCKET_UPLOAD}" ]; then
-    -   ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
-    - fi
+    - |
+      if [ -n "${BUCKET_UPLOAD}" ]; then
+        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
+      fi
 
