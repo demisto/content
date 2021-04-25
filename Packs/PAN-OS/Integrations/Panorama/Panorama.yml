@@ -4584,7 +4584,7 @@ script:
     - contextPath: Panorama.Content.Upload.Message
       description: Content upload message.
       type: string
-    description: Uploads content file to Panorama
+    description: Uploads a content file to Panorama.
   - name: panorama-install-file-content-update
     arguments:
     - name: version_name
@@ -4605,8 +4605,7 @@ script:
       - "yes"
       - "no"
       description: Skips file validity check with PAN-OS update server. Use this option
-        for networks disconnected from the Internet and only if you trust the content
-        file.
+        for air-gapped networks and only if you trust the content file.
       defaultValue: "no"
     outputs:
     - contextPath: Panorama.Content.Install.JobID
