@@ -78,7 +78,7 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     Note: Human readable appears only if the HTTP request did not fail.
     """
     list_type = args.get('list_type')
-    list_target = args.get('list_target', 'proxy')
+    list_target = args.get('list_target', 'proxy-routed')
     ip_address = args.get('IP')
     mask = args.get('mask', '32')
     duration = int(args.get('duration', 0))

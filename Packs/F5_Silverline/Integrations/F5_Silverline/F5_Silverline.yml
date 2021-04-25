@@ -21,8 +21,16 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: F5® Silverline® Threat Intelligence is a cloud-based service incorporating external IP
-  reputation and reducing threat-based communications.
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: F5® Silverline® Threat Intelligence is a cloud-based service incorporating
+  external IP reputation and reducing threat-based communications.
 display: F5_Silverline
 name: F5_Silverline
 script:
@@ -30,7 +38,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The list type can be one of allowlist or denylist or bad_actor.
+      description: The dynamic lists type of threatening IP addresses. The type can
+        be one of allowlist or denylist or bad_actor.
       isArray: false
       name: list_type
       predefined:
@@ -40,9 +49,11 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma separated list of IP object IDs. If this argument is given,
-        only this particular IP object will be returned. Otherwise, all of the IP
-        objects that match list_type will be returned. '
+      description: A comma separated list of IP object IDs. If this argument is given,
+        only those IP objects will be displayed. Otherwise, all IP objects that match
+        the given list_type will be displayed. Note - In case you don't know what
+        is the object ID, you should run this command without object_id arguemnt to
+        get all the IDs.
       isArray: true
       name: object_id
       required: false
@@ -60,50 +71,58 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a particular ip objects list by the list type (allowlist/denylist/bad_actor). For denylist only the proxy list_target can be returned.
+    description: Get a dynamic list of threatening IP addresses by the given list
+      type. The type can be one of allowlist or denylist or bad_actor. Note - For
+      denylist list type only the objects that thier list_target is proxy can be displayed.
     execution: false
     name: f5-silverline-ip-objects-list
     outputs:
     - contextPath: F5Silverline.IPObjectList.id
-      description: List object ID
+      description: The ID of a particular threatening IP address object.
       type: String
     - contextPath: F5Silverline.IPObjectList.type
-      description: List object type
+      description: The type of a particular threatening IP address object.
       type: String
     - contextPath: F5Silverline.IPObjectList.attributes.ip
-      description: IP address
+      description: The IP address of a particular threatening IP address object.
       type: String
     - contextPath: F5Silverline.IPObjectList.attributes.mask
-      description: Mask - change
+      description: The mask of a particular threatening IP address object.
       type: String
     - contextPath: F5Silverline.IPObjectList.attributes.duration
-      description: Duration - change
+      description: The duration (in minutes) of a particular threatening IP address
+        object.
       type: String
     - contextPath: F5Silverline.IPObjectList.attributes.expires_at
-      description: Expiration date (timestamp)
+      description: The expiration date (timestamp) of a particular threatening IP
+        address object.
       type: String
     - contextPath: F5Silverline.IPObjectList.attributes.list_target
-      description: List target of this object (proxy) - change
+      description: The list target of a particular threatening IP address object.
       type: String
     - contextPath: F5Silverline.IPObjectList.links.self
-      description: Url link to this specific IP object
+      description: The F5 Silverline url link of a particular threatening IP address
+        object.
       type: String
     - contextPath: F5Silverline.IPObjectList.meta.note
-      description: IP object notes
+      description: The note of a particular threatening IP address object.
       type: String
     - contextPath: F5Silverline.IPObjectList.meta.tags
-      description: IP object tags
+      description: The tags of a particular threatening IP address object.
       type: Unknown
     - contextPath: F5Silverline.IPObjectList.meta.created_at
-      description: IP object creation timestamp
+      description: The creation date (timestamp) of a particular threatening IP address
+        object.
       type: String
     - contextPath: F5Silverline.IPObjectList.meta.updated_at
-      description: IP object laast update timestamp
+      description: The last update date (timestamp) of a particular threatening IP
+        address object.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The list type can be one of allowlist or denylist or bad_actor. Allwlist is DDoS IP Allowlists.
+      description: The dynamic lists type of threatening IP addresses. The type can
+        be one of allowlist or denylist or bad_actor.
       isArray: false
       name: list_type
       predefined:
@@ -114,10 +133,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The list target can be one of proxy or routed or proxy-routed.
-        This param limits the denylist type but is ignored for the other list types.
-        An optional list_target parameter can be supplied to target either the proxy
-        or routed denylist. If list_target is not specified proxy will be the default.
+      description: This argument can be supplied to target either the proxy or routed
+        denylist. If list_target is not specified it will assume both proxy and routed
+        are requested (i.e proxy-routed). The allowed values for list_target are proxy
+        or routed or proxy-routed. This argument limits the denylist type but is ignored
+        for the other list types.
       isArray: false
       name: list_target
       predefined:
@@ -127,43 +147,49 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IP address of the IP object to set.
+      description: The IP address of a new particular threatening IP address object.
       isArray: false
       name: IP
       required: true
       secret: false
     - default: false
-      description: The mask address of the IP object to set. Default is 32.
+      description: The mask address of a new particular threatening IP address object.
+        Default is 32.
       isArray: false
       name: mask
       required: false
       secret: false
     - default: false
-      description: The duration of the IP object to set. Setting the duration to 0 (default) means the denylist entry will never expire.
+      description: The duration (in minutes) of a new particular threatening IP address
+        object. Setting the duration to 0 (default) means the new IP address object
+        will never expire.
       isArray: false
       name: duration
       required: false
       secret: false
     - default: false
-      description: The note of the IP object to set.
+      description: The note of a new particular threatening IP address object. Defaut
+        is empty.
       isArray: false
       name: note
       required: false
       secret: false
     - default: false
-      description: Comma separated list of tags.
+      description: A Comma separated list of tags of a new particular threatening
+        IP address object. Defaut is empty.
       isArray: true
       name: tags
       required: false
       secret: false
     deprecated: false
-    description: Add IP address in a particular list.
+    description: Add a new particular threatening IP address object by its IP address.
     execution: false
     name: f5-silverline-ip-object-add
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The list type can be one of allowlist or denylist or bad_actor.
+      description: The dynamic lists type of threatening IP addresses. The type can
+        be one of allowlist or denylist or bad_actor.
       isArray: false
       name: list_type
       predefined:
@@ -173,12 +199,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: IP object ID to be deleted.
+      description: The ojbect ID of a particular threatening IP address object that
+        should be deleted.
       name: object_id
       required: true
       secret: false
     deprecated: false
-    description: Deleted a particular ip objects list by the list type (allowlist/denylist/bad_actor) and by the object_id.
+    description: Delete an exising particular threatening IP address object by its
+      object ID.
     execution: false
     name: f5-silverline-ip-object-delete
   dockerimage: demisto/python3:3.9.4.18682
