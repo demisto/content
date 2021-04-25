@@ -1272,7 +1272,7 @@ class Pack(object):
                     modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
                 # The case where the version is not a key in the changelog file or it is a key of aggregated content
                 else:
-                    logging.info("The version is not a key in the changelog file or it is a key of aggregated content")
+                    logging.debug(f'The "{version}" version is not a key in the changelog file or it is a key of aggregated content')
                     same_block_versions_dict, higher_nearest_version = self.get_same_block_versions(
                         release_notes_dir, version, changelog)
                     modified_versions_dict[higher_nearest_version] = aggregate_release_notes_for_marketplace(
