@@ -1259,8 +1259,7 @@ class Pack(object):
         modified_versions_dict = {}
 
         for rn_filename in modified_rn_files:
-            _version = rn_filename.replace('.md', '')
-            version = _version.replace('_', '.')
+            version = release_notes_file_to_version(rn_filename)
             # Should only apply on modified files that are not the last rn file
             if LooseVersion(version) >= changelog_latest_rn_version:
                 continue
@@ -1306,8 +1305,7 @@ class Pack(object):
         lower_versions = lower_versions + lowest_version  # if the version is 1.0.0, ensure lower_versions is not empty
         lower_nearest_version = max(lower_versions)
         for rn_filename in os.listdir(release_notes_dir):
-            _current_version = rn_filename.replace('.md', '')
-            current_version = _current_version.replace('_', '.')
+            current_version = release_notes_file_to_version(rn_filename)
             # Catch all versions that are in the same block
             if lower_nearest_version < LooseVersion(current_version) <= higher_nearest_version:
                 with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
@@ -1330,8 +1328,7 @@ class Pack(object):
         pack_versions_dict: dict = dict()
 
         for filename in sorted(os.listdir(release_notes_dir)):
-            _version = filename.replace('.md', '')
-            version = _version.replace('_', '.')
+            version = release_notes_file_to_version(filename)
 
             # Aggregate all rn files that are bigger than what we have in the changelog file
             if LooseVersion(version) > changelog_latest_rn_version:
@@ -2886,10 +2883,13 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
     all_rn_versions = []
     lowest_version = [LooseVersion('1.0.0')]
     for filename in os.listdir(release_notes_dir):
-        _current_version = filename.replace('.md', '')
-        current_version = _current_version.replace('_', '.')
+        current_version = release_notes_file_to_version(filename)
         all_rn_versions.append(LooseVersion(current_version))
     lower_versions_all_versions = [item for item in all_rn_versions if item < version] + lowest_version
     lower_versions_in_changelog = [LooseVersion(item) for item in changelog.keys() if
                                    LooseVersion(item) < version] + lowest_version
     return max(lower_versions_all_versions) == max(lower_versions_in_changelog)
+
+
+def release_notes_file_to_version(rn_file_name):
+    return rn_file_name.replace('.md', '').replace('_', '.')
