@@ -393,8 +393,6 @@ run-validations:
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
-  rules:
-    - if: '"${BUCKET_UPLOAD}" == "true"'
   script:
     - *start_tunnel
     - echo "=====Get Instance Variables====="
@@ -443,8 +441,6 @@ upload-packs-to-marketplace:
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
-  rules:
-    - if: '"${BUCKET_UPLOAD}" == "true"'
   script:
     - *start_tunnel
     - echo "=====Check User Permissions to Upload Packs=====" # if bucket upload and uploading to marketplace-dist
