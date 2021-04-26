@@ -16,8 +16,23 @@ TYPES = {
 
 
 class Client(BaseClient):
+    def __init__(self, proxy: bool, verify: bool, reliability: str, base_url: str, headers: Dict):
+        super().__init__(proxy=proxy, verify=verify, base_url=base_url, headers=headers)
+        self.base_url = base_url
+        if DBotScoreReliability.is_valid_type(reliability):
+            self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        else:
+            return_error("PhishTankV2 error: Please provide a valid value for the Source Reliability parameter.")
 
     def build_request_body(self, client_body: Dict, list_url: List) -> Dict:
+        """ build the request body according to the client body and the urls.
+
+        Args:
+            client_body: client body to add it in the request body
+            list_url: The urls list
+        Returns:
+            (dict) The request body, in the right format.
+        """
         list_urls = []
         for url in list_url:
             list_urls.append({"url": url})
@@ -33,20 +48,31 @@ class Client(BaseClient):
         }
         return body
 
-    def url_request(self, client_body, full_url, list_url):
+    def url_request(self, client_body, list_url):
+        """ send the url request.
+
+        Args:
+            client_body: client body to add it in the request body
+            list_url: The urls list
+        Returns:
+            (dict) The response from the request.
+        """
         body = self.build_request_body(client_body, list_url)
         result = self._http_request(
             method='POST',
             json_data=body,
-            full_url=full_url)
+            url_suffix='')
         return result
 
 
-def test_module(client: Client, client_body: Dict, full_url) -> str:
+def test_module(client: Client, client_body: Dict) -> str:
+    """
+    Performs basic get request to get sample URL details.
+    """
     try:
         # testing a known malicious URL to check if we get matches
         test_url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"
-        res = client.url_request(client_body, full_url, [test_url])
+        res = client.url_request(client_body, [test_url])
         if res.get('matches'):
             message = 'ok'
         else:
@@ -60,6 +86,10 @@ def test_module(client: Client, client_body: Dict, full_url) -> str:
 
 
 def handle_errors(result: Dict):
+    """
+    Handle errors, raise Exception when there is errors in the response.
+    """
+
     status_code = result.get('StatusCode', 0)
     result_body = result.get('Body')
 
@@ -79,6 +109,13 @@ def handle_errors(result: Dict):
 
 
 def arrange_results_to_urls(results: List, url_list: List) -> Dict:
+    """ arrange the results according the urls list.
+    Args:
+        results: the response.
+        url_list: The urls list
+    Returns:
+        (dict) The results according the urls.
+    """
     urls_results: Dict[str, list] = {}
     for url in url_list:
         urls_results[url] = []
@@ -90,11 +127,14 @@ def arrange_results_to_urls(results: List, url_list: List) -> Dict:
     return urls_results
 
 
-def url_command(client: Client, args: Dict[str, Any], client_body, reliability, full_url) -> CommandResults:
+def url_command(client: Client, args: Dict[str, Any], client_body) -> CommandResults:
+    """
+    url command: Returns URL details for a list of URL
+    """
 
     url = argToList(args.get('url'))
 
-    result = client.url_request(client_body, full_url, url)
+    result = client.url_request(client_body, url)
 
     if result.get('StatusCode'):
         handle_errors(result)
@@ -112,7 +152,7 @@ def url_command(client: Client, args: Dict[str, Any], client_body, reliability, 
                 indicator_type=DBotScoreType.URL,
                 integration_name='GoogleSafeBrowsingV2',
                 score=3,
-                reliability=reliability
+                reliability=client.reliability
             )
             url_standard_context = Common.URL(
                 url=url_key,
@@ -131,7 +171,7 @@ def url_command(client: Client, args: Dict[str, Any], client_body, reliability, 
                 indicator_type=DBotScoreType.URL,
                 integration_name='GoogleSafeBrowsingV2',
                 score=0,
-                reliability=reliability
+                reliability=client.reliability
             )
             url_standard_context = Common.URL(
                 url=url_key,
@@ -164,11 +204,6 @@ def main() -> None:
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
 
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")
-
     client_body = {
         'clientId': params.get('client_id'),
         'clientVersion': params.get('client_version'),
@@ -186,14 +221,15 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+            reliability=reliability)
 
         if demisto.command() == 'test-module':
-            result = test_module(client, client_body, full_url=base_url)
+            result = test_module(client, client_body)
             return_results(result)
 
         elif demisto.command() == 'url':
-            return_results(url_command(client, demisto.args(), client_body, reliability, full_url=base_url))
+            return_results(url_command(client, demisto.args(), client_body))
 
     # Log exceptions and return errors
     except Exception as e:
