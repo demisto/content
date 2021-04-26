@@ -98,6 +98,17 @@ entryTypes = {
     'widget': 17
 }
 
+ENDPOINT_STATUS_OPTIONS = [
+    'Online',
+    'Offline'
+]
+
+ENDPOINT_ISISOLATED_OPTIONS = [
+    'Yes',
+    'No',
+    'Pending isolation',
+    'Pending unisolation'
+]
 
 class EntryType(object):
     """
@@ -3093,9 +3104,13 @@ class Common(object):
                 endpoint_context['Vendor'] = self.vendor
 
             if self.status:
+                if self.status not in ENDPOINT_STATUS_OPTIONS:
+                    raise ValueError('Status does not have a valid value')
                 endpoint_context['Status'] = self.status
 
             if self.is_isolated:
+                if self.is_isolated not in ENDPOINT_ISISOLATED_OPTIONS:
+                    raise ValueError('Is Isolated does not have a valid value')
                 endpoint_context['IsIsolated'] = self.is_isolated
 
             ret_value = {
