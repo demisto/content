@@ -253,6 +253,12 @@
             "instance_names": "JSON Feed_auto_detect"
         },
         {
+            "integrations": "JSON Feed",
+            "playbookID": "JSON_Feed_Test",
+            "fromversion": "5.5.0",
+            "instance_names": "JSON Feed_post"
+        },
+        {
             "integrations": "Google Cloud Functions",
             "playbookID": "test playbook - Google Cloud Functions",
             "fromversion": "5.0.0"
@@ -3259,26 +3265,23 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "AzureWAF",
             "playbookID": "DbotPredictOufOfTheBoxTest",
-            "instance_names": [
-                "ml_dummy_prod"
-            ],
             "fromversion": "4.5.0",
             "timeout": 1000
         },
         {
-            "integrations": "AzureWAF",
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
-            "instance_names": [
-                "ml_dummy_prod"
-            ],
             "fromversion": "5.5.0",
             "timeout": 1000
         },
         {
             "integrations": "VirusTotal - Premium (API v3)",
             "playbookID": "VirusTotal Premium v3 TestPlaybook",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Armis",
+            "playbookID": "Armis-Test",
             "fromversion": "5.5.0"
         }
     ],
@@ -3365,7 +3368,8 @@
         "TestTOPdeskPlaybook": "Issue 35412",
         "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "Issue 31032",
-        "PAN-OS EDL Setup v3 Test": "Issue 35386"
+        "PAN-OS EDL Setup v3 Test": "Issue 35386",
+        "Google-Vault-Generic-Test": "Issue 24347"
     },
     "skipped_integrations": {
         
@@ -3446,6 +3450,7 @@
         "Akamai WAF": "Issue 32318",
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
+        "Armis": "No instance - developed by SOAR Experts",
         
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -3658,6 +3663,9 @@
             "demisto/powershell-ubuntu": {
                 "pid_threshold": 40,
                 "memory_threshold": 200
+            },
+            "demisto/boto3": {
+                "memory_threshold": 90
             }
         }
     }
