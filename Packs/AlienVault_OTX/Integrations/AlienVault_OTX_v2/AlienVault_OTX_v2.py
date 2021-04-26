@@ -191,14 +191,32 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
         raw_response = client.query(section=ip_version,
                                     argument=ip_)
         if raw_response:
+            relationships = []
+            if client.create_relationships:
+                # pulse_info.pulses.[0].attack_ids.display_name - can contain a list of attack_ids
+                pulses = dict_safe_get(raw_response, ['pulse_info', 'pulses'], [''])
+                if pulses and isinstance(pulses, list) and 'attack_ids' in pulses[0]:
+                    display_names = [attack_id.get('display_name') for attack_id in pulses[0].get('attack_ids')]
+                    if display_names:
+                        relationships = [EntityRelation(
+                            name=EntityRelation.Relations.INDICATOR_OF,
+                            entity_a=ip_,
+                            entity_a_type=FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6,
+                            entity_b=display_name,
+                            entity_b_type="Attack Pattern",
+                            source_reliability=client.reliability,
+                            brand=INTEGRATION_NAME) for display_name in display_names]
+
             dbot_score = Common.DBotScore(indicator=ip_, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME,
                                           score=calculate_dbot_score(client, raw_response.get('pulse_info', {})),
                                           reliability=client.reliability)
+
             ip_object = Common.IP(ip=ip_, dbot_score=dbot_score, asn=raw_response.get('asn'),
                                   geo_country=raw_response.get('country_code'),
                                   geo_latitude=raw_response.get("latitude"),
-                                  geo_longitude=raw_response.get("longitude"))
+                                  geo_longitude=raw_response.get("longitude"),
+                                  relations=relationships)
 
             context = {
                 'Reputation': raw_response.get('reputation'),
@@ -214,8 +232,8 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.IP(val.IP && val.IP === obj.IP)',
                 outputs={'IP': context},
                 indicator=ip_object,
-                raw_response=raw_response
-                # relations=relationship
+                raw_response=raw_response,
+                relations=relationships
             ))
 
     if not command_results:

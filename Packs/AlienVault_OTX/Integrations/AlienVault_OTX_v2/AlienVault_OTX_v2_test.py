@@ -79,7 +79,7 @@ URL_RAW_RESPONSE = {
     "alexa": "http://www.alexa.com/siteinfo/fotoidea.com",
     "base_indicator": {},
     "domain": "fotoidea.com",
-    "false_positive": [],
+    "False_positive": [],
     "hostname": "www.fotoidea.com",
     "indicator": "http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list",
     "pulse_info": {
@@ -141,7 +141,7 @@ URL_RELATIONSHIPS = [{
 DOMAIN_RAW_RESPONSE = {
     "alexa": "http://www.alexa.com/siteinfo/otx.alienvault.com",
     "base_indicator": {},
-    "false_positive": [],
+    "False_positive": [],
     "indicator": "otx.alienvault.com",
     "pulse_info": {
         "count": 0,
@@ -212,7 +212,7 @@ IP_RAW_RESPONSE = {
     "country_code3": "USA",
     "country_name": "United States of America",
     "dma_code": 0,
-    "false_positive": [],
+    "False_positive": [],
     "flag_title": "United States of America",
     "flag_url": "/assets/images/flags/us.png",
     "indicator": "8.8.88.8",
@@ -265,6 +265,240 @@ IP_EC = {
     'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': {
         'IP': {'Reputation': 0, 'IP': '8.8.88.8'}}
 }
+
+IP_RAW_RESPONSE_WITH_RELATIONSHIPS = {
+    "accuracy_radius": 1000,
+    "area_code": 0,
+    "asn": "AS36647 YAHOO-GQ1",
+    "base_indicator": {
+        "access_reason": "",
+        "access_type": "public",
+        "content": "",
+        "description": "",
+        "id": 2212739426,
+        "indicator": "98.136.103.23",
+        "title": "",
+        "type": "IPv4"
+    },
+    "charset": 0,
+    "city": None,
+    "city_data": True,
+    "continent_code": "NA",
+    "country_code": "US",
+    "country_code2": "US",
+    "country_code3": "USA",
+    "country_name": "United States of America",
+    "dma_code": 0,
+    "False_positive": [],
+    "flag_title": "United States of America",
+    "flag_url": "/assets/images/flags/us.png",
+    "indicator": "98.136.103.23",
+    "latitude": 37.751,
+    "longitude": -97.822,
+    "postal_code": None,
+    "pulse_info": {
+        "count": 1,
+        "pulses": [
+            {
+                "TLP": "green",
+                "adversary": "",
+                "attack_ids": [
+                    {
+                        "display_name": "T1140 - Deobfuscate/Decode Files or Information",
+                        "id": "T1140",
+                        "name": "Deobfuscate/Decode Files or Information"
+                    },
+                    {
+                        "display_name": "T1040 - Network Sniffing",
+                        "id": "T1040",
+                        "name": "Network Sniffing"
+                    },
+                    {
+                        "display_name": "T1053 - Scheduled Task/Job",
+                        "id": "T1053",
+                        "name": "Scheduled Task/Job"
+                    },
+                    {
+                        "display_name": "T1060 - Registry Run Keys / Startup Folder",
+                        "id": "T1060",
+                        "name": "Registry Run Keys / Startup Folder"
+                    },
+                    {
+                        "display_name": "T1071 - Application Layer Protocol",
+                        "id": "T1071",
+                        "name": "Application Layer Protocol"
+                    }
+                ],
+                "author": {
+                    "avatar_url": "https://otx20-web-media.s3.amazonaws.com/media/avatars/user_80137/resized/80/avatar_54d0ee2979.png",
+                    "id": "80137",
+                    "is_following": False,
+                    "is_subscribed": False,
+                    "username": "dorkingbeauty1"
+                },
+                "cloned_from": None,
+                "comment_count": 0,
+                "created": "2020-12-11T23:37:51.039000",
+                "description": "Technique ID: T1140 ATTACKID\nTechnique Name: Deobfuscate/Decode Files or Information \nThe following is the full set of results for the 2016 WindowSuggested ATT\u0026CK IDs:\nSf:ShellCode-AU\\ [Trj] , Win. \nTechnique ID: T1140 ATTACKID\nTechnique Name: Deobfuscate/Decode Files\nSuggested Targeted Countries:\n86.43.151.3 eircom.net Ireland COUNTRYAS5466 Eir Broadband 91.121.164.151 excite.it ns3058971.ip-91-121-164.eu France COUNTRYAS16276 OVH SAS 91.195.240.126 dicksmail.com Germany COUNTRYAS47846 SEDO GmbH 95.216.117.203 chat4all.org tyr.ionstar.net Finland COUNTRYAS24940 Hetzner Online GmbH 98.136.103.23 yahoo.se w2.src.vip.gq1.yahoo.com United States COUNTRYAS36647 YAHOO-GQ1 99.192.136.18 hotmale.com cs2665.mojohost.com United States COUNTRYAS27589 MOJOHOST\nUK Services Limited 188.125.72.167 www.aol.com unknown.yahoo.com United Kingdom COUNTRYAS34010 Yahoo!",
+                "downvotes_count": 0,
+                "export_count": 7,
+                "follower_count": 0,
+                "groups": [],
+                "id": "5fd402cf91a35497c2af3da8",
+                "in_group": False,
+                "indicator_count": 4323,
+                "indicator_type_counts": {
+                    "FileHash-MD5": 21,
+                    "FileHash-SHA1": 21,
+                    "FileHash-SHA256": 253,
+                    "URL": 3007,
+                    "domain": 309,
+                    "hostname": 712
+                },
+                "industries": [],
+                "is_author": False,
+                "is_modified": True,
+                "is_subscribing": None,
+                "locked": False,
+                "malware_families": [],
+                "modified": "2021-01-10T00:02:05.455000",
+                "modified_text": "84 days ago ",
+                "name": "4275147930ee7f90e65251218ef84542577ff2a79699dd6634108721ee81be1d",
+                "public": 1,
+                "pulse_source": "web",
+                "references": [
+                    "The following is the full set of results for the 2016 Windows World Cup, which will be held on Thursday, 1 July at 19:00 BST.. and will appear on the following page.",
+                    "Suggested Description: The following is the full set of results for the 2016 Windows World Cup, which will be held on Thursday, 1 July at 19:00 BST.. and will appear on the following page. Suggested Targeted Countries: 86.43.151.3 eircom.net Ireland COUNTRYAS5466 Eir Broadband 91.121.164.151 excite.it ns3058971.ip-91-121-164.eu France COUNTRYAS16276 OVH SAS 91.195.240.126 dicksmail.com Germany COUNTRYAS47846 SEDO GmbH 95.216.117.203 chat4all.org tyr.ionstar.net Finland COUNTRYAS24940 Hetzner Online GmbH 98.",
+                    "Suggested ATT\u0026CK IDs: \"Analysis Date 12 months ago Score 14 Malicious Related Pulses OTX User-Created Pulses (23) Related Tags 11 Related Tags khtml , gecko , mac os , cpu iphone ... More Antivirus Detections Sf:ShellCode-AU\\ [Trj] , Win.  Technique ID: T1140 ATTACKID Technique Name: Deobfuscate/Decode Files or Information"
+                ],
+                "related_indicator_is_active": 0,
+                "related_indicator_type": "IPv4",
+                "subscriber_count": 137,
+                "tags": [
+                    "pushdo",
+                    "activity beacon",
+                    "united",
+                    "malware beacon",
+                    "unknown",
+                    "msie",
+                    "windows nt",
+                    "show",
+                    "search",
+                    "entries",
+                    "malware",
+                    "copy",
+                    "date",
+                    "write",
+                    "whitelisted",
+                    "as15169 google",
+                    "united kingdom",
+                    "gmbh",
+                    "default"
+                ],
+                "targeted_countries": [
+                    "Finland",
+                    "Germany",
+                    "France",
+                    "Ireland",
+                    "United Kingdom of Great Britain and Northern Ireland",
+                    "United States of America"
+                ],
+                "threat_hunter_has_agents": 1,
+                "threat_hunter_scannable": True,
+                "upvotes_count": 0,
+                "validator_count": 0,
+                "vote": 0,
+                "votes_count": 0
+            }
+        ],
+        "references": [
+            "The following is the full set of results for the 2016 Windows World Cup, which will be held on Thursday, 1 July at 19:00 BST.. and will appear on the following page.",
+            "Suggested ATT\u0026CK IDs: \"Analysis Date 12 months ago Score 14 Malicious Related Pulses OTX User-Created Pulses (23) Related Tags 11 Related Tags khtml , gecko , mac os , cpu iphone ... More Antivirus Detections Sf:ShellCode-AU\\ [Trj] , Win.  Technique ID: T1140 ATTACKID Technique Name: Deobfuscate/Decode Files or Information",
+            "Suggested Description: The following is the full set of results for the 2016 Windows World Cup, which will be held on Thursday, 1 July at 19:00 BST.. and will appear on the following page. Suggested Targeted Countries: 86.43.151.3 eircom.net Ireland COUNTRYAS5466 Eir Broadband 91.121.164.151 excite.it ns3058971.ip-91-121-164.eu France COUNTRYAS16276 OVH SAS 91.195.240.126 dicksmail.com Germany COUNTRYAS47846 SEDO GmbH 95.216.117.203 chat4all.org tyr.ionstar.net Finland COUNTRYAS24940 Hetzner Online GmbH 98."
+        ],
+        "related": {
+            "alienvault": {
+                "adversary": [],
+                "industries": [],
+                "malware_families": []
+            },
+            "other": {
+                "adversary": [],
+                "industries": [],
+                "malware_families": []
+            }
+        }
+    },
+    "region": None,
+    "reputation": 0,
+    "sections": [
+        "general",
+        "geo",
+        "reputation",
+        "url_list",
+        "passive_dns",
+        "malware",
+        "nids_list",
+        "http_scans"
+    ],
+    "subdivision": None,
+    "type": "IPv4",
+    "type_title": "IPv4",
+    "validation": [
+        {
+            "message": "contained in whitelisted prefix",
+            "name": "Whitelisted IP",
+            "source": "whitelist"
+        }
+    ],
+    "whois": "http://whois.domaintools.com/98.136.103.23"
+}
+
+IP_EC_WITH_RELATIONSHIPS = {
+    'IP(val.Address && val.Address == obj.Address)': [{
+        'Address': '98.136.103.23', 'ASN': 'AS36647 YAHOO-GQ1', 'Geo': {'Location': '37.751:-97.822', 'Country': 'US'},
+        'Relations': [{'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
+                       'EntityB': 'T1140 - Deobfuscate/Decode Files or Information', 'EntityBType': 'Attack Pattern'},
+                      {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
+                       'EntityB': 'T1040 - Network Sniffing', 'EntityBType': 'Attack Pattern'},
+                      {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
+                       'EntityB': 'T1053 - Scheduled Task/Job', 'EntityBType': 'Attack Pattern'},
+                      {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
+                       'EntityB': 'T1060 - Registry Run Keys / Startup Folder', 'EntityBType': 'Attack Pattern'},
+                      {'Relationship': 'indicator-of', 'EntityA': '98.136.103.23', 'EntityAType': 'IP',
+                       'EntityB': 'T1071 - Application Layer Protocol', 'EntityBType': 'Attack Pattern'}]
+    }],
+    'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
+        'Indicator': '98.136.103.23', 'Type': 'ip', 'Vendor': 'AlienVault OTX v2', 'Score': 2,
+        'Reliability': 'C - Fairly reliable'}],
+    'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': {'IP': {'Reputation': 0, 'IP': '98.136.103.23'}}
+}
+
+IP_RELATIONSHIPS = [
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
+     'entityA': '98.136.103.23',
+     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1140 - Deobfuscate/Decode Files or Information',
+     'entityBFamily': 'Indicator', 'entityBType': 'Attack Pattern', 'fields': {},
+     'reliability': 'C - Fairly reliable',
+     'brand': 'AlienVault OTX v2'
+     },
+    {
+        'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
+        'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
+        'entityB': 'T1040 - Network Sniffing', 'entityBFamily': 'Indicator', 'entityBType': 'Attack Pattern',
+        'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'},
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
+     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1053 - Scheduled Task/Job',
+     'entityBFamily': 'Indicator', 'entityBType': 'Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
+     'brand': 'AlienVault OTX v2'},
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
+     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1060 - Registry Run Keys / Startup Folder',
+     'entityBFamily': 'Indicator', 'entityBType': 'Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
+     'brand': 'AlienVault OTX v2'},
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
+     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1071 - Application Layer Protocol',
+     'entityBFamily': 'Indicator', 'entityBType': 'Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
+     'brand': 'AlienVault OTX v2'}]
 
 client = Client(
     base_url="base_url",
@@ -380,10 +614,11 @@ def test_domain_command(mocker, raw_response, expected):
     assert expected == context
 
 
-@pytest.mark.parametrize('raw_response,expected', [
-    (IP_RAW_RESPONSE, IP_EC)
+@pytest.mark.parametrize('ip_,raw_response,expected_ec,expected_relationships', [
+    ('8.8.88.8', IP_RAW_RESPONSE, IP_EC, []),
+    ('98.136.103.23', IP_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_EC_WITH_RELATIONSHIPS, IP_RELATIONSHIPS)
 ])
-def test_ip_command(mocker, raw_response, expected):
+def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationships):
     """
     Given
     - An IPv4 address.
@@ -393,9 +628,15 @@ def test_ip_command(mocker, raw_response, expected):
 
     Then
     - Validate that the IP and DBotScore entry context have the proper values.
+    - Validate that relationships where created if available in the raw response.
     """
     mocker.patch.object(client, 'query', side_effect=[raw_response])
-    command_results = ip_command(client, '8.8.88.8', 'IPv4')
+    command_results = ip_command(client, ip_, 'IPv4')
     # results is CommandResults list
-    context = command_results[0].to_context()['EntryContext']
-    assert expected == context
+    all_context = command_results[0].to_context()
+
+    context = all_context['EntryContext']
+    assert expected_ec == context
+
+    relations = all_context['Relationships']
+    assert expected_relationships == relations
