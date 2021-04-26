@@ -23,63 +23,47 @@
  "fromVersion": "6.1.0",
  "layout": "Phishing",
  "extractSettings": {
- "mode": "Specific",
+  "mode": "Specific",
   "fieldCliNameToExtractSettings": {
    "agentid": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "alertid": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "alertname": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "app": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "assigneduser": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "assignmentgroup": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "attachment": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "attachmentextension": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "attachmenthash": {
     "extractAsIsIndicatorTypeId": "",
@@ -91,107 +75,77 @@
    "attachmentid": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "attachmentname": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "attachmentsize": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "attachmenttype": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "caller": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "category": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "closenotes": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "closinguserid": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "commandline": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "country": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "criticalassets": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "dbotmirrorid": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "dbotprediction": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "dbottextsuggestionhighlighted": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "destinationhostname": {
     "extractAsIsIndicatorTypeId": "hostRep",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "destinationip": {
     "extractAsIsIndicatorTypeId": "",
@@ -204,23 +158,17 @@
    "destinationnetwork": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "destinationport": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "details": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "detectionurl": {
     "extractAsIsIndicatorTypeId": "",
@@ -232,219 +180,157 @@
    "deviceexternalip": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "devicehash": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "devicelocalip": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "devicemodel": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "devicename": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "droppedcount": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailbcc": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailbody": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailbodyformat": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailbodyhtml": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailcc": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailclientname": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailfrom": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailheaders": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailhtml": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailinreplyto": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailkeywords": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailmessageid": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailreceived": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailreplyto": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailreturnpath": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailsenderip": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailsource": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailsubject": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailto": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailtocount": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "emailurlclicked": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "escalation": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "eventid": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "eventtype": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "feedbased": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "filehash": {
     "extractAsIsIndicatorTypeId": "",
@@ -456,156 +342,114 @@
    "filename": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "filepath": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "filesize": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "firstname": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "incomingmirrorerror": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "investigationstage": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "labels": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "lastname": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "linkedcount": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "logsource": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "macaddress": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "md5": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "mobiledevicemodel": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "name": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
     "extractIndicatorTypesIDs": [
-
+     "urlRep"
     ]
    },
    "os": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "osversion": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "outgoingmirrorerror": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "phonenumber": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "pid": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "protocol": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "reporteremailaddress": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "runstatus": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "sha256": {
     "extractAsIsIndicatorTypeId": "",
@@ -617,23 +461,17 @@
    "sourcebrand": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "sourcehostname": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": true,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "sourceinstance": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "sourceip": {
     "extractAsIsIndicatorTypeId": "",
@@ -646,65 +484,47 @@
    "sourcenetwork": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "sourceport": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "sourceusername": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "state": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "subcategory": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "tenantname": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "ticketnumber": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "urlsslverification": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    },
    "useraccountcontrol": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
-    "extractIndicatorTypesIDs": [
-
-    ]
+    "extractIndicatorTypesIDs": []
    }
   }
  }
