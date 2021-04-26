@@ -38,20 +38,26 @@ configuration:
   type: 0
 - display: Radar Critical Severity Level Mapping
   name: radar_critical_severity_mapping
-  defaultvalue: XSOAR High Severity
+  defaultvalue: XSOAR HIGH
   type: 15
   required: false
   options:
-  - XSOAR High Severity
-  - XSOAR Low Severity
+  - XSOAR CRITICAL
+  - XSOAR HIGH
+  - XSOAR MEDIUM
+  - XSOAR LOW
+  - XSOAR INFO
 - display: Radar Warning Severity Level Mapping
   name: radar_warning_severity_mapping
-  defaultvalue: XSOAR Low Severity
+  defaultvalue: XSOAR LOW
   type: 15
   required: false
   options:
-  - XSOAR High Severity
-  - XSOAR Low Severity
+  - XSOAR CRITICAL
+  - XSOAR HIGH
+  - XSOAR MEDIUM
+  - XSOAR LOW
+  - XSOAR INFO
   
 
 defaultclassifier: Rubrik Polaris Radar - Classification
