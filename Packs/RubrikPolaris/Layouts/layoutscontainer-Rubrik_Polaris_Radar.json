@@ -184,7 +184,7 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
-						"y": 4
+						"y": 6
 					},
 					{
 						"displayType": "CARD",
@@ -287,10 +287,10 @@
 						"type": "dynamic",
 						"w": 1,
 						"x": 1,
-						"y": 2
+						"y": 4
 					},
 					{
-						"h": 2,
+						"h": 1,
 						"i": "caseinfoid-fafdf7c0-a255-11eb-86d3-ed6ff0cf2050",
 						"items": [],
 						"maxH": null,
@@ -305,7 +305,7 @@
 						"type": "dynamic",
 						"w": 1,
 						"x": 2,
-						"y": 2
+						"y": 3
 					},
 					{
 						"h": 1,
@@ -324,6 +324,57 @@
 						"w": 1,
 						"x": 0,
 						"y": 2
+					},
+					{
+						"h": 1,
+						"i": "caseinfoid-e449ae90-a6a9-11eb-aa9a-55967479e045",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Files Added",
+						"query": "RubrikRadarFilesAdded",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"h": 1,
+						"i": "caseinfoid-f0b3c850-a6a9-11eb-aa9a-55967479e045",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Files Modified",
+						"query": "RubrikRadarFilesModified",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"h": 1,
+						"i": "caseinfoid-fb65d1d0-a6a9-11eb-aa9a-55967479e045",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Files Removed",
+						"query": "RubrikRadarFilesDeleted",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 1,
+						"y": 3
 					}
 				],
 				"type": "custom"
