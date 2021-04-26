@@ -730,12 +730,12 @@ def test_module(client: QRadarClient):
                     f"Select Instance -> pick this QRadar instance\n. "
                     f"Any field under Events: Builtin Fields or Events: Custom Fields is avaliable to use."
                 )
-            events_limit = params.get("events_limit")
+            events_limit = f'limit {params.get("events_limit")}' if params.get("events_limit") else ''
             offense = raw_offenses[0]
             offense_start_time = offense["start_time"]
             query_expression = (
                 f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense["id"]}) '
-                f"limit {events_limit} START '{offense_start_time}'"
+                f"{events_limit} START '{offense_start_time}'"
             )
             events_query = {"headers": "", "query_expression": query_expression}
             try_create_search_with_retry(client, events_query, offense)
