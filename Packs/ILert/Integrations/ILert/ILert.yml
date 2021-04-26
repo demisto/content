@@ -80,7 +80,7 @@ script:
       description: Incident Url
     - contextPath: iLert.Event.responseCode
       description: Response code
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.4.18682
   runonce: false
   script: ''
   subtype: python3

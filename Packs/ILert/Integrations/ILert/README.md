@@ -26,7 +26,6 @@ Creates a new event/incident in iLert (In order to use this command  you have to
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| integrationKey | The API key of the alert source. | Optional | 
 | incidentKey | For ALERT events, the incident key can be used to deduplicate or group events. If an open incident with the key already exists, the event will be appended to the incident's event log. Otherwise a new incident will be created. For ACCEPT and RESOLVE events, the incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
 | eventType | Must be either ALERT, ACCEPT, or RESOLVE. Default is ALERT. | Optional | 
 | summary | The event summary. Will be used as the incident summary if a new incident is created. | Optional | 
@@ -43,6 +42,10 @@ Creates a new event/incident in iLert (In order to use this command  you have to
 | iLert.Event.responseCode | unknown | Response code | 
 
 
+#### Command Example
+``` !iLert-submit-event summary="Test incident" ```
+
+
 ### iLert-acknowledge-event
 ***
 Acknowledges an existing event in iLert
@@ -55,7 +58,6 @@ Acknowledges an existing event in iLert
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| IntegrationKey | The API key of the alert source. | Optional | 
 | incidentKey | The incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
 
 
@@ -69,10 +71,7 @@ Acknowledges an existing event in iLert
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
+``` !iLert-acknowledge-event incidentKey="ctx312" ```
 
 
 ### iLert-resolve-event
@@ -87,7 +86,6 @@ Resolves an existing event in iLert
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| IntegrationKey | The API key of the alert source. | Optional | 
 | incidentKey | The incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
 
 
@@ -101,8 +99,4 @@ Resolves an existing event in iLert
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
-
+``` !iLert-resolve-event incidentKey="ctx312" ```
