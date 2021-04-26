@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 
 import boto3
 import demistomock as demisto  # noqa: F401
@@ -64,11 +64,7 @@ def aws_session(service='logs', region=None, roleArn=None, roleSessionName=None,
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, datetime.datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, datetime.date):
-            return obj.strftime('%Y-%m-%d')
-        elif isinstance(obj, datetime):
+        if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
         elif isinstance(obj, date):
             return obj.strftime('%Y-%m-%d')
