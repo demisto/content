@@ -1,69 +1,29 @@
 import demistomock as demisto  # noqa: F401
-
+import json
 
 def main() -> None:
 
+    ORANGE_HTML_STYLE = "color:#FF9000;font-size:275%;>"
+    GREEN_HTML_STYLE = "color:#00CD33;font-size:275%;>"
+    DIV_HTML_STYLE = "display:block;text-align:center;"
+
     try:
-        sonar_open_access_files = demisto.context()["Rubrik"]["Sonar"]["openAccessFiles"]
+        radar_open_access_files = demisto.executeCommand("Print", {"value": "${Rubrik.Sonar.openAccessFiles}"})
+        radar_open_access_files = radar_open_access_files[0]["Contents"]
+        
+        if not radar_open_access_files:
+            html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(radar_open_access_files)}</h1></div>"
+        else:
+            html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}{str(radar_open_access_files)}</h1></div>"
 
     except KeyError:
-
-        sonar_open_access_files = -1
-    if sonar_open_access_files == -1:
-        data = {
-                    "Type": 17,
-                    "ContentsFormat": "number",
-                    "Contents": {
-                        "stats": 0,
-                        "params": {
-                            "layout": "horizontal",
-                            "name": "No Results Found",
-                            "sign": "",
-                            "colors": {
-                                "items": {
-                                    "#00CD33": {
-                                        "value": -1
-                                    },
-                                    "#00CD33": {
-                                        "value": 0
-                                    },
-                                    "#ff1744": {
-                                        "value": 3
-                                    }
-                                }
-                            },
-                            "type": "above"
-                        }
-                    }
-                }
-    else:
-        data = {
-                    "Type": 17,
-                    "ContentsFormat": "number",
-                    "Contents": {
-                        "stats": int(sonar_open_access_files),
-                        "params": {
-                            "layout": "horizontal",
-                            "name": "Files with Open Access Permissions (Windows Only)",
-                            "sign": "",
-                            "colors": {
-                                "items": {
-                                    "#00CD33": {
-                                        "value": -1
-                                    },
-                                    "#FF9000": {
-                                        "value": 0
-                                    },
-                                    "#ff1744": {
-                                        "value": 3
-                                    }
-                                }
-                            },
-                            "type": "above"
-                        }
-                    }
-                }
-    demisto.results(data)
+        html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}No Results Found</h1></div>"
+        
+    demisto.results({
+        'ContentsFormat': formats['html'],
+        'Type': entryTypes['note'],
+        'Contents': html
+    })
 
 
 # python2 uses __builtin__ python3 uses builtins

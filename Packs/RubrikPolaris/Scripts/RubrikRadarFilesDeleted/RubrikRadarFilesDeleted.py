@@ -3,18 +3,18 @@ import json
 
 def main() -> None:
 
-    ORANGE_HTML_STYLE = "color:#FF9000;>"
-    GREEN_HTML_STYLE = "color:#00CD33;>"
-    DIV_HTML_STYLE = "display:block;text-align:center;padding:15%;"
+    ORANGE_HTML_STYLE = "color:#FF9000;font-size:275%;>"
+    GREEN_HTML_STYLE = "color:#00CD33;font-size:275%;>"
+    DIV_HTML_STYLE = "display:block;text-align:center;"
 
     try:
         radar_files_deleted = demisto.executeCommand("Print", {"value": "${incident.labels.radar_files_deleted}"})
         radar_files_deleted = radar_files_deleted[0]["Contents"]
         
         if not radar_files_deleted:
-            html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(radar_files_deleted)} Files Added</h1></div>"
+            html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(radar_files_deleted)}</h1></div>"
         else:
-            html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}{str(radar_files_deleted)} Files Added</h1></div>"
+            html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}{str(radar_files_deleted)}</h1></div>"
 
     except KeyError:
         html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}No Results Found</h1></div>"

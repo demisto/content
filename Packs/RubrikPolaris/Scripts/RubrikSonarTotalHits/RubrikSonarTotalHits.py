@@ -3,17 +3,17 @@ import demistomock as demisto  # noqa: F401
 
 def main() -> None:
 
-    ORANGE_HTML_STYLE = "color:#FF9000;>"
-    GREEN_HTML_STYLE = "color:#00CD33;>"
-    DIV_HTML_STYLE = "display:block;text-align:center;padding:15%;"
+    ORANGE_HTML_STYLE = "color:#FF9000;font-size:275%;>"
+    GREEN_HTML_STYLE = "color:#00CD33;font-size:275%;>"
+    DIV_HTML_STYLE = "display:block;text-align:center;"
 
     try:
         sonar_total_hits = demisto.context()["Rubrik"]["Sonar"]["totalHits"]
         
         if not sonar_total_hits:
-            html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(sonar_total_hits)} Total Hits</h1></div>"
+            html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(sonar_total_hits)}</h1></div>"
         else:
-            html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}{str(sonar_total_hits)} Total Hits</h1></div>"
+            html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}{str(sonar_total_hits)}</h1></div>"
 
     except KeyError:
 
