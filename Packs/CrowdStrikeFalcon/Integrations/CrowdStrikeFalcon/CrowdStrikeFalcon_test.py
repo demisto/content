@@ -2724,8 +2724,9 @@ def test_search_device_command(requests_mock):
                       'Hostname': 'FALCON-CROWDSTR', 'FirstSeen': '2020-02-10T12:40:18Z',
                       'LastSeen': '2021-04-05T13:48:12Z', 'LocalIP': '1.1.1.1', 'OS': 'Windows Server 2019',
                       'Status': 'normal'}
-    endpoint_context = {'ID': 'identifier_number', 'Hostname': 'FALCON-CROWDSTR',
-                        'IPAddress': '1.1.1.1', 'OS': 'Windows Server 2019', 'Status': 'normal'}
+    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
+                        'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
+                        'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
 
     requests_mock.get(
         f'{SERVER_URL}/devices/queries/devices/v1',
@@ -2738,10 +2739,12 @@ def test_search_device_command(requests_mock):
         status_code=200,
     )
 
-    result = search_device_command()
+    outputs = search_device_command()
+    result = outputs[0].to_context()
+
     context = result.get('EntryContext')
-    assert [device_context] == context.get('CrowdStrike.Device(val.ID === obj.ID)')
-    assert [endpoint_context] == context.get('Endpoint(val.ID === obj.ID)')
+    assert context['CrowdStrike.Device(val.ID == obj.ID)'] == device_context
+    assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
 
 
 def test_get_endpint_command(requests_mock):
@@ -2758,8 +2761,9 @@ def test_get_endpint_command(requests_mock):
     response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
                                        'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
                               'resources': ['15dbb9d8f06b45fe9f61eb46e829d986'], 'errors': []}}
-    endpoint_context = {'ID': 'identifier_number', 'Hostname': 'FALCON-CROWDSTR',
-                        'IPAddress': '1.1.1.1', 'OS': 'Windows Server 2019', 'Status': 'normal'}
+    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
+                        'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
+                        'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
 
     requests_mock.get(
         f'{SERVER_URL}/devices/queries/devices/v1',
@@ -2772,6 +2776,8 @@ def test_get_endpint_command(requests_mock):
         status_code=200,
     )
 
-    result = get_endpoint_command()
+    outputs = get_endpoint_command()
+    result = outputs[0].to_context()
     context = result.get('EntryContext')
-    assert [endpoint_context] == context.get('Endpoint(val.ID === obj.ID)')
+
+    assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]

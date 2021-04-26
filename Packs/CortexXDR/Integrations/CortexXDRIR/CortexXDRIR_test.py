@@ -302,7 +302,7 @@ def test_get_all_endpoints_using_limit(requests_mock):
     from CortexXDRIR import get_endpoints_command, Client
 
     get_endpoints_response = load_test_data('./test_data/get_all_endpoints.json')
-    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoints/', json=get_endpoints_response)
+    requests_mock.post(f'{XDR_URL}/test_endpoint_commandpublic_api/v1/endpoints/get_endpoints/', json=get_endpoints_response)
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
@@ -328,20 +328,21 @@ def test_endpoint_command(requests_mock):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
-    args = {
-        'id': 'identifier'
-    }
+    args = {'id': 'identifier'}
 
-    _, outputs, _ = endpoint_command(client, args)
+    outputs = endpoint_command(client, args)
+
     get_endpoints_response = {
-        'Hostname': 'ip-3.3.3.3.eu-central-1.compute.internal',
-        'ID': '1111',
-        'IPAddress': '3.3.3.3',
-        'OS': 'AGENT_OS_LINUX',
-        'Status': 'CONNECTED'
-    }
+        Common.Endpoint.CONTEXT_PATH: [{'ID': '1111',
+                                        'Hostname': 'ip-3.3.3.3',
+                                        'IPAddress': '3.3.3.3',
+                                        'OS': 'Linux',
+                                        'Vendor': 'Cortex XDR - IR',
+                                        'Status': 'Offline',
+                                        'IsIsolated': 'No'}]}
 
-    assert [get_endpoints_response] == outputs['Endpoint(val.ID && val.ID == obj.ID)']
+    results = outputs[0].to_context()
+    assert results.get("EntryContext") == get_endpoints_response
 
 
 def test_insert_parsed_alert(requests_mock):
