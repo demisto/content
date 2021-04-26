@@ -8,6 +8,17 @@
     "email": "",
     "categories": [],
     "tags": [],
-    "useCases": [],
-    "keywords": []
+    "useCases": [
+        "Hunting",
+        "Incident Response"
+    ],
+    "keywords": [
+        "Pulse Secure",
+        "Pulse Connect Secure",
+        "CVE-2021-22893",
+        "UNC2630",
+        "zero-day",
+        "0-day",
+        "zero day"
+    ]
 }

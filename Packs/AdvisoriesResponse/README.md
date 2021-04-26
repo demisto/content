@@ -11,4 +11,4 @@ This pack contains the response playbooks for the following advisories:
 - Create a job that will run this playbook on a periodic basis.
 
 
-![CVE-2021-22893 - Pulse Connect Secure RCE]()
+![CVE-2021-22893 - Pulse Connect Secure RCE](https://raw.githubusercontent.com/demisto/content/26dc94e6b3e88bc0e70322e51928f680fc33cc7b/Packs/AdvisoriesResponse/doc_files/CVE-2021-22893_-_Pulse_Connect_Secure_RCE.png)
