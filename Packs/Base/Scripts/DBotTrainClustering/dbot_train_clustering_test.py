@@ -34,8 +34,8 @@ def test_main_regular(mocker):
     FETCHED_INCIDENT_NOT_EMPTY = FETCHED_INCIDENT_NOT_EMPTY
     mocker.patch.object(demisto, 'args',
                         return_value={
-                            'fieldsForClustering': 'entityname',
-                            'fieldForClusterName': 'entityname',
+                            'fieldsForClustering': 'entitynamee',
+                            'fieldForClusterName': 'entitynamer',
                             'fromDate':'',
                             'toDate':'',
                             'limit': '1000',

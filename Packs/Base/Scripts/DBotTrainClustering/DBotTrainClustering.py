@@ -83,7 +83,7 @@ class PostProcessing(object):
        Compute the silhouette for the trained model.
        """
        plot_silhouette = []
-       print("Silhouette Coefficient:")
+       #print("Silhouette Coefficient:")
        self.silhouette = metrics.silhouette_samples(self.clustering.data, self.clustering.results, metric='euclidean')
        #print(np.mean(self.silhouette))
        for number_cluster in range(-1, self.clustering.number_clusters):
@@ -386,7 +386,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
         :param normalize_function: Normalize function to apply on each sample of the corpus before the vectorization
         """
         self.normalize_function = normalize_function
-        self.vec = TfidfVectorizer(**{'analyzer': 'word', 'max_features': 1000, 'ngram_range': (2, 4)})
+        self.vec = TfidfVectorizer(**{'analyzer': 'char', 'max_features': 1000, 'ngram_range': (2, 4)})
 
     def fit(self, x, y=None):
         """
@@ -479,13 +479,15 @@ def remove_fields_not_in_incident(*args, incorrect_fields):
     return [[x for x in field_type if x not in incorrect_fields] for field_type in args]
 
 
-def create_summary(model_processed):
+def create_summary(model_processed, global_msg):
     clustering = model_processed.clustering
     summary = {
+        'Additional comments ' : global_msg,
         'Total number of samples ': str(model_processed.stats["General"]["Nb sample"]),
         'Maximum number of cluster': str(model_processed.max_number_cluster),
         'Total number of cluster: ': str(model_processed.stats["General"]["Nb cluster"]),
-        'Total number of non clusterized element':  str(sum(clustering.model.labels_ == -1))
+        'Total number of clusterized sample': str(sum(clustering.model.labels_ != -1)),
+        'Total number of non clusterized sample':  str(sum(clustering.model.labels_ == -1))
     }
     return_outputs(readable_output=tableToMarkdown("Summary", summary))
 
@@ -526,13 +528,12 @@ def main():
     incidents_df.index = incidents_df.id
 
     populate_fields = fields_for_clustering + field_for_cluster_name
-    incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
+    global_msg, incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
 
-    fields_for_clustering, field_for_cluster_name= \
+    fields_for_clustering, field_for_cluster_name = \
         remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, incorrect_fields=incorrect_fields)
-    if fields_for_clustering is None or field_for_cluster_name is None:
-        return None, msg
-
+    if not fields_for_clustering or not field_for_cluster_name:
+        return None, global_msg
 
     # Create data for training
     X = incidents_df[fields_for_clustering]
@@ -565,7 +566,6 @@ def main():
     if not is_clustering_valid(model.named_steps['clustering']):
         demisto.results(MESSAGE_CLUSTERING_NOT_VALID)
         return None, MESSAGE_CLUSTERING_NOT_VALID
-
     model.named_steps['clustering'].reduce_dimension()
     model.named_steps['clustering'].compute_centers()
     model_processed = PostProcessing(model, min_homogeneity_cluster, max_number_of_clusters)
@@ -576,7 +576,7 @@ def main():
 
     #return Entry and summary
     output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)
-    summary = create_summary(model_processed)
+    summary = create_summary(model_processed, global_msg)
     return_entry_clustering(readable_output=summary, output_clustering=output_clustering_json, tag="trained")
     return output_clustering_json, global_msg
 
