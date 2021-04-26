@@ -301,6 +301,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: 'false'
       description: |-
         Whether to return historical results.
         Valid values: true, false.

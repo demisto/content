@@ -1124,21 +1124,21 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
     """
 
     # Trim the argument and remove ' quotes surrounding ip
-    args['ip'] = args['ip'].strip().strip("'")
+    ip = args['ip'].strip().strip("'")
 
     # Checking whether ip is valid or not
-    if not is_ip_valid(args['ip'], accept_v6_ips=True):
+    if not is_ip_valid(ip, accept_v6_ips=True):
         raise ValueError(MESSAGES['INVALID_IP'])
 
     # http call
-    resp = client.http_request(method="GET", url_suffix=URL_SUFFIX['GET_SERVICES'], params={'query': args['ip']})
+    resp = client.http_request(method="GET", url_suffix=URL_SUFFIX['GET_SERVICES'], params={'query': ip})
 
     total_records = resp.get('totalRecords', 0)
 
     if total_records == 0:
         return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('services'))
 
-    results = [{**response, 'ip': args['ip']} for response in resp.get('results', [])]
+    results = [{**response, 'ip': ip} for response in resp.get('results', [])]
 
     # Creating context
     context_output = remove_empty_elements(results)
