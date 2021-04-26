@@ -6,7 +6,7 @@ Set widgets to custom layout in Domain, IP and RiskIQ Asset type of indicators.
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-indicator-section |
-| Demisto Version | 5.0.0 |
+| Demisto Version | 6.0.0 |
 
 ## Dependencies
 ---
