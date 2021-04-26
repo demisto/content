@@ -1,5 +1,5 @@
 import pytest
-from mock import patch, mock_open
+from unittest.mock import patch, mock_open
 
 import demistomock as demisto
 
@@ -954,9 +954,9 @@ def test_file_scan(mocker, requests_mock):
 
     assert results['Contents']['Positives'] == '1'
     assert results['Contents']['Total'] == '3'
-    assert results['Contents']['Scan_UUID'] == TEST_ENTRY_ID
+    assert results['Contents']['Scan_UUID'] == MOCK_FILE_INFO['name']
     assert results['Contents']['Permalink'] == POLYSWARM_URL_RESULTS
-    assert results['Contents']['Artifact'] == TEST_ENTRY_ID
+    assert results['Contents']['Artifact'] == MOCK_FILE_INFO['name']
 
 
 def test_get_file(mocker, requests_mock):
