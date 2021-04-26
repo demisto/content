@@ -94,6 +94,16 @@ def test_dbot_score(pulse: dict, score: int):
     (GENERAL_RAW_RESPONSE, EMPTY_ANALYSIS_RAW_RESPONSE, EC_WITHOUT_ANALYSIS)
 ])
 def test_file_command(mocker, raw_response_general, raw_response_analysis, expected):
+    """
+    Given
+    - A file hash.
+
+    When
+    - Running file_command with the file.
+
+    Then
+    - Validate that the File and DBotScore entry context have the proper values.
+    """
     mocker.patch.object(client, 'query', side_effect=[raw_response_analysis, raw_response_general])
     command_results = file_command(client, {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'})
     # results is CommandResults list
@@ -125,4 +135,4 @@ def test_url_command_not_found(mocker):
 
     command_results = url_command(client, url)
 
-    assert command_results[0] == expected_result
+    assert command_results[0].to_context()['HumanReadable'] == expected_result

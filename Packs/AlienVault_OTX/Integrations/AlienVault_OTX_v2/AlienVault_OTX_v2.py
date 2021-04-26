@@ -211,7 +211,8 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
 
             command_results.append(CommandResults(
                 readable_output=human_readable,
-                outputs={f'{INTEGRATION_CONTEXT_NAME}.IP(val.IP && val.IP === obj.IP)': {'IP': context}},
+                outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.IP(val.IP && val.IP === obj.IP)',
+                outputs={'IP': context},
                 indicator=ip_object,
                 raw_response=raw_response
                 # relations=relationship
@@ -258,8 +259,9 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
 
             command_results.append(CommandResults(
                 readable_output=human_readable,
-                outputs={f'{INTEGRATION_CONTEXT_NAME}.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
-                         f' val.Whois && val.Whois === obj.Whois)': context},
+                outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
+                               f' val.Whois && val.Whois === obj.Whois)',
+                outputs=context,
                 indicator=domain_object,
                 raw_response=raw_response
                 # relations=relationship
@@ -321,7 +323,8 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
 
             command_results.append(CommandResults(
                 readable_output=human_readable,
-                outputs={outputPaths.get("file"): context},
+                outputs_prefix=outputPaths.get("file"),
+                outputs=context,
                 indicator=file_object,
                 raw_response=raw_response_analysis.update(raw_response_general)
                 # relations=relationship
@@ -334,7 +337,7 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
 
 
 @logger
-def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]:
+def url_command(client: Client, url: str) -> List[CommandResults]:
     """Enrichment for url
 
     Args:
@@ -342,48 +345,50 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
         url:  url address
 
     Returns:
-        Outputs
+        List of CommandResults
     """
-    query_args: list = argToList(url)
-    raws: list = []
+    urls_list: list = argToList(url)
+
     title = f'{INTEGRATION_NAME} - Results for url query'
-    url_ec: list = []
-    alienvault_ec: list = []
-    dbotscore_ec: list = []
-    for args in query_args:
-        raw_response = client.query(section='url',
-                                    argument=args)
+    command_results: List[CommandResults] = []
+    raws: list = []
+
+    for url in urls_list:
+        raw_response = client.query(section='url', argument=url)
         if raw_response:
             if raw_response == 404:
-                return f'No matches for URL {args}', {}, {}
-            raws.append(raw_response)
-            url_ec.append({
-                'Data': raw_response.get('indicator')
-            })
-            alienvault_ec.append({
-                'Url': args,
-                'Hostname': raw_response.get('hostname'),
-                'Domain': raw_response.get('domain'),
-                'Alexa': raw_response.get('alexa'),
-                'Whois': raw_response.get('whois')
-            })
-            dbotscore_ec.append({
-                'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(client, raw_response.get('pulse_info')),
-                'Type': 'url',
-                'Vendor': 'AlienVault OTX v2',
-                'Reliability': client.reliability
-            })
+                command_results.append(CommandResults(readable_output=f'No matches for URL {url}'))
+            else:
+                raws.append(raw_response)
+
+                dbot_score = Common.DBotScore(
+                    indicator=url, indicator_type=DBotScoreType.URL, integration_name=INTEGRATION_NAME,
+                    score=calculate_dbot_score(client, raw_response.get('pulse_info')), reliability=client.reliability)
+
+                url_object = Common.URL(url=url, dbot_score=dbot_score)
+
+                context = {
+                    'Url': url,
+                    'Hostname': raw_response.get('hostname'),
+                    'Domain': raw_response.get('domain'),
+                    'Alexa': raw_response.get('alexa'),
+                    'Whois': raw_response.get('whois')
+                }
+
+                human_readable = tableToMarkdown(name=title, t=context)
+
+                command_results.append(CommandResults(
+                    readable_output=human_readable,
+                    outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.URL(val.Url && val.Url === obj.Url)',
+                    outputs=context,
+                    indicator=url_object,
+                    raw_response=raw_response
+                    # relations=relationship
+                ))
+
     if not raws:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
-    context_entry: dict = {
-        outputPaths.get("url"): url_ec,
-        'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': alienvault_ec,
-        outputPaths.get("dbotscore"): dbotscore_ec
-    }
-    human_readable = tableToMarkdown(t=context_entry.get('AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
-                                     name=title)
-    return human_readable, context_entry, raws
+        command_results.append(CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query'))
+    return command_results
 
 
 @logger
