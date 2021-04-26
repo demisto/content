@@ -715,6 +715,9 @@ def test_module(client: QRadarClient):
     params = demisto.params()
     is_long_running = params.get("longRunning")
     if is_long_running:
+        if not params.get('events_limit'):
+            raise DemistoException('Unlimited long running instance fetch is not supported, please limit your fetch'
+                                   ' using the "Max number of events per incident" parameter.')
         # check fetch incidents can fetch and search events
         raw_offenses = client.get_offenses(_range="0-0")
         fetch_mode = params.get("fetch_mode")
@@ -730,12 +733,12 @@ def test_module(client: QRadarClient):
                     f"Select Instance -> pick this QRadar instance\n. "
                     f"Any field under Events: Builtin Fields or Events: Custom Fields is avaliable to use."
                 )
-            events_limit = f'limit {params.get("events_limit")}' if params.get("events_limit") else ''
+            events_limit = params.get("events_limit")
             offense = raw_offenses[0]
             offense_start_time = offense["start_time"]
             query_expression = (
                 f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense["id"]}) '
-                f"{events_limit} START '{offense_start_time}'"
+                f"limit {events_limit} START '{offense_start_time}'"
             )
             events_query = {"headers": "", "query_expression": query_expression}
             try_create_search_with_retry(client, events_query, offense)
