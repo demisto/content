@@ -92,39 +92,6 @@
 						"y": 0
 					},
 					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Work Plan",
-						"static": false,
-						"type": "workplan",
-						"w": 1,
-						"x": 2,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Linked Incidents",
-						"static": false,
-						"type": "linkedIncidents",
-						"w": 1,
-						"x": 0,
-						"y": 3
-					},
-					{
 						"displayType": "CARD",
 						"h": 2,
 						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
@@ -178,12 +145,12 @@
 						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
+						"minW": 3,
 						"moved": false,
 						"name": "Timeline Information",
 						"static": false,
-						"w": 1,
-						"x": 1,
+						"w": 3,
+						"x": 0,
 						"y": 6
 					},
 					{
@@ -272,7 +239,7 @@
 						"y": 0
 					},
 					{
-						"h": 2,
+						"h": 1,
 						"i": "caseinfoid-ee9b7f20-a255-11eb-86d3-ed6ff0cf2050",
 						"items": [],
 						"maxH": null,
@@ -280,14 +247,14 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Files with Open Access Permissions",
+						"name": "Files with Open Access Permissions (Windows Only)",
 						"query": "RubrikSonarOpenAccessFiles",
 						"queryType": "script",
 						"static": false,
 						"type": "dynamic",
 						"w": 1,
-						"x": 1,
-						"y": 4
+						"x": 0,
+						"y": 3
 					},
 					{
 						"h": 1,
@@ -329,6 +296,7 @@
 						"h": 1,
 						"i": "caseinfoid-e449ae90-a6a9-11eb-aa9a-55967479e045",
 						"items": [],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -346,6 +314,7 @@
 						"h": 1,
 						"i": "caseinfoid-f0b3c850-a6a9-11eb-aa9a-55967479e045",
 						"items": [],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -363,6 +332,7 @@
 						"h": 1,
 						"i": "caseinfoid-fb65d1d0-a6a9-11eb-aa9a-55967479e045",
 						"items": [],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -375,6 +345,36 @@
 						"w": 1,
 						"x": 1,
 						"y": 3
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-f98cd270-a6b1-11eb-bada-87dc9a8c0b9b",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-0b443120-a6b2-11eb-bada-87dc9a8c0b9b",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 2,
+						"x": 1,
+						"y": 4
 					}
 				],
 				"type": "custom"
