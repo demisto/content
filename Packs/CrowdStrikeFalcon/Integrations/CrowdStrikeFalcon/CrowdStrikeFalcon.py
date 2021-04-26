@@ -1576,7 +1576,7 @@ def search_device_command():
             outputs=entry,
             readable_output=tableToMarkdown('Devices', entry, headers=headers, headerTransform=pascalToSpace),
             raw_response=raw_res,
-            indicator=endpoint
+            indicator=endpoint,
         ))
 
     return command_results
@@ -1639,9 +1639,12 @@ def get_endpoint_command():
     raw_res = search_device()
 
     if ip := args.get('ip'):
-
-        # there is no option to filter by ip, in this case we'll get all the devices
+        # there is no option to filter by ip in an api call, therefore we would filter the devices in the code
         raw_res = search_device_by_ip(raw_res, ip)
+
+    if not ip and not args.get('id') and not args.get('hostname'):
+        # in order not to return all the devices
+        return create_entry_object(hr='Please add a filter argument - ip, hostname or id.')
 
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
