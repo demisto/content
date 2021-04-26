@@ -106,7 +106,7 @@ def test_url_command(mocker):
           'Q1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9' \
           'TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8' \
           'cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5JVX3kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
-    expected_result = "No matches for URL\S ['http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026" \
+    expected_result = "No matches for URL's ['http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026" \
                       "data=LeFzS0ZTdINxJN2UMVFvyPotO31nQ1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM" \
                       "5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0X" \
                       "OFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5J" \
