@@ -381,7 +381,7 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
             })
     if not raws:
         if no_matches_url:
-            return f"No matches for URL\S {no_matches_url}", {}, {}
+            return f"No matches for URL's {no_matches_url}", {}, {}
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
     context_entry: dict = {
         outputPaths.get("url"): url_ec,
@@ -390,7 +390,10 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
     }
     human_readable_table = tableToMarkdown(t=context_entry.get('AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
                                            name=title)
-    human_readable = f"{human_readable_table} No matches for URL\S {no_matches_url}" if no_matches_url else human_readable_table
+    if no_matches_url:
+        human_readable = f"{human_readable_table} No matches for URL's {no_matches_url}"
+    else:
+        human_readable = human_readable_table
     return human_readable, context_entry, raws
 
 
