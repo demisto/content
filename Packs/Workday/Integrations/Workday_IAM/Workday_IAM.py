@@ -233,20 +233,12 @@ def get_all_user_profiles():
             employee_id_to_user_profile[employee_id] = user_profile
             email_to_user_profile[email] = user_profile
 
-    if is_demisto_version_ge('6.1'):
-        # searchAfter argument of searchIndicators command is supported only in server version 6.1 and above.
-        query_result = demisto.searchIndicators(query=query, size=BATCH_SIZE)
-        handle_batch(query_result.get('iocs', []))
+    search_indicators = IndicatorsSearcher()
 
-        while query_result.get('searchAfter') is not None:
-            query_result = demisto.searchIndicators(query=query, size=BATCH_SIZE,
-                                                    searchAfter=query_result.get('searchAfter'))
-            handle_batch(query_result.get('iocs', []))
-    else:
-        # server version is below 6.1 - must get all user profile indicators in a single batch
-        single_batch_size = 50000
-        query_result = demisto.searchIndicators(query=query, size=single_batch_size)
+    query_result = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE)
+    while query_result.get('iocs', []):
         handle_batch(query_result.get('iocs', []))
+        query_result = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE)
 
     return employee_id_to_user_profile, email_to_user_profile
 
