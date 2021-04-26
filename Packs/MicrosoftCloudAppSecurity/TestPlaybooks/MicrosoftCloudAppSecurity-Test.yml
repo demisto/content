@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f0b095b0-6ba2-40ab-854a-7887b48a102a
+    taskid: 64b495bb-38ce-433c-8e3a-e1b9f5b5311a
     type: start
     task:
-      id: f0b095b0-6ba2-40ab-854a-7887b48a102a
+      id: 64b495bb-38ce-433c-8e3a-e1b9f5b5311a
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -21,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -20
         }
       }
     note: false
@@ -31,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 379eeadd-e51b-4146-8905-4a19783cdaaa
+    taskid: 75f83c5e-4bab-4296-8eb2-0f2201c8de54
     type: regular
     task:
-      id: 379eeadd-e51b-4146-8905-4a19783cdaaa
+      id: 75f83c5e-4bab-4296-8eb2-0f2201c8de54
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -43,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "15"
     scriptarguments:
       all:
         simple: "yes"
@@ -52,46 +53,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: eebf8f25-0c51-419e-8197-748e4a92cb99
-    type: regular
-    task:
-      id: eebf8f25-0c51-419e-8197-748e4a92cb99
-      version: -1
-      name: microsoft-cas-alerts-list
-      script: '|||microsoft-cas-alerts-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      alert_id:
-        simple: 5f06d71dba4289d0602ba5ac
-      customer_filters: {}
-      instance: {}
-      limit: {}
-      resolution_status: {}
-      service: {}
-      severity: {}
-      skip: {}
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 365
+          "y": 100
         }
       }
     note: false
@@ -101,10 +63,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: f9a1d030-40c2-4cae-83d1-0a9521bca288
+    taskid: 1a092eb4-a4fa-447a-8b9f-1d2f5b34e491
     type: regular
     task:
-      id: f9a1d030-40c2-4cae-83d1-0a9521bca288
+      id: 1a092eb4-a4fa-447a-8b9f-1d2f5b34e491
       version: -1
       name: microsoft-cas-activities-list
       script: '|||microsoft-cas-activities-list'
@@ -114,12 +76,21 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
+    scriptarguments:
+      activity_id: {}
+      custom_filter: {}
+      ip: {}
+      ip_category: {}
+      limit: {}
+      skip: {}
+      source: {}
+      taken_action: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 540
+          "y": 490
         }
       }
     note: false
@@ -129,10 +100,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: fbf84be3-cda6-46bc-8fd8-da36c1bb5adf
+    taskid: 37288e94-1fd5-4bf7-8c8f-df2cc992e20f
     type: regular
     task:
-      id: fbf84be3-cda6-46bc-8fd8-da36c1bb5adf
+      id: 37288e94-1fd5-4bf7-8c8f-df2cc992e20f
       version: -1
       name: microsoft-cas-files-list
       script: '|||microsoft-cas-files-list'
@@ -157,10 +128,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 15b29ae8-36cc-43c8-8eb3-63a1aadf5633
+    taskid: e7ec2f8b-ccfd-4a57-8040-2758677995ad
     type: regular
     task:
-      id: 15b29ae8-36cc-43c8-8eb3-63a1aadf5633
+      id: e7ec2f8b-ccfd-4a57-8040-2758677995ad
       version: -1
       name: microsoft-cas-users-accounts-list
       script: '|||microsoft-cas-users-accounts-list'
@@ -185,15 +156,16 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 513e9881-03cf-4981-8a64-04325e37b143
+    taskid: 14193eaf-f52d-421e-8d0e-16096891348b
     type: title
     task:
-      id: 513e9881-03cf-4981-8a64-04325e37b143
+      id: 14193eaf-f52d-421e-8d0e-16096891348b
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -207,18 +179,59 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "15":
+    id: "15"
+    taskid: f7225862-96de-45bb-80a1-0fb8fc688669
+    type: regular
+    task:
+      id: f7225862-96de-45bb-80a1-0fb8fc688669
+      version: -1
+      name: microsoft-cas-alerts-list
+      script: '|||microsoft-cas-alerts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alert_id: {}
+      custom_filter: {}
+      customer_filters: {}
+      instance: {}
+      limit:
+        simple: "1"
+      resolution_status: {}
+      service: {}
+      severity: {}
+      skip: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1185,
+        "height": 1255,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": -20
       }
     }
   }
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: Test Microsoft Cloud App Security integration
