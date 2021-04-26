@@ -5,9 +5,9 @@ Use the CrowdStrike API integration to interact with CrowdStrike APIs that do no
 Note: In this documentation, we will use the [Incident and detection monitoring APIs](https://falcon.crowdstrike.com/support/documentation/86/detections-monitoring-apis) as an example.
 
 ## Authorization
-In order to use the integration client ID and client secret, of an API client the relevant API scopes granted, are required.
+To use the CrowdStrike API integration, you need the ID and secret of an API client that has right scopes granted to it.
 
-For more details, refer to the [CrowdStrike OAuth2-Based APIs documentation](https://falcon.crowdstrike.com/support/documentation/46/crowdstrike-oauth2-based-apis).
+For details, refer to the [CrowdStrike OAuth2-Based APIs documentation](https://falcon.crowdstrike.com/support/documentation/46/crowdstrike-oauth2-based-apis).
 
 **Note**: The integration stores in cache the API access token based on the permissions it is first run with, so if the permissions are modified, it is recommended to create a new instance of the integration.
 
@@ -42,10 +42,10 @@ Run a CrowdStrike API query.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint | The endpoint in CrowdStrike API to refer.| Required |
+| endpoint | The endpoint to refer to in CrowdStrike API.| Required |
 | http_method | The HTTP method used for the request to CrowdStrike API. Possible values are: "GET", "POST", "DELETE", "PUT", or "PATCH". Default is "GET". | Optional |
-| request_body | The request body (required for POST queries) given in JSON format.. | Optional |
-| query_parameters | The URL query parameters given in JSON format, e.g. {"limit":1} | Optional |
+| request_body | The request body (required for POST queries) in JSON format. | Optional |
+| query_parameters | The URL query parameters in JSON format, e.g., {"limit":1}. | Optional |
 | populate_context | If "true", will populate the API response to the context data. Default is "true". | Optional | 
 
 
@@ -63,4 +63,4 @@ We can see that:
  - The HTTP method is ***GET***
  - The endpoint is ***/incidents/queries/behaviors/v1***
  
-So in order to find behaviors using the integration, we would run the command: `!cs-api-request resource=/incidents/queries/behaviors/v1 http_method=GET`
+So in order to find behaviors using the integration, we would run the command: `!cs-api-request endpoint=/incidents/queries/behaviors/v1 http_method=GET`
