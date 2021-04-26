@@ -270,11 +270,14 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
     for domain in domains_list:
         raw_response = client.query(section='domain', argument=domain)
         if raw_response:
+            relationships = create_attack_pattern_relationships(client, raw_response=raw_response,
+                                                                entity_a=domain, entity_a_type=FeedIndicatorType.Domain)
+
             dbot_score = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME,
                                           score=calculate_dbot_score(client, raw_response.get('pulse_info', {})),
                                           reliability=client.reliability)
-            domain_object = Common.Domain(domain=domain, dbot_score=dbot_score)
+            domain_object = Common.Domain(domain=domain, dbot_score=dbot_score, relations=relationships)
 
             context = {
                 'Name': raw_response.get('indicator'),
@@ -290,8 +293,8 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
                                f' val.Whois && val.Whois === obj.Whois)',
                 outputs=context,
                 indicator=domain_object,
-                raw_response=raw_response
-                # relations=relationship
+                raw_response=raw_response,
+                relations=relationships
             ))
 
     if not command_results:
@@ -323,6 +326,9 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
         raw_response_general = client.query(section='file',
                                             argument=hash_)
         if raw_response_analysis and raw_response_general:
+            relationships = create_attack_pattern_relationships(client, raw_response=raw_response_general,
+                                                                entity_a=hash_, entity_a_type=FeedIndicatorType.File)
+
             shortcut = dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'], {})
             dbot_score = Common.DBotScore(
                 indicator=hash_, indicator_type=DBotScoreType.FILE, integration_name=INTEGRATION_NAME,
@@ -332,7 +338,8 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
 
             file_object = Common.File(md5=shortcut.get('md5'), sha1=shortcut.get('sha1'), sha256=shortcut.get('sha256'),
                                       ssdeep=shortcut.get('ssdeep'), size=shortcut.get('filesize'),
-                                      file_type=shortcut.get('file_type'), dbot_score=dbot_score)
+                                      file_type=shortcut.get('file_type'), dbot_score=dbot_score,
+                                      relations=relationships)
 
             context = {
                 'MD5': shortcut.get('md5'),
@@ -353,8 +360,8 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                 outputs_prefix=outputPaths.get("file"),
                 outputs=context,
                 indicator=file_object,
-                raw_response=raw_response_general
-                # relations=relationship
+                raw_response=raw_response_general,
+                relations=relationships
             ))
 
     if not command_results:
@@ -388,23 +395,22 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
             else:
                 raws.append(raw_response)
 
-                relationship = []
+                relationships = []
                 if client.create_relationships:
+                    relationships = create_attack_pattern_relationships(
+                        client, raw_response=raw_response, entity_a=url, entity_a_type=FeedIndicatorType.URL)
                     domain = raw_response.get('domain')
                     if domain:
-                        relationship = [EntityRelation(name=EntityRelation.Relations.HOSTED_ON,
-                                                       entity_a=url,
-                                                       entity_a_type=FeedIndicatorType.URL,
-                                                       entity_b=domain,
-                                                       entity_b_type=FeedIndicatorType.Domain,
-                                                       source_reliability=client.reliability,
-                                                       brand=INTEGRATION_NAME)]
+                        relationships.extend([EntityRelation(
+                            name=EntityRelation.Relations.HOSTED_ON, entity_a=url, entity_a_type=FeedIndicatorType.URL,
+                            entity_b=domain, entity_b_type=FeedIndicatorType.Domain,
+                            source_reliability=client.reliability, brand=INTEGRATION_NAME)])
 
                 dbot_score = Common.DBotScore(
                     indicator=url, indicator_type=DBotScoreType.URL, integration_name=INTEGRATION_NAME,
                     score=calculate_dbot_score(client, raw_response.get('pulse_info')), reliability=client.reliability)
 
-                url_object = Common.URL(url=url, dbot_score=dbot_score, relations=relationship)
+                url_object = Common.URL(url=url, dbot_score=dbot_score, relations=relationships)
 
                 context = {
                     'Url': url,
@@ -422,7 +428,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
                     outputs=context,
                     indicator=url_object,
                     raw_response=raw_response,
-                    relations=relationship
+                    relations=relationships
                 ))
 
     if not raws:
