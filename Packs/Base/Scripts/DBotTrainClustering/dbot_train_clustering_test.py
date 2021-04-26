@@ -24,7 +24,8 @@ FETCHED_INCIDENT_NOT_EMPTY = [
 def executeCommand(command, args):
     global FETCHED_INCIDENT_NOT_EMPTY
     if command == 'GetIncidentsByQuery':
-        return [{'Contents': json.dumps(FETCHED_INCIDENT_NOT_EMPTY), 'Type': 'note'}]
+        return [{'Contents': json.dumps(json.load(open('incidents.json', 'rb'))), 'Type': 'note'}]
+        #return [{'Contents': json.dumps(FETCHED_INCIDENT_NOT_EMPTY), 'Type': 'note'}]
 
 
 
@@ -33,7 +34,7 @@ def test_main_regular(mocker):
     FETCHED_INCIDENT_NOT_EMPTY = FETCHED_INCIDENT_NOT_EMPTY
     mocker.patch.object(demisto, 'args',
                         return_value={
-                            'fieldsForClustering': 'commandline',
+                            'fieldsForClustering': 'entityname',
                             'fieldForClusterName': 'entityname',
                             'fromDate':'',
                             'toDate':'',

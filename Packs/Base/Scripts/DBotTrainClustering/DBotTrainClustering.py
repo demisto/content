@@ -85,7 +85,7 @@ class PostProcessing(object):
        plot_silhouette = []
        print("Silhouette Coefficient:")
        self.silhouette = metrics.silhouette_samples(self.clustering.data, self.clustering.results, metric='euclidean')
-       print(np.mean(self.silhouette))
+       #print(np.mean(self.silhouette))
        for number_cluster in range(-1, self.clustering.number_clusters):
            plot_silhouette.append(
                np.mean([self.silhouette[i] for i in range(len(self.silhouette)) if self.clustering.results[i] == number_cluster])
@@ -273,7 +273,7 @@ def get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_da
         'fromDate': from_date,
         'toDate': to_date,
         'limit': str(limit),
-        'type': incident_type
+        'incidentTypes': incident_type
     })
     if is_error(res):
         return_error(res)
@@ -397,8 +397,6 @@ class Tfidf(BaseEstimator, TransformerMixin):
         feature_name = x.columns[0]
         if self.normalize_function:
             x = x[feature_name].apply(self.normalize_function)
-        # demisto.results(x)
-        # sys.exit(0)
         self.vec.fit(x)
         return self
 
@@ -485,12 +483,11 @@ def create_summary(model_processed):
     clustering = model_processed.clustering
     summary = {
         'Total number of samples ': str(model_processed.stats["General"]["Nb sample"]),
+        'Maximum number of cluster': str(model_processed.max_number_cluster),
         'Total number of cluster: ': str(model_processed.stats["General"]["Nb cluster"]),
-        'Minimun number of sample per cluster: ': str(model_processed.stats["General"]["min_samples"]) ,
-        'Maximun number of cluster': str(model_processed.max_number_cluster),
         'Total number of non clusterized element':  str(sum(clustering.model.labels_ == -1))
     }
-    return summary
+    return_outputs(readable_output=tableToMarkdown("Summary", summary))
 
 
 
@@ -525,7 +522,7 @@ def main():
         demisto.results(global_msg)
         return None, global_msg
 
-    incidents_df = pd.DataFrame(incidents)
+    incidents_df = pd.DataFrame(incidents).fillna('')
     incidents_df.index = incidents_df.id
 
     populate_fields = fields_for_clustering + field_for_cluster_name
@@ -581,6 +578,7 @@ def main():
     output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)
     summary = create_summary(model_processed)
     return_entry_clustering(readable_output=summary, output_clustering=output_clustering_json, tag="trained")
+    return output_clustering_json, global_msg
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
