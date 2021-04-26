@@ -61,7 +61,7 @@ class Client(BaseClient):
         result = self._http_request(
             method='POST',
             json_data=body,
-            url_suffix='')
+            full_url=self.base_url)
         return result
 
 
