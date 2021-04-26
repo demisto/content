@@ -282,6 +282,8 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
         if field in incidents_df.columns:
             field_values = get_non_na_empty_values(incidents_df, field)
             if len(field_values) > 0:
+                if field in RECIPIENTS_COLUMNS:
+                    field_values = [item for sublist in field_values for item in sublist]
                 field_values_counter = Counter(field_values).most_common()  # type: ignore
                 field_value_str = get_str_representation_top_n_values(field_values, field_values_counter, top_n)
                 headers.append(field)

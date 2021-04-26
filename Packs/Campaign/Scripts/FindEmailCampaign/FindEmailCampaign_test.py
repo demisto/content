@@ -181,10 +181,9 @@ def prepare_additional_context_fields_test(mocker):
     # prepare
     mocker.patch.object(demisto, 'results', side_effect=results)
     mocker.patch('FindEmailCampaign.summarize_email_body', mock_summarize_email_body)
-    mocker.patch('FindEmailCampaign.standardize_recipients_column')
     incident = create_incident(
         subject='subject', body='email body',
-        emailfrom='a@a.com', emailcc='["a@a.com", "b@a.com"]')
+        emailfrom='a@a.com', emailto='a@a.com, b@a.com', emailcc='["a@a.com", "b@a.com"]')
     incidents_list = [incident]
     data = pd.DataFrame(incidents_list)
     return data
