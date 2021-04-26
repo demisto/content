@@ -225,11 +225,11 @@ Check file reputation
 | File.SHA256 | String | The file's SHA256 | 
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision | 
 | File.Malicious.Description | String | For malicious files, the reason for the vendor to make the decision |
-| File.Relations.EntityA | String | The source of the relationship. |
-| File.Relations.EntityB | String | The destination of the relationship. |
-| File.Relations.Relationship | String | The name of the relationship. |
-| File.Relations.EntityAType | String | The type of the source of the relationship. |
-| File.Relations.EntityBType | String | The type of the destination of the relationship. |
+| File.Relationships.EntityA | String | The source of the relationship. |
+| File.Relationships.EntityB | String | The destination of the relationship. |
+| File.Relationships.Relationship | String | The name of the relationship. |
+| File.Relationships.EntityAType | String | The type of the source of the relationship. |
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 

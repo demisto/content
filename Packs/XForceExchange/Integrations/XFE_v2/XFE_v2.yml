@@ -185,19 +185,19 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
       type: String
-    - contextPath: File.Relations.EntityA
+    - contextPath: File.Relationships.EntityA
       description: The source of the relationship.
       type: string
-    - contextPath: File.Relations.EntityB
+    - contextPath: File.Relationships.EntityB
       description: The destination of the relationship.
       type: string
-    - contextPath: File.Relations.Relationship
+    - contextPath: File.Relationships.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: File.Relations.EntityAType
+    - contextPath: File.Relationships.EntityAType
       description: The type of the source of the relationship.
       type: string
-    - contextPath: File.Relations.EntityBType
+    - contextPath: File.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
     - contextPath: DBotScore.Indicator
