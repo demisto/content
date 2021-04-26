@@ -1261,21 +1261,23 @@ class Pack(object):
         for rn_filename in modified_rn_files:
             version = release_notes_file_to_version(rn_filename)
             # Should only apply on modified files that are not the last rn file
-            if LooseVersion(version) < changelog_latest_rn_version:
-                # The case where the version is a key in the changelog file,
-                # and the value is not an aggregated release note
-                if is_the_only_rn_in_block(release_notes_dir, version, changelog):
-                    logging.info("The version is a key in the changelog file and by itself in the changelog block")
-                    with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
-                        rn_lines = rn_file.read()
-                    modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
-                # The case where the version is not a key in the changelog file or it is a key of aggregated content
-                else:
-                    logging.debug(f'The "{version}" version is not a key in the changelog file or it is a key of aggregated content')
-                    same_block_versions_dict, higher_nearest_version = self.get_same_block_versions(
-                        release_notes_dir, version, changelog)
-                    modified_versions_dict[higher_nearest_version] = aggregate_release_notes_for_marketplace(
-                        same_block_versions_dict)
+            if LooseVersion(version) >= changelog_latest_rn_version:
+                continue
+            # The case where the version is a key in the changelog file,
+            # and the value is not an aggregated release note
+            if is_the_only_rn_in_block(release_notes_dir, version, changelog):
+                logging.info("The version is a key in the changelog file and by itself in the changelog block")
+                with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
+                    rn_lines = rn_file.read()
+                modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
+            # The case where the version is not a key in the changelog file or it is a key of aggregated content
+            else:
+                logging.debug(f'The "{version}" version is not a key in the changelog file or it is a key of'
+                              f' aggregated content')
+                same_block_versions_dict, higher_nearest_version = self.get_same_block_versions(
+                    release_notes_dir, version, changelog)
+                modified_versions_dict[higher_nearest_version] = aggregate_release_notes_for_marketplace(
+                    same_block_versions_dict)
 
         return modified_versions_dict
 
@@ -1327,6 +1329,7 @@ class Pack(object):
 
         for filename in sorted(os.listdir(release_notes_dir)):
             version = release_notes_file_to_version(filename)
+
             # Aggregate all rn files that are bigger than what we have in the changelog file
             if LooseVersion(version) > changelog_latest_rn_version:
                 with open(os.path.join(release_notes_dir, filename), 'r') as rn_file:
@@ -2875,18 +2878,17 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
     Returns:
         True if this version's value in the changelog is not an aggregated release notes block. False otherwise.
     """
-    if changelog.get(version):
-        all_rn_versions = []
-        lowest_version = [LooseVersion('1.0.0')]
-        for filename in os.listdir(release_notes_dir):
-            _current_version = filename.replace('.md', '')
-            current_version = _current_version.replace('_', '.')
-            all_rn_versions.append(LooseVersion(current_version))
-        lower_versions_all_versions = [item for item in all_rn_versions if item < version] + lowest_version
-        lower_versions_in_changelog = [LooseVersion(item) for item in changelog.keys() if
-                                       LooseVersion(item) < version] + lowest_version
-        return max(lower_versions_all_versions) == max(lower_versions_in_changelog)
-    return False
+    if not changelog.get(version):
+        return False
+    all_rn_versions = []
+    lowest_version = [LooseVersion('1.0.0')]
+    for filename in os.listdir(release_notes_dir):
+        current_version = release_notes_file_to_version(filename)
+        all_rn_versions.append(LooseVersion(current_version))
+    lower_versions_all_versions = [item for item in all_rn_versions if item < version] + lowest_version
+    lower_versions_in_changelog = [LooseVersion(item) for item in changelog.keys() if
+                                   LooseVersion(item) < version] + lowest_version
+    return max(lower_versions_all_versions) == max(lower_versions_in_changelog)
 
 
 def release_notes_file_to_version(rn_file_name):
