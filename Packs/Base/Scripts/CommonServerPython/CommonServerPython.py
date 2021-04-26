@@ -4605,6 +4605,7 @@ class EntityRelation:
         SIMILAR_TO = 'similar-to'
         SUB_DOMAIN_OF = 'sub-domain-of'
         SUB_TECHNIQUE_OF = 'subtechnique-of'
+        PARENT_TECHNIQUE_OF = 'parent-technique-of'
         SUPRA_DOMAIN_OF = 'supra-domain-of'
         TARGETED_BY = 'targeted-by'
         TARGETS = 'targets'
