@@ -115,15 +115,20 @@ URL_RAW_RESPONSE = {
 
 URL_EC = {
     'URL(val.Data && val.Data == obj.Data)': [{
-        'Data': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'}}],
+        'Data': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
+        'Relations': [{
+            'Relationship': 'hosted-on',
+            'EntityA': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
+            'EntityAType': 'URL', 'EntityB': 'fotoidea.com', 'EntityBType': 'Domain'}]
+    }],
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
     ' val.Type == obj.Type)': [{
         'Indicator': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
         'Type': 'url', 'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'}],
     'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': {
         'Url': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
-        'Hostname': 'www.fotoidea.com', 'Domain': 'fotoidea.com', 'Alexa': 'http://www.alexa.com/siteinfo/fotoidea.com',
-        'Whois': 'http://whois.domaintools.com/fotoidea.com'}
+        'Hostname': 'www.fotoidea.com', 'Domain': 'fotoidea.com',
+        'Alexa': 'http://www.alexa.com/siteinfo/fotoidea.com', 'Whois': 'http://whois.domaintools.com/fotoidea.com'}
 }
 
 URL_RELATIONSHIPS = [{
