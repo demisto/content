@@ -102,6 +102,8 @@ class PostProcessing(object):
         dist_total={}
         for cluster in range(0, self.clustering.number_clusters):
             chosen = {k: v for k, v in self.stats[cluster]['distribution sample'].items() if v >= self.threshold*100}
+            if not chosen:
+                continue
             total = sum(dict(chosen).values(), 0.0)
             dist = {k: v * 100 / total for k, v in chosen.items()}
             dist_total[cluster] = {}
@@ -485,9 +487,10 @@ def create_summary(model_processed, global_msg):
         'Additional comments ' : global_msg,
         'Total number of samples ': str(model_processed.stats["General"]["Nb sample"]),
         'Maximum number of cluster': str(model_processed.max_number_cluster),
-        'Total number of cluster: ': str(model_processed.stats["General"]["Nb cluster"]),
         'Total number of clusterized sample': str(sum(clustering.model.labels_ != -1)),
-        'Total number of non clusterized sample':  str(sum(clustering.model.labels_ == -1))
+        'Total number of non clusterized sample':  str(sum(clustering.model.labels_ == -1)),
+        'Total number of cluster: ': str(model_processed.stats["General"]["Nb cluster"]),
+        'Total number of cluster kept: ': str(len(model_processed.selected_clusters))
     }
     return_outputs(readable_output=tableToMarkdown("Summary", summary))
 
