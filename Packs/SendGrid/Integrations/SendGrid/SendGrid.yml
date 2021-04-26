@@ -9,11 +9,11 @@ configuration:
   type: 4
 - display: From Email ID
   name: fromEmail
-  required: false
+  required: true
   type: 0
 - display: From Sender Name
   name: fromEmailName
-  required: false
+  required: true
   type: 0
 description: Send, manage emails.
 display: SendGrid
@@ -149,6 +149,7 @@ script:
     name: sg-get-global-email-stats
     outputs:
     - contextPath: Sendgrid.GlobalEmailStats
+      description: List of email statistics day/week/month wise.
   - arguments:
     - description: The starting date of the statistics to retrieve. Must follow format
         YYYY-MM-DD.
@@ -175,7 +176,7 @@ script:
     name: sg-get-category-stats
     outputs:
     - contextPath: Sendgrid.CategoryStats
-      description: ""
+      description: List of email category statistics day/week/month wise.
   - arguments:
     - description: The starting date of the statistics to retrieve. Must follow format
         YYYY-MM-DD.
@@ -228,6 +229,7 @@ script:
     name: sg-get-all-categories-stats
     outputs:
     - contextPath: Sendgrid.AllCategoriesStats
+      description: List of all email statistics day/week/month wise.
   - arguments:
     - description: Allows you to perform a prefix search on this particular category.
       name: category
@@ -240,11 +242,13 @@ script:
     name: sg-list-categories
     outputs:
     - contextPath: Sendgrid.CategoriesList
+      description: List of categories.
   - arguments: []
     description: Generates a new batch ID.
     name: sg-create-batch-id
     outputs:
     - contextPath: Sendgrid.Batchid
+      description: Returns a batch id, which can be used manage scheduled sends.
   - arguments:
     - description: ID to manage multiple scheduled sends.
       name: batch_id
@@ -267,11 +271,13 @@ script:
     name: sg-scheduled-status-change
     outputs:
     - contextPath: Sendgrid.SceduledSendStatus
+      description: The latest status of the scheduled send.
   - arguments: []
     description: Retrieves all cancelled and paused scheduled send information.
     name: sg-retrieve-all-scheduled-sends
     outputs:
     - contextPath: Sendgrid.ScheduledSends
+      description: List of all paused/cancelled scheduled sends.
   - arguments:
     - description: ID to manage multiple scheduled sends.
       name: batch_id
@@ -281,6 +287,8 @@ script:
     name: sg-retrieve-scheduled-send
     outputs:
     - contextPath: Sendgrid.ScheduledSend
+      description: List of all paused/cancelled scheduled sends associated with the
+        given batch id.
   - arguments:
     - description: ID to manage multiple scheduled sends.
       name: batch_id

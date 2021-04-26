@@ -9,8 +9,8 @@ This integration was integrated and tested with version xx of SendGrid
     | **Parameter** | **Required** |
     | --- | --- |
     | API Key | True |
-    | From Email ID | False |
-    | From Sender Name | False |
+    | From Email ID | True |
+    | From Sender Name | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -90,7 +90,7 @@ Retrieves all of your global email statistics between a given date range.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sendgrid.GlobalEmailStats | unknown |  | 
+| Sendgrid.GlobalEmailStats | unknown | List of email statistics day/week/month wise. | 
 
 
 #### Command Example
@@ -124,7 +124,7 @@ Retrieves all of your email statistics for each of your categories.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sendgrid.CategoryStats | unknown |  | 
+| Sendgrid.CategoryStats | unknown | List of email category statistics day/week/month wise. | 
 
 
 #### Command Example
@@ -159,7 +159,7 @@ Retrieves the total sum of each email statistic for every category over the give
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sendgrid.AllCategoriesStats | unknown |  | 
+| Sendgrid.AllCategoriesStats | unknown | List of all email statistics day/week/month wise. | 
 
 
 #### Command Example
@@ -190,7 +190,7 @@ Retrieves a list of all of your categories.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sendgrid.CategoriesList | unknown |  | 
+| Sendgrid.CategoriesList | unknown | List of categories. | 
 
 
 #### Command Example
@@ -218,7 +218,7 @@ Generates a new batch ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sendgrid.Batchid | unknown |  | 
+| Sendgrid.Batchid | unknown | Returns a batch id, which can be used manage scheduled sends. | 
 
 
 #### Command Example
@@ -274,7 +274,7 @@ Cancel or pause a scheduled send associated with a batch ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sendgrid.SceduledSendStatus | unknown |  | 
+| Sendgrid.SceduledSendStatus | unknown | The latest status of the scheduled send. | 
 
 
 #### Command Example
@@ -302,7 +302,7 @@ Retrieves all cancelled and paused scheduled send information.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sendgrid.ScheduledSends | unknown |  | 
+| Sendgrid.ScheduledSends | unknown | List of all paused/cancelled scheduled sends. | 
 
 
 #### Command Example
@@ -331,7 +331,7 @@ Retrieves the cancel/paused scheduled send information for a specific batch id.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sendgrid.ScheduledSend | unknown |  | 
+| Sendgrid.ScheduledSend | unknown | List of all paused/cancelled scheduled sends associated with the given batch id. | 
 
 
 #### Command Example
