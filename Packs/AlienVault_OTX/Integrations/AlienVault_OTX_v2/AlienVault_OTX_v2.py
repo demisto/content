@@ -360,20 +360,6 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
             else:
                 raws.append(raw_response)
 
-                dbot_score = Common.DBotScore(
-                    indicator=url, indicator_type=DBotScoreType.URL, integration_name=INTEGRATION_NAME,
-                    score=calculate_dbot_score(client, raw_response.get('pulse_info')), reliability=client.reliability)
-
-                url_object = Common.URL(url=url, dbot_score=dbot_score)
-
-                context = {
-                    'Url': url,
-                    'Hostname': raw_response.get('hostname'),
-                    'Domain': raw_response.get('domain'),
-                    'Alexa': raw_response.get('alexa'),
-                    'Whois': raw_response.get('whois')
-                }
-
                 relationship = []
                 if client.create_relationships:
                     domain = raw_response.get('domain')
@@ -385,6 +371,20 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
                                                        entity_b_type=FeedIndicatorType.Domain,
                                                        source_reliability=client.reliability,
                                                        brand=INTEGRATION_NAME)]
+
+                dbot_score = Common.DBotScore(
+                    indicator=url, indicator_type=DBotScoreType.URL, integration_name=INTEGRATION_NAME,
+                    score=calculate_dbot_score(client, raw_response.get('pulse_info')), reliability=client.reliability)
+
+                url_object = Common.URL(url=url, dbot_score=dbot_score, relations=relationship)
+
+                context = {
+                    'Url': url,
+                    'Hostname': raw_response.get('hostname'),
+                    'Domain': raw_response.get('domain'),
+                    'Alexa': raw_response.get('alexa'),
+                    'Whois': raw_response.get('whois')
+                }
 
                 human_readable = tableToMarkdown(name=title, t=context)
 
