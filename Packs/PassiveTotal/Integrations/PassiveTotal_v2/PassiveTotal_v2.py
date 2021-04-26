@@ -121,7 +121,7 @@ class Client(BaseClient):
         try:
             if not headers:
                 headers = {}
-            headers['X-RISKIQ'] = f"{COMPANY_NAME}-{PRODUCT_NAME}-{demisto.demistoVersion()['version']}"
+            headers['X-RISKIQ'] = f"{COMPANY_NAME}-{PRODUCT_NAME}-{get_demisto_version_as_str()}"
 
             resp = self._http_request(method=method, url_suffix=url_suffix, json_data=json_data, params=params,
                                       headers=headers, timeout=self.request_timeout, resp_type='response',
