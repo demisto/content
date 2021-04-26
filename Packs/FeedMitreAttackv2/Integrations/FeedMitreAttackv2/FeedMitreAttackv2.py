@@ -36,9 +36,6 @@ MITRE_FIELD_MAPPING = {
     "mitremodified": {"name": "modified", "type": "str"}
 }
 
-MAPPING_BY_TYPE = {
-
-}
 
 MITRE_TYPE_TO_DEMISTO_TYPE = {
     "attack-pattern": "STIX Attack Pattern",
@@ -117,7 +114,6 @@ class Client:
             # Supply the collection to TAXIICollection
             tc_source = TAXIICollectionSource(collection_data)
 
-            # Create filters to retrieve content
             filter_objs = {
                 "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
                 "Technique": {"name": "attack-pattern", "filter": Filter("type", "=", "attack-pattern")},
@@ -128,10 +124,7 @@ class Client:
 
             }
 
-            # Retrieve content
             for concept in filter_objs:
-
-                # Stop when we have reached the limit defined
                 if 0 < limit <= counter:
                     break
 
@@ -141,9 +134,7 @@ class Client:
                 except Exception:
                     continue
 
-                # For each item in the MITRE list, add an indicator to the indicators list
                 for mitre_item in mitre_data:
-
                     if 0 < limit <= counter:
                         break
 
