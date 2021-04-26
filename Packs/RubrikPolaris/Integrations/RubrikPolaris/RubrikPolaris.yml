@@ -36,6 +36,23 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- display: Radar Critical Severity Level Mapping
+  name: radar_critical_severity_mapping
+  defaultvalue: XSOAR High Severity
+  type: 15
+  required: false
+  options:
+  - XSOAR High Severity
+  - XSOAR Low Severity
+- display: Radar Warning Severity Level Mapping
+  name: radar_warning_severity_mapping
+  defaultvalue: XSOAR Low Severity
+  type: 15
+  required: false
+  options:
+  - XSOAR High Severity
+  - XSOAR Low Severity
+  
 
 defaultclassifier: Rubrik Polaris Radar - Classification
 defaultmapperin: Rubrik Polaris Radar - Mapping
