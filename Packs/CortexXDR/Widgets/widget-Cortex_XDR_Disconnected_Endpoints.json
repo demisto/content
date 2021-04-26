@@ -21,7 +21,7 @@
 
         ]
     },
-    "query": "XDRDisonnectedEndpoints",
+    "query": "XDRDisconnectedEndpoints",
     "size": 0,
     "version": -1,
     "widgetType": "number",

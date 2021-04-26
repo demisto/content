@@ -1,7 +1,7 @@
 commonfields:
-  id: XDRDisonnectedEndpoints
+  id: XDRDisconnectedEndpoints
   version: -1
-name: XDRDisonnectedEndpoints
+name: XDRDisconnectedEndpoints
 script: ''
 type: python
 tags:

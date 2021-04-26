@@ -95,7 +95,7 @@
                 "prevName": " Cortex XDR Disconnected Endpoints",
                 "dataType": "scripts",
                 "widgetType": "number",
-                "query": "XDRDisonnectedEndpoints",
+                "query": "XDRDisconnectedEndpoints",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
