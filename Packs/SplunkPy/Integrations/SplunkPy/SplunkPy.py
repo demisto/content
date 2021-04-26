@@ -1602,11 +1602,12 @@ def build_search_human_readable(args, parsed_search_results):
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
         else:
-            search_for_table_args = re.search(' table (?P<table>.*)(\|)?', args.get('query', ''))
+            search_for_table_args = re.search(r' table (?P<table>.*)(\|)?', args.get('query', ''))
             if search_for_table_args:
                 table_args = search_for_table_args.group('table')
                 table_args = table_args if '|' not in table_args else table_args.split(' |')[0]
-                chosen_fields = [field for field in re.split(' |,', table_args) if field]
+                chosen_fields = [field.strip('"')
+                                 for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
 
                 headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
