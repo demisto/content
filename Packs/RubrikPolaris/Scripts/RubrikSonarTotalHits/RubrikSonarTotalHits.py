@@ -5,6 +5,7 @@ def main() -> None:
 
     ORANGE_HTML_STYLE = "color:#FF9000;font-size:275%;>"
     GREEN_HTML_STYLE = "color:#00CD33;font-size:275%;>"
+    RED_HTML_STYLE = "color:#FF1744;font-size:275%;>"
     DIV_HTML_STYLE = "display:block;text-align:center;"
 
     try:
@@ -13,70 +14,11 @@ def main() -> None:
         if not sonar_total_hits:
             html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(sonar_total_hits)}</h1></div>"
         else:
-            html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}{str(sonar_total_hits)}</h1></div>"
+            html = f"<div style={DIV_HTML_STYLE}><h1 style={RED_HTML_STYLE}{str(sonar_total_hits)}</h1></div>"
 
     except KeyError:
-
-        sonar_total_hits = -1
-    """
-    if sonar_total_hits == -1:
-        data = {
-                    "Type": 17,
-                    "ContentsFormat": "number",
-                    "Contents": {
-                        "stats": 0,
-                        "params": {
-                            "layout": "horizontal",
-                            "name": "No Results Found",
-                            "sign": "",
-                            "colors": {
-                                "items": {
-                                    "#00CD33": {
-                                        "value": -1
-                                    },
-                                    "#00CD33": {
-                                        "value": 0
-                                    },
-                                    "#ff1744": {
-                                        "value": 3
-                                    }
-                                }
-                            },
-                            "type": "above"
-                        }
-                    }
-                }
-    else:
-        data = {
-                    "Type": 17,
-                    "ContentsFormat": "number",
-                    "Contents": {
-                        "stats": int(sonar_total_hits),
-                        "params": {
-                            "layout": "horizontal",
-                            "name": "Total Hits",
-                            "sign": "",
-                            "colors": {
-                                "items": {
-                                    "#00CD33": {
-                                        "value": -1
-                                    },
-                                    "#FF9000": {
-                                        "value": 0
-                                    },
-                                    "#ff1744": {
-                                        "value": 3
-                                    }
-                                }
-                            },
-                            "type": "above"
-                        }
-                    }
-                }
-    """
-
-    #demisto.results(data)
-
+        html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}No Results Found</h1></div>"
+        
     demisto.results({
         'ContentsFormat': formats['html'],
         'Type': entryTypes['note'],
