@@ -388,8 +388,9 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
         'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': alienvault_ec,
         outputPaths.get("dbotscore"): dbotscore_ec
     }
-    table = tableToMarkdown(t=context_entry.get('AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'), name=title)
-    human_readable = f"{table} No matches for URL\S {no_matches_url}" if no_matches_url else table
+    human_readable_table = tableToMarkdown(t=context_entry.get('AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
+                                           name=title)
+    human_readable = f"{human_readable_table} No matches for URL\S {no_matches_url}" if no_matches_url else human_readable_table
     return human_readable, context_entry, raws
 
 
