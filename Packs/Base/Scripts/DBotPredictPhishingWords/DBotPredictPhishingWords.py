@@ -78,6 +78,44 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     if model_type not in [FASTTEXT_MODEL_TYPE, TORCH_TYPE, UNKNOWN_MODEL_TYPE]:
         model_type = UNKNOWN_MODEL_TYPE
     phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
+    is_model_applied_on_a_single_incidents = isinstance(email_subject, str) and isinstance(email_body, str)
+    if is_model_applied_on_a_single_incidents:
+        return predict_single_incident_full_output(email_subject, email_body, is_return_error, label_threshold,
+                                                   min_text_length,
+                                                   model_type, phishing_model, set_incidents_fields, top_word_limit,
+                                                   word_threshold)
+    else:
+        return predict_batch_incidents_light_output(email_subject, email_body, phishing_model, model_type,
+                                                    min_text_length)
+
+
+def predict_batch_incidents_light_output(email_subject, email_body, phishing_model, model_type, min_text_length):
+    batch_predictions = []
+    for subject, body in zip(email_subject, email_body):
+        incident_res = {'Label': None, 'Probability': None, 'Error': ''}
+        text = "%s \n%s" % (subject, body)
+        input_text, _ = preprocess_text(text, model_type, is_return_error=False)
+        filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
+        if filtered_text_number_of_words == 0:
+            incident_res['Error'] = "The model does not contain any of the input text words"
+        elif filtered_text_number_of_words < min_text_length:
+            incident_res['Error'] = "The model contains fewer than %d words" % min_text_length
+        else:
+            pred = phishing_model.predict(text)
+            incident_res['Label'] = pred[0]
+            incident_res['Probability'] = pred[1]
+        batch_predictions.append(incident_res)
+    return {
+        'Type': entryTypes['note'],
+        'Contents': batch_predictions,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': 'Applied predictions on {} incidents.'.format(len(batch_predictions)),
+    }
+
+
+def predict_single_incident_full_output(email_subject, email_body, is_return_error, label_threshold, min_text_length,
+                                        model_type, phishing_model, set_incidents_fields, top_word_limit,
+                                        word_threshold):
     text = "%s \n%s" % (email_subject, email_body)
     input_text, words_to_token_maps = preprocess_text(text, model_type, is_return_error)
 
@@ -105,7 +143,6 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     negative_words = find_words_contain_tokens(negative_tokens, words_to_token_maps)
     positive_words = list(OrderedSet([s.strip(punctuation) for s in positive_words]))
     negative_words = list(OrderedSet([s.strip(punctuation) for s in negative_words]))
-
     positive_words = [w for w in positive_words if w.isalnum()]
     negative_words = [w for w in negative_words if w.isalnum()]
     highlighted_text_markdown = text.strip()
@@ -119,7 +156,6 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     explain_result['OriginalText'] = text.strip()
     explain_result['TextTokensHighlighted'] = highlighted_text_markdown
     predicted_label = explain_result["Label"]
-
     explain_result_hr = dict()
     explain_result_hr['TextTokensHighlighted'] = highlighted_text_markdown
     explain_result_hr['Label'] = predicted_label

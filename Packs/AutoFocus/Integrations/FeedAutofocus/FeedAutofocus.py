@@ -537,14 +537,6 @@ def main():
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
 
-    client = Client(api_key=params.get('api_key'),
-                    insecure=params.get('insecure'),
-                    proxy=params.get('proxy'),
-                    indicator_feeds=params.get('indicator_feeds'),
-                    custom_feed_urls=params.get('custom_feed_urls'),
-                    scope_type=params.get('scope_type'),
-                    sample_query=params.get('sample_query'))
-
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     # Switch case
@@ -553,6 +545,15 @@ def main():
         'autofocus-get-indicators': get_indicators_command
     }
     try:
+        auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'))
+        client = Client(api_key=auto_focus_key_retriever.key,
+                        insecure=params.get('insecure'),
+                        proxy=params.get('proxy'),
+                        indicator_feeds=params.get('indicator_feeds'),
+                        custom_feed_urls=params.get('custom_feed_urls'),
+                        scope_type=params.get('scope_type'),
+                        sample_query=params.get('sample_query'))
+
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client, feed_tags, tlp_color)
             # we submit the indicators in batches
