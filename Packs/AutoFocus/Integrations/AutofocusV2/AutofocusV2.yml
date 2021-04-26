@@ -755,19 +755,19 @@ script:
     - contextPath: IP.Address
       description: The IP address.
       type: String
-    - contextPath: IP.Relations.EntityA
+    - contextPath: IP.Relationships.EntityA
       description: The source of the relationship.
       type: string
-    - contextPath: IP.Relations.EntityB
+    - contextPath: IP.Relationships.EntityB
       description: The destination of the relationship.
       type: string
-    - contextPath: IP.Relations.Relationship
+    - contextPath: IP.Relationships.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: IP.Relations.EntityAType
+    - contextPath: IP.Relationships.EntityAType
       description: The type of the source of the relationship.
       type: string
-    - contextPath: IP.Relations.EntityBType
+    - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
     - contextPath: AutoFocus.IP.IndicatorValue
@@ -847,19 +847,19 @@ script:
     - contextPath: URL.Data
       description: The URL address.
       type: String
-    - contextPath: URL.Relations.EntityA
+    - contextPath: URL.Relationships.EntityA
       description: The source of the relationship.
       type: string
-    - contextPath: URL.Relations.EntityB
+    - contextPath: URL.Relationships.EntityB
       description: The destination of the relationship.
       type: string
-    - contextPath: URL.Relations.Relationship
+    - contextPath: URL.Relationships.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: URL.Relations.EntityAType
+    - contextPath: URL.Relationships.EntityAType
       description: The type of the source of the relationship.
       type: string
-    - contextPath: URL.Relations.EntityBType
+    - contextPath: URL.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
     - contextPath: AutoFocus.URL.IndicatorValue
@@ -939,19 +939,19 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: String
-    - contextPath: File.Relations.EntityA
+    - contextPath: File.Relationships.EntityA
       description: The source of the relationship.
       type: string
-    - contextPath: File.Relations.EntityB
+    - contextPath: File.Relationships.EntityB
       description: The destination of the relationship.
       type: string
-    - contextPath: File.Relations.Relationship
+    - contextPath: File.Relationships.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: File.Relations.EntityAType
+    - contextPath: File.Relationships.EntityAType
       description: The type of the source of the relationship.
       type: string
-    - contextPath: File.Relations.EntityBType
+    - contextPath: File.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
     - contextPath: File.Tags.TagGroups.TagGroupName
@@ -1112,19 +1112,19 @@ script:
     - contextPath: Domain.MalwareFamily
       description: The malware family associated with the domain.
       type: String
-    - contextPath: Domain.Relations.EntityA
+    - contextPath: Domain.Relationships.EntityA
       description: The source of the relationship.
       type: string
-    - contextPath: Domain.Relations.EntityB
+    - contextPath: Domain.Relationships.EntityB
       description: The destination of the relationship.
       type: string
-    - contextPath: Domain.Relations.Relationship
+    - contextPath: Domain.Relationships.Relationship
       description: The name of the relationship.
       type: string
-    - contextPath: Domain.Relations.EntityAType
+    - contextPath: Domain.Relationships.EntityAType
       description: The type of the source of the relationship.
       type: string
-    - contextPath: Domain.Relations.EntityBType
+    - contextPath: Domain.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
     - contextPath: Domain.Tags
