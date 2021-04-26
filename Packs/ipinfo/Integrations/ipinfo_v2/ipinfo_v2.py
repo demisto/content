@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -43,14 +42,17 @@ def ipinfo_ip_command(client: Client, ip: str) -> List[CommandResults]:
 
 def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreReliability) -> List[CommandResults]:
     command_results = []
-    asn = as_owner = ''  # default values
 
+    # default values
+    asn = as_owner = None
     feed_related_indicators = []
+
     if raw_result:
         hostname = raw_result.get('hostname')
-        feed_related_indicators.append(Common.FeedRelatedIndicators(hostname,
-                                                                    FeedIndicatorType.URL if urlRegex.find(hostname)
-                                                                    else FeedIndicatorType.Domain))
+        feed_related_indicators.append(
+            Common.FeedRelatedIndicators(hostname,
+                                         FeedIndicatorType.URL if urlRegex.find(hostname)
+                                         else FeedIndicatorType.Domain))
         if 'asn' in raw_result:
             asn = demisto.get(raw_result, 'asn.asn')
             as_owner = demisto.get(raw_result, 'asn.name')
@@ -60,21 +62,28 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreRel
                 feed_related_indicators.append(Common.FeedRelatedIndicators(as_domain, FeedIndicatorType.Domain))
 
         elif 'org' in raw_result:
-            asn, as_owner = raw_result.get('org', '').split(' ')[:2]  # default '' to avoid None.split(' ')
+            org = raw_result.get('org', '')
+            org_parts = org.split(' ')
+            if ' ' in org:
+                asn, as_owner = org_parts[0], ' '.join(org_parts[1:])
 
-        organization_name = demisto.get(raw_result, 'company.name')
-        organization_type = demisto.get(raw_result, 'company.type')
-        organization = {'Name': organization_name, 'Type': organization_type} if 'company' in raw_result else None
+        organization = {
+            'Name': demisto.get(raw_result, 'company.name'),
+            'Type': demisto.get(raw_result, 'company.type')
+        } if 'company' in raw_result else None
+
         company_domain = demisto.get(raw_result, 'company.domain')
         if company_domain is not None:
             feed_related_indicators.append(Common.FeedRelatedIndicators(company_domain, FeedIndicatorType.Domain))
 
-        abuse = {'Address': demisto.get(raw_result, 'abuse.address'),
-                 'Country': demisto.get(raw_result, 'abuse.country'),
-                 'Name': demisto.get(raw_result, 'abuse.name'),
-                 'Network': demisto.get(raw_result, 'abuse.network'),
-                 'Phone': demisto.get(raw_result, 'abuse.phone'),
-                 'Email': demisto.get(raw_result, 'abuse.email')} if 'abuse' in raw_result else None
+        abuse = {
+            'Address': demisto.get(raw_result, 'abuse.address'),
+            'Country': demisto.get(raw_result, 'abuse.country'),
+            'Name': demisto.get(raw_result, 'abuse.name'),
+            'Network': demisto.get(raw_result, 'abuse.network'),
+            'Phone': demisto.get(raw_result, 'abuse.phone'),
+            'Email': demisto.get(raw_result, 'abuse.email')
+        } if 'abuse' in raw_result else None
 
         tags = []
         for (tag_path, tag_name) in (('privacy.hosting', 'hosting'),
@@ -84,13 +93,19 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreRel
             if demisto.get(raw_result, tag_path):
                 tags.append(tag_name)
 
-        city = raw_result.get('city', '')
-        region = raw_result.get('region', '')
-        postal = raw_result.get('postal', '')
-        country = raw_result.get('country', '')
+        city = raw_result.get('city')
+        region = raw_result.get('region')
+        postal = raw_result.get('postal')
+        country = raw_result.get('country')
 
-        description = ', '.join((val for val in [city, region, postal, country] if val is not None))
-        loc = raw_result.get('loc', '')
+        description = ', '.join(filter(None, [city, region, postal, country]))
+
+        # parses geolocation
+        lat = lon = ''
+        loc = raw_result.get('loc', '')  # empty string as default on purpose,
+        if ',' in loc:
+            coordinates = loc.split(',')
+            lat, lon = float(coordinates[0]), float(coordinates[1])
 
         entry_context = {'Address': raw_result.get('ip'),
                          'Hostname': hostname,
@@ -99,17 +114,9 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreRel
                          'Tags': tags,
                          'Organization': organization,
                          'Geo': {'Location': loc, 'Country': country, 'Description': description},
-                         'Registrar': {'Abuse': abuse}}
+                         'Registrar': {'Abuse': abuse} if abuse else None}
 
         outputs_key_field = 'Address'  # marks the ip address
-
-        # parses geolocation
-        lat = lon = ''
-
-        if ',' in loc:
-            coordinates = loc.split(',')
-            lat, lon = float(coordinates[0]), float(coordinates[1])
-            return_error(f'{lat=},{lon=}')
 
         indicator = Common.IP(
             ip=ip,
