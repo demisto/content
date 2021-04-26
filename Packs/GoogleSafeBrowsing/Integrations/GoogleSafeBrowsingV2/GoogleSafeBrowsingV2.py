@@ -7,7 +7,7 @@ import traceback
 from typing import Dict, Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()
 
 TYPES = {
     'threatTypes': ["MALWARE", "SOCIAL_ENGINEERING", "POTENTIALLY_HARMFUL_APPLICATION", "UNWANTED_SOFTWARE"],
@@ -16,7 +16,25 @@ TYPES = {
 
 
 class Client(BaseClient):
-    def url_request(self, body: Dict, full_url):
+
+    def build_request_body(self, client_body: Dict, list_url: List) -> Dict:
+        list_urls = []
+        for url in list_url:
+            list_urls.append({"url": url})
+
+        body: Dict = {
+            "client": client_body,
+            "threatInfo": {
+                "threatTypes": TYPES.get('threatTypes'),
+                "platformTypes": TYPES.get('platformTypes'),
+                "threatEntryTypes": ["URL"],
+                "threatEntries": list_urls
+            }
+        }
+        return body
+
+    def url_request(self, client_body, full_url, list_url):
+        body = self.build_request_body(client_body, list_url)
         result = self._http_request(
             method='POST',
             json_data=body,
@@ -26,10 +44,9 @@ class Client(BaseClient):
 
 def test_module(client: Client, client_body: Dict, full_url) -> str:
     try:
-        # testing a known malicious URL to check if we get matches var
+        # testing a known malicious URL to check if we get matches
         test_url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"
-        body = build_request_body(client_body, test_url)
-        res = client.url_request(body, full_url)
+        res = client.url_request(client_body, full_url, [test_url])
         if res.get('matches'):
             message = 'ok'
         else:
@@ -42,24 +59,7 @@ def test_module(client: Client, client_body: Dict, full_url) -> str:
     return message
 
 
-def build_request_body(client_body, list_url):
-    list_urls = []
-    for url in list_url:
-        list_urls.append({"url": url})
-
-    body: Dict = {
-        "client": client_body,
-        "threatInfo": {
-            "threatTypes": TYPES.get('threatTypes'),
-            "platformTypes": TYPES.get('platformTypes'),
-            "threatEntryTypes": ["URL"],
-            "threatEntries": list_urls
-        }
-    }
-    return body
-
-
-def handle_errors(result):
+def handle_errors(result: Dict):
     status_code = result.get('StatusCode', 0)
     result_body = result.get('Body')
 
@@ -78,7 +78,7 @@ def handle_errors(result):
         raise Exception(f'Failed accessing Google Safe Browsing APIs. Error: {error_massage}. Error code: {error_code}')
 
 
-def arrange_results_to_urls(results, url_list):
+def arrange_results_to_urls(results: List, url_list: List) -> Dict:
     urls_results: Dict[str, list] = {}
     for url in url_list:
         urls_results[url] = []
@@ -94,9 +94,7 @@ def url_command(client: Client, args: Dict[str, Any], client_body, reliability, 
 
     url = argToList(args.get('url'))
 
-    request_body = build_request_body(client_body, url)
-
-    result = client.url_request(request_body, full_url)
+    result = client.url_request(client_body, full_url, url)
 
     if result.get('StatusCode'):
         handle_errors(result)
@@ -151,18 +149,19 @@ def url_command(client: Client, args: Dict[str, Any], client_body, reliability, 
 
 
 def main() -> None:
-    api_key = demisto.params().get('api_key')
+    params = demisto.params()
+    api_key = params.get('api_key')
 
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
-    base_url = demisto.params().get('url')
+    base_url = params.get('url')
     if not base_url.endswith('/'):
         base_url += '/'
 
     base_url = f"{base_url}?key={api_key}"
 
-    reliability = demisto.params().get('integrationReliability')
+    reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
 
     if DBotScoreReliability.is_valid_type(reliability):
@@ -171,8 +170,8 @@ def main() -> None:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     client_body = {
-        'clientId': demisto.params().get('client_id'),
-        'clientVersion': demisto.params().get('client_version'),
+        'clientId': params.get('client_id'),
+        'clientVersion': params.get('client_version'),
     }
 
     demisto.debug(f'Command being called is {demisto.command()}')

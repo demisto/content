@@ -1,4 +1,4 @@
-Search Safe Browsing
+Search Safe Browsing v4
 
 ## Configure GoogleSafeBrowsing on Cortex XSOAR
 
