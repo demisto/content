@@ -147,6 +147,28 @@ def create_pulse_by_ec(entry: dict) -> dict:
     return assign_params(**pulse_by_ec)
 
 
+def create_attack_pattern_relationships(client: Client, raw_response: dict, entity_a: str, entity_a_type: str):
+    relationships = []
+
+    if not client.create_relationships:
+        return relationships
+
+    # pulse_info.pulses.[0].attack_ids.display_name - can contain a list of attack_ids
+    pulses = dict_safe_get(raw_response, ['pulse_info', 'pulses'], [''])
+    if pulses and isinstance(pulses, list) and 'attack_ids' in pulses[0]:
+        display_names = [attack_id.get('display_name') for attack_id in pulses[0].get('attack_ids')]
+        if display_names:
+            relationships = [EntityRelation(
+                name=EntityRelation.Relations.INDICATOR_OF,
+                entity_a=entity_a,
+                entity_a_type=entity_a_type,
+                entity_b=display_name,
+                entity_b_type="Attack Pattern",
+                source_reliability=client.reliability,
+                brand=INTEGRATION_NAME) for display_name in display_names]
+    return relationships
+
+
 ''' COMMANDS '''
 
 
@@ -191,21 +213,9 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
         raw_response = client.query(section=ip_version,
                                     argument=ip_)
         if raw_response:
-            relationships = []
-            if client.create_relationships:
-                # pulse_info.pulses.[0].attack_ids.display_name - can contain a list of attack_ids
-                pulses = dict_safe_get(raw_response, ['pulse_info', 'pulses'], [''])
-                if pulses and isinstance(pulses, list) and 'attack_ids' in pulses[0]:
-                    display_names = [attack_id.get('display_name') for attack_id in pulses[0].get('attack_ids')]
-                    if display_names:
-                        relationships = [EntityRelation(
-                            name=EntityRelation.Relations.INDICATOR_OF,
-                            entity_a=ip_,
-                            entity_a_type=FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6,
-                            entity_b=display_name,
-                            entity_b_type="Attack Pattern",
-                            source_reliability=client.reliability,
-                            brand=INTEGRATION_NAME) for display_name in display_names]
+            ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
+            relationships = create_attack_pattern_relationships(client, raw_response=raw_response,
+                                                                entity_a=ip_, entity_a_type=ip_version)
 
             dbot_score = Common.DBotScore(indicator=ip_, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME,
