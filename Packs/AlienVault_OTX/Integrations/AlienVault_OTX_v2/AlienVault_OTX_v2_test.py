@@ -75,6 +75,64 @@ FILE_EC_WITHOUT_ANALYSIS = {
     }]
 }
 
+URL_RAW_RESPONSE = {
+    "alexa": "http://www.alexa.com/siteinfo/fotoidea.com",
+    "base_indicator": {},
+    "domain": "fotoidea.com",
+    "false_positive": [],
+    "hostname": "www.fotoidea.com",
+    "indicator": "http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list",
+    "pulse_info": {
+        "count": 0,
+        "pulses": [],
+        "references": [],
+        "related": {
+            "alienvault": {
+                "adversary": [],
+                "industries": [],
+                "malware_families": [],
+                "unique_indicators": 0
+            },
+            "other": {
+                "adversary": [],
+                "industries": [],
+                "malware_families": [],
+                "unique_indicators": 0
+            }
+        }
+    },
+    "sections": [
+        "general",
+        "url_list",
+        "http_scans",
+        "screenshot"
+    ],
+    "type": "url",
+    "type_title": "URL",
+    "validation": [],
+    "whois": "http://whois.domaintools.com/fotoidea.com"
+}
+
+URL_EC = {
+    'URL(val.Data && val.Data == obj.Data)': [{
+        'Data': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'}}],
+    'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
+    ' val.Type == obj.Type)': [{
+        'Indicator': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
+        'Type': 'url', 'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'}],
+    'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': {
+        'Url': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
+        'Hostname': 'www.fotoidea.com', 'Domain': 'fotoidea.com', 'Alexa': 'http://www.alexa.com/siteinfo/fotoidea.com',
+        'Whois': 'http://whois.domaintools.com/fotoidea.com'}
+}
+
+URL_RELATIONSHIPS = [{
+    'name': 'hosted-on', 'reverseName': 'hosts', 'type': 'IndicatorToIndicator',
+    'entityA': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
+    'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': 'fotoidea.com', 'entityBFamily': 'Indicator',
+    'entityBType': 'Domain', 'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'
+}]
+
 DOMAIN_RAW_RESPONSE = {
     "alexa": "http://www.alexa.com/siteinfo/otx.alienvault.com",
     "base_indicator": {},
@@ -209,7 +267,8 @@ client = Client(
     verify=False,
     proxy=False,
     default_threshold='2',
-    reliability=DBotScoreReliability.C
+    reliability=DBotScoreReliability.C,
+    create_relationships=True
 )
 
 
@@ -238,6 +297,34 @@ def test_file_command(mocker, raw_response_general, raw_response_analysis, expec
     # results is CommandResults list
     context = command_results[0].to_context()['EntryContext']
     assert expected == context
+
+
+@pytest.mark.parametrize('raw_response,expected_ec, expected_relationships', [
+    (URL_RAW_RESPONSE, URL_EC, URL_RELATIONSHIPS),
+])
+def test_url_command(mocker, raw_response, expected_ec, expected_relationships):
+    """
+    Given
+    - A URL.
+
+    When
+    - Running url_command with the url.
+
+    Then
+    - Validate that the URL and DBotScore entry context have the proper values.
+    - Validate that the proper relations were created
+    """
+    mocker.patch.object(client, 'query', side_effect=[raw_response])
+    command_results = url_command(client, {
+        'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'})
+    # results is CommandResults list
+    all_context = command_results[0].to_context()
+
+    context = all_context['EntryContext']
+    assert expected_ec == context
+
+    relations = all_context['Relationships']
+    assert expected_relationships == relations
 
 
 def test_url_command_not_found(mocker):

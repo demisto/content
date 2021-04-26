@@ -325,7 +325,7 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                 outputs_prefix=outputPaths.get("file"),
                 outputs=context,
                 indicator=file_object,
-                raw_response=raw_response_analysis.update(raw_response_general)
+                raw_response=raw_response_general
                 # relations=relationship
             ))
 
@@ -374,6 +374,18 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
                     'Whois': raw_response.get('whois')
                 }
 
+                relationship = []
+                if client.create_relationships:
+                    domain = raw_response.get('domain')
+                    if domain:
+                        relationship = [EntityRelation(name=EntityRelation.Relations.HOSTED_ON,
+                                                       entity_a=url,
+                                                       entity_a_type=FeedIndicatorType.URL,
+                                                       entity_b=domain,
+                                                       entity_b_type=FeedIndicatorType.Domain,
+                                                       source_reliability=client.reliability,
+                                                       brand=INTEGRATION_NAME)]
+
                 human_readable = tableToMarkdown(name=title, t=context)
 
                 command_results.append(CommandResults(
@@ -381,8 +393,8 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
                     outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.URL(val.Url && val.Url === obj.Url)',
                     outputs=context,
                     indicator=url_object,
-                    raw_response=raw_response
-                    # relations=relationship
+                    raw_response=raw_response,
+                    relations=relationship
                 ))
 
     if not raws:
