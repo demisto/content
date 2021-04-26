@@ -226,6 +226,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
             process_incident = {}  # mypy: ignore
             process_incident["incidentClassification"] = "RubrikRadar"
             process_incident["message"] = []  # type: ignore
+            process_incident["severity"] = 0
 
             for key, value in event["node"].items():
                 # Simplify the message data
@@ -257,10 +258,33 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                 else:
                     process_incident[key] = value
 
+            #Map Severity Level
+
+            if event["node"]["severity"] == "Critical":
+
+                if demisto.params().get('radar_critical_severity_mapping') == None:
+                    critical_mapping = 'XSOAR LOW'
+                else:
+                    critical_mapping = demisto.params().get('radar_critical_severity_mapping')
+
+                process_incident["severity"] = convert_to_demisto_severity(critical_mapping)
+
+            elif event["node"]["severity"] == "Warning":
+
+                if demisto.params().get('radar_warning_severity_mapping') == None:
+                    warning_mapping = 'XSOAR LOW'
+                else:
+                    warning_mapping = demisto.params().get('radar_warning_severity_mapping')
+
+                process_incident["severity"] = convert_to_demisto_severity(warning_mapping)
+            else:
+                process_incident["severity"] = IncidentSeverity.LOW
+
             incidents.append({
                 "name": f'Rubrik Radar Anomaly - {process_incident["objectName"]}',
                 "occurred": process_incident["lastUpdated"],
-                "rawJSON": json.dumps(process_incident)
+                "rawJSON": json.dumps(process_incident),
+                "severity": process_incident["severity"]
             })
 
         if len(incidents) > max_fetch:
@@ -585,8 +609,16 @@ def rubrik_cdm_cluster_connection_state_command(client: Client, args: Dict[str, 
         outputs=context
     )
 
+def convert_to_demisto_severity(severity='XSOAR LOW') -> int:
+    """Maps the severity from the Rubrik Radar event to the user specified XSOAR severity level."""
+    demisto.info("SEVERITY TO CONVERT IS: " + severity)
+    return {
+        'XSOAR LOW': IncidentSeverity.LOW,
+        'XSOAR MEDIUM': IncidentSeverity.MEDIUM,
+        'XSOAR HIGH': IncidentSeverity.HIGH,
+        'XSOAR CRITICAL': IncidentSeverity.CRITICAL
+    }[severity]
 
-''' MAIN FUNCTION '''
 
 
 def main() -> None:

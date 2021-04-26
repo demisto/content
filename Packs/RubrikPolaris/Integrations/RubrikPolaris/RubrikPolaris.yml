@@ -46,7 +46,6 @@ configuration:
   - XSOAR HIGH
   - XSOAR MEDIUM
   - XSOAR LOW
-  - XSOAR INFO
 - display: Radar Warning Severity Level Mapping
   name: radar_warning_severity_mapping
   defaultvalue: XSOAR LOW
@@ -57,7 +56,6 @@ configuration:
   - XSOAR HIGH
   - XSOAR MEDIUM
   - XSOAR LOW
-  - XSOAR INFO
   
 
 defaultclassifier: Rubrik Polaris Radar - Classification
