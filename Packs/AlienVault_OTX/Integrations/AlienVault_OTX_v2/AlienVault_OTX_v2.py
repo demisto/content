@@ -148,7 +148,7 @@ def create_pulse_by_ec(entry: dict) -> dict:
 
 
 def create_attack_pattern_relationships(client: Client, raw_response: dict, entity_a: str, entity_a_type: str):
-    relationships = []
+    relationships: list = []
 
     if not client.create_relationships:
         return relationships
