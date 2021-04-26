@@ -47,13 +47,23 @@ def test_send_email_to_reviewers(mocker, capsys):
 
     class SgMock:
         def __init__(self):
-            self.client = self
-            self.mail = self
-            self.send = self
-            self.status_code = 202
+            self.client = self.Client()
 
-        def post(self, request_body):
-            return self
+        class Client:
+            def __init__(self):
+                self.mail = self.Mail()
+
+            class Mail:
+                def __init__(self):
+                    self.send = self.Send()
+
+                class Send:
+                    def post(self, request_body):
+                        return self.Res(request_body)
+
+                    class Res:
+                        def __init__(self, _):
+                            self.status_code = 202
 
     sg_mock = SgMock()
 
@@ -64,7 +74,7 @@ def test_send_email_to_reviewers(mocker, capsys):
         api_token='email_api_token',
         pack_name='TestPack',
         pr_number='1',
-        modified_files=['file1', 'file2']
+        modified_files=['TestPack/file1', 'TestPack/file2']
     )
     captured = capsys.readouterr()
     assert 'Email sent to' in captured.out
