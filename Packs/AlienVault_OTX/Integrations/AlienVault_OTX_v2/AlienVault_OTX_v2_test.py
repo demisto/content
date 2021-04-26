@@ -46,24 +46,34 @@ ANALYSIS_RAW_RESPONSE = {'malware': {}, 'page_type': 'PEXE', 'analysis': {
 EMPTY_ANALYSIS_RAW_RESPONSE = {'malware': {}, 'page_type': 'generic', 'analysis': None}
 
 EC_WITH_ANALYSIS = {
-    'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256'
-    ' || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32'
-    ' || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)': [
-        {'MD5': '2eb14920c75d5e73264f77cfa273ad2c', 'SHA1': '6c5360d41bd2b14b1565f5b18e5c203cf512e493',
-         'SHA256': '4cf9322c49adebf63311a599dc225bbcbf16a253eca59bbe1a02e4ae1d824412', 'SSDeep': '', 'Size': '437760',
-         'Type': 'PE32 executable (GUI) Intel 80386 Mono/.Net assembly, for MS Windows',
-         'Malicious': {'PulseIDs': []}}], 'DBotScore': [
-        {'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Score': 0, 'Type': 'file',
-         'Vendor': 'AlienVault OTX v2', 'Reliability': 'C - Fairly reliable'}]}
-
+    'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||'
+    ' val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||'
+    ' val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||'
+    ' val.SSDeep && val.SSDeep == obj.SSDeep)': {
+        'MD5': '2eb14920c75d5e73264f77cfa273ad2c', 'SHA1': '6c5360d41bd2b14b1565f5b18e5c203cf512e493',
+        'SHA256': '4cf9322c49adebf63311a599dc225bbcbf16a253eca59bbe1a02e4ae1d824412', 'SSDeep': '',
+        'Size': '437760', 'Type': 'PE32 executable (GUI) Intel 80386 Mono/.Net assembly, for MS Windows',
+        'Malicious': {'PulseIDs': []}},
+    'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+    ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
+        'Indicator': {
+            'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}, 'Type': 'file',
+        'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'
+    }]
+}
 EC_WITHOUT_ANALYSIS = {
-    'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256'
-    ' || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32'
-    ' || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)': [
-        {'MD5': None, 'SHA1': None, 'SHA256': None, 'SSDeep': None, 'Size': None, 'Type': None,
-         'Malicious': {'PulseIDs': []}}], 'DBotScore': [
-        {'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Score': 0, 'Type': 'file',
-         'Vendor': 'AlienVault OTX v2', 'Reliability': 'C - Fairly reliable'}]}
+    'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||'
+    ' val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||'
+    ' val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||'
+    ' val.SSDeep && val.SSDeep == obj.SSDeep)': {
+        'MD5': None, 'SHA1': None, 'SHA256': None, 'SSDeep': None, 'Size': None, 'Type': None,
+        'Malicious': {'PulseIDs': []}},
+    'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
+    ' val.Type == obj.Type)': [{
+        'Indicator': {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}, 'Type': 'file',
+        'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'
+    }]
+}
 
 client = Client(
     base_url="base_url",
@@ -89,7 +99,6 @@ def test_file_command(mocker, raw_response_general, raw_response_analysis, expec
     command_results = file_command(client, {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'})
     # results is CommandResults list
     context = command_results[0].to_context()['EntryContext']
-    print(context)
     assert expected == context
 
 
@@ -104,9 +113,9 @@ def test_url_command(mocker):
     Then
     - Return no matches for the url.
     """
-    url = 'http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026data=LeFzS0ZTdINxJN2UMVFvyPotO31n'\
-          'Q1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9'\
-          'TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8'\
+    url = 'http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026data=LeFzS0ZTdINxJN2UMVFvyPotO31n' \
+          'Q1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9' \
+          'TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8' \
           'cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5JVX3kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
     expected_result = 'No matches for URL http://url2447.staywell.com/asm/unsubscribe/?user_id=275860%5C%5Cu0026dat' \
                       'a=LeFzS0ZTdINxJN2UMVFvyPotO31nQ1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB' \

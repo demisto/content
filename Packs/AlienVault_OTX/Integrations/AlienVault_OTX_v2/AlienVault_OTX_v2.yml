@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: AlienVault OTX v22
+  id: AlienVault OTX v2
   version: -1
 configuration:
 - defaultvalue: https://otx.alienvault.com
@@ -47,8 +47,8 @@ configuration:
   required: false
   type: 8
 description: Query Indicators of Compromise in AlienVault OTX.
-display: AlienVault OTX v22
-name: AlienVault OTX v22
+display: AlienVault OTX v2
+name: AlienVault OTX v2
 script:
   commands:
   - arguments:
