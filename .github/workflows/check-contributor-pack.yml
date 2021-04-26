@@ -23,13 +23,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          BRANCH_NAME: ${{ github.base_ref }}
-          BASE_REF: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ github.head_ref }}
+          GIT_REP: ${{ github.repository }}
           SENDGRID_EMAIL_API_KEY: ${{ secrets.SENDGRID_EMAIL_API_KEY }}
         run: |
           echo "PR number is: $PR_NUMBER"
           echo "Target branch name is: $BRANCH_NAME"
-          echo "Target base_ref name is: $BASE_REF"
+          echo "github.repository: $GIT_REP"
           echo "Starting check of contributor packs"
           python Utils/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN --email_api_token $SENDGRID_EMAIL_API_KEY
           echo "Finished check of contributor packs"
