@@ -2120,7 +2120,7 @@ def test_run_script_command_empty_params(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'parameters_values': parameters
+            'parameters_values': {}
         }
     }
 
