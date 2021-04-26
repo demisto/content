@@ -89,8 +89,8 @@ class NetscoutClient(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    def http_request(self, method: str, url_suffix: str = None, params: dict = None, json_data: dict = None,
-                     return_empty_response: bool = None):
+    def http_request(self, method: str, url_suffix: Optional[str] = None, params: Optional[dict] = None,
+                     json_data: Optional[dict] = None, return_empty_response: Optional[bool] = None):
 
         return super()._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
                                      error_handler=self.error_handler, return_empty_response=return_empty_response)
@@ -287,14 +287,14 @@ class NetscoutClient(BaseClient):
                     alert_type = alert.get('attributes', {}).get('alert_type')
                     incidents.append({
                         'name': f"{alert_type}: {alert.get('id')}",
-                        'type': 'Netscout Arbor Sightline Alert',
                         'occurred': start_time,
                         'rawJSON': json.dumps(alert)
                     })
         return incidents, new_last_start_time
 
-    def list_alerts(self, page: int = None, page_size: int = None, search_filter: str = None):
-
+    def list_alerts(self, page: Optional[int] = None, page_size: Optional[int] = None,
+                    search_filter: Optional[str] = None):
+        demisto.info(search_filter)
         return self.http_request(
             method='GET',
             url_suffix='alerts',
@@ -313,7 +313,7 @@ class NetscoutClient(BaseClient):
             url_suffix=f'alerts/{alert_id}/annotations'
         )
 
-    def list_mitigations(self, mitigation_id: str, page: int = None, page_size: int = None):
+    def list_mitigations(self, mitigation_id: str, page: Optional[int] = None, page_size: Optional[int] = None):
         return self.http_request(
             method='GET',
             url_suffix=f'mitigations/{mitigation_id}' if mitigation_id else 'mitigations',
@@ -347,7 +347,7 @@ class NetscoutClient(BaseClient):
             url_suffix='routers/'
         )
 
-    def managed_object_list(self, page: int = None, page_size: int = None):
+    def managed_object_list(self, page: Optional[int] = None, page_size: Optional[int] = None):
         return self.http_request(
             method='GET',
             url_suffix='managed_objects/',
@@ -505,9 +505,9 @@ def list_alerts_command(client: NetscoutClient, args: dict):
 
 
 def alert_annotation_list_command(client: NetscoutClient, args: dict):
-    alert_id = args.get('alert_id')  # type: ignore
+    alert_id = args.get('alert_id', '')
     extend_data = argToBoolean(args.get('extend_data', False))
-    raw_result = client.get_annotations(alert_id)  # type: ignore
+    raw_result = client.get_annotations(alert_id)
     data = raw_result.get('data')
     hr = [build_human_readable(data=annotation) for annotation in data]
     annotations = [build_output(data=annotation, extend_data=extend_data) for annotation in data]
@@ -522,11 +522,11 @@ def alert_annotation_list_command(client: NetscoutClient, args: dict):
 def mitigation_list_command(client: NetscoutClient, args: dict):
     page = arg_to_number(args.get('page'))
     limit = arg_to_number(args.get('limit'))
-    mitigation_id: str = args.get('mitigation_id')  # type: ignore
-    extend_data = argToBoolean(args.get('extend_data', False))  # type: bool
+    mitigation_id = args.get('mitigation_id', '')
+    extend_data = argToBoolean(args.get('extend_data', False))
     raw_result = client.list_mitigations(mitigation_id, page=page, page_size=limit)
     data = raw_result.get('data')
-    data = data[:limit] if isinstance(data, list) else [data]
+    data = data if isinstance(data, list) else [data]
     hr = [build_human_readable(data=mitigation) for mitigation in data]
     mitigations = [build_output(data=mitigation, keys_to_remove=['relationships', 'subobject'], extend_data=extend_data)
                    for mitigation in data]
@@ -572,7 +572,7 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
 
 
 def mitigation_delete_command(client: NetscoutClient, args: Dict[str, str]):
-    mitigation_id: str = args.get('mitigation_id')  # type: ignore
+    mitigation_id = args.get('mitigation_id', '')
     client.delete_mitigation(mitigation_id)
     hr = f'### Mitigation {mitigation_id} was deleted'
     return CommandResults(readable_output=hr)
