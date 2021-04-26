@@ -330,7 +330,8 @@ IP_RAW_RESPONSE_WITH_RELATIONSHIPS = {
                     }
                 ],
                 "author": {
-                    "avatar_url": "https://otx20-web-media.s3.amazonaws.com/media/avatars/user_80137/resized/80/avatar_54d0ee2979.png",
+                    "avatar_url": "https://otx20-web-media.s3.amazonaws.com/media/avatars/user_80137/"
+                                  "resized/80/avatar_54d0ee2979.png",
                     "id": "80137",
                     "is_following": False,
                     "is_subscribed": False,
@@ -339,7 +340,7 @@ IP_RAW_RESPONSE_WITH_RELATIONSHIPS = {
                 "cloned_from": None,
                 "comment_count": 0,
                 "created": "2020-12-11T23:37:51.039000",
-                "description": "Technique ID: T1140 ATTACKID\nTechnique Name: Deobfuscate/Decode Files or Information \nThe following is the full set of results for the 2016 WindowSuggested ATT\u0026CK IDs:\nSf:ShellCode-AU\\ [Trj] , Win. \nTechnique ID: T1140 ATTACKID\nTechnique Name: Deobfuscate/Decode Files\nSuggested Targeted Countries:\n86.43.151.3 eircom.net Ireland COUNTRYAS5466 Eir Broadband 91.121.164.151 excite.it ns3058971.ip-91-121-164.eu France COUNTRYAS16276 OVH SAS 91.195.240.126 dicksmail.com Germany COUNTRYAS47846 SEDO GmbH 95.216.117.203 chat4all.org tyr.ionstar.net Finland COUNTRYAS24940 Hetzner Online GmbH 98.136.103.23 yahoo.se w2.src.vip.gq1.yahoo.com United States COUNTRYAS36647 YAHOO-GQ1 99.192.136.18 hotmale.com cs2665.mojohost.com United States COUNTRYAS27589 MOJOHOST\nUK Services Limited 188.125.72.167 www.aol.com unknown.yahoo.com United Kingdom COUNTRYAS34010 Yahoo!",
+                "description": "Technique ID: T1140 ATTACKID",
                 "downvotes_count": 0,
                 "export_count": 7,
                 "follower_count": 0,
@@ -367,9 +368,7 @@ IP_RAW_RESPONSE_WITH_RELATIONSHIPS = {
                 "public": 1,
                 "pulse_source": "web",
                 "references": [
-                    "The following is the full set of results for the 2016 Windows World Cup, which will be held on Thursday, 1 July at 19:00 BST.. and will appear on the following page.",
-                    "Suggested Description: The following is the full set of results for the 2016 Windows World Cup, which will be held on Thursday, 1 July at 19:00 BST.. and will appear on the following page. Suggested Targeted Countries: 86.43.151.3 eircom.net Ireland COUNTRYAS5466 Eir Broadband 91.121.164.151 excite.it ns3058971.ip-91-121-164.eu France COUNTRYAS16276 OVH SAS 91.195.240.126 dicksmail.com Germany COUNTRYAS47846 SEDO GmbH 95.216.117.203 chat4all.org tyr.ionstar.net Finland COUNTRYAS24940 Hetzner Online GmbH 98.",
-                    "Suggested ATT\u0026CK IDs: \"Analysis Date 12 months ago Score 14 Malicious Related Pulses OTX User-Created Pulses (23) Related Tags 11 Related Tags khtml , gecko , mac os , cpu iphone ... More Antivirus Detections Sf:ShellCode-AU\\ [Trj] , Win.  Technique ID: T1140 ATTACKID Technique Name: Deobfuscate/Decode Files or Information"
+                    "The following is the full set of results for the 2016 Windows World Cup"
                 ],
                 "related_indicator_is_active": 0,
                 "related_indicator_type": "IPv4",
@@ -412,9 +411,7 @@ IP_RAW_RESPONSE_WITH_RELATIONSHIPS = {
             }
         ],
         "references": [
-            "The following is the full set of results for the 2016 Windows World Cup, which will be held on Thursday, 1 July at 19:00 BST.. and will appear on the following page.",
-            "Suggested ATT\u0026CK IDs: \"Analysis Date 12 months ago Score 14 Malicious Related Pulses OTX User-Created Pulses (23) Related Tags 11 Related Tags khtml , gecko , mac os , cpu iphone ... More Antivirus Detections Sf:ShellCode-AU\\ [Trj] , Win.  Technique ID: T1140 ATTACKID Technique Name: Deobfuscate/Decode Files or Information",
-            "Suggested Description: The following is the full set of results for the 2016 Windows World Cup, which will be held on Thursday, 1 July at 19:00 BST.. and will appear on the following page. Suggested Targeted Countries: 86.43.151.3 eircom.net Ireland COUNTRYAS5466 Eir Broadband 91.121.164.151 excite.it ns3058971.ip-91-121-164.eu France COUNTRYAS16276 OVH SAS 91.195.240.126 dicksmail.com Germany COUNTRYAS47846 SEDO GmbH 95.216.117.203 chat4all.org tyr.ionstar.net Finland COUNTRYAS24940 Hetzner Online GmbH 98."
+            "The following is the full set of results for the 2016 Windows World Cup"
         ],
         "related": {
             "alienvault": {
