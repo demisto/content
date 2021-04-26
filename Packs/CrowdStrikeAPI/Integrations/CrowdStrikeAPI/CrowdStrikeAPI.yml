@@ -35,7 +35,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The endpoint in CrowdStrike API to refer to.
+      description: The endpoint to refer to in CrowdStrike API.
       isArray: false
       name: endpoint
       required: true
@@ -56,13 +56,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The request body (required for POST queries) given in JSON format.
+      description: The request body (required for POST queries) in JSON format.
       isArray: false
       name: request_body
       required: false
       secret: false
     - default: false
-      description: The URL query parameters given in JSON format, e.g., {"limit":1}.
+      description: The URL query parameters in JSON format, e.g., {"limit":1}.
       isArray: false
       name: query_parameters
       required: false
