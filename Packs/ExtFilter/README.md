@@ -1,5 +1,5 @@
 Filter values with complex conditions.<br/>
-You can make filters with comlex and combination conditions for the context data at any level of the tree.
+You can make filters with complex and combination conditions for the context data at any level of the tree.
 
 ---
 ## Script Data
