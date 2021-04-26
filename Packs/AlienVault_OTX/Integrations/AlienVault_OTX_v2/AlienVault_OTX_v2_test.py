@@ -7,8 +7,6 @@ import pytest
 from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command
 from CommonServerPython import *
 
-INTEGRATION_NAME = 'AlienVault OTX v2'
-
 # DBot calculation Test
 arg_names_dbot = "pulse, score"
 
@@ -61,6 +59,7 @@ EC_WITH_ANALYSIS = {
         'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'
     }]
 }
+
 EC_WITHOUT_ANALYSIS = {
     'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||'
     ' val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||'
@@ -102,7 +101,7 @@ def test_file_command(mocker, raw_response_general, raw_response_analysis, expec
     assert expected == context
 
 
-def test_url_command(mocker):
+def test_url_command_not_found(mocker):
     """
     Given
     - A url with status code 404.
