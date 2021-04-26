@@ -240,8 +240,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for domain in domains_list:
-        raw_response = client.query(section='domain',
-                                    argument=domain)
+        raw_response = client.query(section='domain', argument=domain)
         if raw_response:
             dbot_score = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME,
@@ -402,8 +401,7 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
     Returns:
         Outputs
     """
-    raw_response = client.query(section='hostname',
-                                argument=hostname)
+    raw_response = client.query(section='hostname', argument=hostname)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for Hostname query'
         context_entry: dict = {

@@ -4,7 +4,7 @@
 import pytest
 
 # Import local packages
-from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command
+from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command
 from CommonServerPython import *
 
 # DBot calculation Test
@@ -21,15 +21,16 @@ arg_values_dbot = [
     ({'count': 10}, 3),
 ]
 
-GENERAL_RAW_RESPONSE = {'indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493',
-                        'sections': ['general', 'analysis'],
-                        'pulse_info': {'count': 0, 'references': [], 'pulses': []},
-                        'base_indicator': {'indicator': '2eb14920c75d5e73264f77cfa273ad2c', 'description': '',
-                                           'title': '', 'access_reason': '', 'access_type': 'public', 'content': '',
-                                           'type': 'FileHash-MD5', 'id': 2113706547}, 'validation': [],
-                        'type': 'sha1', 'type_title': 'FileHash-SHA1'}
+FILE_GENERAL_RAW_RESPONSE = {'indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493',
+                             'sections': ['general', 'analysis'],
+                             'pulse_info': {'count': 0, 'references': [], 'pulses': []},
+                             'base_indicator': {'indicator': '2eb14920c75d5e73264f77cfa273ad2c', 'description': '',
+                                                'title': '', 'access_reason': '', 'access_type': 'public',
+                                                'content': '',
+                                                'type': 'FileHash-MD5', 'id': 2113706547}, 'validation': [],
+                             'type': 'sha1', 'type_title': 'FileHash-SHA1'}
 
-ANALYSIS_RAW_RESPONSE = {'malware': {}, 'page_type': 'PEXE', 'analysis': {
+FILE_ANALYSIS_RAW_RESPONSE = {'malware': {}, 'page_type': 'PEXE', 'analysis': {
     'info': {'results': {'sha1': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'file_class': 'PEXE',
                          'file_type': 'PE32 executable (GUI) Intel 80386 Mono/.Net assembly, for MS Windows',
                          'filesize': '437760', 'ssdeep': '',
@@ -41,9 +42,9 @@ ANALYSIS_RAW_RESPONSE = {'malware': {}, 'page_type': 'PEXE', 'analysis': {
     'analysis_time': 125743941,
     'metadata': {'tlp': 'WHITE'}}}
 
-EMPTY_ANALYSIS_RAW_RESPONSE = {'malware': {}, 'page_type': 'generic', 'analysis': None}
+FILE_EMPTY_ANALYSIS_RAW_RESPONSE = {'malware': {}, 'page_type': 'generic', 'analysis': None}
 
-EC_WITH_ANALYSIS = {
+FILE_EC_WITH_ANALYSIS = {
     'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||'
     ' val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||'
     ' val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||'
@@ -60,7 +61,7 @@ EC_WITH_ANALYSIS = {
     }]
 }
 
-EC_WITHOUT_ANALYSIS = {
+FILE_EC_WITHOUT_ANALYSIS = {
     'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||'
     ' val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||'
     ' val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||'
@@ -72,6 +73,134 @@ EC_WITHOUT_ANALYSIS = {
         'Indicator': {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}, 'Type': 'file',
         'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'
     }]
+}
+
+DOMAIN_RAW_RESPONSE = {
+    "alexa": "http://www.alexa.com/siteinfo/otx.alienvault.com",
+    "base_indicator": {},
+    "false_positive": [],
+    "indicator": "otx.alienvault.com",
+    "pulse_info": {
+        "count": 0,
+        "pulses": [],
+        "references": [],
+        "related": {
+            "alienvault": {
+                "adversary": [],
+                "industries": [],
+                "malware_families": []
+            },
+            "other": {
+                "adversary": [],
+                "industries": [],
+                "malware_families": []
+            }
+        }
+    },
+    "sections": [
+        "general",
+        "geo",
+        "url_list",
+        "passive_dns",
+        "malware",
+        "whois",
+        "http_scans"
+    ],
+    "type": "domain",
+    "type_title": "Domain",
+    "validation": [
+        {
+            "message": "Whitelisted domain alienvault.com",
+            "name": "Whitelisted domain",
+            "source": "majestic"
+        },
+        {
+            "message": "Whitelisted domain alienvault.com",
+            "name": "Whitelisted domain",
+            "source": "whitelist"
+        }
+    ],
+    "whois": "http://whois.domaintools.com/otx.alienvault.com"
+}
+
+DOMAIN_EC = {
+    'Domain(val.Name && val.Name == obj.Name)': [{
+        'Name': {'domain': 'otx.alienvault.com'}}],
+    'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
+    ' val.Type == obj.Type)': [{
+        'Indicator': {'domain': 'otx.alienvault.com'}, 'Type': 'domain', 'Vendor': 'AlienVault OTX v2', 'Score': 0,
+        'Reliability': 'C - Fairly reliable'}],
+    'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa && val.Whois && val.Whois === obj.Whois)': {
+        'Name': 'otx.alienvault.com', 'Alexa': 'http://www.alexa.com/siteinfo/otx.alienvault.com',
+        'Whois': 'http://whois.domaintools.com/otx.alienvault.com'}
+}
+
+IP_RAW_RESPONSE = {
+    "accuracy_radius": 1000,
+    "area_code": 0,
+    "asn": "AS3356 LEVEL3",
+    "base_indicator": {},
+    "charset": 0,
+    "city": None,
+    "city_data": True,
+    "continent_code": "NA",
+    "country_code": "US",
+    "country_code2": "US",
+    "country_code3": "USA",
+    "country_name": "United States of America",
+    "dma_code": 0,
+    "false_positive": [],
+    "flag_title": "United States of America",
+    "flag_url": "/assets/images/flags/us.png",
+    "indicator": "8.8.88.8",
+    "latitude": 37.751,
+    "longitude": -97.822,
+    "postal_code": None,
+    "pulse_info": {
+        "count": 0,
+        "pulses": [],
+        "references": [],
+        "related": {
+            "alienvault": {
+                "adversary": [],
+                "industries": [],
+                "malware_families": []
+            },
+            "other": {
+                "adversary": [],
+                "industries": [],
+                "malware_families": []
+            }
+        }
+    },
+    "region": None,
+    "reputation": 0,
+    "sections": [
+        "general",
+        "geo",
+        "reputation",
+        "url_list",
+        "passive_dns",
+        "malware",
+        "nids_list",
+        "http_scans"
+    ],
+    "subdivision": None,
+    "type": "IPv4",
+    "type_title": "IPv4",
+    "validation": [],
+    "whois": "http://whois.domaintools.com/8.8.88.8"
+}
+
+IP_EC = {
+    'IP(val.Address && val.Address == obj.Address)': [{
+        'Address': '8.8.88.8', 'ASN': 'AS3356 LEVEL3', 'Geo': {'Location': '37.751:-97.822', 'Country': 'US'}}],
+    'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
+    ' val.Type == obj.Type)': [{
+        'Indicator': '8.8.88.8', 'Type': 'ip', 'Vendor': 'AlienVault OTX v2', 'Score': 0,
+        'Reliability': 'C - Fairly reliable'}],
+    'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': {
+        'IP': {'Reputation': 0, 'IP': '8.8.88.8'}}
 }
 
 client = Client(
@@ -90,8 +219,8 @@ def test_dbot_score(pulse: dict, score: int):
 
 
 @pytest.mark.parametrize('raw_response_general,raw_response_analysis,expected', [
-    (GENERAL_RAW_RESPONSE, ANALYSIS_RAW_RESPONSE, EC_WITH_ANALYSIS),
-    (GENERAL_RAW_RESPONSE, EMPTY_ANALYSIS_RAW_RESPONSE, EC_WITHOUT_ANALYSIS)
+    (FILE_GENERAL_RAW_RESPONSE, FILE_ANALYSIS_RAW_RESPONSE, FILE_EC_WITH_ANALYSIS),
+    (FILE_GENERAL_RAW_RESPONSE, FILE_EMPTY_ANALYSIS_RAW_RESPONSE, FILE_EC_WITHOUT_ANALYSIS)
 ])
 def test_file_command(mocker, raw_response_general, raw_response_analysis, expected):
     """
@@ -136,3 +265,45 @@ def test_url_command_not_found(mocker):
     command_results = url_command(client, url)
 
     assert command_results[0].to_context()['HumanReadable'] == expected_result
+
+
+@pytest.mark.parametrize('raw_response,expected', [
+    (DOMAIN_RAW_RESPONSE, DOMAIN_EC)
+])
+def test_domain_command(mocker, raw_response, expected):
+    """
+    Given
+    - A domain name.
+
+    When
+    - Running domain_command with the domain.
+
+    Then
+    - Validate that the Domain and DBotScore entry context have the proper values.
+    """
+    mocker.patch.object(client, 'query', side_effect=[raw_response])
+    command_results = domain_command(client, {'domain': 'otx.alienvault.com'})
+    # results is CommandResults list
+    context = command_results[0].to_context()['EntryContext']
+    assert expected == context
+
+
+@pytest.mark.parametrize('raw_response,expected', [
+    (IP_RAW_RESPONSE, IP_EC)
+])
+def test_ip_command(mocker, raw_response, expected):
+    """
+    Given
+    - An IPv4 address.
+
+    When
+    - Running ip_command with the IP.
+
+    Then
+    - Validate that the IP and DBotScore entry context have the proper values.
+    """
+    mocker.patch.object(client, 'query', side_effect=[raw_response])
+    command_results = ip_command(client, '8.8.88.8', 'IPv4')
+    # results is CommandResults list
+    context = command_results[0].to_context()['EntryContext']
+    assert expected == context
