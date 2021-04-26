@@ -1,0 +1,17 @@
+{
+    "name": "NewPack",
+    "description": "testing mails to contribs",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "daryanon",
+    "url": "",
+    "email": "darya.non@gmail.com",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "devEmail": ["darya.non@gmail.com","dkoval@paloaltonetworks.com"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
