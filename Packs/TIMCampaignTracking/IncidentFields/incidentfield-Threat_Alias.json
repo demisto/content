@@ -13,7 +13,7 @@
     "id": "incident_timcampaignthreatalias",
     "isReadOnly": false,
     "locked": false,
-    "name": "Threat Alias",
+    "name": "TIM Campaign Threat Alias",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
