@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import pandas as pd
 import numpy as np
 import collections
-import pickle
+import dill as pickle
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn import cluster
@@ -14,12 +14,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.manifold import TSNE
 from sklearn import metrics
 import hdbscan
+from datetime import datetime
 
 
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
-MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either add incident fields in " \
-                            "fieldExactMatch, enlarge the time period or increase the limit argument " \
-                            "to more than %s."
+MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either enlarge the time period " \
+                            "or increase the limit argument to more than %s."
 MESSAGE_CLUSTERING_NOT_VALID = "Clustering cannot be created with this dataset"
 MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents."
 
@@ -34,6 +34,7 @@ HDBSCAN_PARAMS = {
     'n_jobs': -1,
     'prediction_data': True
 }
+FAMILY_COLUMN_NAME = 'label'
 
 
 class PostProcessing(object):
@@ -54,6 +55,7 @@ class PostProcessing(object):
        self.silhouette = None
        self.statistics()
        self.compute_dist()
+       self.date_training = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
    def statistics(self):
        """
@@ -69,7 +71,7 @@ class PostProcessing(object):
            self.stats[number_cluster] = {}
            self.stats[number_cluster]['number_samples'] = sum(self.clustering.model.labels_ == number_cluster)
            ind = np.where(self.clustering.model.labels_ == number_cluster)[0]
-           selected_data = [x for x in self.clustering.raw_data.iloc[ind].label]
+           selected_data = [x for x in self.clustering.raw_data.iloc[ind][FAMILY_COLUMN_NAME]]
            #flat_list = [item for sublist in selected_data for item in sublist]
            counter = collections.Counter(selected_data)
            total = sum(dict(counter).values(), 0.0)
@@ -484,15 +486,15 @@ def remove_fields_not_in_incident(*args, incorrect_fields):
 def create_summary(model_processed, global_msg):
     clustering = model_processed.clustering
     summary = {
-        'Additional comments ' : global_msg,
         'Total number of samples ': str(model_processed.stats["General"]["Nb sample"]),
         'Maximum number of cluster': str(model_processed.max_number_cluster),
-        'Total number of clusterized sample': str(sum(clustering.model.labels_ != -1)),
+        'Percentage of clusterized sample': str(round(100*(sum(clustering.model.labels_ != -1) / model_processed.stats["General"]["Nb sample"]),0)) + "%",
         'Total number of non clusterized sample':  str(sum(clustering.model.labels_ == -1)),
         'Total number of cluster: ': str(model_processed.stats["General"]["Nb cluster"]),
-        'Total number of cluster kept: ': str(len(model_processed.selected_clusters))
+        'Total number of cluster kept: ': str(len(model_processed.selected_clusters)),
+        'Training time' : str(model_processed.date_training)
     }
-    return_outputs(readable_output=tableToMarkdown("Summary", summary))
+    return_outputs(readable_output= global_msg + tableToMarkdown("Summary", summary))
 
 
 
@@ -511,11 +513,17 @@ def return_entry_clustering(readable_output, output_clustering, tag=None):
 
 def main():
     global_msg = ""
+    generic_cluster_name = False
 
-    # Get argument of the automation`
+    # Get argument of the automation
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
     max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model,\
     min_homogeneity_cluster, model_override = get_args()
+
+    #Check arguments
+    if not field_for_cluster_name:
+        generic_cluster_name = True
+
 
     # Get all the incidents from query, date and field similarity and field family
     populate_fields = fields_for_clustering + field_for_cluster_name
@@ -535,12 +543,16 @@ def main():
 
     fields_for_clustering, field_for_cluster_name = \
         remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, incorrect_fields=incorrect_fields)
-    if not fields_for_clustering or not field_for_cluster_name:
+
+    # case where no field for clustrering or field for cluster name if not empty and incorrect)
+    if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
         return None, global_msg
 
     # Create data for training
-    X = incidents_df[fields_for_clustering]
-    labels = incidents_df[field_for_cluster_name].rename(columns={field_for_cluster_name[0]: 'label'})
+    #X = incidents_df[fields_for_clustering]
+    if generic_cluster_name:
+        incidents_df[FAMILY_COLUMN_NAME] = ""
+    labels = incidents_df[field_for_cluster_name].rename(columns={field_for_cluster_name[0]: FAMILY_COLUMN_NAME})
 
     ## Model
     tfidf_pipe = Pipeline(steps=[
@@ -553,17 +565,14 @@ def main():
     preprocessor = ColumnTransformer(
         transformers=transformers_list)
 
-    # preprocessor = ColumnTransformer(
-    #     transformers=[
-    #         ('tfidf', tfidf_pipe_text, ['commandline']),
-    #     ])
-
     # pipeline
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
     model = Pipeline(steps=[('preprocessor', preprocessor),
                             ('clustering', Clustering(HDBSCAN_PARAMS))
                             ])
+    # demisto.results(json.dumps(incidents_df.to_dict(orient='row')))
+    # sys.exit(0)
     model.fit(incidents_df, labels)
 
     if not is_clustering_valid(model.named_steps['clustering']):

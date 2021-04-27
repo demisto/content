@@ -35,7 +35,7 @@ def test_main_regular(mocker):
     mocker.patch.object(demisto, 'args',
                         return_value={
                             'fieldsForClustering': 'entityname',
-                            'fieldForClusterName': 'entityname',
+                            #'fieldForClusterName': 'entityname',
                             'fromDate':'',
                             'toDate':'',
                             'limit': '1000',
