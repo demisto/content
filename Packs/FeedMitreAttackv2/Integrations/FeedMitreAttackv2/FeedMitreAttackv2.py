@@ -36,7 +36,6 @@ MITRE_FIELD_MAPPING = {
     "mitremodified": {"name": "modified", "type": "str"}
 }
 
-
 MITRE_TYPE_TO_DEMISTO_TYPE = {
     "attack-pattern": "STIX Attack Pattern",
     "course-of-action": "Course of Action",
@@ -95,7 +94,6 @@ class Client:
         """
         indicators: List[Dict] = list()
         mitre_id_list: Set[str] = set()
-        external_refs: Set[str] = set()
         relationships_list = []
         counter = 0
 
@@ -114,13 +112,12 @@ class Client:
             tc_source = TAXIICollectionSource(collection_data)
 
             filter_objs = {
-                # "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
-                # "Technique": {"name": "attack-pattern", "filter": Filter("type", "=", "attack-pattern")},
-                # "Mitigation": {"name": "course-of-action", "filter": Filter("type", "=", "course-of-action")},
+                "Technique": {"name": "attack-pattern", "filter": Filter("type", "=", "attack-pattern")},
+                "Mitigation": {"name": "course-of-action", "filter": Filter("type", "=", "course-of-action")},
                 "Group": {"name": "intrusion-set", "filter": Filter("type", "=", "intrusion-set")},
                 "Malware": {"name": "malware", "filter": Filter("type", "=", "malware")},
-                "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")}
-
+                "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")},
+                "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
             }
 
             for concept in filter_objs:
@@ -138,11 +135,10 @@ class Client:
                         break
 
                     mitre_item_json = json.loads(str(mitre_item))
-                    value = mitre_item_json.get('name')
-                    indicator_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))
-
                     if mitre_item_json.get('id') not in mitre_id_list:
+                        value = mitre_item_json.get('name')
                         indicator_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))
+
                         if indicator_type == 'Relationship':
                             relationships_list.append(create_relationship(mitre_item_json))
 
@@ -154,8 +150,8 @@ class Client:
                                 "rawJSON": mitre_item_json,
                                 "fields": map_fields_by_type(indicator_type, mitre_item_json)
                             }
-                            indicator_obj['fields']['tags'] = self.tags
 
+                            indicator_obj['fields']['tags'] = self.tags
                             if self.tlp_color:
                                 indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
@@ -163,51 +159,31 @@ class Client:
                             counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
 
-                        print('3')
-                        # Create a duplicate indicator using the "external_id" from the
-                        # original indicator, if the user has selected "includeAPT" as True
-                        if self.include_apt:
-                            ext_refs = [x.get('external_id') for x in mitre_item_json.get('external_references')
-                                        if x.get('external_id') and x.get('source_name') != "mitre-attack"]
-                            for x in ext_refs:
-                                if x not in external_refs:
-                                    indicator_obj = {
-                                        "value": x,
-                                        "score": self.reputation,
-                                        "type": indicator_type,
-                                        "rawJSON": mitre_item_json,
-                                        "fields": map_fields_by_type(indicator_type, mitre_item_json)
-                                    }
-                                    indicator_obj['fields']['tags'] = self.tags
-
-                                    if self.tlp_color:
-                                        indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
-
-                                    # indicators.append(indicator_obj)
-                                    external_refs.add(x)
-        print(external_refs)
-        return_error('gfgfgdfg')
         if indicators:
-            indicators[0]['relationships'] = ['relationships_list']
+            indicators[0]['relationships'] = ['relationships_list']  # todo
 
         return indicators
 
 
 def map_fields_by_type(indicator_type: str, indicator_json: dict):
-    print()
+    created = handle_multiple_dates_in_one_field('created', indicator_json.get('created'))
+    modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))
+    tactics = [tactic.get('phase_name') for tactic in indicator_json.get('kill_chain_phases', {})]
+    external_references_urls = [url.get('url') for url in indicator_json.get('external_references', {})]
+    external_references_descriptions = [des.get('description') for des in indicator_json.get('external_references', {})]
+
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
-        'creationdate': handle_multiple_dates_in_one_field('created', indicator_json.get('created')),  # creation?
-        'modified': handle_multiple_dates_in_one_field('modified', indicator_json.get('modified')),  # does not exist
-        'value': indicator_json.get('name'),  # does not exist
+        'firstseenbysource': created,  # firstseenbysource?
+        'modified': modified,
+        'value': indicator_json.get('name'),  # already exist
         'description': indicator_json.get('description'),
-        'communitynotes': [url.get('url') for url in indicator_json.get('external_references', {})],  # grid
-        # 'communitynotes': [desc.get('description') for desc in indicator_json.get('external_references', {})], # duplicates
+        'communitynotes': external_references_urls,  # grid
+        # 'communitynotes': external_references_descriptions, # duplicates
     }
-    print('1')
     mapping_by_type = {
         "STIX Attack Pattern": {
-            'mitretactics': [tactic.get('phase_name') for tactic in indicator_json.get('kill_chain_phases', {})],  # string / list
+            'mitretactics': tactics,  # string / list
             'operatingsystem': indicator_json.get('x_mitre_platforms')  # operatingsystemref ? list?
         },
         "Intrusion Set": {
@@ -225,8 +201,9 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             'operatingsystem': indicator_json.get('x_mitre_platforms')  # operatingsystemref ? list?
         }
     }
-    print('2')
-    return generic_mapping_fields.update(mapping_by_type.get(indicator_type))
+
+    generic_mapping_fields.update(mapping_by_type.get(indicator_type))
+    return generic_mapping_fields
 
 
 def create_relationship(item_json):
@@ -245,7 +222,7 @@ def create_relationship(item_json):
         'firstseenbysource': item_json.get('created')
     }
 
-    return EntityRelation(name='uses',
+    return EntityRelation(name=item_json.get('relationship_type'),
                           entity_a=item_json.get('source_ref'),
                           entity_a_type=a_type,
                           entity_b=item_json.get('target_ref'),
@@ -267,7 +244,6 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
     dates_as_datetime = [datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ') for date in dates_as_string]
 
     if field_name == 'created':
-        print(f"{min(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z")
         return f"{min(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
     else:
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
