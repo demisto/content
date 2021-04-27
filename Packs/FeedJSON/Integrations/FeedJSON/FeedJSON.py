@@ -12,8 +12,13 @@ def main():
             'url': params.get('url'),
             'extractor': params.get('extractor'),
             'indicator': params.get('indicator', 'indicator'),
+            'rawjson_include_indicator_type': params.get('rawjson_include_indicator_type'),
         }
     }
+
+    if params.get('auto_detect_type') and params.get('indicator_type'):
+        return_error('Indicator Type should not be set if Auto Detect Indicator Type is checked.'
+                     ' Either use Auto Detect or set manually the Indicator Type.')
 
     if not params.get('auto_detect_type'):
         if not params.get('indicator_type'):

@@ -11,10 +11,7 @@ the [JMESPath site](http://jmespath.org/) to verify this expression will return 
 * **JSON Indicator Attribute** - JSON attribute whose value is the indicator. Default is 'indicator'.
 * **Headers** - Headers to add to the http request. Specify each header on a single line in the format: 'Name: Value'. For example: `Content-Type: application/json`. 
 * **POST Data** - Send specified data in a POST request. When specified, by default will add the header: 'Content-Type: application/x-www-form-urlencoded'. To specify a different Content-Type (for example: application/json) use the **Headers** config param.
-  ```
-  User-Agent: XSOAR Feed
-  Pragma: no-cache
-  ```
+* **Include Indicator Type for Mapping** - When using a custom classifier and mapper with this feed, use this option to include the indicator type in the raw json used for classification and mapping. The type will be included under the key `_indicator_type`. 
 
 ## Step by step configuration
 As an example, we'll be looking at the IP ranges from Amazon AWS. This feed will ingest indicators of type CIDR. These are the feed instance configuration parameters for our example.
