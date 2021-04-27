@@ -302,7 +302,7 @@ def test_get_all_endpoints_using_limit(requests_mock):
     from CortexXDRIR import get_endpoints_command, Client
 
     get_endpoints_response = load_test_data('./test_data/get_all_endpoints.json')
-    requests_mock.post(f'{XDR_URL}/test_endpoint_commandpublic_api/v1/endpoints/get_endpoints/', json=get_endpoints_response)
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoints/', json=get_endpoints_response)
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
@@ -312,8 +312,10 @@ def test_get_all_endpoints_using_limit(requests_mock):
         'page': 0,
         'sort_order': 'asc'
     }
-
-    _, outputs, _ = get_endpoints_command(client, args)
+    try:
+        _, outputs, _ = get_endpoints_command(client, args)
+    except Exception as e:
+        print(e)
     expected_endpoint = get_endpoints_response.get('reply')[0]
 
     assert [expected_endpoint] == outputs['PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)']

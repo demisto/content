@@ -2747,7 +2747,7 @@ def test_search_device_command(requests_mock):
     assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
 
 
-def test_get_endpint_command(requests_mock):
+def test_get_endpint_command(requests_mock, mocker):
     """
     Test get_endpint_command with a successful id
     Given
@@ -2775,6 +2775,8 @@ def test_get_endpint_command(requests_mock):
         json=test_data2,
         status_code=200,
     )
+
+    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe'})
 
     outputs = get_endpoint_command()
     result = outputs[0].to_context()
