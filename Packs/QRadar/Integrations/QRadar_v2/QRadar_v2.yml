@@ -83,7 +83,7 @@ configuration:
   name: events_limit
   required: false
   type: 0
-  additionalinfo: Requiered when running as 'long running instance'
+  additionalinfo: This field is require when running as ‘long running instance’ - please set the max amount of events to fetch.
 - additionalinfo: Comma-separated configuration for advanced parameters values. e.g.
     EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   display: Advanced Parameters
