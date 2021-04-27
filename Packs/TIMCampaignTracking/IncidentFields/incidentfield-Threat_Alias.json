@@ -10,7 +10,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_threatalias",
+    "id": "incident_timcampaignthreatalias",
     "isReadOnly": false,
     "locked": false,
     "name": "Threat Alias",
