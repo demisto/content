@@ -103,7 +103,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "timcampaignthreatactor",
+                                "fieldId": "threatactor",
                                 "height": 22,
                                 "id": "1030b162-a2e1-11eb-9d37-c9986135a434",
                                 "index": 2,
@@ -487,19 +487,19 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_threatalias",
+                        "fieldId": "incident_timcampaignthreatalias",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_threatgoals",
+                        "fieldId": "incident_timcampaignthreatgoals",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_threatmotivation",
+                        "fieldId": "incident_timcampaignthreatmotivation",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_threatdetected",
+                        "fieldId": "incident_timcampaignthreatdetected",
                         "isVisible": true
                     },
                     {
