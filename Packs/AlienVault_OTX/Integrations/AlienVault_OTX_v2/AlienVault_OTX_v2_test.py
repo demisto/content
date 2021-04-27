@@ -557,10 +557,10 @@ def test_url_command(mocker, raw_response, expected_ec, expected_relationships):
     all_context = command_results[0].to_context()
 
     context = all_context['EntryContext']
-    assert expected_ec == context
+    assert sorted(expected_ec) == sorted(context)
 
     relations = all_context['Relationships']
-    assert expected_relationships == relations
+    assert sorted(expected_relationships) == sorted(relations)
 
 
 def test_url_command_not_found(mocker):
@@ -629,7 +629,7 @@ def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationshi
     all_context = command_results[0].to_context()
 
     context = all_context['EntryContext']
-    assert expected_ec == context
+    assert sorted(expected_ec) == sorted(context)
 
     relations = all_context['Relationships']
     assert expected_relationships == relations
