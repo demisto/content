@@ -559,34 +559,7 @@ Returns related URLs by indicator.
     "AlienVaultOTX": {
         "URL": [
             {
-                "Data": "https://noemasculating.com"
-            },
-            {
-                "Data": "https://autonomousvehiclesoftwares.com"
-            },
-            {
-                "Data": "https://cloudcjyzgbgafhsuljx.club"
-            },
-            {
-                "Data": "https://kk3969.com"
-            },
-            {
-                "Data": "https://kk3968.com"
-            },
-            {
-                "Data": "https://fashionsneakers.icu"
-            },
-            {
-                "Data": "https://genuineadidas.online"
-            },
-            {
-                "Data": "https://tkbzzz.club"
-            },
-            {
-                "Data": "https://cy710.xyz"
-            },
-            {
-                "Data": "https://chinesekitties.com"
+                "Data": "https://test.com"
             }
         ]
     }
@@ -598,16 +571,7 @@ Returns related URLs by indicator.
 >### AlienVault OTX v2 - Related url list to queried indicator
 >|Data|
 >|---|
->| https://noemasculating.com |
->| https://autonomousvehiclesoftwares.com |
->| https://cloudcjyzgbgafhsuljx.club |
->| https://kk3969.com |
->| https://kk3968.com |
->| https://fashionsneakers.icu |
->| https://genuineadidas.online |
->| https://tkbzzz.club |
->| https://cy710.xyz |
->| https://chinesekitties.com |
+>| https://test.com |
 
 
 ### alienvault-get-related-hashes-by-indicator
