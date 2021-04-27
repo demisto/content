@@ -149,6 +149,14 @@ TAGS_FOR_GENERIC_CONTEXT_OUTPUT = [
 ]
 
 
+@pytest.fixture(autouse=True)
+def init_tests(mocker):
+    params = {
+        'api_key': '1234'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())

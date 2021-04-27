@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: e7836897-a59e-4ec1-8a54-ea9528e23e7d
+    taskid: e7836897-a59e-4ec1-8a54-ea9528e23e7e
     type: regular
     task:
-      id: e7836897-a59e-4ec1-8a54-ea9528e23e7d
+      id: e7836897-a59e-4ec1-8a54-ea9528e23e7e
       version: -1
       name: aws-acm-list-certificates
       description: Retrieves a list of certificate ARNs and domain names. You can request that only certificates that match a specific status be listed. You can also filter by specific attributes of the certificate.
