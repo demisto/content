@@ -3283,6 +3283,12 @@
             "integrations": "Armis",
             "playbookID": "Armis-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "QualysVulnerabilityManagement",
+            "playbookID": "QualysVulnerabilityManagement-Test",
+            "fromversion": "5.0.0",
+            "timeout": 1800
         }
     ],
     "skipped_tests": {
