@@ -1,5 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
@@ -7,6 +7,7 @@ from CommonServerUserPython import *
 import json
 import requests
 from typing import List, Dict
+from string import Template
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -35,7 +36,7 @@ ERR_DICT = {
     '4031': 'User does not have permission.',
     '4034': 'Request is not yet approved.',
     '4091': 'Conflicting request exists. This user or another user has already requested a password for the'
-            ' specified account.'
+            'specified account'
 }
 
 
@@ -86,7 +87,7 @@ def http_request(method: str, suffix_url: str, data=None):
             txt = ERR_DICT[txt]
         elif res.status_code == 401:
             txt = 'Wrong credentials.'
-        return_error(f'Error in API call to BeyondTrust Integration [{res.status_code}] - {txt})')
+        return_error(f'Error in API call to BeyondSafe Integration [{res.status_code}] - {txt})')
     try:
         return res.json()
     except ValueError:
@@ -144,7 +145,7 @@ def get_managed_accounts():
 
         })
 
-    entry_context = {'BeyondTrust.Account(val.AccountId && val.AccountId === obj.AccountId)': managed_accounts}
+    entry_context = {'BeyondTrust.Account(val.AccountID === obj.AccountID)': managed_accounts}
 
     return_outputs(tableToMarkdown('BeyondTrust Managed Accounts', data, headers, removeNull=True), entry_context,
                    managed_accounts)
@@ -377,20 +378,151 @@ def change_credentials():
     demisto.results('The password has been changed')
 
 
-def fetch_credentials():
+def match_cred_name(config_name, name_value, matcher_regex, default_result):
+    if matcher_regex is None:
+        return default_result
+    for r in matcher_regex:
+        try:
+            if re.search(r, name_value):
+                return True
+        except Exception as e:
+            demisto.debug(
+                "BeyondTrust_PGE: Invalid regular expression found in configuration [{0}] with value[{1}]".format(config_name, r))
+    return default_result
+
+
+def fetch_credentials_build_credential(integration_config, requested_identifier, account_name, system_name, password):
+
+    matchedConditionalNameConfig = None
+    if integration_config and 'conditional_names_workaround' in integration_config and len(integration_config['conditional_names_workaround']) > 0:
+        for conditionalNameConfig in integration_config['conditional_names_workaround']:
+            if 'identifier' in conditionalNameConfig and 'name' in conditionalNameConfig and 'new_name' in conditionalNameConfig and \
+                    requested_identifier == conditionalNameConfig['identifier'] and account_name == conditionalNameConfig['name']:
+                matchedConditionalNameConfig = (conditionalNameConfig['name'], conditionalNameConfig['new_name'])
+
+    if 'fetch_format_templates' in integration_config and len(integration_config['fetch_format_templates']) > 0:
+        formatTemplates = integration_config['fetch_format_templates']
+    else:
+        formatTemplates = None
+
+    credentials = []
+    if (formatTemplates):
+        for t in formatTemplates:
+
+            s = Template(t)
+            template_name_result = s.substitute(name=account_name, system=system_name, requested_identifier=SYSTEM_NAME)
+            demisto.debug("PgeBeyondTrust: added credential [{0}] from template string[{1}] for account={2}".format(
+                template_name_result, t, account_name))
+            if matchedConditionalNameConfig and template_name_result == matchedConditionalNameConfig[0]:
+                credentials.append({
+                    'user': template_name_result,
+                    'password': password,
+                    'name': matchedConditionalNameConfig[1]
+                })
+            else:
+                credentials.append({
+                    'user': template_name_result,
+                    'password': password,
+                    'name': template_name_result
+                })
+
+    else:
+
+        demisto.debug("PgeBeyondTrust: no templates specified while processing so adding account [{0}]".format(account_name))
+
+        if matchedConditionalNameConfig and account_name == matchedConditionalNameConfig[0]:
+            credentials.append({
+                'user': account_name,
+                'password': password,
+                'name': matchedConditionalNameConfig[1]
+            })
+        else:
+            credentials.append({
+                'user': account_name,
+                'password': password,
+                'name': account_name
+            })
+
+    return credentials
+
+
+def fetch_credentials_impl():
     """
     Returns: Account's credentials
     """
+
+    credential_names = []
     credentials = []
     identifier = demisto.args().get('identifier')
     duration_minutes = 1
     account_info = get_managed_accounts_request()
 
+    # read the configuration data from the integration configuration data
+    try:
+        if 'integration_config' in demisto.params():
+            integration_config = json.loads(demisto.params().get('integration_config', {}))
+        else:
+            integration_config = {}
+    except Exception as e:
+        demisto.debug("PgeBeyondTrust: Unhandled exception while reading the configuration, ex={}".format(str(e)))
+        integration_config = {}
+
+    includeMatchesConfigName = "include_regex"
+    excludeMatchesConfigName = "exclude_regex"
+    demisto.debug("PgeBeyondTrust: Starting fetch with account size={0}, identifier={1}, config={2}".format(
+        str(len(account_info)), identifier, str(integration_config)))
+
+    if includeMatchesConfigName in integration_config and len(integration_config[includeMatchesConfigName]) > 0:
+        includeMatches = integration_config[includeMatchesConfigName]
+    else:
+        includeMatches = None
+
+    if excludeMatchesConfigName in integration_config and len(integration_config[excludeMatchesConfigName]) > 0:
+        excludeMatches = integration_config[excludeMatchesConfigName]
+    else:
+        excludeMatches = None
+
+    return_credentials = []
     for account in account_info:
+
         account_name = account.get('AccountName')
         system_name = account.get('SystemName')
+
+        doesNameMatch = False
+        if includeMatches is None and excludeMatches is None:
+            doesNameMatch = True
+        elif includeMatches is not None and excludeMatches is None:
+            if match_cred_name(includeMatchesConfigName, account_name, includeMatches, False):
+                doesNameMatch = True
+            else:
+                doesNameMatch = False
+        elif includeMatches is None and excludeMatches is not None:
+            if match_cred_name(excludeMatchesConfigName, account_name, excludeMatches, False):
+                doesNameMatch = False
+            else:
+                doesNameMatch = True
+        elif includeMatches is not None and excludeMatches is not None:
+
+            if match_cred_name(includeMatchesConfigName, account_name, includeMatches, False):
+                if match_cred_name(excludeMatchesConfigName, account_name, excludeMatches, False):
+                    doesNameMatch = False
+                else:
+                    doesNameMatch = True
+            else:
+                doesNameMatch = False
+
+        else:
+            doesNameMatch = False
+
+        if not doesNameMatch:
+            continue
+
         if SYSTEM_NAME and system_name != SYSTEM_NAME:
             continue
+
+        if 'ignore_system_names' in integration_config and system_name in integration_config["ignore_system_names"]:
+            continue
+
         item = {
             'SystemId': account.get('SystemId'),
             'AccountId': account.get('AccountId'),
@@ -399,32 +531,65 @@ def fetch_credentials():
         }
 
         release_id = create_release_request(str(item))
-
         password = get_credentials_request(str(release_id))
 
-        credentials.append({
-            'user': account_name,
-            'password': password,
-            'name': system_name + '_' + account_name
-        })
-    if identifier:
-        credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
-        demisto.debug("Amount of credentials for identifier: {} is {}".format(identifier, len(credentials)))
+        demisto.debug("PgeBeyondTrust: processing beyondtrust account record, account={0}, system={1}".format(
+            account_name, system_name))
 
-    demisto.credentials(credentials)
+        credentials_from_request = fetch_credentials_build_credential(
+            integration_config=integration_config, requested_identifier=identifier, account_name=account_name, system_name=system_name, password=password)
+        if credentials_from_request:
+            for cred in credentials_from_request:
+                if cred["name"] not in credential_names:
+                    if identifier and identifier != "" and cred["name"] == identifier:
+                        return_credentials.append(cred)
+                    elif not identifier or identifier == "":
+                        return_credentials.append(cred)
+                    credential_names.append(cred["name"])
+
+    demisto.debug("PgeBeyondTrust: built a list of [{0}] credentials for identifier={1}".format(
+        str(len(return_credentials)), identifier))
+
+    return return_credentials
+
+
+def fetch_credentials_command():
+    demisto.credentials(fetch_credentials_impl())
+
+
+def fetch_credentials_test_command():
+    current_credentials = fetch_credentials_impl()
+    return_credentials = []
+    headers = ['user', 'password', 'name']
+    for cred in current_credentials:
+        if 'password' in cred or not cred['password']:
+            current_password = cred['password'][:2] + "..."
+        else:
+            current_password = "<Empty>"
+        return_credentials.append({
+            'user': cred['user'],
+            'name': cred['name'],
+            'password': current_password
+        })
+
+    return_outputs(tableToMarkdown('BeyondTrust Current Fetch Accounts', return_credentials, headers, removeNull=True))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
+demisto.debug('PgeBeyondTrust: %s called' % (demisto.command()))
 
 try:
     handle_proxy()
     signin()
     if demisto.command() == 'test-module':
+        demisto.debug("PgeBeyondTrust: test-module called")
         # This is the call made when pressing the integration test button.
         get_managed_accounts_request()
         demisto.results('ok')
+    elif demisto.command() == 'beyondtrust-test-fetch-credentials':
+        fetch_credentials_test_command()
     elif demisto.command() == 'beyondtrust-get-managed-accounts':
         get_managed_accounts()
     elif demisto.command() == 'beyondtrust-get-managed-systems':
@@ -438,7 +603,7 @@ try:
     elif demisto.command() == 'beyondtrust-change-credentials':
         change_credentials()
     elif demisto.command() == 'fetch-credentials':
-        fetch_credentials()
+        fetch_credentials_command()
 
 # Log exceptions
 except Exception as e:
