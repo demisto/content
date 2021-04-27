@@ -806,12 +806,10 @@ def contents_append_notable_user_info(contents, user, user_, user_info) -> List[
     return contents
 
 
-def contents_append_notable_assets_info(contents, asset, asset_, highest_risk_sequence,
-                                        latest_asset_comment) -> List[Any]:
+def contents_append_notable_assets_info(asset, asset_, highest_risk_sequence, latest_asset_comment) -> Dict[Any]:
     """Appends a dictionary of data to the base list
 
     Args:
-        contents: base list
         asset: asset object
         asset_: asset object
         highest_risk_sequence: highest risk sequence object
@@ -843,41 +841,38 @@ def contents_append_notable_assets_info(contents, asset, asset_, highest_risk_se
         'edited': latest_asset_comment.get('edited')
     }
     asset_info.update(contents_asset_data(asset_))
-    contents.append(asset_info)
-    return contents
+    return asset_info
 
 
-def contents_append_notable_session_details(contents, session) -> List[Any]:
+def contents_append_notable_session_details(session) -> Dict[Any]:
     """Appends a dictionary of data to the base list
 
     Args:
-        contents: base list
         session: session object
 
     Returns:
         A contents list with the relevant notable session details
     """
-    contents.append({
+    content = {
         'SessionID': session.get('sessionId'),
         'InitialRiskScore': session.get('initialRiskScore'),
         'LoginHost': session.get('loginHost'),
         'Accounts': session.get('accounts'),
-    })
-    return contents
+    }
+    return content
 
 
-def contents_append_notable_session_user_details(users, user_details, user_info) -> List[Any]:
-    """Appends a dictionary of data to the base list
+def contents_append_notable_session_user_details(user_details, user_info) -> Dict[Any]:
+    """Appends a dictionary of filtered data to the base list for the context
 
     Args:
-        users: base list
         user_details: user details object
         user_info: user info object
 
     Returns:
         A contents list with the relevant notable session details
     """
-    users.append({
+    content = {
         'UserName': user_details.get('username'),
         'RiskScore': round(user_details.get('riskScore')) if 'riskScore' in user_details else None,
         'AverageRiskScore': user_details.get('averageRiskScore'),
@@ -891,22 +886,21 @@ def contents_append_notable_session_user_details(users, user_details, user_info)
         'Title': user_info.get('title'),
         'Location': user_info.get('location'),
         'Email': user_info.get('email'),
-    })
-    return users
+    }
+    return content
 
 
-def contents_append_notable_sequence_details(sequence, sequence_info, contents) -> List[Any]:
-    """Appends a dictionary of data to the base list
+def contents_append_notable_sequence_details(sequence, sequence_info) -> Dict[Any]:
+    """Appends a dictionary of filtered data to the base list for the context
 
     Args:
-        contents: base list
         sequence: sequence object
         sequence_info: sequence_info object
 
     Returns:
         A contents list with the relevant notable sequence details
     """
-    contents.append({
+    content = {
         'sequenceId': sequence.get('sequenceId'),
         'isWhitelisted': sequence.get('isWhitelisted'),
         'areAllTriggeredRulesWhiteListed': sequence.get('areAllTriggeredRulesWhiteListed'),
@@ -921,28 +915,27 @@ def contents_append_notable_sequence_details(sequence, sequence_info, contents) 
         'numOfZones': sequence_info.get('numOfZones'),
         'numOfAssets': sequence_info.get('numOfAssets'),
         'assetId': sequence_info.get('assetId'),
-    })
-    return contents
+    }
+    return content
 
 
-def contents_append_notable_sequence_event_types(sequence, contents, asset_sequence_id) -> List[Any]:
-    """Appends a dictionary of data to the base list
+def contents_append_notable_sequence_event_types(sequence, asset_sequence_id) -> Dict[Any]:
+    """Appends a dictionary of filtered data to the base list for the context
 
     Args:
-        contents: base list
         sequence: sequence object
         asset_sequence_id: asset sequence ID
 
     Returns:
         A contents list with the relevant notable sequence event types
     """
-    contents.append({
+    content = {
         'eventType': sequence.get('eventType'),
         'displayName': sequence.get('displayName'),
         'count': sequence.get('count'),
         'sequenceId': asset_sequence_id
-    })
-    return contents
+    }
+    return content
 
 
 def contents_asset_data(asset_data) -> Dict:
@@ -1108,15 +1101,15 @@ def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     time_period: str = args.get('time_period', '')
     time_ = time_period.split(' ')
     if not len(time_) == 2:
-        raise Exception('Got invalid time period. Enter the time period number and unit.')
+        raise Exception('Got invalid time period. Enter the time period number and unit. For example, 20 d.')
     num: str = time_[0]
     unit: str = time_[1]
     api_unit = unit[0]
     if api_unit == 'm':
         api_unit = api_unit.upper()
 
-    if api_unit not in {'d', 'y', 'M', 'h'}:
-        raise Exception('The time unit is incorrect - can be hours, days, months, years.')
+    if api_unit.lower() not in {'d', 'y', 'm', 'h'}:
+        raise Exception('The time unit is incorrect - can be d, y, m or h.')
 
     contents: list = []
     headers = ['UserName', 'UserFullName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
@@ -1773,8 +1766,7 @@ def get_notable_assets(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any],
         asset_ = asset.get('asset', {})
         highest_risk_sequence = asset.get('highestRiskSequence', {})
         latest_asset_comment = asset.get('latestAssetComment', {})
-        contents = contents_append_notable_assets_info(contents, asset, asset_, highest_risk_sequence,
-                                                       latest_asset_comment)
+        contents.append(contents_append_notable_assets_info(asset, asset_, highest_risk_sequence, latest_asset_comment))
 
     entry_context = {'Exabeam.NotableAsset((val.ipAddress && val.ipAddress === obj.ipAddress) '
                      '|| (val.hostName && val.hostName === obj.hostName))': contents}
@@ -1803,12 +1795,12 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
     executive_user_flags: list = []
 
     for session in session_details_raw_data.get('sessions', {}):
-        contents = contents_append_notable_session_details(contents, session)
+        contents.append(contents_append_notable_session_details(session))
 
     users_response = session_details_raw_data.get('users', {})
     for user_name, user_details in users_response.items():
         user_info = user_details.get('info', {})
-        users = contents_append_notable_session_user_details(users, user_details, user_info)
+        users.append(contents_append_notable_session_user_details(user_details, user_info))
 
     executive_user = session_details_raw_data.get('executiveUserFlags', {})
     for username, status in executive_user.items():
@@ -1851,7 +1843,7 @@ def get_notable_sequence_details(client: Client, args: Dict[str, str]) -> Tuple[
     contents: list = []
     for sequence in sequence_details_raw_data:
         sequence_info = sequence.get('sequenceInfo')
-        contents = contents_append_notable_sequence_details(sequence, sequence_info, contents)
+        contents.append(contents_append_notable_sequence_details(sequence, sequence_info))
 
     contents = contents[from_idx:to_idx]
 
@@ -1885,7 +1877,7 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
 
     contents: list = []
     for sequence in sequence_event_types_raw_data:
-        contents = contents_append_notable_sequence_event_types(sequence, contents, asset_sequence_id)
+        contents.append(contents_append_notable_sequence_event_types(sequence, asset_sequence_id))
 
     contents = contents[from_idx:to_idx]
 
