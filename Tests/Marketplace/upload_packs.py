@@ -1005,7 +1005,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, author_image = pack.upload_author_image(storage_bucket, diff_files_list, True)
+        task_status = pack.upload_author_image(storage_bucket, diff_files_list, True)
 
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
