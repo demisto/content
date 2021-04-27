@@ -887,14 +887,14 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 | PaloAltoNetworksXDR.Endpoint.endpoint_version | String | Endpoint version. | 
 | PaloAltoNetworksXDR.Endpoint.is_isolated | String | Whether the endpoint is isolated. | 
 | PaloAltoNetworksXDR.Endpoint.group_name | String | The name of the group to which the endpoint belongs. | 
-| Endpoint.Hostname | String | Endpoint Hostname. | 
-| Endpoint.OS | String | Endpoint OS. | 
-| Endpoint.IPAddress | String | Endpoint IP Addresses. | 
+| Endpoint.Hostname | String | Endpoint hostname. | 
+| Endpoint.OS | String | Endpoint operating system. | 
+| Endpoint.IPAddress | String | Endpoint IP addresses. | 
 | Endpoint.ID | String | Endpoint ID. | 
-| Endpoint.Status | String | Endpoint Status. | 
+| Endpoint.Status | String | Endpoint status. | 
 | Endpoint.IsIsolated | String | Endpoint isolation status. | 
-| Endpoint.MACAddress | String | Endpoint MAC Address. | 
-| Endpoint.Vendor | String | Endpoint Vendor, the integration name. | 
+| Endpoint.MACAddress | String | Endpoint MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 
 ##### Command Example
@@ -2650,14 +2650,14 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | String | Endpoint Hostname. | 
-| Endpoint.OS | String | Endpoint OS. | 
-| Endpoint.IPAddress | String | Endpoint IP Addresses. | 
+| Endpoint.Hostname | String | Endpoint hostname. | 
+| Endpoint.OS | String | Endpoint operating system. | 
+| Endpoint.IPAddress | String | Endpoint IP addresses. | 
 | Endpoint.ID | String | Endpoint ID. | 
-| Endpoint.Status | String | Endpoint Status. | 
+| Endpoint.Status | String | Endpoint status. | 
 | Endpoint.IsIsolated | String | Endpoint isolation status. | 
-| Endpoint.MACAddress | String | Endpoint MAC Address. | 
-| Endpoint.Vendor | String | Endpoint Vendor, the integration name. | 
+| Endpoint.MACAddress | String | Endpoint MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 #### Command Example
 ```!endpoint id=15dbb9d5fe9f61eb46e829d986```
