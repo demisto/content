@@ -16,8 +16,8 @@ HEADERS = {
 
 
 def create_client(proxy: bool = False, verify: bool = False, base_url='',
-                  reliability: str = DBotScoreReliability.A_PLUS, headers: dict = HEADERS):
-    return Client(proxy=proxy, verify=verify, base_url=base_url, headers=headers, reliability=reliability)
+                  reliability: str = DBotScoreReliability.B):
+    return Client(proxy=proxy, verify=verify, base_url=base_url, reliability=reliability)
 
 
 def test_build_request_body():
@@ -105,20 +105,15 @@ def test_handle_errors():
 
 URL_RESPONSE = {
     'matches': [
-        {'threatType': 'MALWARE', 'platformType': 'ANY_PLATFORM', 'threat': {'url': 'url1'}, 'cacheDuration': '300s',
-         'threatEntryType': 'URL'},
-        {'threatType': 'MALWARE', 'platformType': 'WINDOWS', 'threat': {'url': 'url1'}, 'cacheDuration': '300s',
-         'threatEntryType': 'URL'}]}
+        {'threatType': 'MALWARE', 'platformType': 'ANY_PLATFORM', 'threat': {'url': 'benign.com'}, 'cacheDuration':
+            '300s', 'threatEntryType': 'URL'},
+        {'threatType': 'MALWARE', 'platformType': 'WINDOWS', 'threat': {'url': 'malicious.com'},
+         'cacheDuration': '300s', 'threatEntryType': 'URL'}]}
 
 URL_CONTENTS = [
     {'cacheDuration': '300s',
      'platformType': 'ANY_PLATFORM',
-     'threat': {'url': 'url1'},
-     'threatEntryType': 'URL',
-     'threatType': 'MALWARE'},
-    {'cacheDuration': '300s',
-     'platformType': 'WINDOWS',
-     'threat': {'url': 'url1'},
+     'threat': {'url': 'benign.com'},
      'threatEntryType': 'URL',
      'threatType': 'MALWARE'}
 ]
@@ -127,10 +122,10 @@ URL_CONTENTS = [
 def test_command_url(mocker):
     """
     Given:
-        - Got url to check for scores
+        - A url to check
 
     When:
-        - After asked fot url command
+        - Running the url_command and mocking a malicious response
 
     Then:
         - validating that the IOC score is as expected
@@ -141,12 +136,12 @@ def test_command_url(mocker):
     client = create_client(base_url="https://safebrowsing.googleapis.com/v4/threatMatches:find")
     mocker.patch.object(client, '_http_request', return_value=URL_RESPONSE)
 
-    url_command = url_command(client, {'url': ['url1', 'url2']}, CLIENT_BODY)
+    url_command = url_command(client, {'url': ['benign.com', 'malicious.com']})
 
     # validate score
     output = url_command[0].to_context().get('EntryContext', {})
     dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
                ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     assert output.get(dbot_key, [])[0].get('Score') == 3
-    assert output.get(dbot_key, [])[0].get('Reliability') == DBotScoreReliability.A_PLUS
+    assert output.get(dbot_key, [])[0].get('Reliability') == DBotScoreReliability.B
     assert url_command[0].to_context().get('Contents') == URL_CONTENTS

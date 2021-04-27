@@ -14,15 +14,29 @@ TYPES = {
     'platformTypes': ["ANY_PLATFORM", "WINDOWS", "LINUX", "ALL_PLATFORMS", "OSX", "CHROME", "IOS", "ANDROID"]
 }
 
+INTEGRATION_NAME = 'GoogleSafeBrowsing'
+URL_OUTPUT_PREFIX = 'GoogleSafeBrowsing.URL'
+
 
 class Client(BaseClient):
-    def __init__(self, proxy: bool, verify: bool, reliability: str, base_url: str, headers: Dict):
+    def __init__(self, proxy: bool, verify: bool, reliability: str, base_url: str):
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
         super().__init__(proxy=proxy, verify=verify, base_url=base_url, headers=headers)
+
         self.base_url = base_url
+        self.client_body = {
+            'clientId': demisto.params().get('client_id'),
+            'clientVersion': demisto.params().get('client_version'),
+        }
+
         if DBotScoreReliability.is_valid_type(reliability):
             self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         else:
-            return_error("PhishTankV2 error: Please provide a valid value for the Source Reliability parameter.")
+            return_error("Google Safe Browsing v2 error: "
+                         "Please provide a valid value for the Source Reliability parameter.")
 
     def build_request_body(self, client_body: Dict, list_url: List) -> Dict:
         """ build the request body according to the client body and the urls.
@@ -48,7 +62,7 @@ class Client(BaseClient):
         }
         return body
 
-    def url_request(self, client_body, list_url):
+    def url_request(self, client_body, list_url) -> Dict:
         """ send the url request.
 
         Args:
@@ -65,14 +79,14 @@ class Client(BaseClient):
         return result
 
 
-def test_module(client: Client, client_body: Dict) -> str:
+def test_module(client: Client) -> str:
     """
     Performs basic get request to get sample URL details.
     """
     try:
         # testing a known malicious URL to check if we get matches
         test_url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"
-        res = client.url_request(client_body, [test_url])
+        res = client.url_request(client.client_body, [test_url])
         if res.get('matches'):
             message = 'ok'
         else:
@@ -85,7 +99,7 @@ def test_module(client: Client, client_body: Dict) -> str:
     return message
 
 
-def handle_errors(result: Dict):
+def handle_errors(result: Dict) -> None:
     """
     Handle errors, raise Exception when there is errors in the response.
     """
@@ -127,19 +141,16 @@ def arrange_results_to_urls(results: List, url_list: List) -> Dict:
     return urls_results
 
 
-def url_command(client: Client, args: Dict[str, Any], client_body) -> CommandResults:
+def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     url command: Returns URL details for a list of URL
     """
 
     url = argToList(args.get('url'))
 
-    result = client.url_request(client_body, url)
+    result = client.url_request(client.client_body, url)
 
-    if result.get('StatusCode'):
-        handle_errors(result)
-
-    if not result:
+    if not result or result.get('StatusCode'):
         handle_errors(result)
 
     urls_data = arrange_results_to_urls(result.get('matches'), url)
@@ -150,7 +161,7 @@ def url_command(client: Client, args: Dict[str, Any], client_body) -> CommandRes
             dbot_score = Common.DBotScore(
                 indicator=url_key,
                 indicator_type=DBotScoreType.URL,
-                integration_name='GoogleSafeBrowsingV2',
+                integration_name=INTEGRATION_NAME,
                 score=3,
                 reliability=client.reliability
             )
@@ -160,7 +171,7 @@ def url_command(client: Client, args: Dict[str, Any], client_body) -> CommandRes
             )
             url_data_list.append(CommandResults(
                 readable_output=tableToMarkdown(f'Google Safe Browsing APIs - URL Query: {url_key}', url_data),
-                outputs_prefix='GoogleSafeBrowsingV2.URL',
+                outputs_prefix=URL_OUTPUT_PREFIX,
                 outputs_key_field='IndicatorValue',
                 outputs=url_data,
                 indicator=url_standard_context
@@ -169,7 +180,7 @@ def url_command(client: Client, args: Dict[str, Any], client_body) -> CommandRes
             dbot_score = Common.DBotScore(
                 indicator=url_key,
                 indicator_type=DBotScoreType.URL,
-                integration_name='GoogleSafeBrowsingV2',
+                integration_name=INTEGRATION_NAME,
                 score=0,
                 reliability=client.reliability
             )
@@ -179,13 +190,13 @@ def url_command(client: Client, args: Dict[str, Any], client_body) -> CommandRes
             )
             url_data_list.append(CommandResults(
                 readable_output=f'No matches for URL {url_key}',
-                outputs_prefix='GoogleSafeBrowsingV2.URL',
+                outputs_prefix=URL_OUTPUT_PREFIX,
                 outputs_key_field='IndicatorValue',
                 outputs=result,
                 indicator=url_standard_context
             ))
 
-    return url_data_list  # type: ignore
+    return url_data_list
 
 
 def main() -> None:
@@ -204,32 +215,20 @@ def main() -> None:
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
 
-    client_body = {
-        'clientId': params.get('client_id'),
-        'clientVersion': params.get('client_version'),
-    }
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            headers=headers,
             proxy=proxy,
             reliability=reliability)
 
         if demisto.command() == 'test-module':
-            result = test_module(client, client_body)
+            result = test_module(client)
             return_results(result)
 
         elif demisto.command() == 'url':
-            return_results(url_command(client, demisto.args(), client_body))
+            return_results(url_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
@@ -238,7 +237,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
