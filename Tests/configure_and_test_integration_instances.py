@@ -583,18 +583,11 @@ def __set_server_keys(client, integration_params, integration_name):
     for key, value in integration_params.get('server_keys').items():
         data['data'][key] = value
 
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                                        method='POST', body=data)
-
-    try:
-        result_object = ast.literal_eval(response_data)
-    except ValueError:
-        logging.exception(f'failed to parse response from demisto. response is {response_data}')
-        return
-
-    if status_code >= 300 or status_code < 200:
-        message = result_object.get('message', '')
-        logging.error(f'Failed to set server keys, status_code: {status_code}, message: {message}')
+    update_server_configuration(
+        client=client,
+        server_configuration=data,
+        error_msg='Failed to set server keys'
+    )
 
 
 def set_integration_instance_parameters(integration_configuration,
