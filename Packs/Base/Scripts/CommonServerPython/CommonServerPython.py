@@ -2423,7 +2423,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                ip_context['Relations'] = relations_context
+                ip_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.IP.CONTEXT_PATH: ip_context
@@ -2666,7 +2666,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                file_context['Relations'] = relations_context
+                file_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.File.CONTEXT_PATH: file_context
@@ -2732,7 +2732,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                cve_context['Relations'] = relations_context
+                cve_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -2778,7 +2778,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                email_context['Relations'] = relations_context
+                email_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.EMAIL.CONTEXT_PATH: email_context
@@ -2869,7 +2869,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                url_context['Relations'] = relations_context
+                url_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
@@ -3016,7 +3016,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                domain_context['Relations'] = relations_context
+                domain_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context
@@ -3098,7 +3098,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                endpoint_context['Relations'] = relations_context
+                endpoint_context['Relationships'] = relations_context
 
             if self.vendor:
                 endpoint_context['Vendor'] = self.vendor
@@ -3186,7 +3186,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                account_context['Relations'] = relations_context
+                account_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
