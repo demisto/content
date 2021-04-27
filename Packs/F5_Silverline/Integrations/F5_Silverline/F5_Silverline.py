@@ -77,6 +77,7 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     Adds a new IP object to the requested list type (denylist or allowlist).
     IP object includes an IP address (mandatory). Other fields are optional and have default values.
     Note: Human readable appears only if the HTTP request did not fail.
+    API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (POST section)
     """
     list_type = args.get('list_type')
     list_target = args.get('list_target', 'proxy-routed')
@@ -101,6 +102,7 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandRe
     """
     Deletes an exist IP object from the requested list type (denylist or allowlist) by its object id (mandatory).
     Note: Human readable appears only if the HTTP request did not fail.
+    API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (DELETE section)
     """
     list_type = args.get('list_type')
     object_id = args.get('object_id')
@@ -112,6 +114,12 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     # TODO handle the bad_actor list_type
+    """
+    Gets a list of IP objects by the requested list type (denylist or allowlist).
+    If the object_id argument is given, only those IP objects will be displayed. Otherwise, all IP objects that match
+    the given list_type will be displayed.
+    API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (GET section)
+    """
     list_type = args.get('list_type')
     object_ids = argToList(args.get('object_id'))
     page_number = args.get('page_number')
@@ -167,12 +175,14 @@ def parse_get_ip_object_list_results(results: Dict):
     """
     Parsing the API response after requesting the IP object list. Parsing maps the important fields that will appear
     as the human readable output.
+    An example for a response: https://portal.f5silverline.com/docs/api/v1/ip_objects.md.
+    Under the title "Success Response -> Body"
     """
     parsed_results = []
     results_data = results.get('data')  # type: ignore
     demisto.debug(f"response is {results_data}")
     if isinstance(results_data, dict):
-        # in case the response consist only single ip object, the result is a dict and not a list, so we want to handle
+        # in case the response consist only single ip object, the result is a dict and not a list, but we want to handle
         # those cases in the same way
         results_data = [results_data]
     for ip_object in results_data:  # type: ignore
