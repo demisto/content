@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: F5_Silverline
+  id: F5 Silverline
   version: -1
 configuration:
 - defaultvalue: https://portal.f5silverline.com
@@ -30,9 +30,12 @@ configuration:
   required: false
   type: 8
 description: F5 Silverline Threat Intelligence is a cloud-based service incorporating
-  external IP reputation and reducing threat-based communications.
-display: F5_Silverline
-name: F5_Silverline
+  external IP reputation and reducing threat-based communications. By identifying
+  IP addresses and security categories associated with malicious activity, this managed
+  service integrates dynamic lists of threatening IP addresses with the Silverline
+  cloud-based platform, adding context-based security to policy decisions.
+display: F5 Silverline
+name: F5 Silverline
 script:
   commands:
   - arguments:
