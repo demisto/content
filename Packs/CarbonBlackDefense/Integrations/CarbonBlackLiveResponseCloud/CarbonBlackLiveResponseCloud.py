@@ -21,10 +21,10 @@ CBD_LR_PREFIX = 'cbd-lr'
 # Using Py API
 def put_file_command(credentials: Dict, sensor_id: int, destination_path: str, file_id: str):
     api = CBCloudAPI(**credentials)
-    session = api.select(endpoint_standard.Device, sensor_id).lr_session()
+    session = api.select(endpoint_standard.Device, int(sensor_id)).lr_session() #TODO testing: send sensor_id as int and as str
     file_path = demisto.getFilePath(file_id).get('path')
     session.put_file(open(file_path, 'rb'), destination_path)
-    return f'File: {file_id} is now exist in the remote destination {destination_path}'
+    return f'File: {file_id} is successfully put to the remote destination {destination_path}'
 
 
 # Using Py API
@@ -47,11 +47,23 @@ def delete_file_command(credentials: Dict, sensor_id: int, source_path: str):
 
     session = api.select(endpoint_standard.Device, sensor_id).lr_session()
     session.delete_file(filename=source_path)
-    return f'The file: {source_path} was deleted'
+    return f'The file: {source_path} was deleted successfully.'
 
 
 # Using Py API
 def list_directory_command(credentials: Dict, sensor_id: int, directory_path: str):
+    """
+       Get list of directory entries in th remote sensor
+
+       :param credentials: The credentials for the API
+
+       :param sensor_id: The sensor id
+
+       :param directory_path: Directory to list. This parameter should end with the path separator
+
+       :return: CommandResult represent the API command result
+       :rtype: ``CommandResults``
+    """
     api = CBCloudAPI(**credentials)
 
     session = api.select(endpoint_standard.Device, sensor_id).lr_session()
@@ -80,6 +92,14 @@ def list_directory_command(credentials: Dict, sensor_id: int, directory_path: st
         readable_output=readable_output,
         raw_response=dir_content
     )
+
+
+# Using Py API
+def create_reg_key_command(credentials: Dict, sensor_id: str, reg_path: str):
+    api = CBCloudAPI(**credentials)
+    session = api.select(endpoint_standard.Device, sensor_id).lr_session()
+    session.create_registry_key(reg_path)
+    return f'Reg key: {reg_path}, was created successfully.'
 
 
 # Using Py API
@@ -133,23 +153,15 @@ def get_reg_values_command(credentials: Dict, sensor_id: str, reg_path: str):
 
 
 # Using Py API
-def create_reg_key_command(credentials: Dict, sensor_id: str, reg_path: str):
-    api = CBCloudAPI(**credentials)
-    session = api.select(endpoint_standard.Device, sensor_id).lr_session()
-    session.create_registry_key(reg_path)
-    return f'Reg key: {reg_path}, was created'
-
-
-# Using Py API
-# TODO check default params of overwrite in the YML
+#  # TODO testing the ovverite with different bool & str values
 def set_reg_value_command(
         credentials: Dict, sensor_id: str, reg_path: str,
-        value_data: Any, value_type: str = None, overwrite: bool = True):
-    api = CBCloudAPI(**credentials)
+        value_data: Any, value_type: str, overwrite: bool):
 
+    api = CBCloudAPI(**credentials)
     session = api.select(endpoint_standard.Device, sensor_id).lr_session()
-    session.set_registry_value(reg_path, value_data, overwrite=overwrite, value_type=value_type)
-    return f'Value was set to the reg key: {reg_path}'
+    session.set_registry_value(reg_path, value_data, overwrite=str(overwrite) == 'True', value_type=value_type)
+    return f'Value was set to the reg key: {reg_path} successfully.'
 
 
 # Using Py API

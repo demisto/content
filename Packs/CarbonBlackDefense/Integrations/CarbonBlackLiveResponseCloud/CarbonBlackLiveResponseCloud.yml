@@ -170,7 +170,7 @@ script:
       description: The sensor (endpoint) id
     - name: reg_path
       required: true
-      description: The registry key to set.
+      description: The path of the key + the path of the value e.g. HKLM\SYSTEM\CurrentControlSet\services\ACPI\testvalue
     - name: value_data
       required: true
       description: The value data
@@ -187,6 +187,7 @@ script:
       - REG_SZ
       description: 'The type of value. Examples: REG_DWORD, REG_MULTI_SZ, REG_SZ'
     - name: overwrite
+      defaultValue: "True"
       description: If True, any existing value will be overwritten.
     description: Set a registry value on the specified registry key on the remote
       machine
