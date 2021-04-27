@@ -6,7 +6,7 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Alert Type": {
+                "Netscout Arbor Sightline Alert Type": {
                     "complex": null,
                     "simple": "attributes.alert_class"
                 },

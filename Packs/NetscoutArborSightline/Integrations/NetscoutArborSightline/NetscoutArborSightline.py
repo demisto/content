@@ -393,8 +393,9 @@ def validate_json_arg(json_str: str, arg_name: str) -> dict:
     try:
         sub_object = json.loads(json_str)
         return sub_object
-    except Exception:
-        raise DemistoException(f'The value given in the {arg_name} argument is not a valid JSON format:\n{json_str}')
+    except Exception as err:
+        raise DemistoException(
+            f'The value given in the {arg_name} argument is not a valid JSON format:\n{json_str}\nERROR:\n{err}')
 
 
 def remove_keys(obj: dict, keys_to_remove: list):

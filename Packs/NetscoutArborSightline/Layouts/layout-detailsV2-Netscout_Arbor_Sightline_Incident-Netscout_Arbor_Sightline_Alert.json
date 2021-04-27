@@ -330,7 +330,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "alerttype",
+                                "fieldId": "netscoutarborsightlinealerttype",
                                 "height": 22,
                                 "id": "19489e20-90b2-11eb-95d8-27d92fbbd3a0",
                                 "index": 1,
