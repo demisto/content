@@ -887,13 +887,13 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 | PaloAltoNetworksXDR.Endpoint.endpoint_version | String | Endpoint version. | 
 | PaloAltoNetworksXDR.Endpoint.is_isolated | String | Whether the endpoint is isolated. | 
 | PaloAltoNetworksXDR.Endpoint.group_name | String | The name of the group to which the endpoint belongs. | 
-| Endpoint.Hostname | String | Endpoint hostname. | 
-| Endpoint.OS | String | Endpoint operating system. | 
-| Endpoint.IPAddress | String | Endpoint IP addresses. | 
-| Endpoint.ID | String | Endpoint ID. | 
-| Endpoint.Status | String | Endpoint status. | 
-| Endpoint.IsIsolated | String | Endpoint isolation status. | 
-| Endpoint.MACAddress | String | Endpoint MAC address. | 
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 
@@ -2650,13 +2650,13 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | String | Endpoint hostname. | 
-| Endpoint.OS | String | Endpoint operating system. | 
-| Endpoint.IPAddress | String | Endpoint IP addresses. | 
-| Endpoint.ID | String | Endpoint ID. | 
-| Endpoint.Status | String | Endpoint status. | 
-| Endpoint.IsIsolated | String | Endpoint isolation status. | 
-| Endpoint.MACAddress | String | Endpoint MAC address. | 
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 #### Command Example

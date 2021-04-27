@@ -1033,7 +1033,7 @@ script:
       description: The domain of the endpoint.
       type: String
     - contextPath: Endpoint.OS
-      description: Endpoint OS.
+      description: The endpoint's operation system.
       type: String
     - contextPath: Account.Username
       description: The username in the relevant system.
@@ -1045,10 +1045,10 @@ script:
       description: The endpoint's status.
       type: String
     - contextPath: Endpoint.IsIsolated
-      description: Endpoint isolation status.
+      description: The endpoint's isolation status.
       type: String
     - contextPath: Endpoint.MACAddress
-      description: Endpoint MAC address.
+      description: The endpoint's MAC address.
       type: String
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor. 

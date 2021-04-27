@@ -58,14 +58,14 @@ Searches for devices that match the query.
 | CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
 | CrowdStrike.Device.PolicyType | String | The policy type of the device. | 
 | CrowdStrike.Device.Status | String | The device status. | 
-| Endpoint.Hostname | String | Endpoint hostname. | 
-| Endpoint.OS | String | Endpoint operating system. | 
-| Endpoint.OSVersion | String | Endpoint operating system version. | 
-| Endpoint.IPAddress | String | Endpoint IP addresses. | 
-| Endpoint.ID | String | Endpoint ID. | 
-| Endpoint.Status | String | Endpoint status. | 
-| Endpoint.IsIsolated | String | Endpoint isolation status. | 
-| Endpoint.MACAddress | String | Endpoint MAC address. | 
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.OSVersion | String | The endpoint's operation system version. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 
@@ -2034,15 +2034,15 @@ Lists incident summaries.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | String | Endpoint Hostname. | 
-| Endpoint.OS | String | Endpoint OS. | 
-| Endpoint.OSVersion | String | Endpoint OS version. | 
-| Endpoint.IPAddress | String | Endpoint IP Addresses. | 
-| Endpoint.ID | String | Endpoint ID. | 
-| Endpoint.Status | String | Endpoint Status. | 
-| Endpoint.IsIsolated | String | Endpoint isolation status. | 
-| Endpoint.MACAddress | String | Endpoint MAC Address. | 
-| Endpoint.Vendor | String | Endpoint Vendor, the integration name. | 
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.OSVersion | String | The endpoint's operation system version. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 
 #### Command Example
