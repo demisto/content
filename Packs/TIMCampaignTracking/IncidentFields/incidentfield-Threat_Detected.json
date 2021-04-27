@@ -4,7 +4,7 @@
         "Intel Campaign"
     ],
     "caseInsensitive": true,
-    "cliName": "threatdetected",
+    "cliName": "timcampaignthreatdetected",
     "closeForm": false,
     "content": true,
     "description": "Detected in network?",
