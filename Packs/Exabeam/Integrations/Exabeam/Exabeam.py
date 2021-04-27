@@ -806,7 +806,7 @@ def contents_append_notable_user_info(contents, user, user_, user_info) -> List[
     return contents
 
 
-def contents_append_notable_assets_info(asset, asset_, highest_risk_sequence, latest_asset_comment) -> Dict[Any]:
+def contents_append_notable_assets_info(asset, asset_, highest_risk_sequence, latest_asset_comment) -> Dict:
     """Appends a dictionary of data to the base list
 
     Args:
@@ -844,7 +844,7 @@ def contents_append_notable_assets_info(asset, asset_, highest_risk_sequence, la
     return asset_info
 
 
-def contents_append_notable_session_details(session) -> Dict[Any]:
+def contents_append_notable_session_details(session) -> Dict:
     """Appends a dictionary of data to the base list
 
     Args:
@@ -862,7 +862,7 @@ def contents_append_notable_session_details(session) -> Dict[Any]:
     return content
 
 
-def contents_append_notable_session_user_details(user_details, user_info) -> Dict[Any]:
+def contents_append_notable_session_user_details(user_details, user_info) -> Dict:
     """Appends a dictionary of filtered data to the base list for the context
 
     Args:
@@ -890,7 +890,7 @@ def contents_append_notable_session_user_details(user_details, user_info) -> Dic
     return content
 
 
-def contents_append_notable_sequence_details(sequence, sequence_info) -> Dict[Any]:
+def contents_append_notable_sequence_details(sequence, sequence_info) -> Dict:
     """Appends a dictionary of filtered data to the base list for the context
 
     Args:
@@ -919,7 +919,7 @@ def contents_append_notable_sequence_details(sequence, sequence_info) -> Dict[An
     return content
 
 
-def contents_append_notable_sequence_event_types(sequence, asset_sequence_id) -> Dict[Any]:
+def contents_append_notable_sequence_event_types(sequence, asset_sequence_id) -> Dict:
     """Appends a dictionary of filtered data to the base list for the context
 
     Args:
@@ -1812,7 +1812,7 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
 
     entry_context = {'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)': contents_entry}
 
-    human_readable = tableToMarkdown('Notable Session details:', contents_entry, removeNull=True)
+    human_readable = tableToMarkdown('Notable Session details:', session, removeNull=True)
 
     return human_readable, entry_context, session_details_raw_data
 
