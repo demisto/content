@@ -34,8 +34,8 @@ def test_main_regular(mocker):
     FETCHED_INCIDENT_NOT_EMPTY = FETCHED_INCIDENT_NOT_EMPTY
     mocker.patch.object(demisto, 'args',
                         return_value={
-                            'fieldsForClustering': 'entityname',
-                            #'fieldForClusterName': 'entityname',
+                            'fieldsForClustering': 'entityname, wrong_field',
+                            'fieldForClusterName': 'entityname',
                             'fromDate':'',
                             'toDate':'',
                             'limit': '1000',
@@ -45,8 +45,26 @@ def test_main_regular(mocker):
                             'modelName': 'model',
                             'storeModel': 'False',
                             'minHomogeneityCluster': 0.6,
-                            'incidentType': 'Phishing'
+                            'incidentType': 'Phishing',
+                            'maxPercentageOfMissingValue': 0.001
                         })
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     res, msg = main()
     a = 1
+
+
+
+
+
+# Test if wrong cluster name
+
+# Test if empty cluster name
+
+# Test if incorrect all incorrrect field name
+
+# Test if one incorrect field name
+
+# Test if multiple fields
+
+#
+

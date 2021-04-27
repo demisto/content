@@ -80,6 +80,12 @@ args:
   name: incidentType
   required: false
   secret: false
+- default: false
+  defaultValue: '0.3'
+  isArray: false
+  name: maxPercentageOfMissingValue
+  required: false
+  secret: false
 commonfields:
   id: 3621593a-3641-4b26-90dc-a660f4b4e68c
   version: -1
@@ -90,5 +96,5 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/mlclustering:1.0.0.19238
+dockerimage: demisto/mlclustering:1.0.0.19269
 fromversion: 6.2.0
