@@ -103,7 +103,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatactor",
+                                "fieldId": "timcampaignthreatactor",
                                 "height": 22,
                                 "id": "1030b162-a2e1-11eb-9d37-c9986135a434",
                                 "index": 2,
@@ -112,7 +112,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatalias",
+                                "fieldId": "timcampaignthreatalias",
                                 "height": 22,
                                 "id": "1030d872-a2e1-11eb-9d37-c9986135a434",
                                 "index": 3,
@@ -121,7 +121,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatgoals",
+                                "fieldId": "timcampaignthreatgoals",
                                 "height": 22,
                                 "id": "1030d873-a2e1-11eb-9d37-c9986135a434",
                                 "index": 4,
@@ -130,7 +130,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "threatmotivation",
+                                "fieldId": "timcampaignthreatmotivation",
                                 "height": 22,
                                 "id": "1030d874-a2e1-11eb-9d37-c9986135a434",
                                 "index": 5,
@@ -140,7 +140,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "threatdetected",
+                                "fieldId": "timcampaignthreatdetected",
                                 "height": 22,
                                 "id": "1030d875-a2e1-11eb-9d37-c9986135a434",
                                 "index": 6,
