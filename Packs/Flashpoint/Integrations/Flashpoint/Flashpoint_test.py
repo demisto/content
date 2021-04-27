@@ -37,8 +37,10 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = domain_lookup_command(self.client, TEST_SCAN_DOMAIN)
+        command_result = domain_lookup_command(self.client, TEST_SCAN_DOMAIN)
+        resp = command_result.to_context().get('Contents')
         result = self.get_result(resp)
+        ec = command_result.to_context().get('EntryContext')
 
         with open("./TestData/domain_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -57,8 +59,10 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = ip_lookup_command(self.client, TEST_SCAN_IP)
+        command_result = ip_lookup_command(self.client, TEST_SCAN_IP)
+        resp = command_result.to_context().get('Contents')
         result = self.get_result(resp)
+        ec = command_result.to_context().get('EntryContext')
 
         with open("./TestData/ip_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -97,8 +101,10 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = url_lookup_command(self.client, TEST_SCAN_URL)
+        command_result = url_lookup_command(self.client, TEST_SCAN_URL)
+        resp = command_result.to_context().get('Contents')
         result = self.get_result(resp)
+        ec = command_result.to_context().get('EntryContext')
 
         with open("./TestData/url_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -117,8 +123,10 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = file_lookup_command(self.client, TEST_SCAN_FILE)
+        command_result = file_lookup_command(self.client, TEST_SCAN_FILE)
+        resp = command_result.to_context().get('Contents')
         result = self.get_result(resp)
+        ec = command_result.to_context().get('EntryContext')
 
         with open("./TestData/file_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)

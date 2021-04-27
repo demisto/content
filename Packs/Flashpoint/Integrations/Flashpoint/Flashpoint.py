@@ -760,10 +760,8 @@ def file_lookup_command(client, file):
             file_ioc = Common.File(md5=file, dbot_score=dbot_score, relations=relationships)
         elif hash_type == 'sha1':
             file_ioc = Common.File(sha1=file, dbot_score=dbot_score, relations=relationships)
-        elif hash_type == 'sha256':
+        else:
             file_ioc = Common.File(sha256=file, dbot_score=dbot_score, relations=relationships)
-        elif hash_type == 'sha512':
-            file_ioc = Common.File(sha512=file, dbot_score=dbot_score, relations=relationships)
 
         flashpoint_file_context = []
         for indicator in resp:
