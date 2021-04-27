@@ -1,6 +1,6 @@
 {
     "name": "Microsoft SafeLinks Statistics",
-    "description": "Enables querying the O365 Safe Links statistics from O365",
+    "description": "Safe Links is a feature in Defender for O365 that provides URL scanning and rewriting of inbound email messages in mail flow, and time-of-click verification of URLs and links in email messages and other location. This pack enables querying the O365 Safe Links statistics from O365 to filter, block URLs based on your settings.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Harri Ruuttila",
