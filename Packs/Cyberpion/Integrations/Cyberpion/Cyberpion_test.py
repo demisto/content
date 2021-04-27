@@ -1,6 +1,8 @@
 import json
 import io
 
+MOCKED_BASE_URL = 'https://api.test.com/api/'
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -11,10 +13,10 @@ def test_get_domain_state(requests_mock):
     from Cyberpion import Client
     mock_response = util_load_json('test_data/domain_state.json')
     requests_mock.get(
-        'https://publicportal.cyberpion.com:29173/portal/api/domainstate/?verbosity=details&domain=$anon100-2.com',
+        f'{MOCKED_BASE_URL}domainstate/?verbosity=details&domain=$anon100-2.com',
         json=mock_response)
     client = Client(
-        base_url='https://publicportal.cyberpion.com:29173/portal/api/',
+        base_url=MOCKED_BASE_URL,
         verify=False,
         headers={
             'Authentication': 'Bearer some_api_key'
@@ -36,10 +38,10 @@ def test_get_domain_state_command(requests_mock):
 
     mock_response = util_load_json('test_data/domain_state.json')
     requests_mock.get(
-        'https://publicportal.cyberpion.com:29173/portal/api/domainstate/?verbosity=details&domain=$anon100-2.com',
+        f'{MOCKED_BASE_URL}domainstate/?verbosity=details&domain=$anon100-2.com',
         json=mock_response)
     client = Client(
-        base_url='https://publicportal.cyberpion.com:29173/portal/api/',
+        base_url=f'{MOCKED_BASE_URL}',
         verify=False,
         headers={
             'Authentication': 'Bearer some_api_key'
@@ -63,11 +65,11 @@ def test_fetch_incidents(requests_mock):
 
     mock_response = util_load_json('test_data/new_incidents.json')
     requests_mock.get(
-        'https://publicportal.cyberpion.com:29173/portal/api/actionitems/?verbosity=details&page_size=2',
+        f'{MOCKED_BASE_URL}actionitems/?verbosity=details&page_size=2',
         json=mock_response)
 
     client = Client(
-        base_url='https://publicportal.cyberpion.com:29173/portal/api/',
+        base_url=f'{MOCKED_BASE_URL}',
         verify=False,
         headers={
             'Authentication': 'Bearer some_api_key'
