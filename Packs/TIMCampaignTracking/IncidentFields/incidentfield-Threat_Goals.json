@@ -14,7 +14,7 @@
     "id": "incident_timcampaignthreatgoals",
     "isReadOnly": false,
     "locked": false,
-    "name": "Threat Goals",
+    "name": "TIM Campaign Threat Goals",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
