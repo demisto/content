@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Intel Campaign"
+        "TIM - Campaign"
     ],
     "caseInsensitive": true,
     "cliName": "timcampaignthreatdetected",
