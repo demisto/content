@@ -11,4 +11,4 @@ There are two possible feed sources:
 - Feodo Tracker offers a blocklist of IP addresses that are associated with such botnet C&Cs that can be used to detect and block botnet C2 traffic from infected machines towards the internet. 
 - An IP address will only get added to the blocklist if it responds with a valid botnet C2 response. However, a botnet C2 may go offline later.
 
-Relationships creation will be available only for the **Last 30 Days** source.
+Relationships creation are available only for the **Last 30 Days** source.
