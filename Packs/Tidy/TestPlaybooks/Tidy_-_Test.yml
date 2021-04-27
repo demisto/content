@@ -1,0 +1,433 @@
+id: Tidy - Test
+version: -1
+name: Tidy - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 52c48340-45f6-49e9-89bc-4a38f22eb3b1
+    type: start
+    task:
+      id: 52c48340-45f6-49e9-89bc-4a38f22eb3b1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e2ca717a-c0dd-42ba-8a2a-3c3b6090d689
+    type: regular
+    task:
+      id: e2ca717a-c0dd-42ba-8a2a-3c3b6090d689
+      version: -1
+      name: Allocate Host
+      description: Allocates a Dedicated Host to your account.
+      script: '|||aws-ec2-allocate-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      availability_zone:
+        simple: us-west-2b
+      instance_type:
+        simple: mac1.metal
+      quantity:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1a2f4019-bdd9-44b9-8fec-1d47cadf2a62
+    type: regular
+    task:
+      id: 1a2f4019-bdd9-44b9-8fec-1d47cadf2a62
+      version: -1
+      name: Run instances
+      description: Launches the specified number of instances using an AMI for which
+        you have permissions. You can create a launch template , which is a resource
+        that contains the parameters to launch an instance. When you launch an instance
+        using RunInstances , you can specify the launch template instead of specifying
+        the launch parameters. An instance is ready for you to use when its in the
+        running state. You can check the state of your instance using DescribeInstances.
+      script: '|||aws-ec2-run-instances'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      count:
+        simple: "1"
+      host_id:
+        simple: ${AWS.EC2.Host.HostId}
+      imageId:
+        simple: ami-08288dbd3de17f400
+      instanceType:
+        simple: mac1.metal
+      keyName:
+        simple: oregon-ci
+      securityGroupIds:
+        simple: sg-0ade6888f2d620bfe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c39d8a36-bf77-442f-87e8-43ada583a8dd
+    type: regular
+    task:
+      id: c39d8a36-bf77-442f-87e8-43ada583a8dd
+      version: -1
+      name: Is instance ready?
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached
+      script: '|||aws-ec2-waiter-instance-status-ok'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      execution-timeout:
+        simple: "7200"
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d33098a8-fba3-4c62-8518-931d3ea11aa5
+    type: regular
+    task:
+      id: d33098a8-fba3-4c62-8518-931d3ea11aa5
+      version: -1
+      name: Describe Instance
+      description: Describes one or more of your instances.
+      script: '|||aws-ec2-describe-instances'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e5dd25b8-69c5-4b68-8732-73bae86f8ecc
+    type: playbook
+    task:
+      id: e5dd25b8-69c5-4b68-8732-73bae86f8ecc
+      version: -1
+      name: Content developer setup
+      description: Install content working environment.
+      playbookName: Content developer setup
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "11"
+    scriptarguments:
+      Github token:
+        simple: ${incident.tidygithubtoken}
+      Host Name:
+        simple: ${AWS.EC2.Instances.PublicIpAddress}
+      user:
+        simple: ec2-user
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 0cb8a3c8-8ef2-412b-8905-e788154bcd2f
+    type: regular
+    task:
+      id: 0cb8a3c8-8ef2-412b-8905-e788154bcd2f
+      version: -1
+      name: Terminate Instance
+      description: Shuts down one or more instances. This operation is idempotent;
+        if you terminate an instance more than once, each call succeeds.
+      script: '|||aws-ec2-terminate-instances'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 22397a92-6566-44dd-8821-1634f3b656d9
+    type: regular
+    task:
+      id: 22397a92-6566-44dd-8821-1634f3b656d9
+      version: -1
+      name: Is instance terminated?
+      description: A waiter function that runs every 15  seconds until a successful
+        state is reached
+      script: '|||aws-ec2-waiter-instance-terminated'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      execution-timeout:
+        simple: "7200"
+      instanceIds:
+        simple: ${AWS.EC2.Instances.InstanceId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: c83387d9-263b-4beb-868b-231f6db5aeb8
+    type: regular
+    task:
+      id: c83387d9-263b-4beb-868b-231f6db5aeb8
+      version: -1
+      name: Release Host
+      description: Release on demand dedicated host.
+      script: '|||aws-ec2-release-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      host_id:
+        simple: ${AWS.EC2.Host.HostId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 03c35877-c682-4f98-8cf7-bf07c053aaf7
+    type: title
+    task:
+      id: 03c35877-c682-4f98-8cf7-bf07c053aaf7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 990e175d-2325-4228-8305-a880c47737ed
+    type: condition
+    task:
+      id: 990e175d-2325-4228-8305-a880c47737ed
+      version: -1
+      name: Is there failed tasks?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Tidy.Install.Status
+            iscontext: true
+          right:
+            value:
+              simple: failed
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 147acd97-846e-43bd-8473-f6e2bdd26e23
+    type: regular
+    task:
+      id: 147acd97-846e-43bd-8473-f6e2bdd26e23
+      version: -1
+      name: Return Error Message
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Some tasks has failed, please review
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1815,
+        "width": 840,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: Tidy test playbook. This playbook creates MAC machine and runs the content
+  developer playbook on it.
