@@ -87,16 +87,16 @@ script:
     - contextPath: URL.Data
       description: URL name
       type: string
-    - contextPath: GoogleSafeBrowsingV2.URL.threatType
+    - contextPath: GoogleSafeBrowsing.URL.threatType
       description: The URL threat type.
       type: string
-    - contextPath: GoogleSafeBrowsingV2.URL.platformType
+    - contextPath: GoogleSafeBrowsing.URL.platformType
       description: The URL platform type.
       type: string
-    - contextPath: GoogleSafeBrowsingV2.URL.cacheDuration
+    - contextPath: GoogleSafeBrowsing.URL.cacheDuration
       description: The URL cache duration time.
       type: string
-    - contextPath: GoogleSafeBrowsingV2.URL.threatEntryType
+    - contextPath: GoogleSafeBrowsing.URL.threatEntryType
       description: The URL threat entry type.
       type: string
   dockerimage: demisto/python3:3.9.4.18682

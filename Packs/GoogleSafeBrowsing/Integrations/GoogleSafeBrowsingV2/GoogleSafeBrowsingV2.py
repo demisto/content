@@ -19,7 +19,7 @@ URL_OUTPUT_PREFIX = 'GoogleSafeBrowsing.URL'
 
 
 class Client(BaseClient):
-    def __init__(self, proxy: bool, verify: bool, reliability: str, base_url: str):
+    def __init__(self, proxy: bool, verify: bool, reliability: str, base_url: str, params: dict):
         headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -28,15 +28,15 @@ class Client(BaseClient):
 
         self.base_url = base_url
         self.client_body = {
-            'clientId': demisto.params().get('client_id'),
-            'clientVersion': demisto.params().get('client_version'),
+            'clientId': params.get('client_id'),
+            'clientVersion': params.get('client_version'),
         }
 
         if DBotScoreReliability.is_valid_type(reliability):
             self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         else:
-            return_error("Google Safe Browsing v2 error: "
-                         "Please provide a valid value for the Source Reliability parameter.")
+            raise Exception("Google Safe Browsing v2 error: "
+                            "Please provide a valid value for the Source Reliability parameter.")
 
     def build_request_body(self, client_body: Dict, list_url: List) -> Dict:
         """ build the request body according to the client body and the urls.
@@ -87,13 +87,13 @@ def test_module(client: Client) -> str:
         # testing a known malicious URL to check if we get matches
         test_url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"
         res = client.url_request(client.client_body, [test_url])
-        if res.get('matches'):
+        if res.get('matches'):  # matches - There is a match for the URL we were looking for
             message = 'ok'
         else:
             message = 'Error querying Google Safe Browsing. Expected matching respons, but received none'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+            message = 'Authorization Error: please make sure the API Key is set correctly.'
         else:
             raise e
     return message
@@ -218,6 +218,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
+            params=params,
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
