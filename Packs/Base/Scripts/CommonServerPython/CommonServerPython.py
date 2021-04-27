@@ -3105,12 +3105,13 @@ class Common(object):
 
             if self.status:
                 if self.status not in ENDPOINT_STATUS_OPTIONS:
-                    raise ValueError('Status does not have a valid value')
+                    raise ValueError('Status does not have a valid value such as: Online or Offline')
                 endpoint_context['Status'] = self.status
 
             if self.is_isolated:
                 if self.is_isolated not in ENDPOINT_ISISOLATED_OPTIONS:
-                    raise ValueError('Is Isolated does not have a valid value')
+                    raise ValueError('Is Isolated does not have a valid value such as: Yes, No, Pending'
+                                     ' isolation or Pending unisolation')
                 endpoint_context['IsIsolated'] = self.is_isolated
 
             ret_value = {
