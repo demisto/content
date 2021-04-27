@@ -265,7 +265,7 @@ def test_fetch_incidents_already_fetch_empty(mocker):
      Then
      - validate that all the expected ids are being returned.
      """
-    expected_ids_to_fetch = [3064, 3063, 3062, 3056, 3060]
+    expected_ids_to_fetch = [3055, 3056, 3058, 3059, 3057]
     already_fetched = []
     params = {
         'fetch_delta': '6',
@@ -291,8 +291,8 @@ def test_fetch_incidents_two_iterations(mocker):
      Then
      - validate the correct ids are fetched and the ids that where already fetched do not appear twice.
      """
-    expected_ids_to_fetch_first = [3062, 3056]
-    expected_ids_to_fetch_second = [3060, 3057]
+    expected_ids_to_fetch_first = [3055, 3056]
+    expected_ids_to_fetch_second = [3058, 3059]
 
     already_fetched = [3064, 3063]
     params = {
@@ -307,7 +307,7 @@ def test_fetch_incidents_two_iterations(mocker):
     _, _, new_fetched_first = get_incidents_batch_by_time_request(params)
     assert new_fetched_first == expected_ids_to_fetch_first
 
-    already_fetched = [3064, 3063, 3062, 3056]
+    already_fetched = [3064, 3063, 3055, 3056]
     params = {
         'fetch_delta': '2',
         'fetch_limit': ' 2',

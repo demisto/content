@@ -483,9 +483,11 @@ def get_incidents_batch_by_time_request(params):
     while created_before < current_time and len(incidents_list) < fetch_limit:
         incidents = get_incidents_request(request_params)
         filtered_incidents_list = filter_incidents(incidents)
+        ordered_incidents = sorted(filtered_incidents_list, key=lambda k: (k['created_at'], k['id']))
+
         demisto.debug("Entering while loop,iteration number {} with {} incidents".format(str(iteration_count), str(len(incidents))))
 
-        for incident in filtered_incidents_list:
+        for incident in ordered_incidents:
             # if reached to fetch limit, no need to continue to go through the incidents
             if len(incidents_list) >= fetch_limit:
                 demisto.debug("Number of incident gathered has reached the fetch limit."
@@ -496,10 +498,6 @@ def get_incidents_batch_by_time_request(params):
             if incident.get('id') not in already_fetched:
                 incidents_list.append(incident)
                 new_fetched_incidents_ids.append(incident.get('id'))
-
-        # save the last fetch for the next fetch before advancing it
-        # We would like to run again on the last batch to add the incident that might not been added due to the limit
-        last_fetch = created_after.isoformat().split('.')[0] + 'Z'
 
         # advancing fetch time one day forward
         created_after = created_before
@@ -516,7 +514,8 @@ def get_incidents_batch_by_time_request(params):
                                                                                   last_fetch
                                                                                   ))
         iteration_count = iteration_count + 1
-
+    if incidents_list:
+        last_fetch = incidents_list[-1].get('created_at')
     demisto.debug("End of fetch iteration. Number of incident gathered is {}."
                   "Last fetch is {}. Ids of new incidents are {}".format(str(len(incidents_list)), last_fetch, str(new_fetched_incidents_ids)))
     return incidents_list, last_fetch, new_fetched_incidents_ids
@@ -549,18 +548,15 @@ def fetch_incidents_command():
             'fetch_limit': fetch_limit
         }
 
-        state_parsed_fetch = datetime.strptime(last_fetch[state], TIME_FORMAT)
         incidents_list, last_fetch_time, new_fetched_ids = get_incidents_batch_by_time_request(request_params)
         for incident in incidents_list:
-            incident_creation_time = datetime.strptime(incident['created_at'], TIME_FORMAT)
-            if incident_creation_time > state_parsed_fetch:
-                id = incident.get('id')
-                inc = {
-                    'name': 'ProofPoint_TRAP - ID {}'.format(id),
-                    'rawJSON': json.dumps(incident),
-                    'occurred': incident['created_at']
-                }
-                incidents.append(inc)
+            id = incident.get('id')
+            inc = {
+                'name': 'ProofPoint_TRAP - ID {}'.format(id),
+                'rawJSON': json.dumps(incident),
+                'occurred': incident['created_at']
+            }
+            incidents.append(inc)
 
         if incidents:
             last_fetch[state] = last_fetch_time
