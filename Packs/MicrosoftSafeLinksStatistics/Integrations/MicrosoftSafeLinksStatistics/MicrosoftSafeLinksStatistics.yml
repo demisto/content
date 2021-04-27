@@ -1,0 +1,106 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Microsoft SafeLinks Statistics
+  version: -1
+configuration:
+- defaultvalue: https://outlook.office365.com
+  display: Exchange Online URL
+  name: url
+  required: true
+  type: 0
+- display: Email (Password for basic authentication only)
+  name: credentials
+  required: false
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Use the integration to get statistics from the O365 service on Safe Links
+  clicks
+display: Microsoft SafeLinks Statistics
+name: Microsoft SafeLinks Statistics
+script:
+  commands:
+  - arguments: []
+    description: Starts the OAuth2.0 authorization process.
+    name: o365-safelinks-stats-auth-start
+  - arguments: []
+    description: Completes the OAuth2.0 authorization process.
+    name: o365-safelinks-stats-auth-complete
+  - arguments: []
+    description: Tests the OAuth2.0 authorization process.
+    name: o365-safelinks-stats-auth-test
+  - arguments:
+    - defaultValue: 7 days
+      description: The start date of the date range or a date range (3 days, 1 year,
+        etc.). Entries are stored in the unified audit log in Coordinated Universal
+        Time (UTC). If you specify a date/time value without a time zone, the value
+        is in UTC.
+      name: start_date
+    - description: The end date of the date range. Entries are stored in the unified
+        audit log in Coordinated Universal Time (UTC). If you specify a date/time
+        value without a time zone, the value is in UTC. If empty, wll take current
+        time.
+      name: end_date
+    - description: The ClickId parameter filters the results by the URL that was scanned
+        in the message. Each URL is represented as a GUID value.
+      name: click_id
+    - description: The RecipientAddress parameter filters the results by the recipient's
+        email address. You can specify multiple values separated by commas.
+      name: recipient_address
+    - description: The UrlOrDomain parameter filters the results by the specified
+        URL or domain value.
+      name: url_or_domain
+    description: Use the to search safelinks statistics in o365
+    name: o365-safelinks-stats-search
+    outputs:
+    - contextPath: O365SafeLinksStats.ClickedTime
+      description: Time when link was clicked
+      type: date
+    - contextPath: O365SafeLinksStats.Recipient
+      description: Recipient that had received the link
+      type: string
+    - contextPath: O365SafeLinksStats.URL
+      description: URL that was clicked
+      type: string
+    - contextPath: O365SafeLinksStats.UrlBlocked
+      description: The URL was detected as malicious by Safe Links (only the initial
+        block, not subsequent clicks), or the user clicked the URL while the scan
+        in progress (users are taken to a notification page that asks them to try
+        again after the scan is complete).
+      type: string
+    - contextPath: O365SafeLinksStats.UrlClicked
+      description: The URL is blocked, but the applicable Safe Links policy has the
+        DoNotAllowClickThrough parameter value $false (click through is allowed).
+        Updated policies aren't applied to existing messages that have already been
+        scanned. New or updated policies are applied to new messages that were received
+        after the policy is applied to the mailbox.
+      type: string
+    - contextPath: O365SafeLinksStats.ClickAction
+      description: 'Click Action: The action of a specific click. Possible values
+        are: • None: We were unable to capture the verdict for the URL. The user might
+        have clicked through the URL. • Allowed: The user was allowed to navigate
+        to the URL. • Blocked: The User was blocked from navigating to the URL. •
+        Pending verdict: The user was presented with the detonation pending page.
+        • Blocked overridden: The user was blocked from navigating to the URL; however,
+        the user overrode the block to navigate to the URL. • Pending verdict bypassed:
+        The user presented with the detonation page; however, the user overrode the
+        page to navigate to the URL. • Error: The user was presented with the error
+        page. This can also mean there was an error in capturing the verdict. • Failure:
+        There was unknown exception while capturing the verdict. The user might have
+        clicked through the URL.'
+      type: string
+    - contextPath: O365SafeLinksStats.Workload
+      description: Workload of the link being delivered
+      type: string
+    - contextPath: O365SafeLinksStats.AppName
+      description: Application Name
+      type: string
+  dockerimage: demisto/powershell-ubuntu:7.1.1.16151
+  runonce: false
+  script: ''
+  type: powershell
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
