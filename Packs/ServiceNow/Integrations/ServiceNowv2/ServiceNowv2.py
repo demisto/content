@@ -571,6 +571,8 @@ class Client(BaseClient):
             try:
                 json_res = res.json()
             except Exception as err:
+                if res.status_code == 201:
+                    return "The ticket was successfully created."
                 if not res.content:
                     return ''
                 raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
@@ -723,7 +725,7 @@ class Client(BaseClient):
         return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', params=query_params, body=body)
 
     def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {},
-               input_display_value: bool = False) -> dict:
+               input_display_value: bool = False):
         """Creates a ticket or a record by sending a POST request.
 
         Args:
@@ -1019,6 +1021,8 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     result = client.create(ticket_type, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
+        if 'successfully' in result:
+            return result, {}, {}, True
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
