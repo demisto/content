@@ -91,3 +91,4 @@ system: false
 timeout: '0'
 type: python
 dockerimage: demisto/mlclustering:1.0.0.19238
+fromversion: 6.2.0
