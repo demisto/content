@@ -6,10 +6,11 @@
 # Marketplace & Upload-Flow
 /Tests/Marketplace/upload_git_snapshot.py @guyfreund
 /Tests/Marketplace/install_packs.sh @guyfreund
-/Tests/Marketplace/normalize_gcs_paths.py @guyfreund
 /Tests/Marketplace/configure_and_install_packs.py @guyfreund
 /Tests/Marketplace/copy_and_upload_packs.py @guyfreund
 /Tests/Marketplace/marketplace_services.py @guyfreund
+/Tests/Marketplace/marketplace_statistics.py @guyfreund
+/Tests/Marketplace/marketplace_constants.py @guyfreund
 /Tests/Marketplace/zip_packs.py @guyfreund
 /Tests/Marketplace/upload_packs.py @guyfreund
 /Tests/Marketplace/packs_dependencies.py @guyfreund
