@@ -353,12 +353,14 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
     url_ec: list = []
     alienvault_ec: list = []
     dbotscore_ec: list = []
+    no_matches_url = []
     for args in query_args:
         raw_response = client.query(section='url',
                                     argument=args)
         if raw_response:
             if raw_response == 404:
-                return f'No matches for URL {args}', {}, {}
+                no_matches_url.append(args)
+                continue
             raws.append(raw_response)
             url_ec.append({
                 'Data': raw_response.get('indicator')
@@ -378,14 +380,20 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
                 'Reliability': client.reliability
             })
     if not raws:
+        if no_matches_url:
+            return f"No matches for URL's {no_matches_url}", {}, {}
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
     context_entry: dict = {
         outputPaths.get("url"): url_ec,
         'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': alienvault_ec,
         outputPaths.get("dbotscore"): dbotscore_ec
     }
-    human_readable = tableToMarkdown(t=context_entry.get('AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
-                                     name=title)
+    human_readable_table = tableToMarkdown(t=context_entry.get('AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
+                                           name=title)
+    if no_matches_url:
+        human_readable = f"{human_readable_table} No matches for URL's {no_matches_url}"
+    else:
+        human_readable = human_readable_table
     return human_readable, context_entry, raws
 
 
