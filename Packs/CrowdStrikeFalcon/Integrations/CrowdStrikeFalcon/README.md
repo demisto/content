@@ -58,15 +58,15 @@ Searches for devices that match the query.
 | CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
 | CrowdStrike.Device.PolicyType | String | The policy type of the device. | 
 | CrowdStrike.Device.Status | String | The device status. | 
-| Endpoint.Hostname | String | Endpoint Hostname. | 
-| Endpoint.OS | String | Endpoint OS. | 
-| Endpoint.OSVersion | String | Endpoint OS version. | 
-| Endpoint.IPAddress | String | Endpoint IP Addresses. | 
+| Endpoint.Hostname | String | Endpoint hostname. | 
+| Endpoint.OS | String | Endpoint operating system. | 
+| Endpoint.OSVersion | String | Endpoint operating system version. | 
+| Endpoint.IPAddress | String | Endpoint IP addresses. | 
 | Endpoint.ID | String | Endpoint ID. | 
-| Endpoint.Status | String | Endpoint Status. | 
+| Endpoint.Status | String | Endpoint status. | 
 | Endpoint.IsIsolated | String | Endpoint isolation status. | 
-| Endpoint.MACAddress | String | Endpoint MAC Address. | 
-| Endpoint.Vendor | String | Endpoint Vendor, the integration name. | 
+| Endpoint.MACAddress | String | Endpoint MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 
 #### Command Example
