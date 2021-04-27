@@ -1,8 +1,7 @@
-from datetime import date
-
 import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from datetime import date
 
 AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
 AWS_roleArn = demisto.params()['roleArn']
@@ -63,7 +62,7 @@ def aws_session(service='logs', region=None, roleArn=None, roleSessionName=None,
 
 
 class DatetimeEncoder(json.JSONEncoder):
-    def default(self, obj):
+    def default(self, obj):  # pylint: disable=E0202
         if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
         elif isinstance(obj, date):
