@@ -519,10 +519,9 @@ def create_summary(model_processed, global_msg):
 
 
 
-def return_entry_clustering(readable_output, output_clustering, tag=None):
+def return_entry_clustering(output_clustering, tag=None):
     return_entry = {
         "Type": entryTypes["note"],
-        "HumanReadable": readable_output,
         "ContentsFormat": formats['json'],
         "Contents": output_clustering,
         "EntryContext": {'DBotTrainClustering': output_clustering},

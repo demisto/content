@@ -46,7 +46,7 @@ def test_main_regular(mocker):
                             'storeModel': 'False',
                             'minHomogeneityCluster': 0.6,
                             'incidentType': 'Phishing',
-                            'maxPercentageOfMissingValue': 0.001
+                            'maxPercentageOfMissingValue': 0.5
                         })
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     res, msg = main()
