@@ -577,6 +577,7 @@ def main():
 
     # case where no field for clustrering or field for cluster name if not empty and incorrect)
     if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
+        demisto.results(global_msg)
         return None, global_msg
 
     # Create data for training
@@ -602,13 +603,12 @@ def main():
     model = Pipeline(steps=[('preprocessor', preprocessor),
                             ('clustering', Clustering(HDBSCAN_PARAMS))
                             ])
-    # demisto.results(json.dumps(incidents_df.to_dict(orient='row')))
-    # sys.exit(0)
     model.fit(incidents_df, labels)
 
     if not is_clustering_valid(model.named_steps['clustering']):
-        demisto.results(MESSAGE_CLUSTERING_NOT_VALID)
-        return None, MESSAGE_CLUSTERING_NOT_VALID
+        global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
+        demisto.results(global_msg)
+        return None, global_msg
     model.named_steps['clustering'].reduce_dimension()
     model.named_steps['clustering'].compute_centers()
     model_processed = PostProcessing(model, min_homogeneity_cluster, max_number_of_clusters, generic_cluster_name)
