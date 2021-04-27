@@ -4604,6 +4604,8 @@ class EntityRelation:
         SENT_TO = 'sent-to'
         SIMILAR_TO = 'similar-to'
         SUB_DOMAIN_OF = 'sub-domain-of'
+        SUB_TECHNIQUE_OF = 'subtechnique-of'
+        PARENT_TECHNIQUE_OF = 'parent-technique-of'
         SUPRA_DOMAIN_OF = 'supra-domain-of'
         TARGETED_BY = 'targeted-by'
         TARGETS = 'targets'
@@ -4674,6 +4676,8 @@ class EntityRelation:
                            'similar-to': 'similar-to',
                            'sub-domain-of': 'supra-domain-of',
                            'supra-domain-of': 'sub-domain-of',
+                           'subtechnique-of': 'parent-technique-of',
+                           'parent-technique-of': 'subtechnique-of',
                            'targeted-by': 'targets',
                            'targets': 'targeted-by',
                            'Types': 'Reverse',
