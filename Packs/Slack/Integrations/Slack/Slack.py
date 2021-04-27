@@ -1285,6 +1285,7 @@ def get_conversation_by_name(conversation_name: str) -> dict:
         if not cursor:
             break
 
+        body = body.copy()  # strictly for unit-test purposes (test_get_conversation_by_name_paging)
         body.update({'cursor': cursor})
         response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
 
@@ -1989,6 +1990,7 @@ def main():
     """
     Main
     """
+    global CLIENT
     if is_debug_mode():
         os.environ['PYTHONASYNCIODEBUG'] = "1"
 
