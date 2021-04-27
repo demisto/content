@@ -475,7 +475,7 @@ IP_RELATIONSHIPS = [
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
      'entityA': '98.136.103.23',
      'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1140 - Deobfuscate/Decode Files or Information',
-     'entityBFamily': 'Indicator', 'entityBType': 'STIX  Attack Pattern', 'fields': {},
+     'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {},
      'reliability': 'C - Fairly reliable',
      'brand': 'AlienVault OTX v2'
      },
