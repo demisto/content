@@ -9,16 +9,15 @@ import glob
 import requests
 import logging
 from datetime import datetime
-from zipfile import ZipFile
-from typing import Any, Tuple, Union, Optional
-
 from google.cloud.storage import Bucket
 
-from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
-    GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
-    LANDING_PAGE_SECTIONS_PATH, get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, \
-    get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
-    get_trending_packs
+from zipfile import ZipFile
+from typing import Any, Tuple, Union, Optional
+from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
+    load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts
+from Tests.Marketplace.marketplace_statistics import StatisticsHandler
+from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
+    CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -948,9 +947,6 @@ def main():
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
-    # google cloud bigquery client initialized
-    bq_client = init_bigquery_client(service_account)
-
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
@@ -961,8 +957,6 @@ def main():
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
-    landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
-    trending_packs = get_trending_packs(bq_client, index_folder_path)
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
@@ -985,7 +979,8 @@ def main():
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
 
-    packs_statistic_df = get_packs_statistics_dataframe(bq_client)
+    # initiate the statistics handler for marketplace packs
+    statistics_handler = StatisticsHandler(service_account, index_folder_path, packs_list)
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
@@ -998,19 +993,19 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, pack_content_items = pack.collect_content_items()
+        task_status = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
             continue
 
-        task_status, integration_images = pack.upload_integration_images(storage_bucket, diff_files_list, True)
+        task_status = pack.upload_integration_images(storage_bucket, diff_files_list, True)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status, author_image = pack.upload_author_image(storage_bucket, diff_files_list, True)
+        task_status = pack.upload_author_image(storage_bucket, diff_files_list, True)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
@@ -1023,15 +1018,8 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
-                                           integration_images=integration_images, author_image=author_image,
-                                           index_folder_path=index_folder_path,
-                                           packs_dependencies_mapping=packs_dependencies_mapping,
-                                           build_number=build_number, commit_hash=current_commit_hash,
-                                           packs_statistic_df=packs_statistic_df,
-                                           pack_was_modified=pack_was_modified,
-                                           landing_page_sections=landing_page_sections,
-                                           trending_packs=trending_packs)
+        task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
+                                           current_commit_hash, pack_was_modified, statistics_handler)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
@@ -1066,10 +1054,8 @@ def main():
             pack.cleanup()
             continue
 
-        (task_status, skipped_pack_uploading, full_pack_path) = \
-            pack.upload_to_storage(zip_pack_path, pack.latest_version,
-                                   storage_bucket, override_all_packs
-                                   or pack_was_modified)
+        task_status, skipped_upload, _ = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
+                                                                override_all_packs or pack_was_modified)
 
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
@@ -1096,7 +1082,7 @@ def main():
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_pack_uploading and exists_in_index:
+        if skipped_upload and exists_in_index:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
@@ -1111,7 +1097,7 @@ def main():
                             index_blob=index_blob, build_number=build_number, private_packs=private_packs,
                             current_commit_hash=current_commit_hash, index_generation=index_generation,
                             force_upload=force_upload, previous_commit_hash=previous_commit_hash,
-                            landing_page_sections=landing_page_sections,
+                            landing_page_sections=statistics_handler.landing_page_sections,
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
                             storage_bucket=storage_bucket,
                             )
