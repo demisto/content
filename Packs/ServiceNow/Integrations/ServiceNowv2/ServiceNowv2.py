@@ -569,10 +569,10 @@ class Client(BaseClient):
                     "A connection was established but the instance is in hibernate mode.\n"
                     "Please wake your instance and try again.")
             try:
-                if res.status_code == 201:
-                    return "The ticket was successfully created."
                 json_res = res.json()
             except Exception as err:
+                if res.status_code == 201:
+                    return "The ticket was successfully created."
                 if not res.content:
                     return ''
                 raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
