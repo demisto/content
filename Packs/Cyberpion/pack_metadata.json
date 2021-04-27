@@ -1,0 +1,17 @@
+{
+    "name": "Cyberpion",
+    "description": "Attack surface discovery and vulnerability management",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Isaac El Eini",
+    "url": "",
+    "email": "isaac@cyberpion.com",
+    "created": "2021-01-27T11:24:01Z",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
