@@ -40,7 +40,7 @@ configuration:
   name: timeout
   required: false
   type: 0
-- additionalinfo: The maximum number of incidents per fetch. cannot exceed 100.
+- additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
@@ -73,7 +73,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status
-    is provided then incidents of all the statuses will be fetched. Note: an incident
+    is provided then incidents of all the statuses will be fetched. Note: An incident
     whose status was changed to a filtered status after its creation time will not
     be fetched.'
   display: Incident Statuses to Fetch
@@ -1048,10 +1048,10 @@ script:
       description: Endpoint isolation status.
       type: String
     - contextPath: Endpoint.MACAddress
-      description: Endpoint MAC Address.
+      description: Endpoint MAC address.
       type: String
     - contextPath: Endpoint.Vendor
-      description: Endpoint Vendor, the integration name.
+      description: The integration name of the endpoint vendor. 
       type: String
   - deprecated: false
     description: Gets a list of all the agent versions to use for creating a distribution
@@ -2793,13 +2793,13 @@ script:
       description: The endpoint's status.
       type: String
     - contextPath: Endpoint.IsIsolated
-      description: Endpoint isolation status.
+      description: The endpoint's isolation status.
       type: String
     - contextPath: Endpoint.MACAddress
-      description: Endpoint MAC Address.
+      description: The endpoint's MAC address.
       type: String
     - contextPath: Endpoint.Vendor
-      description: Endpoint Vendor, the integration name.
+      description: The integration name of the endpoint vendor.
       type: String
   dockerimage: demisto/python3:3.9.4.18682
   feed: false
