@@ -1,10 +1,5 @@
 {
-  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
-    "Indicator": "test_scan_dummy_file",
-    "Type": "hash",
-    "Vendor": "Flashpoint",
-    "Score": 3
-  },
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
     {
       "Indicator": "test_scan_dummy_file",
       "Type": "file",
