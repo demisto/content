@@ -570,7 +570,7 @@ class Client(BaseClient):
                     "Please wake your instance and try again.")
             try:
                 if res.status_code == 201:
-                    return "Ticket successfully created"
+                    return "The ticket was successfully created."
                 json_res = res.json()
             except Exception as err:
                 if not res.content:
