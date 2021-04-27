@@ -163,7 +163,7 @@ def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
     url = _create_url(**params)
     params['url'] = url
-    params['indicator_type'] = 'Threat Actor'
+    params['indicator_type'] = 'STIX Threat Actor'
     params['feed_name_to_config'] = {
         'actors': {
             'extractor': 'actors[*]',
