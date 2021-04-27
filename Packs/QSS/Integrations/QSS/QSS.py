@@ -4,8 +4,8 @@ from CommonServerPython import *  # noqa: F401
 
 import json
 import urllib3
-import dateparser
 import traceback
+import dateparser
 from typing import Any, Dict, Tuple, List, Optional, cast
 
 # Disable insecure warnings
@@ -25,30 +25,30 @@ QSS_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 class Client(BaseClient):
 
     def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
-                      alert_type: Optional[str], max_results: Optional[int], start_time: Optional[int]) -> List[Dict[str, Any]]:
+                      max_results: Optional[int], start_time: Optional[int], 
+                      api_key: Optional[str], false_positive: Optional[str]
+                      ) -> List[Dict[str, Any]]:
 
         request_params: Dict[str, Any] = {}
 
-        api_key = demisto.params().get('apikey')
-
-        if api_key:
+		if api_key:
             request_params['apikey'] = api_key
 
         if start_time:
             request_params['start_time'] = start_time
 
-        severity = demisto.params().get('severity')
+        
         if severity:
             request_params['severity'] = severity
-
-        status = demisto.params().get('status')
-        if status:
-            request_params['status'] = status
+	
+		
+        if alert_status:
+            request_params['status'] = alert_status
 
         if max_results:
             request_params['max_fetch'] = max_results
 
-        false_positive = demisto.params().get('false_positive')
+       
         if false_positive:
             request_params['false_positive'] = false_positive
 
@@ -63,16 +63,6 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
-
-def convert_to_demisto_severity(severity: str) -> int:
-    return {
-        'Low': 1,  # low severity
-        'Medium': 2,  # medium severity
-        'High': 3,  # high severity
-        'Critical': 4   # critical severity
-    }[severity]
-
-
 def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
 
     if arg is None:
@@ -86,7 +76,6 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     if isinstance(arg, int):
         return arg
     raise ValueError(f'Invalid number: "{arg_name}"')
-
 
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
 
@@ -106,13 +95,18 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
 
+def convert_to_demisto_severity(severity: str) -> int:
+    return {
+        'Low': 1,  # low severity
+        'Medium': 2,  # medium severity
+        'High': 3,  # high severity
+        'Critical': 4   # critical severity
+    }[severity]
 
-''' COMMAND FUNCTIONS '''
 
-
-def test_module(client: Client, first_fetch_time: int) -> str:
+def test_module(client: Client, first_fetch_time: int, api_key: str) -> str:
     try:
-        client.search_alerts(max_results=1, alert_status=None, alert_type=None, severity=None, start_time=first_fetch_time)
+        client.search_alerts(max_results=1, alert_status=None, severity=None, start_time=first_fetch_time, api_key=api_key, false_positive=None)
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -123,7 +117,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], alert_status: Optional[str],
-                    min_severity: str, alert_type: Optional[str]
+                    min_severity: str, api_key: Optional[str], false_positive: Optional[str]
                     ) -> Tuple[Dict[str, int], List[dict]]:
 
     last_fetch = last_run.get('last_fetch', None)
@@ -136,11 +130,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     alerts = client.search_alerts(
-        alert_type=alert_type,
         alert_status=alert_status,
         max_results=max_results,
         start_time=last_fetch,
-        severity=''
+        severity=min_severity,
+        false_positive=false_positive,
+        api_key=api_key
+        
     )
 
     demisto.debug("Alerts Fetched")
@@ -199,8 +195,11 @@ def main() -> None:
 
     proxy = demisto.params().get('proxy', False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
+
+
+        api_key = demisto.params().get('apikey')
+
         headers: Dict[str, Any] = {
             # No need for headers in the current version of integration
         }
@@ -212,15 +211,16 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, first_fetch_time)
+            result = test_module(client, first_fetch_time, api_key)
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
 
             # Set and define the fetch incidents command to run after activated via integration settings.
-            alert_status = demisto.params().get('alert_status', None)
-            alert_type = demisto.params().get('alert_type', None)
-            min_severity = demisto.params().get('min_severity', None)
+            alert_status = demisto.params().get('alert_status')
+            min_severity = demisto.params().get('min_severity')
+            false_positive = demisto.params().get('false_positive')
+        	 
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_int(
@@ -238,7 +238,8 @@ def main() -> None:
                 first_fetch_time=first_fetch_time,
                 alert_status=alert_status,
                 min_severity=min_severity,
-                alert_type=alert_type
+                api_key=api_key,
+                false_positive=false_positive
             )
 
             # saves next_run for the time fetch-incidents is invoked
