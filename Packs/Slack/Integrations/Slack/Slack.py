@@ -1982,7 +1982,7 @@ def loop_info(loop: asyncio.AbstractEventLoop):
 
 def slack_get_integration_context():
     integration_context = get_integration_context()
-    return_results(fileResult('slack_integration_context', json.dumps(integration_context)))
+    return_results(fileResult('slack_integration_context', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
 
 
 def main():
