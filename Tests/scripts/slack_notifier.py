@@ -58,7 +58,7 @@ def get_circle_failed_steps(ci_token, build_number):
 
 def get_gitlab_failed_steps(ci_token, build_number, server_url, project_id):
     failed_steps_list = []
-    gitlab_client = gitlab.Gitlab(server_url, job_token=ci_token)
+    gitlab_client = gitlab.Gitlab(server_url, oauth_token=ci_token)
     logging.info(f'project id is {project_id}')
     projects = gitlab_client.projects.list()
     logging.info(f'projects are {projects}')
