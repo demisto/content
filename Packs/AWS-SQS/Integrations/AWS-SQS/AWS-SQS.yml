@@ -11,7 +11,8 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Role Arn
+- additionalinfo: When using Access Key and Secret Key, there is no need to use Role Arn
+  display: Role Arn
   name: roleArn
   defaultvalue: ""
   type: 0
