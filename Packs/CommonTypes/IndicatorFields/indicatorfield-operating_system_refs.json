@@ -17,7 +17,12 @@
     "content": true,
     "group": 2,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "Tool",
+        "Attack Pattern",
+        "Malware"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
