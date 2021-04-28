@@ -339,7 +339,8 @@ def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_nu
         response_body = get_incidents_request(
             since=since,
             until=until,
-            page_number=page_number
+            page_number=page_number,
+            page_size=50,
         )
 
         if not response_body:
