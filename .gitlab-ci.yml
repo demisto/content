@@ -562,7 +562,7 @@ force-pack-upload:
   stage: upload-to-marketplace
   needs: ["create-instances"]
   rules:
-    if: '$FORCE_BUCKET_UPLOAD == "true"'
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
   script:
     - *check_user_permissions_to_upload_packs
     - EXTRACT_FOLDER=$(mktemp -d)
