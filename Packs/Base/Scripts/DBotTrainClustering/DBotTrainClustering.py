@@ -28,7 +28,7 @@ PREFIXES_TO_REMOVE = ['incident.']
 REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
                       re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
-TFIDF_PARAMS = {'analyzer': 'char', 'max_features': 1000, 'ngram_range': (2, 4)}
+TFIDF_PARAMS = {'analyzer': 'char', 'max_features': 500, 'ngram_range': (2, 4)}
 
 
 HDBSCAN_PARAMS = {
@@ -551,6 +551,9 @@ def main():
     max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model,\
     min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug = get_args()
 
+    HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
+                           'min_samples': min_number_of_incident_in_cluster})
+
     #Check arguments
     if not field_for_cluster_name:
         generic_cluster_name = True
@@ -580,7 +583,7 @@ def main():
     # case where no field for clustrering or field for cluster name if not empty and incorrect)
     if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
         demisto.results(global_msg)
-        return None, global_msg
+        return None, {}, global_msg
 
     # Create data for training
     if generic_cluster_name:
@@ -595,13 +598,12 @@ def main():
     ])
 
     # preprocessor
-    transformers_list = [('tfidf', tfidf_pipe, fields_for_clustering) for field in fields_for_clustering]
+    transformers_list = [('tfidf' + field, tfidf_pipe, [field]) for field in fields_for_clustering]
     preprocessor = ColumnTransformer(
         transformers=transformers_list)
 
     # pipeline
-    HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
-                           'min_samples': min_number_of_incident_in_cluster})
+
     model = Pipeline(steps=[('preprocessor', preprocessor),
                             ('clustering', Clustering(HDBSCAN_PARAMS))
                             ])
@@ -627,9 +629,7 @@ def main():
     #return Entry and summary
     output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)
     return_entry_clustering(output_clustering=output_clustering_json, tag="trained")
-    return output_clustering_json, global_msg
-
-
+    return model_processed, output_clustering_json,  global_msg
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
