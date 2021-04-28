@@ -83,11 +83,11 @@ variables:
 # See here for more about that https://docs.gitlab.com/ee/ci/pipelines/settings.html#git-shallow-clone  # disable-secrets-detection
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
-  BUCKET_UPLOAD: "false"
+  BUCKET_UPLOAD: "true"
 # Remove this when branches will sync with github
   SKIP_PRIVATE_BUILD: "true"
   COMMIT_FLOW: "false"
-  FORCE_BUCKET_UPLOAD: "true"
+  FORCE_BUCKET_UPLOAD: "false"
 
 stages:
   - unittests-and-validations
