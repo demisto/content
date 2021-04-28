@@ -343,8 +343,8 @@ def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_nu
             page_size=30,
         )
 
-        if not response_body:
-            break
+        # if not response_body:
+        #     break
 
         incidents = response_body.get('items')
         # clear incidents after last_fetched_id
