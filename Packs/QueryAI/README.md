@@ -8,5 +8,5 @@ This integration helps in simplifying data querying and incident response by con
 - Get data from across disparate platforms through Query.AI’s decentralized API architecture
 
 Some useful resources :-
-- For more information, please visit us as at [Query.AI](https://query.ai)
+- For more information, please visit [Query.AI](https://query.ai)
 - Sign-up for a [free-webinar](https://info.query.ai/lp-queryai-product-webinar) or [trial account](https://app.query.ai/live)
