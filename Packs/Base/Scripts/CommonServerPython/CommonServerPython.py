@@ -5000,9 +5000,9 @@ def return_results(results):
         demisto.results(None)
         return
 
-    if results and isinstance(results, list) and len(results) > 0 and isinstance(results[0], CommandResults):
+    if results and isinstance(results, list) and len(results) > 0:
         for result in results:
-            demisto.results(result.to_context())
+            return_results(result)
         return
 
     if isinstance(results, CommandResults):
