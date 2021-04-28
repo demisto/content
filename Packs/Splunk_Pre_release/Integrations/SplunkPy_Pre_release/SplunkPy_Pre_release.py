@@ -350,12 +350,18 @@ class Notable:
     def get_occurred(self):
         """ Returns the occurred time, if not exists in data, returns the current fetch time """
         if '_time' in self.data:
-            notable_occurred = self.data['_time']
-        else:
-            # Use-cases where fetching non-notables from Splunk
-            notable_occurred = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
-            self.time_is_missing = True
-            demisto.debug('\n\n occurred time in else: {} \n\n'.format(notable_occurred))
+            try:
+                notable_occurred = dateparser.parse(self.data['_time'],
+                                                    settings={'TIMEZONE': 'UTC'})
+                if notable_occurred:
+                    return notable_occurred.strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
+            except (ValueError, TypeError):
+                pass
+
+        # Use-cases where fetching non-notables from Splunk
+        notable_occurred = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
+        self.time_is_missing = True
+        demisto.debug('\n\n occurred time in else: {} \n\n'.format(notable_occurred))
 
         return notable_occurred
 
@@ -1105,11 +1111,13 @@ def splunk_realtime(service, query):
     job_kwargs = {"search_mode": "realtime", "earliest_time": "rt", "latest_time": "rt"}
     try:
         for item in get_reader(service.jobs.export(query=query, **job_kwargs)):
-            if not isinstance(item, results.Message):
+            if isinstance(item, results.Message):
+                demisto.debug(item.message)
+            else:
                 yield item
 
-    except Exception as error:
-        return_error(str(error), error)
+    except Exception:
+        demisto.error(traceback.format_exc())
 
 
 def get_splunk_query(demisto_params):
@@ -1124,16 +1132,17 @@ def get_splunk_query(demisto_params):
 
 
 def real_time_search(service):
-    sec_sleep = int(FETCH_LIMIT / 60)
+    sec_sleep = FETCH_LIMIT / 60.0
     search_query = get_splunk_query(demisto.params())
     incident = [None]
     while True:
         for item in splunk_realtime(service, search_query):
-            incident[0] = item_to_incident(item)
             try:
+                incident[0] = item_to_incident(item)
                 demisto.createIncidents(incident)
-            except Exception as error:
-                return_error(str(error), error)
+            except (Exception, SystemExit):
+                demisto.error(traceback.format_exc())
+
             time.sleep(sec_sleep)
 
 
@@ -2203,7 +2212,7 @@ def main():
         connection_args['username'] = username
         connection_args['password'] = password
 
-    if use_requests_handler and use_requests_handler is not None:
+    if use_requests_handler:
         handle_proxy()
         connection_args['handler'] = requests_handler
 
