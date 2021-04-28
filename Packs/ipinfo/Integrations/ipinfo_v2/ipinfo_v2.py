@@ -63,8 +63,8 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreRel
 
         elif 'org' in raw_result:
             org = raw_result.get('org', '')
-            org_parts = org.split(' ')
             if ' ' in org:
+                org_parts = org.split(' ')
                 asn, as_owner = org_parts[0], ' '.join(org_parts[1:])
 
         organization = {
@@ -120,7 +120,7 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreRel
 
         indicator = Common.IP(
             ip=ip,
-            dbot_score=Common.DBotScore(indicator='ip',
+            dbot_score=Common.DBotScore(indicator=ip,
                                         indicator_type=DBotScoreType.IP,
                                         integration_name='IPinfo_v2',
                                         reliability=reliability,

@@ -4865,7 +4865,7 @@ class CommandResults:
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
                  mark_as_note=False, polling_command=None, polling_args=None, polling_timeout=None,
                  polling_next_run=None, relations=None,entry_type=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool,str, dict, str, str, list,EntryType) -> None # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool,str, dict, str, str, list, int) -> None # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
