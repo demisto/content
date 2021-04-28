@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#8052f3",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "GIB Brand Protection Phishing Kit",
+    "layout": "b208448f-f66c-460f-8175-248685298659",
+    "locked": false,
+    "name": "GIB Brand Protection Phishing Kit",
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence \u0026 Attribution",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.0.0"
+}

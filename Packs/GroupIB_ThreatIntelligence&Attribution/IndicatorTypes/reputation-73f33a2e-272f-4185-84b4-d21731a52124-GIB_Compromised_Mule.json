@@ -1,0 +1,15 @@
+{
+    "details": "GIB Compromised Mule",
+    "disabled": false,
+    "expiration": 0,
+    "file": false,
+    "id": "GIB Compromised Mule",
+    "layout": "c5e8daa1-e729-4e1d-8bc2-0bbc51ad8423",
+    "locked": false,
+    "mergeContext": false,
+    "regex": "",
+    "system": false,
+    "updateAfter": 0,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

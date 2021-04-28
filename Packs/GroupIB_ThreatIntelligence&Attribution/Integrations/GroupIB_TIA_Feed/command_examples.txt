@@ -1,0 +1,1 @@
+!gibtia-get-indicators collection=compromised/mule

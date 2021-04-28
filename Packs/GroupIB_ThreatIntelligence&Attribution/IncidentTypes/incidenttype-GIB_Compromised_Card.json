@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#8052f3",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "GIB Compromised Card",
+    "layout": "fb4bf3d9-9a84-49e8-819f-015629ec56c4",
+    "locked": false,
+    "name": "GIB Compromised Card",
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence \u0026 Attribution",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.0.0"
+}
