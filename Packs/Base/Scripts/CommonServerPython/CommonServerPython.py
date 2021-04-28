@@ -110,6 +110,7 @@ ENDPOINT_ISISOLATED_OPTIONS = [
     'Pending unisolation'
 ]
 
+
 class EntryType(object):
     """
     Enum: contains all the entry types (e.g. NOTE, ERROR, WARNING, FILE, etc.)

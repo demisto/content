@@ -1776,9 +1776,6 @@ def endpoint_command(client, args):
     return command_results
 
 
-
-
-
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
                         alert_name, alert_description):
     alert = {
