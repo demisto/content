@@ -93,12 +93,27 @@ stages:
   - create-instances
   - run-instances
   - upload-to-marketplace
+  - notify-slack
+
+notify-slack:
+  stage: notify-slack
+  needs: []
+  when: always
+  allow_failure: true
+  script:
+    - |
+      if [ -n "${BUCKET_UPLOAD}" ]; then
+        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
+      elif [ -n "${COMMIT_FLOW}" ]; then
+        ./Tests/scripts/slack_notifier.sh 'unittests' $ARTIFACTS_FOLDER/env_results.json '' 'gitlab'
+      fi
+
 
 create-instances:
   stage: create-instances
   needs: []
   script:
-    - demisto-sdk create-id-set -o ./Tests/id_set.json
+    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/create_instances_create_id_set_output.log
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
     - cp content-descriptor.json $ARTIFACTS_FOLDER
@@ -289,14 +304,6 @@ run-unittests-and-lint:
           python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
         fi
       fi
-    - echo "====Run Slack Notifier===="
-    - |
-      if [ -n "${BUCKET_UPLOAD}" ]; then
-        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
-      else
-        ./Tests/scripts/slack_notifier.sh 'unittests' $ARTIFACTS_FOLDER/env_results.json '' 'gitlab'
-      fi
-
 
 run-validations:
   stage: unittests-and-validations
@@ -310,7 +317,7 @@ run-validations:
     - echo "====Look For Secrets===="
     - demisto-sdk secrets --post-commit --ignore-entropy
     - echo "====Create id set===="
-    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/create_id_set_output.log
+    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/run_validations_create_id_set_output.log
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - echo "====Merge public and private id sets===="
     - |
@@ -383,14 +390,9 @@ run-validations:
     - echo "successfully downloaded index.zip into $INDEX_PATH"
 
     - UNZIP_PATH=$(mktemp -d)
-    - unzip $INDEX_PATH -d $UNZIP_PATH
+    - unzip $INDEX_PATH -d $UNZIP_PATH > $ARTIFACTS_FOLDER/unzip_index.log
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
-    - echo "====Run Slack Notifier===="
-    - |
-      if [ -n "${BUCKET_UPLOAD}" ]; then
-        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
-      fi
 
 
 .start_tunnel: &start_tunnel
@@ -551,9 +553,4 @@ upload-packs-to-marketplace:
         ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
       else
         echo "Skipping Premium Packs Validation"
-      fi
-    - echo "=====Run Slack Notifier====="
-    - |
-      if [ -n "${BUCKET_UPLOAD}" ]; then
-        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
       fi
