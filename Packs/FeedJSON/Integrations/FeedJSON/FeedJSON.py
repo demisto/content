@@ -16,9 +16,10 @@ def main():
         }
     }
 
-    if params.get('auto_detect_type') and params.get('indicator_type'):
-        return_error('Indicator Type should not be set if Auto Detect Indicator Type is checked.'
-                     ' Either use Auto Detect or set manually the Indicator Type.')
+    if demisto.command() == 'test-module':  # only fail when doing "Test" to avoid breaking an existing feed
+        if params.get('auto_detect_type') and params.get('indicator_type'):
+            return_error('Indicator Type should not be set if Auto Detect Indicator Type is checked.'
+                         ' Either use Auto Detect or set manually the Indicator Type.')
 
     if not params.get('auto_detect_type'):
         if not params.get('indicator_type'):
