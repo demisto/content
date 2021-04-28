@@ -3280,7 +3280,7 @@ def test_return_results_multiple_dict_results(mocker):
     demisto_results_mock = mocker.patch.object(demisto, 'results')
     mock_command_results = [{'MockContext': 0}, {'MockContext': 1}]
     return_results(mock_command_results)
-    args, kwargs = demisto_results_mock.call_args_list[0]
+    args, _ = demisto_results_mock.call_args_list[0]
     assert demisto_results_mock.call_count == 1
     assert [{'MockContext': 0}, {'MockContext': 1}] in args
 

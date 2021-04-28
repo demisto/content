@@ -5000,35 +5000,36 @@ def return_results(results):
         demisto.results(None)
         return
 
-    if results and isinstance(results, list) and len(results) > 0:
+    elif results and isinstance(results, list) and len(results) > 0:
+        result_list = []
         for result in results:
-            return_results(result)
+            if isinstance(result, (dict, str)):
+                result_list.append(result)
+            else:
+                return_results(result)
+        if result_list:
+            demisto.results(result_list)
 
-    if isinstance(results, CommandResults):
+    elif isinstance(results, CommandResults):
         demisto.results(results.to_context())
-        return
 
-    if isinstance(results, BaseWidget):
+    elif isinstance(results, BaseWidget):
         demisto.results(results.to_display())
-        return
 
-    if isinstance(results, GetMappingFieldsResponse):
+    elif isinstance(results, GetMappingFieldsResponse):
         demisto.results(results.extract_mapping())
-        return
 
-    if isinstance(results, GetRemoteDataResponse):
+    elif isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
-        return
 
-    if isinstance(results, GetModifiedRemoteDataResponse):
+    elif isinstance(results, GetModifiedRemoteDataResponse):
         demisto.results(results.to_entry())
-        return
 
-    if hasattr(results, 'to_entry'):
+    elif hasattr(results, 'to_entry'):
         demisto.results(results.to_entry())
-        return
 
-    demisto.results(results)
+    else:
+        demisto.results(results)
 
 
 # deprecated
