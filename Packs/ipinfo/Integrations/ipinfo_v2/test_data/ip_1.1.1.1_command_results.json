@@ -38,7 +38,7 @@
       ],
       "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
         {
-          "Indicator": "ip",
+          "Indicator": "1.1.1.1",
           "Type": "ip",
           "Vendor": "IPinfo_v2",
           "Score": 0,
@@ -49,7 +49,7 @@
         "Address": "1.1.1.1",
         "Hostname": "one.one.one.one",
         "ASN": "AS13335",
-        "ASOwner": "Cloudflare,",
+        "ASOwner": "Cloudflare, Inc.",
         "Tags": [],
         "Organization": null,
         "Geo": {
@@ -57,9 +57,7 @@
           "Country": "US",
           "Description": "Miami, Florida, 33132, US"
         },
-        "Registrar": {
-          "Abuse": null
-        }
+        "Registrar": null
       }
     },
     "IndicatorTimeline": [],
@@ -97,7 +95,7 @@
       ],
       "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
         {
-          "Indicator": "ip",
+          "Indicator": "1.1.1.1",
           "Type": "ip",
           "Vendor": "IPinfo_v2",
           "Score": 0,

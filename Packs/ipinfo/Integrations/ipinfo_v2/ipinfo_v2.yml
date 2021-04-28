@@ -45,12 +45,12 @@ name: ipinfo_v2
 script:
   commands:
   - arguments:
-    - default: false
-      description: IP address to query. E.g. !ip 1.1.1.1
-      isArray: false
-      name: ip
-      required: true
-      secret: false
+      - default: true
+        description: IP address to query. E.g. !ip 1.1.1.1
+        isArray: false
+        name: ip
+        required: true
+        secret: false
     deprecated: false
     description: Check IP reputation (when information is available, returns a JSON
       with details).  Uses all configured Threat Intelligence feeds
@@ -146,7 +146,7 @@ script:
       - contextPath: DBotScore.Vendor
         description: The vendor used to calculate the score.
         type: String
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
   longRunning: false

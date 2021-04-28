@@ -48,7 +48,7 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreRel
     feed_related_indicators = []
 
     if raw_result:
-        hostname = raw_result.get('hostname')
+        hostname = str(raw_result.get('hostname', ''))
         feed_related_indicators.append(
             Common.FeedRelatedIndicators(hostname,
                                          FeedIndicatorType.URL if urlRegex.find(hostname)
@@ -93,27 +93,27 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreRel
             if demisto.get(raw_result, tag_path):
                 tags.append(tag_name)
 
-        city = raw_result.get('city')
-        region = raw_result.get('region')
-        postal = raw_result.get('postal')
-        country = raw_result.get('country')
+        city = raw_result.get('city', '')
+        region = raw_result.get('region', '')
+        postal = raw_result.get('postal', '')
+        country = raw_result.get('country', '')
 
         description = ', '.join(filter(None, [city, region, postal, country]))
 
         # parses geolocation
-        lat = lon = ''
+        lat = lon = None
         loc = raw_result.get('loc', '')  # empty string as default on purpose,
         if ',' in loc:
             coordinates = loc.split(',')
             lat, lon = float(coordinates[0]), float(coordinates[1])
 
         entry_context = {'Address': raw_result.get('ip'),
-                         'Hostname': hostname,
+                         'Hostname': hostname,  # type: ignore
                          'ASN': asn,
                          'ASOwner': as_owner,
-                         'Tags': tags,
+                         'Tags': tags,  # type: ignore
                          'Organization': organization,
-                         'Geo': {'Location': loc, 'Country': country, 'Description': description},
+                         'Geo': {'Location': loc, 'Country': country, 'Description': description},  # type: ignore
                          'Registrar': {'Abuse': abuse} if abuse else None}
 
         outputs_key_field = 'Address'  # marks the ip address
@@ -185,6 +185,8 @@ def main() -> None:
         elif command == 'ip':
             ip_command = ipinfo_ip_command(client, **args)
             return_results(ip_command)
+        else:
+            raise NotImplementedError(f"command {command} is not supported")
 
     # Log exceptions and return errors
     except Exception as e:
