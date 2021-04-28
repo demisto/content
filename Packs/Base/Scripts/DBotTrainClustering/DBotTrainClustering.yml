@@ -86,6 +86,16 @@ args:
   name: maxPercentageOfMissingValue
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  isArray: false
+  name: debug
+  predefined:
+  - 'False'
+  - 'True'
+  required: false
+  secret: false
 commonfields:
   id: 3621593a-3641-4b26-90dc-a660f4b4e68c
   version: -1

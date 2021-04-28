@@ -66,7 +66,7 @@ class PostProcessing(object):
        """
        Compute statistics of the clusters
        """
-       plot_silhouette = self.com_silhouette()
+       #plot_silhouette = self.com_silhouette()
        self.stats['General'] = {}
        self.stats['General']['Nb sample'] = self.clustering.raw_data.shape[0]
        self.stats['General']['Nb cluster'] = self.clustering.number_clusters
@@ -279,10 +279,11 @@ def get_args():  # type: ignore
     model_name = demisto.args().get('modelName')
     store_model = demisto.args().get('storeModel')
     model_override = demisto.args().get('overrideExistingModel', 'False') == 'True'
+    debug = demisto.args().get('debug')
 
     return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
            max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
-           min_homogeneity_cluster,model_override, max_percentage_of_missing_value
+           min_homogeneity_cluster,model_override, max_percentage_of_missing_value, debug
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query_sup, limit, incident_type):
@@ -548,18 +549,19 @@ def main():
     # Get argument of the automation
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
     max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model,\
-    min_homogeneity_cluster, model_override, max_percentage_of_missing_value = get_args()
+    min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug = get_args()
 
     #Check arguments
     if not field_for_cluster_name:
         generic_cluster_name = True
 
     # Get all the incidents from query, date and field similarity and field family
+
+
     populate_fields = fields_for_clustering + field_for_cluster_name
     incidents, msg = get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query,
                                                                 limit, incident_type)
     global_msg += "%s \n" % msg
-
     if not incidents:
         demisto.results(global_msg)
         return None, global_msg
@@ -604,7 +606,6 @@ def main():
                             ('clustering', Clustering(HDBSCAN_PARAMS))
                             ])
     model.fit(incidents_df, labels)
-
     if not is_clustering_valid(model.named_steps['clustering']):
         global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
         demisto.results(global_msg)
@@ -614,14 +615,21 @@ def main():
     model_processed = PostProcessing(model, min_homogeneity_cluster, max_number_of_clusters, generic_cluster_name)
 
     #store model
-    model_processed.summary = create_summary(model_processed, global_msg)
+    summary = create_summary(model_processed, global_msg)
+    model_processed.summary = summary
     if store_model == 'True':
         store_model_in_demisto(model_processed, model_name, model_override)
+
+    if debug == 'True':
+        return_outputs(readable_output=global_msg + tableToMarkdown("Summary", summary))
+
 
     #return Entry and summary
     output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)
     return_entry_clustering(output_clustering=output_clustering_json, tag="trained")
     return output_clustering_json, global_msg
+
+
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

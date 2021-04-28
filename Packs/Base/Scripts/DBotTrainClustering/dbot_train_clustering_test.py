@@ -8,15 +8,15 @@ from DBotTrainClustering import demisto, main, HDBSCAN_PARAMS
 
 
 FETCHED_INCIDENT_NOT_EMPTY = [
-    {'id': '1', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1', 'commandline1': 'powershell IP=1.1.1.1',
+    {'id': '1', 'created': "2021-01-30", 'field1': 'powershell IP=1.1.1.1', 'field2': 'powershell IP=1.1.1.1',
      'entityname': 'powershell'},
-    {'id': '2', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1', 'commandline1': 'powershell IP=1.1.1.1',
+    {'id': '2', 'created': "2021-01-30", 'field1': 'powershell IP=1.1.1.1', 'field2': 'powershell IP=1.1.1.1',
      'entityname': 'nmap'},
-    {'id': '3', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1', 'commandline1': 'powershell IP=1.1.1.1',
+    {'id': '3', 'created': "2021-01-30", 'field1': 'powershell IP=1.1.1.1', 'field2': 'powershell IP=1.1.1.1',
      'entityname': 'nmap'},
-    {'id': '4', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1', 'commandline1': 'powershell IP=1.1.1.1',
+    {'id': '4', 'created': "2021-01-30", 'field1': 'powershell IP=1.1.1.1', 'field2': 'powershell IP=1.1.1.1',
      'entityname': 'powershell'},
-    {'id': '5', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1',
+    {'id': '5', 'created': "2021-01-30", 'field1': 'powershell IP=1.1.1.1',
      'commandline1': 'powershell IP=1.1.1.1',
      'entityname': 'powershell'},
 ]
