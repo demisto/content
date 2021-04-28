@@ -1,26 +1,25 @@
-deprecated: true
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: PolySwarm
+  id: PolySwarm_v2
   version: -1
 configuration:
 - display: PolySwarm API Key
   name: api_key
   required: true
   type: 4
-- defaultvalue: https://api.polyswarm.network/v1
+- defaultvalue: https://api.polyswarm.network/v2
   display: The base URL to connect to
   name: base_url
   required: true
   type: 0
-- defaultvalue: lima
+- defaultvalue: default
   display: PolySwarm community
   name: polyswarm_community
   required: true
   type: 0
 description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
 display: PolySwarm
-name: PolySwarm
+name: PolySwarm_v2
 script:
   commands:
   - arguments:
@@ -134,7 +133,7 @@ script:
     - contextPath: PolySwarm.Scan_UUID
       description: The PolySwarm scan UUID.
       type: String
-    - contextPath: PolySwarm.Artifact
+    - contextPath: PolySwarm.Artifact/
       description: The artifact queried.
       type: String
   - arguments:
@@ -296,6 +295,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
+  dockerimage: demisto/polyswarm:1.0.0.18926
 fromversion: 5.0.0
+
