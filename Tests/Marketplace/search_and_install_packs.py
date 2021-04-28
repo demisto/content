@@ -332,7 +332,7 @@ def install_packs(client: demisto_client,
     }
     logging.info(f'Installing packs on server {host}')
     packs_to_install_str = ', '.join([pack['id'] for pack in packs_to_install])
-    logging.debug(f'Installing the following packs on server {host}:\n{packs_to_install_str}')
+    logging.info(f'Installing the following packs on server {host}:\n{packs_to_install_str}')
 
     # make the pack installation request
     try:
@@ -490,7 +490,7 @@ def install_all_content_packs(client: demisto_client, host: str, server_version:
     :return: None. Prints the response from the server in the build.
     """
     all_packs = []
-    logging.debug(f"Installing all content packs in server {host}")
+    logging.info(f"Installing all content packs in server {host}")
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES:
@@ -504,6 +504,7 @@ def install_all_content_packs(client: demisto_client, host: str, server_version:
             # pack is hidden (deprecated):
             if ('Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version)) and \
                     not hidden:
+                logging.info(f"Appending pack id {pack_id}")
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     return install_packs(client, host, all_packs)
 
