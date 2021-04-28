@@ -63,6 +63,13 @@ configuration:
   name: url_port_stripping
   required: false
   type: 8
+- additionalinfo: If selected, a slash will be appended to URLs composed only of an hostname.
+    For example, 'www.example.com' would become 'www.example.com/'
+  defaultvalue: 'true'
+  display: Add Slash to URLs
+  name: url_add_slash
+  required: false
+  type: 8
 - additionalinfo: If selected, any URL entry that is not compliant with PAN-OS EDL
     URL format is dropped instead of being rewritten.
   display: PAN-OS URL Format Drop Invalid Entries
@@ -154,7 +161,7 @@ script:
     description: Updates values stored in the EDL (only available On-Demand).
     execution: false
     name: edl-update
-  dockerimage: demisto/teams:1.0.0.16907
+  dockerimage: demisto/teams:1.0.0.19245
   feed: false
   isfetch: false
   longRunning: true

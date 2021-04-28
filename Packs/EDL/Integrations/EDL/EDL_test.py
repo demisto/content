@@ -224,15 +224,15 @@ class TestHelperFunctions:
             {'value': '*.domain.com', 'indicator_type': 'URL'},
         ]
 
-        request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True)
+        request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True, url_add_slash=True)
         returned_dict, num_of_indicators = create_values_for_returned_dict(iocs, request_args)
         returned_output = returned_dict.get(EDL_VALUES_KEY, '').split('\n')
         assert '2603:1006:1400::/40' in returned_output
         assert '2002:ac8:b8d:0:0:0:0:0' in returned_output
         assert 'demisto.com/rest/of/path' in returned_output  # port stripping
         assert 'panw.com/path' in returned_output
-        assert '*.domain.com' in returned_output
-        assert 'domain.com' in returned_output  # PAN-OS URLs
+        assert '*.domain.com/' in returned_output
+        assert 'domain.com/' in returned_output  # PAN-OS URLs
         assert num_of_indicators == 6
 
     @pytest.mark.validate_basic_authentication

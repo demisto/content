@@ -58,6 +58,7 @@ class RequestArguments:
                  limit: int = 10000,
                  offset: int = 0,
                  url_port_stripping: bool = False,
+                 url_add_slash: bool = False,
                  drop_invalids: bool = False,
                  collapse_ips: str = DONT_COLLAPSE):
 
@@ -65,6 +66,7 @@ class RequestArguments:
         self.limit = limit
         self.offset = offset
         self.url_port_stripping = url_port_stripping
+        self.url_add_slash = url_add_slash
         self.drop_invalids = drop_invalids
         self.collapse_ips = collapse_ips
 
@@ -79,6 +81,9 @@ class RequestArguments:
             return True
 
         elif self.url_port_stripping != last_update_data.get('url_port_stripping'):
+            return True
+
+        elif self.url_add_slash != last_update_data.get('url_add_slash'):
             return True
 
         elif self.collapse_ips != last_update_data.get('collapse_ips'):
@@ -330,6 +335,9 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
                 # invalid tokens in indicator- if drop_invalids is set - ignore the indicator
                 if request_args.drop_invalids:
                     continue
+            # if the indicator is a URL without a slash, we add a slash at the end
+            if request_args.url_add_slash and '/' not in indicator:
+                indicator = indicator + '/'
             # for PAN-OS *.domain.com does not match domain.com
             # we should provide both
             # this could generate more than num entries according to PAGE_SIZE
@@ -518,6 +526,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     offset = try_parse_integer(request_args.get('s', 0), EDL_OFFSET_ERR_MSG)
     query = request_args.get('q', params.get('indicators_query'))
     strip_port = request_args.get('sp', params.get('url_port_stripping', False))
+    add_slash = request_args.get('sl', params.get('url_add_slash', False))
     drop_invalids = request_args.get('di', params.get('drop_invalids', False))
     collapse_ips = request_args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
 
@@ -527,6 +536,9 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 
     if strip_port == '':
         strip_port = True
+
+    if add_slash == '':
+        add_slash = True
 
     if collapse_ips not in [DONT_COLLAPSE, COLLAPSE_TO_CIDR, COLLAPSE_TO_RANGES]:
         collapse_ips = try_parse_integer(collapse_ips, EDL_COLLAPSE_ERR_MSG)
@@ -540,7 +552,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
             2: COLLAPSE_TO_CIDR
         }
         collapse_ips = collapse_options[collapse_ips]
-    return RequestArguments(query, limit, offset, strip_port, drop_invalids, collapse_ips)
+    return RequestArguments(query, limit, offset, strip_port, add_slash, drop_invalids, collapse_ips)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -648,9 +660,10 @@ def update_edl_command(args: Dict, params: Dict):
     query = args.get('query', '')
     collapse_ips = args.get('collapse_ips', DONT_COLLAPSE)
     url_port_stripping = args.get('url_port_stripping', '').lower() == 'true'
+    url_add_slash = args.get('url_add_slash', '').lower() == 'true'
     drop_invalids = args.get('drop_invalids', '').lower() == 'true'
     offset = try_parse_integer(args.get('offset', 0), EDL_OFFSET_ERR_MSG)
-    request_args = RequestArguments(query, limit, offset, url_port_stripping, drop_invalids, collapse_ips)
+    request_args = RequestArguments(query, limit, offset, url_port_stripping, url_add_slash, drop_invalids, collapse_ips)
     indicators = refresh_edl_context(request_args, save_integration_context=True)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'EDL was updated successfully'
