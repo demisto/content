@@ -168,26 +168,29 @@ class Client:
 def map_fields_by_type(indicator_type: str, indicator_json: dict):
     created = handle_multiple_dates_in_one_field('created', indicator_json.get('created'))
     modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))
-    tactics = [tactic.get('phase_name') for tactic in indicator_json.get('kill_chain_phases', {})]
-    external_references_urls = [url.get('url') for url in indicator_json.get('external_references', {})]
-    external_references_descriptions = [des.get('description') for des in indicator_json.get('external_references', {})]
+
+    notes = []
+    for external_reference in indicator_json.get('external_references', []):
+        if external_reference.get('external_id'):
+            continue
+        url = external_reference.get('url')
+        description = external_reference.get('description')
+        note = f'{url}\n{description}'
+        notes.append({'Notes': note})
 
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
-        'firstseenbysource': created,  # firstseenbysource?
+        'firstseenbysource': created,
         'modified': modified,
-        'value': indicator_json.get('name'),  # already exist
         'description': indicator_json.get('description'),
-        'communitynotes': external_references_urls,  # grid
-        # 'communitynotes': external_references_descriptions, # duplicates
+        'communitynotes': notes,
     }
     mapping_by_type = {
         "STIX Attack Pattern": {
-            'mitretactics': tactics,  # string / list
             'operatingsystem': indicator_json.get('x_mitre_platforms')  # operatingsystemref ? list?
         },
         "Intrusion Set": {
-            'stixaliases': indicator_json.get('aliases')  # stix?
+            'stixaliases': indicator_json.get('aliases')  # stix - gal?
         },
         "STIX Malware": {
             'tags': indicator_json.get('labels'),  # tags duplicate?
