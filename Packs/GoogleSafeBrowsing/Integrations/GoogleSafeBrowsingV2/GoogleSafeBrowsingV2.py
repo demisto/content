@@ -123,10 +123,10 @@ def handle_errors(result: Dict) -> None:
 
 
 def arrange_results_to_urls(results: List, url_list: List) -> Dict:
-    """ arrange the results according the urls list.
+    """ Arrange and filter the URLs results according to the URLs list that we asked information on.
     Args:
-        results: the response.
-        url_list: The urls list
+        results: the API response.
+        url_list: The URLs list that we asked information on.
     Returns:
         (dict) The results according the urls.
     """
@@ -199,18 +199,23 @@ def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return url_data_list
 
 
+def build_base_url(params: Dict) -> str:
+    api_key = params.get('api_key')
+    base_url = params.get('url')
+
+    if not base_url.endswith('/'):
+        base_url += '/'
+
+    return f"{base_url}?key={api_key}"
+
+
 def main() -> None:
     params = demisto.params()
-    api_key = params.get('api_key')
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    base_url = params.get('url')
-    if not base_url.endswith('/'):
-        base_url += '/'
-
-    base_url = f"{base_url}?key={api_key}"
+    base_url = build_base_url(params)
 
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
