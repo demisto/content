@@ -62,7 +62,6 @@ def get_gitlab_failed_steps(ci_token, build_number, server_url, project_id):
     project = gitlab_client.projects.get(int(project_id))
     pipeline = project.pipelines.get(int(build_number))
     jobs = pipeline.jobs.list()
-    logging.info(f'jobs are {jobs}')
 
     for job in jobs:
         if job.status == 'failed':
@@ -169,7 +168,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
             "short": False
         }] + steps_fields
 
-    if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
+    if job_name and job_name in BucketUploadFlow.UPLOAD_JOB_NAMES:
         successful_packs, failed_packs, successful_private_packs, _ = get_upload_data(
             packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         )
@@ -193,7 +192,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
                 "short": False
             }]
 
-    if job_name and job_name != 'Upload Packs To Marketplace' and color == 'good':
+    if job_name and job_name not in BucketUploadFlow.UPLOAD_JOB_NAMES and color == 'good':
         logging.info('On bucket upload flow we are not notifying on jobs that are not Upload Packs. exiting...')
         sys.exit(0)
 
@@ -311,7 +310,7 @@ def get_fields():
 
 
 def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
-                   job_name="", slack_channel=CONTENT_CHANNEL):
+                   job_name="", slack_channel=CONTENT_CHANNEL, gitlab_server=None):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
@@ -340,12 +339,13 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         else:
             raise NotImplementedError('The test_type parameter must be only \'test_playbooks\' or \'unittests\'')
         logging.info(f'Content team attachments:\n{content_team_attachments}')
-        logging.info("Sending Slack messages to #content-team")
+        logging.info(f"Sending Slack messages to {slack_channel}")
         slack_client = SlackClient(slack_token)
+        username = 'Content GitlabCI' if gitlab_server else 'Content CircleCI'
         slack_client.api_call(
             "chat.postMessage",
             json={'channel': slack_channel,
-                  'username': 'Content CircleCI',
+                  'username': username,
                   'as_user': 'False',
                   'attachments': content_team_attachments}
         )
@@ -369,7 +369,7 @@ def main():
         slack_notifier(url, slack, test_type,
                        packs_results_file=os.path.join(
                            ci_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name,
-                       slack_channel=slack_channel)
+                       slack_channel=slack_channel, gitlab_server=options.gitlab_server)
     elif test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(url, slack, test_type)
     else:
