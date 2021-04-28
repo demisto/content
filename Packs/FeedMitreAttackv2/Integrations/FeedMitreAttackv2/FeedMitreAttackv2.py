@@ -9,33 +9,6 @@ from taxii2client.v20 import Server, Collection, ApiRoot
 
 ''' CONSTANT VARIABLES '''
 
-# The field mapping here will determine how the fields
-# are mapped into the indicator. Generally, fields of type
-# "list" will be joined with a "\n". Types of "dict" and
-# "str" will be mapped as is.
-MITRE_FIELD_MAPPING = {
-    "mitrealiases": {"name": "aliases", "type": "list"},
-    "mitrecontributors": {"name": "x_mitre_contributors", "type": "list"},
-    "mitredatasources": {"name": "x_mitre_data_sources", "type": "str"},
-    "mitredefensebypassed": {"name": "x_mitre_defense_bypassed", "type": "list"},
-    "mitredescription": {"name": "description", "type": "str"},
-    "mitredetection": {"name": "x_mitre_detection", "type": "str"},
-    "mitreextendedaliases": {"name": "x_mitre_aliases", "type": "list"},
-    "mitreexternalreferences": {"name": "external_references", "type": "dict"},
-    "mitreid": {"name": "id", "type": "str"},
-    "mitreimpacttype": {"name": "x_mitre_impact_type", "type": "list"},
-    "mitrekillchainphases": {"name": "kill_chain_phases", "type": "dict"},
-    "mitrelabels": {"name": "labels", "type": "list"},
-    "mitrename": {"name": "name", "type": "str"},
-    "mitrepermissionsrequired": {"name": "x_mitre_permissions_required", "type": "list"},
-    "mitreplatforms": {"name": "x_mitre_platforms", "type": "dict"},
-    "mitresystemrequirements": {"name": "x_mitre_system_requirements", "type": "list"},
-    "mitreversion": {"name": "x_mitre_version", "type": "str"},
-    "mitretype": {"name": "type", "type": "str"},
-    "mitrecreated": {"name": "created", "type": "str"},
-    "mitremodified": {"name": "modified", "type": "str"}
-}
-
 MITRE_TYPE_TO_DEMISTO_TYPE = {
     "attack-pattern": "STIX Attack Pattern",
     "course-of-action": "Course of Action",
@@ -151,7 +124,7 @@ class Client:
                                 "fields": map_fields_by_type(indicator_type, mitre_item_json)
                             }
 
-                            indicator_obj['fields']['tags'] = self.tags
+                            indicator_obj['fields']['tags'].append(self.tags)
                             if self.tlp_color:
                                 indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
@@ -168,6 +141,7 @@ class Client:
 def map_fields_by_type(indicator_type: str, indicator_json: dict):
     created = handle_multiple_dates_in_one_field('created', indicator_json.get('created'))
     modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))
+    mitre_platform = ','.join(indicator_json.get('x_mitre_platforms'))
 
     notes = []
     for external_reference in indicator_json.get('external_references', []):
@@ -187,21 +161,21 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     }
     mapping_by_type = {
         "STIX Attack Pattern": {
-            'operatingsystem': indicator_json.get('x_mitre_platforms')  # operatingsystemref ? list?
+            'operatingsystemrefs': mitre_platform
         },
         "Intrusion Set": {
-            'stixaliases': indicator_json.get('aliases')  # stix - gal?
+            'aliases': indicator_json.get('aliases')
         },
         "STIX Malware": {
-            'tags': indicator_json.get('labels'),  # tags duplicate?
-            'stixaliases': indicator_json.get('x_mitre_aliases'),  # stix?
-            'operatingsystem': indicator_json.get('x_mitre_platforms')  # operatingsystemref ? list?
+            'tags': indicator_json.get('labels'),
+            'aliases': indicator_json.get('x_mitre_aliases'),
+            'operatingsystemrefs': mitre_platform
 
         },
         "STIX Tool": {
-            'tags': indicator_json.get('labels'),  # tags duplicate?
-            'stixaliases': indicator_json.get('x_mitre_aliases'),  # stix?
-            'operatingsystem': indicator_json.get('x_mitre_platforms')  # operatingsystemref ? list?
+            'tags': indicator_json.get('labels'),
+            'aliases': indicator_json.get('x_mitre_aliases'),
+            'operatingsystemrefs': mitre_platform
         }
     }
 
