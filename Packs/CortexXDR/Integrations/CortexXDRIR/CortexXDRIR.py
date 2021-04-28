@@ -1493,7 +1493,7 @@ def get_last_mirrored_in_time(args):
 
     else:  # handling 6.0 version
         last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
-        last_mirrored_in_timestamp = (last_mirrored_in_time - 120)
+        last_mirrored_in_timestamp = (last_mirrored_in_time - (120 * 1000))
 
     return last_mirrored_in_timestamp
 
@@ -2593,9 +2593,9 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason'))
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))
         demisto.debug(f"Closing Remote XDR incident with status {update_args['status']}")
-        update_args['resolve_comment'] = update_args.get('closeNotes')
+        update_args['resolve_comment'] = update_args.get('closeNotes', '')
 
 
 def get_update_args(delta, inc_status):
@@ -2609,10 +2609,12 @@ def get_update_args(delta, inc_status):
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
+
+    if remote_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
+                      f'incident {remote_args.remote_incident_id}')
     try:
-        if remote_args.delta and remote_args.incident_changed:
-            demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
-                          f'incident {remote_args.remote_incident_id}')
+        if remote_args.incident_changed:
             update_args = get_update_args(remote_args.delta, remote_args.inc_status)
 
             update_args['incident_id'] = remote_args.remote_incident_id
@@ -2973,6 +2975,8 @@ def run_script_command(client: Client, args: Dict) -> CommandResults:
             parameters = json.loads(parameters)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
+    else:
+        parameters = {}
     response = client.run_script(script_uid, endpoint_ids, parameters, timeout)
     reply = response.get('reply')
     return CommandResults(

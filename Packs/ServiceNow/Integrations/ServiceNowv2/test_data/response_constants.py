@@ -305,6 +305,7 @@ RESPONSE_CREATE_TICKET = {
         "work_start": ""
     }
 }
+RESPONSE_CREATE_TICKET_WITH_OUT_JSON = "The ticket was successfully created."
 RESPONSE_UPDATE_TICKET_SC_REQ = {
     "result": {
         "active": "true",
