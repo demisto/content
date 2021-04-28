@@ -59,9 +59,10 @@ def options_handler():
 
 
 def main():
-    # options = options_handler()
-
-    get_and_set_private_id_set_by_path('private_id_set.json', 'IAM')
+    options = options_handler()
+    private_id_set_path = options.private_id_set_path
+    new_pack_name = options.new_pack_name
+    get_and_set_private_id_set_by_path(private_id_set_path, new_pack_name)
 
 
 if __name__ == '__main__':
