@@ -4868,7 +4868,7 @@ class CommandResults:
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
                  mark_as_note=False, polling_command=None, polling_args=None, polling_timeout=None,
-                 polling_next_run=None, relations=None,entry_type=None):
+                 polling_next_run=None, relations=None, entry_type=None):
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool,str, dict, str, str, list, int) -> None # noqa: E501
         if raw_response is None:
             raw_response = outputs
@@ -4881,7 +4881,7 @@ class CommandResults:
 
         self.indicators = indicators  # type: Optional[List[Common.Indicator]]
         self.indicator = indicator  # type: Optional[Common.Indicator]
-        self.entry_type = entry_type  # type: EntryType
+        self.entry_type = entry_type  # type: int
 
         self.outputs_prefix = outputs_prefix
 
