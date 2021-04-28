@@ -1,3 +1,6 @@
+import sys
+from datetime import datetime, timedelta
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -20,14 +23,41 @@ class Client(BaseClient):
         self.client_secret = client_secret
         self.access_token = ""
 
-    def login(self):
-        # todo try to use the current access_token
-        # if the access is expired, generate a new one
-        res = self._http_request(
+    def generate_new_access_token(self):
+        body = {
+            "grant_type": "client_credentials",
+            "client_id": self.client_id,
+            "client_secret": self.client_secret
+        }
+        return self._http_request(
             method='POST',
-            url_suffix="api/oauth",
-            body={}
+            url_suffix="oauth",
+            json_data=body
         )
+
+    def save_access_token_to_context(self, auth_response):
+        now = datetime.now()
+        expires_in = now + timedelta(seconds=auth_response.get("expires_in"))
+        context = {"access_token": self.access_token, "expires_in": expires_in}
+        set_integration_context(context)
+        demisto.debug(
+            f"New access token that expires in : {expires_in.strftime(DATE_FORMAT)} was set to integration_context.")
+
+    def login(self):
+        integration_context = get_integration_context()
+        access_token_expiration = integration_context.get('expires_in')
+        access_token = integration_context.get('access_token')
+        now = datetime.now()
+        if access_token and access_token_expiration and access_token_expiration > now:
+            return
+        # if the access is expired, generate a new one
+        auth_response = self.generate_new_access_token()
+        access_token = auth_response.get("access_token")
+        if access_token:
+            self.access_token = access_token
+            self.save_access_token_to_context(auth_response)
+        else:
+            return_error("HPE Aruba Clearpass error: The client credentials are invalid.")
 
 
 ''' COMMAND FUNCTIONS '''
@@ -49,9 +79,6 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -85,17 +112,19 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 
 def main() -> None:
     params = demisto.params()
-    base_url = urljoin(params['url'], '/api/v1')
+    base_url = urljoin(params['url'], '/api')
     client_id = params.get('client_id')
     client_secret = params.get('client_secret')
 
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
-    client = Client()
+    client = Client(proxy=proxy, verify=verify_certificate, base_url=base_url, client_id=client_id,
+                    client_secret=client_secret)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
+        client.login()
+        sys.exit(0)
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
         headers: Dict = {}
