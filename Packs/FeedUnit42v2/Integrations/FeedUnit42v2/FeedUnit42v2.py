@@ -102,67 +102,6 @@ def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: O
     return indicators
 
 
-def parse_indicators_relationships(indicators: List, matched_relationships: Dict, id_to_object: Dict):
-    """Parse the relationships between indicators to attack-patterns, malware and campaigns.
-
-    Args:
-      indicators (List): a list of indicators.
-      matched_relationships (Dict): a dict of relationships in the form of `id: list(related_ids)`.
-      id_to_object: a dict in the form of `id: stix_object`.
-
-    Returns:
-        A list of indicators, containing the indicators and the relationships between them.
-    """
-    for indicator in indicators:
-        indicator_id = indicator.get('fields', {}).get('indicatoridentification', '')
-        for relation in matched_relationships.get(indicator_id, []):
-            relation_object = id_to_object.get(relation)
-            if not relation_object:
-                # in case a relationship object mentioned a connection to another object
-                # that were not fetched from the feed.
-                continue
-
-            if relation.startswith('attack-pattern'):
-                relation_value_field = relation_object.get('external_references')
-                field_type = 'feedrelatedindicators'
-                indicator['fields']['feedrelatedindicators'] = []
-            elif relation.startswith('campaign'):
-                relation_value_field = relation_object.get('name')
-                field_type = 'campaign'
-            elif relation.startswith('malware'):
-                relation_value_field = relation_object.get('name')
-                field_type = 'malwarefamily'
-            else:
-                continue
-
-            if isinstance(relation_value_field, str):
-                # multiple malware or campaign names can be associated to an indicator
-                if field_type in indicator.get('fields'):
-                    indicator['fields'][field_type].extend([relation_value_field])
-                else:
-                    indicator['fields'][field_type] = [relation_value_field]
-
-            else:  # a feedrelatedindicators is a list of dict
-                all_urls = []
-                external_id = ''
-
-                for item in relation_value_field:
-                    if 'url' in item:
-                        all_urls.append(item.get('url'))
-
-                        if 'external_id' in item:
-                            external_id = item.get('external_id')
-
-                feedrelatedindicators_obj = {
-                    'type': 'Attack Pattern',
-                    'value': external_id,
-                    'description': ','.join(all_urls)
-                }
-                indicator['fields'][field_type].extend([feedrelatedindicators_obj])
-
-    return indicators
-
-
 def sort_report_objects_by_type(objects):
     """Get lists of objects by their type.
 
@@ -494,13 +433,15 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[str] = None) -> List[Dict]:
+def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[str] = None,
+                     create_relationships=False) -> List[Dict]:
     """Retrieves indicators and reports from the feed
 
     Args:
         client: Client object with request
         feed_tags: feed tags.
         tlp_color: Traffic Light Protocol color.
+        create_relationships: Create indicators relationships
     Returns:
         List. Processed indicators and reports from feed.
     """
@@ -521,7 +462,6 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     matched_relationships, courses_of_action_products = match_relationships(client.objects_data['relationship'])
 
     indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
-    indicators = parse_indicators_relationships(indicators, matched_relationships, id_to_object)
 
     main_report_objects, sub_report_objects = sort_report_objects_by_type(client.objects_data['report'])
     reports = parse_reports(main_report_objects, feed_tags, tlp_color)
@@ -577,6 +517,7 @@ def main():
     verify = not params.get('insecure', False)
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
+    create_relationships = params.get('create_relationships')
 
     command = demisto.command()
     demisto.debug(f'Command being called in Unit42 feed is: {command}')
@@ -589,7 +530,7 @@ def main():
             demisto.results(result)
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators(client, feed_tags, tlp_color)
+            indicators = fetch_indicators(client, feed_tags, tlp_color, create_relationships)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 

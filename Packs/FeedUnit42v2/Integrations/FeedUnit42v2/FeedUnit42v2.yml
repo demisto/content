@@ -89,6 +89,11 @@ configuration:
   name: insecure
   required: false
   type: 8
+- defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 description: Unit42 feed of published IOCs, which contains known malicious indicators.
 display: Unit42 Feed
 name: Unit42 Feed
