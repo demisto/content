@@ -642,13 +642,13 @@ def list_branch_pull_requests_command() -> CommandResults:
     response = list_branch_pull_requests(branch_name, repository, organization)
     formatted_outputs = [format_pr_outputs(output) for output in response]
 
-    return CommandResults(
+    return_results(CommandResults(
         outputs_prefix='GitHub.PR',
         outputs_key_field='Number',
         outputs=formatted_outputs,
         raw_response=response,
         readable_output=tableToMarkdown(f'Pull Request For Branch #{branch_name}', formatted_outputs, removeNull=True)
-    )
+    ))
 
 
 def is_pr_merged(pull_number: Union[int, str]):
@@ -1579,5 +1579,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__main__", "__builtin__", "builtins"):
+if __name__ == '__builtin__' or __name__ == 'builtins':
     main()
