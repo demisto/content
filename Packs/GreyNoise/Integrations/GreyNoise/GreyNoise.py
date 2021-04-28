@@ -9,7 +9,7 @@ import traceback
 import requests
 import re
 import copy
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Any
 from greynoise import GreyNoise, exceptions, util  # type: ignore
 
 # Disable insecure warnings
@@ -553,6 +553,55 @@ def stats_command(client: Client, args: dict) -> Any:
     )
 
 
+@exception_handler
+@logger
+def riot_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Returns information about IP whether it is harmful or not. RIOT (Rule It Out) means to inform the analyst about
+    the harmfulness of the IP. For the harmless IP, the value of Riot is "True" which in turn returns DNS and other
+    information about the IP. For the harmful IP, the value of Riot is "False".
+
+    :type client: ``Client``
+    :param client: client object
+
+    :type args: ``dict``
+    :param args: All command arguments, usually passed from ``demisto.args()``.
+    :return: A ``CommandResults`` object that is then passed to ``return_results``,
+           that contains the IP information.
+    :rtype: ``CommandResults``
+    """
+    ip = args.get("ip", "")
+    response = client.riot(ip)
+    original_response = copy.deepcopy(response)
+    response = remove_empty_elements(response)
+    name = ""
+    if response.get("riot") is False or response.get("riot") == "false":
+        name = "Potentially harmful IP"
+    elif response.get("riot") is True or response.get("riot") == "true":
+        name = "Benign IP"
+    if response.get("logo_url", "") != "":
+        del response["logo_url"]
+    headers = ["IP", "RIOT", "Category", "Name", "Description", "Last Updated"]
+    hr = {
+        "IP": f"[{response.get('ip')}](https://viz.greynoise.io/riot/{response.get('ip')})",
+        "RIOT": response.get("riot"),
+        "Category": response.get("category"),
+        "Name": response.get("name"),
+        "Description": response.get("description"),
+        "Last Updated": response.get("last_updated")
+    }
+    human_readable = tableToMarkdown(
+        name=name, t=hr, headers=headers, removeNull=True
+    )
+    return CommandResults(
+        outputs_prefix="GreyNoise.Riot",
+        outputs_key_field="ip",
+        outputs=response,
+        readable_output=human_readable,
+        raw_response=original_response,
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -599,6 +648,9 @@ def main() -> None:
             result = query_command(client, demisto.args())
             return_results(result)
 
+        elif demisto.command() == 'greynoise-riot':
+            result = riot_command(client, demisto.args())
+            return_results(result)
     # Log exceptions and return errors
     except DemistoException as err:
         return_error(str(err))
