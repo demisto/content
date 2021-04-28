@@ -158,6 +158,7 @@ EXPECTED_CREATE_TICKET = {
         "description": "creating a test ticket"
     }
 }
+EXPECTED_CREATE_TICKET_WITH_OUT_JSON = {}
 EXPECTED_QUERY_TICKETS = {
     'Ticket(val.ID===obj.ID)': [
         {
