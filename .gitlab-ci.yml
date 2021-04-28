@@ -65,6 +65,7 @@ default:
     - node --version
     - npm --version
     - demisto-sdk --version
+    - echo CI_SERVER_URL=$CI_SERVER_URL
 
 
 variables:
