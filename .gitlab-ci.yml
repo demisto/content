@@ -310,7 +310,7 @@ run-validations:
     - echo "====Look For Secrets===="
     - demisto-sdk secrets --post-commit --ignore-entropy
     - echo "====Create id set===="
-    - demisto-sdk create-id-set -o ./Tests/id_set.json
+    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/create_id_set_output.log
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - echo "====Merge public and private id sets===="
     - |
