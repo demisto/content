@@ -1277,14 +1277,13 @@ def get_github_get_check_run():
             'CheckRunCompletedAt': check_run_completed_at,
             'CheckRunOutPut': check_run_output
         })
-
-    ec = {
-        'GitHub.CheckRuns(val.ID == obj.CheckRunID)': check_run_result
-    }
-    human_readable = tableToMarkdown('Check Run Details', check_run_result,
-                                     headerTransform=string_to_table_header)
-
-    return_outputs(readable_output=human_readable, outputs=ec, raw_response=check_run_result)
+    command_results = CommandResults(
+        outputs_prefix='GitHub.CheckRuns',
+        outputs_key_field='CheckRunID',
+        outputs=check_run_result,
+        raw_response=check_run_result,
+    )
+    return_results(command_results)
 
 
 def fetch_incidents_command():
