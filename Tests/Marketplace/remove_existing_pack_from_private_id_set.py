@@ -45,7 +45,7 @@ def get_and_set_private_id_set_by_path(private_id_set_path, new_pack_name):
     private_id_set = remove_old_pack_from_private_id_set(private_id_set, new_pack_name)
 
     with open(private_id_set_path, 'w') as id_set_file:
-        json.dump(private_id_set, id_set_file)
+        json.dump(private_id_set, id_set_file, indent=4)
 
 
 def options_handler():
@@ -59,10 +59,9 @@ def options_handler():
 
 
 def main():
-    options = options_handler()
-    private_id_set_path = options.private_id_set_path
-    new_pack_name = options.new_pack_name
-    get_and_set_private_id_set_by_path(private_id_set_path, new_pack_name)
+    # options = options_handler()
+
+    get_and_set_private_id_set_by_path('private_id_set.json', 'IAM')
 
 
 if __name__ == '__main__':
