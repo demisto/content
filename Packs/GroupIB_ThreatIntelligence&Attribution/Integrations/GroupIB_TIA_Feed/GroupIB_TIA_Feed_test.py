@@ -17,7 +17,7 @@ COLLECTION_NAMES = [
 
 @pytest.fixture(scope='function', params=COLLECTION_NAMES, ids=COLLECTION_NAMES)
 def session_fixture(request):
-    return request.param, Client(base_url='https://something')
+    return request.param, Client(base_url='https://some.ru')
 
 
 def test_fetch_indicators_command(mocker, session_fixture):

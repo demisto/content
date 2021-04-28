@@ -1,40 +1,22 @@
 {
-	"brands": [
-		"Group-IB Threat Intelligence \u0026 Attribution"
-	],
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "Group-IB Threat Intelligence \u0026 Attribution",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"bp/phishing": "GIB Brand Protection Phishing",
-		"bp/phishing_kit": "GIB Brand Protection Phishing Kit",
-		"compromised/account": "GIB Compromised Account",
-		"compromised/card": "GIB Compromised Card",
-		"malware/targeted_malware": "GIB Targeted Malware",
-		"osi/git_leak": "GIB OSI Git Leak",
-		"osi/public_leak": "GIB OSI Public Leak"
-	},
-	"locked": false,
-	"logicalVersion": 2,
-	"mapping": null,
-	"name": "Group-IB Threat Intelligence \u0026 Attribution (classifier)",
-	"nameRaw": "Group-IB Threat Intelligence \u0026 Attribution (classifier)",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": "gibType"
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Group-IB Threat Intelligence \u0026 Attribution",
+    "keyTypeMap": {
+        "bp/phishing": "GIB Brand Protection Phishing",
+        "bp/phishing_kit": "GIB Brand Protection Phishing Kit",
+        "compromised/account": "GIB Compromised Account",
+        "compromised/card": "GIB Compromised Card",
+        "malware/targeted_malware": "GIB Targeted Malware",
+        "osi/git_leak": "GIB OSI Git Leak",
+        "osi/public_leak": "GIB OSI Public Leak"
+    },
+    "name": "Group-IB Threat Intelligence \u0026 Attribution (classifier)",
+    "transformer": {
+        "complex": null,
+        "simple": "gibType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

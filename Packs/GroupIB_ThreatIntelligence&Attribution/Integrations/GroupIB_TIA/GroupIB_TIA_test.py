@@ -39,7 +39,7 @@ RESULTS.update({
                            '(https://bt.group-ib.com'
                            '/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/cmV2aXNpb24tZml'
                            'sZURpZmYtNTQwOGFmNDAxNmU1ZmQxY2E2ZWFkMzU4Y2MzYjJiNGI2MDVmNTRmNjg1OGM3OGJlZjB'
-                           'jZWJlMmRlZTA2ZjA4Zg==) | asdas@hangy.de | sadsdsa | 2019-06-20T13:13:35+00:00 |\\n", '
+                           'jZWJlMmRlZTA2ZjA4Zg==) | some@gmail.ru | sadsdsa | 2019-06-20T13:13:35+00:00 |\\n", '
                            '"seqUpdate": 1611219371626093, "source": "github", '
                            '"gibType": "osi/git_leak", "relatedIndicatorsData": "", "systemSeverity": 1}'}]),
     'osi/public_leak': (
@@ -58,13 +58,9 @@ RESULTS.update({
                            '| ------ | ------------- | -------------- | ---- |----- | ------ |\\n| whaaaaaat | '
                            '2020-10-05T17:51:31+03:00 | 2020-10-05T17:45:46+03:00 | '
                            '3066db9f57b7997607208fedc45d7203029d9cb3 | '
-                           '[https://pastebin.com/uuPpnSDF](https://pastebin.com/uuPpnSDF) | pastebin.com '
+                           '[https://some.ru](https://some.ru) | some.ru '
                            '|\\n", "matches": "| Type | Sub Type | Value |\\n| ---- | -------- | ----- |\\n| email '
-                           '| email | wojcieh@cast.net |\\n| email | email | jolo@mac.com |\\n| email | email '
-                           '| lar@mail.com |\\n| email | email | ado@rizon.net |\\n| email | email | dest@live.com '
-                           '|\\n| email | email | carl@taol.com |\\n| email | email | athi@hoo.ca |\\n| email | email '
-                           '| somas@cast.net |\\n| email | email | lharre@hoo.ca |\\n| email '
-                           '| email | pwards@hoo.com |\\n", '
+                           '| email | some@gmail.ru |\\n", '
                            '"oldId": null, '
                            '"portalLink": "https://bt.group-ib.com/osi/public_leak?'
                            'searchValue=id:a9a5b5cb9b971a2a037e3a0a30654186ea248094", '
@@ -83,10 +79,10 @@ RESULTS.update({
              'rawJSON': '{"dateDetected": "2021-01-14T12:10:41+00:00", "dateFirstSeen": "2021-01-14T13:10:41+00:00", '
                         '"dateLastSeen": "2021-01-14T14:12:17+00:00", "downloadedFrom": "| URL | File Name '
                         '| Domain | Date |\\n| --- | --------- | ------ | ---- |\\n'
-                        '| https://sukkarksa.com/sukr/show.zip | show.zip | sukkarksa.com | 2021-01-21 10:10:41 |\\n'
-                        '| https://www.sukkarksa.com/sukr/show.zip | show.zip | ''www.sukkarksa.com '
-                        '| 2021-01-21 10:10:41 |\\n| https://mail.sukkarksa.com/sukr/show.zip | show.zip '
-                        '| mail.sukkarksa.com | 2021-01-21 10:10:41 |\\n", '
+                        '| https://some.ru | show.zip | some.ru | 2021-01-21 10:10:41 |\\n'
+                        '| https://some.ru | show.zip | ''some.ru '
+                        '| 2021-01-21 10:10:41 |\\n| https://some.ru | show.zip '
+                        '| some.ru | 2021-01-21 10:10:41 |\\n", '
                         '"emails": [], "evaluation": {"admiraltyCode": "B2", "credibility": 70, '
                         '"reliability": 80, "severity": "orange", "tlp": "amber", "ttl": '
                         '30}, "hash": "8d7ea805fe20d6d77f57e2f0cadd17b1", "id": '
@@ -109,7 +105,7 @@ COLLECTION_NAMES = ['compromised/account', 'compromised/card', 'osi/git_leak', '
 
 @pytest.fixture(scope='function', params=COLLECTION_NAMES, ids=COLLECTION_NAMES)
 def session_fixture(request):
-    return request.param, Client(base_url='https://something')
+    return request.param, Client(base_url='https://some.ru')
 
 
 def test_fetch_incidents_command(mocker, session_fixture):

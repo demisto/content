@@ -13,24 +13,24 @@
             }
         },
         "cnc": {
-            "cnc": "http://f0503872.xsph.ru/login",
-            "domain": "f0503872.xsph.ru",
+            "cnc": "http://some.ru",
+            "domain": "some.ru",
             "ipv4": {
                 "asn": "AS35278 Sprinthost.ru LLC",
                 "city": "Moscow",
                 "countryCode": "RU",
                 "countryName": "Russian Federation",
-                "ip": "141.8.193.236",
+                "ip": "11.11.11.11",
                 "provider": "Sprinthost.ru LLC",
                 "region": "Moscow City"
             },
             "ipv6": null,
-            "url": "http://f0503872.xsph.ru/login"
+            "url": "http://some.ru"
         },
         "dateCompromised": null,
         "dateDetected": "2019-12-12T09:51:07+00:00",
         "device": null,
-        "domain": "www.google.com",
+        "domain": "some.ru",
         "dropEmail": {
             "domain": null,
             "email": "",
@@ -55,7 +55,7 @@
         "id": "253b9a136f0d574149fc43691eaf7ae27aff141a",
         "isFavourite": false,
         "isHidden": false,
-        "login": "ivan@gmail.com",
+        "login": "some@gmail.ru",
         "malware": {
             "id": "411ac9df6c5515922a56e30013e8b8b366eeec80",
             "name": "PredatorStealer"
@@ -120,7 +120,7 @@
                 "city": "San Francisco",
                 "countryCode": "US",
                 "countryName": "United States",
-                "ip": "172.67.134.188",
+                "ip": "11.11.11.11",
                 "provider": "Cloudflare",
                 "region": "California"
             },
@@ -202,7 +202,7 @@
             "city": "Some city",
             "countryCode": "CA",
             "countryName": "Canada",
-            "ip": "12.12.12.12",
+            "ip": "11.11.11.11",
             "provider": "Some provider",
             "region": "NA"
         },
@@ -210,8 +210,8 @@
         "isHidden": false,
         "oldId": "396798526",
         "phishingDomain": {
-            "domain": "some.com",
-            "local": "some.com",
+            "domain": "some.ru",
+            "local": "some.ru",
             "dateRegistered": "2013-11-15 13:41:30",
             "title": "",
             "registrar": "Some"
@@ -222,9 +222,9 @@
         "targetBrand": "Some brand",
         "targetCategory": "Finance > Banking",
         "targetCountryName": null,
-        "targetDomain": "some.com",
+        "targetDomain": "some.ru",
         "type": "Phishing",
-        "url": "https://some.php"
+        "url": "https://some.ru"
     },
     "bp/phishing_kit": {
         "dateDetected": "2021-01-14T12:10:41+00:00",
@@ -233,20 +233,20 @@
         "downloadedFrom": [
             {
                 "date": "2021-01-21 10:10:41",
-                "url": "https://sukkarksa.com/sukr/show.zip",
-                "domain": "sukkarksa.com",
+                "url": "https://some.ru",
+                "domain": "some.ru",
                 "fileName": "show.zip"
             },
             {
                 "date": "2021-01-21 10:10:41",
-                "url": "https://www.sukkarksa.com/sukr/show.zip",
-                "domain": "www.sukkarksa.com",
+                "url": "https://some.ru",
+                "domain": "some.ru",
                 "fileName": "show.zip"
             },
             {
                 "date": "2021-01-21 10:10:41",
-                "url": "https://mail.sukkarksa.com/sukr/show.zip",
-                "domain": "mail.sukkarksa.com",
+                "url": "https://some.ru",
+                "domain": "some.ru",
                 "fileName": "show.zip"
             }
         ],
@@ -314,7 +314,7 @@
                 "fileDiff": "https://bt.group-ib.com/api/v2/osi/git_leak/f201c253ac71f7d78db39fa111a2af9d7ee7a3f7/cmV2aXNpb24tZmlsZURpZmYtNTQwOGFmNDAxNmU1ZmQxY2E2ZWFkMzU4Y2MzYjJiNGI2MDVmNTRmNjg1OGM3OGJlZjBjZWJlMmRlZTA2ZjA4Zg==",
                 "hash": "029eef2ec6e7a16d958f4ae666b7295f427f123b",
                 "info": {
-                    "authorEmail": "asdas@hangy.de",
+                    "authorEmail": "some@gmail.ru",
                     "authorName": "sadsdsa",
                     "dateCreated": "2019-06-20T13:13:35+00:00"
                 }
@@ -346,10 +346,10 @@
                 "datePublished": "2020-10-05T17:45:46+03:00",
                 "hash": "3066db9f57b7997607208fedc45d7203029d9cb3",
                 "itemSource": "api",
-                "link": "https://pastebin.com/uuPpnSDF",
+                "link": "https://some.ru",
                 "sequenceUpdate": null,
                 "size": 345,
-                "source": "pastebin.com",
+                "source": "some.ru",
                 "status": 1,
                 "title": "Hashed Email With Exclude"
             }
@@ -357,16 +357,7 @@
         "matches": {
             "email": {
                 "email": [
-                    "wojcieh@cast.net",
-                    "jolo@mac.com",
-                    "lar@mail.com",
-                    "ado@rizon.net",
-                    "dest@live.com",
-                    "carl@taol.com",
-                    "athi@hoo.ca",
-                    "somas@cast.net",
-                    "lharre@hoo.ca",
-                    "pwards@hoo.com"
+                    "some@gmail.ru"
                 ]
             }
         },

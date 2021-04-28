@@ -1,4 +1,5 @@
 
+
 Use Group-IB Threat Intelligence & Attribution Feed integration to fetch IOCs from various Group-IB collections.
 This integration was integrated and tested with version 1.0 of Group-IB Threat Intelligence & Attribution Feed
 ## Configure Group-IB Threat Intelligence & Attribution Feed on Cortex XSOAR
@@ -61,6 +62,6 @@ There is no context output for this command.
 >|value|type|asn|geocountry|gibmalwarename|
 >|---|---|---|---|---|
 >| 11.11.11.11 | IP |  |  | Anubis |
->| 12.12.12.12 | IP | AS12121 | France | FlexNet |
->| 13.13.13.13 | IP | AS1313 | United States | FlexNet |
+>| 11.11.11.11 | IP | AS12121 | France | FlexNet |
+>| 11.11.11.11 | IP | AS1313 | United States | FlexNet |
 

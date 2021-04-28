@@ -2,19 +2,19 @@
     "compromised/mule": {
         "account": "3765123456411567",
         "cnc": {
-            "cnc": "http://worus.space/zse45rdx/index.php",
+            "cnc": "http://some.ru",
             "domain": "worus.space",
             "ipv4": {
                 "asn": null,
                 "city": null,
                 "countryCode": null,
                 "countryName": null,
-                "ip": "45.80.70.235",
+                "ip": "11.11.11.11",
                 "provider": null,
                 "region": null
             },
             "ipv6": null,
-            "url": "http://worus.space/zse45rdx/index.php"
+            "url": "http://some.ru"
         },
         "dateAdd": "2020-11-11T16:09:00+00:00",
         "dateIncident": null,
@@ -74,25 +74,25 @@
                 "city": null,
                 "countryCode": "NL",
                 "countryName": "Netherlands",
-                "ip": "100.12.21.18",
+                "ip": "11.11.11.11",
                 "provider": "Some Company",
                 "region": null
             }
         },
         "cnc": {
-            "cnc": "http://xxxsos.ru",
-            "domain": "xxxsos.ru",
+            "cnc": "http://some.ru",
+            "domain": "some.ru",
             "ipv4": {
                 "asn": "AS16276 OVH SAS",
                 "city": null,
                 "countryCode": "FR",
                 "countryName": "France",
-                "ip": "94.23.180.176",
+                "ip": "11.11.11.11",
                 "provider": "OVH SAS",
                 "region": null
             },
             "ipv6": null,
-            "url": "http://xxxsos.ru"
+            "url": "http://some.ru"
         },
         "dateCompromised": null,
         "dateDetected": "2018-01-11T01:18:43+00:00",
@@ -143,7 +143,7 @@
                 "city": "Redwood City",
                 "countryCode": "US",
                 "countryName": "United States",
-                "ip": "149.20.1.66",
+                "ip": "11.11.11.11",
                 "provider": "Internet Systems Consortium",
                 "region": "California"
             },
@@ -176,7 +176,7 @@
                 "city": "Some city",
                 "countryCode": "US",
                 "countryName": "United States",
-                "ip": "45.11.105.128",
+                "ip": "11.11.11.11",
                 "provider": "Comcast Cable",
                 "region": "Washington"
             },
@@ -211,7 +211,7 @@
             "city": "",
             "countryCode": null,
             "countryName": "Indonesia",
-            "ip": "12.122.34.213",
+            "ip": "11.11.11.11",
             "provider": null,
             "region": null
         },
@@ -256,7 +256,7 @@
             "city": "Some city",
             "countryCode": "CA",
             "countryName": "Canada",
-            "ip": "12.12.12.12",
+            "ip": "11.11.11.11",
             "provider": "Some provider",
             "region": "NA"
         },
@@ -264,8 +264,8 @@
         "isHidden": false,
         "oldId": "396798526",
         "phishingDomain": {
-            "domain": "some.com",
-            "local": "some.com",
+            "domain": "some.ru",
+            "local": "some.ru",
             "dateRegistered": "2013-11-15 13:41:30",
             "title": "",
             "registrar": "Some"
@@ -276,9 +276,9 @@
         "targetBrand": "Some brand",
         "targetCategory": "Finance > Banking",
         "targetCountryName": null,
-        "targetDomain": "some.com",
+        "targetDomain": "some.ru",
         "type": "Phishing",
-        "url": "https://some.php"
+        "url": "https://some.ru"
     },
     "attacks/phishing_kit": {
         "dateDetected": "2021-01-14T12:10:41+00:00",
@@ -287,20 +287,20 @@
         "downloadedFrom": [
             {
                 "date": "2021-01-21 10:10:41",
-                "url": "https://sukkarksa.com/sukr/show.zip",
-                "domain": "sukkarksa.com",
+                "url": "https://some.ru",
+                "domain": "some.ru",
                 "fileName": "show.zip"
             },
             {
                 "date": "2021-01-21 10:10:41",
-                "url": "https://www.sukkarksa.com/sukr/show.zip",
-                "domain": "www.sukkarksa.com",
+                "url": "https://some.ru",
+                "domain": "some.ru",
                 "fileName": "show.zip"
             },
             {
                 "date": "2021-01-21 10:10:41",
-                "url": "https://mail.sukkarksa.com/sukr/show.zip",
-                "domain": "mail.sukkarksa.com",
+                "url": "https://some.ru",
+                "domain": "some.ru",
                 "fileName": "show.zip"
             }
         ],
@@ -399,11 +399,11 @@
                 "langs": ["en"],
                 "malwareList": [],
                 "params": {
-                    "domain": "www.creaideck.com",
-                    "ipv4": ["10.220.220.220", "111.22.22.33"],
+                    "domain": "some.ru",
+                    "ipv4": ["11.11.11.11", "11.11.11.11"],
                     "ipv6": [],
                     "ssl": [],
-                    "url": "https://www.creaideck.com/update/darwin64.bin"
+                    "url": "https://some.ru"
                 },
                 "seqUpdate": 16107188498908,
                 "techSeqUpdate": null,
@@ -478,18 +478,18 @@
             "tlp": "green",
             "ttl": 30
         },
-        "id": "109.70.100.46",
+        "id": "11.11.11.11",
         "ipv4": {
             "asn": null,
             "city": null,
             "countryCode": null,
             "countryName": null,
-            "ip": "109.70.100.46",
+            "ip": "11.11.11.11",
             "provider": null,
             "region": null
         },
         "nodes": [],
-        "portalLink": "https://bt.group-ib.com/suspicious/tor?searchValue=id:109.70.100.46",
+        "portalLink": "https://bt.group-ib.com/suspicious/tor?searchValue=id:11.11.11.11",
         "seqUpdate": 16110967720000,
         "source": "check.torproject.org"
     },
@@ -511,7 +511,7 @@
             "city": null,
             "countryCode": "CZ",
             "countryName": "Czech Republic",
-            "ip": "89.187.177.92",
+            "ip": "11.11.11.11",
             "provider": "DataCamp s.r.o.",
             "region": null
         },
@@ -542,7 +542,7 @@
             "city": null,
             "countryCode": "LB",
             "countryName": "Lebanon",
-            "ip": "185.90.169.156",
+            "ip": "11.11.11.11",
             "provider": "Libatech SAL",
             "region": null
         },
@@ -551,13 +551,13 @@
         "oldId": "395880626",
         "portalLink": "https://bt.group-ib.com/suspicious/socks?searchValue=id:02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e",
         "seqUpdate": 1614926061941,
-        "source": "awmproxy.com"
+        "source": "some.ru"
     },
     "malware/cnc": {
-        "cnc": "https://jquery-assets.com",
+        "cnc": "https://some.ru",
         "dateDetected": "2021-01-21T10:35:21+00:00",
         "dateLastSeen": "2021-01-21T10:35:21+00:00",
-        "domain": "jquery-assets.com",
+        "domain": "some.ru",
         "file": [],
         "id": "aeed277396e27e375d030a91533aa232444d0089",
         "ipv4": [
@@ -566,7 +566,7 @@
                 "city": null,
                 "countryCode": "US",
                 "countryName": "United States",
-                "ip": "8.209.65.45",
+                "ip": "11.11.11.11",
                 "provider": "Alibaba.com Singapore E-Commerce Private Limited",
                 "region": null
             }
@@ -582,7 +582,7 @@
         "seqUpdate": 1614925981037,
         "ssl": [],
         "threatActor": null,
-        "url": "https://jquery-assets.com"
+        "url": "https://some.ru"
     },
     "osi/vulnerability": {
         "affectedSoftware": [
@@ -650,11 +650,11 @@
         "id": "CVE-2021-27152",
         "lastseen": "2021-02-11T14:35:24 03:00",
         "portalLink": "https://bt.group-ib.com/osi/vulnerabilities?searchValue=id:CVE-2021-27152",
-        "provider": "vulners.com",
+        "provider": "some.ru",
         "references": [
             "https://pierrekim.github.io/blog/2021-01-12-fiberhome-ont-0day-vulnerabilities.html#httpd-hardcoded-credentials"
         ],
-        "reporter": "cve@mitre.org",
+        "reporter": "some@gmail.ru",
         "seqUpdate": 16130451156953,
         "softwareMixed": [
             {

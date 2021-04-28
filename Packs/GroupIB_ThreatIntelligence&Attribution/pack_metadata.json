@@ -4,7 +4,7 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Group-IB",
-    "url": "https://github.com/ivanovchinnikov",
+    "url": "https://github.com/EvgeniyMeteliza",
     "email": "e.metelitsa@group-ib.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
@@ -19,12 +19,16 @@
         "Security"
     ],
     "useCases": [
-        "Threat Intelligence Enrichment",
-        "Incident Management",
-        "Information lookup"
+        "Hunting",
+        "Lost or Stolen Device",
+        "Phishing",
+        "Threat Intelligence Management",
+        "Malware"
     ],
-    "keywords": [],
+    "keywords": [
+        "Threat intelligence"
+    ],
     "githubUser": [
-        "ivanovchinnikov"
+        "EvgeniyMeteliza"
     ]
 }

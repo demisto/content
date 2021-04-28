@@ -33,10 +33,10 @@
                 }
             },
             {
-                "value": "http://worus.space/zse45rdx/index.php",
+                "value": "http://some.ru",
                 "type": "URL",
                 "raw_json": {
-                    "value": "http://worus.space/zse45rdx/index.php",
+                    "value": "http://some.ru",
                     "type": "URL",
                     "gibcollection": "compromised/mule",
                     "gibid": "50a3b4abbfca5dcbec9c8b3a110598f61ba93r33",
@@ -77,10 +77,10 @@
                 }
             },
             {
-                "value": "45.80.70.235",
+                "value": "11.11.11.11",
                 "type": "IP",
                 "raw_json": {
-                    "value": "45.80.70.235",
+                    "value": "11.11.11.11",
                     "type": "IP",
                     "gibcollection": "compromised/mule",
                     "gibid": "50a3b4abbfca5dcbec9c8b3a110598f61ba93r33",
@@ -108,10 +108,10 @@
         },
         [
             {
-                "value": "http://xxxsos.ru",
+                "value": "http://some.ru",
                 "type": "URL",
                 "raw_json": {
-                    "value": "http://xxxsos.ru",
+                    "value": "http://some.ru",
                     "type": "URL",
                     "gibcollection": "compromised/imei",
                     "gibid": "0c1426048474df19ada9d0089ef8b3efce906556",
@@ -130,10 +130,10 @@
                 }
             },
             {
-                "value": "xxxsos.ru",
+                "value": "some.ru",
                 "type": "Domain",
                 "raw_json": {
-                    "value": "xxxsos.ru",
+                    "value": "some.ru",
                     "type": "Domain",
                     "gibcollection": "compromised/imei",
                     "gibid": "0c1426048474df19ada9d0089ef8b3efce906556",
@@ -152,10 +152,10 @@
                 }
             },
             {
-                "value": "94.23.180.176",
+                "value": "11.11.11.11",
                 "type": "IP",
                 "raw_json": {
-                    "value": "94.23.180.176",
+                    "value": "11.11.11.11",
                     "type": "IP",
                     "asn": "AS16276 OVH SAS",
                     "geocountry": "France",
@@ -187,7 +187,7 @@
                     "devicemodel": "Nexus S/2.3.7 ($$$Flexnet v.5.5)",
                     "asn": "AS22222 Some Company",
                     "geocountry": "Netherlands",
-                    "ipaddress": "100.12.21.18",
+                    "ipaddress": "11.11.11.11",
                     "gibcollection": "compromised/imei",
                     "gibid": "0c1426048474df19ada9d0089ef8b3efce906556",
                     "gibmalwarename": "FlexNet",
@@ -200,7 +200,7 @@
                     "devicemodel": "Nexus S/2.3.7 ($$$Flexnet v.5.5)",
                     "asn": "AS22222 Some Company",
                     "geocountry": "Netherlands",
-                    "ipaddress": "100.12.21.18",
+                    "ipaddress": "11.11.11.11",
                     "gibcollection": "compromised/imei",
                     "gibid": "0c1426048474df19ada9d0089ef8b3efce906556",
                     "gibmalwarename": "FlexNet",
@@ -233,10 +233,10 @@
                 }
             },
             {
-                "value": "149.20.1.66",
+                "value": "11.11.11.11",
                 "type": "IP",
                 "raw_json": {
-                    "value": "149.20.1.66",
+                    "value": "11.11.11.11",
                     "type": "IP",
                     "asn": "AS1280 Internet Systems Consortium, Inc.",
                     "geocountry": "United States",
@@ -253,10 +253,10 @@
                 }
             },
             {
-                "value": "45.11.105.128",
+                "value": "11.11.11.11",
                 "type": "GIB Victim IP",
                 "raw_json": {
-                    "value": "45.11.105.128",
+                    "value": "11.11.11.11",
                     "type": "GIB Victim IP",
                     "asn": "AS1298 Comcast Cable Communications",
                     "geocountry": "United States",
@@ -335,13 +335,13 @@
                     "gibcollection": "attacks/deface",
                     "gibid": "6009637a1135cd001ef46e21",
                     "type": "IP",
-                    "value": "12.122.34.213",
+                    "value": "11.11.11.11",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
                     "gibthreatactorname": "FRK48"
                 },
                 "type": "IP",
-                "value": "12.122.34.213"
+                "value": "11.11.11.11"
             }
         ]
     ],
@@ -361,10 +361,10 @@
                     "gibcollection": "attacks/phishing",
                     "gibid": "fce7f92d0b64946cf890842d083953649b259952",
                     "type": "URL",
-                    "value": "https://some.php"
+                    "value": "https://some.ru"
                 },
                 "type": "URL",
-                "value": "https://some.php"
+                "value": "https://some.ru"
             },
             {
                 "fields": {
@@ -374,7 +374,7 @@
                     "gibphishingtitle": "",
                     "gibtargetbrand": "Some brand",
                     "gibtargetcategory": "Finance > Banking",
-                    "gibtargetdomain": "some.com",
+                    "gibtargetdomain": "some.ru",
                     "registrarname": "Some"
                 },
                 "raw_json": {
@@ -384,13 +384,13 @@
                     "gibphishingtitle": "",
                     "gibtargetbrand": "Some brand",
                     "gibtargetcategory": "Finance > Banking",
-                    "gibtargetdomain": "some.com",
+                    "gibtargetdomain": "some.ru",
                     "registrarname": "Some",
                     "type": "Domain",
-                    "value": "some.com"
+                    "value": "some.ru"
                 },
                 "type": "Domain",
-                "value": "some.com"
+                "value": "some.ru"
             },
             {
                 "fields": {
@@ -404,10 +404,10 @@
                     "gibcollection": "attacks/phishing",
                     "gibid": "fce7f92d0b64946cf890842d083953649b259952",
                     "type": "IP",
-                    "value": "12.12.12.12"
+                    "value": "11.11.11.11"
                 },
                 "type": "IP",
-                "value": "12.12.12.12"
+                "value": "11.11.11.11"
             }
         ]
     ],
@@ -432,14 +432,14 @@
                     "gibcollection": "apt/threat",
                     "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
                     "type": "IP",
-                    "value": "10.220.220.220",
+                    "value": "11.11.11.11",
                     "gibmalwarename": "",
                     "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
                     "gibthreatactorisapt": true,
                     "gibthreatactorname": "Lazarus"
                 },
                 "type": "IP",
-                "value": "10.220.220.220"
+                "value": "11.11.11.11"
             },
             {
                 "fields": {
@@ -454,14 +454,14 @@
                     "gibcollection": "apt/threat",
                     "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
                     "type": "IP",
-                    "value": "111.22.22.33",
+                    "value": "11.11.11.11",
                     "gibmalwarename": "",
                     "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
                     "gibthreatactorisapt": true,
                     "gibthreatactorname": "Lazarus"
                 },
                 "type": "IP",
-                "value": "111.22.22.33"
+                "value": "11.11.11.11"
             },
             {
                 "fields": {
@@ -476,14 +476,14 @@
                     "gibcollection": "apt/threat",
                     "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
                     "type": "Domain",
-                    "value": "www.creaideck.com",
+                    "value": "some.ru",
                     "gibmalwarename": "",
                     "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
                     "gibthreatactorisapt": true,
                     "gibthreatactorname": "Lazarus"
                 },
                 "type": "Domain",
-                "value": "www.creaideck.com"
+                "value": "some.ru"
             },
             {
                 "fields": {
@@ -498,14 +498,14 @@
                     "gibcollection": "apt/threat",
                     "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
                     "type": "URL",
-                    "value": "https://www.creaideck.com/update/darwin64.bin",
+                    "value": "https://some.ru",
                     "gibmalwarename": "",
                     "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
                     "gibthreatactorisapt": true,
                     "gibthreatactorname": "Lazarus"
                 },
                 "type": "URL",
-                "value": "https://www.creaideck.com/update/darwin64.bin"
+                "value": "https://some.ru"
             },
             {
                 "fields": {
@@ -549,16 +549,16 @@
             {
                 "fields": {
                     "gibcollection": "suspicious_ip/tor_node",
-                    "gibid": "109.70.100.46"
+                    "gibid": "11.11.11.11"
                 },
                 "raw_json": {
                     "gibcollection": "suspicious_ip/tor_node",
-                    "gibid": "109.70.100.46",
+                    "gibid": "11.11.11.11",
                     "type": "IP",
-                    "value": "109.70.100.46"
+                    "value": "11.11.11.11"
                 },
                 "type": "IP",
-                "value": "109.70.100.46"
+                "value": "11.11.11.11"
             }
         ]
     ],
@@ -586,10 +586,10 @@
                     "gibproxyport": 80,
                     "source": "free-proxy-list.net",
                     "type": "IP",
-                    "value": "89.187.177.92"
+                    "value": "11.11.11.11"
                 },
                 "type": "IP",
-                "value": "89.187.177.92"
+                "value": "11.11.11.11"
             }
         ]
     ],
@@ -613,10 +613,10 @@
                     "gibcollection": "suspicious_ip/socks_proxy",
                     "gibid": "02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e",
                     "type": "IP",
-                    "value": "185.90.169.156"
+                    "value": "11.11.11.11"
                 },
                 "type": "IP",
-                "value": "185.90.169.156"
+                "value": "11.11.11.11"
             }
         ]
     ],
@@ -637,11 +637,11 @@
                     "gibcollection": "malware/cnc",
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
                     "type": "URL",
-                    "value": "https://jquery-assets.com",
+                    "value": "https://some.ru",
                     "gibmalwarename": "JS Sniffer - Poter"
                 },
                 "type": "URL",
-                "value": "https://jquery-assets.com"
+                "value": "https://some.ru"
             },
             {
                 "fields": {
@@ -653,11 +653,11 @@
                     "gibcollection": "malware/cnc",
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
                     "type": "Domain",
-                    "value": "jquery-assets.com",
+                    "value": "some.ru",
                     "gibmalwarename": "JS Sniffer - Poter"
                 },
                 "type": "Domain",
-                "value": "jquery-assets.com"
+                "value": "some.ru"
             },
             {
                 "fields": {
@@ -673,11 +673,11 @@
                     "gibcollection": "malware/cnc",
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
                     "type": "IP",
-                    "value": "8.209.65.45",
+                    "value": "11.11.11.11",
                     "gibmalwarename": "JS Sniffer - Poter"
                 },
                 "type": "IP",
-                "value": "8.209.65.45"
+                "value": "11.11.11.11"
             }
         ]
     ],
