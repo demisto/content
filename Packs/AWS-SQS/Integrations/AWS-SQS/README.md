@@ -14,10 +14,14 @@
 <li><strong>AWS Default Region</strong></li>
 <li><strong>Role Arn</strong></li>
 <li><strong>Role Session Name</strong></li>
-<li><strong>Fetch incidents</strong></li>
 <li><strong>Role Session Duration</strong></li>
+<li><strong>Access Key</strong>: when using access key and secret key, there is no need to use Role Arn</li>
+<li><strong>Secret Key</strong></li>
 <li>
 <strong>QueueURL</strong>: the relevant URL is under the <strong>Details</strong> tab. </li>
+<li><strong>Fetch incidents</strong></li>
+<li><strong>Proxy</strong>: use system proxy settings</li>
+<li><strong>Insecure</strong>: trust any certificate (not secure)</li>
 </ul>
 
 <h2>Fetched Incidents Data</h2>
