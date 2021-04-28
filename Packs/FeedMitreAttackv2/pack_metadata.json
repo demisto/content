@@ -1,6 +1,6 @@
 {
-    "name": "Feed MitreAttack v2",
-    "description": "\"\"",
+    "name": "MITRE ATT&CK v2",
+    "description": "Fetches indicators from MITRE ATT&CK.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -11,5 +11,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [
+        "MITRE",
+        "Feed",
+        "ATT&CK"
+    ]
 }
