@@ -85,7 +85,7 @@ if [ -n "$_gitlab" ]; then
     --form token="${_ci_token}" \
     --form ref="${_branch}" \
     --form "${_variables}" \
-    "https://code-stage.pan.run/projects/84/trigger/pipeline"
+    "https://code-stage.pan.run/projects/84/trigger/pipeline"  # disable-secrets-detection
 
 else
 
