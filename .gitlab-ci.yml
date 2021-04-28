@@ -183,7 +183,6 @@ create-instances:
           fi
           python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
       fi
-    - echo "$CI_JOB_ID" | tee $ARTIFACTS_FOLDER/create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
 
 .test_content_on_server_instances_base:
   needs: ["create-instances"]
@@ -543,12 +542,11 @@ upload-packs-to-marketplace:
         PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
         GCS_PATH=$(mktemp)
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
-        CREATE_INSTANCES_JOB_NUMBER=$(cat $ARTIFACTS_FOLDER/create_instances_build_num.txt)
         echo $GCS_MARKET_KEY > $GCS_PATH
 
         GCS_BUILD_BUCKET="marketplace-ci-build"
         if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
+          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
         fi
 
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH"
@@ -578,5 +576,4 @@ force-pack-upload:
       if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
           STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
       fi
-    - exit 1
     - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"

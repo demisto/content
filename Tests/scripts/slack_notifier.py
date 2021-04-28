@@ -62,9 +62,9 @@ def get_gitlab_failed_steps(ci_token, build_number, server_url, project_id):
     logging.info(f'project id is {project_id}')
     projects = gitlab_client.projects.list()
     logging.info(f'projects are {projects}')
-    project = gitlab_client.projects.get(project_id)
+    project = gitlab_client.projects.get(int(project_id))
     logging.info(f'project is {project}')
-    pipeline = project.pipelines.get(build_number)
+    pipeline = project.pipelines.get(int(build_number))
     logging.info(f'pipeline is {pipeline}')
     jobs = pipeline.jobs.list()
 
