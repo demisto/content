@@ -87,6 +87,7 @@ variables:
 # Remove this when branches will sync with github
   SKIP_PRIVATE_BUILD: "true"
   COMMIT_FLOW: "false"
+  FORCE_BUCKET_UPLOAD: "false"
 
 stages:
   - unittests-and-validations
@@ -100,13 +101,13 @@ notify-slack:
   when: always
   allow_failure: true
   script:
+    - echo "=====Notify Slack====="
     - |
       if [ -n "${BUCKET_UPLOAD}" ]; then
         ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
       elif [ -n "${COMMIT_FLOW}" ]; then
         ./Tests/scripts/slack_notifier.sh 'unittests' $ARTIFACTS_FOLDER/env_results.json '' 'gitlab'
       fi
-
 
 create-instances:
   stage: create-instances
@@ -182,7 +183,7 @@ create-instances:
           fi
           python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
       fi
-    - echo "$CI_JOB_ID" > $ARTIFACTS_FOLDER/create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
+    - echo "$CI_JOB_ID" | tee $ARTIFACTS_FOLDER/create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
 
 .test_content_on_server_instances_base:
   needs: ["create-instances"]
@@ -446,6 +447,22 @@ run-validations:
       done
     fi
 
+.check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
+  - echo "=====Check User Permissions to Upload Packs=====" # if bucket upload and uploading to marketplace-dist
+  - |
+    if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
+      CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
+      echo "recieved content leaders"
+      LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
+      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
+      if [[ -z "$GITLAB_USER_NAME" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "$GITLAB_USER_NAME"`" ]]; then
+        echo -e "User '$GITLAB_USER_NAME' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
+        exit 1
+      else
+        echo "User '${GITLAB_USER_NAME}' is allowed to upload packs / force upload packs."
+      fi
+    fi
+
 .install_packs_in_server:
   needs: ["create-instances"]
   stage: run-instances
@@ -513,20 +530,7 @@ upload-packs-to-marketplace:
     - if: '$BUCKET_UPLOAD == "true"'
   script:
     - *start_tunnel
-    - echo "=====Check User Permissions to Upload Packs=====" # if bucket upload and uploading to marketplace-dist
-    - |
-      if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
-        CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
-        echo "recieved content leaders"
-        LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-        LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
-        if [[ -z "$GITLAB_USER_NAME" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "$GITLAB_USER_NAME"`" ]]; then
-          echo -e "User '$GITLAB_USER_NAME' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
-          exit 1
-        else
-          echo "User '${GITLAB_USER_NAME}' is allowed to upload packs / force upload packs."
-        fi
-      fi
+    - *check_user_permissions_to_upload_packs
     - echo "=====Upload Packs To Marketplace Storage====="
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
@@ -553,3 +557,21 @@ upload-packs-to-marketplace:
       else
         echo "Skipping Premium Packs Validation"
       fi
+
+force-pack-upload:
+  stage: upload-to-marketplace
+  needs: ["create-instances"]
+  rules:
+    if: '$FORCE_BUCKET_UPLOAD == "true"'
+  script:
+    - *check_user_permissions_to_upload_packs
+    - EXTRACT_FOLDER=$(mktemp -d)
+    - PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+    - PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+    - CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+    - GCS_BUILD_BUCKET="marketplace-ci-build"
+    - |
+      if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+          STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+      fi
+    - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"

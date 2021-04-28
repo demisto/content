@@ -11,10 +11,10 @@ echo "starting configure_and_install_packs ..."
 
 if [ "$2" = "gitlab" ]; then
   PREVIOUS_JOB_NUMBER=$(cat "$ARTIFACTS_FOLDER"/create_instances_build_num.txt)
-  python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CI_COMMIT_BRANCH" --build_number "$PREVIOUS_JOB_NUMBER" -af "$ARTIFACTS_FOLDER"
+  python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CI_COMMIT_BRANCH" --build_number "$CI_PIPELINE_ID" -af "$ARTIFACTS_FOLDER"
 else
   PREVIOUS_JOB_NUMBER=$(cat create_instances_build_num.txt)
-  python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CIRCLE_BRANCH" --build_number "$PREVIOUS_JOB_NUMBER"
+  python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CIRCLE_BRANCH" --build_number "$CI_PIPELINE_ID"
 fi
 
 exit $RETVAL
