@@ -36,21 +36,28 @@ class Client(BaseClient):
         )
 
     def save_access_token_to_context(self, auth_response):
-        now = datetime.now()
-        expires_in = now + timedelta(seconds=auth_response.get("expires_in"))
-        context = {"access_token": self.access_token, "expires_in": expires_in}
-        set_integration_context(context)
-        demisto.debug(
-            f"New access token that expires in : {expires_in.strftime(DATE_FORMAT)} was set to integration_context.")
+        access_token_expiration_in_seconds = auth_response.get("expires_in")
+        if access_token_expiration_in_seconds and isinstance(auth_response.get("expires_in"), int):
+            access_token_expiration_datetime = datetime.now() + timedelta(seconds=access_token_expiration_in_seconds)
+            context = {"access_token": self.access_token, "expires_in": access_token_expiration_datetime}
+            set_integration_context(context)
+            demisto.debug(
+                f"New access token that expires in : {expires_in.strftime(DATE_FORMAT)} w"
+                f"as set to integration_context.")
+        else:
+            return_error(f"HPEArubaClearpass error: Got an invalid access token "
+                         f"expiration time from the API: {access_token_expiration_in_seconds} "
+                         f"from type: {type(access_token_expiration_in_seconds)}")
 
     def login(self):
         integration_context = get_integration_context()
         access_token_expiration = integration_context.get('expires_in')
         access_token = integration_context.get('access_token')
-        now = datetime.now()
-        if access_token and access_token_expiration and access_token_expiration > now:
+        is_context_has_access_token = access_token and access_token_expiration
+        if is_context_has_access_token and access_token_expiration > datetime.now():
             return
-        # if the access is expired, generate a new one
+
+        # if the access is expired or not exist, generate a new one
         auth_response = self.generate_new_access_token()
         access_token = auth_response.get("access_token")
         if access_token:
