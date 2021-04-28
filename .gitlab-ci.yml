@@ -106,7 +106,7 @@ notify-slack:
       if [ -n "${BUCKET_UPLOAD}" ]; then
         ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
       elif [ -n "${COMMIT_FLOW}" ]; then
-        ./Tests/scripts/slack_notifier.sh 'unittests' $ARTIFACTS_FOLDER/env_results.json '' 'gitlab'
+        ./Tests/scripts/slack_notifier.sh 'unittests' $ARTIFACTS_FOLDER/env_results.json '$SLACK_CHANNEL' 'gitlab'
       fi
 
 create-instances:
