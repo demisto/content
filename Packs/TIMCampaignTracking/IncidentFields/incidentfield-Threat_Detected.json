@@ -14,7 +14,7 @@
     "id": "incident_timcampaignthreatdetected",
     "isReadOnly": false,
     "locked": false,
-    "name": "Threat Detected",
+    "name": "TIM Campaign Threat Detected",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
