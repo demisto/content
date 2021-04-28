@@ -65,7 +65,7 @@ configuration:
   type: 8
 - additionalinfo: If selected, a slash will be appended to URLs composed only of an hostname.
     For example, 'www.example.com' would become 'www.example.com/'
-  defaultvalue: 'true'
+  defaultvalue: 'false'
   display: Add Slash to URLs
   name: url_add_slash
   required: false
