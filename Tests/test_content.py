@@ -37,7 +37,7 @@ BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
 BUILD_NUM = os.environ.get('CI_BUILD_ID')
 WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
-ENV_RESULTS_PATH = './env_results.json'
+ENV_RESULTS_PATH = './artifacts/env_results.json'
 
 
 class SettingsTester:
