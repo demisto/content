@@ -3,14 +3,13 @@ import json
 
 def main() -> None:
 
-    ORANGE_HTML_STYLE = "color:#FF9000;font-size:275%;>"
+    ORANGE_HTML_STYLE = "color:#FF9000;font-size:250%;>"
     GREEN_HTML_STYLE = "color:#00CD33;font-size:275%;>"
     RED_HTML_STYLE = "color:#FF1744;font-size:275%;>"
     DIV_HTML_STYLE = "display:block;text-align:center;"
 
     try:
-        radar_open_access_files = demisto.executeCommand("Print", {"value": "${Rubrik.Sonar.openAccessFiles}"})
-        radar_open_access_files = radar_open_access_files[0]["Contents"]
+        radar_open_access_files = demisto.context()["Rubrik"]["Sonar"]["openAccessFiles"]
         
         if not radar_open_access_files:
             html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(radar_open_access_files)}</h1></div>"
