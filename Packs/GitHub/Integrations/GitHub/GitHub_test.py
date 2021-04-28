@@ -1,4 +1,4 @@
-from GitHub import main, BASE_URL, list_branch_pull_requests_command
+from GitHub import main, BASE_URL, list_branch_pull_requests
 import demistomock as demisto
 import json
 
@@ -41,12 +41,7 @@ def test_search_code(requests_mock, mocker):
 def test_list_branch_pull_requests_command(requests_mock, mocker):
     requests_mock.get('https://api.github.com/repos/demisto/content/pulls?head=demisto:Update-Docker-Image',
                       json=branch_pull_requests_data['response'])
-    mocker.patch.object(demisto, 'args', return_value={
-        'organization': 'demisto',
-        'repository': 'content',
-        'branch_name': 'Update-Docker-Image'
-    })
-    results = list_branch_pull_requests_command()
+    results = list_branch_pull_requests(branch_name='Update-Docker-Image', repository='content', organization='demisto')
     assert results.outputs_prefix == 'GitHub.PR'
     assert results.outputs_key_field == 'Number'
     assert results.raw_response == branch_pull_requests_data['response']

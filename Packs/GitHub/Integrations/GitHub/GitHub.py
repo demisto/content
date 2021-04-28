@@ -617,15 +617,34 @@ def create_pull_request_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def list_branch_pull_requests(branch_name: str, repository: str = None, organization: str = None):
+def list_branch_pull_requests(branch_name: str, repository: Optional[str] = None,
+                              organization: Optional[str] = None) -> CommandResults:
+    """
+    Performs API request to GitHub service and formats the returned pull requests details to outputs.
+    Args:
+        branch_name (str): Name of the branch to retrieve its PR.
+        repository (Optional[str]): Repository the branch resides in. Defaults to 'REPOSITORY' if not given.
+        organization (Optional[str]): Organization the branch resides in. Defaults to 'USER' if not given.
+
+    Returns:
+        (CommandResults).
+    """
     repository = repository if repository else REPOSITORY
     organization = organization if organization else USER
     suffix = f'/repos/{organization}/{repository}/pulls?head={organization}:{branch_name}'
     response = http_request('GET', url_suffix=suffix)
-    return response
+    formatted_outputs = [format_pr_outputs(output) for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitHub.PR',
+        outputs_key_field='Number',
+        outputs=formatted_outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown(f'Pull Request For Branch #{branch_name}', formatted_outputs, removeNull=True)
+    )
 
 
-def list_branch_pull_requests_command() -> CommandResults:
+def list_branch_pull_requests_command() -> None:
     """
     List all pull requests corresponding to the given 'branch_name' in 'organization'
     Args:
@@ -633,22 +652,15 @@ def list_branch_pull_requests_command() -> CommandResults:
         - 'organization': Organization the branch belongs to.
         - 'repository': The repository the branch belongs to. Uses 'REPOSITORY' parameter if not given.
     Returns:
-        (CommandResults).
+        (None): Results to XSOAR.
     """
     args = demisto.args()
     branch_name = args.get('branch_name', '')
     organization = args.get('organization')
     repository = args.get('repository')
-    response = list_branch_pull_requests(branch_name, repository, organization)
-    formatted_outputs = [format_pr_outputs(output) for output in response]
+    results = list_branch_pull_requests(branch_name, repository, organization)
 
-    return_results(CommandResults(
-        outputs_prefix='GitHub.PR',
-        outputs_key_field='Number',
-        outputs=formatted_outputs,
-        raw_response=response,
-        readable_output=tableToMarkdown(f'Pull Request For Branch #{branch_name}', formatted_outputs, removeNull=True)
-    ))
+    return_results(results)
 
 
 def is_pr_merged(pull_number: Union[int, str]):
