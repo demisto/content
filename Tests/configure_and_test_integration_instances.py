@@ -41,7 +41,7 @@ NO_PROXY = ','.join([
     'oproxy.demisto.ninja',
     'oproxy-dev.demisto.ninja',
 ])
-NO_PROXY_CONFIG = {'python.pass.extra.keys': f'--env##no_proxy={NO_PROXY}'}  # noqa: E501
+NO_PROXY_CONFIG = {'python.pass.extra.keys': f'--env##no_proxy={NO_PROXY}##--network=host'}  # noqa: E501
 DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
