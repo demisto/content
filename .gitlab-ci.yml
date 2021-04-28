@@ -35,11 +35,11 @@ default:
        echo "found venv"
      else
       echo "installing venv"
-      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
+      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap > $ARTIFACTS_FOLDER/python_venv_init.log
      fi
-     venv/bin/pip3 install -r .circleci/build-requirements.txt
-     venv/bin/pip2 install -r dev-requirements-py2.txt
-     source ./venv/bin/activate
+     venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/python_venv_init.log
+     venv/bin/pip2 install -r dev-requirements-py2.txt >> $ARTIFACTS_FOLDER/python_venv_init.log
+     source ./venv/bin/activate >> $ARTIFACTS_FOLDER/python_venv_init.log
     - git config diff.renameLimit 6000
     - export PATH="${PWD}/node_modules/.bin:${PATH}"
     - |
@@ -97,7 +97,6 @@ stages:
 
 notify-slack:
   stage: notify-slack
-  needs: []
   when: always
   allow_failure: true
   script:
