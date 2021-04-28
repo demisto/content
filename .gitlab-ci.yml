@@ -83,11 +83,11 @@ variables:
 # See here for more about that https://docs.gitlab.com/ee/ci/pipelines/settings.html#git-shallow-clone  # disable-secrets-detection
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
-  BUCKET_UPLOAD: "true"
+  BUCKET_UPLOAD: "false"
 # Remove this when branches will sync with github
   SKIP_PRIVATE_BUILD: "true"
   COMMIT_FLOW: "false"
-  FORCE_BUCKET_UPLOAD: "false"
+  FORCE_BUCKET_UPLOAD: "true"
 
 stages:
   - unittests-and-validations
@@ -574,4 +574,5 @@ force-pack-upload:
       if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
           STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
       fi
+    - exit 1
     - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
