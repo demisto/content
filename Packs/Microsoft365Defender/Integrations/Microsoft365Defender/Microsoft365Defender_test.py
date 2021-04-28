@@ -77,7 +77,7 @@ def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_re
     mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
     results = fetch_incidents(client, first_fetch_time, fetch_limit)
     assert len(results) == len(mock_results)
-    for incident, mock_incident in zip(results,mock_results):
+    for incident, mock_incident in zip(results, mock_results):
         assert incident['name'] == mock_incident['name']
         assert incident['occurred'] == mock_incident['occurred']
         assert incident['rawJSON'] == mock_incident['rawJSON']
