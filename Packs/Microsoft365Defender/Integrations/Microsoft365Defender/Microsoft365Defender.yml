@@ -30,6 +30,14 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense
   suite that natively coordinates detection, prevention, investigation, and response
   across endpoints, identities, email, and applications to provide integrated protection
@@ -86,45 +94,45 @@ script:
     execution: false
     name: microsoft-365-defender-incidents-list
     outputs:
-      - contextPath: Microsoft365Defender.Incident.incidentId
-        description: Incident's ID
-        type: Number
-      - contextPath: Microsoft365Defender.Incident.redirectIncidentId
-        description: Only populated in case an incident is being grouped together with another
-          incident, as part of the incident processing logic.
-        type: Unknown
-      - contextPath: Microsoft365Defender.Incident.incidentName
-        description: The name of the Incident.
-        type: String
-      - contextPath: Microsoft365Defender.Incident.createdTime
-        description: The date and time (in UTC) the Incident was created.
-        type: Date
-      - contextPath: Microsoft365Defender.Incident.lastUpdateTime
-        description: The date and time (in UTC) the Incident was last updated.
-        type: Date
-      - contextPath: Microsoft365Defender.Incident.assignedTo
-        description: Owner of the Incident.
-        type: String
-      - contextPath: Microsoft365Defender.Incident.classification
-        description: 'Specification of the incident. Possible values are: Unknown, FalsePositive,
+    - contextPath: Microsoft365Defender.Incident.incidentId
+      description: Incident's ID
+      type: Number
+    - contextPath: Microsoft365Defender.Incident.redirectIncidentId
+      description: Only populated in case an incident is being grouped together with
+        another incident, as part of the incident processing logic.
+      type: Unknown
+    - contextPath: Microsoft365Defender.Incident.incidentName
+      description: The name of the Incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.createdTime
+      description: The date and time (in UTC) the Incident was created.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.lastUpdateTime
+      description: The date and time (in UTC) the Incident was last updated.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.assignedTo
+      description: Owner of the Incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.classification
+      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive,
         TruePositive.'
-        type: String
-      - contextPath: Microsoft365Defender.Incident.determination
-        description: 'Specifies the determination of the incident. Possible values are:
+      type: String
+    - contextPath: Microsoft365Defender.Incident.determination
+      description: 'Specifies the determination of the incident. Possible values are:
         NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware,
         Other.'
-        type: String
-      - contextPath: Microsoft365Defender.Incident.status
-        description: 'Specifies the current status of the incident. Possible values are:
-        Active, Resolved, and Redirected.'
-        type: String
-      - contextPath: Microsoft365Defender.Incident.severity
-        description: 'Severity of the Incident. Possible values are: UnSpecified, Informational,
+      type: String
+    - contextPath: Microsoft365Defender.Incident.status
+      description: 'Specifies the current status of the incident. Possible values
+        are: Active, Resolved, and Redirected.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.severity
+      description: 'Severity of the Incident. Possible values are: UnSpecified, Informational,
         Low, Medium, and High.'
-        type: String
-      - contextPath: Microsoft365Defender.Incident.alerts
-        description: List of alerts relevant for the incidents
-        type: Unknown
+      type: String
+    - contextPath: Microsoft365Defender.Incident.alerts
+      description: List of alerts relevant for the incidents
+      type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -187,45 +195,45 @@ script:
     execution: false
     name: microsoft-365-defender-incident-update
     outputs:
-      - contextPath: Microsoft365Defender.Incident.incidentId
-        description: Incident's ID
-        type: Number
-      - contextPath: Microsoft365Defender.Incident.redirectIncidentId
-        description: Only populated in case an incident is being grouped together with another
-          incident, as part of the incident processing logic.
-        type: Unknown
-      - contextPath: Microsoft365Defender.Incident.incidentName
-        description: The name of the Incident.
-        type: String
-      - contextPath: Microsoft365Defender.Incident.createdTime
-        description: The date and time (in UTC) the Incident was created.
-        type: Date
-      - contextPath: Microsoft365Defender.Incident.lastUpdateTime
-        description: The date and time (in UTC) the Incident was last updated.
-        type: Date
-      - contextPath: Microsoft365Defender.Incident.assignedTo
-        description: Owner of the Incident.
-        type: String
-      - contextPath: Microsoft365Defender.Incident.classification
-        description: 'Specification of the incident. Possible values are: Unknown, FalsePositive,
+    - contextPath: Microsoft365Defender.Incident.incidentId
+      description: Incident's ID
+      type: Number
+    - contextPath: Microsoft365Defender.Incident.redirectIncidentId
+      description: Only populated in case an incident is being grouped together with
+        another incident, as part of the incident processing logic.
+      type: Unknown
+    - contextPath: Microsoft365Defender.Incident.incidentName
+      description: The name of the Incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.createdTime
+      description: The date and time (in UTC) the Incident was created.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.lastUpdateTime
+      description: The date and time (in UTC) the Incident was last updated.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.assignedTo
+      description: Owner of the Incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.classification
+      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive,
         TruePositive.'
-        type: String
-      - contextPath: Microsoft365Defender.Incident.determination
-        description: 'Specifies the determination of the incident. Possible values are:
+      type: String
+    - contextPath: Microsoft365Defender.Incident.determination
+      description: 'Specifies the determination of the incident. Possible values are:
         NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware,
         Other.'
-        type: String
-      - contextPath: Microsoft365Defender.Incident.status
-        description: 'Specifies the current status of the incident. Possible values are:
-        Active, Resolved, and Redirected.'
-        type: String
-      - contextPath: Microsoft365Defender.Incident.severity
-        description: 'Severity of the Incident. Possible values are: UnSpecified, Informational,
+      type: String
+    - contextPath: Microsoft365Defender.Incident.status
+      description: 'Specifies the current status of the incident. Possible values
+        are: Active, Resolved, and Redirected.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.severity
+      description: 'Severity of the Incident. Possible values are: UnSpecified, Informational,
         Low, Medium, and High.'
-        type: String
-      - contextPath: Microsoft365Defender.Incident.alerts
-        description: List of alerts relevant for the incidents
-        type: Unknown
+      type: String
+    - contextPath: Microsoft365Defender.Incident.alerts
+      description: List of alerts relevant for the incidents
+      type: Unknown
   - arguments:
     - default: false
       description: Todo
@@ -239,12 +247,12 @@ script:
     execution: false
     name: microsoft-365-defender-advanced-hunting
     outputs:
-      - contextPath: Microsoft365Defender.Hunt.query
-        description: The query used, also acted as a key
-        type: String
-      - contextPath: Microsoft365Defender.Hunt.results.
-        description: The results of the query
-        type: Unknown
+    - contextPath: Microsoft365Defender.Hunt.query
+      description: The query used, also acted as a key
+      type: String
+    - contextPath: Microsoft365Defender.Hunt.results.
+      description: The results of the query
+      type: Unknown
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: true

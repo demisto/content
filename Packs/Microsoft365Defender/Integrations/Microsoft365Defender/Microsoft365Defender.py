@@ -270,6 +270,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     return CommandResults(outputs_prefix='Microsoft365Defender.Incident', outputs_key_field='incidentId',
                           outputs=raw_incidents, readable_output=human_readable_table)
 
+
 @logger
 def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -> CommandResults:
     """
@@ -307,7 +308,7 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
                                            headers=list(readable_incident.keys()))
 
     return CommandResults(outputs_prefix='Microsoft365Defender.Incident', outputs_key_field='incidentId',
-                          outputs=updated_incident,readable_output=human_readable_table)
+                          outputs=updated_incident, readable_output=human_readable_table)
 
 
 @logger
@@ -350,7 +351,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int) -> 
 
         skip = 0
         incidents = list()
-        while True: # as long as there are incidents to fetch run this loop.
+        while True:  # as long as there are incidents to fetch run this loop.
             response = client.incidents_list(from_date=last_run, skip=skip)
             raw_incidents = response.get('value')
             incidents += [{
@@ -364,11 +365,11 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int) -> 
                 break
             skip += int(MAX_ENTRIES)
 
-        incidents.sort(key=lambda x: dateparser.parse(x['occurred'])) # sort the incidents by the creation time
+        incidents.sort(key=lambda x: dateparser.parse(x['occurred']))  # sort the incidents by the creation time
         incidents_queue += incidents
 
     oldest_incidents = incidents_queue[:fetch_limit]
-    new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run # newest incident creation time
+    new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run  # newest incident creation time
     demisto.setLastRun({'last_run': new_last_run,
                         'incidents_queue': incidents_queue[fetch_limit:]})
     return oldest_incidents
@@ -459,7 +460,6 @@ def main() -> None:
             fetch_limit = arg_to_number(fetch_limit)
             incidents = fetch_incidents(client, first_fetch_time, fetch_limit)
             demisto.incidents(incidents)
-
 
     # Log exceptions and return errors
     except Exception as e:
