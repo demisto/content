@@ -58,7 +58,7 @@ class Client:
         self.get_roots()
         self.get_collections()
 
-    def build_iterator(self, limit: int = -1) -> List:
+    def build_iterator(self, create_relationships=False, limit: int = -1) -> List:
         """Retrieves all entries from the feed.
 
         Returns:
@@ -111,7 +111,7 @@ class Client:
                         value = mitre_item_json.get('name')
                         indicator_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))
 
-                        if indicator_type == 'Relationship':
+                        if indicator_type == 'Relationship' and create_relationships:
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
                                 continue
                             relationships_list.append(create_relationship(mitre_item_json))
@@ -240,8 +240,8 @@ def test_module(client):
         return_error('Could not connect to server')
 
 
-def fetch_indicators(client):
-    indicators = client.build_iterator()
+def fetch_indicators(client, create_relationships):
+    indicators = client.build_iterator(create_relationships)
     return indicators
 
 
@@ -292,6 +292,7 @@ def main():
     verify_certificate = not params.get('insecure', False)
     tags = argToList(params.get('feedTags', []))
     tlp_color = params.get('tlp_color')
+    create_relationships = params.get('create_relationships')
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
@@ -307,7 +308,7 @@ def main():
             test_module(client)
 
         elif demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators(client)
+            indicators = fetch_indicators(client, create_relationships)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
