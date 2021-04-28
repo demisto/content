@@ -70,7 +70,7 @@ configuration:
   type: 0
 - additionalinfo: If selected, the indicator type will be auto detected for each indicator.
   defaultvalue: 'true'
-  display: Auto Detect Indicator Type
+  display: Auto detect indicator type
   name: auto_detect_type
   required: false
   type: 8
