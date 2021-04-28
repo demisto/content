@@ -1,4 +1,5 @@
 import io
+import json
 import traceback
 import types
 import zipfile
@@ -11,8 +12,9 @@ from tempfile import TemporaryDirectory
 from typing import Any, Dict, List, Optional, Tuple
 
 import git
-from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION
+from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
 from demisto_sdk.commands.common.content import Content
+from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.init.contribution_converter import (
     AUTOMATION, INTEGRATION, INTEGRATIONS_DIR, SCRIPT, SCRIPTS_DIR,
@@ -186,9 +188,10 @@ def run_validate(file_path: str, json_output_file: str) -> None:
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
+    logging_setup(verbose=3, quiet=False, log_path=lint_log_dir)
     lint_manager = LintManager(
         input=file_path, git=False, all_packs=False, quiet=False, verbose=1,
-        log_path=lint_log_dir, prev_ver='', json_file_path=json_output_file
+        prev_ver='', json_file_path=json_output_file
     )
     lint_manager.run_dev_packages(
         parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,
@@ -221,16 +224,22 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     prefix = '-'.join(filename.split('-')[:-1])
     containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
     containing_dir.mkdir(exist_ok=True)
+    is_json = filename.casefold().endswith('.json')
     data_as_string = data.decode()
-    loaded_data = yaml.load(data_as_string)
-    buff = io.StringIO()
-    yaml.dump(loaded_data, buff)
-    data_as_string = buff.getvalue()
-    # write yaml integration file to file system
+    loaded_data = json.loads(data_as_string) if is_json else yaml.load(data_as_string)
+    if is_json:
+        data_as_string = json.dumps(loaded_data)
+    else:
+        buff = io.StringIO()
+        yaml.dump(loaded_data, buff)
+        data_as_string = buff.getvalue()
+    # write content item file to file system
     file_path = containing_dir / filename
     file_path.write_text(data_as_string)
     file_type = find_type(str(file_path))
     file_type = file_type.value if file_type else file_type
+    if is_json or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
+        return str(file_path), {}
     extractor = Extractor(
         input=str(file_path), file_type=file_type, output=containing_dir,
         no_logging=True, no_pipenv=True, no_basic_fmt=True
