@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+
+# from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import json
@@ -614,6 +615,40 @@ def create_pull_request_command():
     }
     human_readable = tableToMarkdown(f'Created Pull Request #{response.get("number")}', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+def list_branch_pull_requests(branch_name: str, repository: str = None, organization: str = None):
+    repository = repository if repository else REPOSITORY
+    organization = organization if organization else USER
+    suffix = f'/repos/{organization}/{repository}/pulls?head={organization}:{branch_name}'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
+def list_branch_pull_requests_command() -> CommandResults:
+    """
+    List all pull requests corresponding to the given 'branch_name' in 'organization'
+    Args:
+        - 'branch_name': Branch name to retrieve its pull requests.
+        - 'organization': Organization the branch belongs to.
+        - 'repository': The repository the branch belongs to. Uses 'REPOSITORY' parameter if not given.
+    Returns:
+        (CommandResults).
+    """
+    args = demisto.args()
+    branch_name = args.get('branch_name', '')
+    organization = args.get('organization')
+    repository = args.get('repository')
+    response = list_branch_pull_requests(branch_name, repository, organization)
+    formatted_outputs = [format_pr_outputs(output) for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitHub.PR',
+        outputs_key_field='Number',
+        outputs=formatted_outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown(f'Pull Request For Branch #{branch_name}', formatted_outputs, removeNull=True)
+    )
 
 
 def is_pr_merged(pull_number: Union[int, str]):
@@ -1482,6 +1517,7 @@ COMMANDS = {
     'Github-list-files': list_files_command,
     'GitHub-get-file-content': get_file_content_from_repo,
     'GitHub-search-code': search_code_command,
+    'GitHub-list-branch-pull-requests': list_branch_pull_requests_command
 }
 
 
@@ -1543,5 +1579,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
