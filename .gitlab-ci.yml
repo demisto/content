@@ -214,7 +214,7 @@ create-instances:
     - |
       if [ $INSTANCE_ROLE == "Server Master" ];
         then
-          ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ARTIFACTS_FOLDER/env_results.json
+          ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ARTIFACTS_FOLDER/env_results.json '$SLACK_CHANNEL' 'gitlab'
       fi
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
     - export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
