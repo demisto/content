@@ -1,9 +1,6 @@
 commonfields:
   id: If-Then-Else
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
 name: If-Then-Else
 script: ''
 type: javascript
@@ -16,20 +13,22 @@ args:
 - name: value
   description: The value to evaluate
 - name: equals
-  description: The value to compare in the condition
+  description: (Depreciated) If value equals this
 - name: then
   description: Return this value if 'condition' is true
 - name: else
   description: Return this value if 'condition' is false
 - name: condition
-  description: The condition expression to evaluate
-  defaultValue: value==equals
-- name: optional_value
-  description: The value to compare in the condition
+  description: The condition expression to evaluate such as lhs==rhs or lhs!=rhs.
+    value==equals if this is empty for backward compatibility.
+- name: lhs
+  description: The value to compare in the condition (left hand side)
+- name: rhs
+  description: The value to compare in the condition (right hand side)
 - name: options
   description: 'Option flags (comma separated list): available options are `case_insensitive`,
     `regex_dot_all`, `regex_multiline`, `regex_full_match`, `input_data_type:then=<type>`,
-    `input_data_type:else=<type>`, `input_data_type:equals=<type>` and `input_data_type:optional_value=<type>`.'
+    `input_data_type:else=<type>`, `input_data_type:lhs=<type>` and `input_data_type:rhs=<type>`.'
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole

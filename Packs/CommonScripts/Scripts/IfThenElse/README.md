@@ -15,11 +15,12 @@ A transformer for simple if-then-else logic. This can potentially reduce the num
 | **Argument Name** | **Description** |
 | --- | --- |
 | value | (Optional) The value to evaluate |
-| equals | (Optional) The value to compare in the condition |
+| equals | (Optional, Depreciated) If value equals this |
 | then | (Optional) Return this value if 'condition' is true |
 | else | (Optional) Return this value if 'condition' is false |
 | condition | (Optional) The condition expression to evaluate, See `Condition` |
-| optional_value | (Optional) The optional value to compare in the condition |
+| lhs | (Optional) The value to compare in the condition (left hand side). |
+| rhs | (Optional) The value to compare in the condition (right hand side). |
 | options | (Optional) Option flags (comma separated list), See `Options` |
 
 #### Condition
@@ -29,10 +30,10 @@ The format of the condition expression is:
 
     <lhs> <operator> <rhs>
 
-    e.g. value==equals
-    e.g. value in list equals
+    e.g. lhs==rhs
+    e.g. value in list rhs
 
-You can specify `value`, `equals` or `optional_value` for `<lhs>` and `<rhs>`. Those keywords are corresponding to its argument name.<br>
+You can specify `lhs`, `rhs` or `value` for `<lhs>` and `<rhs>`. Those keywords are corresponding to its argument name.<br>
 Also, see `Operator` for the available operators.
 
 
@@ -61,8 +62,8 @@ Also, see `Operator` for the available operators.
 | regex_full_match | Matched only when the whole string given matched with the regular expression pattern. This only applies to applies to regular expression. |
 | input_data_type:then=&lt;type&gt; | The data given in `then` is converted based on the keyword specified in `<type>`. See `input_data_type`. e.g. input_data_type:then=json |
 | input_data_type:else=&lt;type&gt; | The data given in `else` is converted based on the keyword specified in `<type>`. See `input_data_type`. e.g. input_data_type:else=json |
-| input_data_type:equals=&lt;type&gt; | The data given in `equals` is converted based on the keyword specified in `<type>`. See `input_data_type`. e.g. input_data_type:equals=json |
-| input_data_type:optional_value=&lt;type&gt; | The data given in `optional_value` is converted based on the keyword specified in `<type>`. See `input_data_type`. e.g. input_data_type:optional_value=json |
+| input_data_type:lhs=&lt;type&gt; | The data given in `lhs` is converted based on the keyword specified in `<type>`. See `input_data_type`. e.g. input_data_type:lhs=json |
+| input_data_type:rhs=&lt;type&gt; | The data given in `rhs` is converted based on the keyword specified in `<type>`. See `input_data_type`. e.g. input_data_type:rhs=json |
 
 #### input_data_type
 | **Type** | **Description** |
