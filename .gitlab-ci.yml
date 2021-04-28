@@ -96,6 +96,7 @@ stages:
 
 create-instances:
   stage: create-instances
+  needs: []
   script:
     - demisto-sdk create-id-set -o ./Tests/id_set.json
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
@@ -228,6 +229,7 @@ server_master:
     INSTANCE_ROLE: "Server Master"
 
 run-unittests-and-lint:
+  needs: []
   stage: unittests-and-validations
   artifacts:
     expire_in: 48 hrs
@@ -298,6 +300,7 @@ run-unittests-and-lint:
 
 run-validations:
   stage: unittests-and-validations
+  needs: []
   artifacts:
     expire_in: 48 hrs
     paths:
@@ -554,4 +557,3 @@ upload-packs-to-marketplace:
       if [ -n "${BUCKET_UPLOAD}" ]; then
         ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
       fi
-
