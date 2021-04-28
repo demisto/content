@@ -19,12 +19,14 @@ class Client(BaseClient):
         self.api_key = api_key
         self.reliability = reliability
 
-    def _url_suffix(self, ip: str) -> str:
-        api_key_in_url = f'?token={self.api_key}' if self.api_key else ''
-        return f'{ip}/json{api_key_in_url}'
-
     def ipinfo_ip(self, ip: str) -> Dict[str, Any]:
-        return self._http_request(method='GET', url_suffix=self._url_suffix(ip=ip))
+        return self.http_request(ip)
+
+    def http_request(self, ip: str) -> Dict[str, Any]:
+        """ constructs url with token (if existent), then returns request """
+        return self._http_request(method='GET',
+                                  url_suffix=f'{ip}/json',
+                                  params=assign_params(token=self.api_key))
 
 
 def test_module(client: Client) -> str:
@@ -33,122 +35,126 @@ def test_module(client: Client) -> str:
     return 'ok'  # on any failure, an exception is raised
 
 
-#
-
 def ipinfo_ip_command(client: Client, ip: str) -> List[CommandResults]:
     response = client.ipinfo_ip(ip)
     return parse_results(ip, response, client.reliability)
 
 
 def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreReliability) -> List[CommandResults]:
-    command_results = []
+    command_results: List[CommandResults] = []
 
     # default values
     asn = as_owner = None
-    feed_related_indicators = []
+    feed_related_indicators: List[Common.FeedRelatedIndicators] = []
 
-    if raw_result:
-        hostname = str(raw_result.get('hostname', ''))
-        feed_related_indicators.append(
-            Common.FeedRelatedIndicators(hostname,
-                                         FeedIndicatorType.URL if urlRegex.find(hostname)
-                                         else FeedIndicatorType.Domain))
-        if 'asn' in raw_result:
-            asn = demisto.get(raw_result, 'asn.asn')
-            as_owner = demisto.get(raw_result, 'asn.name')
-            as_domain = demisto.get(raw_result, 'asn.domain')
+    if not raw_result:
+        return command_results
 
-            if as_domain:
-                feed_related_indicators.append(Common.FeedRelatedIndicators(as_domain, FeedIndicatorType.Domain))
+    hostname = str(raw_result.get('hostname', ''))
+    feed_related_indicators.append(
+        Common.FeedRelatedIndicators(hostname,
+                                     FeedIndicatorType.URL if urlRegex.find(hostname) else FeedIndicatorType.Domain,
+                                     'Hostname'))
 
-        elif 'org' in raw_result:
-            org = raw_result.get('org', '')
-            if ' ' in org:
-                org_parts = org.split(' ')
-                asn, as_owner = org_parts[0], ' '.join(org_parts[1:])
+    if 'org' in raw_result:
+        org = raw_result.get('org', '')
+        if ' ' in org:
+            org_parts = org.split(' ')
+            asn, as_owner = org_parts[0], ' '.join(org_parts[1:])
 
-        organization = {
-            'Name': demisto.get(raw_result, 'company.name'),
-            'Type': demisto.get(raw_result, 'company.type')
-        } if 'company' in raw_result else None
+    # example of a field only available on paid accounts
+    if 'asn' in raw_result:
+        asn = demisto.get(raw_result, 'asn.asn')
+        as_owner = demisto.get(raw_result, 'asn.name')
+        as_domain = demisto.get(raw_result, 'asn.domain')
 
-        company_domain = demisto.get(raw_result, 'company.domain')
-        if company_domain is not None:
-            feed_related_indicators.append(Common.FeedRelatedIndicators(company_domain, FeedIndicatorType.Domain))
+        if as_domain:
+            feed_related_indicators.append(
+                Common.FeedRelatedIndicators(as_domain, FeedIndicatorType.Domain, 'AS domain'))
 
-        abuse = {
-            'Address': demisto.get(raw_result, 'abuse.address'),
-            'Country': demisto.get(raw_result, 'abuse.country'),
-            'Name': demisto.get(raw_result, 'abuse.name'),
-            'Network': demisto.get(raw_result, 'abuse.network'),
-            'Phone': demisto.get(raw_result, 'abuse.phone'),
-            'Email': demisto.get(raw_result, 'abuse.email')
-        } if 'abuse' in raw_result else None
+    organization = {
+        'Name': demisto.get(raw_result, 'company.name'),
+        'Type': demisto.get(raw_result, 'company.type')
+    } if 'company' in raw_result else None
 
-        tags = []
-        for (tag_path, tag_name) in (('privacy.hosting', 'hosting'),
-                                     ('privacy.proxy', 'proxy'),
-                                     ('privacy.tor', 'tor'),
-                                     ('privacy.vpn', 'vpn')):
-            if demisto.get(raw_result, tag_path):
-                tags.append(tag_name)
+    company_domain = demisto.get(raw_result, 'company.domain')
+    if company_domain is not None:
+        feed_related_indicators.append(Common.FeedRelatedIndicators(company_domain,
+                                                                    FeedIndicatorType.Domain,
+                                                                    'Company domain'))
 
-        city = raw_result.get('city', '')
-        region = raw_result.get('region', '')
-        postal = raw_result.get('postal', '')
-        country = raw_result.get('country', '')
+    abuse = {
+        'Address': demisto.get(raw_result, 'abuse.address'),
+        'Country': demisto.get(raw_result, 'abuse.country'),
+        'Name': demisto.get(raw_result, 'abuse.name'),
+        'Network': demisto.get(raw_result, 'abuse.network'),
+        'Phone': demisto.get(raw_result, 'abuse.phone'),
+        'Email': demisto.get(raw_result, 'abuse.email')
+    } if 'abuse' in raw_result else None
 
-        description = ', '.join(filter(None, [city, region, postal, country]))
+    tags = []
+    for (tag_path, tag_name) in (('privacy.hosting', 'hosting'),
+                                 ('privacy.proxy', 'proxy'),
+                                 ('privacy.tor', 'tor'),
+                                 ('privacy.vpn', 'vpn')):
+        if demisto.get(raw_result, tag_path):
+            tags.append(tag_name)
 
-        # parses geolocation
-        lat = lon = None
-        loc = raw_result.get('loc', '')  # empty string as default on purpose,
-        if ',' in loc:
-            coordinates = loc.split(',')
-            lat, lon = float(coordinates[0]), float(coordinates[1])
+    city = raw_result.get('city', '')
+    region = raw_result.get('region', '')
+    postal = raw_result.get('postal', '')
+    country = raw_result.get('country', '')
 
-        entry_context = {'Address': raw_result.get('ip'),
-                         'Hostname': hostname,  # type: ignore
-                         'ASN': asn,
-                         'ASOwner': as_owner,
-                         'Tags': tags,  # type: ignore
-                         'Organization': organization,
-                         'Geo': {'Location': loc, 'Country': country, 'Description': description},  # type: ignore
-                         'Registrar': {'Abuse': abuse} if abuse else None}
+    description = ', '.join(filter(None, [city, region, postal, country]))
 
-        outputs_key_field = 'Address'  # marks the ip address
+    # parses geolocation
+    lat = lon = None
+    loc = raw_result.get('loc', '')  # empty string as default on purpose,
+    if ',' in loc:
+        coordinates = loc.split(',')
+        lat, lon = float(coordinates[0]), float(coordinates[1])
 
-        indicator = Common.IP(
-            ip=ip,
-            dbot_score=Common.DBotScore(indicator=ip,
-                                        indicator_type=DBotScoreType.IP,
-                                        integration_name='IPinfo_v2',
-                                        reliability=reliability,
-                                        score=Common.DBotScore.NONE),
-            asn=asn,
-            hostname=hostname,
-            feed_related_indicators=feed_related_indicators,
-            geo_latitude=str(lat) if lat else None,
-            geo_longitude=str(lon) if lon else None,
-            geo_description=description or None,
-            geo_country=country,
-            tags=','.join(tags))
+    entry_context = {'Address': raw_result.get('ip'),
+                     'Hostname': hostname,  # type: ignore
+                     'ASN': asn,
+                     'ASOwner': as_owner,
+                     'Tags': tags,  # type: ignore
+                     'Organization': organization,
+                     'Geo': {'Location': loc, 'Country': country, 'Description': description},  # type: ignore
+                     'Registrar': {'Abuse': abuse} if abuse else None}
 
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown(f'IPinfo results for {ip}', raw_result),
-            raw_response=raw_result,
-            outputs_prefix='IPinfo.IP',
-            outputs=entry_context,
-            outputs_key_field=outputs_key_field,
-            indicator=indicator))
+    outputs_key_field = 'Address'  # marks the ip address
 
-        if lat and lon:
-            map_output = CommandResults(raw_response={'lat': lat, 'lng': lon},
-                                        entry_type=EntryType.MAP_ENTRY_TYPE,
-                                        outputs_key_field=outputs_key_field,
-                                        indicator=indicator)
-            command_results.append(map_output)
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=Common.DBotScore(indicator=ip,
+                                    indicator_type=DBotScoreType.IP,
+                                    integration_name='IPinfo_v2',
+                                    reliability=reliability,
+                                    score=Common.DBotScore.NONE),
+        asn=asn,
+        hostname=hostname,
+        feed_related_indicators=feed_related_indicators,
+        geo_latitude=str(lat) if lat else None,
+        geo_longitude=str(lon) if lon else None,
+        geo_description=description or None,
+        geo_country=country,
+        tags=','.join(tags))
 
+    command_results.append(CommandResults(
+        readable_output=tableToMarkdown(f'IPinfo results for {ip}', raw_result),
+        raw_response=raw_result,
+        outputs_prefix='IPinfo.IP',
+        outputs=entry_context,
+        outputs_key_field=outputs_key_field,
+        indicator=indicator))
+
+    if lat and lon:
+        map_output = CommandResults(raw_response={'lat': lat, 'lng': lon},
+                                    entry_type=EntryType.MAP_ENTRY_TYPE,
+                                    outputs_key_field=outputs_key_field,
+                                    indicator=indicator)
+        command_results.append(map_output)
     return command_results
 
 
@@ -163,16 +169,16 @@ def main() -> None:
     api_key = demisto.get(params, 'credentials.password') or ''
     insecure = params.get('insecure') or False
     base_url = params.get('base_url') or "https://ipinfo.io"
+    reliability = params.get('integrationReliability')
 
     demisto.debug(f'Command being called is {command}')
 
-    reliability = params.get('integrationReliability')
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")
-
     try:
+        if DBotScoreReliability.is_valid_type(reliability):
+            reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        else:
+            raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
         client = Client(api_key=api_key,
                         verify_certificate=insecure,
                         proxy=proxy,
