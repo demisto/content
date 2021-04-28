@@ -151,21 +151,20 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))
     mitre_platform = ','.join(indicator_json.get('x_mitre_platforms'))
 
-    notes = []
+    publications = []
     for external_reference in indicator_json.get('external_references', []):
         if external_reference.get('external_id'):
             continue
         url = external_reference.get('url')
         description = external_reference.get('description')
-        note = f'{url}\n{description}'
-        notes.append({'Notes': note})
+        publications.append({'Link': url, 'Title': description})
 
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
         'firstseenbysource': created,
         'modified': modified,
         'description': indicator_json.get('description'),
-        'communitynotes': notes,
+        'publications': publications,
     }
     mapping_by_type = {
         "STIX Attack Pattern": {
