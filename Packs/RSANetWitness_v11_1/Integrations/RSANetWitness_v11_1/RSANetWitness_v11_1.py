@@ -178,7 +178,7 @@ def http_request(method, url, body=None, headers=None, url_params=None):
             return response.json()
         except Exception as e:
             demisto.debug('Could not parse response as a JSON.\nResponse is: {}.'
-                          '\nError is:{}'.format(response.content, e.message))
+                          '\nError is: {}'.format(response.content, e.message))
             return None
     # bad request - NetWitness returns a common json structure for errors; a list of error objects
     error_lst = response.json().get('errors')
