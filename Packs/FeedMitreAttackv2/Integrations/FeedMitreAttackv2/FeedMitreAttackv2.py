@@ -18,28 +18,27 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {
     "relationship": "Relationship"
 }
 
+INDICATOR_TYPE_TO_SCORE = {
+    "Intrusion Set": 3,
+    "Attack Pattern": 2,
+    "Course of Action": 0,
+    "Malware": 3,
+    "Tool": 2
+}
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 
 class Client:
 
-    def __init__(self, url, proxies, verify, include_apt, reputation, tags: list = None,
+    def __init__(self, url, proxies, verify, tags: list = None,
                  tlp_color: Optional[str] = None):
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
-        self.include_apt = include_apt
-        self.indicatorType = "MITRE ATT&CK"
-        self.reputation = 0
         self.tags = [] if tags is None else tags
         self.tlp_color = tlp_color
-        if reputation == 'Good':
-            self.reputation = 0
-        elif reputation == 'Suspicious':
-            self.reputation = 2
-        elif reputation == 'Malicious':
-            self.reputation = 3
         self.server: Server
         self.api_root: List[ApiRoot]
         self.collections: List[Collection]
@@ -113,12 +112,17 @@ class Client:
                         indicator_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))
 
                         if indicator_type == 'Relationship':
+                            if mitre_item_json.get('relationship_type') == 'revoked-by':
+                                continue
                             relationships_list.append(create_relationship(mitre_item_json))
 
                         else:
+                            if is_indicator_deprecated_or_revoked(mitre_item_json):
+                                continue
+                            indicator_score = INDICATOR_TYPE_TO_SCORE.get(indicator_type)
                             indicator_obj = {
                                 "value": value,
-                                "score": self.reputation,
+                                "score": indicator_score,
                                 "type": indicator_type,
                                 "rawJSON": mitre_item_json,
                                 "fields": map_fields_by_type(indicator_type, mitre_item_json)
@@ -136,6 +140,10 @@ class Client:
             indicators[0]['relationships'] = ['relationships_list']  # todo
 
         return indicators
+
+
+def is_indicator_deprecated_or_revoked(indicator_json):
+    return True if indicator_json.get("x_mitre_deprecated") or indicator_json.get("revoked") else False
 
 
 def map_fields_by_type(indicator_type: str, indicator_json: dict):
@@ -281,8 +289,6 @@ def main():
     params = demisto.params()
     args = demisto.args()
     url = 'https://cti-taxii.mitre.org'
-    include_apt = params.get('includeAPT')
-    reputation = params.get('feedReputation', 'None')
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
     tags = argToList(params.get('feedTags', []))
@@ -291,7 +297,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(url, proxies, verify_certificate, include_apt, reputation, tags, tlp_color)
+        client = Client(url, proxies, verify_certificate, tags, tlp_color)
         client.initialise()
         commands = {
             'mitre-get-indicators': get_indicators_command,
