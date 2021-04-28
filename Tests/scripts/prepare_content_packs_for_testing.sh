@@ -5,7 +5,6 @@ set -e
 
 CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
 CI_BUILD_ID=${CI_BUILD_ID:-00000}
-ARTIFACTS_FOLDER=${ARTIFACTS_FOLDER}
 PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
 ID_SET=$ARTIFACTS_FOLDER/id_set.json
 EXTRACT_FOLDER=$(mktemp -d)
@@ -16,7 +15,6 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
 fi
 
 echo "Preparing content packs for testing ..."
-
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 echo "Auth loaded successfully."
 
@@ -38,7 +36,7 @@ if [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
   SOURCE_PATH="content"
 else
   # ====== UPDATING TESTING BUCKET ======
-  SOURCE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_BUILD_ID/content"
+  SOURCE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
   echo "Copying production bucket files at: gs://marketplace-dist/content to testing bucket at path: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH ..."
   gsutil -m cp -r "gs://marketplace-dist/content" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing.log" 2>&1
   echo "Finished copying successfully."
@@ -51,7 +49,7 @@ echo "Finished copying successfully."
 
 if [ ! -n "${BUCKET_UPLOAD}" ]; then
     echo "Updating modified content packs in the bucket ..."
-    CONTENT_PACKS_TO_INSTALL_FILE="./artifacts/content_packs_to_install.txt"
+    CONTENT_PACKS_TO_INSTALL_FILE="$ARTIFACTS_FOLDER/content_packs_to_install.txt"
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
     echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
   else

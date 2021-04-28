@@ -60,7 +60,7 @@ MARKET_PLACE_CONFIGURATION = {
 AVOID_DOCKER_IMAGE_VALIDATION = {
     'content.validate.docker.images': 'false'
 }
-ID_SET_PATH = './Tests/id_set.json'
+ID_SET_PATH = './artifacts/id_set.json'
 
 
 class Running(IntEnum):
@@ -123,7 +123,7 @@ class Build:
     test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CIRCLECI_RUN
-    env_results_path = './env_results.json'
+    env_results_path = './artifacts/env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
@@ -584,18 +584,11 @@ def __set_server_keys(client, integration_params, integration_name):
     for key, value in integration_params.get('server_keys').items():
         data['data'][key] = value
 
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                                        method='POST', body=data)
-
-    try:
-        result_object = ast.literal_eval(response_data)
-    except ValueError:
-        logging.exception(f'failed to parse response from demisto. response is {response_data}')
-        return
-
-    if status_code >= 300 or status_code < 200:
-        message = result_object.get('message', '')
-        logging.error(f'Failed to set server keys, status_code: {status_code}, message: {message}')
+    update_server_configuration(
+        client=client,
+        server_configuration=data,
+        error_msg='Failed to set server keys'
+    )
 
 
 def set_integration_instance_parameters(integration_configuration,
@@ -747,7 +740,7 @@ def update_content_on_demisto_instance(client, server, ami_name):
         # check that the content installation updated
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
         release, asset_id = get_content_version_details(client, ami_name)
-        with open('content-descriptor.json', 'r') as cd_file:
+        with open('./artifacts/content-descriptor.json', 'r') as cd_file:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')

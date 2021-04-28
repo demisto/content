@@ -2412,7 +2412,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                ip_context['Relations'] = relations_context
+                ip_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.IP.CONTEXT_PATH: ip_context
@@ -2655,7 +2655,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                file_context['Relations'] = relations_context
+                file_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.File.CONTEXT_PATH: file_context
@@ -2721,7 +2721,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                cve_context['Relations'] = relations_context
+                cve_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -2767,7 +2767,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                email_context['Relations'] = relations_context
+                email_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.EMAIL.CONTEXT_PATH: email_context
@@ -2858,7 +2858,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                url_context['Relations'] = relations_context
+                url_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
@@ -3005,7 +3005,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                domain_context['Relations'] = relations_context
+                domain_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context
@@ -3083,7 +3083,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                endpoint_context['Relations'] = relations_context
+                endpoint_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
@@ -3158,7 +3158,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                account_context['Relations'] = relations_context
+                account_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
@@ -6939,10 +6939,10 @@ class IndicatorsSearcher:
         if self._can_use_search_after:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
                                            searchAfter=self._search_after_param)
-            if self._search_after_title in res and res[self._search_after_title] is not None:
-                self._search_after_param = res[self._search_after_title]
-            else:
-                demisto.log('Elastic search using searchAfter was not found in searchIndicators')
+            self._search_after_param = res[self._search_after_title]
+
+            if res[self._search_after_title] is None:
+                demisto.info('Elastic search using searchAfter returned all indicators')
 
         else:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page,
