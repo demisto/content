@@ -4,16 +4,15 @@ Pytest Unit Tests: all funcion names must start with "test_"
 
 More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
 You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
 import json
 import io
-
-from Microsoft365Defender import *
+import demistomock as demisto
+from Microsoft365Defender import Client
+from Microsoft365Defender import fetch_incidents
 
 
 def util_load_json(path):
@@ -22,57 +21,84 @@ def util_load_json(path):
 
 
 def test_convert_incident():
-    """
-    Check for None input
-    """
-    empty_incident = {'ID': None,
-                      'Display Name': None,
-                      'Assigned User': None,
-                      'Classification': None,
-                      'Event Type': None,
-                      'Occurred': None,
-                      'Updated': None,
-                      'Status': None,
-                      'Severity': None,
-                      'Tags': None,
-                      'RawJSON': None}
+    from Microsoft365Defender import convert_incident_to_readable
+    empty_incident = util_load_json("./test_data/empty_incident.json")
+    assert convert_incident_to_readable(None) == empty_incident
+    raw_incident = util_load_json("./test_data/raw_incident.json")
+    converted_incident = util_load_json("./test_data/converted_incident.json")
+    assert convert_incident_to_readable(raw_incident) == converted_incident
 
-    assert convert_incident(None) == empty_incident
 
-def test_microsoft_365_defender_incidents_list_command(client,args):
-    """
-    Test invalid limit - negative, non number, bigger than 100
-    Test empty params
-    Test empty client
-    Test client with no auth
-    Args:
-        client:
-        args:
+def mock_client(mocker, function: str = None, http_response=None):
+    mocker.patch.object(demisto, 'getIntegrationContext',
+                        return_value={'current_refresh_token': 'refresh_token', 'access_token': 'access_token'})
+    client = Client(
+        app_id='app_id',
+        verify=False,
+        proxy=False
+    )
+    if http_response:
+        mocker.patch.object(client, function, return_value=http_response)
+    return client
 
-    Returns:
 
-    """
-    pass
-def test_list_incidents_request(status: Optional[str], assigned_to: str, limit: str, timeout=TIMEOUT):
+def check_api_response(results, results_mock):
+    assert results.outputs_prefix == results_mock['outputs_prefix']
+    assert results.outputs_key_field == results_mock['outputs_key_field']
+    assert results.readable_output == results_mock['readable_output']
+    assert results.outputs == results_mock['outputs']
 
-# TODO: REMOVE the following dummy unit test function
-# def test_baseintegration_dummy():
-#     """Tests helloworld-say-hello command function.
-#
-#     Checks the output of the command function with the expected output.
-#
-#     No mock is needed here because the say_hello_command does not call
-#     any external API.
-#     """
-#     from BaseIntegration import Client, baseintegration_dummy_command
-#
-#     client = Client(base_url='some_mock_url', verify=False)
-#     args = {
-#         'dummy': 'this is a dummy response'
-#     }
-#     response = baseintegration_dummy_command(client, args)
-#
-#     mock_response = util_load_json('test_data/baseintegration-dummy.json')
-#
-#     assert response.outputs == mock_response
-# # TODO: ADD HERE unit tests for every command
+
+def test_microsoft_365_defender_incidents_list_command(mocker):
+    from Microsoft365Defender import microsoft_365_defender_incidents_list_command
+    client = mock_client(mocker, 'incidents_list', util_load_json('./test_data/incidents_list_response.json'))
+    results = microsoft_365_defender_incidents_list_command(client, {'limit': 10})
+    check_api_response(results, util_load_json('./test_data/incidents_list_results.json'))
+
+
+def test_microsoft_365_defender_incident_update_command(mocker):
+    from Microsoft365Defender import microsoft_365_defender_incident_update_command
+    client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_update_response.json'))
+    args = {'id': '263', 'tags': 'test1,test2', 'status': 'Active', 'classification': 'Unknown',
+            'determination': 'Other'}
+    results = microsoft_365_defender_incident_update_command(client, args)
+    check_api_response(results, util_load_json('./test_data/incident_update_results.json'))
+
+
+def test_microsoft_365_defender_advanced_hunting_command(mocker):
+    from Microsoft365Defender import microsoft_365_defender_advanced_hunting_command
+    client = mock_client(mocker, 'advanced_hunting', util_load_json('./test_data/advanced_hunting_response.json'))
+    args = {'query': 'AlertInfo'}
+    results = microsoft_365_defender_advanced_hunting_command(client, args)
+    check_api_response(results, util_load_json('./test_data/advanced_hunting_results.json'))
+
+
+def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_results):
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+    results = fetch_incidents(client, first_fetch_time, fetch_limit)
+    assert len(results) == len(mock_results)
+    for incident, mock_incident in zip(results,mock_results):
+        assert incident['name'] == mock_incident['name']
+        assert incident['occurred'] == mock_incident['occurred']
+        assert incident['rawJSON'] == mock_incident['rawJSON']
+
+
+def test_fetch_incidents(mocker):
+    response_dict = util_load_json('./test_data/fetch_response.json')
+    client = Client(
+        app_id='app_id',
+        verify=False,
+        proxy=False
+    )
+    mocker.patch.object(demisto, 'getIntegrationContext',
+                        return_value={'current_refresh_token': 'refresh_token', 'access_token': 'access_token'})
+    response_list = response_dict['response_list']
+    mocker.patch.object(client, 'incidents_list', side_effect=response_list)
+
+    first_fetch_time = "3000 days"
+    fetch_limit = 50
+    results = util_load_json('./test_data/fetch_results.json')
+
+    for i in ['first', 'second', 'third', 'forth']:
+        fetch_check(mocker, client, response_dict[f'{i}_last_run'], first_fetch_time, fetch_limit,
+                    results[f'{i}_result'])
