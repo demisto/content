@@ -500,4 +500,3 @@ if demisto.command() == 'aws-logs-describe-metric-filters':
     result = describe_metric_filters(demisto.args())
 
 demisto.results(result)
-sys.exit(0)
