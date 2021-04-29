@@ -27,7 +27,7 @@ TEST_POST_SEARCH_KEYWORD = 'testing'
 
 
 class MyTestCase(unittest.TestCase):
-    client = Client(API_KEY, "url", False, None)
+    client = Client(API_KEY, "url", False, None, True)
 
     @patch("Flashpoint.Client.http_request")
     def test_domain(self, mocker):
