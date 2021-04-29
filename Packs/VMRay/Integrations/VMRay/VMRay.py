@@ -150,7 +150,9 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         err = find_error(response)
         if err:
             if "no jobs were created" in build_errors_string(err):
-                err_message = err[0].get("error_msg") + ' Please try using the command with reanalyze=true.'
+                err_message = err[0].get("error_msg") + ' \nThere is a possibility this file has been analyzed ' \
+                                                        'before. Please try using the command with the argument: ' \
+                                                        'reanalyze=true.'
                 err[0]['error_msg'] = err_message
             return_error(ERROR_FORMAT.format(r.status_code, err))
         return response
