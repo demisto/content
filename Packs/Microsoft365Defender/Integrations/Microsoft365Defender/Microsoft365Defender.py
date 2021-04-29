@@ -169,9 +169,10 @@ def test_context_for_token() -> None:
     Returns:
 
     """
-    raise DemistoException(
-            "This integration does not have a test module. Please run !microsoft-365-defender-auth-start and "
-            "!microsoft-365-defender-auth-complete and check the connection using !microsoft-365-defender-auth-test")
+    if not get_integration_context().get('access_token'):
+        raise DemistoException(
+                "This integration does not have a test module. Please run !microsoft-365-defender-auth-start and "
+                "!microsoft-365-defender-auth-complete and check the connection using !microsoft-365-defender-auth-test")
 
 
 def test_module(client: Client) -> str:
