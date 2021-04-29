@@ -15,12 +15,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Client id for client credentials grant type
+- display: Client id
   hidden: false
   name: client_id
   required: true
   type: 0
-- display: Client secret for client credentials grant type
+- display: Client secret
   hidden: false
   name: client_secret
   required: true
