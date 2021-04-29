@@ -1,0 +1,1 @@
+ConfigureAzureApplicationAccessPolicy app_id="37b5b9d5" identity="demisto@palo.com" username="admin@palo.com" password="12345"
