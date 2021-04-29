@@ -1,26 +1,38 @@
 {
- "description": "",
- "feed": false,
- "id": "respond-analyst-classifier",
- "keyTypeMap": {
-  "Closed": "Respond Software Incident",
-  "Open": "Respond Software Incident"
- },
- "name": "Respond Analyst Classifier",
- "transformer": {
-  "complex": {
-   "accessor": "",
-   "filters": [
-
-   ],
-   "root": "status",
-   "transformers": [
-
-   ]
-  },
-  "simple": ""
- },
- "type": "classification",
- "version": -1,
- "fromVersion": "6.0.0"
+    "brands": null,
+    "defaultIncidentType": "",
+    "description": "",
+    "feed": false,
+    "fromServerVersion": "",
+    "id": "respond-analyst-classifier",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "instanceIds": null,
+    "itemVersion": "",
+    "keyTypeMap": {
+        "Closed": "Respond Software Incident",
+        "Open": "Respond Software Incident"
+    },
+    "locked": false,
+    "logicalVersion": 0,
+    "mapping": null,
+    "name": "Respond Analyst Classifier",
+    "nameRaw": "Respond Analyst Classifier",
+    "packID": "",
+    "sourceClassifierId": "",
+    "system": false,
+    "toServerVersion": "",
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "status",
+            "transformers": []
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "unclassifiedCases": null,
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

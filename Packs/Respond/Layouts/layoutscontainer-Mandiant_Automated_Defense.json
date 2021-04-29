@@ -44,7 +44,7 @@
 								"fieldId": "owner",
 								"height": 22,
 								"id": "incident-owner-field",
-								"index": 3,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -53,7 +53,7 @@
 								"fieldId": "sourcebrand",
 								"height": 22,
 								"id": "incident-sourceBrand-field",
-								"index": 4,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -62,7 +62,7 @@
 								"fieldId": "sourceinstance",
 								"height": 22,
 								"id": "incident-sourceInstance-field",
-								"index": 5,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -71,11 +71,12 @@
 								"fieldId": "playbookid",
 								"height": 22,
 								"id": "incident-playbookId-field",
-								"index": 6,
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -89,6 +90,7 @@
 					{
 						"h": 2,
 						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -104,6 +106,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -120,6 +123,7 @@
 						"h": 2,
 						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -135,6 +139,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -151,6 +156,7 @@
 						"h": 2,
 						"hideName": false,
 						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -195,6 +201,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -216,7 +223,7 @@
 								"fieldId": "closereason",
 								"height": 22,
 								"id": "incident-closeReason-field",
-								"index": 0,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -225,7 +232,7 @@
 								"fieldId": "dbotclosed",
 								"height": 22,
 								"id": "incident-dbotClosed-field",
-								"index": 1,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -234,7 +241,7 @@
 								"fieldId": "closenotes",
 								"height": 44,
 								"id": "incident-closeNotes-field",
-								"index": 2,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -243,15 +250,6 @@
 								"fieldId": "feedbackoutcome",
 								"height": 22,
 								"id": "2a258f80-a383-11eb-a64e-c350a7cafb36",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "feedbackcomments",
-								"height": 22,
-								"id": "2e08e430-a383-11eb-a64e-c350a7cafb36",
 								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -260,12 +258,22 @@
 								"endCol": 2,
 								"fieldId": "feedbackcomments",
 								"height": 22,
-								"id": "30c6cbb0-a383-11eb-a64e-c350a7cafb36",
+								"id": "2e08e430-a383-11eb-a64e-c350a7cafb36",
 								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "feedbackcomments",
+								"height": 22,
+								"id": "30c6cbb0-a383-11eb-a64e-c350a7cafb36",
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -301,12 +309,21 @@
 								"startCol": 0
 							},
 							{
+								"endCol": 2,
+								"fieldId": "malware",
+								"height": 106,
+								"id": "db593400-a3b0-11eb-94bb-31ada179a364",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "filehashes",
 								"height": 106,
 								"id": "873f66c0-a381-11eb-a64e-c350a7cafb36",
-								"index": 2,
+								"index": 3,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -317,12 +334,22 @@
 								"fieldId": "escalationreasons",
 								"height": 106,
 								"id": "530dd970-a1f8-11eb-856d-c37e59fd1c7a",
-								"index": 3,
+								"index": 4,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domains",
+								"height": 106,
+								"id": "d83b0410-a3b0-11eb-94bb-31ada179a364",
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -394,11 +421,21 @@
 								"listId": "caseinfoid-456202b0-a37e-11eb-a64e-c350a7cafb36",
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "mandiantstatus",
+								"height": 22,
+								"id": "85cbb3b0-a39b-11eb-a238-49de86c18927",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
+						"minW": 2,
 						"moved": false,
 						"name": "Automated Defense Basic Information",
 						"static": false,

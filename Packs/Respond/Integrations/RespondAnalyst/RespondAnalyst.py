@@ -1,6 +1,7 @@
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *
+
+
 import json
 from datetime import datetime
 import dateparser
@@ -605,7 +606,7 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
     # collect domains
     domains = []
     for domain in raw_incident.get('wpHosts'):
-        domains.append(domain.get('hostname'))
+        domains.append({'name': domain.get('hostname')})
 
     # convert graphql response to standardized JSON output for an incident
     formatted_incident = {
@@ -849,6 +850,7 @@ def get_incident_command(rest_client, args):
                                       formatted_incident)
     return readable_output
 
+
 def get_escalations_command(rest_client, args):
     start = datetime.now().timestamp()
     fourMinutes = 240
@@ -905,11 +907,13 @@ def get_escalations_command(rest_client, args):
 
 
 def get_remote_data_command(rest_client, args):
+    demisto.debug('in remote data')
     full_id = args.get('id')
     last_index = full_id.rfind(':')
     args['respond_tenant_id'] = full_id[0:last_index]
     args['incident_id'] = full_id[last_index + 1:]
     entries = []
+    demisto.debug('in remote data 2')
     try:
         updated_incident = get_formatted_incident(rest_client, args)
         updated_incident['id'] = args.get('id')
@@ -1132,7 +1136,8 @@ def main():
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
 
-        elif demisto.command() == 'get-remote-data':
+        elif demisto.command() == 'get-remote-data' || demisto.command() == 'get-modified-remote':
+            demisto.debug('get-remote-data called')
             return_results(get_remote_data_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'mad-get-escalations':

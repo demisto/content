@@ -5,7 +5,6 @@ commonfields:
 configuration:
 - defaultvalue: None
   display: Incident Mirroring Direction
-  hidden: false
   name: mirror_direction
   options:
   - None
@@ -14,9 +13,9 @@ configuration:
   - Both
   required: false
   type: 15
-- display: Base Url
+- additionalinfo: https://<Respond Analyst Server> (either hostname or IP address)
+  display: Base Url
   name: base_url
-  additionalinfo: https://<Respond Analyst Server> (either hostname or IP address)
   required: true
   type: 0
 - display: Trust any certificate (not secure)
@@ -31,12 +30,12 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: API Token
-  additionalinfo: steps to generate an API token here -> https://knowledge-base.respond-software.com/knowledge/api-token
+- additionalinfo: steps to generate an API token here -> https://knowledge-base.respond-software.com/knowledge/api-token
+  display: API Token
   name: token
   required: true
   type: 4
-- defaultvalue: '500'
+- defaultvalue: "500"
   display: Max Fetch
   name: max_fetch
   required: false
@@ -46,137 +45,94 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-
-description: Use the Mandiant Automated Defense integration to fetch and update incidents from Mandiant Automated Defense. Mandiant Automated Defense fetches open incidents and updates them every minute. Changes made within XSOAR are reflected in Mandiant Automated Defense platform with bi-directional mirroring capabilities enabled.
-display: Mandiant Automated Defense (Formerly Respond Software)
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Use the Mandiant Automated Defense integration to fetch and update incidents
+  from Mandiant Automated Defense. Mandiant Automated Defense fetches open incidents
+  and updates them every minute. Changes made within XSOAR are reflected in Mandiant
+  Automated Defense platform with bi-directional mirroring capabilities enabled.
+display: Mandiant Automated Defense (Formerly Respond Software) (Partner Contribution)
 name: Respond_Analyst
 script:
   commands:
   - arguments:
-    - default: false
-      description: ID of the Tenant in which the incident resides in Respond
-      isArray: false
+    - description: ID of the Tenant in which the incident resides in Respond
       name: tenant_id
-      required: false
-      secret: false
-    - default: false
-      description: Respond incident ID of the incident to retrieve
-      isArray: false
+    - description: Respond incident ID of the incident to retrieve
       name: incident_id
       required: true
-      secret: false
-    deprecated: false
-    description: pull data for a specific incident from MAD. This command will only return an output of the incident data. it does not create a new incident
-    execution: false
+    description: pull data for a specific incident from MAD. This command will only
+      return an output of the incident data. it does not create a new incident
     name: mad-get-incident
   - arguments:
-    - default: false
-      description: ID of the Tenant in which the incident resides in Respond
-      isArray: false
+    - description: ID of the Tenant in which the incident resides in Respond
       name: tenant_id
-      required: false
-      secret: false
-    - default: false
-      description: Respond incident ID of the incident to retrieve
-      isArray: false
+    - description: Respond incident ID of the incident to retrieve
       name: incident_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Outcome of the incident. Confirmed, Non-Actionable, or Inconclusive. This outcome is determined by the analyst who closes the incident
-      isArray: false
+      description: Outcome of the incident. Confirmed, Non-Actionable, or Inconclusive.
+        This outcome is determined by the analyst who closes the incident
       name: incident_feedback
       predefined:
       - ConfirmedIncident
       - NonActionable
       - Inconclusive
-      required: false
-      secret: false
-    - default: false
-      description: additional feedback information added by analysts. Any specific notes or observations
-      isArray: false
+    - description: additional feedback information added by analysts. Any specific
+        notes or observations
       name: feedback_optional_text
-      required: false
-      secret: false
-    deprecated: false
-    description: close an incident in Respond and provide feedback on that incident. If the incident is already closed, feedback can still be updated. Additional comments and an updated closure code are viable options for updates on an incident that has already been closed (and on incidents that have not been closed yet as well)
-    execution: false
+    description: close an incident in Respond and provide feedback on that incident.
+      If the incident is already closed, feedback can still be updated. Additional
+      comments and an updated closure code are viable options for updates on an incident
+      that has already been closed (and on incidents that have not been closed yet
+      as well)
     name: mad-close-incident
   - arguments:
-    - default: false
-      description: respond incident id
-      isArray: false
+    - description: respond incident id
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: tenant id
-      isArray: false
+    - description: tenant id
       name: tenant_id
-      required: false
-      secret: false
-    - default: false
-      description: email
-      isArray: false
+    - description: email
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: assign a user to a Respond incident
-    execution: false
     name: mad-assign-user
   - arguments:
-    - default: false
-      description: incident id
-      isArray: false
+    - description: incident id
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: tenant id
-      isArray: false
+    - description: tenant id
       name: tenant_id
-      required: false
-      secret: false
-    - default: false
-      description: email
-      isArray: false
+    - description: email
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: unassign a user from a Respond incident
-    execution: false
     name: mad-remove-user
   - arguments:
-    - default: false
-      isArray: false
+    - description: incident_id
       name: incident_id
       required: true
-      secret: false
-      description: incident_id
-    - default: false
-      isArray: false
+    - description: tenant id
       name: tenant_id
-      required: false
-      secret: false
-      description: tenant id
-    deprecated: false
-    description: Get escalation data associated with incident. In Respond, an 'escalation' is a specific event derived from a cybersecurity telemetry. Escalations are compiled together to form Incidents in Respond.
-    execution: false
+    description: Get escalation data associated with incident. In Respond, an 'escalation'
+      is a specific event derived from a cybersecurity telemetry. Escalations are
+      compiled together to form Incidents in Respond.
     name: mad-get-escalations
   dockerimage: demisto/python3:3.9.4.18682
-  feed: false
   isfetch: true
+  ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
+defaultclassifier: Respond Analyst
+defaultmapperin: Respond Analyst (mapper)

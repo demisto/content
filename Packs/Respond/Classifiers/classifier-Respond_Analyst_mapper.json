@@ -11,7 +11,7 @@
     "itemVersion": "",
     "keyTypeMap": {},
     "locked": false,
-    "logicalVersion": 4,
+    "logicalVersion": 8,
     "mapping": {
         "Respond Software Incident": {
             "dontMapEventToLabels": false,
@@ -47,6 +47,10 @@
                 "Description": {
                     "complex": null,
                     "simple": "description"
+                },
+                "Domains": {
+                    "complex": null,
+                    "simple": "domains"
                 },
                 "Escalation Reasons": {
                     "complex": {
@@ -97,6 +101,10 @@
                     "complex": null,
                     "simple": "lastEventTime"
                 },
+                "Malware": {
+                    "complex": null,
+                    "simple": "malware"
+                },
                 "Mandiant Status": {
                     "complex": null,
                     "simple": "status"
@@ -132,6 +140,23 @@
                 "severity": {
                     "complex": null,
                     "simple": "severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "dbotMirrorDirection"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "respondRemoteId"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "dbotMirrorInstance"
                 }
             }
         }
