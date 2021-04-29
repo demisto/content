@@ -375,4 +375,4 @@ view: |-
   }
 tests:
 - Group-IB Threat Intelligence & Attribution-Test
-fromversion: 5.0.0
+fromversion: 6.0.0

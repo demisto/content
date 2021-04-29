@@ -13,7 +13,7 @@
     "cliName": "gibid",
     "closeForm": false,
     "content": true,
-    "description": "ID of event in GIB TI\u0026A",
+    "description": "ID of event in GIB TI&A",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -32,5 +32,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

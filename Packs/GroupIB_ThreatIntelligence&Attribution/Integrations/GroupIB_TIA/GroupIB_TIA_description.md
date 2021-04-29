@@ -1,10 +1,3 @@
-### Partner Contributed Integration
-#### Integration Author: Group-IB
-Support and maintenance for this integration are provided by the author. Please use the following contact details:
-- **Email**: [e.metelitsa@group-ib.com](mailto:e.metelitsa@group-ib.com)
-- **URL**: [https://github.com/EvgeniyMeteliza](https://github.com/EvgeniyMeteliza)
-***
-    
 ### Group-IB Threat Intelligence & Attribution  
   
   

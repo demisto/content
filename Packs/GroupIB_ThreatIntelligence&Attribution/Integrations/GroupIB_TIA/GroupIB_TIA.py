@@ -1051,13 +1051,9 @@ def main():
     params = demisto.params()
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
-    url = str(params.get("url"))
+    base_url = str(params.get("url"))
     proxy = params.get("proxy", False)
     verify_certificate = not params.get("insecure", False)
-    if url[-1] == "/":
-        base_url = url + "api/v2/"
-    else:
-        base_url = url + "/api/v2/"
 
     incident_collections = params.get("incident_collections", [])
     incidents_first_fetch = params.get("first_fetch", "3 days").strip()

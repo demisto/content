@@ -3216,11 +3216,6 @@
         {
             "integrations": "Nutanix Hypervisor",
             "playbookID": "Nutanix-test"
-        },
-        {
-            "integrations": "Group-IB Threat Intelligence & Attribution",
-            "playbookID": "Group-IB Threat Intelligence & Attribution-Test",
-            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {

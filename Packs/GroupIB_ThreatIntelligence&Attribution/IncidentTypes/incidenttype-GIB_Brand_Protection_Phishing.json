@@ -8,15 +8,15 @@
     "hours": 0,
     "hoursR": 0,
     "id": "GIB Brand Protection Phishing",
-    "layout": "c3be15f8-95a7-4407-8e9e-d4b764a75e42",
+    "layout": "GIB Brand Protection Phishing Layout",
     "locked": false,
     "name": "GIB Brand Protection Phishing",
-    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence \u0026 Attribution",
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence & Attribution",
     "readonly": false,
     "reputationCalc": 1,
     "system": false,
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

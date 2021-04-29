@@ -8,15 +8,15 @@
     "hours": 0,
     "hoursR": 0,
     "id": "GIB Compromised Card",
-    "layout": "fb4bf3d9-9a84-49e8-819f-015629ec56c4",
+    "layout": "GIB Compromised Card Layout",
     "locked": false,
     "name": "GIB Compromised Card",
-    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence \u0026 Attribution",
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence & Attribution",
     "readonly": false,
     "reputationCalc": 1,
     "system": false,
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

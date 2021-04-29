@@ -8,15 +8,15 @@
     "hours": 0,
     "hoursR": 0,
     "id": "GIB Compromised Account",
-    "layout": "d64164e4-eac1-474a-8f95-4647830338d9",
+    "layout": "GIB Compromised Account Layout",
     "locked": false,
     "name": "GIB Compromised Account",
-    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence \u0026 Attribution",
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence & Attribution",
     "readonly": false,
     "reputationCalc": 1,
     "system": false,
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

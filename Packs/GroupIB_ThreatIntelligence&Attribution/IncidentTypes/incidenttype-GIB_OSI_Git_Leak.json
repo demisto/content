@@ -8,15 +8,15 @@
     "hours": 0,
     "hoursR": 0,
     "id": "GIB OSI Git Leak",
-    "layout": "0737a2fc-7ff5-4ef1-84ec-66fa642bc1f1",
+    "layout": "GIB OSI Git Leak Layout",
     "locked": false,
     "name": "GIB OSI Git Leak",
-    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence \u0026 Attribution",
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence & Attribution",
     "readonly": false,
     "reputationCalc": 1,
     "system": false,
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

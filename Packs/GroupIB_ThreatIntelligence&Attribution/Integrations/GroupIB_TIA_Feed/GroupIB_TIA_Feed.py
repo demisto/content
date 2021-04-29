@@ -743,11 +743,7 @@ def main():
     password = params.get('credentials').get('password')
     proxy = params.get('proxy', False)
     verify_certificate = not params.get('insecure', False)
-    url = str(params.get("url"))
-    if url[-1] == "/":
-        base_url = url + "api/v2/"
-    else:
-        base_url = url + "/api/v2/"
+    base_url = str(params.get("url"))
 
     indicator_collections = params.get('indicator_collections', [])
     indicators_first_fetch = params.get('indicators_first_fetch', '3 days').strip()
@@ -773,11 +769,11 @@ def main():
 
         elif command == 'fetch-indicators':
             # Set and define the fetch incidents command to run after activated via integration settings.
-            next_run, indicators = fetch_indicators_command(client=client, last_run=demisto.getIntegrationContext(),
+            next_run, indicators = fetch_indicators_command(client=client, last_run=get_integration_context(),
                                                             first_fetch_time=indicators_first_fetch,
                                                             indicator_collections=indicator_collections,
                                                             requests_count=requests_count)
-            demisto.setIntegrationContext(next_run)
+            set_integration_context(next_run)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
