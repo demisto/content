@@ -10,10 +10,6 @@
                     "complex": null,
                     "simple": "assignedTo"
                 },
-                "Classification": {
-                    "complex": null,
-                    "simple": "classification"
-                },
                 "Event Type": {
                     "complex": null,
                     "simple": "determination"
@@ -61,10 +57,6 @@
                 "Assigned User": {
                     "complex": null,
                     "simple": "assignedTo"
-                },
-                "Classification": {
-                    "complex": null,
-                    "simple": "classification"
                 },
                 "Event Type": {
                     "complex": null,
