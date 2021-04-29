@@ -1,0 +1,14 @@
+!cbd-lr-file-put sensor_id="the actually sensor id" destination_path="C:\\test\\test_file.txt" file_id=142@5
+!cbd-lr-file-get sensor_id="the actually sensor id" source_path="C:\\test\\test_file.txt" delay=2 timeout=30
+!cbd-lr-file-delete sensor_id="the actually sensor id" source_path="C:\\test\\test_file.txt"
+!cbd-lr-reg-key-create sensor_id="the actually sensor id" reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST
+!cbd-lr-reg-value-set sensor_id="the actually sensor id" reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST\\TEST_VAL value_data=[\"val_1\",\"val_2\"] value_type=REG_MULTI_SZ
+!cbd-lr-reg-sub-keys sensor_id="the actually sensor id" reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST
+!cbd-lr-reg-get-values sensor_id="the actually sensor id" reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST
+!cbd-lr-reg-value-delete sensor_id="the actually sensor id" reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST\\TEST_VAL
+!cbd-lr-reg-key-delete reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST sensor_id="the actually sensor id"
+!cbd-lr-directory-listing sensor_id="the actually sensor id" directory_path="C:\\test\\"
+!cbd-lr-ps sensor_id="the actually sensor id"
+!cbd-lr-execute sensor_id="the actually sensor id" command_string="c:\\Windows\\system32\\cmd.exe"
+!cbd-lr-kill pid=4424 sensor_id="the actually sensor id"
+!cbd-lr-memdump sensor_id="the actually sensor id" target_path=C:\\test\\test_dumped_file

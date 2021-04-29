@@ -1,8 +1,13 @@
-## BaseIntegration Help
+## Carbon Black Cloud Live Response
+Set up API Keys in the Carbon Black Cloud.
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+**Creating an API Key**
+1. To create an API Key, go to Settings > API Access > API Keys tab in the Carbon Black Cloud console.
+2. Select “Add API Key” from the far right.
+3. Give the API Key a unique name, and select the Live Response access level.
+4. Hit save, and you will be provided with your API Key Credentials:
+  - API Secret Key
+  - API ID
 
+5. Set up Carbon Black Cloud Live Response integration instance with the created API Secret Key and API ID
