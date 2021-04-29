@@ -10,10 +10,6 @@ from html.parser import HTMLParser
 from html import unescape
 from re import compile as _Re
 import pandas as pd
-import logging
-
-logger = logging.getLogger("spacy")
-logger.setLevel(logging.ERROR)
 
 
 def hash_word(word, hash_seed):
@@ -180,7 +176,7 @@ class Tokenizer:
     def init_spacy_model(self, language):
         try:
             self.nlp = spacy.load(self.languages_to_model_names[language],
-                                  disable=['tagger', 'parser', 'ner', 'textcat'])
+                                  disable=['parser', 'ner', 'textcat'])
         except Exception:
             return_error("The specified language is not supported in this docker. In order to pre-process text "
                          "using this language, it's required to change this docker. Please check at the documentation "
