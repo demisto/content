@@ -26,6 +26,12 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 script:
   script: ''
   type: python
