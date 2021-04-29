@@ -18,6 +18,9 @@ UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'sha-1': FeedIndicatorType.File,
     'sha-256': FeedIndicatorType.File,
     'file:hashes': FeedIndicatorType.File,
+    'campaign':
+    'attack-pattern'
+    'report'
 }
 
 COURSE_OF_ACTION_U42 = ['Cortex XDR Prevent', 'DNS Security', 'XSOAR']
@@ -100,34 +103,6 @@ def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: O
                     indicators.append(indicator_obj)
 
     return indicators
-
-
-def sort_report_objects_by_type(objects):
-    """Get lists of objects by their type.
-
-    Args:
-      objects: a list of objects.
-
-    Returns:
-        List. Objects of type report.
-    """
-    main_report_objects = []
-    sub_report_objects = []
-
-    for obj in objects:
-        is_main_report = False
-
-        for object_id in obj.get('object_refs'):
-            if object_id.startswith('report'):
-                is_main_report = True
-                break
-
-        if is_main_report:
-            main_report_objects.append(obj)
-        else:
-            sub_report_objects.append(obj)
-
-    return main_report_objects, sub_report_objects
 
 
 def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optional[str] = None) -> list:
@@ -319,7 +294,7 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
-def create_attack_pattern_indicator(client) -> List:
+def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
     """Creates Attack Pattern indicators with the related mitre course of action.
 
     Returns:
@@ -364,9 +339,12 @@ def create_attack_pattern_indicator(client) -> List:
                 "mitrecourseofaction": create_course_of_action_field(courses_of_action),
                 "publications": publications,
                 "reportedby": 'Unit42',
-                "tags": [],
+                "tags": feed_tags,
             }
         }
+        if tlp_color:
+            indicator['fields']['trafficlightprotocol'] = tlp_color
+
         attack_pattern_indicators.append(indicator)
     return attack_pattern_indicators
 
@@ -447,6 +425,14 @@ def match_relationships(relationships: List):
     return matches, courses_of_action_products
 
 
+def create_list_relationships(client, id_to_object):
+    relationships_objects = client.objects_data['relationship']
+    for relationships_object in relationships_objects:
+        source_ref = relationships_object.get('source_ref')
+        target_ref = relationships_object.get('target_ref')
+
+
+
 def test_module(client: Client) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
@@ -482,11 +468,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
 
     reports = parse_reports(client.objects_data['report'], feed_tags, tlp_color)
 
-    attack_pattern_indicators = create_attack_pattern_indicator(client)
-
-
-
-
+    attack_pattern_indicators = create_attack_pattern_indicator(client, feed_tags, tlp_color)
 
     id_to_object = {
         obj.get('id'): obj for obj in
@@ -494,6 +476,14 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         + client.objects_data['campaign'] + client.objects_data['attack-pattern']
         + client.objects_data['course-of-action']
     }
+
+    if create_relationships:
+        list_relationships = create_list_relationships(client, id_to_object)
+
+        dummy_indicator = {
+            "value": "$$DummyIndicator$$",
+            "relationships": list_relationships
+        }
 
     # matched_relationships, courses_of_action_products = match_relationships(client.objects_data['relationship'])
 
@@ -526,6 +516,14 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
     limit = int(args.get('limit', '10'))
 
     indicators = client.fetch_stix_objects_from_api(test=True, type='indicator')
+    relationship = client.objects_data['relationship']
+    typ = set()
+    for rel in relationship:
+        typ.add(rel.get('source_ref'))
+        typ.add(rel.get('target_ref'))
+    print(typ)
+    return_error('ghghg')
+
 
     indicators = parse_indicators(indicators, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]
