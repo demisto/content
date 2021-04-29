@@ -1117,7 +1117,7 @@ def search_samples_command():
             # continue search command
             args['af_cookie'] = af_cookie
 
-    command_results, status = samples_search_results_helper(args)
+    status = samples_search_results_helper(args)
     if status != 'complete':
         polling_args = {
             'af_cookie': args.get('af_cookie'),
@@ -1127,8 +1127,7 @@ def search_samples_command():
         polling_config = Common.ScheduledCommandConfiguration(command='autofocus-search-samples',
                                                               next_run_in_seconds=interval_in_secs,
                                                               args=polling_args, timeout_in_seconds=600)
-        command_results.append(CommandResults(scheduled_command_config=polling_config))
-    return_results(command_results)
+        return_results(CommandResults(scheduled_command_config=polling_config))
 
 
 def search_samples_helper(args):
@@ -1224,8 +1223,7 @@ def search_sessions_helper(args):
 
 def samples_search_results_command():
     args = demisto.args()
-    command_results, _ = samples_search_results_helper(args)
-    return_results(command_results)
+    samples_search_results_helper(args)
 
 
 def samples_search_results_helper(args):
@@ -1241,7 +1239,6 @@ def samples_search_results_helper(args):
         'AutoFocus.SamplesSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
         outputPaths['file']: files
     }
-    command_results = []
     if not results:
         return_outputs(readable_output=hr, outputs=context, raw_response={})
     else:
@@ -1249,11 +1246,12 @@ def samples_search_results_helper(args):
         for result in results:
             if 'Artifact' in result:
                 hr = samples_search_result_hr(result, status)
+                return_outputs(readable_output=hr, outputs=context, raw_response=results)
             else:
                 hr = tableToMarkdown(f'Search Samples Result is {status}', result)
                 hr += tableToMarkdown('Artifacts for Sample: ', [])
-            command_results.append(CommandResults(readable_output=hr, outputs=context, raw_response=results))
-    return command_results, status
+                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+    return status
 
 
 def samples_search_result_hr(result: dict, status: str) -> str:
