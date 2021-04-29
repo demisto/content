@@ -2,7 +2,7 @@
   - Search for the Security Notice email sent from Codecov.
   - Collect indicators to be used in your threat hunting process.
   - Query network logs to detect related activity.
-  - Search for the use of Codecov bash uploader in the repositories using GitHub.
+  - Search for Codecov bash uploader in the repository files using GitHub.
   - Query Panorama to search for logs with related anti-spyware signatures
     - Data Exfiltration Traffic Detection
     - Malicious Modified Shell Script Detection

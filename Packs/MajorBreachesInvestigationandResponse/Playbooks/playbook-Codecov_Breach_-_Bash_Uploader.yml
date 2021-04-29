@@ -6,7 +6,7 @@ description: |-
   - Search for the Security Notice email sent from Codecov.
   - Collect indicators to be used in your threat hunting process.
   - Query network logs to detect related activity.
-  - Search for the use of Codecov bash uploader in the repositories using GitHub.
+  - Search for Codecov bash uploader in the repository files using GitHub.
   - Query Panorama to search for logs with related anti-spyware signatures
       - Data Exfiltration Traffic Detection
       - Malicious Modified Shell Script Detection
@@ -35,7 +35,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": -760
+          "y": -870
         }
       }
     note: false
@@ -62,8 +62,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 370
+          "x": -710,
+          "y": 325
         }
       }
     note: false
@@ -87,12 +87,11 @@ tasks:
       '#none#':
       - "19"
       - "20"
-      - "29"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -650,
+          "x": -710,
           "y": 680
         }
       }
@@ -145,7 +144,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": -320
+          "y": -420
         }
       }
     note: false
@@ -173,7 +172,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": -610
+          "y": -700
         }
       }
     note: false
@@ -201,7 +200,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": -450
+          "y": -560
         }
       }
     note: false
@@ -243,8 +242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": -140
+          "x": -710,
+          "y": -245
         }
       }
     note: false
@@ -283,8 +282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 20
+          "x": -710,
+          "y": -55
         }
       }
     note: false
@@ -319,7 +318,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 190
+          "y": 140
         }
       }
     note: false
@@ -349,7 +348,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       IPAddresses:
         complex:
@@ -383,7 +382,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1290,
+          "x": -960,
           "y": 960
         }
       }
@@ -407,7 +406,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       IPAddress:
         complex:
@@ -451,7 +450,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -860,
+          "x": -470,
           "y": 960
         }
       }
@@ -475,7 +474,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       HostFieldsToReturn: {}
       IPAddress:
@@ -526,7 +525,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
+          "x": -20,
           "y": 960
         }
       }
@@ -555,7 +554,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
+          "x": -240,
           "y": 820
         }
       }
@@ -584,7 +583,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1500,
+          "x": -1190,
           "y": 820
         }
       }
@@ -628,8 +627,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 510
+          "x": -710,
+          "y": 500
         }
       }
     note: false
@@ -656,8 +655,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1140
+          "x": -710,
+          "y": 1650
         }
       }
     note: false
@@ -686,8 +685,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1300
+          "x": -710,
+          "y": 1800
         }
       }
     note: false
@@ -717,8 +716,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1470
+          "x": -710,
+          "y": 1970
         }
       }
     note: false
@@ -747,8 +746,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1630
+          "x": -710,
+          "y": 2140
         }
       }
     note: false
@@ -779,8 +778,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 1800
+          "x": -50,
+          "y": 2320
         }
       }
     note: false
@@ -805,7 +804,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 2010
+          "y": 2540
         }
       }
     note: false
@@ -828,7 +827,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       action: {}
       addr-dst: {}
@@ -854,7 +853,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1710,
+          "x": -1430,
           "y": 960
         }
       }
@@ -865,25 +864,25 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 3466b674-36bf-4f87-86a6-5b88e8995532
+    taskid: c98e4231-26b8-449f-8945-8e196fc386d9
     type: title
     task:
-      id: 3466b674-36bf-4f87-86a6-5b88e8995532
+      id: c98e4231-26b8-449f-8945-8e196fc386d9
       version: -1
-      name: GitHub Hunt
+      name: GitHub Affected Files
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "30"
+      - "31"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 820
+          "x": -710,
+          "y": 1160
         }
       }
     note: false
@@ -893,10 +892,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 76ee513a-b340-41d5-8df6-744048150a40
+    taskid: dd1a3428-8653-4ff2-8a93-79806337b6ae
     type: regular
     task:
-      id: 76ee513a-b340-41d5-8df6-744048150a40
+      id: dd1a3428-8653-4ff2-8a93-79806337b6ae
       version: -1
       name: Search Codecov in Git repository
       description: Searches for code in repositories that match a given query.
@@ -912,13 +911,66 @@ tasks:
       page_number: {}
       page_size: {}
       query:
-        simple: https://codecov.io/bash+in:file
+        complex:
+          root: inputs.Github_Code_Search_query
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 960
+          "x": -430,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 3e428184-fcd8-4c78-830d-01779ad8f0b5
+    type: condition
+    task:
+      id: 3e428184-fcd8-4c78-830d-01779ad8f0b5
+      version: -1
+      name: Is GitHub integration enabled?
+      description: Checks if GitHub integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GitHub
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1310
         }
       }
     note: false
@@ -929,21 +981,23 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_13_#default#": 0.23,
+      "12_13_#default#": 0.2,
       "12_1_yes": 0.46,
       "13_1_Yes": 0.24,
       "13_27_#default#": 0.1,
       "25_26_Yes": 0.43,
       "25_27_#default#": 0.2,
-      "6_11_yes": 0.3,
-      "6_13_#default#": 0.21
+      "31_22_#default#": 0.56,
+      "31_30_yes": 0.54,
+      "6_11_yes": 0.17,
+      "6_13_#default#": 0.28
     },
     "paper": {
       "dimensions": {
-        "height": 2835,
-        "width": 2310,
-        "x": -1710,
-        "y": -760
+        "height": 3475,
+        "width": 2030,
+        "x": -1430,
+        "y": -870
       }
     }
   }
@@ -972,10 +1026,11 @@ inputs:
   required: false
   description: The limit of results to return from the search
   playbookInputQuery:
-- key: ThreatIDs
-  value: {}
+- key: Github_Code_Search_query
+  value:
+    simple: https://codecov.io/bash+in:file
   required: false
-  description: ""
+  description: Github query to search for Codecov bash uploader use.
   playbookInputQuery:
 outputs: []
 tests:
