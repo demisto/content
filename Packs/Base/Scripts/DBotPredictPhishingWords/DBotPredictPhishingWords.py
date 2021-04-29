@@ -2,7 +2,6 @@
 
 from CommonServerPython import *
 from string import punctuation
-from nltk import word_tokenize
 import demisto_ml
 
 FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
@@ -61,15 +60,15 @@ def preprocess_text(text, model_type, is_return_error):
     language = demisto.args().get('language', 'English')
     tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
     args = {'input': input_,
-                  'hashSeed': hash_seed,
-                  'language': language,
-                  'tokenizationMethod': tokenization,
-                  'inputType': input_type,
-                  'preProcessType': preprocess_type,
-                  'dedupThreshold': '-1',
-                  'outputFormat': 'json',
-                  'textFields': 'text',
-                  'removeShortTextThreshold': '0'}
+            'hashSeed': hash_seed,
+            'language': language,
+            'tokenizationMethod': tokenization,
+            'inputType': input_type,
+            'preProcessType': preprocess_type,
+            'dedupThreshold': '-1',
+            'outputFormat': 'json',
+            'textFields': 'text',
+            'removeShortTextThreshold': '0'}
     res = demisto.executeCommand('DBotPreProcessTextData', args)
     if is_error(res):
         handle_error(res[0]['Contents'], is_return_error)
