@@ -321,7 +321,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The page number. 
+      description: The page number.
       isArray: false
       name: page_number
       required: false
@@ -2735,8 +2735,8 @@ script:
       defaultValue: 'raw'
       name: media_type
       predefined:
-        - raw
-        - html
+      - raw
+      - html
       required: false
       secret: false
     - default: false
@@ -2746,8 +2746,8 @@ script:
       defaultValue: 'false'
       name: create_file_from_content
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -2820,7 +2820,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The repository of the pull request. Defaults to repository parameter if not given.
+      description: The repository of the pull request. Defaults to repository parameter
+        if not given.
       isArray: false
       name: repository
       required: false

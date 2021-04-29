@@ -14,7 +14,7 @@ def load_test_data(json_path):
         return json.load(f)
 
 
-test_list_branch_pull_requests_command = load_test_data('./test_data/get-branch-pull-requests-response.json')
+test_list_branch_pull_requests_command_response = load_test_data('./test_data/get-branch-pull-requests-response.json')
 
 
 def test_search_code(requests_mock, mocker):
@@ -38,11 +38,9 @@ def test_search_code(requests_mock, mocker):
     assert 'Repository Name' in results['HumanReadable']
 
 
-def test_list_branch_pull_requests_command(requests_mock, mocker):
+def test_list_branch_pull_requests_command(requests_mock):
     requests_mock.get('https://api.github.com/repos/demisto/content/pulls?head=demisto:Update-Docker-Image',
-                      json=test_list_branch_pull_requests_command['response'])
-    results = list_branch_pull_requests(branch_name='Update-Docker-Image', repository='content', organization='demisto')
-    assert results.outputs_prefix == 'GitHub.PR'
-    assert results.outputs_key_field == 'Number'
-    assert results.raw_response == test_list_branch_pull_requests_command['response']
-    assert results.outputs == test_list_branch_pull_requests_command['expected']
+                      json=test_list_branch_pull_requests_command_response['response'])
+    formatted_outputs = list_branch_pull_requests(branch_name='Update-Docker-Image', repository='content',
+                                                  organization='demisto')
+    assert formatted_outputs == test_list_branch_pull_requests_command_response['expected']
