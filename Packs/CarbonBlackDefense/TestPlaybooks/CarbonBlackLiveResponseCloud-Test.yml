@@ -1,5 +1,5 @@
 id: CarbonBlackLiveResponseCloud-Test
-version: 156
+version: 165
 vcShouldKeepItemLegacyProdMachine: false
 name: CarbonBlackLiveResponseCloud-Test
 fromversion: 6.0.0
@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 50
+          "x": 162.5,
+          "y": 65
         }
       }
     note: false
@@ -55,8 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 195
+          "x": 162.5,
+          "y": 240
         }
       }
     note: false
@@ -81,8 +81,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4220
+          "x": 1170,
+          "y": 4900
         }
       }
     note: false
@@ -118,8 +118,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 545
+          "x": 162.5,
+          "y": 575
         }
       }
     note: false
@@ -155,8 +155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2120
+          "x": 162.5,
+          "y": 2150
         }
       }
     note: false
@@ -198,8 +198,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
+          "x": 162.5,
+          "y": 750
         }
       }
     note: false
@@ -233,8 +233,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 162.5,
+          "y": 925
         }
       }
     note: false
@@ -268,8 +268,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1070
+          "x": 162.5,
+          "y": 1100
         }
       }
     note: false
@@ -305,8 +305,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1770
+          "x": 162.5,
+          "y": 1800
         }
       }
     note: false
@@ -318,10 +318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: db481a66-ce6b-4d94-8fc1-6b3b789e6172
+    taskid: 7fa35d42-5683-4467-88c3-e011f1dd82b1
     type: regular
     task:
-      id: db481a66-ce6b-4d94-8fc1-6b3b789e6172
+      id: 7fa35d42-5683-4467-88c3-e011f1dd82b1
       version: -1
       name: Execute process
       script: CarbonBlackLiveResponseCloud|||cbd-lr-execute
@@ -330,12 +330,12 @@ tasks:
       brand: CarbonBlackLiveResponseCloud
     nexttasks:
       '#none#':
-      - "27"
+      - "106"
     scriptarguments:
       cmd_line_path:
         simple: C:\Windows\System32\cmd.exe /c  C:\\test\CarbonBlackLiveResponseProcessForTest.bat
       command_string:
-        simple: C:\test\test_process.exe /c C:\test\loop.bat
+        simple: regedit.exe
       sensor_id:
         simple: ${inputs.sensor_id}
       session_id:
@@ -344,14 +344,12 @@ tasks:
         simple: "False"
       wait_for_output:
         simple: "False"
-      working_directory:
-        simple: C:\test\
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3870
+          "x": 162.5,
+          "y": 4250
         }
       }
     note: false
@@ -363,10 +361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 74ea98f5-5f5a-458b-8381-f81b08aaa1e0
+    taskid: 830c04ad-28c0-4b91-8c4f-77bd99b69548
     type: regular
     task:
-      id: 74ea98f5-5f5a-458b-8381-f81b08aaa1e0
+      id: 830c04ad-28c0-4b91-8c4f-77bd99b69548
       version: -1
       name: Kill process
       description: Kill process specified by process id
@@ -374,17 +372,34 @@ tasks:
       type: regular
       iscommand: true
       brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "27"
     scriptarguments:
+      pid:
+        complex:
+          root: CarbonBlackDefenseLR.ExecuteProcess
+          accessor: return_value
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[0-9]+'
       sensor_id:
-        simple: "3925348"
+        simple: ${inputs.sensor_id}
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 4030
+          "x": 162.5,
+          "y": 4695
         }
       }
     note: false
@@ -396,10 +411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 858de687-f304-4926-8ca9-06f23e24e6ef
+    taskid: 301c085e-25d6-453d-8b92-357c1db06fa4
     type: regular
     task:
-      id: 858de687-f304-4926-8ca9-06f23e24e6ef
+      id: 301c085e-25d6-453d-8b92-357c1db06fa4
       version: -1
       name: Dump memory
       script: CarbonBlackLiveResponseCloud|||cbd-lr-memdump
@@ -415,13 +430,13 @@ tasks:
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
       target_path:
-        simple: C:\test\memdump_test\memdump_test_file
+        simple: ${inputs.memdump_file_path}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3170
+          "x": 162.5,
+          "y": 3375
         }
       }
     note: false
@@ -433,10 +448,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 9ce8bbe5-6844-4055-80d2-18aaadf4e4b8
+    taskid: 4f9d3e30-751e-4bd4-84c8-bded80e60c91
     type: regular
     task:
-      id: 9ce8bbe5-6844-4055-80d2-18aaadf4e4b8
+      id: 4f9d3e30-751e-4bd4-84c8-bded80e60c91
       version: -1
       name: Get dir content
       description: List the contents of a directory on the remote machine
@@ -449,15 +464,15 @@ tasks:
       - "101"
     scriptarguments:
       directory_path:
-        simple: C:\test\memdump_test
+        simple: ${inputs.memdump_dir}
       sensor_id:
         simple: ${inputs.sensor_id}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3345
+          "x": 162.5,
+          "y": 3550
         }
       }
     note: false
@@ -494,8 +509,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 370
+          "x": 162.5,
+          "y": 400
         }
       }
     note: false
@@ -520,7 +535,7 @@ tasks:
       brand: CarbonBlackLiveResponseCloud
     nexttasks:
       '#none#':
-      - "44"
+      - "104"
     scriptarguments:
       sensor_id:
         simple: ${inputs.sensor_id}
@@ -528,36 +543,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3695
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "87":
-    id: "87"
-    taskid: 24ace2b1-ab80-4030-8ae7-b6b177a0465e
-    type: regular
-    task:
-      id: 24ace2b1-ab80-4030-8ae7-b6b177a0465e
-      version: -1
-      name: Fail
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
+          "x": 162.5,
+          "y": 3900
         }
       }
     note: false
@@ -591,8 +578,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2820
+          "x": 162.5,
+          "y": 2850
         }
       }
     note: false
@@ -628,8 +615,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2295
+          "x": 162.5,
+          "y": 2325
         }
       }
     note: false
@@ -665,8 +652,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2470
+          "x": 162.5,
+          "y": 2500
         }
       }
     note: false
@@ -703,8 +690,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2645
+          "x": 162.5,
+          "y": 2675
         }
       }
     note: false
@@ -729,7 +716,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "46"
+      - "103"
     scriptarguments:
       file_path:
         simple: c:\test\test.txt
@@ -741,8 +728,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2995
+          "x": 162.5,
+          "y": 3025
         }
       }
     note: false
@@ -765,7 +752,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "87"
+      - "105"
       Sub keys exist:
       - "98"
     separatecontext: false
@@ -782,8 +769,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1245
+          "x": 162.5,
+          "y": 1275
         }
       }
     note: false
@@ -817,8 +804,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1420
+          "x": 162.5,
+          "y": 1450
         }
       }
     note: false
@@ -841,7 +828,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "87"
+      - "105"
       "yes":
       - "42"
     separatecontext: false
@@ -856,8 +843,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1595
+          "x": 162.5,
+          "y": 1625
         }
       }
     note: false
@@ -893,8 +880,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1945
+          "x": 162.5,
+          "y": 1975
         }
       }
     note: false
@@ -906,10 +893,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "101":
     id: "101"
-    taskid: 49037342-cad4-4daf-8e92-2cb14cc08f91
+    taskid: 18e03899-622c-4850-84cc-e6aff412292c
     type: condition
     task:
-      id: 49037342-cad4-4daf-8e92-2cb14cc08f91
+      id: 18e03899-622c-4850-84cc-e6aff412292c
       version: -1
       name: Verify dir content
       type: condition
@@ -924,16 +911,19 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: hasLength
           left:
             value:
               simple: CarbonBlackDefenseLR.Directory.content
             iscontext: true
+          right:
+            value:
+              simple: "3"
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3520
+          "x": 162.5,
+          "y": 3725
         }
       }
     note: false
@@ -963,8 +953,152 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4045
+          "x": 972.5,
+          "y": 4240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: b9da7918-aaa7-4181-8f7b-e4b5134befcd
+    type: regular
+    task:
+      id: b9da7918-aaa7-4181-8f7b-e4b5134befcd
+      version: -1
+      name: Delete memdump file
+      description: Delete the specified file name on the remote machine
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-file-delete
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      sensor_id:
+        simple: ${inputs.sensor_id}
+      source_path:
+        simple: ${inputs.memdump_file_path}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 6cc08f86-b78c-45d0-80f7-32b49824e4e0
+    type: condition
+    task:
+      id: 6cc08f86-b78c-45d0-80f7-32b49824e4e0
+      version: -1
+      name: Verify processes
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "102"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefenseLR.Directory.content
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 50c7ceac-29b1-4552-87ca-9a7a24b238eb
+    type: regular
+    task:
+      id: 50c7ceac-29b1-4552-87ca-9a7a24b238eb
+      version: -1
+      name: Fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 972.5,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 950986a2-5a0a-417e-8fe5-850a6de433ab
+    type: regular
+    task:
+      id: 950986a2-5a0a-417e-8fe5-850a6de433ab
+      version: -1
+      name: Get the PID of test process
+      description: Create a new process on the remote machine with the specified command
+        string
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-execute
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      command_string:
+        simple: cmd.exe /c c:\test\get_pid.bat
+      sensor_id:
+        simple: ${inputs.sensor_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4460
         }
       }
     note: false
@@ -976,13 +1110,17 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "101_102_#default#": 0.56,
+      "104_102_#default#": 0.53,
+      "99_42_yes": 0.86
+    },
     "paper": {
       "dimensions": {
-        "height": 4235,
-        "width": 1470,
-        "x": 50,
-        "y": 50
+        "height": 4900,
+        "width": 1387.5,
+        "x": 162.5,
+        "y": 65
       }
     }
   }
@@ -1008,6 +1146,18 @@ inputs:
 - key: test_file_path
   value:
     simple: C:\test\test.txt
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: memdump_dir
+  value:
+    simple: C:\test\memdump_test\
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: memdump_file_path
+  value:
+    simple: C:\test\memdump_test\test_dumped_file
   required: false
   description: ""
   playbookInputQuery: null
