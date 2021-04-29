@@ -396,7 +396,8 @@ def country_code_list_command(client: Client, demisto_args: dict) -> CommandResu
         outputs_key_field='country_name',
         outputs=countries_list,
         raw_response=countries_list,
-        readable_output=readable_output
+        readable_output=readable_output,
+
     )
 
 
@@ -446,7 +447,7 @@ def handle_country_list_commands(client: Client, demisto_args: dict,
         outputs_key_field='country',
         outputs=countries_list,
         raw_response=raw_result,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -503,7 +504,7 @@ def handle_country_addition_commands(client: Client, demisto_args: dict,
         outputs_key_field='country',
         outputs=countries_list,
         raw_response=raw_result,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -542,7 +543,7 @@ def handle_country_deletion_commands(client: Client, demisto_args: dict, meta_da
     else:  # inbound
         raw_result = client.inbound_blacklisted_country_delete_command(demisto_args)
 
-    if not raw_result.status_code == 204:
+    if raw_result.status_code != 204:
         raise DemistoException("Api call should return no content status")
 
     return f"Countries were successfully removed from the {direction} blacklisted list"
@@ -602,7 +603,7 @@ def handle_host_list_commands(client: Client, demisto_args: dict,
         outputs_key_field='host_address',
         outputs=hosts_list,
         raw_response=raw_result,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -677,7 +678,7 @@ def handle_host_addition_and_replacement_commands(client: Client,
         outputs_key_field='host_address',
         outputs=hosts_list,
         raw_response=raw_result,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -724,7 +725,7 @@ def handle_host_deletion_commands(client: Client, demisto_args: dict,
         else:
             raw_result = client.inbound_whitelisted_host_remove_command(demisto_args)
 
-    if not raw_result.status_code == 204:
+    if raw_result.status_code != 204:
         raise DemistoException("Api call should return no content status")
 
     return f"Hosts were successfully removed from the {direction} {list_color} list"
@@ -767,7 +768,7 @@ def handle_protection_groups_list_commands(client: Client, demisto_args: dict) -
         outputs_key_field='pgid',
         outputs=protection_group_list,
         raw_response=raw_result,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -814,7 +815,7 @@ def handle_protection_groups_update_commands(client: Client, demisto_args: dict)
         outputs_key_field='pgid',
         outputs=protection_groups_list,
         raw_response=raw_result,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -854,7 +855,7 @@ def handle_domain_list_commands(client: Client, demisto_args: dict) -> CommandRe
         outputs_key_field='domain',
         outputs=domains_list,
         raw_response=raw_result,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -899,7 +900,7 @@ def handle_domain_addition_commands(client: Client, demisto_args: dict) -> Comma
         outputs_key_field='domain',
         outputs=domains_list,
         raw_response=raw_result,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -928,7 +929,7 @@ def handle_domain_deletion_commands(client: Client, demisto_args: dict) -> str:
     demisto_args['domain'] = ','.join(argToList(domain))
 
     raw_result = client.inbound_blacklisted_domain_remove_command(demisto_args)
-    if not raw_result.status_code == 204:
+    if raw_result.status_code != 204:
         raise DemistoException("Api call should return no content status")
 
     return "Domains were successfully removed from the inbound blacklisted list"
@@ -969,7 +970,7 @@ def handle_url_list_commands(client: Client, demisto_args: dict) -> CommandResul
         outputs_key_field='url',
         outputs=urls_list,
         raw_response=raw_result,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -1013,7 +1014,7 @@ def handle_url_addition_commands(client: Client, demisto_args: dict) -> CommandR
         outputs_key_field="url",
         outputs=urls_list,
         raw_response=raw_result,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -1042,7 +1043,7 @@ def handle_url_deletion_commands(client: Client, demisto_args: dict) -> str:
     demisto_args['url'] = ','.join(argToList(url))
 
     raw_result = client.inbound_blacklisted_url_remove_command(demisto_args)
-    if not raw_result.status_code == 204:
+    if raw_result.status_code != 204:
         raise DemistoException("Api call should return no content status")
 
     return "Urls were successfully removed from the inbound blacklisted list"
@@ -1080,10 +1081,10 @@ def main() -> None:
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto_command} command. Error: {str(e)}')
+        return_error(f'Failed to execute {demisto_command} command. Error: {str(e)}', error=e)
 
 
 ''' ENTRY POINT '''
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ == '__main__':
     main()

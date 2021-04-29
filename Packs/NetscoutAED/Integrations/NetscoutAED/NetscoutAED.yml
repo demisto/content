@@ -3,8 +3,7 @@ commonfields:
   id: NetscoutAED
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Server URL
+- display: Server URL
   name: base_url
   required: true
   type: 0
@@ -21,6 +20,8 @@ configuration:
   name: proxy
   required: false
   type: 8
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: Use the Netscout Arbor Edge Defense Integration to detect and stop both
   inbound threats and outbound communication from internal compromised hosts.
@@ -1270,4 +1271,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
+fromversion: 5.5.0
