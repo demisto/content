@@ -37,7 +37,7 @@ class Client:
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
-        self.tags = [] if tags is None else tags
+        self.tags = [] if not tags else tags
         self.tlp_color = tlp_color
         self.server: Server
         self.api_root: List[ApiRoot]
@@ -115,6 +115,7 @@ class Client:
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
                                 continue
                             relationships_list.append(create_relationship(mitre_item_json))
+                            demisto.debug('RelationshipRelationship')
 
                         else:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
@@ -128,7 +129,11 @@ class Client:
                                 "fields": map_fields_by_type(indicator_type, mitre_item_json)
                             }
 
-                            indicator_obj['fields']['tags'].append(self.tags)
+                            if indicator_obj['fields'].get('tags'):
+                                indicator_obj['fields']['tags'].append(self.tags)
+                            else:
+                                indicator_obj['fields'].update({"tags": self.tags})
+
                             if self.tlp_color:
                                 indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
@@ -136,8 +141,12 @@ class Client:
                             counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
 
-        if indicators:
-            indicators[0]['relationships'] = ['relationships_list']  # todo
+        dummy_indicator_for_relations = {
+            "value": "$$DummyIndicator$$",
+            "relationships": relationships_list
+        }
+
+        indicators.append(dummy_indicator_for_relations)
 
         return indicators
 
@@ -149,7 +158,6 @@ def is_indicator_deprecated_or_revoked(indicator_json):
 def map_fields_by_type(indicator_type: str, indicator_json: dict):
     created = handle_multiple_dates_in_one_field('created', indicator_json.get('created'))
     modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))
-    mitre_platform = ','.join(indicator_json.get('x_mitre_platforms'))
 
     publications = []
     for external_reference in indicator_json.get('external_references', []):
@@ -166,9 +174,10 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         'description': indicator_json.get('description'),
         'publications': publications,
     }
+
     mapping_by_type = {
         "STIX Attack Pattern": {
-            'operatingsystemrefs': mitre_platform
+            'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         },
         "Intrusion Set": {
             'aliases': indicator_json.get('aliases')
@@ -176,17 +185,16 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         "STIX Malware": {
             'tags': indicator_json.get('labels'),
             'aliases': indicator_json.get('x_mitre_aliases'),
-            'operatingsystemrefs': mitre_platform
+            'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
 
         },
         "STIX Tool": {
             'tags': indicator_json.get('labels'),
             'aliases': indicator_json.get('x_mitre_aliases'),
-            'operatingsystemrefs': mitre_platform
+            'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         }
     }
-
-    generic_mapping_fields.update(mapping_by_type.get(indicator_type))
+    generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))
     return generic_mapping_fields
 
 
