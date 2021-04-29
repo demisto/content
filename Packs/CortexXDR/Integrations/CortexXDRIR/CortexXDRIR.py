@@ -21,6 +21,7 @@ API_KEY_LENGTH = 128
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
+INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
@@ -1493,7 +1494,7 @@ def get_last_mirrored_in_time(args):
 
     else:  # handling 6.0 version
         last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
-        last_mirrored_in_timestamp = (last_mirrored_in_time - 120)
+        last_mirrored_in_timestamp = (last_mirrored_in_time - (120 * 1000))
 
     return last_mirrored_in_timestamp
 
@@ -1681,9 +1682,16 @@ def get_endpoints_command(client, args):
             sort_by_first_seen=sort_by_first_seen,
             sort_by_last_seen=sort_by_last_seen
         )
+
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False)
+    endpoint_context_list = []
+    for endpoint in standard_endpoints:
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+        endpoint_context_list.append(endpoint_context)
+
     context = {
         f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-        Common.Endpoint.CONTEXT_PATH: return_endpoint_standard_context(endpoints)
+        Common.Endpoint.CONTEXT_PATH: endpoint_context_list
     }
     account_context = create_account_context(endpoints)
     if account_context:
@@ -1695,17 +1703,77 @@ def get_endpoints_command(client, args):
     )
 
 
-def return_endpoint_standard_context(endpoints):
-    endpoints_context_list = []
-    for endpoint in endpoints:
-        endpoints_context_list.append(assign_params(**{
-            "Hostname": (endpoint['host_name'] if endpoint.get('host_name', '') else endpoint.get('endpoint_name')),
-            "ID": endpoint.get('endpoint_id'),
-            "IPAddress": endpoint.get('ip'),
-            "Domain": endpoint.get('domain'),
-            "OS": endpoint.get('os_type'),
-        }))
-    return endpoints_context_list
+def convert_os_to_standard(endpoint_os):
+    os_type = ''
+    endpoint_os = endpoint_os.lower()
+    if 'windows' in endpoint_os:
+        os_type = "Windows"
+    elif 'linux' in endpoint_os:
+        os_type = "Linux"
+    elif 'macos' in endpoint_os:
+        os_type = "Macos"
+    elif 'android' in endpoint_os:
+        os_type = "Android"
+    return os_type
+
+
+def generate_endpoint_by_contex_standard(endpoints, ip_as_string):
+    standard_endpoints = []
+    for single_endpoint in endpoints:
+        status = 'Online' if single_endpoint.get('endpoint_status') == 'connected' else 'Offline'
+        is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
+        hostname = single_endpoint['host_name'] if single_endpoint.get('host_name', '') else single_endpoint.get(
+            'endpoint_name')
+        ip = single_endpoint.get('ip')
+        # in the `xdr-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
+        # in the `endpoint` command we use the standard
+        if ip_as_string and isinstance(ip, list):
+            ip = ip[0]
+        os_type = convert_os_to_standard(single_endpoint.get('os_type', ''))
+        endpoint = Common.Endpoint(
+            id=single_endpoint.get('endpoint_id'),
+            hostname=hostname,
+            ip_address=ip,
+            os=os_type,
+            status=status,
+            is_isolated=is_isolated,
+            mac_address=single_endpoint.get('mac_address'),
+            domain=single_endpoint.get('domain'),
+            vendor=INTEGRATION_NAME)
+
+        standard_endpoints.append(endpoint)
+    return standard_endpoints
+
+
+def endpoint_command(client, args):
+    endpoint_id_list = argToList(args.get('id'))
+    endpoint_ip_list = argToList(args.get('ip'))
+    endpoint_hostname_list = argToList(args.get('hostname'))
+
+    endpoints = client.get_endpoints(
+        endpoint_id_list=endpoint_id_list,
+        ip_list=endpoint_ip_list,
+        hostname=endpoint_hostname_list,
+    )
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True)
+    command_results = []
+    if standard_endpoints:
+        for endpoint in standard_endpoints:
+            endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+            hr = tableToMarkdown('Cortex XDR Endpoint', endpoint_context)
+
+            command_results.append(CommandResults(
+                readable_output=hr,
+                raw_response=endpoints,
+                indicator=endpoint
+            ))
+
+    else:
+        command_results.append(CommandResults(
+            readable_output="No endpoints were found",
+            raw_response=endpoints,
+        ))
+    return command_results
 
 
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
@@ -2593,9 +2661,9 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason'))
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))
         demisto.debug(f"Closing Remote XDR incident with status {update_args['status']}")
-        update_args['resolve_comment'] = update_args.get('closeNotes')
+        update_args['resolve_comment'] = update_args.get('closeNotes', '')
 
 
 def get_update_args(delta, inc_status):
@@ -2609,10 +2677,12 @@ def get_update_args(delta, inc_status):
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
+
+    if remote_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
+                      f'incident {remote_args.remote_incident_id}')
     try:
-        if remote_args.delta and remote_args.incident_changed:
-            demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
-                          f'incident {remote_args.remote_incident_id}')
+        if remote_args.incident_changed:
             update_args = get_update_args(remote_args.delta, remote_args.inc_status)
 
             update_args['incident_id'] = remote_args.remote_incident_id
@@ -2973,6 +3043,8 @@ def run_script_command(client: Client, args: Dict) -> CommandResults:
             parameters = json.loads(parameters)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
+    else:
+        parameters = {}
     response = client.run_script(script_uid, endpoint_ids, parameters, timeout)
     reply = response.get('reply')
     return CommandResults(
@@ -3292,6 +3364,9 @@ def main():
 
         elif demisto.command() == 'xdr-run-script-kill-process':
             return_results(run_script_kill_process_command(client, args))
+
+        elif demisto.command() == 'endpoint':
+            return_results(endpoint_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
