@@ -154,6 +154,7 @@ def reset_auth() -> CommandResults:
 
 @logger
 def test_connection(client: Client) -> CommandResults:
+    test_context_for_token()
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
@@ -168,9 +169,9 @@ def test_context_for_token() -> None:
     Returns:
 
     """
-    if not get_integration_context().get('access_token'):
-        raise DemistoException(
-            "Please run !microsoft-365-defender-auth-start and !microsoft-365-defender-auth-complete")
+    raise DemistoException(
+            "This integration does not have a test module. Please run !microsoft-365-defender-auth-start and "
+            "!microsoft-365-defender-auth-complete and check the connection using !microsoft-365-defender-auth-test")
 
 
 def test_module(client: Client) -> str:
