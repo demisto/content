@@ -412,76 +412,48 @@ script:
     - contextPath: AutoFocus.SessionsSearch.SessionStart
       description: The time when the session began.
       type: Date
-    - contextPath: AutoFocus.SamplesResults.Size
-      description: The file size in bytes.
+    - contextPath: AutoFocus.SessionsResults.FileName
+      description: The name of the file..
       type: String
-    - contextPath: AutoFocus.SamplesResults.SHA1
-      description: The SHA1 hash of the file.
+    - contextPath: AutoFocus.SessionsResults.ID
+      description: The session ID. Used to get session details.
       type: String
-    - contextPath: AutoFocus.SamplesResults.SHA256
+    - contextPath: AutoFocus.SessionsResults.Industry
+      description: The related industry.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Region
+      description: The regions of the sessions.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.SHA256
       description: The SHA256 hash of the file.
       type: String
-    - contextPath: AutoFocus.SamplesResults.Created
-      description: The date that the file was created.
-      type: Date
-    - contextPath: AutoFocus.SamplesResults.Finished
-      description: Date finished.
-      type: Date
-    - contextPath: AutoFocus.SamplesResults.Region
-      description: Region of the sample.
+    - contextPath: AutoFocus.SessionsResults.UploadSource
+      description: The source of the uploaded sample.
       type: String
-    - contextPath: AutoFocus.SamplesResults.FileType
-      description: The file type.
+    - contextPath: AutoFocus.SessionsResults.FileURL
+      description: The URL of the file.
       type: String
-    - contextPath: AutoFocus.SamplesResults.Tags
-      description: The tags attached to the sample.
+    - contextPath: AutoFocus.SessionsResults.Tags
+      description: Relevant tags.
       type: String
-    - contextPath: AutoFocus.SamplesResults.Verdict
-      description: The verdict of the sample.
-      type: Number
-    - contextPath: AutoFocus.SamplesResults.TagGroups
-      description: Groups of relevant tags.
-      type: String
-    - contextPath: AutoFocus.SamplesSearch.Status
+    - contextPath: AutoFocus.SessionsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
-    - contextPath: File.Size
-      description: The size of the file in bytes.
-      type: Number
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
+    - contextPath: File.Name
+      description: The full file name (including file extension).
       type: String
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
-    - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
+    - contextPath: File.MalwareFamily
+      description: The malware family associated with the file.
       type: String
     - contextPath: File.Tags
       description: Tags of the file.
       type: String
-    - contextPath: AutoFocus.SamplesResults.Artifact.b
-      description: How many set the artifact as benign.
-      type: Number
-    - contextPath: AutoFocus.SamplesResults.Artifact.g
-      description: How many set the artifact as grayware.
-      type: Number
-    - contextPath: AutoFocus.SamplesResults.Artifact.m
-      description: How many set the artifact as malicious.
-      type: Number
-    - contextPath: AutoFocus.SamplesResults.Artifact.confidence
-      description: Confidence in the decision.
-      type: String
-    - contextPath: AutoFocus.SamplesResults.Artifact.indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: AutoFocus.SamplesResults.Artifact.indicator_type
-      description: 'The indicator type, for example: Mutex, User agent, IPv4, Domain.'
-      type: String
-    - contextPath: AutoFocus.SamplesResults.ID
-      description: ID of sample search
-      type: String
+    - contextPath: AutoFocus.SessionsResults.Seen
+      description: Session seen.
+      type: Date
   - arguments:
     - default: false
       description: The AF Cookie for retrieving results of previous searches. The

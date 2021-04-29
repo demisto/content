@@ -4326,6 +4326,7 @@ class Common(object):
         """
         VERSION_MISMATCH_ERROR = 'This command is not supported for your server version. Please update your server ' \
                                  'version to 6.2.0 or later.'
+
         def __init__(
                 self,
                 command,  # type: str
@@ -4335,9 +4336,9 @@ class Common(object):
         ):
             self._command = command
             if next_run_in_seconds < 10:
-                demisto.info('PollingConfiguration provided value for next_run_in_seconds: '
-                             '{} is '.format(next_run_in_seconds) +
-                             'too low - minimum interval is 10 seconds. next_run_in_seconds was set to 10 seconds.')
+                demisto.info('ScheduledCommandConfiguration provided value for next_run_in_seconds: '
+                             '{} is '.format(next_run_in_seconds) + 'too low - minimum interval is 10 seconds. '
+                                                                    'next_run_in_seconds was set to 10 seconds.')
                 next_run_in_seconds = 10
             self._next_run = str(next_run_in_seconds)
             self._args = args
@@ -4346,7 +4347,7 @@ class Common(object):
         @staticmethod
         def raise_error_if_not_supported():
             if not is_demisto_version_ge('6.2.0'):
-                raise DemistoException(Common.PollingConfiguration.VERSION_MISMATCH_ERROR)
+                raise DemistoException(Common.ScheduledCommandConfiguration.VERSION_MISMATCH_ERROR)
 
         def to_results(self):
             """
