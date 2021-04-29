@@ -886,7 +886,7 @@ def run_server(taxii_server: TAXIIServer, is_test=False):
         else:
             demisto.debug('Starting HTTP Server')
 
-        wsgi_server = WSGIServer(('', taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        wsgi_server = WSGIServer(('0.0.0.0', taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
         if is_test:
             server_process = Process(target=wsgi_server.serve_forever)
             server_process.start()
