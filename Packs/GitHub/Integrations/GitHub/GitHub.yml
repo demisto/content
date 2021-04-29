@@ -266,7 +266,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of issues to return. Default is 50. Maximum is 200.
+      description: The number of issues to return. Default is 50. Maximum is 100.
       isArray: false
       name: limit
       required: false
@@ -386,7 +386,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of issues to return. Default is 50. Maximum is 200.
+      description: The number of issues to return. Default is 50. Maximum is 100.
       isArray: false
       name: limit
       required: false
@@ -2735,8 +2735,8 @@ script:
       defaultValue: 'raw'
       name: media_type
       predefined:
-      - raw
-      - html
+        - raw
+        - html
       required: false
       secret: false
     - default: false
@@ -2746,8 +2746,8 @@ script:
       defaultValue: 'false'
       name: create_file_from_content
       predefined:
-      - 'true'
-      - 'false'
+        - 'true'
+        - 'false'
       required: false
       secret: false
     deprecated: false
