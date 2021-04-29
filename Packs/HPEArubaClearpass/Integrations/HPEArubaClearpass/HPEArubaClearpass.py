@@ -105,7 +105,7 @@ def test_module(client: Client) -> str:
     try:
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
@@ -114,9 +114,16 @@ def test_module(client: Client) -> str:
 
 def parse_endpoints_response(response):
     items_list = response.get('_embedded', {}).get('items')
+    human_readable = []
     if items_list:
-        pass
-
+        for item in items_list:
+            human_readable.append({
+                'id': item.get('id'),
+                'mac_address': item.get('mac_address'),
+                'status': item.get('status'),
+                'attributes': item.get('attributes')
+            })
+    return human_readable
 
 
 def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -129,10 +136,11 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     endpoints_filter.update({'mac_address': mac_address}) if mac_address else None
     params = {'filter': endpoints_filter, 'offset': offset, 'limit': limit}
     res = client.request_endpoints(method='GET', params=params, url_suffix='endpoint')
+    human_readable = parse_endpoints_response(res)
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
+        outputs_prefix='HPEArubaClearpass.endpoints',
+        outputs_key_field='id',
         outputs=res,
     )
 
