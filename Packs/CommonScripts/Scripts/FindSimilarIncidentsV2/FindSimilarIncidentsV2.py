@@ -142,7 +142,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
         query = similar_keys_query
 
     if ignore_closed:
-        query += " and -status:Closed' if query else '-status:Closed"
+        query += " and -status:Closed" if query else "-status:Closed"
 
     if incident_id:
         query = "(-id:%s) and (%s)" % (incident_id, query) if query else "(-id:%s)' % (incident_id)"
