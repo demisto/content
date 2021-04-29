@@ -2446,22 +2446,21 @@ class Common(object):
             if self.updated_date:
                 ip_context['UpdatedDate'] = self.updated_date
 
-            if self.registrar_abuse_name or self.registrar_abuse_address or self.registrar_abuse_country or\
+            if self.registrar_abuse_name or self.registrar_abuse_address or self.registrar_abuse_country or \
                     self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
-                    ip_context['Registrar'] = {'Abuse': {}}
-
-                    if self.registrar_abuse_name:
-                        ip_context['Registrar']['Abuse']['Name'] = self.registrar_abuse_name
-                    if self.registrar_abuse_address:
-                        ip_context['Registrar']['Abuse']['Address'] = self.registrar_abuse_address
-                    if self.registrar_abuse_country:
-                        ip_context['Registrar']['Abuse']['Country'] = self.registrar_abuse_country
-                    if self.registrar_abuse_network:
-                        ip_context['Registrar']['Abuse']['Network'] = self.registrar_abuse_network
-                    if self.registrar_abuse_phone:
-                        ip_context['Registrar']['Abuse']['Phone'] = self.registrar_abuse_phone
-                    if self.registrar_abuse_email:
-                        ip_context['Registrar']['Abuse']['Email'] = self.registrar_abuse_email
+                ip_context['Registrar'] = {'Abuse': {}}
+                if self.registrar_abuse_name:
+                    ip_context['Registrar']['Abuse']['Name'] = self.registrar_abuse_name
+                if self.registrar_abuse_address:
+                    ip_context['Registrar']['Abuse']['Address'] = self.registrar_abuse_address
+                if self.registrar_abuse_country:
+                    ip_context['Registrar']['Abuse']['Country'] = self.registrar_abuse_country
+                if self.registrar_abuse_network:
+                    ip_context['Registrar']['Abuse']['Network'] = self.registrar_abuse_network
+                if self.registrar_abuse_phone:
+                    ip_context['Registrar']['Abuse']['Phone'] = self.registrar_abuse_phone
+                if self.registrar_abuse_email:
+                    ip_context['Registrar']['Abuse']['Email'] = self.registrar_abuse_email
 
             if self.campaign:
                 ip_context['Campaign'] = self.campaign
@@ -2639,7 +2638,6 @@ class Common(object):
                 'note': self.note,
                 'timestamp': self.timestamp,
             }
-
 
     class Publications(object):
         """
@@ -2865,7 +2863,7 @@ class Common(object):
             self.community_notes = community_notes
             self.publications = publications
             self.threat_types = threat_types
-            self.imphash= imphash
+            self.imphash = imphash
             self.quarantined = quarantined
             self.organization = organization
             self.associated_file_names = associated_file_names
@@ -3156,9 +3154,9 @@ class Common(object):
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
         def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
-                     feed_related_indicators=None, tags=None, malware_family=None, port = None, internal=None,
+                     feed_related_indicators=None, tags=None, malware_family=None, port=None, internal=None,
                      campaign=None, traffic_light_protocol=None, threat_types=None, asn=None, as_owner=None,
-                     geo_country=None, organization=None, community_notes=None, publications=None , relations=None):
+                     geo_country=None, organization=None, community_notes=None, publications=None, relations=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
