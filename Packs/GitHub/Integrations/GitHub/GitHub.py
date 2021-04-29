@@ -618,7 +618,7 @@ def create_pull_request_command():
 
 
 def list_branch_pull_requests(branch_name: str, repository: Optional[str] = None,
-                              organization: Optional[str] = None) -> CommandResults:
+                              organization: Optional[str] = None) -> List[Dict]:
     """
     Performs API request to GitHub service and formats the returned pull requests details to outputs.
     Args:
@@ -627,7 +627,7 @@ def list_branch_pull_requests(branch_name: str, repository: Optional[str] = None
         organization (Optional[str]): Organization the branch resides in. Defaults to 'USER' if not given.
 
     Returns:
-        (CommandResults).
+        (List[Dict]): List of the formatted pull requests outputs.
     """
     repository = repository if repository else REPOSITORY
     organization = organization if organization else USER
@@ -635,13 +635,7 @@ def list_branch_pull_requests(branch_name: str, repository: Optional[str] = None
     response = http_request('GET', url_suffix=suffix)
     formatted_outputs = [format_pr_outputs(output) for output in response]
 
-    return CommandResults(
-        outputs_prefix='GitHub.PR',
-        outputs_key_field='Number',
-        outputs=formatted_outputs,
-        raw_response=response,
-        readable_output=tableToMarkdown(f'Pull Request For Branch #{branch_name}', formatted_outputs, removeNull=True)
-    )
+    return formatted_outputs
 
 
 def list_branch_pull_requests_command() -> None:
@@ -658,9 +652,14 @@ def list_branch_pull_requests_command() -> None:
     branch_name = args.get('branch_name', '')
     organization = args.get('organization')
     repository = args.get('repository')
-    results = list_branch_pull_requests(branch_name, repository, organization)
+    formatted_outputs = list_branch_pull_requests(branch_name, repository, organization)
 
-    return_results(results)
+    return_results(CommandResults(
+        outputs_prefix='GitHub.PR',
+        outputs_key_field='Number',
+        outputs=formatted_outputs,
+        readable_output=tableToMarkdown(f'Pull Request For Branch #{branch_name}', formatted_outputs, removeNull=True)
+    ))
 
 
 def is_pr_merged(pull_number: Union[int, str]):
