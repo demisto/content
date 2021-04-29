@@ -403,12 +403,15 @@ class FeedIndicatorType(object):
             return None
 
 
-class ScheduleMetadata:
+class ScheduleMetadata(object):
     """
     Schedule metadata helper class used when a command is being called via another command schedule
 
     :type context: ``dict``
     :param context: Context in which the command was executed.
+
+    :return: None
+    :rtype: ``None``
     """
     def __init__(self, context):
         parent_entry = context.get('ParentEntry', {})
@@ -418,6 +421,7 @@ class ScheduleMetadata:
         self.times_ran = int(parent_entry.get('timesRan', 0)) + 1
         self.start_date = parent_entry.get('startDate')
         self.end_date = parent_entry.get('endingDate')
+
 
 def is_debug_mode():
     """Return if this script/command was passed debug-mode=true option
