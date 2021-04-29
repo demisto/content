@@ -915,6 +915,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
             'LinkToOffense': urljoin(client.server, link_to_offense_suffix),
         }
 
+
         domain_enrich = {
             'domain_name': domain_id_name_dict.get(offense.get('domain_id'))
         } if DOMAIN_ENRCH_FLG.lower() == 'true' and domain_id_name_dict.get(offense.get('domain_id')) else dict()
