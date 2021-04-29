@@ -245,7 +245,7 @@ script:
     name: mad-get-escalations
   dockerimage: demisto/python3:3.9.4.18682
   isfetch: true
-  ismappable: true
+  ismappable: false
   isremotesyncin: true
   isremotesyncout: true
   runonce: false

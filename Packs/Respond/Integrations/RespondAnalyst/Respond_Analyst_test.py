@@ -100,10 +100,11 @@ def test_get_incident_command(requests_mock):
         'tenant_id': 'Tenant 1',
         'incident_id': 6
     }
-    incident = get_incident_command(client, args)
+    command_result = get_incident_command(client, args)
 
-    assert incident
-    assert incident == expected_result
+    assert command_result
+    # print(incident)
+    assert command_result.get('readable_output') == expected_result
 
 
 def test_fetch_incidents_no_new(mocker, requests_mock):
@@ -543,7 +544,7 @@ def test_get_remote_data_command(requests_mock):
                     'name': 'RAT.Win32.CRYSIS.SM',
                     'type': 'RAT',
                     'vendor': 'McAfee'}],
-            "hashes": ['44d88612fea8a8f36de82e1278abb02f'],
+            "hashes": [{'hash': '44d88612fea8a8f36de82e1278abb02f'}],
             'accounts': [{
                 'domain': None,
                 'name': 'svc_adminscom3'},
@@ -591,7 +592,7 @@ def test_update_remote_system_command(mocker, requests_mock):
         "status": "status val",
         "delta": {
             "title": "title val",
-            "responddescription": "description val"}
+            "description": "description val"}
     }
     rest_client = mock_rest_client()
 
