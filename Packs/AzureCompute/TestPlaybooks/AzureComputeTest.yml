@@ -134,7 +134,7 @@ tasks:
       resource_group:
         simple: compute-integration
       virtual_machine_name:
-        simple: TestOAuth
+        simple: TestOAuth2
     separatecontext: false
     view: |-
       {
