@@ -1,10 +1,19 @@
 import demistomock as demisto
+import pytest
+
+def mock_request(method, url, params=None, headers=None, files=None, verify=None, proxies=None):
+    class Result:
+        status_code = 200
+
+        def json():
+            return {'data': {'errors': [{'error_msg': 'Submission not stored because no jobs were created',
+                                        'submission_filename': 'example.pdf'}]}}
+
+    result = Result
+    return result
 
 
-def mock_upload_sample(file_id, params):
-    return "no jobs"
-
-
+# @pytest.fixture(autouse=False)
 def test_upload_sample_command(mocker):
     """
     Given:
@@ -12,15 +21,17 @@ def test_upload_sample_command(mocker):
     When:
         upload_sample_command is running
     Then:
-        Assert that the function does not return an error
+        Make sure the error includes "Please try using the command with reanalyzed=true".
     """
-    expected_output = "No jobs was created, maybe because the file has already been analyzed, " \
-                      "please try using the command with reanalyze=true."
+    expected_output = 'Error in API call to VMRay [200] - [{\'error_msg\': \'Submission not stored because no jobs ' \
+                      'were created Please try using the command with reanalyzed=true.\', \'submission_filename\': ' \
+                      '\'example.pdf\'}]'
     mocker.patch.object(demisto, 'params', return_value={"api_key": "123456", "server": "example.com"})
-    import VMRay
-    mocker.patch('VMRay.upload_sample', side_effect=mock_upload_sample)
-    mocker_output = mocker.patch('VMRay.return_outputs')
+    mocker.patch.object(demisto, 'command', return_value='vmray-upload-sample')
+    mocker.patch('requests.request', side_effect=mock_request)
+    mocker_output = mocker.patch('VMRay.return_error')
+    from VMRay import main
 
-    VMRay.upload_sample_command()
+    main()
 
-    assert mocker_output.call_args.kwargs.get('readable_output') == expected_output
+    assert mocker_output.call_args.args[0] == expected_output
