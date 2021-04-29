@@ -43,15 +43,19 @@ class Client:
     :type proxies: ``dict``
     :param proxies: proxies dict for http request
 
+    :type create_relationships: ``bool``
+    :param create_relationships: True if integration will create relationships
+
     :return response of request
     :rtype ``dict``
     """
 
-    def __init__(self, api_key, url, verify, proxies):
+    def __init__(self, api_key, url, verify, proxies, create_relationships):
         self.url = url
         self.api_key = api_key
         self.verify = verify
         self.proxies = proxies
+        self.create_relationships = create_relationships
 
     def http_request(self, method, url_suffix, params=None):
         """
@@ -307,14 +311,15 @@ def ip_lookup_command(client, ip):
 
         )
         relationships = []
-        if events_details.get('attack_ids'):
-            for attack_id in events_details.get('attack_ids'):
-                relationships.append(EntityRelation(name='indicator-of',
-                                                    entity_a=ip,
-                                                    entity_a_type=FeedIndicatorType.IP,
-                                                    entity_b=attack_id,
-                                                    entity_b_type='STIX Attack Pattern',
-                                                    brand=BRAND))
+        if client.create_relationships:
+            if events_details.get('attack_ids'):
+                for attack_id in events_details.get('attack_ids'):
+                    relationships.append(EntityRelation(name='indicator-of',
+                                                        entity_a=ip,
+                                                        entity_a_type=FeedIndicatorType.IP,
+                                                        entity_b=attack_id,
+                                                        entity_b_type='STIX Attack Pattern',
+                                                        brand=BRAND))
 
         ip_ioc = Common.IP(ip=ip, dbot_score=dbot_score, relations=relationships)
 
@@ -464,14 +469,15 @@ def domain_lookup_command(client, domain):
 
         )
         relationships = []
-        if events_details.get('attack_ids'):
-            for attack_id in events_details.get('attack_ids'):
-                relationships.append(EntityRelation(name='indicator-of',
-                                                    entity_a=domain,
-                                                    entity_a_type=FeedIndicatorType.Domain,
-                                                    entity_b=attack_id,
-                                                    entity_b_type='STIX Attack Pattern',
-                                                    brand=BRAND))
+        if client.create_relationships:
+            if events_details.get('attack_ids'):
+                for attack_id in events_details.get('attack_ids'):
+                    relationships.append(EntityRelation(name='indicator-of',
+                                                        entity_a=domain,
+                                                        entity_a_type=FeedIndicatorType.Domain,
+                                                        entity_b=attack_id,
+                                                        entity_b_type='STIX Attack Pattern',
+                                                        brand=BRAND))
 
         domain_ioc = Common.Domain(domain=domain, dbot_score=dbot_score, relations=relationships)
 
@@ -647,14 +653,15 @@ def url_lookup_command(client, url):
         )
 
         relationships = []
-        if events_details.get('attack_ids'):
-            for attack_id in events_details.get('attack_ids'):
-                relationships.append(EntityRelation(name='indicator-of',
-                                                    entity_a=url,
-                                                    entity_a_type=FeedIndicatorType.URL,
-                                                    entity_b=attack_id,
-                                                    entity_b_type='STIX Attack Pattern',
-                                                    brand=BRAND))
+        if client.create_relationships:
+            if events_details.get('attack_ids'):
+                for attack_id in events_details.get('attack_ids'):
+                    relationships.append(EntityRelation(name='indicator-of',
+                                                        entity_a=url,
+                                                        entity_a_type=FeedIndicatorType.URL,
+                                                        entity_b=attack_id,
+                                                        entity_b_type='STIX Attack Pattern',
+                                                        brand=BRAND))
 
         url_ioc = Common.URL(url=url, dbot_score=dbot_score, relations=relationships)
 
@@ -746,14 +753,15 @@ def file_lookup_command(client, file):
         )
 
         relationships = []
-        if events_details.get('attack_ids'):
-            for attack_id in events_details.get('attack_ids'):
-                relationships.append(EntityRelation(name='indicator-of',
-                                                    entity_a=file,
-                                                    entity_a_type=DBotScoreType.FILE,
-                                                    entity_b=attack_id,
-                                                    entity_b_type='STIX Attack Pattern',
-                                                    brand=BRAND))
+        if client.create_relationships:
+            if events_details.get('attack_ids'):
+                for attack_id in events_details.get('attack_ids'):
+                    relationships.append(EntityRelation(name='indicator-of',
+                                                        entity_a=file,
+                                                        entity_a_type=DBotScoreType.FILE,
+                                                        entity_b=attack_id,
+                                                        entity_b_type='STIX Attack Pattern',
+                                                        brand=BRAND))
 
         hash_type = get_hash_type(file)  # if file_hash found, has to be md5, sha1 or sha256
         if hash_type == 'md5':
@@ -1489,13 +1497,14 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    params = demisto.params()
     api_key = get_apikey()
-    url = demisto.params()["url"]
-    verify_certificate = not demisto.params().get('insecure', False)
-
+    url = params["url"]
+    verify_certificate = not params.get('insecure', False)
+    create_relationships = argToBoolean(params.get('create_relationships', True))
     proxies = handle_proxy()
     try:
-        client = Client(api_key, url, verify_certificate, proxies)
+        client = Client(api_key, url, verify_certificate, proxies, create_relationships)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
