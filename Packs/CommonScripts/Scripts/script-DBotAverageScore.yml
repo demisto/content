@@ -4,6 +4,9 @@ commonfields:
 name: DBotAverageScore
 script: >
   var scores = dq(invContext, 'DBotScore(val.Indicator && val.Score)');
+  if (!(Array.isArray(scores))) {
+      scores = [scores]
+  }
 
   var s = {};
 
