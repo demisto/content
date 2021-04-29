@@ -10,10 +10,23 @@ from html.parser import HTMLParser
 from html import unescape
 from re import compile as _Re
 import pandas as pd
+import logging
+
+logger = logging.getLogger("spacy")
+logger.setLevel(logging.ERROR)
 
 
 def hash_word(word, hash_seed):
     return str(hash_djb2(word, int(hash_seed)))
+
+
+html_patterns = [
+    re.compile(r"(?is)<(script|style).*?>.*?(</\1>)"),
+    re.compile(r"(?s)<!--(.*?)-->[\n]?"),
+    re.compile(r"(?s)<.*?>"),
+    re.compile(r"&nbsp;"),
+    re.compile(r" +")
+]
 
 
 def create_text_result(original_text, tokenized_text, original_words_to_tokens, hash_seed=None):
@@ -30,6 +43,13 @@ def create_text_result(original_text, tokenized_text, original_words_to_tokens, 
         text_result['hashedTokenizedText'] = hash_tokenized_text
         text_result['wordsToHashedTokens'] = words_to_hashed_tokens
     return text_result
+
+
+def clean_html_from_text(text):
+    cleaned = text
+    for pattern in html_patterns:
+        cleaned = pattern.sub(" ", cleaned)
+    return unescape(cleaned).strip()
 
 
 class Tokenizer:
@@ -55,13 +75,7 @@ class Tokenizer:
         self.language = language
         self.tokenization_method = tokenization_method
         self.max_text_length = 10 ** 5
-        self.html_patterns = [
-            re.compile(r"(?is)<(script|style).*?>.*?(</\1>)"),
-            re.compile(r"(?s)<!--(.*?)-->[\n]?"),
-            re.compile(r"(?s)<.*?>"),
-            re.compile(r"&nbsp;"),
-            re.compile(r" +")
-        ]
+
         self.nlp = None
         self.html_parser = HTMLParser()
         self._unicode_chr_splitter = _Re('(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)').split
@@ -98,12 +112,6 @@ class Tokenizer:
 
     def remove_multiple_whitespaces(self, text):
         return re.sub(r"\s+", " ", text).strip()
-
-    def clean_html_from_text(self, text):
-        cleaned = text
-        for pattern in self.html_patterns:
-            cleaned = pattern.sub(" ", cleaned)
-        return unescape(cleaned).strip()
 
     def handle_tokenizaion_method(self, text):
         language = self.language
@@ -187,7 +195,8 @@ class Tokenizer:
             if self.remove_new_lines:
                 t = self.remove_line_breaks(t)
             if self.clean_html:
-                t = self.clean_html_from_text(t)
+                t = clean_html_from_text(t)
+                original_text = t
             t = self.remove_multiple_whitespaces(t)
             if len(t) < self.max_text_length:
                 tokenized_text, original_words_to_tokens = self.handle_tokenizaion_method(t)
@@ -309,8 +318,8 @@ def pre_process_tokenizer(text, seed):
 
 
 def pre_process_none(text, seed):
-    original_text = text
-    tokenized_text = text
+    original_text = clean_html_from_text(text)
+    tokenized_text = original_text
     original_words_to_tokens = {x: x for x in text.split()}
     return create_text_result(original_text, tokenized_text, original_words_to_tokens, seed)
 
