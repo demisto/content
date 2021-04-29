@@ -22,6 +22,7 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = ""
+        self.headers = {}
 
     def generate_new_access_token(self):
         body = {
@@ -55,6 +56,7 @@ class Client(BaseClient):
         access_token = integration_context.get('access_token')
         is_context_has_access_token = access_token and access_token_expiration
         if is_context_has_access_token and access_token_expiration > datetime.now():
+            self.set_request_headers()
             return
 
         # if the access is expired or not exist, generate a new one
@@ -63,8 +65,17 @@ class Client(BaseClient):
         if access_token:
             self.access_token = access_token
             self.save_access_token_to_context(auth_response)
+            self.set_request_headers()
         else:
             return_error("HPE Aruba Clearpass error: The client credentials are invalid.")
+
+    def set_request_headers(self):
+        """
+        Setting the headers for the future HTTP requests.
+        The headers should be: {Authorization: Bearer <access_token>}
+        """
+        authorization_header_value = f"{TOKEN_TYPE} {self.access_token}"
+        self.headers = {"Authorization": authorization_header_value}
 
 
 ''' COMMAND FUNCTIONS '''
@@ -111,12 +122,6 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
-
-
-''' MAIN FUNCTION '''
-
-
 def main() -> None:
     params = demisto.params()
     base_url = urljoin(params['url'], '/api')
@@ -131,7 +136,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client.login()
-        sys.exit(0)
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
         headers: Dict = {}
