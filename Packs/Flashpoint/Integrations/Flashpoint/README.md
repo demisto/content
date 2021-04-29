@@ -48,6 +48,11 @@ Context Output
 | IP.Address | string | The IP address. |
 | IP.Malicious.Description | string | The description of the malicious IP. |
 | IP.Malicious.Vendor | string | The vendor of the malicious IP. |
+| IP.Relationships.EntityA | String | The source of the relationship. |
+| IP.Relationships.EntityB | String | The destination of the relationship. |
+| IP.Relationships.Relationship | String | The name of the relationship. |
+| IP.Relationships.EntityAType | String | The type of the source of the relationship. |
+| IP.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | Flashpoint.IP.Event.Href | string | The list of the reference link of the indicator. |
 | Flashpoint.IP.Event.Address | string | The IP address of the indicator. |
 | Flashpoint.IP.Event.EventDetails | Unknown | The event details in which the indicator is observed. |
@@ -157,6 +162,11 @@ Returns the reputation of a domain. The domain is considered malicious if thereâ
 | Domain.Malicious.Description | string | The description of the malicious indicator. |
 | Domain.Malicious.Vendor | string | The vendor of the malicious indicator. |
 | Domain.Name | string | The name of the domain. |
+| Domain.Relationships.EntityA | String | The source of the relationship. |
+| Domain.Relationships.EntityB | String | The destination of the relationship. |
+| Domain.Relationships.Relationship | String | The name of the relationship. |
+| Domain.Relationships.EntityAType | String | The type of the source of the relationship. |
+| Domain.Relationships.EntityBType | String | The type of the destination of the relationship. |
 
 ##### Command Example
 ```
@@ -381,6 +391,11 @@ Returns the reputation of the URL. The URL is considered malicious if thereâ€™s 
 | Flashpoint.Url.Event.Comment | string | The comment which was provided when the indicator was observed. |
 | URL.Malicious.Description | string | The description of the malicious URL. |
 | URL.Malicious.Vendor | string | The vendor of the malicious URL. |
+| URL.Relationships.EntityA | String | The source of the relationship. |
+| URL.Relationships.EntityB | String | The destination of the relationship. |
+| URL.Relationships.Relationship | String | The name of the relationship. |
+| URL.Relationships.EntityAType | String | The type of the source of the relationship. |
+| URL.Relationships.EntityBType | String | The type of the destination of the relationship. |
 
 ##### Command Example
 ```
@@ -490,6 +505,11 @@ Returns the reputation of the file-hash. The file-hash is considered malicious i
 | File.MD5 | string | The MD5 hash of the file. |
 | File.SHA1 | string | The SHA1 hash of the file. |
 | File.SHA256 | string | The SHA256 hash of the file. |
+| File.Relationships.EntityA | String | The source of the relationship. |
+| File.Relationships.EntityB | String | The destination of the relationship. |
+| File.Relationships.Relationship | String | The name of the relationship. |
+| File.Relationships.EntityAType | String | The type of the source of the relationship. |
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. |
 
 ##### Command Example
 ```
