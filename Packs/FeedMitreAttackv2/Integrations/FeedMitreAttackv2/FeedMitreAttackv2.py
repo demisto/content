@@ -20,7 +20,7 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {
 
 INDICATOR_TYPE_TO_SCORE = {
     "Intrusion Set": 3,
-    "Attack Pattern": 2,
+    "STIX Attack Pattern": 2,
     "Course of Action": 0,
     "Malware": 3,
     "Tool": 2
@@ -67,6 +67,7 @@ class Client:
         indicators: List[Dict] = list()
         mitre_id_list: Set[str] = set()
         relationships_list = []
+        id_to_name = {}
         counter = 0
 
         # For each collection
@@ -114,11 +115,12 @@ class Client:
                         if indicator_type == 'Relationship' and create_relationships:
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
                                 continue
-                            relationships_list.append(create_relationship(mitre_item_json))
+                            relationships_list.append(create_relationship(mitre_item_json, id_to_name).to_indicator())
 
                         else:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
                                 continue
+                            id_to_name[mitre_item_json.get('id')] = value
                             indicator_score = INDICATOR_TYPE_TO_SCORE.get(indicator_type)
                             indicator_obj = {
                                 "value": value,
@@ -140,12 +142,13 @@ class Client:
                             counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
 
-        dummy_indicator_for_relations = {
-            "value": "$$DummyIndicator$$",
-            "relationships": relationships_list
-        }
+        if create_relationships and limit > 0:
+            dummy_indicator_for_relations = {
+                "value": "$$DummyIndicator$$",
+                "relationships": relationships_list
+            }
 
-        indicators.append(dummy_indicator_for_relations)
+            indicators.append(dummy_indicator_for_relations)
 
         return indicators
 
@@ -197,7 +200,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     return generic_mapping_fields
 
 
-def create_relationship(item_json):
+def create_relationship(item_json, id_to_name):
     """
     Create a single relation with the given arguments.
     """
@@ -213,10 +216,10 @@ def create_relationship(item_json):
         'firstseenbysource': item_json.get('created')
     }
 
-    return EntityRelation(name='uses',
-                          entity_a=item_json.get('source_ref'),
+    return EntityRelation(name=item_json.get('relationship_type'),
+                          entity_a=id_to_name.get(item_json.get('source_ref')),
                           entity_a_type=a_type,
-                          entity_b=item_json.get('target_ref'),
+                          entity_b=id_to_name.get(item_json.get('target_ref')),
                           entity_b_type=b_type,
                           fields=mapping_fields)
 

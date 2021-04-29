@@ -126,54 +126,6 @@ script:
     description: Shows the feed names and IDs from TAXII.
     execution: false
     name: mitre-show-feeds
-  - arguments:
-    - default: false
-      description: The search word.
-      isArray: false
-      name: search
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: Whether the search is case sensitive. Can be "True" or "False".
-        The default is "False".
-      isArray: false
-      name: casesensitive
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    deprecated: false
-    description: Performs a generic search across the MITRE ATT&CK indicators.
-    execution: false
-    name: mitre-search-indicators
-    outputs:
-    - contextPath: indicators.id
-      description: The ID of the MITRE indicator found.
-      type: string
-    - contextPath: indicators.value
-      description: THe value of the MITRE indicator found.
-      type: string
-  - arguments:
-    - default: true
-      description: Indicator to look up.
-      isArray: false
-      name: indicator
-      required: true
-      secret: false
-    deprecated: false
-    description: Lookup reputation in the indicators.
-    execution: false
-    name: mitre-reputation
-    outputs:
-    - contextPath: MITRE.ATT&CK.value
-      description: The indicator value.
-      type: string
-    - contextPath: MITRE.ATT&CK.indicatorid
-      description: Indicator ID.
-      type: number
   dockerimage: demisto/taxii2:1.0.0.18446
   feed: true
   isfetch: false
