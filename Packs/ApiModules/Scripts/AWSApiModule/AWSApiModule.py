@@ -93,6 +93,7 @@ class AWSClient:
         elif self.aws_access_key_id and self.aws_role_arn:
             sts_client = boto3.client(
                 service_name='sts',
+                region_name=region if region else self.aws_default_region,
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key,
                 verify=self.verify_certificate,
