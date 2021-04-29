@@ -5033,12 +5033,14 @@ def return_results(results):
     elif results and isinstance(results, list) and len(results) > 0:
         result_list = []
         for result in results:
-            if isinstance(result, (dict, str)):
-                result_list.append(result)
-            else:
-                return_results(result)
-        if result_list:
-            demisto.results(result_list)
+            demisto.results(result.to_context())
+            return
+        #     if isinstance(result, (dict, str)):
+        #         result_list.append(result)
+        #     else:
+        #         return_results(result)
+        # if result_list:
+        #     demisto.results(result_list)
 
     elif isinstance(results, CommandResults):
         demisto.results(results.to_context())
