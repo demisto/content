@@ -521,12 +521,40 @@ def test_hash_djb2():
 
 def test_camelize():
     non_camalized = [{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}]
-    expected_output = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
-    assert camelize(non_camalized, '_') == expected_output
+    expected_output_upper_camel = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
+    expected_output_lower_camel = [{'chookityBop': 'asdasd'}, {'abC': 'd e', 'nop': 'qr_st', 'fghIjk': 'lm'}]
+    assert camelize(non_camalized, '_') == expected_output_upper_camel
+    assert camelize(non_camalized, '_', upper_camel=True) == expected_output_upper_camel
+    assert camelize(non_camalized, '_', upper_camel=False) == expected_output_lower_camel
 
     non_camalized2 = {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}
-    expected_output2 = {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}
-    assert camelize(non_camalized2, '_') == expected_output2
+    expected_output2_upper_camel = {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}
+    expected_output2_lower_camel = {'abC': 'd e', 'nop': 'qr_st', 'fghIjk': 'lm'}
+    assert camelize(non_camalized2, '_') == expected_output2_upper_camel
+    assert camelize(non_camalized2, '_', upper_camel=True) == expected_output2_upper_camel
+    assert camelize(non_camalized2, '_', upper_camel=False) == expected_output2_lower_camel
+
+
+def test_camelize_string():
+    from CommonServerPython import camelize_string
+    non_camalized = ['chookity_bop', 'ab_c', 'fgh_ijk', 'nop']
+    expected_output_upper_camel = ['ChookityBop', 'AbC', 'FghIjk', 'Nop']
+    expected_output_lower_camel = ['chookityBop', 'abC', 'fghIjk', 'nop']
+    for i in range(len(non_camalized)):
+        assert camelize_string(non_camalized[i], '_') == expected_output_upper_camel[i]
+        assert camelize_string(non_camalized[i], '_', upper_camel=True) == expected_output_upper_camel[i]
+        assert camelize_string(non_camalized[i], '_', upper_camel=False) == expected_output_lower_camel[i]
+
+
+def test_underscoreToCamelCase():
+    from CommonServerPython import underscoreToCamelCase
+    non_camalized = ['chookity_bop', 'ab_c', 'fgh_ijk', 'nop']
+    expected_output_upper_camel = ['ChookityBop', 'AbC', 'FghIjk', 'Nop']
+    expected_output_lower_camel = ['chookityBop', 'abC', 'fghIjk', 'nop']
+    for i in range(len(non_camalized)):
+        assert underscoreToCamelCase(non_camalized[i]) == expected_output_upper_camel[i]
+        assert underscoreToCamelCase(non_camalized[i], upper_camel=True) == expected_output_upper_camel[i]
+        assert underscoreToCamelCase(non_camalized[i], upper_camel=False) == expected_output_lower_camel[i]
 
 
 # Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
@@ -4076,7 +4104,14 @@ class TestIndicatorsSearcher:
         if not searchAfter:
             searchAfter = 0
 
-        return {'searchAfter': searchAfter + 1}
+        if searchAfter < 6:
+            searchAfter += 1
+
+        else:
+            # mock the end of indicators
+            searchAfter = None
+
+        return {'searchAfter': searchAfter}
 
     def test_search_indicators_by_page(self, mocker):
         """
@@ -4122,6 +4157,28 @@ class TestIndicatorsSearcher:
             search_indicators_obj_search_after.search_indicators_by_version()
 
         assert search_indicators_obj_search_after._search_after_param == 5
+        assert search_indicators_obj_search_after._page == 0
+
+    def test_search_all_indicators_by_search_after(self, mocker):
+        """
+        Given:
+          - Searching indicators couple of times
+          - Server version in equal or higher than 6.1.0
+        When:
+          - Mocking search indicators using the searchAfter parameter until there are no more indicators
+          so search_after is None
+        Then:
+          - The search after param is None
+          - The page param is 0
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        search_indicators_obj_search_after = IndicatorsSearcher()
+        search_indicators_obj_search_after._can_use_search_after = True
+        for n in range(7):
+            search_indicators_obj_search_after.search_indicators_by_version()
+        assert search_indicators_obj_search_after._search_after_param == None
         assert search_indicators_obj_search_after._page == 0
 
 

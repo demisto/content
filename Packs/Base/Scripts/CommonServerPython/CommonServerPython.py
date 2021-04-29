@@ -98,6 +98,18 @@ entryTypes = {
     'widget': 17
 }
 
+ENDPOINT_STATUS_OPTIONS = [
+    'Online',
+    'Offline'
+]
+
+ENDPOINT_ISISOLATED_OPTIONS = [
+    'Yes',
+    'No',
+    'Pending isolation',
+    'Pending unisolation'
+]
+
 
 class EntryType(object):
     """
@@ -2428,7 +2440,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                ip_context['Relations'] = relations_context
+                ip_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.IP.CONTEXT_PATH: ip_context
@@ -2671,7 +2683,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                file_context['Relations'] = relations_context
+                file_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.File.CONTEXT_PATH: file_context
@@ -2737,7 +2749,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                cve_context['Relations'] = relations_context
+                cve_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -2783,7 +2795,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                email_context['Relations'] = relations_context
+                email_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.EMAIL.CONTEXT_PATH: email_context
@@ -2874,7 +2886,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                url_context['Relations'] = relations_context
+                url_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
@@ -3021,7 +3033,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                domain_context['Relations'] = relations_context
+                domain_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context
@@ -3040,7 +3052,8 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None, relations=None):
+                     memory=None, processors=None, processor=None, relations=None, vendor=None, status=None,
+                     is_isolated=None):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
@@ -3054,6 +3067,9 @@ class Common(object):
             self.memory = memory
             self.processors = processors
             self.processor = processor
+            self.vendor = vendor
+            self.status = status
+            self.is_isolated = is_isolated
             self.relations = relations
 
         def to_context(self):
@@ -3099,7 +3115,21 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                endpoint_context['Relations'] = relations_context
+                endpoint_context['Relationships'] = relations_context
+
+            if self.vendor:
+                endpoint_context['Vendor'] = self.vendor
+
+            if self.status:
+                if self.status not in ENDPOINT_STATUS_OPTIONS:
+                    raise ValueError('Status does not have a valid value such as: Online or Offline')
+                endpoint_context['Status'] = self.status
+
+            if self.is_isolated:
+                if self.is_isolated not in ENDPOINT_ISISOLATED_OPTIONS:
+                    raise ValueError('Is Isolated does not have a valid value such as: Yes, No, Pending'
+                                     ' isolation or Pending unisolation')
+                endpoint_context['IsIsolated'] = self.is_isolated
 
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
@@ -3174,7 +3204,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                account_context['Relations'] = relations_context
+                account_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
@@ -4327,7 +4357,7 @@ class Common(object):
             )
 
 
-def camelize_string(src_str, delim='_'):
+def camelize_string(src_str, delim='_', upper_camel=True):
     """
     Transform snake_case to CamelCase
 
@@ -4337,11 +4367,22 @@ def camelize_string(src_str, delim='_'):
     :type delim: ``str``
     :param delim: indicator category.
 
+    :type upper_camel: ``bool``
+    :param upper_camel: When True then transforms string to camel case with the first letter capitalised
+                        (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                        (for example: demisto_content to demistoContent).
+
     :return: A CammelCase string.
     :rtype: ``str``
     """
+    if not src_str:  # empty string
+        return ""
     components = src_str.split(delim)
-    return ''.join(map(lambda x: x.title(), components))
+    camelize_without_first_char = ''.join(map(lambda x: x.title(), components[1:]))
+    if upper_camel:
+        return components[0].title() + camelize_without_first_char
+    else:
+        return components[0].lower() + camelize_without_first_char
 
 
 class IndicatorsTimeline:
@@ -4665,6 +4706,8 @@ class EntityRelation:
         SENT_TO = 'sent-to'
         SIMILAR_TO = 'similar-to'
         SUB_DOMAIN_OF = 'sub-domain-of'
+        SUB_TECHNIQUE_OF = 'subtechnique-of'
+        PARENT_TECHNIQUE_OF = 'parent-technique-of'
         SUPRA_DOMAIN_OF = 'supra-domain-of'
         TARGETED_BY = 'targeted-by'
         TARGETS = 'targets'
@@ -4735,6 +4778,8 @@ class EntityRelation:
                            'similar-to': 'similar-to',
                            'sub-domain-of': 'supra-domain-of',
                            'supra-domain-of': 'sub-domain-of',
+                           'subtechnique-of': 'parent-technique-of',
+                           'parent-technique-of': 'subtechnique-of',
                            'targeted-by': 'targets',
                            'targets': 'targeted-by',
                            'Types': 'Reverse',
@@ -5223,7 +5268,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
-def camelize(src, delim=' '):
+def camelize(src, delim=' ', upper_camel=True):
     """
         Convert all keys of a dictionary (or list of dictionaries) to CamelCase (with capital first letter)
 
@@ -5233,6 +5278,11 @@ def camelize(src, delim=' '):
         :type delim: ``str``
         :param delim: The delimiter between two words in the key (e.g. delim=' ' for "Start Date"). Default ' '.
 
+        :type upper_camel: ``bool``
+        :param upper_camel: When True then transforms dictionary keys to camel case with the first letter capitalised
+                            (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                            (for example: demisto_content to demistoContent).
+
         :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
         :rtype: ``dict`` or ``list``
     """
@@ -5241,10 +5291,14 @@ def camelize(src, delim=' '):
         if callable(getattr(src_str, "decode", None)):
             src_str = src_str.decode('utf-8')
         components = src_str.split(delim)
-        return ''.join(map(lambda x: x.title(), components))
+        camelize_without_first_char = ''.join(map(lambda x: x.title(), components[1:]))
+        if upper_camel:
+            return components[0].title() + camelize_without_first_char
+        else:
+            return components[0].lower() + camelize_without_first_char
 
     if isinstance(src, list):
-        return [camelize(phrase, delim) for phrase in src]
+        return [camelize(phrase, delim, upper_camel=upper_camel) for phrase in src]
     return {camelize_str(key): value for key, value in src.items()}
 
 
@@ -5315,12 +5369,17 @@ pascalRegex = re.compile('([A-Z]?[a-z]+)')
 # ############################## REGEX FORMATTING end ###############################
 
 
-def underscoreToCamelCase(s):
+def underscoreToCamelCase(s, upper_camel=True):
     """
        Convert an underscore separated string to camel case
 
        :type s: ``str``
        :param s: The string to convert (e.g. hello_world) (required)
+
+       :type upper_camel: ``bool``
+       :param upper_camel: When True then transforms dictionarykeys to camel case with the first letter capitalised
+                           (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                           (for example: demisto_content to demistoContent).
 
        :return: The converted string (e.g. HelloWorld)
        :rtype: ``str``
@@ -5329,7 +5388,11 @@ def underscoreToCamelCase(s):
         return s
 
     components = s.split('_')
-    return ''.join(x.title() for x in components)
+    camel_without_first_char = ''.join(x.title() for x in components[1:])
+    if upper_camel:
+        return components[0].title() + camel_without_first_char
+    else:
+        return components[0].lower() + camel_without_first_char
 
 
 def camel_case_to_underscore(s):
@@ -6980,10 +7043,10 @@ class IndicatorsSearcher:
         if self._can_use_search_after:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
                                            searchAfter=self._search_after_param)
-            if self._search_after_title in res and res[self._search_after_title] is not None:
-                self._search_after_param = res[self._search_after_title]
-            else:
-                demisto.log('Elastic search using searchAfter was not found in searchIndicators')
+            self._search_after_param = res[self._search_after_title]
+
+            if res[self._search_after_title] is None:
+                demisto.info('Elastic search using searchAfter returned all indicators')
 
         else:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page,
