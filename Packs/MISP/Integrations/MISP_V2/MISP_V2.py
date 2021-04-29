@@ -386,7 +386,9 @@ def build_attribute_context(response: Union[dict, requests.Response]) -> dict:
         'comment',
         'deleted',
         'disable_correlation',
-        'value'
+        'value',
+        'Event',
+        'Object'
     ]
     if isinstance(response, str):
         response = json.loads(json.dumps(response))
@@ -1025,7 +1027,12 @@ def search_attributes() -> Tuple[dict, Any]:
     if response:
         response_for_context = build_attribute_context(response)
 
-        md = f'## MISP attributes-search returned {len(response_for_context)} attributes.'
+        md = f'## MISP attributes-search returned {len(response_for_context)} attributes.\n'
+
+        # if attributes were returned, display one to the warroom to visualize the result:
+        if len(response_for_context) > 0:
+            md += tableToMarkdown(f'Attribute ID: {response_for_context[0].get("ID")}', response_for_context[0])
+
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': response,

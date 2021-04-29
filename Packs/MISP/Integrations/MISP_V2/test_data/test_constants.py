@@ -470,7 +470,20 @@ filtered_attributes_response = [
         'Comment': '',
         'Deleted': False,
         'DisableCorrelation': True,
-        'Value': 'Bars Ferrari'
+        'Value': 'Bars Ferrari',
+        'Event': {
+            'OrganisationID': None,
+            'Distribution': None,
+            'ID': None,
+            'Info': None,
+            'OwnerOrganisation.ID': None,
+            'UUID': None
+        },
+        'Object': {
+            'ID': '10691',
+            'Distribution': '5',
+            'SharingGroupID': '0'
+        }
     },
     {
         'ID': '67899',
@@ -487,7 +500,20 @@ filtered_attributes_response = [
         'Comment': '',
         'Deleted': False,
         'DisableCorrelation': True,
-        'Value': 'Ferrari'
+        'Value': 'Ferrari',
+        'Event': {
+            'OrganisationID': None,
+            'Distribution': None,
+            'ID': None,
+            'Info': None,
+            'OwnerOrganisation.ID': None,
+            'UUID': None
+        },
+        'Object': {
+            'ID': '10691',
+            'Distribution': '5',
+            'SharingGroupID': '0'
+        }
     },
     {
         'ID': '67902',
@@ -503,7 +529,20 @@ filtered_attributes_response = [
         'Comment': '',
         'Deleted': False,
         'DisableCorrelation': True,
-        'Value': '308 GTS'
+        'Value': '308 GTS',
+        'Event': {
+            'OrganisationID': None,
+            'Distribution': None,
+            'ID': None,
+            'Info': None,
+            'OwnerOrganisation.ID': None,
+            'UUID': None
+        },
+        'Object': {
+            'ID': '10691',
+            'Distribution': '5',
+            'SharingGroupID': '0'
+        }
     },
     {
         'ID': '211859',
@@ -520,10 +559,14 @@ filtered_attributes_response = [
         'Comment': '',
         'Deleted': False,
         'DisableCorrelation': False,
-        'Value': 'test'
+        'Value': 'test',
+        'Event': {
+            'OrganisationID': '1',
+            'Distribution': '0',
+            'ID': '11700',
+            'Info': 'Testplayboook',
+            'OwnerOrganisation.ID': '1',
+            'UUID': '604d039e-ee5c-4f14-94f5-784eac110002'
+        }
     }
 ]
-
-
-
-

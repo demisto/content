@@ -667,6 +667,8 @@
 </tbody>
 </table>
 <p> </p>
+
+
 <h3 id="h_4f637628-b26c-48b8-89ee-3ef4be73dedf">2. Search for attributes</h3>
 <p> </p>
 <hr>
@@ -849,12 +851,60 @@
     ]
 }
 </pre>
-<p> </p>
 <h5>Human Readable Output</h5>
 <p> </p>
 <h3>MISP attributes-search returned 2 attributes.</h3>
-<p> </p>
-<p> </p>
+<h4>Attribute ID: 67899</h4>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Comment</th>
+<th>Deleted</th>
+<th>DisableCorrelation</th>
+<th>Distribution</th>
+<th>Event</th>
+<th>EventID</th>
+<th>ID</th>
+<th>Object</th>
+<th>ObjectID</th>
+<th>ObjectRelation</th>
+<th>SharingGroupID</th>
+<th>Timestamp</th>
+<th>ToIDs</th>
+<th>Type</th>
+<th>UUID</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Other</td>
+<td></td>
+<td>false</td>
+<td>true</td>
+<td>5</td>
+<td>OrganisationID: null<br>Distribution: null<br>ID: null<br>Info: null<br>OwnerOrganisation.ID: null<br>UUID: null</td>
+<td>2226</td>
+<td>67899</td>
+<td>ID: 10691<br>Distribution: 5<br>SharingGroupID: 0</td>
+<td>10691</td>
+<td>make</td>
+<td>0</td>
+<td>1572948879</td>
+<td>false</td>
+<td>text</td>
+<td>3ba21810-4c1f-409a-a3e4-26f3436b1e39</td>
+<td>Ferrari</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
 <p> </p>
 <p> </p>
 <h3 id="h_53acd13b-9862-45fe-ba8f-9f524ef0795d">3. Get the reputation of a file</h3>
