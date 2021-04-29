@@ -51,7 +51,6 @@ def query_cdl(fw_monitor_list: list) -> CommandResults:
     :param fw_monitor_list: list of FWs serials
     :return: CommandResults object containing the serials which sent logs and that did not.
     """
-    no_logs_str = "### Logs table\n**No entries.**\n"
     firewalls_with_logs = []
     firewalls_without_logs = []
     start_time = datetime.utcnow() - timedelta(hours=12)  # Looking for the last 12 hours of logs
@@ -60,15 +59,16 @@ def query_cdl(fw_monitor_list: list) -> CommandResults:
     for current_fw in fw_monitor_list:
         query['query'] = f'log_source_id = \'{current_fw}\''
 
-        query_result = demisto.executeCommand("cdl-query-logs", query)
+        query_result = demisto.executeCommand("cdl-query-traffic-logs", query)
         if is_error(query_result):
             raise Exception(f'Querying logs in Cortex Data Lake failed. {query_result[0]["Contents"]}')
 
         if query_result:
-            if query_result[0]['HumanReadable'] == no_logs_str:
-                firewalls_with_logs.append(current_fw)
-            else:
+            # HR title comes from the XDR command
+            if query_result[0]['HumanReadable'] == "### Logs traffic table\n**No entries.**\n":
                 firewalls_without_logs.append(current_fw)
+            else:
+                firewalls_with_logs.append(current_fw)
 
     all_results = [{'FirewallsWithLogsSent': firewalls_with_logs,
                     'FirewallsWithoutLogsSent': firewalls_without_logs}]
