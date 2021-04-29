@@ -14,11 +14,11 @@ PARAMETERS_DICT = {
     'query': '',
     'maxNumberOfCluster': '1000',
     'minNumberofIncidentPerCluster': '2',
-    'modelName': 'model',
+    'modelName': 'model ',
     'storeModel': 'False',
     'minHomogeneityCluster': 0.6,
     'incidentType': 'Phishing',
-    'maxPercentageOfMissingValue': 0.5
+    'maxRatioOfMissingValue': 0.5
 }
 
 FETCHED_INCIDENT_NOT_EMPTY = [
