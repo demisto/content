@@ -72,7 +72,6 @@ def paging_args_to_params(page_size, page_number):
 
 
 def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    # TODO handle the bad_actor list_type
     """
     Adds a new IP object to the requested list type (denylist or allowlist).
     IP object includes an IP address (mandatory). Other fields are optional and have default values.
@@ -98,7 +97,6 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    # TODO handle the bad_actor list_type
     """
     Deletes an exist IP object from the requested list type (denylist or allowlist) by its object id (mandatory).
     Note: Human readable appears only if the HTTP request did not fail.
@@ -113,7 +111,6 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    # TODO handle the bad_actor list_type
     """
     Gets a list of IP objects by the requested list type (denylist or allowlist).
     If the object_id argument is given, only those IP objects will be displayed. Otherwise, all IP objects that match

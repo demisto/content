@@ -42,13 +42,12 @@ script:
     - auto: PREDEFINED
       default: false
       description: The dynamic lists type of threatening IP addresses. The type can
-        be one of allowlist or denylist or bad_actor.
+        be one of allowlist or denylist.
       isArray: false
       name: list_type
       predefined:
       - allowlist
       - denylist
-      - bad_actor
       required: true
       secret: false
     - default: false
@@ -75,8 +74,7 @@ script:
       secret: false
     deprecated: false
     description: Get a dynamic list of threatening IP addresses by the given list
-      type. The type can be one of allowlist or denylist or bad_actor. Note - For
-      denylist list type only the objects that thier list_target is proxy can be displayed.
+      type. The list type can be one of allowlist or denylist.
     execution: false
     name: f5-silverline-ip-objects-list
     outputs:
@@ -93,8 +91,8 @@ script:
       description: The mask of a particular threatening IP address object.
       type: String
     - contextPath: F5Silverline.IPObjectList.attributes.duration
-      description: The duration (in minutes) of a particular threatening IP address
-        object.
+      description: The duration (in seconds) of a particular threatening IP address
+        object where list type is 'denylist'.
       type: String
     - contextPath: F5Silverline.IPObjectList.attributes.expires_at
       description: The expiration date (timestamp) of a particular threatening IP
@@ -125,13 +123,12 @@ script:
     - auto: PREDEFINED
       default: false
       description: The dynamic lists type of threatening IP addresses. The type can
-        be one of allowlist or denylist or bad_actor.
+        be one of allowlist or denylist.
       isArray: false
       name: list_type
       predefined:
       - allowlist
       - denylist
-      - bad_actor
       required: true
       secret: false
     - auto: PREDEFINED
@@ -163,9 +160,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration (in minutes) of a new particular threatening IP address
-        object. Setting the duration to 0 (default) means the new IP address object
-        will never expire.
+      description: The duration (in seconds) of a new particular threatening IP address
+        object where the list type is 'denylist'. Setting the duration to 0 (default) means the new IP address object
+        will never expire. This feature has been removed for allowlist.
       isArray: false
       name: duration
       required: false
@@ -192,13 +189,12 @@ script:
     - auto: PREDEFINED
       default: false
       description: The dynamic lists type of threatening IP addresses. The type can
-        be one of allowlist or denylist or bad_actor.
+        be one of allowlist or denylist.
       isArray: false
       name: list_type
       predefined:
       - allowlist
       - denylist
-      - bad_actor
       required: true
       secret: false
     - default: false
