@@ -2689,7 +2689,7 @@ script:
     - contextPath: GitHub.FileContent.Branch
       description: The branch from which the file was fetched.
       type: Unknown
-  dockerimage: demisto/pyjwt3:1.0.0.16907
+  dockerimage: demisto/pyjwt3:1.0.0.19327
   feed: false
   isfetch: true
   longRunning: false
