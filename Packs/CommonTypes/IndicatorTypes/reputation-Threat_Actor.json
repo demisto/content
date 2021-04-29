@@ -2,7 +2,7 @@
     "contextPath": "",
     "contextValue": "",
     "defaultMapping": null,
-    "details": "STIX Threat Actor",
+    "details": "Threat Actor",
     "disabled": false,
     "enhancementScriptNames": [],
     "excludedBrands": [],
@@ -10,7 +10,7 @@
     "file": false,
     "fileHashesPriority": null,
     "formatScript": "",
-    "id": "STIX Threat Actor",
+    "id": "Threat Actor",
     "locked": false,
     "manualMapping": {},
     "mergeContext": false,
@@ -22,6 +22,6 @@
     "updateAfter": 0,
     "version": -1,
     "fromVersion": "5.5.0",
-    "layout": "STIX Threat Actor"
+    "layout": "Threat Actor"
 
 }
