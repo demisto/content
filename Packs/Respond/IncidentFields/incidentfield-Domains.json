@@ -1,62 +1,48 @@
 {
-	"associatedToAll": false,
-	"associatedTypes": [
-		"Respond Software Incident"
-	],
-	"breachScript": "",
-	"caseInsensitive": true,
-	"cliName": "domains",
-	"closeForm": false,
-	"columns": [
-		{
-			"displayName": "name",
-			"fieldCalcScript": "",
-			"isDefault": true,
-			"isReadOnly": false,
-			"key": "name",
-			"required": false,
-			"script": "",
-			"selectValues": null,
-			"type": "shortText",
-			"width": 150
-		}
-	],
-	"content": false,
-	"defaultRows": [
-		{},
-		{},
-		{}
-	],
-	"description": "",
-	"editForm": true,
-	"fieldCalcScript": "",
-	"fromServerVersion": "",
-	"group": 0,
-	"hidden": false,
-	"id": "incident_domains",
-	"isReadOnly": false,
-	"itemVersion": "",
-	"locked": false,
-	"mergeStrategy": "",
-	"name": "Domains",
-	"neverSetAsRequired": false,
-	"ownerOnly": false,
-	"packID": "",
-	"placeholder": "",
-	"required": false,
-	"runScriptAfterUpdate": false,
-	"script": "",
-	"selectValues": null,
-	"sla": 0,
-	"system": false,
-	"systemAssociatedTypes": null,
-	"threshold": 72,
-	"toServerVersion": "",
-	"type": "grid",
-	"unmapped": false,
-	"unsearchable": false,
-	"useAsKpi": false,
-	"validatedError": "",
-	"validationRegex": "",
-	"version": -1
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Respond Software Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "domains",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "name",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_domains",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Domains",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
 }

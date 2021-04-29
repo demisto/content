@@ -3,7 +3,6 @@
     "associatedTypes": [
         "Respond Software Incident"
     ],
-    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "externalsystems",
     "closeForm": false,
@@ -33,42 +32,29 @@
             "width": 150
         }
     ],
-    "content": false,
+    "content": true,
     "defaultRows": [
         {},
         {},
         {}
     ],
-    "description": "",
     "editForm": true,
-    "fieldCalcScript": "",
-    "fromServerVersion": "",
     "group": 0,
     "hidden": false,
     "id": "incident_externalsystems",
     "isReadOnly": false,
-    "itemVersion": "",
     "locked": false,
-    "mergeStrategy": "",
     "name": "External Systems",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "packID": "",
-    "placeholder": "",
     "required": false,
-    "runScriptAfterUpdate": false,
-    "script": "",
-    "selectValues": null,
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
     "threshold": 72,
-    "toServerVersion": "",
     "type": "grid",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
-    "validatedError": "",
-    "validationRegex": "",
-    "version": -1
+    "version": -1,
+    "fromVersion": "5.0.0"
 }
