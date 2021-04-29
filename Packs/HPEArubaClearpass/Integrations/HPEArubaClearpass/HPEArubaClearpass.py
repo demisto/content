@@ -43,7 +43,7 @@ class Client(BaseClient):
             context = {"access_token": self.access_token, "expires_in": access_token_expiration_datetime}
             set_integration_context(context)
             demisto.debug(
-                f"New access token that expires in : {expires_in.strftime(DATE_FORMAT)} w"
+                f"New access token that expires in : {access_token_expiration_datetime.strftime(DATE_FORMAT)} w"
                 f"as set to integration_context.")
         else:
             return_error(f"HPEArubaClearpass error: Got an invalid access token "
@@ -81,7 +81,8 @@ class Client(BaseClient):
         return self._http_request(
             method=method,
             params=params,
-            url_suffix=url_suffix)
+            url_suffix=url_suffix,
+            headers=self.headers)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -136,12 +137,15 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     endpoints_filter.update({'mac_address': mac_address}) if mac_address else None
     params = {'filter': endpoints_filter, 'offset': offset, 'limit': limit}
     res = client.request_endpoints(method='GET', params=params, url_suffix='endpoint')
-    human_readable = parse_endpoints_response(res)
+    TABLE_HEADERS_GET_OBJECTS = ['ID', 'MAC Address', 'Status', 'Attributes']
+    human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', [parse_endpoints_response(res)],
+                                     TABLE_HEADERS_GET_OBJECTS)
 
     return CommandResults(
+        readable_output=human_readable,
         outputs_prefix='HPEArubaClearpass.endpoints',
         outputs_key_field='id',
-        outputs=res,
+        outputs=res.get('_embedded', {}).get('items'),
     )
 
 

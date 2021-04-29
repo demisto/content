@@ -29,7 +29,7 @@ defaultMapperIn: 'null'
 defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: change it
-display: HPEArubaClearpass
+display: HPE Aruba Clearpass
 name: HPEArubaClearpass
 script:
   commands:
