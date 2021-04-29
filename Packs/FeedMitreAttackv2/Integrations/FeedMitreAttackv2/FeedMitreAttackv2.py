@@ -115,7 +115,6 @@ class Client:
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
                                 continue
                             relationships_list.append(create_relationship(mitre_item_json))
-                            demisto.debug('RelationshipRelationship')
 
                         else:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
@@ -214,7 +213,7 @@ def create_relationship(item_json):
         'firstseenbysource': item_json.get('created')
     }
 
-    return EntityRelation(name=item_json.get('relationship_type'),
+    return EntityRelation(name='uses',
                           entity_a=item_json.get('source_ref'),
                           entity_a_type=a_type,
                           entity_b=item_json.get('target_ref'),
