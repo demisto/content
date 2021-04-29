@@ -1,0 +1,15 @@
+{
+  "name": "PingCastle",
+  "description": "Windows-based utility to audit the risk level of your AD infrastructure and check for vulnerable practices",
+  "support": "partner",
+  "currentVersion": "1.0.0",
+  "author": "soarxperts",
+  "url": "www.soarxperts.com",
+  "email": "support@soarxperts.com",
+  "categories": ["Vulnerability Management"],
+  "tags": [],
+  "created": "2021-01-02T18:00:53Z",
+  "useCases": [],
+  "keywords": ["Active Directory", "Active Directory Audit"],
+  "dependencies": {}
+}
