@@ -6,6 +6,7 @@ description: |-
   - Search for the Security Notice email sent from Codecov.
   - Collect indicators to be used in your threat hunting process.
   - Query network logs to detect related activity.
+  - Searching for Codecov bash uploader in the repositories using GitHub.
   - Query Panorama to search for logs with related anti-spyware signatures
       - Data Exfiltration Traffic Detection
       - Malicious Modified Shell Script Detection
@@ -33,7 +34,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
+          "x": 220,
           "y": -760
         }
       }
@@ -86,6 +87,7 @@ tasks:
       '#none#':
       - "19"
       - "20"
+      - "29"
     separatecontext: false
     view: |-
       {
@@ -142,8 +144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": -310
+          "x": 220,
+          "y": -320
         }
       }
     note: false
@@ -170,7 +172,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
+          "x": 220,
           "y": -610
         }
       }
@@ -198,7 +200,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
+          "x": 220,
           "y": -450
         }
       }
@@ -316,7 +318,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
+          "x": 220,
           "y": 190
         }
       }
@@ -381,7 +383,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -950,
+          "x": -1290,
           "y": 960
         }
       }
@@ -449,7 +451,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -480,
+          "x": -860,
           "y": 960
         }
       }
@@ -524,7 +526,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
+          "x": -440,
           "y": 960
         }
       }
@@ -553,7 +555,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
+          "x": -650,
           "y": 820
         }
       }
@@ -564,12 +566,12 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: b5dc6ded-d51b-4ab1-879f-6569a930bbbf
+    taskid: 3b9ef253-5901-48dc-89c8-39decba4f79c
     type: title
     task:
-      id: b5dc6ded-d51b-4ab1-879f-6569a930bbbf
+      id: 3b9ef253-5901-48dc-89c8-39decba4f79c
       version: -1
-      name: Search in network logs
+      name: Hunt Network Logs
       type: title
       iscommand: false
       brand: ""
@@ -582,7 +584,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -950,
+          "x": -1500,
           "y": 820
         }
       }
@@ -852,7 +854,70 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1400,
+          "x": -1710,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 3466b674-36bf-4f87-86a6-5b88e8995532
+    type: title
+    task:
+      id: 3466b674-36bf-4f87-86a6-5b88e8995532
+      version: -1
+      name: GitHub Hunt
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 76ee513a-b340-41d5-8df6-744048150a40
+    type: regular
+    task:
+      id: 76ee513a-b340-41d5-8df6-744048150a40
+      version: -1
+      name: Search Codecov in Git repository
+      description: Searches for code in repositories that match a given query.
+      script: '|||GitHub-search-code'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      limit: {}
+      page_number: {}
+      page_size: {}
+      query:
+        simple: https://codecov.io/bash+in:file
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
           "y": 960
         }
       }
@@ -876,8 +941,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2835,
-        "width": 2000,
-        "x": -1400,
+        "width": 2310,
+        "x": -1710,
         "y": -760
       }
     }
