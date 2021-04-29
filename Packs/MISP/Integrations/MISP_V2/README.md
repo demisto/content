@@ -25,6 +25,8 @@
 <p> </p>
 <ol>
 <li><a href="#h_4f615456-b26c-48b8-89ee-3ef4be73dedf" target="_self">Search for events: misp-search</a></li>
+<li><a href="#h_4f637628-b26c-48b8-89ee-3ef4be73dedf" target="_self">Search for attributes: misp-search-attributes</a
+></li>
 <li><a href="#h_53acd13b-9862-45fe-ba8f-9f524ef0795d" target="_self">Get the reputation of a file: file</a></li>
 <li><a href="#h_58d2d4e2-08aa-4c78-9f67-9415508ac63c" target="_self">Check if a URL is in MISP events: url</a></li>
 <li><a href="#h_8ffb723c-d3f8-40fc-a15a-ecb8b011d507" target="_self">Get the reputation of an IP address: ip</a></li>
@@ -665,9 +667,197 @@
 </tbody>
 </table>
 <p> </p>
+<h3 id="h_4f637628-b26c-48b8-89ee-3ef4be73dedf">2. Search for attributes</h3>
+<p> </p>
+<hr>
+<p> </p>
+<p>Search for attributes in MISP.</p>
+<p> </p>
+<h5>Base Command</h5>
+<p> </p>
+<p><code>misp-search-attributes</code></p>
+<p> </p>
+<h5>Input</h5>
+<p> </p>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 134px;"><strong>Argument Name</strong></th>
+<th style="width: 535px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 134px;">type</td>
+<td style="width: 535px;">The attribute type. Use any valid MISP attribute.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 134px;">value</td>
+<td style="width: 535px;">Search for the specified value in the attributes' value field.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 134px;">category</td>
+<td style="width: 535px;">The attribute category. Use any valid MISP attribute category.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 134px;">uuid</td>
+<td style="width: 535px;">Return events that include an attribute with the given UUID. Alternatively the event's UUID must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 134px;">to_ids</td>
+<td style="width: 535px;">Return only the attributes set with the "to_ids" flag</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+</tbody>
+</table>
 <p> </p>
 <p> </p>
-<h3 id="h_53acd13b-9862-45fe-ba8f-9f524ef0795d">2. Get the reputation of a file</h3>
+<p> </p>
+<h5>Context Output</h5>
+<p> </p>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 334px;"><strong>Path</strong></th>
+<th style="width: 62px;"><strong>Type</strong></th>
+<th style="width: 344px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Distribution</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Attribute distribution.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Value</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Attribute value.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.EventID</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Attribute event ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Timestamp</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Attribute timestamp.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Deleted</td>
+<td style="width: 62px;">boolean</td>
+<td style="width: 344px;">Whether the attribute is deleted.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.DisableCorrelation</td>
+<td style="width: 62px;">boolean</td>
+<td style="width: 344px;">Whether attribute correlation is disabled.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Type</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Attribute type.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.ID</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Attribute ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.UUID</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Attribute UUID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.ShadowAttribute</td>
+<td style="width: 62px;">Unknown</td>
+<td style="width: 344px;">Attribute shadow attribute.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.ToIDs</td>
+<td style="width: 62px;">boolean</td>
+<td style="width: 344px;">Whether the Intrusion Detection System flag is set.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Category</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Attribute category.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.SharingGroupID</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Attribute sharing group ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Comment</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Attribute comment.</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<p> </p>
+<p> </p>
+<h5>Command Example</h5>
+<p> </p>
+<pre>!misp-search-attributes category="Other" type="Ferrari"</pre>
+<p> </p>
+<h5>Context Example</h5>
+<p> </p>
+<pre>{
+    "MISP.Attribute": [
+        {
+            "ID": "67899",
+            "EventID": "2226",
+            "ObjectID": "10691",
+            "ObjectRelation": "make",
+            "Category": "Other",
+            "Type": "text",
+            "ToIDs": False,
+            "UUID": "3ba21810-4c1f-409a-a3e4-26f3436b1e39",
+            "Timestamp": "1572948879",
+            "Distribution": "5",
+            "SharingGroupID": "0",
+            "Comment": "",
+            "Deleted": False,
+            "DisableCorrelation": True,
+            "Value": "Ferrari"
+        },
+        {
+            "ID": "215746",
+            "EventID": "12041",
+            "ObjectID": "35655",
+            "ObjectRelation": "make",
+            "Category": "Other",
+            "Type": "text",
+            "ToIDs": False,
+            "UUID": "175c30f8-8bba-44bc-9727-7065da0ed109",
+            "Timestamp": "1619620662",
+            "Distribution": "5",
+            "SharingGroupID": "0",
+            "Comment": "",
+            "Deleted": False,
+            "DisableCorrelation": True,
+            "Value": "Ferrari"
+        }
+    ]
+}
+</pre>
+<p> </p>
+<h5>Human Readable Output</h5>
+<p> </p>
+<h3>MISP attributes-search returned 2 attributes.</h3>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<h3 id="h_53acd13b-9862-45fe-ba8f-9f524ef0795d">3. Get the reputation of a file</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -809,7 +999,7 @@
 <p> </p>
 <p> </p>
 <p> </p>
-<h3 id="h_58d2d4e2-08aa-4c78-9f67-9415508ac63c">3. Check if a URL is in MISP events</h3>
+<h3 id="h_58d2d4e2-08aa-4c78-9f67-9415508ac63c">4. Check if a URL is in MISP events</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -999,7 +1189,7 @@
 <p> </p>
 <p> </p>
 <p> </p>
-<h3 id="h_8ffb723c-d3f8-40fc-a15a-ecb8b011d507">4. Get the reputation of an IP address</h3>
+<h3 id="h_8ffb723c-d3f8-40fc-a15a-ecb8b011d507">5. Get the reputation of an IP address</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -1169,7 +1359,7 @@
 <p> </p>
 <p> </p>
 <p> </p>
-<h3 id="h_699dedd4-2412-4cb5-b6b1-aeaf965195e5">5. Create a MISP event</h3>
+<h3 id="h_699dedd4-2412-4cb5-b6b1-aeaf965195e5">6. Create a MISP event</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -1520,7 +1710,7 @@
 <p> </p>
 <p>New event with ID: 753 has been successfully created.</p>
 <p> </p>
-<h3 id="h_2249eec0-1a73-42ef-8422-fc8f2bc9b167">6. Download a file sample</h3>
+<h3 id="h_2249eec0-1a73-42ef-8422-fc8f2bc9b167">7. Download a file sample</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -1578,7 +1768,7 @@
 <p> </p>
 <p>Couldn't find file with hash 3d74da0a7276735f1afae01951b39ff7a9d92c94</p>
 <p> </p>
-<h3 id="h_d770e98c-2d22-49f0-b875-d5a5e760e775">7. Add an attribute to an event</h3>
+<h3 id="h_d770e98c-2d22-49f0-b875-d5a5e760e775">8. Add an attribute to an event</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -2008,7 +2198,7 @@
 <p> </p>
 <p>New attribute: 8.8.3.3 was added to event id 743.</p>
 <p> </p>
-<h3 id="h_f325c9d3-2e07-46e9-8e69-6b96f9030909">8 Upload a file sample</h3>
+<h3 id="h_f325c9d3-2e07-46e9-8e69-6b96f9030909">9 Upload a file sample</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -2123,7 +2313,7 @@
 <li>file name: MISP_V2_unified.yml</li>
 </ul>
 <p> </p>
-<h3 id="h_bc997769-2b6d-4324-afde-74ec8b896ee2">9. Delete an event</h3>
+<h3 id="h_bc997769-2b6d-4324-afde-74ec8b896ee2">10. Delete an event</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -2164,7 +2354,7 @@
 <p> </p>
 <h5>Human Readable Output</h5>
 <p> </p>
-<h3 id="h_d47d7978-435a-4999-ba8a-2f581356f032">10. Add a tag to an event or attribute</h3>
+<h3 id="h_d47d7978-435a-4999-ba8a-2f581356f032">11. Add a tag to an event or attribute</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -2416,7 +2606,7 @@
 <p> </p>
 <p>Tag Example tag has been successfully added to event 5ce29ac4-3b54-459e-a6ee-00acac110002</p>
 <p> </p>
-<h3 id="h_04357de2-77f9-48d7-a47e-bc4e9ec2c563">11. Add sighting to an attribute</h3>
+<h3 id="h_04357de2-77f9-48d7-a47e-bc4e9ec2c563">12. Add sighting to an attribute</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -2469,7 +2659,7 @@
 <p> </p>
 <p>Sighting 'sighting' has been successfully added to attribute 23513ce2-2060-4bc8-9b44-6bd735e4f740</p>
 <p> </p>
-<h3 id="h_92415f70-7f80-4d61-98a1-696a40fc3c73">12. Add an OSINT feed</h3>
+<h3 id="h_92415f70-7f80-4d61-98a1-696a40fc3c73">13. Add an OSINT feed</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -2534,7 +2724,7 @@
 <p> </p>
 <h5>Total of 0 events was added to MISP.</h5>
 <p> </p>
-<h3 id="h_f2dd36fd-1ac6-40ef-81ad-3a6b4422b342">13. Add an email object to an event</h3>
+<h3 id="h_f2dd36fd-1ac6-40ef-81ad-3a6b4422b342">14. Add an email object to an event</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -2864,7 +3054,7 @@
 <p> </p>
 <p>Object has been added to MISP event ID 743</p>
 <p> </p>
-<h3 id="h_7fbf18d8-075a-422f-b28f-217948bc5182">14. Add a domain object to an event</h3>
+<h3 id="h_7fbf18d8-075a-422f-b28f-217948bc5182">15. Add a domain object to an event</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -3162,7 +3352,7 @@
 <p> </p>
 <p>Object has been added to MISP event ID 743</p>
 <p> </p>
-<h3 id="h_c495c545-f854-4bd3-b65c-c703415cf1b4">15. Add a URL object to an event</h3>
+<h3 id="h_c495c545-f854-4bd3-b65c-c703415cf1b4">16. Add a URL object to an event</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -3488,7 +3678,7 @@
 <p> </p>
 <p>Object has been added to MISP event ID 743</p>
 <p> </p>
-<h3 id="h_d89bbb90-7744-427b-9bbb-484eb751f21c">16. Add an object to an event</h3>
+<h3 id="h_d89bbb90-7744-427b-9bbb-484eb751f21c">17. Add an object to an event</h3>
 <p> </p>
 <hr>
 <p> </p>
@@ -3766,7 +3956,7 @@
 <p> </p>
 <p>Object has been added to MISP event ID 743</p>
 <p> </p>
-<h3 id="h_fde36c78-62d4-4e37-b895-dcef403a0e89">17. Add an IP object to an event</h3>
+<h3 id="h_fde36c78-62d4-4e37-b895-dcef403a0e89">18. Add an IP object to an event</h3>
 <p> </p>
 <hr>
 <p> </p>
