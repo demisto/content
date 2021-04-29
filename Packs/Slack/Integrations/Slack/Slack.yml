@@ -528,7 +528,12 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  dockerimage: demisto/slack:1.0.0.18207
+  - arguments: []
+    name: slack-get-integration-context
+    description: Returns the integration context as a file. Use this command for debug purposes only.
+    execution: false
+    hidden: true
+  dockerimage: demisto/slack:1.0.0.19258
   feed: false
   isfetch: false
   longRunning: true
