@@ -119,12 +119,12 @@ def parse_endpoints_response(response):
     if items_list:
         for item in items_list:
             human_readable.append({
-                'id': item.get('id'),
-                'mac_address': item.get('mac_address'),
-                'status': item.get('status'),
-                'attributes': item.get('attributes')
+                'ID': item.get('id'),
+                'MAC Address': item.get('mac_address'),
+                'Status': item.get('status'),
+                'Attributes': item.get('attributes')
             })
-    return human_readable
+    return human_readable, items_list
 
 
 def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -136,16 +136,17 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     endpoints_filter.update({'status': status}) if status else None
     endpoints_filter.update({'mac_address': mac_address}) if mac_address else None
     params = {'filter': endpoints_filter, 'offset': offset, 'limit': limit}
+
     res = client.request_endpoints(method='GET', params=params, url_suffix='endpoint')
-    TABLE_HEADERS_GET_OBJECTS = ['ID', 'MAC Address', 'Status', 'Attributes']
-    human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', [parse_endpoints_response(res)],
-                                     TABLE_HEADERS_GET_OBJECTS)
+
+    readable_output, outputs = parse_endpoints_response(res)
+    human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', readable_output, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='HPEArubaClearpass.endpoints',
         outputs_key_field='id',
-        outputs=res.get('_embedded', {}).get('items'),
+        outputs=outputs,
     )
 
 
