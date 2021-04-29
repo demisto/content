@@ -1,0 +1,1027 @@
+id: SailPointIdentityNow-Test
+name: SailPointIdentityNow-Test
+version: -1
+fromversion: 6.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a4a33c78-e761-4cba-b0e4-87b65d760110
+    type: start
+    task:
+      id: a4a33c78-e761-4cba-b0e4-87b65d760110
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 98816c32-27d2-4349-9095-b5d9c8cf91f9
+    type: regular
+    task:
+      id: 98816c32-27d2-4349-9095-b5d9c8cf91f9
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: 4a6b820d-1c26-4cef-a9fb-8624e348f48b
+    type: regular
+    task:
+      id: 4a6b820d-1c26-4cef-a9fb-8624e348f48b
+      version: -1
+      name: identitynow-search-identities
+      description: ''
+      script: '|||identitynow-search-identities'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: 7dad4f02-f7ef-4dc1-8176-eb3f79a6cf10
+    type: condition
+    task:
+      id: 7dad4f02-f7ef-4dc1-8176-eb3f79a6cf10
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.firstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.lastName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.inactive
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.protected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.isManager
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.identityProfile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.accounts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.accountCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.appCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.accessCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.entitlementCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.roleCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.accessProfileCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.pod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: e7ff1df0-97c5-443e-acff-05720c790dc7
+    type: regular
+    task:
+      id: e7ff1df0-97c5-443e-acff-05720c790dc7
+      version: -1
+      name: identitynow-get-accounts
+      description: ''
+      script: '|||identitynow-get-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: db085972-7a97-4685-ab85-8daf52ff27c1
+    type: condition
+    task:
+      id: db085972-7a97-4685-ab85-8daf52ff27c1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.identityId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.nativeIdentity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.sourceId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.authoritative
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.disabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.locked
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.systemAccount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.uncorrelated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.manuallyCorrelated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.hasEntitlements
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: 76f1f180-f8b2-4539-8983-bc1a1e261afa
+    type: regular
+    task:
+      id: 76f1f180-f8b2-4539-8983-bc1a1e261afa
+      version: -1
+      name: identitynow-get-accountactivities
+      description: ''
+      script: '|||identitynow-get-accountactivities'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: ae87c400-a372-486a-a512-bd25ed504a3b
+    type: condition
+    task:
+      id: ae87c400-a372-486a-a512-bd25ed504a3b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.completed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.completionStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.requesterIdentitySummary
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.targetIdentitySummary
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.items
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.executionStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.cancelable
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccountActivity.cancelComment
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: 58ebd944-2108-425f-ad28-b7d9a073ef8b
+    type: regular
+    task:
+      id: 58ebd944-2108-425f-ad28-b7d9a073ef8b
+      version: -1
+      name: identitynow-search-accessprofiles
+      description: ''
+      script: '|||identitynow-search-accessprofiles'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: 4a232ed8-861c-4476-acac-ca064c60e396
+    type: condition
+    task:
+      id: 4a232ed8-861c-4476-acac-ca064c60e396
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.entitlements
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.entitlementCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.synced
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.requestable
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.requestCommentsRequired
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.pod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: dc39769b-d349-4775-986a-8597152acf19
+    type: regular
+    task:
+      id: dc39769b-d349-4775-986a-8597152acf19
+      version: -1
+      name: identitynow-search-roles
+      description: ''
+      script: '|||identitynow-search-roles'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: cc31b68c-0ab7-4d53-b520-7813314936ad
+    type: condition
+    task:
+      id: cc31b68c-0ab7-4d53-b520-7813314936ad
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.accessProfiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.accessProfileCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.synced
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.requestable
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.requestCommentsRequired
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.pod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Role.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: 30b9ae50-9334-405f-8766-78fc8ca8fa2e
+    type: regular
+    task:
+      id: 30b9ae50-9334-405f-8766-78fc8ca8fa2e
+      version: -1
+      name: identitynow-search-entitlements
+      description: ''
+      script: '|||identitynow-search-entitlements'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: a384b2a2-7d9c-4e41-9614-97768b5466d8
+    type: condition
+    task:
+      id: a384b2a2-7d9c-4e41-9614-97768b5466d8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.synced
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.privileged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.identityCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.attribute
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.schema
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.pod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Entitlement.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: acfbcaaa-9283-46a1-9f45-ce0e1ff140ec
+    type: regular
+    task:
+      id: acfbcaaa-9283-46a1-9f45-ce0e1ff140ec
+      version: -1
+      name: identitynow-search-events
+      description: ''
+      script: '|||identitynow-search-events'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: ae3944fd-520b-4928-bc33-d094a0ca5aaa
+    type: condition
+    task:
+      id: ae3944fd-520b-4928-bc33-d094a0ca5aaa
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.stack
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.synced
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.objects
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.technicalName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.target
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.actor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.operation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.pod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Event.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: 8701fbdf-5372-47c4-9ae1-0a8b1f29e694
+    type: regular
+    task:
+      id: 8701fbdf-5372-47c4-9ae1-0a8b1f29e694
+      version: -1
+      name: identitynow-request-grant
+      description: ''
+      script: '|||identitynow-request-grant'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: 17
+    taskid: 5e542b6b-9155-49c0-ad82-68c2353fbe3d
+    type: regular
+    task:
+      id: 5e542b6b-9155-49c0-ad82-68c2353fbe3d
+      version: -1
+      name: identitynow-request-revoke
+      description: ''
+      script: '|||identitynow-request-revoke'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: '18'
+    taskid: 0a9ab341-5895-47bf-9c38-1db39bdf7525
+    type: title
+    task:
+      id: 0a9ab341-5895-47bf-9c38-1db39bdf7525
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []

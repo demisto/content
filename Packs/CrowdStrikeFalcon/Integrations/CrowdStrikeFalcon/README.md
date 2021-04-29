@@ -57,7 +57,17 @@ Searches for devices that match the query.
 | CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
 | CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
 | CrowdStrike.Device.PolicyType | String | The policy type of the device. | 
- 
+| CrowdStrike.Device.Status | String | The device status. | 
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.OSVersion | String | The endpoint's operation system version. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
+
 
 #### Command Example
 
@@ -75,7 +85,8 @@ Searches for devices that match the query.
                 "LastSeen": "2019-03-28T02:36:41Z", 
                 "OS": "Mojave (10.14)", 
                 "ID": "336474ea6a524e7c68575f6508d84781", 
-                "FirstSeen": "2017-12-28T22:38:11Z"
+                "FirstSeen": "2017-12-28T22:38:11Z",
+                "Status": "contained"
             }, 
             {
                 "ExternalIP": "94.188.164.68", 
@@ -85,7 +96,28 @@ Searches for devices that match the query.
                 "LastSeen": "2019-03-17T10:03:17Z", 
                 "OS": "Mojave (10.14)", 
                 "ID": "459146dbe524472e73751a43c63324f3", 
-                "FirstSeen": "2017-12-10T11:01:20Z"
+                "FirstSeen": "2017-12-10T11:01:20Z",
+                "Status": "contained"
+            }
+        ],
+      "Endpoint(val.ID === obj.ID)": [
+            {
+              "Hostname": "154.132.82-test-co.in-addr.arpa",
+              "ID": "336474ea6a524e7c68575f6508d84781",
+              "IPAddress": "192.168.1.76", 
+              "OS": "Mojave (10.14)",
+              "Status": "Online",
+              "￿Vendor": "CrowdStrike Falcon",
+              "￿MACAddress": "1-1-1-1"
+            },
+            {
+              "Hostname": "154.132.82-test-co.in-addr.arpa", 
+              "ID": "459146dbe524472e73751a43c63324f3",
+              "IPAddress": "172.22.14.237", 
+              "OS": "Mojave (10.14)", 
+              "Status": "Online",
+              "￿Vendor": "CrowdStrike Falcon",
+              "￿MACAddress": "1-1-1-1"
             }
         ]
     }
@@ -94,11 +126,10 @@ Searches for devices that match the query.
 
 ### Devices
 
-| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z |
-| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z |
-
+| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
+| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
  
 
 ### 2. Get a behavior
@@ -1984,3 +2015,60 @@ Lists incident summaries.
 
 #### Command Example
 ```!cs-falcon-list-incident-summaries```
+
+
+### 34. Endpoint
+***
+Lists incident summaries.
+
+#### Base Command
+
+`endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Endpoint ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.OSVersion | String | The endpoint's operation system version. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
+
+
+#### Command Example
+```!endpoint id=15dbb9d5fe9f61eb46e829d986```
+
+#### Context Example
+```json
+{
+  "Endpoint":
+    {
+      "Hostname": "Hostname",
+      "ID": "15dbb9d5fe9f61eb46e829d986",
+      "IPAddress": "1.1.1.1",
+      "OS": "Windows",
+      "OSVersion": "Windows Server 2019",
+      "Status": "Online",
+      "￿Vendor": "CrowdStrike Falcon",
+      "￿MACAddress": "1-1-1-1"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Endpoints
+>|ID|IPAddress|OS|OSVersion|Hostname|Status|MACAddress|Vendor
+>|---|---|---|---|---|---|---|---|
+>| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows | Windows Server 2019| Hostname | Online | 1-1-1-1 | CrowdStrike Falcon|\n"
+

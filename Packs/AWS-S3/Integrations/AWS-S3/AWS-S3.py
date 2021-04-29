@@ -62,7 +62,8 @@ def aws_session(service='s3', region=None, roleArn=None, roleSessionName=None, r
     if kwargs and not AWS_ACCESS_KEY_ID:
 
         if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
+            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
+                                      region_name=AWS_DEFAULT_REGION)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
                 client = boto3.client(
@@ -298,16 +299,18 @@ def list_objects_command(args):
     )
     data = []
     response = client.list_objects(Bucket=args.get('bucket'))
-    for key in response['Contents']:
-        data.append({
-            'Key': key['Key'],
-            'Size': convert_size(key['Size']),
-            'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
-        })
-
-    ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
-    human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
-    return_outputs(human_readable, ec)
+    if response.get('Contents', None):
+        for key in response['Contents']:
+            data.append({
+                'Key': key['Key'],
+                'Size': convert_size(key['Size']),
+                'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
+            })
+        ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
+        human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
+        return_outputs(human_readable, ec)
+    else:
+        return_outputs("The {} bucket contains no objects.".format(args.get('bucket')))
 
 
 def get_file_path(file_id):

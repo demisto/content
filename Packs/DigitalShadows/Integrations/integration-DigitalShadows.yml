@@ -40,6 +40,21 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- display: Fetch Limit
+  name: fetchLimit
+  defaultvalue: "50"
+  type: 0
+  required: false
+  additionalinfo: Limit on the number of incidents retrieved in a single fetch.  Must
+    be an integer between 1 and 200 inclusive.
+- display: Initial Fetch (Minutes)
+  name: initialFetch
+  defaultvalue: "1"
+  type: 0
+  required: false
+  additionalinfo: The time period in minutes for which to fetch historic incidents.
+    This is used the first time incidents are fetched and if the last run details
+    are reset. Must be an integer greater than or equal to 1.
 script:
   script: >-
     var url = params.server.replace(/[\/]+$/, '') +'/api';
@@ -728,6 +743,7 @@ script:
 
 
     var sendRequest = function(url, method, body) {
+    
         var res = http(
             url,
             {
@@ -748,84 +764,158 @@ script:
         return res.Body;
     };
 
+    var fetchCommandIncidents = function(comnd, now, name, lastRun, fetchLimit) {
 
-    var fetchCommandIncidents = function(comnd, bodyArgs, name){
-        incidents = [];
+        logDebug(comnd + ": Last Updated (start) " + JSON.stringify(lastRun));
+
         cmd = commandDictionary[comnd];
-        res = sendRequest(url+cmd.url, cmd.method, createBody(bodyArgs, arrayArgs));
-        parsed_res = JSON.parse(res);
-        if (parsed_res && parsed_res.content){
-            parsed_res.content.forEach(function(inc){
-                inc['origin'] = name;
-                incidents.push({
-                  name: name,
-                  rawJSON: JSON.stringify(inc)
-                });
-            });
+        var incidents = [];
+
+        // Handles the edge case where the entire page of results on the previous fetch was published within the adjusted time window - see updateLastRun()
+        // There may be more than the max page size of items published in that time window, so retrieve multiple pages to deduplciate
+        offset = 0;
+        pageSize = 500;
+        total = 1;
+
+        while (offset < total && incidents.length < fetchLimit) {
+
+           logDebug(comnd + ": Page offset " + offset + ", already retrieved " + incidents.length + " incidents.");
+
+
+            // build date filter, pagination and sort
+            bodyArgs = {filter_dateRange: lastRun.time + '/' + now};
+            bodyArgs.sort_property = 'id';
+            bodyArgs.sort_direction = 'ASCENDING';
+            bodyArgs.pagination_offset = offset;
+            bodyArgs.pagination_size = pageSize;
+
+            res = sendRequest(url+cmd.url, cmd.method, createBody(bodyArgs, arrayArgs));
+            incidentResponse = JSON.parse(res);
+
+            incidents = incidents.concat(buildIncidents(incidentResponse, name, lastRun, fetchLimit - incidents.length));
+
+            offset = offset + pageSize;
+            if (incidentResponse) {
+                total = incidentResponse.total;
+            }
         }
+
+        if (incidents.length < fetchLimit) {
+            lastRun.time = now;
+            lastRun.ids = [];
+            logDebug(comnd + " Incidents: " + incidents.length + ". Retrieved all incidents within fetch limit of " + fetchLimit + ", clearing stored state. " + JSON.stringify(lastRun));
+        } else {
+            logDebug(comnd + " Incidents: " + incidents.length + ". Did not retrieve all incidents within fetch limit of " + fetchLimit + ", keeping stored state. " + JSON.stringify(lastRun));
+        }
+
         return incidents;
     };
 
 
-    var getIncidentsIds = function(incidents) {
-        var ids = [];
-        incidents.forEach(function(inc) {
-            ids.push(JSON.parse(inc.rawJSON).id);
-        });
+    var buildIncidents = function(parsed_res, name, lastRun, limit) {
+        var incidents = [];
+        if (parsed_res && parsed_res.content){
 
-        return ids;
+            parsed_res.content.forEach(function(inc){
+
+                // if incident should not be excluded add it to the results
+                if (incidents.length < limit) {
+                    if (lastRun.ids.indexOf(inc.id)==-1) {
+
+                        lastRun.ids.push(inc.id);
+
+                        var finalName = name;
+
+                        // maintain behaviour of original integration in naming phishing related items
+                        if(inc.subType && (inc.subType=="PHISHING_ATTEMPT")) {
+                            finalName = "PHISHING_ATTEMPT";
+                        }
+
+                        inc.origin = finalName;
+                        incidents.push({
+                            name: finalName,
+                            rawJSON: JSON.stringify(inc)
+                        });
+                    } else {
+                        logDebug("Dropping Incident " + inc.id + ". Have " + incidents.length + " incidents from this page, limit is " + limit +", dropping duplicate incident.");
+                    }
+                } else {
+                        logDebug("Dropping Incident " + inc.id + ". Already have limit of " + incidents.length + " incidents from this page.");
+                }
+            });
+
+          }
+
+        return incidents;
     };
+
 
 
     var fetchIncidents = function(){
+
         var lastRun = getLastRun();
+
         nowDate = new Date();
         var now = nowDate.toISOString();
-        if (!lastRun || !lastRun.value) {
-            lastRun = {value: (new Date(nowDate.getTime() - 1*60*1000)).toISOString()};
+
+        if (!lastRun || !lastRun.lastRunIncident || !lastRun.lastRunIntel) {
+            // default last run based on the initial fetch parameter
+            defaultDate = new Date(nowDate.getTime() - (parseInt(params.initialFetch, 10)*60*1000)).toISOString();
+            lastRun = {
+                lastRunIncident: {time: defaultDate, ids: []},
+                lastRunIntel: {time: defaultDate, ids: []}
+
+            };
         }
 
-        // first API call - fetch PHISHING_ATTEMPT incidents only (within the date range)
-        bodyArgs = {filter_types_type:'BRAND_PROTECTION', filter_types_subTypes:'PHISHING_ATTEMPT', filter_dateRange: lastRun.value + '/' + now};
-        var incidents = fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'PHISHING_ATTEMPT');
+        // copy the last run details
+        lastRunIncident = {time: lastRun.lastRunIncident.time, ids: []};
+        lastRunIncident.ids = lastRunIncident.ids.concat(lastRun.lastRunIncident.ids);
 
-        var ids = getIncidentsIds(incidents);
+        lastRunIntel = {time: lastRun.lastRunIntel.time, ids: []};
+        lastRunIntel.ids = lastRunIntel.ids.concat(lastRun.lastRunIntel.ids);
 
-        // second API call - fetch all incidents (within the date range)
-        bodyArgs = {filter_dateRange: lastRun.value + '/' + now};
-        temp = fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'Client Incident');
+        // first API call - fetch all incidents (within the date range)
+        var incidents = fetchCommandIncidents('ds-find-incidents-filtered', now, 'Client Incident', lastRunIncident, parseInt(params.fetchLimit, 10));
 
-        if (incidents) {
-            // concatenate only new incident to list (filter the duplicates)
-            filteredIncidents = temp.filter(function(inc) {
-               incidentId = JSON.parse(inc.rawJSON).id;
-               notDuplicatedIncident = (ids.indexOf(incidentId) == -1);
-               return notDuplicatedIncident;
-            });
-            incidents = incidents.concat(filteredIncidents);
-        }
-        else {
-            incidents = temp;
+        // only retrieve intelligence updates if there is space within the fetch limit
+        if(incidents.length <  params.fetchLimit) {
+
+            // Calculate how many items remain within the fetch limit
+            remainingFetchLimit =  params.fetchLimit-incidents.length;
+
+            // second API call - fetch intelligence updates (within the date range)
+            incidents = incidents.concat(fetchCommandIncidents('ds-find-intelligence-incidents', now, 'Intelligence Incident', lastRunIntel, remainingFetchLimit));
         }
 
-        // third API call - fetch intelligence incidents (within the date range)
-        incidents = incidents.concat(fetchCommandIncidents('ds-find-intelligence-incidents', bodyArgs, 'Intelligence Incident'));
+        //update last run details once all calls have been made successfully
+        lastRun.lastRunIncident = lastRunIncident;
+        lastRun.lastRunIntel = lastRunIntel;
+        setLastRun(lastRun);
 
-        // fourth API call - fetch data breaches (within the date range)
-        bodyArgs = {filter_published: lastRun.value + '/' + now};
-        incidents = incidents.concat(fetchCommandIncidents('ds-find-data-breaches', bodyArgs, 'Data Breach'));
-
-        setLastRun({value: now});
         return JSON.stringify(incidents);
     };
 
+    var validateParameters = function() {
+        if(!params.fetchLimit) params.fetchLimit = 50;
+        if(!params.initialFetch) params.initialFetch = 1;
+        
+        if (isNaN(params.fetchLimit) || params.fetchLimit > 200 || params.fetchLimit < 1) throw 'Fetch limit must be an integer between 1 and 200';
+        if (isNaN(params.initialFetch) || params.initialFetch < 1) throw 'Initial fetch must be an integer greater than or equal to 1';
+    };
+    
 
     switch (command) {
+
         case 'test-module':
+            validateParameters();
+            // Validate connection
             cmd = commandDictionary['ds-get-breach-summary'];
             sendRequest(url+cmd.url, cmd.method);
+
             return 'ok';
         case 'fetch-incidents':
+            validateParameters();
             return fetchIncidents();
         default:
             cmd = commandDictionary[command];

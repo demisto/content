@@ -6,7 +6,6 @@ import sys
 import io
 import demistomock as demisto
 
-
 IP_ADDRESS = '127.0.0.1'
 
 FILE_RES_JSON = {
@@ -60,7 +59,10 @@ IP_RES_JSON = {
             "tagGroups": [
                 {
                     "tag_group_name": "Downloader",
-                    "description": "This type of malware secretly downloads malicious files from a remote server, then installs and executes the files."  # noqa: E501
+                    "description":
+                        "This type of malware secretly downloads malicious files from a remote server, "
+                        "then installs and executes the files."
+                    # noqa: E501
                 }
             ],
             "aliases": [
@@ -147,6 +149,14 @@ TAGS_FOR_GENERIC_CONTEXT_OUTPUT = [
 ]
 
 
+@pytest.fixture(autouse=True)
+def init_tests(mocker):
+    params = {
+        'api_key': '1234'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
@@ -175,7 +185,6 @@ def test_calculate_dbot_score_file():
 
 
 def test_connection_error(mocker):
-
     import AutofocusV2
 
     RETURN_ERROR_TARGET = 'AutofocusV2.return_error'
@@ -188,7 +197,7 @@ def test_connection_error(mocker):
 
         with pytest.raises(SystemExit):
             AutofocusV2.search_indicator('ip', '8.8.8.8')
-        assert 'Error connecting to server. Check your URL/Proxy/Certificate settings'\
+        assert 'Error connecting to server. Check your URL/Proxy/Certificate settings' \
                in return_error_mock.call_args[0][0]
 
 
@@ -225,3 +234,91 @@ def test_get_tags_for_generic_context():
      """
     import AutofocusV2
     assert AutofocusV2.get_tags_for_generic_context(TAGS_FROM_FILE_RES) == TAGS_FOR_GENERIC_CONTEXT_OUTPUT
+
+
+def test_reliability(mocker):
+    import AutofocusV2
+    import CommonServerPython
+    from CommonServerPython import DBotScoreReliability
+    mock_data = {'indicator': {'indicatorValue': '1.1.1.1', 'indicatorType': 'IPV4_ADDRESS',
+                               'summaryGenerationTs': 1616340557369, 'firstSeenTsGlobal': None,
+                               'lastSeenTsGlobal': None, 'latestPanVerdicts': {'Test': 'test'},
+                               'seenByDataSourceIds': [], 'wildfireRelatedSampleVerdictCounts': {}}, 'tags': [],
+                 }
+    mocker.patch.object(AutofocusV2, 'search_indicator', return_value=mock_data)
+    mocked_dbot = mocker.patch.object(CommonServerPython.Common, 'DBotScore')
+    mocker.patch.object(CommonServerPython.Common, 'IP')
+    AutofocusV2.search_ip_command('1.1.1.1', DBotScoreReliability.B)
+    assert mocked_dbot.call_args[1].get('reliability') == 'B - Usually reliable'
+
+
+def test_get_tags_for_tags_and_malware_family_fields():
+    """
+
+     Given:
+         - The 'Tags' values returned from the API for a given response.
+     When:
+         - When the user uses 'file' 'ip' 'domain' or 'url' commands.
+     Then:
+         - Only specific tags should be parsed in to context.
+
+     """
+    import AutofocusV2
+    tags = AutofocusV2.get_tags_for_tags_and_malware_family_fields(TAGS_FROM_RESPONSE)
+    tags.sort()
+    assert tags == ['Bladabindi', 'NJRat', 'NanoCoreRAT', 'RemoteAccessTrojan', 'Unit42.NJRat', 'Unit42.NanoCoreRAT']
+
+
+TAGS_FROM_RESPONSE = [
+    {
+        "aliases": [
+            "Bladabindi"
+        ],
+        "count": 2273664,
+        "customer_industry": "High Tech",
+        "customer_name": "Palo Alto Networks Unit42",
+        "description": "NJRa.",
+        "downVotes": "",
+        "lasthit": "2020-11-17 12:04:36",
+        "myVote": "",
+        "public_tag_name": "Unit42.NJRat",
+        "source": "Unit 42",
+        "support_id": 1,
+        "tagGroups": [
+            {
+                "description": "Remote",
+                "tag_group_name": "RemoteAccessTrojan"
+            }
+        ],
+        "tag_class_id": 3,
+        "tag_definition_id": 31426,
+        "tag_definition_scope_id": 4,
+        "tag_definition_status_id": 1,
+        "tag_name": "NJRat",
+        "upVotes": 1
+    },
+    {
+        "count": 506972,
+        "customer_industry": "High Tech",
+        "customer_name": "Palo Alto Networks Unit42",
+        "description": "Generally",
+        "downVotes": "",
+        "lasthit": "2020-11-17 16:31:52",
+        "myVote": "",
+        "public_tag_name": "Unit42.NanoCoreRAT",
+        "source": "Unit 42",
+        "support_id": 1,
+        "tag_class_id": 3,
+        "tag_definition_id": 31987,
+        "tag_definition_scope_id": 4,
+        "tag_definition_status_id": 1,
+        "tag_name": "NanoCoreRAT",
+        "tagGroups": [
+            {
+                "description": "Remote",
+                "tag_group_name": "RemoteAccessTrojan"
+            }
+        ],
+        "upVotes": 3
+    }
+]

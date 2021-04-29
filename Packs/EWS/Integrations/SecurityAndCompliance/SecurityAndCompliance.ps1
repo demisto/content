@@ -212,24 +212,44 @@ function ParseSuccessResults([string]$success_results, [int]$limit, [bool]$all_r
 
 
 
-function ParseResults([string]$results, [int]$limit = -1) {
-    $results_matches = (Select-String -AllMatches "\{?Location: (.*); Sender: (.*); Subject: (.*); Type: (.*); Size: (.*); Received Time: (.*); Data Link: (.*)[},]"  -InputObject $results).Matches
-    $parsed_results = New-Object System.Collections.Generic.List[System.Object]
-    foreach ($match in $results_matches)
-    {
-        if ($parsed_results.Count -ge $limit -and $limit -ne -1){
-            break
+function ParseResults([string]$results, [int]$limit = -1, [string]$type = "Preview") {
+   if ($type -eq "Preview"){
+        $results_matches_preview = (Select-String -AllMatches "\{?Location: (.*); Sender: (.*); Subject: (.*); Type: (.*); Size: (.*); Received Time: (.*); Data Link: (.*)[},]"  -InputObject $results).Matches
+        $parsed_results = New-Object System.Collections.Generic.List[System.Object]
+        foreach ($match in $results_matches_preview)
+        {
+            if ($parsed_results.Count -ge $limit -and $limit -ne -1){
+                break
+            }
+
+            $parsed_results.Add(@{
+                "Location" = $match.Groups[1].Value
+                "Sender" = $match.Groups[2].Value
+                "Subject" = $match.Groups[3].Value
+                "Type" = $match.Groups[4].Value
+                "Size" = $match.Groups[5].Value
+                "ReceivedTime" = $match.Groups[6].Value
+                "DataLink" = $match.Groups[7].Value
+            })
         }
-        $parsed_results.Add(@{
-            "Location" = $match.Groups[1].Value
-            "Sender" = $match.Groups[2].Value
-            "Subject" = $match.Groups[3].Value
-            "Type" = $match.Groups[4].Value
-            "Size" = $match.Groups[5].Value
-            "ReceivedTime" = $match.Groups[6].Value
-            "DataLink" = $match.Groups[7].Value
-        })
+   }
+    if ($type -eq "Purge"){
+        $results_matches_purge = (Select-String -AllMatches "\{?Location: (.*); Item count: (.*); Total size: (.*); Failed count: (.*); [},]"  -InputObject $results).Matches
+        $parsed_results = New-Object System.Collections.Generic.List[System.Object]
+        foreach ($match in $results_matches_purge)
+        {
+            if ($parsed_results.Count -ge $limit -and $limit -ne -1){
+                break
+            }
+            $parsed_results.Add(@{
+                "Location" = $match.Groups[1].Value
+                "ItemCount" = $match.Groups[2].Value
+                "TotalSize" = $match.Groups[3].Value
+                "FailedCount" = $match.Groups[4].Value
+            })
+        }
     }
+
 
     return $parsed_results
     <#
@@ -341,7 +361,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
         "SearchName" = $search_action.SearchName
         "Status" = $search_action.Status
         "TenantId" = $search_action.TenantId
-        "Results" = ParseResults -results $search_action.Results -limit $limit
+        "Results" = ParseResults -results $search_action.Results -limit $limit -type $search_action.Action
     }
     <#
         .DESCRIPTION
@@ -946,7 +966,7 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]GetSearch([string]$search_name, [int]$limit) {
+    [psobject]GetSearch([string]$search_name) {
         try{
             # Establish session to remote
             $this.CreateSession()
@@ -966,9 +986,6 @@ class SecurityAndComplianceClient {
 
             .PARAMETER search_name
             The name of the compliance search.
-
-            .PARAMETER limit
-            Results limit (-1 is unlimited).
 
             .EXAMPLE
             $client.GetSearch("new-search")
@@ -1055,6 +1072,9 @@ class SecurityAndComplianceClient {
                 throw "New action must include valid action - Preview/Purge"
             }
             $response = New-ComplianceSearchAction @cmd_params
+            if (-not $response){
+                throw "The search action didn't return any results. Please check the search_name and consider running the o365-sc-start-search command before."
+            }
 
             return $response
         }
@@ -1143,15 +1163,12 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]GetSearchAction([string]$search_action_name, [int]$limit) {
+    [psobject]GetSearchAction([string]$search_action_name) {
         try{
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
             Import-PSSession -Session $this.session -CommandName Get-ComplianceSearchAction -AllowClobber
-            if ($limit -eq -1) {
-                $limit = "unlimited"
-            }
             $response = Get-ComplianceSearchAction -Identity $search_action_name
 
             return $response
@@ -1166,9 +1183,6 @@ class SecurityAndComplianceClient {
 
             .PARAMETER search_action_name
             The name of the compliance search action.
-
-            .PARAMETER limit
-            Results limit (-1 is unlimited).
 
             .EXAMPLE
             $client.GetSearchAction("search-name")
@@ -1202,7 +1216,8 @@ function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $raw_response = $client.AuthorizationRequest()
     $human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
-2. Run the following command **!$script:COMMAND_PREFIX-auth-complete** in the War Room."
+2. Run the **!$script:COMMAND_PREFIX-auth-complete** command in the War Room.
+3. Run the **!$script:COMMAND_PREFIX-auth-test** command in the War Room to test the completion of the authorization process and the configured parameters."
     $entry_context = @{}
 
     return $human_readable, $entry_context, $raw_response
@@ -1323,7 +1338,7 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $all_results = ConvertTo-Boolean $kwargs.all_results
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearch($kwargs.search_name, $kwargs.limit)
+    $raw_response = $client.GetSearch($kwargs.search_name)
     # Entry context
     $entry_context = @{
         $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext -search $raw_response -limit $kwargs.limit -all_results $all_results
@@ -1338,9 +1353,9 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     }
     # Results file export
     if ($export) {
-        $parsed_results_all = ParseSuccessResults -success_results $raw_response.SuccessResults -limit -1 -all_results $true
+        $parsed_results_all = ParseSuccessResults -success_results $raw_response.SuccessResults -limit $kwargs.limit -all_results $all_results
         if ($parsed_results_all.Count -ne 0){
-            $file_entry = FileResult "$($kwargs.search_name)_search.json" $($parsed_results_all | ConvertTo-Json)
+            $file_entry = FileResult "$($kwargs.search_name)_search.json" $($parsed_results_all | ConvertTo-Json) $true
         }
     }
 
@@ -1405,7 +1420,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     $results = ConvertTo-Boolean $kwargs.results
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearchAction($kwargs.search_action_name, $kwargs.limit)
+    $raw_response = $client.GetSearchAction($kwargs.search_action_name)
     # Entry context
     $entry_context = @{
         $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response $kwargs.limit
@@ -1420,9 +1435,9 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     }
     # Results file export
     if ($export) {
-        $parsed_results_all = ParseResults -results $raw_response.Results -limit -1
+        $parsed_results_all = ParseResults -results $raw_response.Results -limit $kwargs.limit
         if ($parsed_results_all.Count -ne 0){
-            $file_entry = FileResult "$($kwargs.search_action_name)_search_action.json" $($parsed_results_all | ConvertTo-Json)
+            $file_entry = FileResult "$($kwargs.search_action_name)_search_action.json" $($parsed_results_all | ConvertTo-Json) $true
         }
     }
 

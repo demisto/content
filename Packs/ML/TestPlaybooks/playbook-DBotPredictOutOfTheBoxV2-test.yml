@@ -1,0 +1,343 @@
+id: DbotPredictOufOfTheBoxTestV2
+version: -1
+name: DbotPredictOufOfTheBoxTestV2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b25fa8d2-98fa-4dc6-845c-99809370cfd4
+    type: start
+    task:
+      id: b25fa8d2-98fa-4dc6-845c-99809370cfd4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8d59f33e-507c-4223-8480-c8bf26b7dac6
+    type: regular
+    task:
+      id: 8d59f33e-507c-4223-8480-c8bf26b7dac6
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 242f4b80-ec3c-4bee-80dd-d835ff633640
+    type: regular
+    task:
+      id: 242f4b80-ec3c-4bee-80dd-d835ff633640
+      version: -1
+      name: Predict Using Out Of The Box Model
+      scriptName: DBotPredictOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      emailBody:
+        simple: 'Re: PO# OP848784204'
+      emailBodyHTML: {}
+      emailSubject:
+        simple: 'Dear office, Kindly find attached our new order (Po# OP848784204)
+          and the attached letter for the bank payment. Please sign, stamp and resend.   Kindly
+          ship our order by using the service DHL EXPRESS WORLDWIDE. Our DHL account
+          number is: 950389383   Thanks  Best Regards,  Cristina Cadano Marketing
+          Officer - Procurement Officer Marketing@trustm.tv Tel. +974 4431 3336 Fax
+          +974 4435 3336 P.O. Box 10536 Doha,'
+      labelProbabilityThreshold: {}
+      minTextLength: {}
+      returnError: {}
+      topWordsLimit: {}
+      wordThreshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 12333aa3-0590-49b2-866e-8c2b7b7b899a
+    type: condition
+    task:
+      id: 12333aa3-0590-49b2-866e-8c2b7b7b899a
+      version: -1
+      name: Check Prediction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "YES":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+      - - operator: greaterThan
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.9"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a2a470aa-9a87-4fa2-804d-de19d4d0b285
+    type: title
+    task:
+      id: a2a470aa-9a87-4fa2-804d-de19d4d0b285
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 45bfa561-25d8-4438-8780-de8166abd545
+    type: regular
+    task:
+      id: 45bfa561-25d8-4438-8780-de8166abd545
+      version: -1
+      name: Load Automation's Docker
+      description: Predict phishing incidents using the out-of-the-box pretrained
+        model.
+      scriptName: DBotPredictOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      emailBody:
+        simple: test
+      emailBodyHTML: {}
+      emailSubject: {}
+      labelProbabilityThreshold: {}
+      minTextLength: {}
+      returnError: {}
+      topWordsLimit: {}
+      wordThreshold: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 784d63be-adc2-4c91-8c80-6cb5ba991e1e
+    type: regular
+    task:
+      id: 784d63be-adc2-4c91-8c80-6cb5ba991e1e
+      version: -1
+      name: Wait for automation
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 309a9ea9-16a6-4529-83cb-ac798529290b
+    type: regular
+    task:
+      id: 309a9ea9-16a6-4529-83cb-ac798529290b
+      version: -1
+      name: Load Automation's Docker
+      description: Predict phishing incidents using the out-of-the-box pretrained
+        model.
+      scriptName: DBotPredictOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      emailBody:
+        simple: test
+      emailBodyHTML: {}
+      emailSubject: {}
+      labelProbabilityThreshold: {}
+      minTextLength: {}
+      returnError: {}
+      topWordsLimit: {}
+      wordThreshold: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: ef6ce480-7598-4dfe-85fe-c74104790bdb
+    type: regular
+    task:
+      id: ef6ce480-7598-4dfe-85fe-c74104790bdb
+      version: -1
+      name: Wait for automation
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

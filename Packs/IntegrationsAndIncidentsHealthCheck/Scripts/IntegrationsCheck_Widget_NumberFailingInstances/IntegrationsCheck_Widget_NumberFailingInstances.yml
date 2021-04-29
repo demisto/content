@@ -1,9 +1,9 @@
-comment: Data output script for populating the dashboard number graph widget with the
-  number of failing integrations.
+comment: Data output script for populating the dashboard number graph widget with
+  the number of failing integrations.
 commonfields:
   id: IntegrationsCheck-Widget-NumberFailingInstances
   version: -1
-dockerimage: demisto/python3:3.8.5.11789
+dockerimage: demisto/python3:3.9.1.15759
 enabled: true
 name: IntegrationsCheck-Widget-NumberFailingInstances
 runas: DBotWeakRole

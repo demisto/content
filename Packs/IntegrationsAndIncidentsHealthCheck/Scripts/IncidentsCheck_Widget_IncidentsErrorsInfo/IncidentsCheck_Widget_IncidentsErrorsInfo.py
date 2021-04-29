@@ -11,7 +11,7 @@ def parse_data(list_json):
     if isinstance(list_json, list):
         for instance in list_json:
             list_table.append({
-                'Incident Creation Date': instance.get('creationdate', '').split('.')[0],
+                'Incident Creation Date': instance.get('creationdate', '').split('.')[0].replace('T', ' '),
                 'Incident ID': instance.get('incidentid'),
                 'Incident Owner': instance.get('owner'),
                 'Number of Errors': instance.get('numberoferrors'),
@@ -25,14 +25,14 @@ def parse_data(list_json):
 
     else:
         data = {'total': 1, 'data': [{
-            'Incident Creation Date': r'N\A',
-            'Incident ID': r'N\A',
-            'Incident Owner': r'N\A',
-            'Number of Errors': r'N\A',
-            'Playbook Name': r'N\A',
-            'Task ID': r'N\A',
-            'Task Name': r'N\A',
-            'Command Name': r'N\A'
+            'Incident Creation Date': r'N/A',
+            'Incident ID': r'N/A',
+            'Incident Owner': r'N/A',
+            'Number of Errors': r'N/A',
+            'Playbook Name': r'N/A',
+            'Task ID': r'N/A',
+            'Task Name': r'N/A',
+            'Command Name': r'N/A'
         }]}
 
         return data

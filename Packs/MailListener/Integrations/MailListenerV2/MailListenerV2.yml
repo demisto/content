@@ -147,7 +147,7 @@ script:
       eml file format.
     execution: false
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/imap:1.0.0.14044
+  dockerimage: demisto/imap:1.0.0.17111
   feed: false
   isfetch: true
   longRunning: false

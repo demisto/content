@@ -13,7 +13,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+    reputation
   defaultvalue: Suspicious
   display: Indicator Reputation
   name: feedReputation
@@ -24,7 +24,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data.
+- additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
   display: Source Reliability
   name: feedReliability
@@ -38,7 +38,7 @@ configuration:
   required: true
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed.
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -82,9 +82,9 @@ configuration:
   type: 0
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   type: 0
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
@@ -100,44 +100,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Indicator Reputation
-  name: feedReputation
-  type: 18
-  required: false
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
-- display: Source Reliability
-  name: feedReliability
-  type: 15
-  required: true
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
-  required: false
-  type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
-  display: Traffic Light Protocol Color
-  name: tlp_color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  required: false
-  type: 15
 description: |-
   "Intel 471's Actors feed is an actor-centric intelligence feature.
   It combines both a field-based intelligence collection and a headquartered-based intelligence analysis component.
@@ -158,7 +120,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: intel471-actors-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.12410
+  dockerimage: demisto/jmespath:1.0.0.19143
   feed: true
   isfetch: false
   longRunning: false

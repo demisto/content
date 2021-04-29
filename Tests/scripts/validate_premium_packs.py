@@ -12,7 +12,8 @@ import os
 
 from Tests.scripts.validate_index import log_message_if_statement, get_index_json_data
 from Tests.configure_and_test_integration_instances import Build, Server
-from Tests.Marketplace.marketplace_services import load_json, GCPConfig
+from Tests.Marketplace.marketplace_services import load_json
+from Tests.Marketplace.marketplace_constants import GCPConfig
 from Tests.scripts.utils.log_util import install_logging
 from pprint import pformat
 
@@ -29,6 +30,8 @@ def options_handler():
                         help=f'Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip to',
                         required=True)
     parser.add_argument('-pb', '--production_bucket_name', help='Production bucket name', required=True)
+    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
+                        required=False)
     parser.add_argument('-sa', '--service_account', help='Path to gcloud service account', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file', required=True)
 
@@ -217,10 +220,10 @@ def main():
     install_logging("Validate Premium Packs.log")
     options = options_handler()
     exit_code = 0
-
-    index_data, index_path = get_index_json_data(service_account=options.service_account,
-                                                 production_bucket_name=options.production_bucket_name,
-                                                 extract_path=options.extract_path)
+    index_data, index_file_path = get_index_json_data(
+        service_account=options.service_account, production_bucket_name=options.production_bucket_name,
+        extract_path=options.extract_path, storage_base_path=options.storage_base_path
+    )
 
     # Get the first host by the ami env
     hosts, _ = Build.get_servers(ami_env=options.ami_env)

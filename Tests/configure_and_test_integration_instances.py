@@ -37,11 +37,17 @@ from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
+NO_PROXY = ','.join([
+    'oproxy.demisto.ninja',
+    'oproxy-dev.demisto.ninja',
+])
+NO_PROXY_CONFIG = {'python.pass.extra.keys': f'--env##no_proxy={NO_PROXY}'}  # noqa: E501
 DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
-    'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
+    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',    # noqa: E501
+    'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
     'docker.run.internal.asuser': 'true'
@@ -577,18 +583,11 @@ def __set_server_keys(client, integration_params, integration_name):
     for key, value in integration_params.get('server_keys').items():
         data['data'][key] = value
 
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                                        method='POST', body=data)
-
-    try:
-        result_object = ast.literal_eval(response_data)
-    except ValueError:
-        logging.exception(f'failed to parse response from demisto. response is {response_data}')
-        return
-
-    if status_code >= 300 or status_code < 200:
-        message = result_object.get('message', '')
-        logging.error(f'Failed to set server keys, status_code: {status_code}, message: {message}')
+    update_server_configuration(
+        client=client,
+        server_configuration=data,
+        error_msg='Failed to set server keys'
+    )
 
 
 def set_integration_instance_parameters(integration_configuration,
@@ -877,9 +876,12 @@ def configure_servers_and_restart(build):
         if LooseVersion(build.server_numeric_version) <= LooseVersion('5.5.0'):
             configure_types.append('ignore docker image validation')
             configurations.update(AVOID_DOCKER_IMAGE_VALIDATION)
+            configurations.update(NO_PROXY_CONFIG)
         if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
+                configurations.update(NO_PROXY_CONFIG)
+                configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
             configure_types.append('docker hardening')
@@ -1385,7 +1387,7 @@ def main():
 
     configure_servers_and_restart(build)
     disable_instances(build)
-    installed_content_packs_successfully = install_packs_pre_update(build)
+    install_packs_pre_update(build)
 
     new_integrations, modified_integrations = get_changed_integrations(build)
 
@@ -1393,7 +1395,7 @@ def main():
                                                                                   new_integrations,
                                                                                   modified_integrations)
     modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-    installed_content_packs_successfully = update_content_on_servers(build) and installed_content_packs_successfully
+    installed_content_packs_successfully = update_content_on_servers(build)
 
     successful_tests_post, failed_tests_post = test_integrations_post_update(build,
                                                                              new_module_instances,

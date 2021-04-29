@@ -31,6 +31,30 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Fields
+  name: fields
+  defaultvalue: ""
+  type: 0
+  required: false
+  additionalinfo: Fields to be fetched. The Fields specify columns that you can see
+    in the arcsight logger interface. The fields that you select will be fetched as
+    data.
+- display: Aggregate events into one incident
+  name: aggregate
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: By enabling this you take all the events that happened in the last
+    minute and aggregate them into one Events key. This will result in having all
+    the data for the last minute fetched into one incident.
+- display: Fetch limit
+  name: fetchlimit
+  defaultvalue: "100"
+  type: 0
+  required: false
+  additionalinfo: This parameter limits the maximum number of events that can be
+    fetched at once. In case the aggregate parameter is checked this parameter will
+    limit the number of events in the aggregated Events key.
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
@@ -468,15 +492,32 @@ script:
         if (params.eventsQuery){
             query = params.eventsQuery;
         }
-        var fields = null;
+        if (params.fields){
+            var fields = params.fields;
+            var discover_fields = true;
+        } else {
+            var fields = null;
+            var discover_fields = false;
+        }
+        if (params.fetchlimit){
+            var fetchlimit = params.fetchlimit;
+        } else {
+            var fetchlimit = 100;
+        }
         var events = getSearchEventsRequest(userSessionId, query, 120000, startTime,
-            endTime, null, null, null, false, null,
-            null, null, 100, fields);
+            endTime, discover_fields, null, null, false, null,
+            null, null, fetchlimit, fields);
 
         var incidents = [];
-        for (var i = 0; i < events.length; i++) {
-            var incident = incidentFromEvent(events[i]);
+        if(params.aggregate){
+            var events_aggregate = { "Events" : events };
+            var incident = incidentFromEvent(events_aggregate);
             incidents.push(incident);
+        } else {
+            for (var i = 0; i < events.length; i++) {
+                var incident = incidentFromEvent(events[i]);
+                incidents.push(incident);
+            }
         }
 
         setLastRun({ time: endTime });
