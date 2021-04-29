@@ -86,6 +86,71 @@ script:
     - contextPath: HPEArubaClearpass.endpoints.attributes
       description: Additional attributes (key/value pairs) may be stored with the endpoint.
       type: Unknown
+  - arguments:
+    - default: false
+      description: Numeric ID of the endpoint.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    - default: false
+      description: MAC Address of the endpoint to be set. If not given, all the endpoints will be returned.
+      isArray: false
+      name: mac_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the endpoint to be set. Can be Known/Unknown/Disabled.
+      isArray: false
+      name: status
+      predefined:
+      - Known
+      - Unknown
+      - Disabled
+      required: false
+      secret: false
+    - default: false
+      description: Description of the endpoint to be set.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: A comma seperated list of Device Insight Tags.
+      isArray: true
+      name: device_insight_tags
+      required: false
+      secret: false
+    - default: false
+      description: 'Additional attributes (key/value pairs) may be stored with the endpoint. An example for an attribute - [{"demisto_test": "aaaaa"},{"test":"good"}]'
+      isArray: true
+      name: attributes
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates some fields of an endpoint.
+    execution: false
+    name: aruba-clearpass-endpoint-update
+    outputs:
+    - contextPath: HPEArubaClearpass.endpoints.id
+      description: The ID of the endpoint.
+      type: Number
+    - contextPath: HPEArubaClearpass.endpoints.mac_address
+      description: The MAC Address of the endpoint.
+      type: string
+    - contextPath: HPEArubaClearpass.endpoints.description
+      description: The description of the endpoint.
+      type: string
+    - contextPath: HPEArubaClearpass.endpoints.status
+      description: The status of the endpoint.
+      type: string
+    - contextPath: HPEArubaClearpass.endpoints.device_insight_tags
+      description: List of Device Insight Tags.
+      type: Unknown
+    - contextPath: HPEArubaClearpass.endpoints.attributes
+      description: Additional attributes (key/value pairs) may be stored with the endpoint.
+      type: Unknown
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false

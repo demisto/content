@@ -120,12 +120,7 @@ def parse_endpoints_response(response):
     human_readable = []
     if items_list:
         for item in items_list:
-            human_readable.append({
-                'ID': item.get('id'),
-                'MAC Address': item.get('mac_address'),
-                'Status': item.get('status'),
-                'Attributes': item.get('attributes')
-            })
+            human_readable.append(endpoints_response_to_dict(item))
     return human_readable, items_list
 
 
@@ -152,32 +147,38 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
+def endpoints_response_to_dict(response):
+    return {
+        'ID': response.get('id'),
+        'MAC Address': response.get('mac_address'),
+        'Status': response.get('status', ""),
+        'Attributes': response.get('attributes', ""),
+        'Description': response.get('description', ""),
+        'Device insight tags': response.get('device_insight_tags', "")
+    }
+
+
 def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     endpoint_id = args.get('endpoint_id')
     mac_address = args.get('mac_address')
     status = args.get('status')
     description = args.get('description')
-    device_insight_tags = args.get('device_insight_tags')
-    attributes = args.get('attributes')
+    device_insight_tags = argToList(args.get('device_insight_tags'))
+
+    attributes = argToList(args.get('attributes'))
+    attributes_values = {}
+    for attribute in attributes:
+        attributes_values.update(attribute)
 
     request_body = {}
     request_body.update({'status': status}) if status else None
     request_body.update({'mac_address': mac_address}) if mac_address else None
     request_body.update({'description': description}) if description else None
     request_body.update({'device_insight_tags': device_insight_tags}) if device_insight_tags else None
-    request_body.update({'attributes': attributes}) if attributes else None
+    request_body.update({'attributes': attributes_values}) if attributes else None
 
-    params = {'body': request_body}
-    res = client.request_endpoints(method='PATCH', params={}, url_suffix=f'endpoint/{endpoint_id}', body=params)
-
-    outputs = {
-        'ID': res.get('id'),
-        'MAC Address': res.get('mac_address'),
-        'Status': res.get('status', ""),
-        'Attributes': res.get('attributes', ""),
-        'Description': res.get('description', ""),
-        'Device insight tags': res.get('device_insight_tags', "")
-    }
+    res = client.request_endpoints(method='PATCH', params={}, url_suffix=f'endpoint/{endpoint_id}', body=request_body)
+    outputs = endpoints_response_to_dict(res)
     human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', outputs, removeNull=True)
 
     return CommandResults(
