@@ -77,12 +77,14 @@ class Client(BaseClient):
         authorization_header_value = f"{TOKEN_TYPE} {self.access_token}"
         self.headers = {"Authorization": authorization_header_value}
 
-    def request_endpoints(self, method: str, params: dict, url_suffix: str):
+    def request_endpoints(self, method: str, params: dict, url_suffix: str, body={}):
         return self._http_request(
             method=method,
             params=params,
             url_suffix=url_suffix,
-            headers=self.headers)
+            headers=self.headers,
+            json_data=body
+        )
 
 
 ''' COMMAND FUNCTIONS '''
@@ -150,6 +152,42 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
+def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    endpoint_id = args.get('endpoint_id')
+    mac_address = args.get('mac_address')
+    status = args.get('status')
+    description = args.get('description')
+    device_insight_tags = args.get('device_insight_tags')
+    attributes = args.get('attributes')
+
+    request_body = {}
+    request_body.update({'status': status}) if status else None
+    request_body.update({'mac_address': mac_address}) if mac_address else None
+    request_body.update({'description': description}) if description else None
+    request_body.update({'device_insight_tags': device_insight_tags}) if device_insight_tags else None
+    request_body.update({'attributes': attributes}) if attributes else None
+
+    params = {'body': request_body}
+    res = client.request_endpoints(method='PATCH', params={}, url_suffix=f'endpoint/{endpoint_id}', body=params)
+
+    outputs = {
+        'ID': res.get('id'),
+        'MAC Address': res.get('mac_address'),
+        'Status': res.get('status', ""),
+        'Attributes': res.get('attributes', ""),
+        'Description': res.get('description', ""),
+        'Device insight tags': res.get('device_insight_tags', "")
+    }
+    human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', outputs, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='HPEArubaClearpass.endpoints',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
 def main() -> None:
     params = demisto.params()
     base_url = urljoin(params.get('url'), '/api')
@@ -174,6 +212,9 @@ def main() -> None:
 
         elif demisto.command() == 'aruba-clearpass-endpoints-list':
             return_results(get_endpoints_list_command(client, demisto.args()))
+
+        elif demisto.command() == 'aruba-clearpass-endpoint-update':
+            return_results(update_endpoint_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
