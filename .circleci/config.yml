@@ -1071,7 +1071,6 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
           when: always
       - *comment_on_contrib_pr
-      - *destroy_instances
       - *store_artifacts
 
   Force Upload Packs To Marketplace:
