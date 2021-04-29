@@ -405,8 +405,8 @@ class Model:
         for field in self.field_for_command_line:
             if field not in self.incident_to_match.columns \
                     or not self.incident_to_match[field].values[0] \
-                    or (not isinstance(self.incident_to_match[field].values[0], str) and
-                        not isinstance(self.incident_to_match[field].values[0], list)) \
+                    or (not isinstance(self.incident_to_match[field].values[0], str) and not isinstance(
+                self.incident_to_match[field].values[0], list)) \
                     or self.incident_to_match[field].values[0] == 'None' \
                     or self.incident_to_match[field].values[0] == 'N/A':
                 remove_list.append(field)
