@@ -1,6 +1,7 @@
 from GitHub import main, BASE_URL
 import demistomock as demisto
 import json
+import pytest
 
 
 MOCK_PARAMS = {
@@ -33,3 +34,37 @@ def test_search_code(requests_mock, mocker):
     assert results['Contents'] == raw_response
     assert len(results['EntryContext']['GitHub.CodeSearchResults(val.html_url == obj.html_url)']) == 7
     assert 'Repository Name' in results['HumanReadable']
+
+
+def mock_http_request(method, url_suffix, params=None, data=None):
+    return {"items": [{"repository_url": "", "limit": params.get("per_page")}]}
+
+
+SEARCH_CASES = [
+    (200, 100),
+    (40, 40)
+]
+
+
+@pytest.mark.parametrize('limit, expected_result', SEARCH_CASES)
+def test_search_command(mocker, limit, expected_result):
+    """
+    Given:
+        There are some issues to fetch from GitHub
+    When:
+        search_command is running
+    Then:
+        Assert that the limit <= 100
+    """
+    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    mocker.patch.object(demisto, 'args', return_value={
+        'query': 'Hello',
+        'limit': limit
+    })
+    mocker.patch('GitHub.http_request', side_effect=mock_http_request)
+    mocker_output = mocker.patch('GitHub.return_outputs')
+    from GitHub import search_command
+
+    search_command()
+
+    assert mocker_output.call_args.args[2].get('items')[0].get('limit') == expected_result
