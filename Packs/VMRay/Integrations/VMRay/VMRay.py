@@ -150,7 +150,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         err = find_error(response)
         if err:
             if "no jobs were created" in build_errors_string(err):
-                err_message = err[0].get("error_msg") + ' Please try using the command with reanalyzed=true.'
+                err_message = err[0].get("error_msg") + ' Please try using the command with reanalyze=true.'
                 err[0]['error_msg'] = err_message
             return_error(ERROR_FORMAT.format(r.status_code, err))
         return response
@@ -334,13 +334,6 @@ def upload_sample_command():
 
     # Request call
     raw_response = upload_sample(file_id, params=params)
-    if "no jobs" in raw_response:
-        human_readable = "No jobs was created, maybe because the file has already been analyzed, " \
-                         "please try using the command with reanalyze=true."
-        return_outputs(
-            readable_output=human_readable
-        )
-        return
     data = raw_response.get('data')
     jobs_list = list()
     jobs = data.get('jobs')

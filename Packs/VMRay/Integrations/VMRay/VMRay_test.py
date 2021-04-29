@@ -1,5 +1,5 @@
 import demistomock as demisto
-import pytest
+
 
 def mock_request(method, url, params=None, headers=None, files=None, verify=None, proxies=None):
     class Result:
@@ -13,7 +13,6 @@ def mock_request(method, url, params=None, headers=None, files=None, verify=None
     return result
 
 
-# @pytest.fixture(autouse=False)
 def test_upload_sample_command(mocker):
     """
     Given:
