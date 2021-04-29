@@ -47,8 +47,8 @@ script:
       isArray: false
       name: with_results
       predefined:
-        - true
-        - false
+        - 'true'
+        - 'false'
     - default: false
       description: The query for which to retrieve samples. For additional information
         on how to build your query using the AF GUI, see the detailed description
@@ -277,8 +277,8 @@ script:
       isArray: false
       name: with_results
       predefined:
-        - true
-        - false
+        - 'true'
+        - 'false'
     - default: false
       description: Interval in seconds between each poll.
       isArray: false
