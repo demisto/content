@@ -14,7 +14,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
 
-__version__ = '2.1'
+__version__ = '2.1.1'
 
 
 def rename_keys(old_to_new: Dict[str, str], original: Dict[str, Any]):
@@ -50,7 +50,9 @@ class Client(BaseClient):
         )
 
     def entity_enrich(
-        self, entity: str, entity_type: str, related: bool, risky: bool, profile: str = 'All'
+        self, entity: str, entity_type: str,
+            related: bool, risky: bool,
+            profile: str = 'All'
     ) -> Dict[str, Any]:
         """Entity enrich."""
 
@@ -119,6 +121,8 @@ class Client(BaseClient):
                 "cvss",
                 "nvdDescription",
                 "relatedEntities",
+                "cpe",
+                "relatedLinks"
             ],
             "url": [
                 "entity",
@@ -217,6 +221,37 @@ def translate_score(score: int, threshold: int) -> int:
         return Common.DBotScore.SUSPICIOUS
     else:
         return Common.DBotScore.NONE
+
+
+def parse_cpe(cpes: list) -> list:
+    dicts = []
+    parts = {
+        'o': 'Operating System',
+        'a': 'Application',
+        'h': 'Hardware',
+        '*': 'Any',
+        '-': 'NA'
+    }
+    cpe_regex = re.compile(
+        r'cpe:2\.3:(?P<Part>[aoh*-]):(?P<Vendor>[a-zA-Z_-]+):'
+        r'(?P<Product>[A-Za-z0-9_-]+):(?P<Version>[0-9.]+):(?P<Update>[a-zA-Z0-9*]+):'
+        r'(?P<Edition>[a-zA-Z0-9*]+):(?P<Language>[a-zA-Z0-9*]+):'
+        r'(?P<swedition>[a-zA-Z0-9*]+):(?P<targetsw>[a-zA-Z0-9*]+):'
+        r'(?P<targethw>[a-zA-Z0-9*]+):(?P<Other>[a-zA-Z0-9*]+)'
+    )
+    for cpe in cpes:
+        try:
+            match = cpe_regex.match(cpe)
+            if match:
+                tmp_dict = match.groupdict()
+                tmp_dict['Part'] = parts[tmp_dict.get('Part', '-')]
+                tmp_dict['Software Edition'] = tmp_dict.pop('swedition')
+                tmp_dict['Target Software'] = tmp_dict.pop('targetsw')
+                tmp_dict['Target Hardware'] = tmp_dict.pop('targethw')
+                dicts.append(tmp_dict)
+        except:
+            continue
+    return dicts
 
 
 def determine_hash(hash_value: str) -> str:
@@ -778,6 +813,21 @@ def build_intel_markdown(entity_data: Dict[str, Any], entity_type: str) -> str:
                     f'{prettify_time(cdata.get("lastModified"))}',
                 ]
             markdown.extend(cvss)
+            if data.get("cpe", None):
+                markdown.append(
+                    tableToMarkdown(
+                        "CPE Information",
+                        parse_cpe(data.get("cpe")),
+                        ['Part', 'Vendor', 'Product', 'Version', 'Update', 'Edition',
+                         'Language', 'Software Edition', 'Target Software',
+                         'Target Hardware', 'Other']
+                    )
+                )
+            if data.get('relatedLinks', None):
+                markdown.append(tableToMarkdown(
+                    "Related Links",
+                    [{'Related Links': x} for x in data.get('relatedLinks')]
+                ))
         evidence_table = [
             {
                 "Rule Criticality": detail.get("criticalityLabel"),
@@ -857,7 +907,10 @@ def build_intel_context(
         )
         command_results.append(
             CommandResults(
-                readable_output=tableToMarkdown('New indicator was created', indicator.to_context()),
+                readable_output=tableToMarkdown(
+                    'New indicator was created',
+                    indicator.to_context()
+                ),
                 indicator=indicator
             )
         )
@@ -871,7 +924,10 @@ def build_intel_context(
             )
             command_results.append(
                 CommandResults(
-                    readable_output=tableToMarkdown("New indicator was created", indicator.to_context()),
+                    readable_output=tableToMarkdown(
+                        "New indicator was created",
+                        indicator.to_context()
+                    ),
                     indicator=indicator
                 )
             )
