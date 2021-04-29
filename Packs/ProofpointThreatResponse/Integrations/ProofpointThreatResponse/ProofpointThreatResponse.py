@@ -428,6 +428,7 @@ def get_incidents_request(params):
         list. The incidents returned from the API call
     """
     fullurl = BASE_URL + 'api/incidents'
+    demisto.debug("get_incidents_request before the request")
     incidents_list = requests.get(
         fullurl,
         headers={
@@ -435,9 +436,10 @@ def get_incidents_request(params):
             'Authorization': API_KEY
         },
         params=params,
-        verify=VERIFY_CERTIFICATE
+        verify=VERIFY_CERTIFICATE,
+        timeout=10
     )
-
+    demisto.debug("get_incidents_request after the request")
     if incidents_list.status_code < 200 or incidents_list.status_code >= 300:
         if incidents_list.status_code == 502 or incidents_list.status_code == 504:
             return_error('The operation failed. There is a possibility you are trying to get too many incidents.\n'
@@ -481,7 +483,9 @@ def get_incidents_batch_by_time_request(params):
     }
 
     while created_before < current_time and len(incidents_list) < fetch_limit:
+        demisto.debug("Entering while loop, before getting incidents")
         incidents = get_incidents_request(request_params)
+        demisto.debug("Entering while loop, after getting incidents")
         filtered_incidents_list = filter_incidents(incidents)
         ordered_incidents = sorted(filtered_incidents_list, key=lambda k: (k['created_at'], k['id']))
 
