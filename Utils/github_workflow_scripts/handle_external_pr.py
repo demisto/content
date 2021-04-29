@@ -14,8 +14,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
 REVIEWERS = ['Itay4', 'moishce', 'dantavori']
-WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
-              'wizard @{selected_reviewer} will very shortly look over your proposed changes. '
+WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Make sure to register your ' \
+              'contribution by filling the [Contribution Registration](https://forms.gle/XDfxU4E61ZwEESSMA) form, ' \
+              'so our content wizard @{selected_reviewer} will know he can start review your proposed changes. '
 
 
 def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
