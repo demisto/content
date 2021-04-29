@@ -1,62 +1,91 @@
-"""Base Script for Cortex XSOAR (aka Demisto)
-
-This is an empty script with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-"""
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any
 import traceback
-
 
 ''' STANDALONE FUNCTION '''
 
 
-# TODO: REMOVE the following dummy function:
-def basescript_dummy(dummy: str) -> Dict[str, str]:
+def build_create_relationships_result(relationships, human_readable):
+    return {
+        'Type': 1,
+        'ContentsFormat': 'json',
+        'Contents': None,
+        'HumanReadable': human_readable,
+        'EntryContext': {},
+        'IndicatorTimeline': [],
+        'IgnoreAutoExtract': False,
+        'Relationships': relationships,
+        'Note': False
+    }
+
+
+def validate_arguments() -> Dict[str, str]:
     """Returns a simple python dict with the information provided
     in the input (dummy).
 
     :type dummy: ``str``
     :param dummy: string to add in the dummy dict that is returned
 
-    :return: dict as {"dummy": dummy}
-    :rtype: ``str``
+    :return: dict of all relevant arguments for the relationship.
+    :rtype: ``dict``
     """
+    args = demisto.args()
+    indicators = []
+    if args.get('entity_b') and args.get('entity_b_type') and args.get('entity_b_query'):
+        raise Exception("entity_b_query can not be used with entity_b and/or entity_b_type")
+    if args.get('entity_b') and args.get('entity_b_query') or args.get('entity_b_type') and args.get('entity_b_query'):
+        raise Exception("entity_b_query can not be used with entity_b and/or entity_b_type")
 
-    return {"dummy": dummy}
-# TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    if args.get('entity_b_query'):
+        args['entity_b'] = find_indicators_to_limit_loop(query) # ????????????????
+
+    if argToBoolean(args.get('create_indicator')):
+        # entityb_b = search for all indicators, check that do not exists and create. ???????????????
+        entityb_b_list = []
+        for entity_b in entityb_b_list:
+            indicator = {
+                'value': entity_b,
+                'type': args.get('entity_b_type'),
+            }
+            indicators.append(indicator)
+
+    return args
 
 
 ''' COMMAND FUNCTION '''
 
 
-# TODO: REMOVE the following dummy command function
-def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
+def create_relation_command(args):
+    relationships = []
+    entity_b_list = argToList(args.get('entity_b', []))
+    for entity_b in entity_b_list:
+        relationships.append(EntityRelation(
+            name=args.get("name"),
+            reverse_name=args.get("reverse_name", ''),
+            entity_a=args.get("entity_a"),
+            entity_a_type=args.get("object_type_a"),
+            entity_b=entity_b,
+            entity_b_type=args.get("object_type_b"),
+            source_reliability=args.get("source_reliability"),
+            brand="XSOAR",
+            fields={
+                "revoked": bool(demisto.getArg("revoked")),
+                "firstSeenBySource": demisto.getArg("first_seen_by_source") or datetime.now().isoformat('T'),
+                "lastSeenBySource": demisto.getArg("last_seen_by_source") or datetime.now().isoformat('T'),
+                "description": demisto.getArg('description')
+                }
+            )
+        )
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the standalone function and get the raw response
-    result = basescript_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseScript',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs
+    if len(relationships) == 1:
+        human_readable = f"Relationship for {args.get('entity_a')} was created successfully."
+    elif len(relationships) > 1 :
+        human_readable = f"Relationships for {args.get('entity_a')} were created successfully."
+    else:
+        human_readable = f"Relationships were not created for {args.get('entity_a')}. "
+    return relationships, human_readable
 
 
 ''' MAIN FUNCTION '''
@@ -64,11 +93,12 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
 def main():
     try:
-        # TODO: replace the invoked command function with yours
-        return_results(basescript_dummy_command(demisto.args()))
-    except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+        args = validate_arguments()
+        relationships, human_readable = create_relation_command(args)
+        demisto.results(build_create_relationships_result(relationships, human_readable))
+    except Exception as e:
+        demisto.error(traceback.format_exc())
+        return_error(f'Failed to execute create-relation automation. Error: {str(e)}')
 
 
 ''' ENTRY POINT '''

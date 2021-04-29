@@ -4700,15 +4700,18 @@ class EntityRelation:
             return EntityRelation.Relations.RELATIONS_NAMES[name]
 
     def __init__(self, name, entity_a, entity_a_type, entity_b, entity_b_type,
-                 relation_type='IndicatorToIndicator', entity_a_family='Indicator', entity_b_family='Indicator',
-                 source_reliability="", fields=None, brand=""):
+                 reverse_name = '', relation_type='IndicatorToIndicator', entity_a_family='Indicator',
+                 entity_b_family='Indicator', source_reliability="", fields=None, brand=""):
 
         # Relation
         if not EntityRelation.Relations.is_valid(name):
             raise ValueError("Invalid relation: " + name)
         self._name = name
 
-        self._reverse_name = EntityRelation.Relations.get_reverse(name)
+        if reverse_name:
+            self._reverse_name = reverse_name
+        else:
+            self._reverse_name = EntityRelation.Relations.get_reverse(name)
 
         if not EntityRelation.RelationsTypes.is_valid_type(relation_type):
             raise ValueError("Invalid relation type: " + relation_type)
