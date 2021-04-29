@@ -300,49 +300,75 @@ def parse_related_indicators(report: Dict, related_ids: List, id_to_object: Dict
     return indicators
 
 
-def create_attack_pattern_indicator(indicator_val: str, relation_object: Dict, matched_relationships: Dict,
-                                    id_to_object: Dict, courses_of_action_products: Dict) -> Dict:
-    """Creates Attack Pattern indicator with the related mitre course of action.
+def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
+    """Parses datetime fields to handle one value or more
 
     Args:
-        indicator_val (String): The indicator value.
-        relation_object (Dict): Stix relationship object.
-        matched_relationships (Dict): a dict of relationships in the form of `id: list(related_ids)`.
-        id_to_object (Dict): a dict in the form of `id: stix_object`.
-        courses_of_action_products (Dict): Connects courses of action id with the relationship product.
+        field_name (str): The field name that holds the data (created/modified).
+        field_value (str): Raw value returned from feed.
 
     Returns:
-        Attack Pattern indicator.
+        str. One datetime value (min/max) according to the field name.
+    """
+    dates_as_string = field_value.splitlines()
+    dates_as_datetime = [datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ') for date in dates_as_string]
+
+    if field_name == 'created':
+        return f"{min(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
+    else:
+        return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
+
+
+def create_attack_pattern_indicator(client) -> List:
+    """Creates Attack Pattern indicators with the related mitre course of action.
+
+    Returns:
+        Attack Pattern indicators list.
     """
 
-    relationship = relation_object.get('id')
-    courses_of_action: Dict[str, List] = {}
+    relationships = client.objects_data['relationship']
+    courses_of_action = {}
 
-    if relationship in matched_relationships:
-        for source in matched_relationships[relationship]:
-            if source.startswith('course-of-action') and id_to_object.get(source):
-                relationship_product = courses_of_action_products[source]
-                if relationship_product not in courses_of_action:
-                    courses_of_action[relationship_product] = []
-                courses_of_action[relationship_product].append(id_to_object[source])
+    for relationship in relationships:
+        source = relationship.get('source_ref')
 
-    name = relation_object.get('name')
-    name = name.partition(':')[2] if name else ''
-    return {
-        "value": indicator_val,
-        "type": 'Attack Pattern',
-        "fields": {
-            "mitrename": name.strip(),
-            "mitredescription": relation_object.get('description'),
-            "firstseenbysource": relation_object.get('created'),
-            "indicatoridentification": relation_object.get('id'),
-            "tags": [],
-            "modified": relation_object.get('modified'),
-            "reportedby": 'Unit42',
-            "mitrecourseofaction": create_course_of_action_field(courses_of_action),
-            "mitrekillchainphases": relation_object.get('kill_chain_phases')
+        if source.startswith('course-of-action'):
+            product = relationship.get('x_panw_coa_u42_panw_product', [])
+            if product:
+                courses_of_action[source] = product[0]
+            else:
+                courses_of_action[source] = 'No product'
+
+    attack_pattern_indicators = []
+    attack_indicator_objects = client.objects_data['attack-pattern']
+
+    for attack_indicator in attack_indicator_objects:
+
+        publications = []
+        for external_reference in attack_indicator.get('external_references', []):
+            if external_reference.get('external_id'):
+                continue
+            url = external_reference.get('url')
+            description = external_reference.get('description')
+            publications.append({'Link': url, 'Title': description})
+
+        indicator = {
+            "value": attack_indicator.get('name'),
+            "type": 'Attack Pattern',
+            "fields": {
+                'stixid': attack_indicator.get('id'),
+                "firstseenbysource": handle_multiple_dates_in_one_field('created', attack_indicator.get('created')),
+                "modified": handle_multiple_dates_in_one_field('modified', attack_indicator.get('modified')),
+                'description': attack_indicator.get('description'),
+                'operatingsystemrefs': attack_indicator.get('x_mitre_platforms'),
+                "mitrecourseofaction": create_course_of_action_field(courses_of_action),
+                "publications": publications,
+                "reportedby": 'Unit42',
+                "tags": [],
+            }
         }
-    }
+        attack_pattern_indicators.append(indicator)
+    return attack_pattern_indicators
 
 
 def create_course_of_action_field(courses_of_action: dict) -> str:
@@ -452,6 +478,16 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     for type_, objects in client.objects_data.items():
         demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
 
+    indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
+
+    reports = parse_reports(client.objects_data['report'], feed_tags, tlp_color)
+
+    attack_pattern_indicators = create_attack_pattern_indicator(client)
+
+
+
+
+
     id_to_object = {
         obj.get('id'): obj for obj in
         client.objects_data['report'] + client.objects_data['indicator'] + client.objects_data['malware']
@@ -459,9 +495,9 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         + client.objects_data['course-of-action']
     }
 
-    matched_relationships, courses_of_action_products = match_relationships(client.objects_data['relationship'])
+    # matched_relationships, courses_of_action_products = match_relationships(client.objects_data['relationship'])
 
-    indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
+
 
     main_report_objects, sub_report_objects = sort_report_objects_by_type(client.objects_data['report'])
     reports = parse_reports(main_report_objects, feed_tags, tlp_color)
