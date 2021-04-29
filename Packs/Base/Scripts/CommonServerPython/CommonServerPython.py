@@ -98,6 +98,18 @@ entryTypes = {
     'widget': 17
 }
 
+ENDPOINT_STATUS_OPTIONS = [
+    'Online',
+    'Offline'
+]
+
+ENDPOINT_ISISOLATED_OPTIONS = [
+    'Yes',
+    'No',
+    'Pending isolation',
+    'Pending unisolation'
+]
+
 
 class EntryType(object):
     """
@@ -2536,7 +2548,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                ip_context['Relations'] = relations_context
+                ip_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.IP.CONTEXT_PATH: ip_context
@@ -2964,7 +2976,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                file_context['Relations'] = relations_context
+                file_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.File.CONTEXT_PATH: file_context
@@ -3030,7 +3042,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                cve_context['Relations'] = relations_context
+                cve_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -3076,7 +3088,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                email_context['Relations'] = relations_context
+                email_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.EMAIL.CONTEXT_PATH: email_context
@@ -3245,7 +3257,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                url_context['Relations'] = relations_context
+                url_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
@@ -3461,7 +3473,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                domain_context['Relations'] = relations_context
+                domain_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context
@@ -3480,7 +3492,8 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None, relations=None):
+                     memory=None, processors=None, processor=None, relations=None, vendor=None, status=None,
+                     is_isolated=None):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
@@ -3494,6 +3507,9 @@ class Common(object):
             self.memory = memory
             self.processors = processors
             self.processor = processor
+            self.vendor = vendor
+            self.status = status
+            self.is_isolated = is_isolated
             self.relations = relations
 
         def to_context(self):
@@ -3539,7 +3555,21 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                endpoint_context['Relations'] = relations_context
+                endpoint_context['Relationships'] = relations_context
+
+            if self.vendor:
+                endpoint_context['Vendor'] = self.vendor
+
+            if self.status:
+                if self.status not in ENDPOINT_STATUS_OPTIONS:
+                    raise ValueError('Status does not have a valid value such as: Online or Offline')
+                endpoint_context['Status'] = self.status
+
+            if self.is_isolated:
+                if self.is_isolated not in ENDPOINT_ISISOLATED_OPTIONS:
+                    raise ValueError('Is Isolated does not have a valid value such as: Yes, No, Pending'
+                                     ' isolation or Pending unisolation')
+                endpoint_context['IsIsolated'] = self.is_isolated
 
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
@@ -3614,7 +3644,7 @@ class Common(object):
 
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                account_context['Relations'] = relations_context
+                account_context['Relationships'] = relations_context
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
@@ -5060,6 +5090,8 @@ class EntityRelation:
         SENT_TO = 'sent-to'
         SIMILAR_TO = 'similar-to'
         SUB_DOMAIN_OF = 'sub-domain-of'
+        SUB_TECHNIQUE_OF = 'subtechnique-of'
+        PARENT_TECHNIQUE_OF = 'parent-technique-of'
         SUPRA_DOMAIN_OF = 'supra-domain-of'
         TARGETED_BY = 'targeted-by'
         TARGETS = 'targets'
@@ -5130,6 +5162,8 @@ class EntityRelation:
                            'similar-to': 'similar-to',
                            'sub-domain-of': 'supra-domain-of',
                            'supra-domain-of': 'sub-domain-of',
+                           'subtechnique-of': 'parent-technique-of',
+                           'parent-technique-of': 'subtechnique-of',
                            'targeted-by': 'targets',
                            'targets': 'targeted-by',
                            'Types': 'Reverse',
@@ -7395,10 +7429,10 @@ class IndicatorsSearcher:
         if self._can_use_search_after:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
                                            searchAfter=self._search_after_param)
-            if self._search_after_title in res and res[self._search_after_title] is not None:
-                self._search_after_param = res[self._search_after_title]
-            else:
-                demisto.log('Elastic search using searchAfter was not found in searchIndicators')
+            self._search_after_param = res[self._search_after_title]
+
+            if res[self._search_after_title] is None:
+                demisto.info('Elastic search using searchAfter returned all indicators')
 
         else:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page,
