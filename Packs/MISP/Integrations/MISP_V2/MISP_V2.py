@@ -33,7 +33,7 @@ MISP_URL = demisto.params().get('url')
 USE_SSL = not demisto.params().get('insecure')
 proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
-MISP_ATTRIBUTE_PATH = 'MISP.Atrribute(obj.ID === val.ID)'
+MISP_ATTRIBUTE_PATH = 'MISP.Attribute(obj.ID === val.ID)'
 MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
 DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
 try:

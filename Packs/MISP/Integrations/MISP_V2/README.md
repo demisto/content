@@ -801,6 +801,177 @@
 <td style="width: 62px;">string</td>
 <td style="width: 344px;">Attribute comment.</td>
 </tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.ID</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">MISP event ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.Distribution</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">MISP event distribution.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.ThreatLevelID</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.PublishTimestamp</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Timestamp of the publish time (if published).</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.EventCreatorEmail</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Email address of the event creator.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.Date</td>
+<td style="width: 62px;">date</td>
+<td style="width: 344px;">Event creation date.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.Locked</td>
+<td style="width: 62px;">boolean</td>
+<td style="width: 344px;">Is the event locked.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.OwnerOrganisation.ID</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Owner organization ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.OwnerOrganisation.Name</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Owner organization name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.OwnerOrganisation.UUID</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Owner organization UUID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.RelatedEvent.ID</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Event IDs of related events (can be a list).</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.ProposalEmailLock</td>
+<td style="width: 62px;">boolean</td>
+<td style="width: 344px;">If email lock was proposed.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.Timestamp</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Timestamp of the event.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.Galaxy.Description</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Event's galaxy description.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.Galaxy.Name</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Galaxy name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.Galaxy.Type</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Galaxy type.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.Published</td>
+<td style="width: 62px;">boolean</td>
+<td style="width: 344px;">Whether the event is published.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.DisableCorrelation</td>
+<td style="width: 62px;">boolean</td>
+<td style="width: 344px;">Whether correlation is disabled.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.UUID</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Event UUID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.ShadowAttribute</td>
+<td style="width: 62px;">Unknown</td>
+<td style="width: 344px;">Event shadow attributes.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.Analysis</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Event analysis (0 Initial, 1 Ongoing, 2 Completed).</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.SharingGroupID</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Event sharing group ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Event.Tag.Name</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">All tag names in the event.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.MetaCategory</td>
+<td style="width: 62px;">String</td>
+<td style="width: 344px;">Object Meta Category.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.Distribution</td>
+<td style="width: 62px;">Number</td>
+<td style="width: 344px;">Distribution of object.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.Name</td>
+<td style="width: 62px;">String</td>
+<td style="width: 344px;">Name of the object.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.TemplateVersion</td>
+<td style="width: 62px;">Number</td>
+<td style="width: 344px;">Template version of the object.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.EventID</td>
+<td style="width: 62px;">Number</td>
+<td style="width: 344px;">ID of the event which the object first created.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.TemplateUUID</td>
+<td style="width: 62px;">String</td>
+<td style="width: 344px;">UUID of template</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.Timestamp</td>
+<td style="width: 62px;">String</td>
+<td style="width: 344px;">Timestamp of object creation</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.Deleted</td>
+<td style="width: 62px;">Boolean</td>
+<td style="width: 344px;">Whether the object was deleted.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.ID</td>
+<td style="width: 62px;">Number</td>
+<td style="width: 344px;">ID of object.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.UUID</td>
+<td style="width: 62px;">String</td>
+<td style="width: 344px;">UUID of object.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Object.Description</td>
+<td style="width: 62px;">String</td>
+<td style="width: 344px;">Description of the object.</td>
+</tr>
+
 </tbody>
 </table>
 <p> </p>
@@ -808,45 +979,41 @@
 <p> </p>
 <h5>Command Example</h5>
 <p> </p>
-<pre>!misp-search-attributes category="Other" type="Ferrari"</pre>
+<pre>!misp-search-attributes category="Other" value="Ferrari"</pre>
 <p> </p>
 <h5>Context Example</h5>
 <p> </p>
 <pre>{
     "MISP.Attribute": [
-        {
-            "ID": "67899",
-            "EventID": "2226",
-            "ObjectID": "10691",
-            "ObjectRelation": "make",
-            "Category": "Other",
-            "Type": "text",
-            "ToIDs": False,
-            "UUID": "3ba21810-4c1f-409a-a3e4-26f3436b1e39",
-            "Timestamp": "1572948879",
-            "Distribution": "5",
-            "SharingGroupID": "0",
-            "Comment": "",
-            "Deleted": False,
-            "DisableCorrelation": True,
-            "Value": "Ferrari"
-        },
-        {
-            "ID": "215746",
-            "EventID": "12041",
-            "ObjectID": "35655",
-            "ObjectRelation": "make",
-            "Category": "Other",
-            "Type": "text",
-            "ToIDs": False,
-            "UUID": "175c30f8-8bba-44bc-9727-7065da0ed109",
-            "Timestamp": "1619620662",
-            "Distribution": "5",
-            "SharingGroupID": "0",
-            "Comment": "",
-            "Deleted": False,
-            "DisableCorrelation": True,
-            "Value": "Ferrari"
+    {
+        'ID': '215746',
+        'EventID': '12041',
+        'ObjectID': '35655',
+        'ObjectRelation': 'make',
+        'Category': 'Other',
+        'Type': 'text',
+        'ToIDs': False,
+        'UUID': '175c30f8-8bba-44bc-9727-7065da0ed109',
+        'Timestamp': '1619620662',
+        'Distribution': '5',
+        'SharingGroupID': '0',
+        'Comment': '',
+        'Deleted': False,
+        'DisableCorrelation': True,
+        'Value': 'Ferrari',
+        'Event': {
+            'OrganisationID': '1',
+            'Distribution': '0',
+            'ID': '12041',
+            'Info': 'Testplayboook',
+            'OwnerOrganisation.ID': '1',
+            'UUID': '60897327-db98-4cab-8911-32faac110002'
+            },
+        'Object': {
+            'ID': '35655',
+            'Distribution': '5',
+            'SharingGroupID': '0'
+            }
         }
     ]
 }
@@ -884,17 +1051,17 @@
 <td>false</td>
 <td>true</td>
 <td>5</td>
-<td>OrganisationID: null<br>Distribution: null<br>ID: null<br>Info: null<br>OwnerOrganisation.ID: null<br>UUID: null</td>
-<td>2226</td>
-<td>67899</td>
-<td>ID: 10691<br>Distribution: 5<br>SharingGroupID: 0</td>
-<td>10691</td>
+<td>OrganisationID: 1<br>Distribution: 0<br>ID: 12041<br>Info: Testplayboook<br>OwnerOrganisation.ID: 1<br>UUID: 60897327-db98-4cab-8911-32faac110002</td>
+<td>12041</td>
+<td>215746</td>
+<td>ID: 35655<br>Distribution: 5<br>SharingGroupID: 0</td>
+<td>35655</td>
 <td>make</td>
 <td>0</td>
-<td>1572948879</td>
+<td>1619620662</td>
 <td>false</td>
 <td>text</td>
-<td>3ba21810-4c1f-409a-a3e4-26f3436b1e39</td>
+<td>175c30f8-8bba-44bc-9727-7065da0ed109</td>
 <td>Ferrari</td>
 </tr>
 </tbody>

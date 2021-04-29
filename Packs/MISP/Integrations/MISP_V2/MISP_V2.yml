@@ -2039,8 +2039,6 @@ script:
       - contextPath: MISP.Attribute.Comment
         description: Attribute comment
         type: string
-
-
       - contextPath: MISP.Attribute.Event.ID
         description: MISP event ID
         type: number
@@ -2143,10 +2141,6 @@ script:
       - contextPath: MISP.Attribute.Object.Description
         description: Description of the object
         type: String
-
-
-
-
   dockerimage: demisto/pymisp:1.0.0.19190
   feed: false
   isfetch: false
