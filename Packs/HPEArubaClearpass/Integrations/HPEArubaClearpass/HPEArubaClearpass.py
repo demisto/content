@@ -77,6 +77,12 @@ class Client(BaseClient):
         authorization_header_value = f"{TOKEN_TYPE} {self.access_token}"
         self.headers = {"Authorization": authorization_header_value}
 
+    def request_endpoints(self, method: str, params: dict, url_suffix: str):
+        return self._http_request(
+            method=method,
+            params=params,
+            url_suffix=url_suffix)
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -106,19 +112,28 @@ def test_module(client: Client) -> str:
     return message
 
 
-def get_endpoints_list_command(client: Client) -> CommandResults:
-    args = demisto.args()
+def parse_endpoints_response(response):
+    items_list = response.get('_embedded', {}).get('items')
+    if items_list:
+        pass
 
-    if not dummy:
-        raise ValueError('dummy not specified')
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+
+def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mac_address = args.get('mac_address')
+    status = args.get('status')
+    offset = args.get('offset', 0)
+    limit = args.get('limit', 25)
+    endpoints_filter = {}
+    endpoints_filter.update({'status': status}) if status else None
+    endpoints_filter.update({'mac_address': mac_address}) if mac_address else None
+    params = {'filter': endpoints_filter, 'offset': offset, 'limit': limit}
+    res = client.request_endpoints(method='GET', params=params, url_suffix='endpoint')
 
     return CommandResults(
         outputs_prefix='BaseIntegration',
         outputs_key_field='',
-        outputs=result,
+        outputs=res,
     )
 
 
@@ -145,7 +160,7 @@ def main() -> None:
             return_results(test_module(client))
 
         elif demisto.command() == 'aruba-clearpass-endpoints-list':
-            return_results(get_endpoints_list_command(client))
+            return_results(get_endpoints_list_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

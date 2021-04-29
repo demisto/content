@@ -42,13 +42,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Status of the required endpoint. Can be known/unknown/disabled.
+      description: Status of the required endpoint. Can be Known/Unknown/Disabled.
       isArray: false
       name: status
       predefined:
-      - known
-      - unknown
-      - disabled
+      - Known
+      - Unknown
+      - Disabled
       required: false
       secret: false
     - default: false
