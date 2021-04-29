@@ -848,8 +848,13 @@ def get_incident_command(rest_client, args):
     readable_output = tableToMarkdown(f'Mandiant Automated Defense Alert, '
                                       f'{formatted_incident["tenantId"]} : {formatted_incident["incidentId"]}',
                                       formatted_incident)
-    return readable_output
-
+    # return readable_output
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Mandiant.Incident',
+        outputs_key_field='incidentId',
+        outputs=formatted_incident
+    )
 
 def get_escalations_command(rest_client, args):
     start = datetime.now().timestamp()
@@ -1128,7 +1133,7 @@ def main():
             return_outputs(remove_user_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'mad-get-incident':
-            return_outputs(get_incident_command(rest_client, demisto.args()))
+            return_results(get_incident_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'update-remote-system':
             return_results(update_remote_system_command(rest_client, demisto.args()))
@@ -1136,7 +1141,7 @@ def main():
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
 
-        elif demisto.command() == 'get-remote-data' || demisto.command() == 'get-modified-remote':
+        elif demisto.command() == 'get-remote-data':
             demisto.debug('get-remote-data called')
             return_results(get_remote_data_command(rest_client, demisto.args()))
 

@@ -67,6 +67,127 @@ script:
     description: pull data for a specific incident from MAD. This command will only
       return an output of the incident data. it does not create a new incident
     name: mad-get-incident
+    outputs:
+    - contextPath: Mandiant.Incident.incidentId
+      description: ID of incident
+      type: String
+    - contextPath: Mandiant.Incident.timeGenerated
+      description: time incident was created
+      type: Date
+    - contextPath: Mandiant.Incident.eventCount
+      description: number of events associated with incident
+      type: Number
+    - contextPath: Mandiant.Incident.firstEventTime
+      description: time first event associated with incident occurred
+      type: Date
+    - contextPath: Mandiant.Incident.lastEventTime
+      description: time most recent event associated with incident occurred
+      type: Date
+    - contextPath: Mandiant.Incident.URL
+      description: URL to incident in Mandiant Advantage platform
+      type: String
+    - contextPath: Mandiant.Incident.closeURL
+      description: URL to incident close page in Mandiant Advantage platform
+      type: String
+    - contextPath: Mandiant.Incident.title
+      description: incident title
+      type: String
+    - contextPath: Mandiant.Incident.description
+      description: incident description
+      type: String
+    - contextPath: Mandiant.Incident.status
+      description: incident status
+      type: String
+    - contextPath: Mandiant.Incident.severity
+      description: incident severity
+      type: String
+    - contextPath: Mandiant.Incident.probability
+      description: incident probability
+      type: String
+    - contextPath: Mandiant.Incident.attackStage
+      description: incident attack stage
+      type: String
+    - contextPath: Mandiant.Incident.attackTactic
+      description: incident attack tactic
+      type: Unknown
+    - contextPath: Mandiant.Incident.assetCriticality
+      description: incident asset criticiality
+      type: String
+    - contextPath: Mandiant.Incident.assetCount
+      description: incident asset count
+      type: Number
+    - contextPath: Mandiant.Incident.assets.hostname
+      description: asset hostname
+      type: String
+    - contextPath: Mandiant.Incident.assets.ipaddress
+      description: asset ip address
+      type: String
+    - contextPath: Mandiant.Incident.assets.isinternal
+      description: asset is internal
+      type: Boolean
+    - contextPath: Mandiant.Incident.externalsystems.hostname
+      description: system hostname
+      type: String
+    - contextPath: Mandiant.Incident.externalsystems.ipaddress
+      description: system ip address
+      type: String
+    - contextPath: Mandiant.Incident.externalsystems.isinternal
+      description: system is internal
+      type: Boolean
+    - contextPath: Mandiant.Incident.accounts.domain
+      description: account domain
+      type: Unknown
+    - contextPath: Mandiant.Incident.accounts.name
+      description: account name
+      type: String
+    - contextPath: Mandiant.Incident.hashes.hash
+      description: hash
+      type: String
+    - contextPath: Mandiant.Incident.malware.name
+      description: malware name
+      type: String
+    - contextPath: Mandiant.Incident.malware.type
+      description: malware type
+      type: String
+    - contextPath: Mandiant.Incident.malware.vendor
+      description: malware vendor
+      type: String
+    - contextPath: Mandiant.Incident.escalationreasons.label
+      description: escalation reason
+      type: String
+    - contextPath: Mandiant.Incident.assignedUsers
+      description: assigned users
+      type: String
+    - contextPath: Mandiant.Incident.tenantIdRespond
+      description: tenant id in mandiant
+      type: String
+    - contextPath: Mandiant.Incident.tenantId
+      description: tenant id external
+      type: String
+    - contextPath: Mandiant.Incident.respondRemoteId
+      description: remote id
+      type: String
+    - contextPath: Mandiant.Incident.dbotMirrorDirection
+      description: mirror direction
+      type: String
+    - contextPath: Mandiant.Incident.dbotMirrorInstance
+      description: mirror instance
+      type: String
+    - contextPath: Mandiant.Incident.owner
+      description: owner
+      type: String
+    - contextPath: Mandiant.Incident.feedback.timeUpdated
+      description: time feedback updated
+      type: Date
+    - contextPath: Mandiant.Incident.feedback.userId
+      description: user id
+      type: String
+    - contextPath: Mandiant.Incident.feedback.outcome
+      description: feedback outcome
+      type: String
+    - contextPath: Mandiant.Incident.feedback.comments
+      description: feedback comments
+      type: String
   - arguments:
     - description: ID of the Tenant in which the incident resides in Respond
       name: tenant_id
