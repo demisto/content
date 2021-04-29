@@ -36,6 +36,8 @@ The format of the condition expression is:
 You can specify `lhs`, `rhs` or `value` for `<lhs>` and `<rhs>`. Those keywords are corresponding to its argument name.<br>
 Also, see `Operator` for the available operators.
 
+If the condition is empty, evaluates `value` == `equals` for backward compatibility.
+
 
 #### Operator
 | **Operator** | **Description** |

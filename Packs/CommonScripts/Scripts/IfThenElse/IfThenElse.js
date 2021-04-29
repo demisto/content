@@ -1,15 +1,4 @@
 
-function assertLegacyCondition(lhs_name, rhs_name, operator) {
-    if (lhs_name != "equals" && rhs_name != "equals") {
-        return;
-    }
-    if (operator == "==" && lhs_name == "value" && rhs_name == "equals" ){
-        // Depreciated condition for backward compatibility
-        return;
-    }
-    throw "Legacy parameter (equals) is not supported for the condition, please use lhs and rhs.";
-}
-
 function convertValue(args, type, value) {
     if (type === undefined || type === null || type == "raw") {
         // nop: type == "raw"
@@ -137,18 +126,19 @@ function evaluate(operator, lhs, rhs, options) {
 }
 
 var condition = args.condition;
-if (!condition) {
-    // We don't set default value in the condition for removing `equals` in the future
-    condition = 'value==equals';
-} else {
+if (condition) {
     condition = condition.trim();
+    if (condition.indexOf("equals") >= 0) {
+        throw "Legacy parameter (equals) is not supported for the condition, please use lhs and rhs.";
+    }
+} else {
+    condition = 'value==equals';
 }
+
 const options = makeOptions(args.options);
 const [lhs_name, lhs] = getValue(args, condition, options, true);
 const [rhs_name, rhs] = getValue(args, condition, options, false);
 const operator = getOperator(lhs_name, rhs_name, condition);
-
-assertLegacyCondition(lhs_name, rhs_name, operator);
 
 if (evaluate(operator, lhs, rhs, options)) {
     return convertValue(args, options["input_data_type:then"], args.then);
