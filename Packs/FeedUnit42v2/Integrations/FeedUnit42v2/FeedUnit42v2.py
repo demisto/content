@@ -18,9 +18,16 @@ UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'sha-1': FeedIndicatorType.File,
     'sha-256': FeedIndicatorType.File,
     'file:hashes': FeedIndicatorType.File,
-    'campaign':
-    'attack-pattern'
-    'report'
+}
+
+RELATIONS_TYPE_TO_DEMISTO_TYPES = {
+    'campaign': 'Campaign',
+    'attack-pattern': 'Attack Pattern',
+    'report': 'Report',
+    'indicator': 'Indicator',
+    'malware': 'Malware',
+    'course-of-action': 'Course of Action'
+
 }
 
 COURSE_OF_ACTION_U42 = ['Cortex XDR Prevent', 'DNS Security', 'XSOAR']
@@ -148,133 +155,6 @@ def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optiona
     return reports
 
 
-def parse_reports_relationships(reports: List, sub_reports: List, matched_relationships: Dict,
-                                id_to_object: Dict, courses_of_action_products: Dict) -> Tuple[list, list]:
-    """Parse the relationships between reports' malware to attack-patterns and indicators.
-
-    Args:
-      reports: a list of reports.
-      sub_reports: a list of sub-reports.
-      matched_relationships (Dict): a dict of relationships in the form of `id: list(related_ids)`.
-      id_to_object: a dict in the form of `id: stix_object`.
-      courses_of_action_products (Dict): Connects courses of action id with the relationship product.
-
-    Returns:
-        A list of processed reports.
-        a list of Attack Patterns indicators.
-    """
-    indicators = []
-    for report in reports:
-        related_ids = []  # Since main reports dont hold their own relationships theres a need to collect them.
-
-        related_sub_reports = [object_id for object_id in report.get('rawJSON', {}).get('unit42_object_refs', [])
-                               if object_id.startswith('report')]
-
-        report_malware_set = set()
-
-        for sub_report in sub_reports:
-            if sub_report.get('id') in related_sub_reports:
-                # Indicators relationship only comes from being related to the malware objects of the report.
-                related_ids += [id_ for id_ in matched_relationships.get(sub_report.get('id'), [])
-                                if not id_.startswith('indicator')]
-
-                for object_id in sub_report.get('object_refs', []):
-                    if object_id.startswith('malware'):
-                        report_malware_set.add(object_id)
-                    elif object_id.startswith('attack-pattern'):
-                        related_ids.append(object_id)
-
-        report['fields']['feedrelatedindicators'] = []
-
-        for malware_id in report_malware_set:
-            related_ids += matched_relationships.get(malware_id, [])
-
-            malware_object = id_to_object.get(malware_id)
-
-            if malware_object:
-                report['fields']['feedrelatedindicators'].extend([{
-                    'type': 'Malware',
-                    'value': malware_object.get('name'),
-                    'description': malware_object.get(
-                        'description', ', '.join(malware_object.get('labels', ['No description provided.'])))
-                }])
-
-        indicators.extend(parse_related_indicators(report, related_ids, id_to_object,
-                                                   matched_relationships, courses_of_action_products))
-
-    return reports, indicators
-
-
-def parse_related_indicators(report: Dict, related_ids: List, id_to_object: Dict, matched_relationships: Dict,
-                             courses_of_action_products: Dict) -> List[Dict]:
-    """ Creates feed related indicators to Stix report object.
-
-    Args:
-        report (dict): Stix report object.
-        related_ids (List): Malware objects ids related to the report.
-        id_to_object (Dict): a dict in the form of `id: stix_object`.
-        matched_relationships (Dict): a dict of relationships in the form of `id: list(related_ids)`.
-        courses_of_action_products (Dict): Connects courses of action id with the relationship product.
-
-    Returns:
-        List of Attack Pattern indicators.
-    """
-    indicators = []
-    for relation in related_ids:
-        relation_object = id_to_object.get(relation)
-        if not relation_object:
-            continue
-
-        if relation.startswith('attack-pattern'):
-            type_name = 'Attack Pattern'
-            relation_value_field = relation_object.get('external_references')
-        elif relation.startswith('indicator'):
-            # Need to create the connection only to file hashes
-            if not relation_object.get('pattern', '').startswith('[file:'):
-                continue
-
-            type_name = 'Indicator'
-            relation_value_field = relation_object.get('name')
-        elif relation.startswith('malware'):
-            type_name = 'Malware'
-            relation_value_field = relation_object.get('name')
-        else:
-            continue
-
-        if isinstance(relation_value_field, str):
-            report['fields']['feedrelatedindicators'].extend([{
-                'type': type_name,
-                'value': relation_value_field,
-                'description': ', '.join(relation_object.get('labels', ['No description provided.']))
-            }])
-            indicator_val = relation_value_field
-
-        else:
-            all_urls = []
-            external_id = ''
-
-            for item in relation_value_field:
-                if 'url' in item:
-                    all_urls.append(item.get('url'))
-
-                    if 'external_id' in item:
-                        external_id = item.get('external_id')
-
-            report['fields']['feedrelatedindicators'].extend([{
-                'type': type_name,
-                'value': external_id,
-                'description': ','.join(all_urls)
-            }])
-            indicator_val = external_id
-
-        if indicator_val and type_name == 'Attack Pattern':
-            # create Attack Pattern indicator
-            indicators.append(create_attack_pattern_indicator(indicator_val, relation_object, matched_relationships,
-                                                              id_to_object, courses_of_action_products))
-
-    return indicators
-
-
 def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
     """Parses datetime fields to handle one value or more
 
@@ -386,51 +266,44 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
     return markdown
 
 
-def match_relationships(relationships: List):
-    """Creates a dict that connects object_id to all objects_ids it has a relationship with.
-
-    Args:
-        relationships (List): A list of relationship objects.
-
-    Returns:
-        Dict. Connects object_id to all objects_ids it has a relationship with. In the form of `id: [related_ids]`
-        Dict. Connects courses of action id with the relationship product.
-    """
-    matches: Dict[str, set] = {}
-    courses_of_action_products = {}
-
-    for relationship in relationships:
-        source = relationship.get('source_ref')
-        target = relationship.get('target_ref')
-
-        if not source or not target:
-            continue
-
-        if source in matches:
-            matches[source].add(target)
-        else:
-            matches[source] = {target}
-
-        if target in matches:
-            matches[target].add(source)
-        else:
-            matches[target] = {source}
-
-        if source.startswith('course-of-action'):
-            product = relationship.get('x_panw_coa_u42_panw_product', [])
-            if product:
-                courses_of_action_products[source] = product[0]
-            else:
-                courses_of_action_products[source] = 'No product'
-    return matches, courses_of_action_products
+def get_ioc_type(indicator, id_to_object):
+    ioc_type = ''
+    indicator_obj = id_to_object.get(indicator)
+    pattern = indicator_obj.get('pattern')
+    for unit42_type in UNIT42_TYPES_TO_DEMISTO_TYPES:
+        if unit42_type in pattern:
+            ioc_type = UNIT42_TYPES_TO_DEMISTO_TYPES.get(unit42_type)
+            break
+    return ioc_type
 
 
 def create_list_relationships(client, id_to_object):
+    relationships_list = []
     relationships_objects = client.objects_data['relationship']
     for relationships_object in relationships_objects:
-        source_ref = relationships_object.get('source_ref')
-        target_ref = relationships_object.get('target_ref')
+        a_type = relationships_object.get('source_ref').split('--')[0]
+        a_type = RELATIONS_TYPE_TO_DEMISTO_TYPES.get(a_type)
+        if a_type == 'Indicator':
+            a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
 
+        b_type = relationships_object.get('target_ref').split('--')[0]
+        b_type = RELATIONS_TYPE_TO_DEMISTO_TYPES.get(b_type)
+        if b_type == 'Indicator':
+            b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
+
+        mapping_fields = {
+            'lastseenbysource': relationships_object.get('modified'),
+            'firstseenbysource': relationships_object.get('created')
+        }
+
+        entity_relation = EntityRelation(name=relationships_object.get('relationship_type'),
+                                         entity_a=relationships_object.get('source_ref'),
+                                         entity_a_type=a_type,
+                                         entity_b=relationships_object.get('target_ref'),
+                                         entity_b_type=b_type,
+                                         fields=mapping_fields)
+        relationships_list.append(entity_relation)
+    return relationships_list
 
 
 def test_module(client: Client) -> str:
@@ -477,6 +350,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         + client.objects_data['course-of-action']
     }
 
+    dummy_indicator = {}
     if create_relationships:
         list_relationships = create_list_relationships(client, id_to_object)
 
@@ -485,20 +359,14 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
             "relationships": list_relationships
         }
 
-    # matched_relationships, courses_of_action_products = match_relationships(client.objects_data['relationship'])
-
-
-
-    main_report_objects, sub_report_objects = sort_report_objects_by_type(client.objects_data['report'])
-    reports = parse_reports(main_report_objects, feed_tags, tlp_color)
-    reports, mitre_indicators = parse_reports_relationships(reports, sub_report_objects, matched_relationships,
-                                                            id_to_object, courses_of_action_products)
+    if dummy_indicator:
+        indicators.append(dummy_indicator)
 
     demisto.debug(f'{len(indicators)} XSOAR Indicators were created.')
     demisto.debug(f'{len(reports)} XSOAR STIX Report Indicators were created.')
-    demisto.debug(f'{len(mitre_indicators)} Attack Pattern Indicators were created.')
+    demisto.debug(f'{len(attack_pattern_indicators)} Attack Pattern Indicators were created.')
 
-    return indicators + reports + mitre_indicators
+    return indicators + reports + attack_pattern_indicators
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = [],
@@ -516,14 +384,6 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
     limit = int(args.get('limit', '10'))
 
     indicators = client.fetch_stix_objects_from_api(test=True, type='indicator')
-    relationship = client.objects_data['relationship']
-    typ = set()
-    for rel in relationship:
-        typ.add(rel.get('source_ref'))
-        typ.add(rel.get('target_ref'))
-    print(typ)
-    return_error('ghghg')
-
 
     indicators = parse_indicators(indicators, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]
