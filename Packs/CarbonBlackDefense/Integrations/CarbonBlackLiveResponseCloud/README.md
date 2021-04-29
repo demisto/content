@@ -1,5 +1,4 @@
 VMware Carbon Black Endpoint Standard Live Response is a feature that’s allows security operators to collect information and take action on remote endpoints in real time, These actions include the ability to upload, download, and remove files, retrieve and remove registry entries, dump contents of physical memory, execute and terminate processes.
-This integration was integrated and tested with version xx of CarbonBlackLiveResponseCloud
 ## Configure CarbonBlackLiveResponseCloud on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

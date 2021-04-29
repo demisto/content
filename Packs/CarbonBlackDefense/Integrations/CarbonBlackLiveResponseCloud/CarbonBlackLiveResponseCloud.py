@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from cbc_sdk import endpoint_standard
-from cbc_sdk import CBCloudAPI
-from cbc_sdk import errors
+from cbc_sdk import endpoint_standard, CBCloudAPI, errors
 import ntpath
 import requests
 
@@ -219,7 +217,7 @@ def create_process_command(
         wait_for_output=argToBoolean(wait_for_output),
         wait_for_completion=argToBoolean(wait_for_completion),
         **additional_params,
-        )
+    )
 
     process_results_str = str(process_results_bytes)
     if wait_for_output and process_results_bytes:
@@ -247,11 +245,12 @@ def memdump_command(api_client: CBCloudAPI, sensor_id: str, target_path: str):
 def command_test_module(api_client: CBCloudAPI) -> str:
     try:
         api_client.api_json_request(method='GET', uri='/integrationServices/v3/cblr/session/')
-        return 'ok'
     except errors.UnauthorizedError:
         return_error('Authorization Error: Check your API Credentials')
     except Exception as e:
         return_error(f'An error occurred.\n {str(e)}')
+
+    return 'ok'
 
 
 def main():

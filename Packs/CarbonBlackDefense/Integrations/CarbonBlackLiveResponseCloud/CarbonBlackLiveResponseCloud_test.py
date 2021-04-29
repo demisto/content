@@ -1,9 +1,5 @@
 import pytest
-from pytest import CaptureFixture
-import CommonServerPython
 from cbapi.live_response_api import LiveResponseMemdump
-import tkinter
-
 from CarbonBlackLiveResponseCloud import *
 import demistomock as demisto
 
@@ -16,6 +12,7 @@ CREDENTIALS = dict(
 api_client = CBCloudAPI(**CREDENTIALS)
 
 commands_with_args = {
+
     command_test_module: {
         'api_client': api_client
     },
@@ -106,7 +103,7 @@ TEST_DIR_LIST = [
     {
         'size': 25600, 'attributes': ['TEST_ARCHIVE'],
         'create_time': 123, 'last_access_time': 123,
-        'last_write_time': 123, 'filename': 'test.xls',
+        'last_write_time': '1000000000000', 'filename': 'test.xls',
         'alternate_name': 'test_$9EE1B~1.XLS'}]
 
 TEST_PROCESSES_RESULT = [
@@ -144,13 +141,15 @@ WRONG_ARGS = [
     ('get_file', get_file_command, dict(timeout='wrong_val')),
 ]
 
+DIR_LIST_EXPECTED_OUTPUT = '|Name|Type|Date Modified|Size|\n|---|---|---|---|\n| test.xls | File | ' \
+                           '2001-09-09T01:46:40.000Z | 25600 |'
 #
 
 HAPPY_PATH_ARGS_FOR_COMMAND_RESULTS = [
     ('list_registry_keys_and_values', list_reg_sub_keys_command, 'sub_1', (), {'sub_keys': ['sub_1', 'sub_2']}),
     ('list_registry_values', get_reg_values_command, 'test_pbREG_SZ_1', (), TEST_REG_VALUES),
     ('list_processes', list_processes_command, 'test_path_1 | 1 | test_command_line_1', (), TEST_PROCESSES_RESULT),
-    ('list_directory', list_directory_command, 'test.xls | File', (), TEST_DIR_LIST),
+    ('list_directory', list_directory_command, DIR_LIST_EXPECTED_OUTPUT, (), TEST_DIR_LIST),
     ('create_process', create_process_command, 'test_process_output',
      dict(command_string='test_cmd_line_path', wait_timeout=30, wait_for_output=True, wait_for_completion=True),
      'test_process_output')
@@ -257,12 +256,12 @@ class TestCommands:
 
         """
 
-        mocked_obj = mock_method_in_lr_session(mocker=mocker,
-                                               method_name=api_method_to_be_mocked,
-                                               mocked_results=None,
-                                               )
+        mock_method_in_lr_session(mocker=mocker,
+                                  method_name=api_method_to_be_mocked,
+                                  mocked_results=None,
+                                  )
 
-        kwargs = commands_with_args[tested_command]
+        kwargs = commands_with_args[tested_command].copy()
         kwargs.update(wrong_args)
         try:
             tested_command(**kwargs)
@@ -303,10 +302,11 @@ class TestCommands:
         """
         # prepare
         mocker.patch('cbapi.live_response_api.LiveResponseMemdump.wait')
-        mocked_obj = mock_method_in_lr_session(
+        mock_method_in_lr_session(
             mocker=mocker,
             method_name='start_memdump',
-            mocked_results=LiveResponseMemdump(None, None, None))
+            mocked_results=LiveResponseMemdump(None, None, None),
+        )
 
         # run
         kwargs = commands_with_args[memdump_command]
@@ -358,7 +358,7 @@ class TestCommands:
         # run
         with capfd.disabled():  # allowed output in the stdout in the end of test
             try:
-                res = command_test_module(**kwargs)
+                command_test_module(**kwargs)
 
                 # assert
                 assert False, 'should fail with SystemExit as return_error should occurred'

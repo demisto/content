@@ -1,6 +1,0 @@
-!cbd-lr-file-put sensor_id=3925348 destination_path="C:\\test\\test_file.txt" file_id=142@5
-!cbd-lr-file-get sensor_id=3925348 source_path="C:\\test\\test_file.txt" delay=2 timeout=30
-!cbd-lr-file-delete sensor_id=3925348 source_path="C:\\test\\test_file.txt"
-!cbd-lr-directory-listing sensor_id="3925348" directory_path="C:\\test\\"
-!cbd-lr-reg-key-create sensor_id=3925348 reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST
-!cbd-lr-reg-value-set reg_path=HKEY_LOCAL_MACHINE\\SOFTWARE\\TEST\\TEST_VAL sensor_id=3925348 value_data=[\"val_1\",\"val_2\"] value_type=REG_MULTI_SZ
