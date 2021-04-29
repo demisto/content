@@ -11,8 +11,7 @@ you are implementing with your integration
 import json
 import io
 import demistomock as demisto
-from Microsoft365Defender import Client
-from Microsoft365Defender import fetch_incidents
+from Microsoft365Defender import Client, fetch_incidents
 
 
 def util_load_json(path):
