@@ -1,17 +1,7 @@
 {
-    "brands": null,
-    "defaultIncidentType": "",
     "description": "",
     "feed": false,
-    "fromServerVersion": "",
     "id": "respond-analyst-mapper",
-    "incidentSamples": null,
-    "indicatorSamples": null,
-    "instanceIds": null,
-    "itemVersion": "",
-    "keyTypeMap": {},
-    "locked": false,
-    "logicalVersion": 8,
     "mapping": {
         "Respond Software Incident": {
             "dontMapEventToLabels": false,
@@ -162,17 +152,7 @@
         }
     },
     "name": "Respond Analyst (mapper)",
-    "nameRaw": "Respond Analyst (mapper)",
-    "packID": "",
-    "sourceClassifierId": "",
-    "system": false,
-    "toServerVersion": "",
-    "transformer": {
-        "complex": null,
-        "simple": ""
-    },
     "type": "mapping-incoming",
-    "unclassifiedCases": null,
     "version": -1,
     "fromVersion": "6.0.0"
 }

@@ -856,6 +856,7 @@ def get_incident_command(rest_client, args):
         outputs=formatted_incident
     )
 
+
 def get_escalations_command(rest_client, args):
     start = datetime.now().timestamp()
     fourMinutes = 240
