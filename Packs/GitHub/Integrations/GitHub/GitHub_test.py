@@ -14,9 +14,6 @@ def load_test_data(json_path):
         return json.load(f)
 
 
-test_list_branch_pull_requests_command_response = load_test_data('./test_data/get-branch-pull-requests-response.json')
-
-
 def test_search_code(requests_mock, mocker):
     raw_response = load_test_data('./test_data/search_code_response.json')
     requests_mock.get(f'{BASE_URL}/search/code?q=create_artifacts%2borg%3ademisto&page=0&per_page=10',
@@ -39,6 +36,8 @@ def test_search_code(requests_mock, mocker):
 
 
 def test_list_branch_pull_requests_command(requests_mock):
+    test_list_branch_pull_requests_command_response = load_test_data(
+        './test_data/get-branch-pull-requests-response.json')
     requests_mock.get('https://api.github.com/repos/demisto/content/pulls?head=demisto:Update-Docker-Image',
                       json=test_list_branch_pull_requests_command_response['response'])
     formatted_outputs = list_branch_pull_requests(branch_name='Update-Docker-Image', repository='content',
