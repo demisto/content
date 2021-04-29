@@ -3367,7 +3367,7 @@ script:
     - contextPath: GitHub.PR.ChangedFiles
       description: The number of changed files in the pull request
       type: Number
-  dockerimage: demisto/pyjwt3:1.0.0.19245
+  dockerimage: demisto/pyjwt3:1.0.0.19327
   feed: false
   isfetch: true
   longRunning: false
