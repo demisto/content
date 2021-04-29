@@ -918,5 +918,5 @@ def main():
         return_error(str(exc))
 
 
-if __name__ in ('__builtin__', 'builtins', '__name__'):
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
