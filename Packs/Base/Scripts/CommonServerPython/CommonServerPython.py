@@ -391,6 +391,22 @@ class FeedIndicatorType(object):
             return None
 
 
+class ScheduleMetadata:
+    """
+    Schedule metadata helper class used when a command is being called via another command schedule
+
+    :type context: ``dict``
+    :param context: Context in which the command was executed.
+    """
+    def __init__(self, context):
+        parent_entry = context.get('ParentEntry', {})
+        self.is_polling = True if parent_entry.get('polling') else False
+        self.polling_command = parent_entry.get('pollingCommand')
+        self.polling_args = parent_entry.get('pollingArgs')
+        self.times_ran = int(parent_entry.get('timesRan', 0)) + 1
+        self.start_date = parent_entry.get('startDate')
+        self.end_date = parent_entry.get('endingDate')
+
 def is_debug_mode():
     """Return if this script/command was passed debug-mode=true option
 
@@ -4254,10 +4270,10 @@ class Common(object):
 
             return ret_value
 
-    class PollingConfiguration:
+    class ScheduledCommandConfiguration:
         """
-        PollingConfiguration class
-        Holds the polling configuration for the command result - managing the way the command should be polled.
+        ScheduledCommand configuration class
+        Holds the scheduled command configuration for the command result - managing the way the command should be polled.
 
         :type command: ``str``
         :param command: The command that'll run after next_run_in_seconds has passed.
@@ -4268,7 +4284,7 @@ class Common(object):
         :type args: ``Optional[Dict[str, Any]]``
         :param args: Arguments to use when executing the command.
 
-        :type timeout_in_seconds: ``int``
+        :type timeout_in_seconds: ``Optional[int]``
         :param timeout_in_seconds: Number of seconds until the polling sequence will timeout.
 
         :return: None
@@ -4285,8 +4301,9 @@ class Common(object):
         ):
             self._command = command
             if next_run_in_seconds < 10:
-                demisto.info(f'PollingConfiguration provided value for next_run_in_seconds: {next_run_in_seconds} is '
-                             'too small - minimum interval is 10 seconds. next_run_in_seconds was set to 10 seconds.')
+                demisto.info('PollingConfiguration provided value for next_run_in_seconds: '
+                             '{} is '.format(next_run_in_seconds) +
+                             'too low - minimum interval is 10 seconds. next_run_in_seconds was set to 10 seconds.')
                 next_run_in_seconds = 10
             self._next_run = str(next_run_in_seconds)
             self._args = args
@@ -4297,7 +4314,7 @@ class Common(object):
             if not is_demisto_version_ge('6.2.0'):
                 raise DemistoException(Common.PollingConfiguration.VERSION_MISMATCH_ERROR)
 
-        def to_result(self):
+        def to_results(self):
             """
             Returns the result dictionary of the polling command
             """
@@ -4898,8 +4915,8 @@ class CommandResults:
     :type mark_as_note: ``bool``
     :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
 
-    :type polling_config: ``PollingConfiguration``
-    :param polling_config: Class to manage the way the command should be polled
+    :type scheduled_command_config: ``Common.ScheduledCommandConfiguration``
+    :param scheduled_command_config: manages the way the command should be polled.
 
     :return: None
     :rtype: ``None``
@@ -4907,8 +4924,8 @@ class CommandResults:
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
-                 mark_as_note=False, relations=None, polling_config=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, list, Common.PollingConfiguration) -> None  # noqa: E501
+                 mark_as_note=False, relations=None, scheduled_command_config=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, list, Common.ScheduledCommandConfiguration) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -4940,7 +4957,7 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
-        self.polling_config = polling_config  # type: Optional[PollingConfiguration]
+        self.scheduled_command_config = scheduled_command_config  # type: Optional[Common.ScheduledCommandConfiguration]
 
         self.relations = relations
 
@@ -5014,8 +5031,8 @@ class CommandResults:
             'Note': mark_as_note,
             'Relationships': relations,
         }
-        if self.polling_config:
-            return_entry.update(self.polling_config.to_result())
+        if self.scheduled_command_config:
+            return_entry.update(self.scheduled_command_config.to_results())
         return return_entry
 
 
@@ -5722,6 +5739,10 @@ class DebugLogger(object):
         brand = callingContext.get('IntegrationBrand')
         if brand:
             msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, callingContext.get('IntegrationInstance'))
+        sm = ScheduleMetadata(callingContext)
+        if sm.is_polling:
+            msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
+                   "date: [{}]".format(sm.polling_command, sm.polling_args, sm.times_ran, sm.start_date, sm.end_date)
         self.int_logger.write(msg)
 
 
