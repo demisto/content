@@ -12,14 +12,14 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - additionalinfo: Due to API limitation the maximum is 100
   defaultvalue: '10'
   display: Number of incidents for each fetch.
   hidden: false
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -253,7 +253,7 @@ script:
     - contextPath: Microsoft365Defender.Hunt.results.
       description: The results of the query
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.14297
+  dockerimage: demisto/crypto:1.0.0.19032
   feed: false
   isfetch: true
   longRunning: false

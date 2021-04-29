@@ -1,0 +1,32 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#F8C89A",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "Specific"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Microsoft 365 Defender Incident",
+	"itemVersion": "",
+	"layout": "b91a81ab-4cb6-4df2-8a24-696eeb9a7633",
+	"locked": false,
+	"name": "Microsoft 365 Defender Incident",
+	"onChangeRepAlg": 0,
+	"packID": "",
+	"preProcessingScript": "",
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

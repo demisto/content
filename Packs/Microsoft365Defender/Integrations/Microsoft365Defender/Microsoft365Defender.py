@@ -3,8 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-import traceback
-from typing import Dict, Any
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -13,7 +12,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
-MAX_ENTRIES = '100'
+MAX_ENTRIES = 100
 TIMEOUT = 30
 ''' CLIENT CLASS '''
 
@@ -35,7 +34,7 @@ class Client(BaseClient):
             'ok_codes': (200, 201, 202, 204),
             'resource': 'https://api.security.microsoft.com'
         }
-        self.ms_client = MicrosoftClient(**client_args)
+        self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
     @logger
     def incidents_list(self, limit: int = MAX_ENTRIES, status: Optional[str] = None, assigned_to: Optional[str] = None,
@@ -63,7 +62,6 @@ class Client(BaseClient):
 
         """
         params = {'$top': limit}
-
         filter_query = ''
         if status:
             filter_query += 'status eq ' + "'" + status + "'"
@@ -78,7 +76,7 @@ class Client(BaseClient):
             filter_query += f"createdTime gt {from_date}"
 
         if filter_query:
-            params['$filter'] = filter_query
+            params['$filter'] = filter_query  # type: ignore
 
         if skip:
             params['$skip'] = skip
@@ -89,17 +87,17 @@ class Client(BaseClient):
     @logger
     def update_incident(self, incident_id: int, status: Optional[str], assigned_to: Optional[str],
                         classification: Optional[str],
-                        determination: Optional[str], tags: Optional[List[str]], timeout=TIMEOUT) -> Dict:
+                        determination: Optional[str], tags: Optional[List[str]], timeout: int = TIMEOUT) -> Dict:
         """
         PATCH request to update single incident.
         Args:
             incident_id: incident's id
-            status - Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
-            assigned_to - Owner of the incident.
-            classification - Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
-            determination -  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
+            status: Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+            assigned_to: Owner of the incident.
+            classification: Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
+            determination:  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
                                  Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
-            tags - Custom tags associated with an incident. Separated by commas without spaces (CSV)
+            tags: Custom tags associated with an incident. Separated by commas without spaces (CSV)
                  for example: tag1,tag2,tag3.
             timeout: The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
@@ -156,7 +154,7 @@ def reset_auth() -> CommandResults:
 
 @logger
 def test_connection(client: Client) -> CommandResults:
-    test_context_for_token(client)
+    test_context_for_token()
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
@@ -164,12 +162,10 @@ def test_connection(client: Client) -> CommandResults:
 ''' HELPER FUNCTIONS '''
 
 
-def test_context_for_token(client: Client) -> None:
+def test_context_for_token() -> None:
     """
     Checks if the user acquired token via the authentication process.
     Args:
-        client(Client): Microsoft 365 Defender's client to preform the API calls.
-
     Returns:
 
     """
@@ -334,7 +330,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int) -> 
         incidents, new last_run
     """
 
-    test_context_for_token(client)
+    test_context_for_token()
 
     last_run_dict = demisto.getLastRun()
 
@@ -418,8 +414,8 @@ def main() -> None:
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
     app_id = demisto.params().get('app_id')
-    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
-    fetch_limit = demisto.params().get('fetch_limit', 10)
+    first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
+    fetch_limit = demisto.params().get('max_fetch', 10)
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()
@@ -460,7 +456,8 @@ def main() -> None:
             fetch_limit = arg_to_number(fetch_limit)
             incidents = fetch_incidents(client, first_fetch_time, fetch_limit)
             demisto.incidents(incidents)
-
+        else:
+            raise NotImplementedError
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
