@@ -1,0 +1,1671 @@
+category: Network Security
+commonfields:
+  id: NetscoutArborSightline
+  version: -1
+configuration:
+- defaultvalue: Netscout Arbor Sightline Alert
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: https://example.com/
+  display: Server URL (e.g., https://....)
+  name: url
+  required: true
+  type: 0
+- additionalinfo: API Key (leave empty. Fill in the API Key in the password field.)
+  display: ""
+  displaypassword: API Token
+  hiddenusername: true
+  name: api_token
+  required: false
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days
+    or ISO format 2020-01-01T10:00:00). Maximal number of past events to fetch is
+    10,000.
+  defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
+  defaultvalue: "50"
+  display: Fetch Limit
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: Alert class to filter by. Only one class can be configured at a
+    time. If none was chosen, all classes will be fetched.
+  display: Alert Class
+  name: alert_class
+  options:
+  - bgp
+  - cloudsignal
+  - data
+  - dos
+  - smart
+  - system_error
+  - system_event
+  - tms
+  - traffic
+  required: false
+  type: 15
+- additionalinfo: Alert type to filter by. Only one type can be configured at a time.
+    If none was chosen, all types will be fetched.
+  display: Alert Type
+  name: alert_type
+  options:
+  - autoclassify_restart
+  - bgp_down
+  - bgp_hijack
+  - bgp_instability
+  - bgp_trap
+  - blob_thresh
+  - cloud_mit_request
+  - cloudsignal_fault
+  - collector_down
+  - collector_start
+  - config_change
+  - device_system_error
+  - dns_baseline
+  - dos
+  - dos_host_detection
+  - dos_mo_profiled
+  - dos_profiled_network
+  - dos_profiled_router
+  - fingerprint_thresh
+  - flexible_license_error
+  - flow_down
+  - flow_missing
+  - gre_down
+  - hw_failure
+  - smart_thresh
+  - interface_usage
+  - nucleus_fault
+  - routing_failover
+  - routing_interface_failover
+  - service_thresh
+  - smart_thresh
+  - snmp_down
+  - spcomm_failure
+  - tms_fault
+  - traffic_auto_mitigation
+  required: false
+  type: 15
+- additionalinfo: Alert importance to filter by. For more complex operations use the
+    'Importance Operator' parameter. If none was chosen, all importances will be fetched.
+  display: Importance
+  name: importance
+  options:
+  - Low
+  - Medium
+  - High
+  required: false
+  type: 15
+- additionalinfo: 'The operator to apply on the ''Importance'' parameter. For example:
+    if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
+    with importance grater to 1 will be fetched. Default is ''=''.'
+  defaultvalue: =
+  display: Importance Operator
+  name: importance_operator
+  options:
+  - =
+  - '>'
+  - <
+  required: false
+  type: 15
+- additionalinfo: Alert status to filter by. If none was chosen, all statuses will
+    be fetched.
+  display: Event Status
+  name: ongoing
+  options:
+  - Ongoing
+  - Not Ongoing
+  required: false
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 2b27bd96-6b87-4588-8e72-0757013b45f6
+    propagationLabels:
+    - all
+    toServerVersion: ""
+defaultmapperin: Netscout Arbor Sightline - Incoming Mapper
+description: DDoS protection and network visibility.
+detaileddescription: "## Netscout Arbor Sightline Help\r\n\r\n### Generate API Key\r\nIn
+  order to generate a new API Key in your Slightline UI navigate to **Administartion**
+  > **Arbor API WEB Services** \r\n\r\n### Configuration params\r\n**NOTE**: If using
+  6.0.2 or lower version, put your API Key in the **Password** field, leave the **API
+  Token** field empty.\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/netscout-arbor-sightline)"
+display: Netscout Arbor Sightline (Peakflow)
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAsaSURBVHgB7ZkJdFTVGYD/e98s2YgJuESlgEhBqZRgYsAFHEIWkmAy4AmnWrAN9eBSjz2op622kSlUjq0W21qpLbWta5UIhGyTTAKMFgUFKptKowWtFeWwBZJMMjPv3b//fbOQhCwTSQ/ac79z3sx99/3/vff9/73/XR6AQqFQKBQKhUKhUCgUCoVCoVAoFAqFQqFQKBSKrxys601+oXMbAI6m7M9QN272eKoP9lQoKipKDaJtG2OYhEKUe9xVf5b5eXlzJjOLZS3pJ/ZTnY6ISzzuDa+aOgVz1zEmroVYG4tsT727Mj9ynzNnzihmWO7lDByIcAm9TQdlv4sC1nS0BWu3bKk90Vs5RUVzr9IBFlBbp6LA8YwBFcGOI7DXGRfVbS361oiua8fFCYDn/Y3KzuqnaS1UlldDXm0cZE2u+e8FegrkF5VMB2TPUzlWROMOT111TW8F5c12LmUc76S2fOypq5wW0nX+BRBnQ8ywAw11ldfLlKXHk6lhn6cxi/Zber0SukRXgQBaR3PA8YD0SqCNj+RzbkmlrMt79JkzqwZ2ZTTNxBT6TYMYEQziIumcOU4HF/AsOWdUqKyo2FjqCXMShlnezMnJKWpqajoZeXBD0a2pSdDxkI5iMWkkh/RCitR2agdORMEWJyVbd+fMnntvU/36LZqRfJHBYSaJDOunaaTLrjA4lTuWv+HaMXaBK/PAv7u9t4GXImejZUX0Ihn026uDGWfSqWnMLDOch3AVDsJOxPBIwtKnCEJ+TsHu+5rc8DgMnhrS39hrsQaujaQFsjs4wMRuAgzup9+RdLVRGeXdnxkfyj9HYWmaZgTlaBgZaip7mwyyn1IXUE+fRk5LpczU9vbUriOJJ6LvabLv/GgnZHCQRvBbJN8p66TcGfTcRtcUzlFGii3lWf/86OHtE8oDJxMfJcdEOxi3iQ9swzq3UX00ABh1bJhGdZI9cTqAdXP52+O/tTyreTv0Buf9j4IeCDR+xED7JsRoJ2r/R5F03w6mUKIh3pefP+/FhoZ1n8EgIIO/4XGv//VAco3uSg/9ebrm5RU6v8NkwxHbGtwbei3DJvz5ZKSRocqwygjAoo0bK48VFBTY/WidYGWwGAG3bt1a0REtt8h5OzmzVI5YCufHOBoPdHYijaK2Fq/Xqzscjri4uOGTgIslJH61AYHnw3ZAvoNZOBc+f2tihyH4yUBrwq8AtVePJCYeqZhfYTyw+6LEhMCIGZyJFaSQTtdYi8ZWU/71j08+3A5nicddvYn+Ng3WTpI+HMyoVyJFU7gYNbGcXv5OaQT4ssD5ZZEkIlsnnSvTbrfbT3976Lqnq7jD6UxhQfhxOB6309+Cend1fVcZej85ireXlpYubGtrs2wMlQVLt42THekBW3LncLo6hRB3LctqfqWrbsiJh90/3zV+j64zL2WNo040OVFPLaP838E5hPeejV6y3GsyRRYpsyeklMCXCQGHIklakCzOzc29pD/xuADeRmHF7BQUvl5uqFtf35dsRUWFEe4oJlyzylAdnv+witc1V/Sl+9P05k+ZIX4YbRuyha7NY+LgHNLHCMYAGuACK9TTBJ9CvXFFdnbxlk2bqg5DDDAQsyiEdH8xxH20epbzL8LZItANGt9PZV5BtV3HbYmv5RfNe0rDzpfr6uo+7ymOwPMi1QrG18MgQI7Z0RZzvt7lAtGf/NFjom7EhYwWduw8mp4n6am2EZT9KZwjeF8PWltte8CAh2WaAtt4WxwfxGKL5dDIX9rj+qXD4TwPhgCPZ8MnBor5ZPfdZgbCOEDxhAH2d/IL567OzS3uNqJpPr40krah+AAGA+LpsnR9/0DiTxZ+6Cd7fSTTNBXEW/V+V9//c/p0sN1+BD316U9Rcqe8J2MuyC2aVwwxQCO+jV7v824XYweTkvQADBFNdRv2BnzWG2hb8yC1LbwVQrnVuZ1b+fuzZzuj+2tzWRVG0NIdviAGt9pjkaN1wWm7Mss5Xbvw/h+7hCG0n1DCZwoL8RsmDxQGQAN4wu/DK7teyYnWgpqaGh8MIV5vRZunfv2jBtOupj2yjDanwo+SBWcvzJg97+LQLYuGbcHF12FQsGh4tYAxCgeYYFxei0WuosO3JwNB3grnED6QQFP92gbaXoRWggzGUPhZMZCOwZjP661s6XrR4mXIRq8Eu1h6Y+3aA421lcv9vuAE2pW+EWoqjrVz4ZBpAaIpIsvAUjZ8+PB+RzGtpLuUj29H62Rs0bLH7X3azLXZQccn40qip3kM3k873tnSU45h71HERRM8hUpb+NaAIWBAB0vibLiS9rbN4dvJcI5xOFwwdeq1NqfTyUyjhPF6az8XKFZG7jnC1+Q/OfoVMvZRMxNFUebUGTflLVzYrZOY5VJZs6jMk7p+ETlZk3lB4HLVHFpcIuSgY8zNS/dNPEPXRXnB1EMjyS2PRPJos/nSvTQnm23h8AlAeIHGeEZx8aJu+rK8mtqdieT9SaGq4AAMAZZYhKqqqg7nzilZwgSrhRgpLr6l115qt+u4Zs2a6BHhF8Fi2Tk6dUTaM50B9q7Xu8tVWFjaIu1ttfrBH+QZETmD4X/kP00Nh+jc+xd0fv4YVWynmp+BY633ZOfkrMubO1fXOi3mUadv27YxGrMvoXRZKwuupM6z1JXp+mzp9iv+RHlyqpKCq1gHJvzs9ekvPfKPKeb8iqITgsFgutXQVtHYnGDmIf4L4rU/RNpyDIN7U5hdnu1fTg9v9Osn7sotLn7aEqRpPQkgO3tW3IgLkx4lz14Q0mA1MEhkJykrK4P29na53QvZKlblxpoNdfkFzlU0Eu4eSJa2Sd/1674be3sW0HHTzJkzn6RkJ3xBNJsmp4lZtDqeZU+AO3XQX6Oef1gE+USqPD0sdkAzbJH9Lnrck1fmFeyaTo66ie7Pp+tlmz3pKPpxs2CBDopQI+0sboaM4aaGYLd4ve8+Rqk2xhJXALZdTs6dZ+oy/CskHF0WNOBNyguQU8Ywod0ApyPiXgrDTtdVpz86vOV2n8orKFnGGVtNnYBciquYzhcJpr+HPmGzxSfLo84xYQN+igH+exgkWVlZ1pTz067jwiKnBXOHEbODJS3gfzAF7AWUvKx/SSZ78YTengjz0DxlNZyFg5GLOvopkHt0urXRfJsbqjZav0Gd+WFPQ8Xx01ouoUHBfAHWZ8kP80PS7Hz6KTU/gZzWRzM8MvF9uYgzNTN3+lw7LvkeTbDygOUH8isLhD5yjDKDqdTDsK6A9yyC3Vw+rfmMEOtxT3kht2DXaI2iAYnLSJJJKpms65SM7BgTxt2NjZX9bueoo4qeJwqpF46cwAROQQq1EHZwjzkYnyOlzYi8go4nz1gUyV5oaMZtJNdIZW+k2PR65FnAon9Auk1Sv99LiDXx8f6OPhuOWGPKAf6xLxlPTdWLgfaWsfQeD5Fx/04eOUQ2OkEh6gBdVQhGNp2Fv9hTT55QXZt19a0I5uLrFTSPNfGI1AXzgB5rSP8W2n6le+qqGrvqujIP+VwZ++8HEUwnNz5HWXtJn+Z1RrpMfjmSh0LfZvxUVvm09/twjkvQ+fty0FgO1bOO9JvpXY/KNsjy5F4eLfo19fVVVTAQgj7akJ3Ik89HsgLtJz40GJ3ycdwXtSd8xcnIyLCmpIxKjosLWP1+f0dTU+Mp8wNbDJSUlAzr4DzeGghw2kj7c6655iTNuyIWXde+byT5jwfi7XE2zYZG8J2PJ7XIDw8wCGT9uq4ntrdzfdgw8FVXVw/pNlKhUCgUCoVCoVAoFAqFQqFQKBQKhUKhUCgU/7/8F01XvH3hufm8AAAAAElFTkSuQmCC
+name: NetscoutArborSightline
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Alert ID to list the annotation for. Can be obtained from the na-sightline-alert-list
+        command.
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whather to extend results with all available data.
+      name: extend_data
+      predefined:
+      - "true"
+      - "false"
+    description: Lists the collection of annotations for a given alert.
+    name: na-sightline-alert-annotation-list
+    outputs:
+    - contextPath: NASightline.AlertAnnotation.AlertID
+      description: The alert ID of the annotation.
+      type: String
+    - contextPath: NASightline.AlertAnnotation.Annotations.added
+      description: Date and time the annotation was made.
+      type: Date
+    - contextPath: NASightline.AlertAnnotation.Annotations.author
+      description: User ID of the annotation author.
+      type: String
+    - contextPath: NASightline.AlertAnnotation.Annotations.id
+      description: The ID of the annotation.
+      type: String
+    - contextPath: NASightline.AlertAnnotation.Annotations.text
+      description: Annotation text.
+      type: String
+    - contextPath: NASightline.AlertAnnotation.Annotations.type
+      description: Type of the returned object.
+      type: String
+    - contextPath: NASightline.AlertAnnotation.Annotations.relationships
+      description: Relationships of the annotation (only visible when extending data).
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Alert ID. If given, all other arguments will be ignored.
+      name: alert_id
+    - auto: PREDEFINED
+      description: Alert class to filter by.
+      name: alert_class
+      predefined:
+      - bgp
+      - cloudsignal
+      - data
+      - dos
+      - smart
+      - system_error
+      - system_event
+      - tms
+      - traffic
+    - auto: PREDEFINED
+      description: Alert type to filter by.
+      name: alert_type
+      predefined:
+      - autoclassify_restart
+      - bgp_down
+      - bgp_hijack
+      - bgp_instability
+      - bgp_trap
+      - blob_thresh
+      - cloud_mit_request
+      - cloudsignal_fault
+      - collector_down
+      - collector_start
+      - config_change
+      - device_system_error
+      - dns_baseline
+      - dos
+      - dos_host_detection
+      - dos_mo_profiled
+      - dos_profiled_network
+      - dos_profiled_router
+      - fingerprint_thresh
+      - flexible_license_error
+      - flow_down
+      - flow_missing
+      - gre_down
+      - hw_failure
+      - smart_thresh
+      - interface_usage
+      - nucleus_fault
+      - routing_failover
+      - routing_interface_failover
+      - service_thresh
+      - smart_thresh
+      - snmp_down
+      - spcomm_failure
+      - tms_fault
+      - traffic_auto_mitigation
+    - auto: PREDEFINED
+      description: Alert classification to filter by.
+      name: classification
+      predefined:
+      - Possible Attack
+      - False Positive
+      - Verified Attack
+      - Network Failure
+      - Flash Crowd
+      - Trivial
+    - auto: PREDEFINED
+      description: Alert importance to filter by. For more complex operators use the
+        'importance_operator' argument.
+      name: importance
+      predefined:
+      - Low
+      - Medium
+      - High
+    - auto: PREDEFINED
+      description: 'The operator to apply on the importance argument (''>'' is grater
+        than, ''<'' is smaller than, ''=''is equal). For example: if the chosen operator
+        is ''>'' and the chosen importance is ''Low'', only alerts with importance
+        grater than Low will be fetched.'
+      name: importance_operator
+      predefined:
+      - <
+      - =
+      - '>'
+    - auto: PREDEFINED
+      description: Alert status to filter by. If not set, all statuses will be pulled.
+      name: ongoing
+      predefined:
+      - "true"
+      - "false"
+    - description: Alert start time to filter by. For more complex operators use the
+        'start_time_operator' argument.
+      name: start_time
+    - auto: PREDEFINED
+      description: 'The operator to apply on the ''start_time'' argument. For example:
+        if the chosen operator is ''>'' and the given time is ''2020-12-01T13:15:00'',
+        only alerts with starting time grater than ''2020-12-01T13:15:00'' will be
+        fetched.'
+      name: start_time_operator
+      predefined:
+      - =
+      - '>'
+      - <
+    - description: Alert stop time to filter by. For more complex operators use the
+        'stop_time_operator' argument.
+      name: stop_time
+    - auto: PREDEFINED
+      description: 'The operator to apply on the ''stop_time'' argument. For example:
+        if the chosen operator is ''>'' and the given time is ''2020-12-01T13:15:00'',
+        only alerts with stopping time grater than ''2020-12-01T13:15:00'' will be
+        fetched.'
+      name: stop_time_operator
+      predefined:
+      - =
+      - '>'
+      - <
+    - description: ID of managed object associated with the alert. Can be obtained
+        from the na-sightline-managed-object-list command.
+      name: managed_object_id
+    - description: The page to return starting from 1.
+      name: page
+    - description: Maximal number of alerts to retrieve, will also set the size of
+        the returned page.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whather to extend results with all available data.
+      name: extend_data
+      predefined:
+      - "true"
+      - "false"
+    description: List all alerts, when an alert ID is given only the relevant alert
+      will be fetched.
+    name: na-sightline-alert-list
+    outputs:
+    - contextPath: NASightline.Alert.alert_class
+      description: 'The class of the alert. One of the following: bgp, cloudsignal,
+        data, dos, smart, system_error, system_event ,tms ,traffic.'
+      type: String
+    - contextPath: NASightline.Alert.alert_type
+      description: 'The type of the alert. One of the following: bgp_hijack, bgp_instability,
+        bgp_trap, cloudsignal, cloudsignal_fault, cloud_mit_request, data, bgp_down,
+        flow_down, snmp_down, dos, dos_host_detection, dos_profiled_network, dos_profiled_router,
+        mobile, mobile_fault, smart, smart_thresh, system_error, collector_down, flexible_license,
+        hw_failure, routing_failover, routing_failover_interface, spcomm_failure,
+        system_monitor, system_event, config_change, tms, dns_baseline, gre_down,
+        tms_fault, traffic, blob_thresh, fingerprint_thresh, interface_usage, service_thresh,
+        traffic_auto_mitigation.'
+      type: String
+    - contextPath: NASightline.Alert.id
+      description: The ID of the alert.
+      type: String
+    - contextPath: NASightline.Alert.importance
+      description: 'Importance of the alert. One of the following 2: high, 1: medium,
+        0: low'
+      type: Number
+    - contextPath: NASightline.Alert.ongoing
+      description: Whether the alert is currently active or not.
+      type: Boolean
+    - contextPath: NASightline.Alert.relationships
+      description: Relationships of the alert (only visible when extending data).
+      type: Unknown
+    - contextPath: NASightline.Alert.start_time
+      description: Date and time at which the alert activity was first detected.
+      type: Date
+    - contextPath: NASightline.Alert.type
+      description: Type of the returned object.
+      type: String
+    - contextPath: NASightline.Alert.classification
+      description: 'Classification of the alert. One of the following: False Positive,
+        Flash Crowd, Network Failure, Possible Attack, Trivial, Verified Attack '
+      type: String
+    - contextPath: NASightline.Alert.stop_time
+      description: Date and time at which the alert activity was no longer detected.
+      type: Date
+    - contextPath: NASightline.Alert.subobject
+      description: Subobject data (only visible when extending data).
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The mitigation ID to get. Can be obtained from the na-sightline-mitigation-list
+        command
+      name: mitigation_id
+    - description: The page to return starting from 1.
+      name: page
+    - description: Maximal number of mitigations to retrieve, will also set the size
+        of the returned page.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whather to extend results with all available data.
+      name: extend_data
+      predefined:
+      - "true"
+      - "false"
+    description: List all mitigations, when a mitigation ID is given the only the
+      relevant mitigation will be fetched.
+    name: na-sightline-mitigation-list
+    outputs:
+    - contextPath: NASightline.Mitigation.description
+      description: Description of the mitigation.
+      type: String
+    - contextPath: NASightline.Mitigation.id
+      description: The Id of the mitigation.
+      type: String
+    - contextPath: NASightline.Mitigation.ip_version
+      description: IP version of the traffic that is being mitigated.
+      type: Number
+    - contextPath: NASightline.Mitigation.is_automitigation
+      description: Whether the mitigation is an auto-mitigation or not.
+      type: Boolean
+    - contextPath: NASightline.Mitigation.name
+      description: Mitigation name.
+      type: String
+    - contextPath: NASightline.Mitigation.ongoing
+      description: Whether the mitigation is currently running or not.
+      type: Boolean
+    - contextPath: NASightline.Mitigation.start
+      description: Start date and time of the mitigation in ISO 8601 format.
+      type: String
+    - contextPath: NASightline.Mitigation.subtype
+      description: 'The type of mitigation. One of the following: blackhole, flowspec,
+        tms.'
+      type: String
+    - contextPath: NASightline.Mitigation.type
+      description: Type of the returned object.
+      type: String
+    - contextPath: NASightline.Mitigation.user
+      description: The user who initiated a mitigation.
+      type: String
+    - contextPath: NASightline.Mitigation.relationships
+      description: Relationships of the mitigation (only visible when extending data).
+      type: Unknown
+    - contextPath: NASightline.Mitigation.subobject
+      description: Subobject data (only visible when extending data).
+      type: Unknown
+  - arguments:
+    - description: Mitigation name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: IP version of the traffic that is being mitigated. This attribute
+        cannot be changed once it is set.
+      name: ip_version
+      predefined:
+      - IPv4
+      - IPv6
+      required: true
+    - description: Description of the mitigation.
+      name: description
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to start the mitigation (true) or not (false).
+      name: ongoing
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: The type of mitigation.
+      name: sub_type
+      predefined:
+      - tms
+      - flowspec
+      required: true
+    - description: 'JSON object that specifies the attributes specific to the mitigation
+        subtype. For example: {"bgp_announce": false, "protection_prefixes": ["192.0.2.0/24"]}.
+        List of values supported for each sub-type can be found in the Netscout Arbor
+        Sightline documentation: <your_server_url>/api/sp/doc/v7/mitigations.html#url-/mitigations/'
+      name: sub_object
+      required: true
+    - description: ID of the alert associated with the mitigation. Can be obtained
+        from the na-sightline-alert-list command.
+      name: alert_id
+    - description: ID of the mitigation template applied to this mitigation. To get
+        a list of available templates and their IDs run the 'na-sightline-mitigation-template-list'.
+      name: mitigation_template_id
+    - description: (Flowspec mitigations only) Comma separated list of IDs of the
+        routers to which the flowspec announcement is made. To get a list of available
+        routers and their IDs run the 'na-sightline-router-list'.
+      name: router_ids
+    - description: (TMS mitigations only) ID of the managed object associated with
+        the alert. To get a list of available managed objects and their IDs run the
+        'na-sightline-managed-object-list'.
+      name: managed_object_id
+    - description: (TMS mitigations only) ID of the TMS group that the associated
+        managed object belongs to. To get a list of available tms groups and their
+        IDs run the 'na-sightline-tms-group-list'.
+      name: tms_group_id
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whather to extend results with all available data.
+      name: extend_data
+      predefined:
+      - "true"
+      - "false"
+    description: List all alerts, when an alert ID is given only the relevant alert
+      will be fetched.
+    name: na-sightline-mitigation-create
+    outputs:
+    - contextPath: NASightline.Mitigation.id
+      description: The ID of the mitagation.
+      type: String
+    - contextPath: NASightline.Mitigation.ip_version
+      description: IP version of the traffic that is being mitigated.
+      type: Number
+    - contextPath: NASightline.Mitigation.is_automitigation
+      description: Whether the mitigation is an auto-mitigation or not.
+      type: Boolean
+    - contextPath: NASightline.Mitigation.name
+      description: Mitigation name.
+      type: String
+    - contextPath: NASightline.Mitigation.ongoing
+      description: Whether the mitigation is currently running or not.
+      type: Boolean
+    - contextPath: NASightline.Mitigation.subobject
+      description: Subobject data (only visible when extending data).
+      type: Unknown
+    - contextPath: NASightline.Mitigation.subtype
+      description: 'The type of mitigation. One of the following: blackhole, flowspec,
+        tms.'
+      type: String
+    - contextPath: NASightline.Mitigation.type
+      description: Type of the returned object.
+      type: String
+    - contextPath: NASightline.Mitigation.relationships
+      description: Relationships of the mitigation (only visible when extending data).
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The mitigation ID to delete. Can be obtained from the na-sightline-mitigation-list
+        command.
+      name: mitigation_id
+      required: true
+    description: Delete a given mitigation.
+    name: na-sightline-mitigation-delete
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whather to extend results with all available data.
+      name: extend_data
+      predefined:
+      - "true"
+      - "false"
+    description: Get a list of available mitigation templates.
+    name: na-sightline-mitigation-template-list
+    outputs:
+    - contextPath: NASightline.MitigationTemplate.description
+      description: The description of the mitigation template.
+      type: String
+    - contextPath: NASightline.MitigationTemplate.id
+      description: The ID of the mitigation template.
+      type: String
+    - contextPath: NASightline.MitigationTemplate.ip_version
+      description: The IP version of the traffic that you want to mitigate with this
+        mitigation template.
+      type: Number
+    - contextPath: NASightline.MitigationTemplate.name
+      description: The name of the mitigation template.
+      type: String
+    - contextPath: NASightline.MitigationTemplate.subtype
+      description: The type of mitigation this template can be applied to.
+      type: String
+    - contextPath: NASightline.MitigationTemplate.system
+      description: System or custom object.
+      type: Boolean
+    - contextPath: NASightline.MitigationTemplate.type
+      description: Type of the returned object.
+      type: String
+    - contextPath: NASightline.MitigationTemplate.subobject
+      description: Subobject data (only visible when extending data).
+      type: Unknown
+    - contextPath: NASightline.MitigationTemplate.relationships
+      description: Relationships of the mitigation template (only visible when extending
+        data).
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whather to extend results with all available data.
+      name: extend_data
+      predefined:
+      - "true"
+      - "false"
+    description: Get a list of available routers.
+    name: na-sightline-router-list
+    outputs:
+    - contextPath: NASightline.Router.advanced_fallback_alg
+      description: 'The algorithm used to classify interfaces during auto-configuration
+        that either report no traffic or have no associated BGP information: internal,
+        external, or use_bgp_and_local. use_bgp_and_local classifies each observed
+        flow, based on learned BGP information and the configured IP address space.'
+      type: String
+    - contextPath: NASightline.Router.advanced_use_simpson_flowspec_redirect_ip
+      description: If true, BGP Redirect-to-IP flowspec announcements are generated
+        conforming to draft-simpson-idr-flowspec-redirect-02.txt.
+      type: Boolean
+    - contextPath: NASightline.Router.bgp2_capabilities_labeled_unicast
+      description: If true, Sightline is permitted to generate BGP 6PE diversion announcements
+        for IPv6 destinations over the secondary BGP session per RFC 4798.
+      type: Boolean
+    - contextPath: NASightline.Router.bgp_capabilities_l3vpn_flowspec_ipv4
+      description: (MPLS Layer 3 VPNs only) If true, Sightline includes the route
+        distinguisher (RD) and route target (RT) values in BGP flowspec diversion
+        announcements for IPv4 traffic in flowspec mitigations and TMS mitigations.
+      type: Boolean
+    - contextPath: NASightline.Router.bgp_capabilities_l3vpn_flowspec_ipv6
+      description: (MPLS Layer 3 VPNs only) If true, Sightline includes the route
+        distinguisher (RD) and route target (RT) values in BGP flowspec diversion
+        announcements for IPv6 traffic in flowspec mitigations and TMS mitigations.
+      type: Boolean
+    - contextPath: NASightline.Router.bgp_capabilities_labeled_unicast
+      description: If true, Sightline is permitted to generate BGP 6PE diversion announcements
+        for for IPv6 destinations over the primary BGP session per RFC 4798.
+      type: Boolean
+    - contextPath: NASightline.Router.description
+      description: Router description.
+      type: String
+    - contextPath: NASightline.Router.flow_alerting
+      description: If true, enables flow down alerting for this router.
+      type: Boolean
+    - contextPath: NASightline.Router.flow_export_ip
+      description: The IP address of the router that sends flow records to Sightline.
+      type: String
+    - contextPath: NASightline.Router.flow_flow_ignored
+      description: Either ignore NetFlow from this router (on) or not (off).
+      type: String
+    - contextPath: NASightline.Router.flow_flow_ignored_ipv6
+      description: Either ignore IPv6 NetFlow from this router (on) or not (off).
+      type: String
+    - contextPath: NASightline.Router.flow_sample_rate
+      description: The sample rate of the flow information sent by this router.
+      type: String
+    - contextPath: NASightline.Router.id
+      description: The ID of the router.
+      type: String
+    - contextPath: NASightline.Router.is_proxy
+      description: If true, Sightline treats the router as a proxy for other routers.
+      type: Boolean
+    - contextPath: NASightline.Router.license_type
+      description: 'The router license type: core, edge, or unset. For more information,
+        see “Configuring Routers” in the Sightline and TMS User Guide.'
+      type: String
+    - contextPath: NASightline.Router.name
+      description: Router name
+      type: String
+    - contextPath: NASightline.Router.snmp_authprotocol
+      description: 'SNMP v3 authentication protocol. One of the following: md5, sha,
+        sha-224, sha-256, sha-384, sha-512'
+      type: String
+    - contextPath: NASightline.Router.snmp_priv_protocol
+      description: 'The SNMP v3 privacy protocol: DES or AES. DES.'
+      type: String
+    - contextPath: NASightline.Router.snmp_security_level
+      description: 'SNMP v3 security level. One of the following: noAuthNoPriv (no
+        pass-phrase authentication is performed), authNoPriv (pass-phrase authentication
+        is performed, but there is no encryption of the data in the trap messages),
+        authPriv (pass-phrase authentication is performed and the data in the trap
+        messages is encrypted).'
+      type: String
+    - contextPath: NASightline.Router.snmp_version
+      description: 'SNMP version: 1, 2, or 3.'
+      type: Number
+    - contextPath: NASightline.Router.type
+      description: Type of the returned object.
+      type: String
+    - contextPath: NASightline.Router.advanced_local_as
+      description: The default local AS number override.
+      type: String
+    - contextPath: NASightline.Router.bgp_capabilities_flowspec
+      description: If true, Sightline can use the primary BGP peering session to generate
+        BGP flowspec diversion announcements for IPv4 traffic in flowspec mitigations
+        and TMS mitigations.
+      type: Boolean
+    - contextPath: NASightline.Router.bgp_capabilities_flowspec_ipv4
+      description: If true, Sightline can use the primary BGP peering session to generate
+        BGP flowspec diversion announcements for IPv4 traffic in flowspec mitigations
+        and TMS mitigations.
+      type: Boolean
+    - contextPath: NASightline.Router.bgp_capabilities_monitor_routes_ipv4
+      description: If primary, the primary BGP peering session is used to monitor
+        the IPv4 routes on the router for the purposes of classifying IPv4 traffic.
+        If secondary, the secondary BGP peering session is used. If disabled, IPv4
+        routes are not monitored and IPv4 traffic is not classified using BGP routing
+        information from this router.
+      type: String
+    - contextPath: NASightline.Router.bgp_ip_address
+      description: The remote IP address that you want Sightline to use to create
+        a BGP peering session with this router.
+      type: String
+    - contextPath: NASightline.Router.bgp_remote_as
+      description: The ASN of the router.
+      type: String
+    - contextPath: NASightline.Router.bgp_session_name
+      description: A name to help identify the BGP peering session in the Sightline
+        UI when you create a blackhole or TMS mitigation.
+      type: String
+    - contextPath: NASightline.Router.relationships
+      description: Relationships of the router (only visible when extending data).
+      type: Unknown
+  - arguments:
+    - description: The page to return starting from 1.
+      name: page
+    - description: Maximal number of mitigations to retrieve, will also set the size
+        of the returned page.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whather to extend results with all available data.
+      name: extend_data
+      predefined:
+      - "true"
+      - "false"
+    description: Get a list of available managed objects.
+    name: na-sightline-managed-object-list
+    outputs:
+    - contextPath: NASightline.ManagedObject.autodetected
+      description: If true, Sightline automatically detects and configures VPN sites
+        when the match type of a VPN managed object is a route target and the VPN
+        sites match the configured route targets.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.automitigation_precise_protection_prefixes
+      description: If true, the precise protection prefixes feature for auto-mitigations
+        is enabled.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.detection_network_country_enabled
+      description: If true, profiled country detection is enabled.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.detection_network_enabled
+      description: If true, profiled network detection is enabled.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.detection_profiled_autorate
+      description: If true, automatic rate calculation for profiled router detection
+        is enabled.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.detection_profiled_enabled
+      description: If true, profiled router detection is enabled.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.detection_profiled_fast_flood_enabled
+      description: If true, fast flood detection for profiled routers is enabled.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.detection_profiled_outgoing_enabled
+      description: If true, outgoing detection for profiled router detection is enabled.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.detection_profiled_severity_duration
+      description: Number of seconds that traffic must exceed a given severity threshold
+        before Sightline escalates its severity for profiled router detection.
+      type: Number
+    - contextPath: NASightline.ManagedObject.detection_profiled_severity_snmp_enabled
+      description: If true, SNMP link rate severity calculation is enabled for profiled
+        router detection.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.detection_profiled_threshold_bandwidth
+      description: 'Threshold for interface bandwidth alerts for profiled router detection.
+        An integer from 1 to 5 where: 1 = detect more alerts, 2 = default, 3 = detect
+        fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts.'
+      type: Number
+    - contextPath: NASightline.ManagedObject.detection_profiled_threshold_packet_rate
+      description: 'Threshold for interface packet alerts for profiled router detection.
+        An integer from 1 to 5 where: 1 = detect more alerts, 2 = default, 3 = detect
+        fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts.'
+      type: Number
+    - contextPath: NASightline.ManagedObject.detection_profiled_threshold_protocol
+      description: 'Threshold for all protocol alerts for profiled router detection.
+        An integer from 1 to 5 where: 1 = detect more alerts, 2 = default, 3 = detect
+        fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts.'
+      type: Number
+    - contextPath: NASightline.ManagedObject.dynamic_match_enabled
+      description: If true, Sightline can monitor traffic for OTT domains that have
+        frequently changing service IP addresses.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.editable
+      description: If true, is editable.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.family
+      description: 'A valid managed object type. Not all values appear in the UI as
+        managed object types. One of the following: none, peer, profile, customer,
+        worm (deprecated), vpn, vpnsite, service, subscriber.'
+      type: String
+    - contextPath: NASightline.ManagedObject.id
+      description: The ID of the ,anaged object.
+      type: String
+    - contextPath: NASightline.ManagedObject.match
+      description: A value appropriate for the specified match_type.
+      type: String
+    - contextPath: NASightline.ManagedObject.match_enabled
+      description: If true, Sightline records flow for this managed object.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.match_type
+      description: 'The managed object’s match type. One of the following: advanced,
+        appid, asregexp, cidr_blocks, cidr_groups, cidr_v6_blocks, community, extended_community,
+        interface, profiled_interface_group, subas, peer_as, tmsports.'
+      type: String
+    - contextPath: NASightline.ManagedObject.mitigation_automitigation_stop_event
+      description: 'The event that stops this TMS auto-mitigation. One of the following:
+        manual, after_mitigation_starts, after_alert_ends.'
+      type: String
+    - contextPath: NASightline.ManagedObject.mitigation_automitigation_stop_minutes
+      description: Stops the TMS auto-mitigation after the specified number of minutes
+        for the after_mitigation_starts or after_alert_ends stop events. This is automatically
+        set to 0 if mitigation_automitigation_stop_event is manual.
+      type: Number
+    - contextPath: NASightline.ManagedObject.mitigation_automitigation_tms_enabled
+      description: If true, TMS auto-mitigation is enabled.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.mitigation_blackhole_auto_enabled
+      description: If true, blackhole auto-mitigation is enabled.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.mitigation_flowspec_auto_enabled
+      description: If true, flowspec auto-mitigation is enabled.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.name
+      description: The managed object’s name.
+      type: String
+    - contextPath: NASightline.ManagedObject.num_children
+      description: The number of child managed objects assigned to this one.
+      type: Number
+    - contextPath: NASightline.ManagedObject.parent_editable
+      description: If false, parent is read-only.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.relationships
+      description: Relationships of the managed object (only visible when extending
+        data).
+      type: Unknown
+    - contextPath: NASightline.ManagedObject.scrub_insight_mo_match
+      description: If true, Sightline disassociates the managed object from flow before
+        sending flow to Insight, thereby preventing the managed object from being
+        subject to or appearing in Insight queries.
+      type: Boolean
+    - contextPath: NASightline.ManagedObject.tags
+      description: A list of tags that are applied to the managed object.
+      type: String
+    - contextPath: NASightline.ManagedObject.type
+      description: Type of the returned object.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whather to extend results with all available data.
+      name: extend_data
+      predefined:
+      - "true"
+      - "false"
+    description: Get a list of available TMS groups.
+    name: na-sightline-tms-group-list
+    outputs:
+    - contextPath: NASightline.TMSGroup.check_available_bw
+      description: If true, ensures that all TMS appliances or Cisco ASR 9000 vDDoS
+        Protection devices in a group use less than 90% of the allowed traffic rate
+        in order for a mitigation to start.
+      type: Boolean
+    - contextPath: NASightline.TMSGroup.check_bgp_peering
+      description: If true, ensures that the TMS appliances or Cisco ASR 9000 vDDoS
+        Protection devices are part of a peering session.
+      type: Boolean
+    - contextPath: NASightline.TMSGroup.check_group_allup
+      description: If true, requires all group members to be up before starting a
+        mitigation. This ensures that sufficient resources are available before a
+        mitigation starts.
+      type: Boolean
+    - contextPath: NASightline.TMSGroup.default_bgp_offramp
+      description: If true, the default BGP diversion nexthops of the TMS appliances
+        or Cisco ASR 9000 vDDoS Protection devices in the TMS group are used.
+      type: Boolean
+    - contextPath: NASightline.TMSGroup.description
+      description: Description of the TMS group.
+      type: String
+    - contextPath: NASightline.TMSGroup.fail_open
+      description: If true, ends the mitigation if one or more group members fails
+        or becomes unreachable.
+      type: Boolean
+    - contextPath: NASightline.TMSGroup.flowspec_redirect_ipv4_destination
+      description: In TMS flowspec diversion deployments, these attributes each specify
+        a destination route target or IP address. The Sightline peer uses these destinations
+        in TMS mitigations to advertise routes to its BGP peers.
+      type: String
+    - contextPath: NASightline.TMSGroup.flowspec_redirect_ipv4_type
+      description: In TMS flowspec diversion deployments, these attributes define
+        whether the Sightline peer redirects TMS mitigation traffic to a route target
+        or to an IP address.
+      type: String
+    - contextPath: NASightline.TMSGroup.flowspec_redirect_ipv6_destination
+      description: In TMS flowspec diversion deployments, these attributes each specify
+        a destination route target or IP address. The Sightline peer uses these destinations
+        in TMS mitigations to advertise routes to its BGP peers.
+      type: String
+    - contextPath: NASightline.TMSGroup.flowspec_redirect_ipv6_type
+      description: In TMS flowspec diversion deployments, these attributes define
+        whether the Sightline peer redirects TMS mitigation traffic to a route target
+        or to an IP address.
+      type: String
+    - contextPath: NASightline.TMSGroup.id
+      description: The tms group ID.
+      type: String
+    - contextPath: NASightline.TMSGroup.l3vpn_flowspec_ipv4_route_distinguisher
+      description: This attribute specifies the route distinguisher (RD) for a VPN,
+        which uniquely identifies the routes for that VPN.
+      type: String
+    - contextPath: NASightline.TMSGroup.l3vpn_flowspec_ipv6_route_distinguisher
+      description: This attribute specifies the route distinguisher (RD) for a VPN,
+        which uniquely identifies the routes for that VPN.
+      type: String
+    - contextPath: NASightline.TMSGroup.member_limits_differ
+      description: If true, TMS device limits (such as maximum mitigations or filter
+        lists) differ, which leads to either performance issues if devices change
+        midstream for ongoing mitigations, or failure to start or save mitigations.
+      type: Boolean
+    - contextPath: NASightline.TMSGroup.mitigation_orchestration.bandwidth_threshold_percent
+      description: The percentage of total bandwidth capacity at which this TMS group
+        will become overloaded.
+      type: Number
+    - contextPath: NASightline.TMSGroup.mitigation_orchestration.enabled
+      description: If true, mitigation orchestration is enabled for this TMS group.
+      type: Boolean
+    - contextPath: NASightline.TMSGroup.name
+      description: TMS group name.
+      type: String
+    - contextPath: NASightline.TMSGroup.nexthop
+      description: The IPv4 address for the BGP diversion nexthop. It overrides the
+        default nexthops of the TMS appliances or Cisco ASR 9000 vDDoS Protection
+        devices that are in the TMS group.
+      type: String
+    - contextPath: NASightline.TMSGroup.nexthop_v6
+      description: The IPv6 address for the BGP diversion nexthop. It overrides the
+        default nexthops of the TMS appliances or Cisco ASR 9000 vDDoS Protection
+        devices that are in the TMS group.
+      type: String
+    - contextPath: NASightline.TMSGroup.relationships
+      description: Relationships of the managed object (only visible when extending
+        data).
+      type: Unknown
+    - contextPath: NASightline.TMSGroup.system
+      description: If true, the TMS group is pre-configured in Sightline and is not
+        editable.
+      type: Boolean
+    - contextPath: NASightline.TMSGroup.tms_group_type
+      description: Type of the tms group.
+      type: String
+    - contextPath: NASightline.TMSGroup.type
+      description: Type of the returned object.
+      type: String
+  dockerimage: demisto/python3:3.9.4.18682
+  isfetch: true
+  runonce: false
+  script: |2
+
+
+
+    from copy import deepcopy
+    import requests
+    import traceback
+    from typing import Dict, Tuple
+    from datetime import timezone
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+
+    ''' CONSTANTS '''
+
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+    IMPORTANCE_DICTIONARY = {
+        'Low': '1',
+        'Medium': '2',
+        'High': '3'
+    }
+    ONGOING_DICTIONARY = {
+        'Ongoing': 'true',
+        'Not Ongoing': 'false',
+    }
+    IP_DICTIONARY = {
+        'IPv4': 4,
+        'IPv6': 6
+    }
+
+    ROUTERS_HR_HEADERS = [
+        'id',
+        'name',
+        'description',
+        'is_proxy',
+        'license_type',
+        'snmp_authprotocol',
+        'snmp_priv_protocol',
+        'snmp_security_level',
+        'snmp_version',
+    ]
+
+    MANAGED_OBJECTS_HR_HEADERS = [
+        'id',
+        'name',
+        'tags',
+        'match_type',
+        'match_enabled',
+        'match',
+        'family',
+        'autodetected'
+    ]
+
+    ''' CLIENT CLASS '''
+
+
+    class NetscoutClient(BaseClient):
+        """Client class to interact with the service API
+
+        This Client implements API calls, and does not contain any XSOAR logic.
+        Should only do requests and return data.
+        It inherits from BaseClient defined in CommonServer Python.
+        Most calls use _http_request() that handles proxy, SSL verification, etc.
+        """
+
+        OPERATOR_NAME_DICTIONARY = {
+            # <parm name>: <argument operator name>
+            'importance': 'importance_operator',
+            'start_time': 'start_time_operator',
+            'stop_time': 'stop_time_operator',
+        }
+
+        RELATIONSHIP_TO_TYPE = {
+            'routers': 'router'
+        }
+
+        MAX_ALERTS_FOR_FIRST_FETCH = 10000
+
+        def __init__(self, base_url, verify, proxy, first_fetch, headers=None, max_fetch=None, alert_class=None,
+                     alert_type=None,
+                     classification=None, importance=None, importance_operator=None, ongoing=None):
+            self.first_fetch = first_fetch
+            self.max_fetch = max_fetch
+            self.alert_class = alert_class
+            self.alert_type = alert_type
+            self.classification = classification
+            self.importance = importance
+            self.importance_operator = importance_operator
+            self.ongoing = ongoing
+
+            super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
+
+        def http_request(self, method: str, url_suffix: Optional[str] = None, params: Optional[dict] = None,
+                         json_data: Optional[dict] = None, return_empty_response: Optional[bool] = None):
+
+            return super()._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
+                                         error_handler=self.error_handler, return_empty_response=return_empty_response)
+
+        @staticmethod
+        def error_handler(res: requests.Response):
+            """
+            Error handler for API calls
+            Args:
+                res (requests.Response): Response to handle error for
+
+            """
+            try:
+                # Try to parse json error response
+                error_entry = res.json()
+                error: str = f'Error in API call [{res.status_code}] - {res.reason}'
+                if res.status_code in (400, 422, 404):
+                    error_list: list = []
+                    for err in error_entry.get('errors'):
+                        # Building the list of errors
+                        new_error_source = err.get('source', {}).get('pointer', '').split('/')[-1]
+                        new_error_details = err.get('detail')
+                        new_error = f'{new_error_source}: {new_error_details}' if new_error_source else new_error_details
+                        error_list.append(new_error)
+
+                    # If we manged to build a list of errors use it otherwise use basic information
+                    if error_list:
+                        error = f'{error}: \n' + '\n'.join(error_list)
+
+                elif res.status_code in (500, 401):
+                    message = error_entry.get('errors', [])[0].get('message')
+                    if message:
+                        error = f'{error}\n{message}'
+
+                raise DemistoException(error)
+
+            except ValueError:
+                raise DemistoException(
+                    f'Could not parse error returned from Netscout Arbor Sightline server:\n{str(res.content)}')
+
+        def calculate_amount_of_incidents(self, start_time: str) -> int:
+            """
+            Perform an API call with page size = 1 (perPage=1) to calculate the amount of incidents (#pages will be equal to
+            #incidents).
+
+            Arguments:
+                start_time (str): Starting time to search by
+
+            Returns:
+                (int) The amount of pages (incidents) in total in the given query, 0 if none.
+            """
+            attributes_dict = assign_params(start_time=start_time, start_time_operator='>', alert_class=self.alert_class,
+                                            alert_type=self.alert_type, classification=self.classification,
+                                            importance=self.importance, importance_operator=self.importance_operator,
+                                            ongoing=self.ongoing)
+            data_attribute_filter = self.build_data_attribute_filter(attributes_dict)
+            page_size = 1
+            results = self.list_alerts(page_size=page_size, search_filter=data_attribute_filter)
+            last_page_link = results.get('links', {}).get('last')
+            if last_page_link:
+                last_page_number_matcher = re.match(r'.*&page=(\d+)', last_page_link)
+                if not last_page_number_matcher:
+                    raise DemistoException(
+                        f'Could not calculate page size, last page number was not found:\n{last_page_link}')
+                last_page_number = last_page_number_matcher.group(1)
+            else:
+                last_page_number = 0
+
+            return int(last_page_number)
+
+        def build_relationships(self, **kwargs) -> dict:
+            """
+            Builds the relationships object for creating a mitigation. An example of relationships object is:
+            {
+                "mitigation_template": {
+                    "data": {
+                        "id": "4", "type": "mitigation_template"
+                    }
+                },
+                "alert": {
+                    "data": {
+                        "id": "101", "type": "alert"
+                        "id": "101", "type": "alert"
+                    }
+                }
+            }
+            Args:
+                kwargs (dict): Dict containing key values parameters to be used for relationships. for example:
+                {'ip_version': 4}
+
+            Returns:
+                (dict): Netscout relationships object
+            """
+            relationships: Dict[str, Any] = {}
+            for key, val in kwargs.items():
+                if val:
+                    # In some cases the name of the relationships is not the same as the type (most cases it is)
+                    _type = self.RELATIONSHIP_TO_TYPE.get(key, key)
+                    if key == 'routers':
+                        relationships[key] = {
+                            'data': [{
+                                'type': _type,
+                                'id': val[0]
+                            }]
+                        }
+                    else:
+                        relationships[key] = {
+                            'data': {
+                                'type': _type,
+                                'id': val
+                            }
+                        }
+            return relationships
+
+        def build_data_attribute_filter(self, attributes_dict: dict) -> str:
+            """
+            Builds data attribute filter in the NetscoutArbor form. For example: '/data/attributes/importance>1' where
+            key=importance operator='>' and value=1.
+            The function iterates over all arguments (besides operators listed in the OPERATOR_NAME_DICTIONARY) and chain
+            together the 'key operator val' such that the argument name is 'key', its value is 'val' and operator is '=' if
+            no relevant operator is present. In case of multiple parameters the attributes are separated with 'AND'.
+
+            Args:
+                attributes_dict (dict): Dict containing key values filter parameters. for example: {'importance': 1}
+
+            Returns:
+                (str): Netscout data attribute filter string. For example:
+                /data/attributes/importance>1 AND /data/attributes/ongoing=true
+            """
+            param_list = []
+            operator_names = self.OPERATOR_NAME_DICTIONARY.values()
+            for key, val in attributes_dict.items():
+
+                # We don't create a filter for operator names
+                if key not in operator_names and val:
+                    operator = '='  # type: str
+
+                    # If the current parameter supports a special operator (it appears in the OPERATOR_NAME_DICTIONARY),
+                    # we take the operator value using the operator name (that appears in the OPERATOR_NAME_DICTIONARY)
+                    if operator_name := self.OPERATOR_NAME_DICTIONARY.get(key):
+                        operator = attributes_dict.get(operator_name) if attributes_dict.get(
+                            operator_name) else '='  # type: ignore
+
+                    param_list.append(f'/data/attributes/{key + operator + val}')  # type: ignore
+            return ' AND '.join(param_list)
+
+        def fetch_incidents(self) -> Tuple[list, str]:
+            """
+            Perform fetch incidents process.
+            1.  We first save the current time to know what was the time at the beginning of the incidents counting process.
+            2.  We calculate the amount of incidents we need to fetch by performing a query for all incident newer
+                than last run (or first fetch), we do this by setting the page size to 1, which makes the amount of returned
+                pages to be equal to the amount of incidents.
+            3.  Then, to get the relevant incidents, we query for all incidents *older* then the time we sampled in the
+                step 1, with page size equal to the amount of incidents from step 2. This ensures that the first page in
+                this search will have all of the incidents created after the given start time and only them.
+            4.  Finally out of the relevant incidents we take the older ones (from the end of the list) and set the new
+                start time to the creation time of the first incidnt in the list.
+
+            Returns
+                (list, str): List of incidents to save and string representing the creation time of the latest incident to
+                    be saved.
+            """
+            last_run = demisto.getLastRun()
+            new_last_start_time = last_start_time = last_run.get('LastFetchTime', self.first_fetch)
+            demisto.debug(f'Last fetch time to use is: {last_start_time}')
+
+            # We calculate the page size to query, by performing an incidents query with page size = 1, the amount of
+            # returned pages will equal to amount of incidents
+            now = datetime.now(timezone.utc).isoformat()
+            amount_of_incidents = self.calculate_amount_of_incidents(start_time=last_start_time)
+            incidents: list = []
+
+            if amount_of_incidents:
+                attributes_dict = assign_params(start_time=now, start_time_operator='<', alert_class=self.alert_class,
+                                                alert_type=self.alert_type, importance=self.importance,
+                                                classification=self.classification,
+                                                importance_operator=self.importance_operator,
+                                                ongoing=self.ongoing)
+
+                data_attribute_filter = self.build_data_attribute_filter(attributes_dict)
+                demisto.debug(
+                    f'NetscoutArborSightline fetch params are: page_size={amount_of_incidents}, '
+                    f'search_filter={data_attribute_filter}')
+
+                results = self.list_alerts(page_size=amount_of_incidents, search_filter=data_attribute_filter)
+                all_alerts = results.get('data')
+                short_alert_list = all_alerts[-1 * self.max_fetch:]
+                if short_alert_list:
+                    new_last_start_time = short_alert_list[0].get('attributes', {}).get('start_time')
+
+                    for alert in reversed(short_alert_list):
+                        start_time = alert.get('attributes', {}).get('start_time')
+                        alert_type = alert.get('attributes', {}).get('alert_type')
+                        incidents.append({
+                            'name': f"{alert_type}: {alert.get('id')}",
+                            'occurred': start_time,
+                            'rawJSON': json.dumps(alert)
+                        })
+            return incidents, new_last_start_time
+
+        def list_alerts(self, page: Optional[int] = None, page_size: Optional[int] = None,
+                        search_filter: Optional[str] = None):
+            demisto.info(search_filter)
+            return self.http_request(
+                method='GET',
+                url_suffix='alerts',
+                params=assign_params(page=page, perPage=page_size, filter=search_filter)
+            )
+
+        def get_alert(self, alert_id: str):
+            return self.http_request(
+                method='GET',
+                url_suffix=f'alerts/{alert_id}'
+            )
+
+        def get_annotations(self, alert_id: str):
+            return self.http_request(
+                method='GET',
+                url_suffix=f'alerts/{alert_id}/annotations'
+            )
+
+        def list_mitigations(self, mitigation_id: str, page: Optional[int] = None, page_size: Optional[int] = None):
+            return self.http_request(
+                method='GET',
+                url_suffix=f'mitigations/{mitigation_id}' if mitigation_id else 'mitigations',
+                params=assign_params(page=page, perPage=page_size)
+
+            )
+
+        def create_mitigation(self, data: dict):
+            return self.http_request(
+                method='POST',
+                url_suffix='mitigations/',
+                json_data=data
+            )
+
+        def delete_mitigation(self, mitigation_id: str):
+            self.http_request(
+                method='DELETE',
+                url_suffix=f'mitigations/{mitigation_id}',
+                return_empty_response=True
+            )
+
+        def mitigation_template_list(self):
+            return self.http_request(
+                method='GET',
+                url_suffix='mitigation_templates/'
+            )
+
+        def router_list(self):
+            return self.http_request(
+                method='GET',
+                url_suffix='routers/'
+            )
+
+        def managed_object_list(self, page: Optional[int] = None, page_size: Optional[int] = None):
+            return self.http_request(
+                method='GET',
+                url_suffix='managed_objects/',
+                params=assign_params(page=page, perPage=page_size)
+            )
+
+        def tms_group_list(self):
+            return self.http_request(
+                method='GET',
+                url_suffix='tms_groups/'
+            )
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def clean_links(target_obj: Union[dict, list]):
+        """
+        Recursively look for a all keys named 'links' and remove them from the object.
+        Args:
+            target_obj (dict/list): An object to remove the links key from.
+        """
+
+        if isinstance(target_obj, dict):
+            remove_keys(target_obj, ['links'])
+            for val in target_obj.values():
+                clean_links(val)
+
+        if isinstance(target_obj, list):
+            for i in target_obj:
+                clean_links(i)
+
+
+    def validate_json_arg(json_str: str, arg_name: str) -> dict:
+        """
+        Parse the json data. If the format is invalid an appropriate exception will be raised
+        Args:
+            json_str (str): The data to parse
+            arg_name (str): The argument name where the data eas given (for exception purposes)
+        Return:
+            (dict): dict representing the given json
+        """
+        try:
+            sub_object = json.loads(json_str)
+            return sub_object
+        except Exception:
+            raise DemistoException(f'The value given in the {arg_name} argument is not a valid JSON format:\n{json_str}')
+
+
+    def remove_keys(obj: dict, keys_to_remove: list):
+        """
+        Removes the the given keys from a given dict.
+        Args:
+            obj (dict): The object to remove the key from.
+            keys_to_remove (lst): List of keys to remove.
+        """
+        for key in keys_to_remove:
+            if obj.get(key):
+                del obj[key]
+
+
+    def flatten_key(obj: dict, key_to_flatten: str):
+        """
+        Extract the data inside a given key to the root level of the object.
+        Args:
+            obj (dict): The object to extract the data from.
+            key_to_flatten (str): The key name to extract.
+        """
+        if sub_dictionary := obj.get(key_to_flatten):
+            for sub_key, sub_val in sub_dictionary.items():
+                obj[sub_key] = sub_val
+            del obj[key_to_flatten]
+
+
+    def build_human_readable(data: dict) -> dict:
+        """
+        Removes the relationships and subobject data from the object and extracts the data inside attributes to the root
+        level of the object to be displayed nicely in human readable.
+        Args:
+            data (dict): The data to create human readable from.
+        Return:
+            (dict): The same object without the relationships data and with the attributes extracted to the root level.
+        """
+        hr = deepcopy(data)
+        flatten_key(hr, 'attributes')
+        remove_keys(hr, ['relationships', 'subobject'])
+        return hr
+
+
+    def build_output(data: dict, extend_data: bool = False, key_to_flat: str = 'attributes',
+                     keys_to_remove: list = ['relationships']) -> dict:
+        data_copy = deepcopy(data)
+        clean_links(data_copy)
+        if key_to_flat:
+            flatten_key(data_copy, key_to_flat)
+        if not extend_data:
+            remove_keys(data_copy, keys_to_remove)
+        return data_copy
+
+
+    ''' COMMAND FUNCTIONS '''
+
+
+    def test_module(client: NetscoutClient) -> str:
+        client.fetch_incidents()
+        return 'ok'
+
+
+    def fetch_incidents_command(client: NetscoutClient):
+        incidents, last_start_time = client.fetch_incidents()
+        demisto.incidents(incidents)
+        demisto.setLastRun({'LastFetchTime': last_start_time})
+
+
+    def list_alerts_command(client: NetscoutClient, args: dict):
+        limit = arg_to_number(args.get('limit'))
+        page = arg_to_number(args.get('page'))
+        alert_id = args.get('alert_id')
+        alert_class = args.get('alert_class')
+        alert_type = args.get('alert_type')
+        classification = args.get('classification')
+        importance = IMPORTANCE_DICTIONARY.get(args.get('importance', ''))
+        importance_operator = args.get('importance_operator')
+        ongoing = args.get('ongoing') if args.get('ongoing') else None
+        start_time = args.get('start_time')
+        start_time_operator = args.get('start_time_operator')
+        stop_time = args.get('stop_time')
+        stop_time_operator = args.get('stop_time_operator')
+        managed_object_id = args.get('managed_object_id')
+        extend_data = argToBoolean(args.get('extend_data', False))
+        if alert_id:
+            raw_result = client.get_alert(alert_id)
+        else:
+            attributes_dict = assign_params(alert_id=alert_id, alert_class=alert_class, alert_type=alert_type,
+                                            classification=classification, importance=importance,
+                                            importance_operator=importance_operator, ongoing=ongoing, start_time=start_time,
+                                            start_time_operator=start_time_operator, stop_time=stop_time,
+                                            stop_time_operator=stop_time_operator)
+            data_attribute_filter = client.build_data_attribute_filter(attributes_dict)
+            data_relationships_filter = f'AND /data/relationships/managed_object/data/id={managed_object_id}' if \
+                managed_object_id else ''
+            search_filter = data_attribute_filter + data_relationships_filter
+            raw_result = client.list_alerts(page=page, page_size=limit, search_filter=search_filter)
+
+        data = raw_result.get('data')
+        data = data if isinstance(data, list) else [data]
+        hr = [build_human_readable(data=alert) for alert in data]
+        outputs = [build_output(data=alert, extend_data=extend_data) for alert in data]
+
+        return CommandResults(outputs_prefix='NASightline.Alert',
+                              outputs_key_field='id',
+                              outputs=outputs,
+                              readable_output=tableToMarkdown('Alerts', hr),
+                              raw_response=raw_result)
+
+
+    def alert_annotation_list_command(client: NetscoutClient, args: dict):
+        alert_id = args.get('alert_id', '')
+        extend_data = argToBoolean(args.get('extend_data', False))
+        raw_result = client.get_annotations(alert_id)
+        data = raw_result.get('data')
+        hr = [build_human_readable(data=annotation) for annotation in data]
+        annotations = [build_output(data=annotation, extend_data=extend_data) for annotation in data]
+        context = {'AlertID': alert_id, 'Annotations': annotations}
+        return CommandResults(outputs_prefix='NASightline.AlertAnnotation',
+                              outputs_key_field='AlertID',
+                              outputs=context,
+                              readable_output=tableToMarkdown(f'Alert {alert_id} annotations', hr),
+                              raw_response=raw_result)
+
+
+    def mitigation_list_command(client: NetscoutClient, args: dict):
+        page = arg_to_number(args.get('page'))
+        limit = arg_to_number(args.get('limit'))
+        mitigation_id = args.get('mitigation_id', '')
+        extend_data = argToBoolean(args.get('extend_data', False))
+        raw_result = client.list_mitigations(mitigation_id, page=page, page_size=limit)
+        data = raw_result.get('data')
+        data = data if isinstance(data, list) else [data]
+        hr = [build_human_readable(data=mitigation) for mitigation in data]
+        mitigations = [build_output(data=mitigation, keys_to_remove=['relationships', 'subobject'], extend_data=extend_data)
+                       for mitigation in data]
+        return CommandResults(outputs_prefix='NASightline.Mitigation',
+                              outputs_key_field='id',
+                              outputs=mitigations,
+                              readable_output=tableToMarkdown('Mitigation list', hr),
+                              raw_response=raw_result)
+
+
+    def mitigation_create_command(client: NetscoutClient, args: dict):
+        ip_version = IP_DICTIONARY.get(args.get('ip_version'))  # type: ignore
+        if not ip_version:
+            raise DemistoException('ip_version value can be one of the following: '
+                                   f'{",".join(list(IP_DICTIONARY.keys()))}. {args.get("ip_version")} was given.')
+        description = args.get('description')
+        name = args.get('name')
+        ongoing = args.get('ongoing', 'false')
+        sub_type = args.get('sub_type')
+        sub_object = validate_json_arg(args.get('sub_object'), 'sub_object')  # type: ignore
+        alert_id = args.get('alert_id')
+        managed_object_id = args.get('managed_object_id')
+        mitigation_template_id = args.get('mitigation_template_id')
+        router_ids = argToList(args.get('router_ids'))
+        tms_group_id = args.get('tms_group_id')
+        extend_data = argToBoolean(args.get('extend_data', False))
+
+        relationships = client.build_relationships(alert=alert_id, managed_object=managed_object_id,
+                                                   mitigation_template=mitigation_template_id, routers=router_ids,
+                                                   tms_group=tms_group_id)
+        attributes = assign_params(description=description, ip_version=ip_version, name=name, ongoing=ongoing,
+                                   subtype=sub_type, subobject=sub_object)
+        object_data = {'relationships': relationships, 'attributes': attributes}
+        raw_result = client.create_mitigation(data={'data': object_data})
+        data = raw_result.get('data')
+        hr = build_human_readable(data=data)
+        mitigation = build_output(data=data, extend_data=extend_data)
+        return CommandResults(outputs_prefix='NASightline.Mitigation',
+                              outputs_key_field='id',
+                              outputs=mitigation,
+                              readable_output=tableToMarkdown('Mitigation was created', hr),
+                              raw_response=raw_result)
+
+
+    def mitigation_delete_command(client: NetscoutClient, args: Dict[str, str]):
+        mitigation_id = args.get('mitigation_id', '')
+        client.delete_mitigation(mitigation_id)
+        hr = f'### Mitigation {mitigation_id} was deleted'
+        return CommandResults(readable_output=hr)
+
+
+    def mitigation_template_list_command(client: NetscoutClient, args: dict):
+        extend_data = argToBoolean(args.get('extend_data', False))
+        raw_result = client.mitigation_template_list()
+        data = raw_result.get('data')
+        data = data if isinstance(data, list) else [data]
+        hr = [build_human_readable(data=mitigation_template) for mitigation_template in data]
+        mitigation_templates = [
+            build_output(data=mitigation_template, extend_data=extend_data, keys_to_remove=['relationships', 'subobject'])
+            for mitigation_template in data]
+
+        return CommandResults(outputs_prefix='NASightline.MitigationTemplate',
+                              outputs_key_field='id',
+                              outputs=mitigation_templates,
+                              readable_output=tableToMarkdown('Mitigation template list', hr, removeNull=True),
+                              raw_response=raw_result)
+
+
+    def router_list_command(client: NetscoutClient, args: dict):
+        extend_data = argToBoolean(args.get('extend_data', False))
+        raw_result = client.router_list()
+        data = raw_result.get('data')
+        data = data if isinstance(data, list) else [data]
+        hr = [build_human_readable(router) for router in data]
+        routers = [build_output(data=router, extend_data=extend_data) for router in data]
+        return CommandResults(outputs_prefix='NASightline.Router',
+                              outputs_key_field='id',
+                              outputs=routers,
+                              readable_output=tableToMarkdown('Router list', hr, headers=ROUTERS_HR_HEADERS,
+                                                              removeNull=True),
+                              raw_response=raw_result)
+
+
+    def managed_object_list_command(client: NetscoutClient, args: dict):
+        page = arg_to_number(args.get('page'))
+        limit = arg_to_number(args.get('limit'))
+        extend_data = argToBoolean(args.get('extend_data', False))
+        raw_result = client.managed_object_list(page=page, page_size=limit)
+        data = raw_result.get('data')
+        data = data if isinstance(data, list) else [data]
+        objects = [build_output(data=managed_object, extend_data=extend_data) for managed_object in data]
+        hr = [build_human_readable(data=managed_object) for managed_object in data]
+        return CommandResults(outputs_prefix='NASightline.ManagedObject',
+                              outputs_key_field='id',
+                              outputs=objects,
+                              readable_output=tableToMarkdown('Managed object list', hr,
+                                                              headers=MANAGED_OBJECTS_HR_HEADERS, removeNull=True),
+                              raw_response=raw_result)
+
+
+    def tms_group_list_command(client: NetscoutClient, args: dict):
+        extend_data = argToBoolean(args.get('extend_data', False))
+        raw_result = client.tms_group_list()
+        data = raw_result.get('data')
+        data = data if isinstance(data, list) else [data]
+        hr = [build_human_readable(data=tms_group) for tms_group in data]
+        groups = [build_output(data=group, extend_data=extend_data) for group in data]
+        return CommandResults(outputs_prefix='NASightline.TMSGroup',
+                              outputs_key_field='id',
+                              outputs=groups,
+                              readable_output=tableToMarkdown('TMS group list', hr, removeNull=True),
+                              raw_response=raw_result)
+
+
+    ''' MAIN FUNCTION '''
+
+
+    def main() -> None:
+        try:
+            command = demisto.command()
+            params = demisto.params()
+
+            if not params.get('api_token') or not (api_token := params.get('api_token', {}).get('password')):
+                raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
+            base_url = urljoin(params['url'], 'api/sp')
+            verify_certificate = not params.get('insecure', False)
+            proxy = params.get('proxy', False)
+            first_fetch = None
+            if first_fetch_dt := arg_to_datetime(params.get('first_fetch', '3 days')):
+                first_fetch = first_fetch_dt.isoformat()
+            max_fetch = min(arg_to_number(params.get('max_fetch', 50)), 100)
+            alert_class = params.get('alert_class')
+            alert_type = params.get('alert_type')
+            classification = params.get('classification')
+            importance = IMPORTANCE_DICTIONARY.get(params.get('importance'))
+            importance_operator = params.get('importance_operator', '=')
+            ongoing = ONGOING_DICTIONARY.get(params.get('ongoing'))
+
+            demisto.debug(f'Command being called is {demisto.command()}')
+
+            headers: Dict = {
+                'X-Arbux-APIToken': api_token
+            }
+
+            client = NetscoutClient(
+                base_url=base_url,
+                verify=verify_certificate,
+                headers=headers,
+                proxy=proxy,
+                first_fetch=first_fetch,
+                max_fetch=max_fetch,
+                alert_class=alert_class,
+                alert_type=alert_type,
+                classification=classification,
+                importance=importance,
+                importance_operator=importance_operator,
+                ongoing=ongoing
+            )
+            args: dict = demisto.args()
+
+            result = ''
+            if command == 'test-module':
+                result = test_module(client)
+            elif command == 'fetch-incidents':
+                fetch_incidents_command(client)
+            elif command == 'na-sightline-alert-list':
+                result = list_alerts_command(client, args)
+            elif command == 'na-sightline-alert-annotation-list':
+                result = alert_annotation_list_command(client, args)
+            elif command == 'na-sightline-mitigation-list':
+                result = mitigation_list_command(client, args)
+            elif command == 'na-sightline-mitigation-create':
+                result = mitigation_create_command(client, args)
+            elif command == 'na-sightline-mitigation-delete':
+                result = mitigation_delete_command(client, args)
+            elif command == 'na-sightline-mitigation-template-list':
+                result = mitigation_template_list_command(client, args)
+            elif command == 'na-sightline-router-list':
+                result = router_list_command(client, args)
+            elif command == 'na-sightline-managed-object-list':
+                result = managed_object_list_command(client, args)
+            elif command == 'na-sightline-tms-group-list':
+                result = tms_group_list_command(client, args)
+            else:
+                raise NotImplementedError(f'Command: {command} is not implemented')
+
+            if result:
+                return_results(result)
+
+        except Exception as e:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+
+
+    ''' ENTRY POINT '''
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+  subtype: python3
+  type: python
