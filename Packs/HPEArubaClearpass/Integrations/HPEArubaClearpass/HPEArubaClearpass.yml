@@ -7,13 +7,13 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Client ID
-  additionalinfo: HPE Aruba Clearpass client identifier.
+- additionalinfo: HPE Aruba Clearpass client identifier.
+  display: Client ID
   name: client_id
   required: true
   type: 0
-- display: Client Secret
-  additionalinfo: HPE Aruba Clearpass client secret.
+- additionalinfo: HPE Aruba Clearpass client secret.
+  display: Client Secret
   name: client_secret
   required: true
   type: 4
@@ -25,6 +25,9 @@ configuration:
   name: proxy
   required: false
   type: 8
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
+defaultclassifier: 'null'
 description: change it
 display: HPEArubaClearpass
 name: HPEArubaClearpass
@@ -32,27 +35,66 @@ script:
   commands:
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
+      description: MAC Address of the required endpoint. If not given, all the endpoints will be returned.
       isArray: false
-      name: dummy
-      required: true
+      name: mac_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the required endpoint. Can be known/unknown/disabled.
+      isArray: false
+      name: status
+      predefined:
+      - known
+      - unknown
+      - disabled
+      required: false
+      secret: false
+    - default: false
+      description: Zero based offset to start from. The default value is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of items to return in range of 1 – 1000. The default value is 25.
+      isArray: false
+      name: limit
+      required: false
       secret: false
     deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+    description: Get a list of endpoints.
     execution: false
-    name: baseintegration-dummy
+    name: aruba-clearpass-endpoints-list
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - contextPath: HPEArubaClearpass.endpoints.id
+      description: The ID of the endpoint.
+      type: Number
+    - contextPath: HPEArubaClearpass.endpoints.mac_address
+      description: The MAC Address of the endpoint.
+      type: string
+    - contextPath: HPEArubaClearpass.endpoints.description
+      description: The description of the endpoint.
+      type: string
+    - contextPath: HPEArubaClearpass.endpoints.status
+      description: The status of the endpoint.
+      type: string
+    - contextPath: HPEArubaClearpass.endpoints.device_insight_tags
+      description: List of Device Insight Tags.
+      type: Unknown
+    - contextPath: HPEArubaClearpass.endpoints.attributes
+      description: Additional attributes (key/value pairs) may be stored with the endpoint.
+      type: Unknown
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.1.15759
-fromversion: 6.0.0
+  type: python
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0

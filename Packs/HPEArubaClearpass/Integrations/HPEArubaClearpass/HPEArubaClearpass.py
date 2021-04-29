@@ -106,9 +106,9 @@ def test_module(client: Client) -> str:
     return message
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    dummy = args.get('dummy', None)
+def get_endpoints_list_command(client: Client) -> CommandResults:
+    args = demisto.args()
+
     if not dummy:
         raise ValueError('dummy not specified')
 
@@ -124,45 +124,34 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 
 def main() -> None:
     params = demisto.params()
-    base_url = urljoin(params['url'], '/api')
+    base_url = urljoin(params.get('url'), '/api')
     client_id = params.get('client_id')
     client_secret = params.get('client_secret')
 
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
-    client = Client(proxy=proxy, verify=verify_certificate, base_url=base_url, client_id=client_id,
+    client = Client(proxy=proxy,
+                    verify=verify_certificate,
+                    base_url=base_url,
+                    client_id=client_id,
                     client_secret=client_secret)
+
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client.login()
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module(client))
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'aruba-clearpass-endpoints-list':
+            return_results(get_endpoints_list_command(client))
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
-
-''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
