@@ -3,7 +3,7 @@ from datetime import timezone
 from typing import Any, Dict, Tuple, List, Optional
 
 from dateparser import parse
-from mailparser import parse_from_bytes
+from mailparser import parse_from_bytes, parse_from_string
 from imap_tools import OR
 from imapclient import IMAPClient
 
@@ -12,18 +12,25 @@ from CommonServerPython import *
 
 
 class Email(object):
-    def __init__(self, message_bytes: bytes, include_raw_body: bool, save_file: bool, id_: int) -> None:
+    def __init__(self, message_data_raw: Union[bytes, str], include_raw_body: bool, save_file: bool, id_: int) -> None:
         """
         Initialize Email class with all relevant data
         Args:
             id_: The unique ID with which the email can be fetched from the server specifically
-            message_bytes: The raw email bytes
+            message_data_raw: The raw email bytes
             include_raw_body: Whether to include the raw body of the mail in the incident's body
             save_file: Whether to save the .eml file of the incident's mail
         """
-        email_object = parse_from_bytes(message_bytes)
+        try:
+            email_object = parse_from_bytes(message_data_raw)
+        except Exception:
+            try:
+                email_object = parse_from_string(message_data_raw)
+            except Exception:
+                raise DemistoException("Failed to parse mail data")
+
         self.id = id_
-        self.mail_bytes = message_bytes
+        self.mail_raw = message_data_raw
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
         self.cc = [mail_addresses for _, mail_addresses in email_object.cc]
         self.bcc = [mail_addresses for _, mail_addresses in email_object.bcc]
@@ -92,7 +99,7 @@ class Email(object):
                 'name': file_result['File']
             })
         if self.save_eml_file:
-            file_result = fileResult('original-email-file.eml', self.mail_bytes)
+            file_result = fileResult('original-email-file.eml', self.mail_raw)
             files.append({
                 'path': file_result['FileID'],
                 'name': file_result['File']
@@ -255,10 +262,10 @@ def fetch_mails(client: IMAPClient,
     messages_fetched = []
     demisto.debug(f'Messages to fetch: {messages_uids}')
     for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
-        message_bytes = message_data.get(b'RFC822')
-        if not message_bytes:
+        message_data_raw = message_data.get(b'RFC822')
+        if not message_data_raw:
             continue
-        email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
+        email_message_object = Email(message_data_raw, include_raw_body, save_file, mail_id)
         if (not time_to_fetch_from or time_to_fetch_from < email_message_object.date) and \
                 int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
@@ -371,7 +378,7 @@ def get_email(client: IMAPClient, message_id: int) -> CommandResults:
 
 def get_email_as_eml(client: IMAPClient, message_id: int) -> dict:
     mails_fetched, _, _ = fetch_mails(client, message_id=message_id)
-    mail_file = [fileResult('original-email-file.eml', mail.mail_bytes) for mail in mails_fetched]
+    mail_file = [fileResult('original-email-file.eml', mail.mail_raw) for mail in mails_fetched]
     return mail_file[0] if mail_file else {}
 
 
