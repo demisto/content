@@ -447,7 +447,7 @@ def get_video_by_id():
             'HumanReadable': '### ThreatGrid Sample Run Video File -\n'
                              + 'Your sample run video file download request has been completed successfully for '
                              + sample_id,
-            'Contents': r.json(),
+            'Contents': ec,
             'ContentsFormat': formats['json']
         },
         fileResult(sample_id + '.webm', r.content)
