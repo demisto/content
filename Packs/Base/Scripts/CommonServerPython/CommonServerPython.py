@@ -5034,7 +5034,7 @@ def return_results(results):
         result_list = []
         for result in results:
             demisto.results(result.to_context())
-            return
+        return
         #     if isinstance(result, (dict, str)):
         #         result_list.append(result)
         #     else:
