@@ -1,0 +1,21 @@
+{
+    "name": "GreyNoise Community",
+    "description": "GreyNoise is a threat intelligence service that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can access the free, GreyNoise Community API to provide enrichment data to their workflows. The full integration code can be found here: https://github.com/demisto/content/tree/master/Packs/GreyNoise_Community",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "GreyNoise",
+    "url": "https://greynoise.io",
+    "email": "hello@greynoise.io",
+    "created": "2021-04-21T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": ["Threat Intelligence"],
+    "useCases": ["Threat Intelligence Management"],
+    "keywords": [
+        "ip",
+        "enrichment",
+        "reputation"
+    ],
+    "githubUser": []
+}

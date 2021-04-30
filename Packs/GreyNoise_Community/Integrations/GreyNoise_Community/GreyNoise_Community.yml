@@ -1,0 +1,94 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: greynoise_community
+  version: -1
+configuration:
+- display: GreyNoise API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: https://api.greynoise.io
+  display: GreyNoise API Server Address
+  name: api_server
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Query routable IPv4 addresses in the GreyNoise Community API
+display: GreyNoise Community
+name: greynoise_community
+fromversion: 5.0.0
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: List of IPs to Query
+      isArray: true
+      name: ips
+      required: true
+      secret: false
+    deprecated: false
+    description: Query IPs in GreyNosie Community API
+    execution: false
+    name: greynoise-community-lookup
+    outputs:
+    - contextPath: IP.address
+      description: IP Address
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: GreyNoise_Community.IP.address
+      description: IP Queried
+      type: String
+    - contextPath: GreyNoise_Community.IP.noise
+      description: Is IP Classified as Internet Background Noise
+      type: Boolean
+    - contextPath: GreyNoise_Community.IP.riot
+      description: Does IP belong to a known benign service
+      type: Unknown
+    - contextPath: GreyNoise_Community.IP.classification
+      description: GreyNoise IP Classification
+      type: String
+    - contextPath: GreyNoise_Community.IP.name
+      description: Actor or Service Name
+      type: String
+    - contextPath: GreyNoise_Community.IP.link
+      description: Link to GreyNoise Visualizer
+      type: String
+    - contextPath: GreyNoise_Community.IP.last_seen
+      description: Date IP was last observed or updated
+      type: Date
+    - contextPath: GreyNoise_Community.IP.message
+      description: Additional Information
+      type: Unknown
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: string
+  dockerimage: demisto/greynoise:1.0.0.19381
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
