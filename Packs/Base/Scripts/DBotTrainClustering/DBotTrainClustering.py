@@ -221,6 +221,11 @@ class Clustering(object):
 
 
 def extract_fields_from_args(arg: List[str]) -> List[str]:
+    """
+    Extract field from field with prefixe (like incident.commandline)
+    :param arg: List of field
+    :return: List of field without prefix
+    """
     fields_list = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in arg if x]
     return list(dict.fromkeys(fields_list))
 
@@ -272,7 +277,17 @@ def get_args():  # type: ignore
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
-                                               query_sup: str, limit: int, incident_type: str) -> Union[json, str]:
+                                               query_sup: str, limit: int, incident_type: str) -> Union[List, str]:
+    """
+    Get incidents with given parameters and return list of incidents
+    :param populate_fields: List of field to populate
+    :param from_date: from_date
+    :param to_date: to_date
+    :param query_sup: additional criteria for the query
+    :param limit: maximun number of incident to fetch
+    :param incident_type: type of incident to fetch
+    :return: list of incident
+    """
     msg = ""
     if query_sup:
         query = " %s" % query_sup
@@ -347,6 +362,11 @@ def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List, *field
 
 
 def normalize_global(obj):  # type: ignore
+    """
+    Funtion to decide which normalization to use
+    :param obj:
+    :return:
+    """
     if isinstance(obj, str):
         return normalize_command_line(obj)
     else:
@@ -375,7 +395,7 @@ def normalize_json(obj) -> str:  # type: ignore
     return my_string
 
 
-def normalize_command_line(command: Union(str, list)) -> str:
+def normalize_command_line(command: Union[str, list]) -> str:
     """
     Normalize command line
     :param command: command line
@@ -442,6 +462,11 @@ def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_o
 
 
 def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
+    """
+    Criteria to decide if clustering is valid or not (like not enough clusters)
+    :param clustering_model: Clustering model
+    :return: Boolean
+    """
     n_labels = len(set(clustering_model.model.labels_))
     n_samples = len(clustering_model.raw_data)
     if not 1 < n_labels < n_samples:
@@ -450,6 +475,13 @@ def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
 
 
 def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd.DataFrame, type: str) -> str:
+    """
+
+    :param model_processed: Postprocessing
+    :param incidents_df: incidents_df
+    :param type: type of incident
+    :return:
+    """
     clustering = model_processed.clustering
     data = {}
     data['data'] = []
@@ -489,7 +521,7 @@ def find_incorrect_field(populate_fields: List[str], incidents_df: pd.DataFrame,
     return global_msg, incorrect_fields
 
 
-def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> list[str]:
+def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> List[str]:
     """
     Return list without field in incorrect_fields
     :param args: *List of fields
@@ -500,6 +532,11 @@ def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> list[st
 
 
 def create_summary(model_processed: Type[PostProcessing]) -> dict:
+    """
+    Create json with summary of the training
+    :param model_processed: Postprocessing
+    :return: JSON with information about the training
+    """
     clustering = model_processed.clustering
     summary = {
         'Total number of samples ': str(model_processed.stats["General"]["Nb sample"]),
@@ -516,6 +553,12 @@ def create_summary(model_processed: Type[PostProcessing]) -> dict:
 
 
 def return_entry_clustering(output_clustering: json, tag: str = None) -> None:
+    """
+    Create and return entry with the JSON containing the clusters
+    :param output_clustering: json with the cluster
+    :param tag: tag
+    :return: Return entry to demisto
+    """
     return_entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
@@ -528,10 +571,18 @@ def return_entry_clustering(output_clustering: json, tag: str = None) -> None:
 
 
 def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.DataFrame, global_msg: str,
-                           max_percentage_of_missing_value: float) -> Union[List[str],str]:
+                           max_ratio_of_missing_value: float) -> Union[List[str],str]:
+    """
+    Remove fields that are not valid (like too small number of sample)
+    :param fields_for_clustering: List of field to use for the clustering
+    :param incidents_df: DataFrame of incidents
+    :param global_msg: global_msg
+    :param max_ratio_of_missing_value: max ratio of missing values we accept
+    :return: List of valid fields, message
+    """
     missing_values_percentage = incidents_df[fields_for_clustering].applymap(lambda x: x == '').sum(axis=0) / len(
         incidents_df)
-    mask = missing_values_percentage < max_percentage_of_missing_value
+    mask = missing_values_percentage < max_ratio_of_missing_value
     valid_field = mask[mask].index.tolist()
     invalid_field = mask[~mask].index.tolist()
     if invalid_field:
