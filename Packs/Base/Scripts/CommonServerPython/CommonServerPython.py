@@ -5033,14 +5033,14 @@ def return_results(results):
     elif results and isinstance(results, list) and len(results) > 0 and isinstance(results[0], CommandResults):
         result_list = []
         for result in results:
-            demisto.results(result.to_context())
-        return
-        #     if isinstance(result, (dict, str)):
-        #         result_list.append(result)
-        #     else:
-        #         return_results(result)
-        # if result_list:
-        #     demisto.results(result_list)
+            if isinstance(result, (dict, str)):
+                # Results of type dict or str are of the old results format and work with demisto.results()
+                result_list.append(result)
+            else:
+                # The rest are of the new format and have a corresponding function (to_context, to_display, etc...)
+                return_results(result)
+        if result_list:
+            demisto.results(result_list)
 
     elif isinstance(results, CommandResults):
         demisto.results(results.to_context())
