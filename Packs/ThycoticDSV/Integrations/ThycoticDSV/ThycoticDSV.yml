@@ -15,12 +15,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Client id
+- display: Client ID for authenticate
   hidden: false
   name: client_id
   required: true
   type: 0
-- display: Client secret
+- display: Client Secret for authenticate
   hidden: false
   name: client_secret
   required: true
@@ -33,7 +33,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Name secret
+      description: Secret name for DSV
       isArray: false
       name: name
       required: true
