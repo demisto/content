@@ -15,6 +15,7 @@ from sklearn.manifold import TSNE
 from sklearn import metrics
 import hdbscan
 from datetime import datetime
+from typing import Type
 
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either enlarge the time period " \
@@ -81,20 +82,6 @@ class PostProcessing(object):
             dist = dict((k, v) for k, v in dist.items() if v >= 1)
             self.stats[number_cluster]['distribution sample'] = dist
 
-    def com_silhouette(self):
-        """
-        Compute the silhouette for the trained model.
-        """
-        plot_silhouette = []
-        # print("Silhouette Coefficient:")
-        self.silhouette = metrics.silhouette_samples(self.clustering.data, self.clustering.results, metric='euclidean')
-        # print(np.mean(self.silhouette))
-        for number_cluster in range(-1, self.clustering.number_clusters):
-            plot_silhouette.append(
-                np.mean([self.silhouette[i] for i in range(len(self.silhouette)) if
-                         self.clustering.results[i] == number_cluster])
-            )
-        return plot_silhouette
 
     def compute_dist(self):
         """
@@ -104,28 +91,27 @@ class PostProcessing(object):
         """
         dist_total = {}
         if not self.generic_cluster_name:
-            for cluster in range(0, self.clustering.number_clusters):
-                chosen = {k: v for k, v in self.stats[cluster]['distribution sample'].items() if
+            for cluster_number in range(0, self.clustering.number_clusters):
+                chosen = {k: v for k, v in self.stats[cluster_number]['distribution sample'].items() if
                           v >= self.threshold * 100}
-
                 if not chosen:
                     continue
                 total = sum(dict(chosen).values(), 0.0)
                 dist = {k: v * 100 / total for k, v in chosen.items()}
-                dist_total[cluster] = {}
-                dist_total[cluster]['number_samples'] = sum(
-                    self.clustering.raw_data[self.clustering.model.labels_ == cluster].label.isin(list(chosen.keys())))
-                dist_total[cluster]['distribution'] = dist
-                dist_total[cluster]['clusterName'] = ' , '.join([x for x in chosen.keys()])
+                dist_total[cluster_number] = {}
+                dist_total[cluster_number]['number_samples'] = sum(
+                    self.clustering.raw_data[self.clustering.model.labels_ == cluster_number].label.isin(list(chosen.keys())))
+                dist_total[cluster_number]['distribution'] = dist
+                dist_total[cluster_number]['clusterName'] = ' , '.join([x for x in chosen.keys()])
         else:
-            for cluster in range(0, self.clustering.number_clusters):
-                chosen = self.stats[cluster]['distribution sample']
+            for cluster_number in range(0, self.clustering.number_clusters):
+                chosen = self.stats[cluster_number]['distribution sample']
                 total = sum(dict(chosen).values(), 0.0)
                 dist = {k: v * 100 / total for k, v in chosen.items()}
-                dist_total[cluster] = {}
-                dist_total[cluster]['distribution'] = dist
-                dist_total[cluster]['number_samples'] = self.stats[cluster]['number_samples']
-                dist_total[cluster]['clusterName'] = 'Cluster %s' % str(cluster)
+                dist_total[cluster_number] = {}
+                dist_total[cluster_number]['distribution'] = dist
+                dist_total[cluster_number]['number_samples'] = self.stats[cluster_number]['number_samples']
+                dist_total[cluster_number]['clusterName'] = 'Cluster %s' % str(cluster_number)
 
         self.selected_clusters = dist_total
 
@@ -281,11 +267,12 @@ def get_args():  # type: ignore
     debug = demisto.args().get('debug')
 
     return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-           max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
-           min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug
+        max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
+        min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug
 
 
-def get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query_sup, limit, incident_type):
+def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
+                                               query_sup: str, limit: int, incident_type: str) -> Union[json, str]:
     msg = ""
     if query_sup:
         query = " %s" % query_sup
@@ -353,13 +340,13 @@ def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List, *field
         for key, value in item.items():
             value = recursive_filter(value, regex_patterns, *fieldsToRemove)
             if key not in fieldsToRemove and value not in fieldsToRemove and (
-            not match_one_regex(value, regex_patterns)):
+                not match_one_regex(value, regex_patterns)):
                 result[key] = value
         return result
     return item
 
 
-def normalize_global(obj):
+def normalize_global(obj):  # type: ignore
     if isinstance(obj, str):
         return normalize_command_line(obj)
     else:
@@ -388,12 +375,14 @@ def normalize_json(obj) -> str:  # type: ignore
     return my_string
 
 
-def normalize_command_line(command: str) -> str:
+def normalize_command_line(command: Union(str, list)) -> str:
     """
     Normalize command line
     :param command: command line
     :return: Normalized command line
     """
+    if command and isinstance(command, list):
+        command = ' '.join(set(command))
     if command and isinstance(command, str):
         my_string = command.lower()
         my_string = "".join([REPLACE_COMMAND_LINE.get(c, c) for c in my_string])
@@ -442,7 +431,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
         return self.vec.transform(x).toarray()
 
 
-def store_model_in_demisto(model, model_name, model_override):
+def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool) -> None:
     model_data = base64.b64encode(pickle.dumps(model))
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
@@ -452,7 +441,7 @@ def store_model_in_demisto(model, model_name, model_override):
         return_error(get_error(res))
 
 
-def is_clustering_valid(clustering_model):
+def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
     n_labels = len(set(clustering_model.model.labels_))
     n_samples = len(clustering_model.raw_data)
     if not 1 < n_labels < n_samples:
@@ -460,25 +449,25 @@ def is_clustering_valid(clustering_model):
     return True
 
 
-def create_clusters_json(model_processed, incidents_df, type):
+def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd.DataFrame, type: str) -> str:
     clustering = model_processed.clustering
     data = {}
     data['data'] = []
     color = ['0048BA', '#B0BF1A	', '#7CB9E8	', '#B284BE	', '#E52B50', '#FFBF00', '#665D1E', '#8DB600',
              '#D0FF14']
-    for cluster, coordinates in clustering.centers.items():
-        if cluster not in model_processed.selected_clusters.keys():
+    for cluster_number, coordinates in clustering.centers.items():
+        if cluster_number not in model_processed.selected_clusters.keys():
             continue
         d = {}
         d['x'] = float(coordinates[0])
         d['y'] = float(coordinates[1])
-        d['name'] = model_processed.selected_clusters[cluster]['clusterName']
+        d['name'] = model_processed.selected_clusters[cluster_number]['clusterName']
         d['dataType'] = 'incident'
-        d['color'] = color[divmod(cluster, len(color))[1]]
-        d['pivot'] = str(cluster)
-        d['incidents_ids'] = [x for x in incidents_df[clustering.model.labels_ == cluster].id.values.tolist()]
+        d['color'] = color[divmod(cluster_number, len(color))[1]]
+        d['pivot'] = str(cluster_number)
+        d['incidents_ids'] = [x for x in incidents_df[clustering.model.labels_ == cluster_number].id.values.tolist()]
         d['query'] = 'type:%s' % type
-        d['data'] = [int(model_processed.stats[cluster]['number_samples'])]
+        d['data'] = [int(model_processed.stats[cluster_number]['number_samples'])]
         data['data'].append(d)
 
     pretty_json = json.dumps(data, indent=4, sort_keys=True)
@@ -500,7 +489,7 @@ def find_incorrect_field(populate_fields: List[str], incidents_df: pd.DataFrame,
     return global_msg, incorrect_fields
 
 
-def remove_fields_not_in_incident(*args, incorrect_fields):
+def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> list[str]:
     """
     Return list without field in incorrect_fields
     :param args: *List of fields
@@ -510,7 +499,7 @@ def remove_fields_not_in_incident(*args, incorrect_fields):
     return [[x for x in field_type if x not in incorrect_fields] for field_type in args]
 
 
-def create_summary(model_processed, global_msg):
+def create_summary(model_processed: Type[PostProcessing]) -> dict:
     clustering = model_processed.clustering
     summary = {
         'Total number of samples ': str(model_processed.stats["General"]["Nb sample"]),
@@ -526,7 +515,7 @@ def create_summary(model_processed, global_msg):
     return summary
 
 
-def return_entry_clustering(output_clustering, tag=None):
+def return_entry_clustering(output_clustering: json, tag: str = None) -> None:
     return_entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
@@ -538,7 +527,8 @@ def return_entry_clustering(output_clustering, tag=None):
     demisto.results(return_entry)
 
 
-def remove_not_valid_field(fields_for_clustering, incidents_df, global_msg, max_percentage_of_missing_value):
+def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.DataFrame, global_msg: str,
+                           max_percentage_of_missing_value: float) -> Union[List[str],str]:
     missing_values_percentage = incidents_df[fields_for_clustering].applymap(lambda x: x == '').sum(axis=0) / len(
         incidents_df)
     mask = missing_values_percentage < max_percentage_of_missing_value
@@ -555,8 +545,8 @@ def main():
 
     # Get argument of the automation
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-    max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
-    min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug = get_args()
+        max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
+        min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug = get_args()
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
@@ -599,7 +589,7 @@ def main():
     else:
         labels = incidents_df[field_for_cluster_name].rename(columns={field_for_cluster_name[0]: FAMILY_COLUMN_NAME})
 
-    ## Model
+    # Model
     tfidf_pipe = Pipeline(steps=[
         ('tfidf', Tfidf(normalize_function=normalize_global))
     ])
@@ -624,7 +614,7 @@ def main():
     model_processed = PostProcessing(model, min_homogeneity_cluster, max_number_of_clusters, generic_cluster_name)
 
     # store model
-    summary = create_summary(model_processed, global_msg)
+    summary = create_summary(model_processed)
     model_processed.summary = summary
     if store_model == 'True':
         store_model_in_demisto(model_processed, model_name, model_override)

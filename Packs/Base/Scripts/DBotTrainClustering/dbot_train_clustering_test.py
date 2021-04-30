@@ -1,11 +1,7 @@
-# from CommonServerPython import *
-# import pytest
 import json
-import numpy as np
-import pandas as pd
 
-from DBotTrainClustering import demisto, main, HDBSCAN_PARAMS, MESSAGE_INCORRECT_FIELD, MESSAGE_INVALID_FIELD, \
-    MESSAGE_NO_INCIDENT_FETCHED, preprocess_incidents_field, PREFIXES_TO_REMOVE
+from DBotTrainClustering import demisto, main, MESSAGE_INCORRECT_FIELD, MESSAGE_INVALID_FIELD, \
+    preprocess_incidents_field, PREFIXES_TO_REMOVE
 
 PARAMETERS_DICT = {
     'fromDate': '',
@@ -49,12 +45,13 @@ FETCHED_INCIDENT_EMPTY = []
 def executeCommand(command, args):
     global FETCHED_INCIDENT
     if command == 'GetIncidentsByQuery':
-        #return [{'Contents': json.dumps(json.load(open('incidents.json', 'rb'))), 'Type': 'note'}]
         return [{'Contents': json.dumps(FETCHED_INCIDENT), 'Type': 'note'}]
+
 
 def test_preprocess_incidents_field():
     assert preprocess_incidents_field('incident.commandline', PREFIXES_TO_REMOVE) == 'commandline'
     assert preprocess_incidents_field('commandline', PREFIXES_TO_REMOVE) == 'commandline'
+
 
 def test_main_regular(mocker):
     global FETCHED_INCIDENT
@@ -118,23 +115,24 @@ def test_empty_cluster_name(mocker):
                  'incidents_ids': ['1', '3'],
                  'name': 'Cluster 0',
                  'query': 'type:Phishing'
-    }
+        }
     sub_dict_1 = {
                  'data': [2],
                  'dataType': 'incident',
                  'incidents_ids': ['2', '4'],
                  'name': 'Cluster 1',
                  'query': 'type:Phishing'
-    }
+        }
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     model, output_clustering_json, msg = main()
     output_json = json.loads(output_clustering_json)
     cluster_0 = output_json['data'][0]
     cluster_1 = output_json['data'][1]
-    assert (all(item in cluster_0.items() for item in sub_dict_0.items())
-            and all(item in cluster_1.items() for item in sub_dict_1.items())) \
-            or (all(item in cluster_0.items() for item in sub_dict_1.items())
-            and all(item in cluster_1.items() for item in sub_dict_0.items()))
+    assert (all(item in cluster_0.items() for item in sub_dict_0.items()) and
+            all(item in cluster_1.items() for item in sub_dict_1.items())) or \
+            (all(item in cluster_0.items() for item in sub_dict_1.items()) and
+            all(item in cluster_1.items() for item in sub_dict_0.items()))
+
 
 # Test if incorrect all incorrrect field name
 def test_all_incorrect_fields(mocker):
@@ -151,6 +149,7 @@ def test_all_incorrect_fields(mocker):
     assert not output_clustering_json
     assert not model
 
+
 # Test if one field has no enough value
 def test_missing_too_many_values(mocker):
     global FETCHED_INCIDENT
@@ -161,24 +160,6 @@ def test_missing_too_many_values(mocker):
                         return_value=PARAMETERS_DICT)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     model, output_clustering_json, msg = main()
-    assert MESSAGE_INVALID_FIELD %'field_2' in msg
-    assert  output_clustering_json
-    assert  model
-
-
-def test_missing_too_many_values(mocker):
-    global FETCHED_INCIDENT
-    FETCHED_INCIDENT = FETCHED_INCIDENT_EMPTY
-    PARAMETERS_DICT.update(
-        {'fieldsForClustering': 'field_1, field_2', 'fieldForClusterName': 'entityname'})
-    mocker.patch.object(demisto, 'args',
-                        return_value=PARAMETERS_DICT)
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    model, output_clustering_json, msg = main()
-    assert MESSAGE_NO_INCIDENT_FETCHED in msg
-    assert not output_clustering_json
-    assert not model
-
-
-
-
+    assert MESSAGE_INVALID_FIELD % 'field_2' in msg
+    assert output_clustering_json
+    assert model
