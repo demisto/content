@@ -22,6 +22,13 @@ def test_module(client: Client) -> str:
 
     return "ok"
 
+def map_scores_to_dbot(score):
+    if 0 <= score <= 4:
+        return 1
+    elif 5 <= score <= 7:
+        return 2
+    elif 8 <= score <= 10:
+        return 3
 
 def query_samples(client, **args) -> CommandResults:
     params = {"subset": args.get("subset")}
@@ -134,12 +141,51 @@ def get_report_triage(client: Client, **args) -> CommandResults:
 
     r = client._http_request("GET", f"samples/{sample_id}/{task_id}/report_triage.json")
 
+    if 'sample' in r:
+        if 'score' in r['sample']:
+            score = map_scores_to_dbot(r['sample']['score'])
+
+    target = r['sample']['target']
+    if not "sha256" in r['sample']:
+        dbot_score = Common.DBotScore(
+            indicator=target,
+            indicator_type=DBotScoreType.URL,
+            integration_name="Hatching Triage",
+            score=score
+        )
+        indicator = Common.URL(
+            url=target,
+            dbot_score=dbot_score
+        )
+    else:
+        dbot_score = Common.DBotScore(
+            indicator=r['sample']['sha256'],
+            indicator_type=DBotScoreType.FILE,
+            integration_name="Hatching Triage",
+            score=score
+        )
+        indicator = Common.File(
+            name=target,
+            sha256=r['sample']['sha256'],
+            md5=r['sample']['md5'],
+            sha1=r['sample']['sha1'],
+            dbot_score=dbot_score
+        )
+
     results = CommandResults(
         outputs_prefix="Triage.sample.reports.triage",
         outputs_key_field="sample.id",
         outputs=r,
+        indicator=indicator
     )
-
+    #dbot_score_data = []
+    #dbot_score_data.append({
+    #    "Indicator": target,
+    #    "Score": score,
+    #    "Type": "file",
+    #    "Vendor": "Hatching Triage"
+    #})
+    #appendContext("DBotScore", dbot_score_data)
     return results
 
 
