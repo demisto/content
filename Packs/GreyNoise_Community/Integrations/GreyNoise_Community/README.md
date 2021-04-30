@@ -2,6 +2,10 @@ GreyNoise tells security analysts what not to worry about. We do this by curatin
 tools with noise. This unique perspective helps analysts confidently ignore irrelevant or harmless activity, creating
 more time to uncover and investigate true threats. The Action allows IP enrichment via the GreyNoise Community API.
 
+This pack is design specifically for GreyNoise Community users and only provides the subset of intel available via the
+GreyNoise Community API.  The [GreyNoise Pack](https://github.com/demisto/content/tree/master/Packs/GreyNoise) 
+should be used by customers with a paid subscription to GreyNoise.
+
 This integration was integrated and tested with version 0.8.0 of GreyNoise Python SDK.
 Supported Cortex XSOAR versions: 5.0.0 and later.
 
