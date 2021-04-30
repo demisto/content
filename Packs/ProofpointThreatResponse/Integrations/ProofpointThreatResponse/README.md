@@ -18,7 +18,7 @@ Use the Proofpoint Threat Response integration to orchestrate and automate incid
     | Fetch incidents with specific event sources. Can be a list of comma separated values. |  | False |
     | Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma separated values. |  | False |
     | Fetch incident with specific states. |  | False |
-    | POST URL of the JSON alert source. | You can find this value by navigating to Sources -&amp;gt; JSON event source -&amp;gt; POST URL. | False |
+    | POST URL of the JSON alert source. | You can find this value by navigating to Sources -> JSON event source -> POST URL. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
