@@ -89,7 +89,7 @@ class PostProcessing(object):
         :param threshols: the threshold used to select the family(ies)
         :return:
         """
-        dist_total = {}
+        dist_total = {} #type: Dict
         if not self.generic_cluster_name:
             for cluster_number in range(0, self.clustering.number_clusters):
                 chosen = {k: v for k, v in self.stats[cluster_number]['distribution sample'].items() if
@@ -198,13 +198,13 @@ class Clustering(object):
         """
         self.get_data(X, y)
         if hasattr(self.model, 'fit_predict'):
-            self.results = self.model.fit_predict(X)
+            self.results = self.model.fit_predict(X) #type: ignore
         else:
-            self.model.fit(X)
+            self.model.fit(X) #type: ignore
             if hasattr(self.model, 'labels_'):
-                self.results = self.model.labels_.astype(np.int)
+                self.results = self.model.labels_.astype(np.int) #type: ignore
             else:
-                self.results = self.model.predict(X)
+                self.results = self.model.predict(X) #type: ignore
         self.number_clusters = len(set(self.results[self.results >= 0]))
         return
 
@@ -215,8 +215,8 @@ class Clustering(object):
             self.TSNE_ = True
 
     def compute_centers(self):
-        for cluster in range(self.number_clusters):
-            center = np.mean(self.data_2d[np.where(self.model.labels_ == cluster)], axis=0)
+        for cluster in range(self.number_clusters): #type: ignore
+            center = np.mean(self.data_2d[np.where(self.model.labels_ == cluster)], axis=0) #type: ignore
             self.centers[cluster] = center
 
 
@@ -277,7 +277,7 @@ def get_args():  # type: ignore
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
-                                               query_sup: str, limit: int, incident_type: str) -> Union[List, str]:
+                                               query_sup: str, limit: int, incident_type: str) -> Union[Union[List, None], str]:
     """
     Get incidents with given parameters and return list of incidents
     :param populate_fields: List of field to populate
@@ -467,8 +467,8 @@ def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
     :param clustering_model: Clustering model
     :return: Boolean
     """
-    n_labels = len(set(clustering_model.model.labels_))
-    n_samples = len(clustering_model.raw_data)
+    n_labels = len(set(clustering_model.model.labels_)) #type: ignore
+    n_samples = len(clustering_model.raw_data) #type: ignore
     if not 1 < n_labels < n_samples:
         return False
     return True
@@ -496,7 +496,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
         d['name'] = model_processed.selected_clusters[cluster_number]['clusterName']
         d['dataType'] = 'incident'
         d['color'] = color[divmod(cluster_number, len(color))[1]]
-        d['pivot'] = str(cluster_number)
+        d['pivot'] = str(cluster_number) #type: ignore
         d['incidents_ids'] = [x for x in incidents_df[clustering.model.labels_ == cluster_number].id.values.tolist()]
         d['query'] = 'type:%s' % type
         d['data'] = [int(model_processed.stats[cluster_number]['number_samples'])]
