@@ -244,7 +244,7 @@ def test_fetch_incidents_limit_exceed(mocker):
      - validate that the number or incidents that is returned is equal to the limit when the api returned more.
      """
     params = {
-        'fetch_delta': '6',
+        'fetch_delta': '6 hours',
         'fetch_limit': ' 5',
         'created_after': '2021-03-30T11:44:24Z',
         'state': 'closed'
@@ -268,7 +268,7 @@ def test_fetch_incidents_already_fetch_empty(mocker):
     expected_ids_to_fetch = [3055, 3056, 3058, 3059, 3057]
     already_fetched = []
     params = {
-        'fetch_delta': '6',
+        'fetch_delta': '6 hours',
         'fetch_limit': ' 5',
         'created_after': '2021-03-30T11:44:24Z',
         'already_fetched': already_fetched,
@@ -296,7 +296,7 @@ def test_fetch_incidents_two_iterations(mocker):
 
     already_fetched = [3064, 3063]
     params = {
-        'fetch_delta': '2',
+        'fetch_delta': '2 hours',
         'fetch_limit': ' 2',
         'created_after': '2021-03-30T11:44:24Z',
         'already_fetched': already_fetched,
@@ -309,7 +309,7 @@ def test_fetch_incidents_two_iterations(mocker):
 
     already_fetched = [3064, 3063, 3055, 3056]
     params = {
-        'fetch_delta': '2',
+        'fetch_delta': '2 hours',
         'fetch_limit': ' 2',
         'created_after': '2021-03-30T11:44:24Z',
         'already_fetched': already_fetched,

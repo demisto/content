@@ -466,13 +466,27 @@ def get_incidents_batch_by_time_request(params):
     incidents_list = []  # type:list
     new_fetched_incidents_ids = []
 
-    fetch_delta = int(params.get('fetch_delta', '6'))
+    fetch_delta = params.get('fetch_delta', '6 hours')
     fetch_limit = int(params.get('fetch_limit', '50'))
     already_fetched = params.get('already_fetched', [])
     last_fetch = params.get('created_after')
 
     current_time = datetime.now()
-    time_delta = timedelta(hours=fetch_delta)  # batch by days
+
+    fetch_delta_split = fetch_delta.strip().split(' ')
+    unit = fetch_delta_split[1].lower()
+    number = int(fetch_delta_split[0])
+
+    if unit not in ['minute', 'minutes',
+                    'hour', 'hours',
+                    ]:
+        return_error('The unit of fetch_delta is invalid. Must be minutes, hours.')
+
+    if 'hour' in unit:
+        time_delta = timedelta(hours=number)  # batch by hours
+    else:
+        time_delta = timedelta(minutes=number)  # batch by minutes
+
     created_after = datetime.strptime(params.get('created_after'), TIME_FORMAT)
     created_before = created_after + time_delta
 
@@ -489,7 +503,8 @@ def get_incidents_batch_by_time_request(params):
         filtered_incidents_list = filter_incidents(incidents)
         ordered_incidents = sorted(filtered_incidents_list, key=lambda k: (k['created_at'], k['id']))
 
-        demisto.debug("Entering while loop,iteration number {} with {} incidents".format(str(iteration_count), str(len(incidents))))
+        demisto.debug("Entering while loop,iteration number {} with {} incidents".format(str(iteration_count),
+                                                                                         str(len(filtered_incidents_list))))
 
         for incident in ordered_incidents:
             # if reached to fetch limit, no need to continue to go through the incidents
@@ -512,11 +527,10 @@ def get_incidents_batch_by_time_request(params):
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
         demisto.debug("End of current while iteration, number of all incidents gathered until now"
                       " {}. The next created_after is {} and"
-                      "The next create_before is {}, the last fetch is {}".format(str(len(incidents_list)),
-                                                                                  request_params['created_after'],
-                                                                                  request_params['created_before'],
-                                                                                  last_fetch
-                                                                                  ))
+                      "The next create_before is {}.".format(str(len(incidents_list)),
+                                                             request_params['created_after'],
+                                                             request_params['created_before']
+                                                             ))
         iteration_count = iteration_count + 1
     if incidents_list:
         last_fetch = incidents_list[-1].get('created_at')

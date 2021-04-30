@@ -37,8 +37,8 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- defaultvalue: '6'
-  display: Number of hours between the last incident fetched and the next incident in a single fetch.
+- defaultvalue: '6 hours'
+  display: The delta between the last incident fetched and the next incident in a single fetch. e.g. 1 hour, 3 minutes.
   name: fetch_delta
   required: false
   type: 0
