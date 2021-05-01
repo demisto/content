@@ -3366,7 +3366,8 @@
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "Issue 31032",
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "Google-Vault-Generic-Test": "Issue 24347",
-        "FireEyeNX-Test": "Issue 33216"
+        "FireEyeNX-Test": "Issue 33216",
+        "GmailTest": "Issue 27057"
     },
     "skipped_integrations": {
         
