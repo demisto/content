@@ -91,4 +91,4 @@ runas: DBotWeakRole
 runonce: true
 dockerimage: demisto/machine-learning
 tests:
-- No test
+- Dedup - Generic v2 - Test
