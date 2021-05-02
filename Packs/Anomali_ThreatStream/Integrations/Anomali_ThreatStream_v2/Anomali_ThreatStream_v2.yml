@@ -1628,7 +1628,7 @@ script:
     - contextPath: ThreatStream.URL.Tags
       description: Tags assigned to the URL
       type: Unknown
-  dockerimage: demisto/emoji:1.0.0.18288
+  dockerimage: demisto/emoji:1.0.0.19032
   feed: false
   isfetch: false
   longRunning: false
