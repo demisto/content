@@ -26,7 +26,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   required: false
-  defaultvalue: ''
+  defaultvalue: false
   type: 8
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
 display: Rasterize
