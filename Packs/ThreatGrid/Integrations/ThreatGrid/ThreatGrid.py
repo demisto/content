@@ -845,12 +845,7 @@ def get_analysis_iocs():
     r = req('GET', url, params=params)
     iocs = []    # type: ignore
     dbots = []    # type: ignore
-    demisto.info(f'this is r.json() {r}')
-    demisto.info(f'this is r.json() {r.json()}')
-    demisto.info(f'this is demisto.get(r.json()) {demisto.get(r.json(), "Not found")}')
-    demisto.info(f'this is demisto.get("data")) {demisto.get("data", "Not found")}')
     items = demisto.get(r.json(), 'data.items')    # type: ignore
-    demisto.info(f"check items {items}")
     if not items:
         append_to_analysis_iocs_arrays(iocs, dbots, demisto.get(r.json(), 'data'))
     else:
@@ -872,13 +867,12 @@ def append_to_analysis_iocs_arrays(iocs, dbots, k):
     """
     Helper for appending analysis item to ioc an dbot arrays
     """
-    demisto.info(f"check k {k}")
     iocs.append(ioc_to_readable(k))
     dbots.append({
         'Vendor': 'ThreatGrid',
         'Type': 'IOC',
-        'Indicator': k.get('ioc', 'default'),
-        'Score': calc_score(k.get('severity', 'default'))
+        'Indicator': k.get('ioc', 'unknown'),
+        'Score': calc_score(k.get('severity', '1'))
     })
 
 
