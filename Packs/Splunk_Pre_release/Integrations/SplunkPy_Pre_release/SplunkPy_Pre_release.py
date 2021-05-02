@@ -2220,6 +2220,7 @@ def main():
         connection_args['handler'] = handler(proxy)
 
     try:
+        connection_args['autologin'] = True
         service = client.connect(**connection_args)
     except urllib2.URLError as e:
         if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
