@@ -364,4 +364,3 @@ if demisto.command() == 'aws-route53-test-dns-answer':
     result = test_dns_answer(demisto.args())
 
 demisto.results(result)
-sys.exit(0)
