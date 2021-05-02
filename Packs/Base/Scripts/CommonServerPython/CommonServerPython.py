@@ -403,26 +403,6 @@ class FeedIndicatorType(object):
             return None
 
 
-class ScheduleMetadata(object):
-    """
-    Schedule metadata helper class used when a command is being called via another command schedule
-
-    :type context: ``dict``
-    :param context: Context in which the command was executed.
-
-    :return: None
-    :rtype: ``None``
-    """
-    def __init__(self, context):
-        parent_entry = context.get('ParentEntry', {})
-        self.is_polling = True if parent_entry.get('polling') else False
-        self.polling_command = parent_entry.get('pollingCommand')
-        self.polling_args = parent_entry.get('pollingArgs')
-        self.times_ran = int(parent_entry.get('timesRan', 0)) + 1
-        self.start_date = parent_entry.get('startDate')
-        self.end_date = parent_entry.get('endingDate')
-
-
 def is_debug_mode():
     """Return if this script/command was passed debug-mode=true option
 
@@ -432,6 +412,29 @@ def is_debug_mode():
     # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
     return hasattr(demisto, 'is_debug') and demisto.is_debug
 
+
+def get_schedule_metadata(context):
+    """
+        Get the entry schedule metadata if available
+
+        :type context: ``dict``
+        :param context: Context in which the command was executed.
+
+        :return: Dict with metadata of scheduled entry
+        :rtype: ``dict``
+    """
+    schedule_metadata = {}
+    parent_entry = context.get('ParentEntry', {})
+    if parent_entry:
+        schedule_metadata = assign_params(
+            is_polling=True if parent_entry.get('polling') else False,
+            polling_command=parent_entry.get('pollingCommand'),
+            polling_args=parent_entry.get('pollingArgs'),
+            times_ran=int(parent_entry.get('timesRan', 0)) + 1,
+            start_date=parent_entry.get('startDate'),
+            end_date=parent_entry.get('endingDate')
+        )
+    return schedule_metadata
 
 def auto_detect_indicator_type(indicator_value):
     """
@@ -4968,8 +4971,8 @@ class CommandResults:
     :type mark_as_note: ``bool``
     :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
 
-    :type scheduled_command_config: ``Common.ScheduledCommandConfiguration``
-    :param scheduled_command_config: manages the way the command should be polled.
+    :type scheduled_command: ``Common.ScheduledCommandConfiguration``
+    :param scheduled_command: manages the way the command should be polled.
 
     :return: None
     :rtype: ``None``
@@ -4977,7 +4980,7 @@ class CommandResults:
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
-                 mark_as_note=False, relations=None, scheduled_command_config=None):
+                 mark_as_note=False, relations=None, scheduled_command=None):
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, list, Common.ScheduledCommandConfiguration) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
@@ -5010,7 +5013,7 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
-        self.scheduled_command_config = scheduled_command_config  # type: Optional[Common.ScheduledCommandConfiguration]
+        self.scheduled_command = scheduled_command  # type: Optional[Common.ScheduledCommandConfiguration]
 
         self.relations = relations
 
@@ -5084,8 +5087,8 @@ class CommandResults:
             'Note': mark_as_note,
             'Relationships': relations,
         }
-        if self.scheduled_command_config:
-            return_entry.update(self.scheduled_command_config.to_results())
+        if self.scheduled_command:
+            return_entry.update(self.scheduled_command.to_results())
         return return_entry
 
 
@@ -5810,10 +5813,16 @@ class DebugLogger(object):
         brand = callingContext.get('IntegrationBrand')
         if brand:
             msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, callingContext.get('IntegrationInstance'))
-        sm = ScheduleMetadata(callingContext)
-        if sm.is_polling:
+        sm = get_schedule_metadata(context=callingContext)
+        if sm.get('is_polling'):
             msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
-                   "date: [{}]".format(sm.polling_command, sm.polling_args, sm.times_ran, sm.start_date, sm.end_date)
+                   "date: [{}]".format(
+                sm.get('polling_command'),
+                sm.get('polling_args'),
+                sm.get('times_ran'),
+                sm.get('start_date'),
+                sm.get('end_date')
+            )
         self.int_logger.write(msg)
 
 
