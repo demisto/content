@@ -154,6 +154,76 @@ script:
       description: Additional attributes (key/value pairs) may be stored with the
         endpoint.
       type: Unknown
+  - arguments:
+    - default: false
+      description: Numeric ID of the required attribute.
+      isArray: false
+      name: attribute_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the required attribute.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Entity Name of the required attribute. Can be Device/LocalUser/GuestUser/Endpoint/Onboard.
+      isArray: false
+      name: entity_name
+      predefined:
+      - Device
+      - LocalUser
+      - GuestUser
+      - Endpoint
+      - Onboard
+      required: false
+      secret: false
+    - default: false
+      description: Zero based offset to start from. The default value is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of items to return in range of 1 – 1000. The default
+        value is 25.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of attributes. If no arguments were given, all of the
+      attributes will be displayed.
+    execution: false
+    name: aruba-clearpass-attributes-list
+    outputs:
+    - contextPath: HPEArubaClearpass.attributes.id
+      description: The ID of the attribute.
+      type: Number
+    - contextPath: HPEArubaClearpass.attributes.name
+      description: The name of the attribute.
+      type: string
+    - contextPath: HPEArubaClearpass.attributes.entity_name
+      description: The entity Name of the attribute.
+      type: string
+    - contextPath: HPEArubaClearpass.attributes.data_type
+      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
+      type: string
+    - contextPath: HPEArubaClearpass.attributes.mandatory
+      description: Whether the entity of the attribute is mandatory.
+      type: Boolean
+    - contextPath: HPEArubaClearpass.attributes.default_value
+      description: Default Value of the attribute.
+      type: Unknown
+    - contextPath: HPEArubaClearpass.attributes.allow_multiple
+      description: Whether to allow multiple values of the attribute for data type
+        String.
+      type: Boolean
+    - contextPath: HPEArubaClearpass.attributes.allowed_value
+      description: The allowed value for data type list (e.g., example1,example2,example3).
+      type: Unknown
   dockerimage: demisto/python3:3.9.4.18682
   script: '-'
   subtype: python3

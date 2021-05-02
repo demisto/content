@@ -40,7 +40,8 @@ class Client(BaseClient):
         access_token_expiration_in_seconds = auth_response.get("expires_in")
         if access_token_expiration_in_seconds and isinstance(auth_response.get("expires_in"), int):
             access_token_expiration_datetime = datetime.now() + timedelta(seconds=access_token_expiration_in_seconds)
-            context = {"access_token": self.access_token, "expires_in": access_token_expiration_datetime}
+            context = {"access_token": self.access_token,
+                       "expires_in": access_token_expiration_datetime.strftime(DATE_FORMAT)}
             set_integration_context(context)
             demisto.debug(
                 f"New access token that expires in : {access_token_expiration_datetime.strftime(DATE_FORMAT)} w"
@@ -52,22 +53,23 @@ class Client(BaseClient):
 
     def login(self):
         integration_context = get_integration_context()
-        access_token_expiration = integration_context.get('expires_in')
-        access_token = integration_context.get('access_token')
-        is_context_has_access_token = access_token and access_token_expiration
-        if is_context_has_access_token and access_token_expiration > datetime.now():
-            self.set_request_headers()
-            return
-
-        # if the access is expired or not exist, generate a new one
-        auth_response = self.generate_new_access_token()
-        access_token = auth_response.get("access_token")
-        if access_token:
-            self.access_token = access_token
-            self.save_access_token_to_context(auth_response)
-            self.set_request_headers()
+        if integration_context:
+            access_token_expiration = integration_context.get('expires_in')
+            access_token = integration_context.get('access_token')
+            is_context_has_access_token = access_token and access_token_expiration
+            if is_context_has_access_token and access_token_expiration > datetime.now():
+                self.set_request_headers()
+                return
         else:
-            return_error("HPE Aruba Clearpass error: The client credentials are invalid.")
+            # if the access is expired or not exist, generate a new one
+            auth_response = self.generate_new_access_token()
+            access_token = auth_response.get("access_token")
+            if access_token:
+                self.access_token = access_token
+                self.save_access_token_to_context(auth_response)
+                self.set_request_headers()
+            else:
+                return_error("HPE Aruba Clearpass error: The client credentials are invalid.")
 
     def set_request_headers(self):
         """
@@ -77,7 +79,7 @@ class Client(BaseClient):
         authorization_header_value = f"{TOKEN_TYPE} {self.access_token}"
         self.headers = {"Authorization": authorization_header_value}
 
-    def request_endpoints(self, method: str, params: dict, url_suffix: str, body={}):
+    def prepare_request(self, method: str, params: dict, url_suffix: str, body={}):
         return self._http_request(
             method=method,
             params=params,
@@ -106,6 +108,8 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
+        params = {'filter': {}, 'offset': 0, 'limit': 25}
+        client.prepare_request(method='GET', params=params, url_suffix='endpoint')
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -115,12 +119,12 @@ def test_module(client: Client) -> str:
     return message
 
 
-def parse_endpoints_response(response):
+def parse_items_response(response, parsing_function):
     items_list = response.get('_embedded', {}).get('items')
     human_readable = []
     if items_list:
         for item in items_list:
-            human_readable.append(endpoints_response_to_dict(item))
+            human_readable.append(parsing_function(item))
     return human_readable, items_list
 
 
@@ -134,9 +138,9 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     endpoints_filter.update({'mac_address': mac_address}) if mac_address else None
     params = {'filter': endpoints_filter, 'offset': offset, 'limit': limit}
 
-    res = client.request_endpoints(method='GET', params=params, url_suffix='endpoint')
+    res = client.prepare_request(method='GET', params=params, url_suffix='endpoint')
 
-    readable_output, outputs = parse_endpoints_response(res)
+    readable_output, outputs = parse_items_response(res, endpoints_response_to_dict)
     human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', readable_output, removeNull=True)
 
     return CommandResults(
@@ -177,7 +181,7 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
     request_body.update({'device_insight_tags': device_insight_tags}) if device_insight_tags else None
     request_body.update({'attributes': attributes_values}) if attributes else None
 
-    res = client.request_endpoints(method='PATCH', params={}, url_suffix=f'endpoint/{endpoint_id}', body=request_body)
+    res = client.prepare_request(method='PATCH', params={}, url_suffix=f'endpoint/{endpoint_id}', body=request_body)
     outputs = endpoints_response_to_dict(res)
     human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', outputs, removeNull=True)
 
@@ -187,6 +191,51 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_key_field='id',
         outputs=outputs,
     )
+
+
+def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    attribute_id = args.get('attribute_id')
+    try:
+        if attribute_id:
+            attribute_id = int(attribute_id)
+    except ValueError:
+        return_error("Please note that attribute_id should be a valid id number (integer).")
+
+    name = args.get('name')
+    entity_name = args.get('entity_name')
+    offset = args.get('offset', 0)
+    limit = args.get('limit', 25)
+
+    attribute_filter = {}
+    attribute_filter.update({'id': attribute_id}) if attribute_id else None
+    attribute_filter.update({'name': name}) if name else None
+    attribute_filter.update({'entity_name': entity_name}) if entity_name else None
+    params = {'filter': attribute_filter, 'offset': offset, 'limit': limit}
+
+    res = client.prepare_request(method='GET', params=params, url_suffix='attribute')
+
+    readable_output, outputs = parse_items_response(res, attributes_response_to_dict)
+    human_readable = tableToMarkdown('HPE Aruba Clearpass attributes', readable_output, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='HPEArubaClearpass.attributes',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
+def attributes_response_to_dict(response):
+    return {
+        'ID': response.get('id'),
+        'Name': response.get('name'),
+        'Entity name': response.get('entity_name'),
+        'Data type': response.get('data_type'),
+        'Mandatory': response.get('mandatory', False),
+        'Default value': response.get('default_value'),
+        'Allow multiple': response.get('allow_multiple', False),
+        'Allowed value': response.get('allowed_value', False)
+    }
 
 
 def main() -> None:
@@ -213,6 +262,9 @@ def main() -> None:
 
         elif demisto.command() == 'aruba-clearpass-endpoint-update':
             return_results(update_endpoint_command(client, demisto.args()))
+
+        elif demisto.command() == 'aruba-clearpass-attributes-list':
+            return_results(get_attributes_list_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
