@@ -10,7 +10,6 @@ if [ "$#" -lt "1" ]; then
   [-f, --force]               Whether to trigger the force upload flow.
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
-  [-g, --gitlab]              Whether to trigger gitlab ci or circle. If flag is used will trigger gitlab build.
   "
   exit 1
 fi

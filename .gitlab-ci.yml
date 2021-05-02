@@ -490,7 +490,7 @@ run-validations:
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
     - echo INSTANCE_CREATED="$INSTANCE_CREATED"
     - echo "=====Wait Until Server Ready====="
-    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" "$ARTIFACTS_FOLDER" "gitlab"
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - echo "=====Install Packs====="
     - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" "gitlab"
     - echo "=====Destroy Instances====="

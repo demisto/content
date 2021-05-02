@@ -161,6 +161,8 @@ references:
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
         echo 'export ENV_RESULTS_PATH=/home/circleci/project/artifacts/env_results.json' >> $BASH_ENV
         echo 'source /home/circleci/project/.circleci/content_release_vars.sh' >> $BASH_ENV
+        chmod +x .circleci/gitlab-ci-env-variables.sh
+        ./.circleci/gitlab-ci-env-variables.sh
         if [ -n "${NIGHTLY_PARAMETER}" ];
         then
             echo 'export NIGHTLY=true' >> $BASH_ENV
@@ -623,7 +625,7 @@ references:
       shell: /bin/bash
       when: always
       command: |
-        python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" "$CIRCLE_ARTIFACTS" ""
+        python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
 
   check_if_instance_was_created: &check_if_instance_was_created
     run:
