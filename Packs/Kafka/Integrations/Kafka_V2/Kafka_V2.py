@@ -331,6 +331,8 @@ def fetch_incidents(client):
     topic = demisto.params().get('topic', '')
     partition_to_fetch_from = argToList(demisto.params().get('partition', ''))
     offset_to_fetch_from = demisto.params().get('offset', -2)
+    message_max_bytes = int(demisto.params().get("max_bytes_per_message", 1048576))
+
     try:
         offset_to_fetch_from = int(offset_to_fetch_from)
     except ValueError as e:
@@ -353,7 +355,8 @@ def fetch_incidents(client):
         consumer_args = {
             'consumer_timeout_ms': 2000,  # wait max 2 seconds for new messages
             'reset_offset_on_start': True,
-            'auto_offset_reset': offset_to_fetch_from
+            'auto_offset_reset': offset_to_fetch_from,
+            'fetch_message_max_bytes': message_max_bytes
         }
 
         if partition_to_fetch_from:
