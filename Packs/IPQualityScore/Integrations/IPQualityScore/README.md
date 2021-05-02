@@ -29,7 +29,7 @@ Runs reputation on IPs.
 
 #### Aquiring an API key
 
-1. Go to https://www.ipqualityscore.com/create-account and register for an account.
+1. Go to https://www.ipqualityscore.com/create-account and register for an account. Accounts are free and come with 5,000 API lookups each month. Additional lookups can be purchased one time or on a monthly basis.
 2. Once you've registered, login then go to https://www.ipqualityscore.com/documentation/proxy-detection/overview and your API key will be listed under the "Private Key" subheading.
 
 
