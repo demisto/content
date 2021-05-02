@@ -85,7 +85,8 @@ Checks the reputation of the given IP.
                 "Location": "33.6007,73.0679"
             }, 
             "ASN": "45595", 
-            "Address": "39.41.26.166"
+            "Address": "39.41.26.166",
+            "Tags": ["phish-target", "victim-hi-tech"]
         }, 
         "DBotScore": {
             "Vendor": "TOR Exit Nodes", 
@@ -103,6 +104,7 @@ Checks the reputation of the given IP.
             "Address": "39.41.26.166", 
             "Organization": "PTCL", 
             "Type": "ip", 
+            "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}],
             "ASN": "45595"
         }
     }
@@ -179,6 +181,7 @@ Checks the reputation of the given domain name.
             "Address": "microsoftfaq.com", 
             "Organization": "", 
             "Type": "domain", 
+            "Tags": ["phish-target", "victim-hi-tech"],
             "ASN": ""
         }, 
         "Domain": {
@@ -195,7 +198,8 @@ Checks the reputation of the given domain name.
                     "Email": "", 
                     "Name": "Registrant City:"
                 }
-            }
+            },
+            "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}]
         }, 
         "DBotScore": {
             "Vendor": "Analyst", 
@@ -277,10 +281,12 @@ Checks the reputation of the given hash of the file.
             "Modified": "2019-06-24T10:13:27.284Z", 
             "Source": "URLHaus Hashes", 
             "Type": "md5", 
+            "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}],
             "MD5": "07df6c1d9a76d81f191be288d463784b"
         }, 
         "File": {
-            "MD5": "07df6c1d9a76d81f191be288d463784b"
+            "MD5": "07df6c1d9a76d81f191be288d463784b",
+            "Tags": ["phish-target", "victim-hi-tech"]
         }
     }
 
@@ -347,6 +353,7 @@ Checks the reputation of the given email address.
             "Modified": "2019-06-24T09:50:23.810Z", 
             "Source": "Anomali Labs Compromised Credentials", 
             "Type": "email", 
+            "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}],
             "Email": "goo@test.com"
         }
     }
@@ -1709,7 +1716,8 @@ Checks the reputation of the given URL.
             "Malicious": {
                 "Vendor": "ThreatStream"
             }, 
-            "Data": "http://194.147.35.172/mikey.mpsl"
+            "Data": "http://194.147.35.172/mikey.mpsl",
+            "Tags": ["phish-target", "victim-hi-tech"]
         }, 
         "ThreatStream.URL": {
             "Status": "active", 
@@ -1720,7 +1728,8 @@ Checks the reputation of the given URL.
             "Source": "H3X Tracker", 
             "Address": "http://194.147.35.172/mikey.mpsl", 
             "Organization": "LLC Baxet", 
-            "Type": "url"
+            "Type": "url",
+            "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}]
         }, 
         "DBotScore": {
             "Vendor": "H3X Tracker", 
