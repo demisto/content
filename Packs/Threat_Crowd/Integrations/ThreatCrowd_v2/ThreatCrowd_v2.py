@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
 import traceback
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -35,7 +35,7 @@ def handle_resolutions(resolutions: List[dict], limit: Optional[int]) -> List[di
     return resolutions
 
 
-def _get_dbot_score(json_res: dict) -> (int, str):
+def _get_dbot_score(json_res: dict) -> Tuple[int, str]:
     """Gets a json response and calculate the dbot score by the response. Returns both the score in code and as
     string """
 
