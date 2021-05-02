@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import os
 
 import demisto_client
 from slack import WebClient as SlackClient
@@ -150,7 +151,7 @@ if __name__ == "__main__":
     install_simple_logging()
     options = options_handler()
     if options.instance_tests:
-        with open('./artifacts/env_results.json', 'r') as json_file:
+        with open(os.getenv('ENV_RESULTS_PATH'), 'r') as json_file:
             env_results = json.load(json_file)
             server = f'https://localhost:{env_results[0]["TunnelPort"]}'
 

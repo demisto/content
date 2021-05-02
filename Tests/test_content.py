@@ -18,7 +18,6 @@ from google.api_core.exceptions import PreconditionFailed
 from google.cloud import storage
 
 from Tests.test_dependencies import get_used_integrations
-from Tests.configure_and_test_integration_instances import ENV_RESULTS_PATH
 from demisto_sdk.commands.common.constants import FILTER_CONF
 from demisto_sdk.commands.test_content.ParallelLoggingManager import ParallelLoggingManager
 
@@ -330,9 +329,10 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         logging.info(f'Local run, assuming server version is {default_version}')
         return default_version
 
-    env_json = load_env_results_json(ENV_RESULTS_PATH)
+    env_json = load_env_results_json(os.getenv('ENV_RESULTS_PATH'))
     if not env_json:
-        logging.warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
+        logging.warning(f"Did not find {os.getenv('ENV_RESULTS_PATH')} file, "
+                        f"assuming server version is {default_version}.")
         return default_version
 
     instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}

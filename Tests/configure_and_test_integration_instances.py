@@ -61,7 +61,6 @@ AVOID_DOCKER_IMAGE_VALIDATION = {
     'content.validate.docker.images': 'false'
 }
 ID_SET_PATH = './artifacts/id_set.json'
-ENV_RESULTS_PATH = os.path.join(os.getenv('ARTIFACTS_FOLDER'), "env_results.json")
 
 
 class Running(IntEnum):
@@ -124,6 +123,7 @@ class Build:
     test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CIRCLECI_RUN
+    env_results_path = os.getenv('ENV_RESULTS_PATH')
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #

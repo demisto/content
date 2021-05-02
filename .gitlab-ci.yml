@@ -35,11 +35,11 @@ default:
        echo "found venv"
      else
       echo "installing venv"
-      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap > $ARTIFACTS_FOLDER/python_venv_init.log
+      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log
      fi
-     venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/python_venv_init.log
-     venv/bin/pip2 install -r dev-requirements-py2.txt >> $ARTIFACTS_FOLDER/python_venv_init.log
-     source ./venv/bin/activate >> $ARTIFACTS_FOLDER/python_venv_init.log
+     venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log
+     venv/bin/pip2 install -r dev-requirements-py2.txt >> $ARTIFACTS_FOLDER/logs/installations.log
+     source ./venv/bin/activate >> $ARTIFACTS_FOLDER/logs/installations.log
     - git config diff.renameLimit 6000
     - export PATH="${PWD}/node_modules/.bin:${PATH}"
     - |
@@ -87,6 +87,7 @@ variables:
 # Remove this when branches will sync with github
   SKIP_PRIVATE_BUILD: "true"
   FORCE_BUCKET_UPLOAD: "false"
+  ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
 
 stages:
   - unittests-and-validations
@@ -105,14 +106,14 @@ notify-slack:
       if [ -n "${BUCKET_UPLOAD}" ]; then
         ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
       elif [ -n "${COMMIT_FLOW}" ]; then
-        ./Tests/scripts/slack_notifier.sh 'unittests' $ARTIFACTS_FOLDER/env_results.json '$SLACK_CHANNEL' 'gitlab'
+        ./Tests/scripts/slack_notifier.sh 'unittests' $ENV_RESULTS_PATH '$SLACK_CHANNEL' 'gitlab'
       fi
 
 create-instances:
   stage: create-instances
   needs: []
   script:
-    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/create_instances_create_id_set_output.log
+    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/logs/create_instances_create_id_set_output.log
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
     - cp content-descriptor.json $ARTIFACTS_FOLDER
@@ -180,7 +181,7 @@ create-instances:
           else
             export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
           fi
-          python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+          python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ENV_RESULTS_PATH"
       fi
 
 
@@ -214,9 +215,9 @@ create-instances:
     - |
       if [ $INSTANCE_ROLE == "Server Master" ];
         then
-          ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ARTIFACTS_FOLDER/env_results.json '$SLACK_CHANNEL' 'gitlab'
+          ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ENV_RESULTS_PATH '$SLACK_CHANNEL' 'gitlab'
       fi
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ENV_RESULTS_PATH "$INSTANCE_ROLE" "$TIME_TO_LIVE"
     - export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
     - zip -P $PSWD -j $ARTIFACTS_FOLDER/Logs.zip $ARTIFACTS_FOLDER/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
     - rm -f $ARTIFACTS_FOLDER/server*.log
@@ -314,7 +315,7 @@ run-validations:
     - echo "====Look For Secrets===="
     - demisto-sdk secrets --post-commit --ignore-entropy
     - echo "====Create id set===="
-    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/run_validations_create_id_set_output.log
+    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/logs/run_validations_create_id_set_output.log
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - echo "====Merge public and private id sets===="
     - |
@@ -387,7 +388,7 @@ run-validations:
     - echo "successfully downloaded index.zip into $INDEX_PATH"
 
     - UNZIP_PATH=$(mktemp -d)
-    - unzip $INDEX_PATH -d $UNZIP_PATH > $ARTIFACTS_FOLDER/unzip_index.log
+    - unzip $INDEX_PATH -d $UNZIP_PATH > $ARTIFACTS_FOLDER/logs/unzip_index.log
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
 
@@ -418,7 +419,7 @@ run-validations:
     else
       echo "Generating the ips and ports"
       # Generating the ips and ports with the following form: <instance-ip> <tunnel-port>
-      IPS_AND_PORTS=$(cat $ARTIFACTS_FOLDER/env_results.json | jq ".[] | select(.Role==\"$INSTANCE_ROLE\")" | jq -r '[.InstanceDNS, .TunnelPort] | @tsv' | sed "s/\"//g")
+      IPS_AND_PORTS=$(cat $ENV_RESULTS_PATH | jq ".[] | select(.Role==\"$INSTANCE_ROLE\")" | jq -r '[.InstanceDNS, .TunnelPort] | @tsv' | sed "s/\"//g")
       # Handling the ip & port pairs line by line
       echo "Handling the ip & port pairs line by line"
       echo $IPS_AND_PORTS | grep -o -E "[0-9\.]+ [0-9]{4}" | while read IP_AND_PORT;
@@ -492,7 +493,7 @@ run-validations:
       if [ -n "${CONTRIB_BRANCH}" ]; then
         echo "Skipping - not running in contribution instance"
       else
-        python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+        python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ENV_RESULTS_PATH "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
         zip -P $PSWD -j $ARTIFACTS_FOLDER/Logs.zip $ARTIFACTS_FOLDER/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)

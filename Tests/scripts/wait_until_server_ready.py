@@ -12,7 +12,6 @@ import requests
 import urllib3.util
 
 from Tests.scripts.utils.log_util import install_logging
-from Tests.configure_and_test_integration_instances import ENV_RESULTS_PATH
 from demisto_sdk.commands.common.tools import run_command
 # Disable insecure warnings
 from demisto_sdk.commands.test_content.constants import SSH_USER
@@ -83,7 +82,7 @@ def main():
     instance_name_to_wait_on = sys.argv[1]
 
     ready_ami_list = []
-    with open(ENV_RESULTS_PATH, 'r') as json_file:
+    with open(os.getenv('ENV_RESULTS_PATH'), 'r') as json_file:
         env_results = json.load(json_file)
         instance_ips = [(env.get('Role'), env.get('InstanceDNS'), env.get('TunnelPort')) for env in env_results]
 
