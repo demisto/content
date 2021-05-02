@@ -71,7 +71,6 @@ def ip_command(client, args, ip_suspicious_score_threshold, ip_malicious_score_t
 
         if result.get('fraud_score', 0) >= ip_malicious_score_threshold:
             score = 3
-            result['Malicious'] = {'Vendor': 'IPQualityScore'}
         elif result.get('fraud_score', 0) >= ip_suspicious_score_threshold:
             score = 2
         else:
@@ -116,7 +115,6 @@ def email_command(client, args, email_suspicious_score_threshold, email_maliciou
 
         if result.get('fraud_score', 0) >= email_malicious_score_threshold:
             score = 3
-            result['Malicious'] = {'Vendor': 'IPQualityScore'}
         elif result.get('fraud_score', 0) >= email_suspicious_score_threshold:
             score = 2
         else:
@@ -158,7 +156,6 @@ def url_command(client, args, url_suspicious_score_threshold, url_malicious_scor
 
         if result.get('fraud_score', 0) >= url_malicious_score_threshold:
             score = 3
-            result['Malicious'] = {'Vendor': 'IPQualityScore'}
         elif result.get('fraud_score', 0) >= url_suspicious_score_threshold:
             score = 2
         else:
