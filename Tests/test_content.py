@@ -305,11 +305,11 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def load_env_results_json():
-    if not os.path.isfile(ENV_RESULTS_PATH):
+def load_env_results_json(env_results_path):
+    if not os.path.isfile(env_results_path):
         return {}
 
-    with open(ENV_RESULTS_PATH, 'r') as json_file:
+    with open(env_results_path, 'r') as json_file:
         return json.load(json_file)
 
 
