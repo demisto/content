@@ -867,9 +867,7 @@ def append_to_analysis_iocs_arrays(iocs, dbots, k):
     """
     Helper for appending analysis item to ioc an dbot arrays
     """
-    if not k:
-        return
-    if k.get('ioc'):
+    if k and k.get('ioc'):
         iocs.append(ioc_to_readable(k))
         dbots.append({
             'Vendor': 'ThreatGrid',
