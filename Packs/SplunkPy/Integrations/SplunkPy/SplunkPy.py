@@ -1982,12 +1982,23 @@ def kv_store_collection_config(service):
     return_outputs("KV store collection {} configured successfully".format(app), {}, {})
 
 
+def batch_kv_upload(kv_data_service_client, json_data):
+    if json_data.startswith('[') and json_data.endswith(']'):
+        return json.loads(kv_data_service_client._post(
+            'batch_save', headers=client.KVStoreCollectionData.JSON_HEADER, body=json_data).body.read().decode('utf-8'))
+    elif json_data.startswith('{') and json_data.endswith('}'):
+        return kv_data_service_client.insert(json_data)
+    else:
+        raise DemistoException('kv_store_data argument should be in json format. '
+                               '(e.g. {"key": "value"} or [{"key": "value"}, {"key": "value"}]')
+
+
 def kv_store_collection_add_entries(service):
     args = demisto.args()
     kv_store_data = args.get('kv_store_data', '').encode('utf-8')
     kv_store_collection_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
-    service.kvstore[kv_store_collection_name].data.batch_save(kv_store_data)
+    batch_kv_upload(service.kvstore[kv_store_collection_name].data, kv_store_data)
     timeline = None
     if indicator_path:
         kv_store_data = json.loads(kv_store_data)
