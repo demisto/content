@@ -56,7 +56,8 @@ Checks the reputation of the given IP.
 | IP.ASN | String | Autonomous System \(AS\) number associated with the indicator. | 
 | IP.Address | String | IP address of the indicator. | 
 | IP.Geo.Country | String | Country associated with the indicator. | 
-| IP.Geo.Location | String | Longitude and latitude of the IP address. | 
+| IP.Geo.Location | String | Longitude and latitude of the IP address. |
+| IP.Tags | Unknown |(List) Tags of the IP. | 
 | ThreatStream.IP.ASN | String | Autonomous System \(AS\) number associated with the indicator. | 
 | ThreatStream.IP.Address | String | IP address of the indicator. | 
 | ThreatStream.IP.Country | String | Country associated with the indicator. | 
@@ -138,6 +139,7 @@ Checks the reputation of the given domain name.
 | --- | --- | --- |
 | Domain.Name | String | The domain name. | 
 | Domain.DNS | String | IPs resolved by DNS.  | 
+| Domain.Tags | Unknown |(List) Tags of the domain. | 
 | Domain.WHOIS.CreationDate | Date | Date the domain was created. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
 | Domain.WHOIS.UpdatedDate | Date | Date the domain was last updated. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
 | Domain.WHOIS.Registrant.Name | String | Name of the registrant. | 
@@ -237,7 +239,8 @@ Checks the reputation of the given hash of the file.
 | File.SHA1 | String | SHA1 hash of the file. | 
 | File.SHA256 | String | SHA256 hash of the file. | 
 | File.SHA512 | String | SHA512 hash of the file. | 
-| File.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
+| File.Malicious.Vendor | String | Vendor that reported the indicator as malicious. |
+| File.Tags | Unknown |(List) Tags of the file. |  
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -1683,6 +1686,7 @@ Checks the reputation of the given URL.
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | URL.Data | String | The URL of the indicator. | 
+| URL.Tags | Unknown |(List) Tags of the URL. | 
 | URL.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
 | ThreatStream.URL.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.URL.Confidence | String | Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
