@@ -35,19 +35,20 @@ def handle_resolutions(resolutions: List[dict], limit: Optional[int]) -> List[di
     return resolutions
 
 
-def _get_dbot_score(json_res: dict) -> int:
-    """Gets a json response and calculate the dbot score by the response"""
+def _get_dbot_score(json_res: dict) -> (int, str):
+    """Gets a json response and calculate the dbot score by the response. Returns both the score in code and as
+    string """
 
     if json_res.get('response_code') == '1':
         votes = json_res.get('votes')
         if votes == -1:
-            return Common.DBotScore.BAD
+            return Common.DBotScore.BAD, 'BAD'
         elif votes == 0:
-            return Common.DBotScore.SUSPICIOUS
+            return Common.DBotScore.SUSPICIOUS, 'SUSPICIOUS'
         elif votes == 1:
-            return Common.DBotScore.GOOD
+            return Common.DBotScore.GOOD, 'GOOD'
 
-    return Common.DBotScore.NONE
+    return Common.DBotScore.NONE, 'None'
 
 
 ''' COMMAND FUNCTIONS '''
@@ -56,27 +57,38 @@ def _get_dbot_score(json_res: dict) -> int:
 def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'ip/report/'
-    resolution_limit = None
+    res_limit = None
     ips = argToList(args.get('ip'))
     for ip in ips:
         res = client._http_request(method='GET', url_suffix=api_url, params={'ip': ip})
         res['value'] = ip
-        score = _get_dbot_score(res)
+        score, score_str = _get_dbot_score(res)
         dbot = Common.DBotScore(
             ip, DBotScoreType.IP, VENDOR, score, reliability=client.reliability)
         ip_object = Common.IP(ip, dbot)
 
         markdown = f"### Threat crowd report for ip {ip}: \n"
+        markdown += f'DBotScore: {score_str} \n'
+
         if not client.extended_data:
-            resolution_limit = DEFAULT_RESOLUTION_LIMIT
-
-        markdown += tableToMarkdown('Resolutions', handle_resolutions(res.get('resolutions', []), resolution_limit))
-        markdown += f"Hashes: \n {res.get('hashes')} \n"
+            res_limit = DEFAULT_RESOLUTION_LIMIT
+        hashes = res.get('hashes')[:res_limit]
+        resolutions = handle_resolutions(res.get('resolutions', []), res_limit)
+        markdown += tableToMarkdown('Resolutions', resolutions)
+        markdown += f"Hashes: \n {hashes} \n"
         markdown += tableToMarkdown('References', res.get('references'))
-
+        outputs = {
+            'hashes': hashes,
+            'permalink': res.get('permalink'),
+            'resolutions': resolutions,
+            'references': res.get('references'),
+            'response_code': res.get('response_code'),
+            'votes': res.get('votes'),
+            'value': res.get('value')
+        }
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.IP',
-            outputs=res.copy(),
+            outputs=outputs,
             outputs_key_field='value',
             indicator=ip_object,
             readable_output=markdown,
@@ -94,12 +106,14 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     for email in emails:
         res = client._http_request(method='GET', url_suffix=api_url, params={'email': email})
         res['value'] = email
-        score = _get_dbot_score(res)
+        score, score_str = _get_dbot_score(res)
         dbot = Common.DBotScore(
             email, DBotScoreType.EMAIL, VENDOR, score, reliability=client.reliability)
         email_object = Common.EMAIL(email, dbot)
 
-        markdown = tableToMarkdown(f"Threat crowd report for Email {email}", res)
+        markdown = f"Threat crowd report for Email {email} \n"
+        markdown += f'DBotScore: {score_str} \n'
+        markdown += tableToMarkdown(f"Results", res)
 
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.Account',
@@ -122,22 +136,37 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     for domain in domains:
         res = client._http_request(method='GET', url_suffix=api_url, params={'domain': domain})
         res['value'] = domain
-        score = _get_dbot_score(res)
+        score, score_str = _get_dbot_score(res)
         dbot = Common.DBotScore(
             domain, DBotScoreType.DOMAIN, VENDOR, score, reliability=client.reliability)
         domain_object = Common.Domain(domain, dbot)
 
         markdown = f"### Threat crowd report for domain {domain} \n"
+        markdown += f'DBotScore: {score_str} \n'
+
         if not client.extended_data:
             resolution_limit = DEFAULT_RESOLUTION_LIMIT
 
-        markdown += tableToMarkdown('Resolutions', handle_resolutions(res.get('resolutions', []), resolution_limit))
+        subdomains = res.get('subdomains')[:resolution_limit]
+        resolutions = handle_resolutions(res.get('resolutions', []), resolution_limit)
+        markdown += tableToMarkdown('Resolutions', resolutions)
         res_without_resolutions = res.copy()
         res_without_resolutions.pop('resolutions')
         markdown += tableToMarkdown("\n", res_without_resolutions)
+
+        outputs = {
+            'hashes': res.get('hashes'),
+            'permalink': res.get('permalink'),
+            'resolutions': resolutions,
+            'references': res.get('references'),
+            'response_code': res.get('response_code'),
+            'votes': res.get('votes'),
+            'subdomains': subdomains,
+            'value': res.get('value')
+        }
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.Domain',
-            outputs=res.copy(),
+            outputs=outputs,
             outputs_key_field='value',
             indicator=domain_object,
             readable_output=markdown,
@@ -176,13 +205,13 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     for file_hash in files:
         res = client._http_request(method='GET', url_suffix=api_url, params={'resource': file_hash})
         res['value'] = file_hash
-
-        score = _get_dbot_score(res)
+        score, score_str = _get_dbot_score(res)
         dbot = Common.DBotScore(
             file_hash, DBotScoreType.FILE, VENDOR, score, reliability=client.reliability)
         file_object = Common.File(dbot, md5=res.get('md5'), sha1=res.get('sha1'))
 
-        markdown = tableToMarkdown(f"Threat crowd report for File {file_hash}", res)
+        markdown = f"Threat crowd report for File {file_hash}: \n Reputation: {score_str} \n"
+        markdown += tableToMarkdown('Results', res)
 
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.File',
