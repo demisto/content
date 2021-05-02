@@ -869,7 +869,7 @@ tasks:
     task:
       id: c98e4231-26b8-449f-8945-8e196fc386d9
       version: -1
-      name: GitHub Affected Files
+      name: Scope affected repositories
       type: title
       iscommand: false
       brand: ""
