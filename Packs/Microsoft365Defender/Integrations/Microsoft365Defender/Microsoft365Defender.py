@@ -257,7 +257,9 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     status = args.get('status')
     assigned_to = args.get('assigned_to')
     offset = arg_to_number(args.get('offset'))
+
     response = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to, skip=offset)
+    
     raw_incidents = response.get('value')
     readable_incidents = [convert_incident_to_readable(incident) for incident in raw_incidents]
     # the table headers are the incident keys. creates dummy incident to manage a situation of empty list.
