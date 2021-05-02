@@ -113,7 +113,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
         markdown = f"Threat crowd report for Email {email} \n"
         markdown += f'DBotScore: {score_str} \n'
-        markdown += tableToMarkdown(f"Results", res)
+        markdown += tableToMarkdown("Results", res)
 
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.Account',
