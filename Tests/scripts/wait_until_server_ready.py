@@ -41,19 +41,19 @@ def exit_if_timed_out(loop_start_time, current_time):
         sys.exit(1)
 
 
-def download_cloud_init_logs_from_server(ip: str, artifacts_folder: str) -> None:
+def download_cloud_init_logs_from_server(ip: str) -> None:
     """
     Since setup instance is now done by the server itself in the *user-data* script, the logs of the setup are stored
     in the server itself.
     This method downloads those logs to artifacts path for debugging purposes
     Args:
         ip: The ip from which we should download the cloud-init log file
-        artifacts_folder: The folder to which to download the logs
     """
     cloud_init_log_path = '/var/log/cloud-init-output.log'
     try:
         # downloading cloud-init logs to artifacts
-        check_output(f'scp {SSH_USER}@{ip}:{cloud_init_log_path} {artifacts_folder}/{ip}-cloud_init.log'.split())
+        check_output(f'scp {SSH_USER}@{ip}:{cloud_init_log_path} '
+                     f'{os.getenv("ARTIFACTS_FOLDER")}/{ip}-cloud_init.log'.split())
     except Exception:
         logging.exception(f'Could not download cloud-init file from server {ip}.')
 
@@ -132,7 +132,7 @@ def main():
         instance_ips_to_download_log_files = [ami_instance_ip for ami_instance_name, ami_instance_ip, _ in instance_ips if
                                               ami_instance_name == instance_name_to_wait_on]
         for ip in instance_ips_to_download_log_files:
-            download_cloud_init_logs_from_server(ip, artifacts_folder)
+            download_cloud_init_logs_from_server(ip)
             docker_login(ip)
 
 
