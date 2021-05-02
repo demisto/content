@@ -5242,6 +5242,8 @@ class EntityRelation:
             if not DBotScoreReliability.is_valid_type(source_reliability):
                 raise ValueError("Invalid source reliability value", source_reliability)
             self._source_reliability = source_reliability
+        else:
+            self._source_reliability = ''
 
     def to_entry(self):
         """ Convert object to XSOAR entry
@@ -5262,8 +5264,9 @@ class EntityRelation:
                 "entityBFamily": self._entity_b_family,
                 "entityBType": self._entity_b_type,
                 "fields": self._fields,
-                "reliability": self._source_reliability
             }
+            if self._source_reliability:
+                entry["reliability"] = self._source_reliability
             if self._brand:
                 entry["brand"] = self._brand
         return entry
