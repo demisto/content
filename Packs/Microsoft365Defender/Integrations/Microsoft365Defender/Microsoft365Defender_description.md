@@ -1,6 +1,7 @@
 ###Microsoft 365 Defender
 
-Use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) to...
+Use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code)
+to connect Microsoft 365 Defender with Cortex XSOAR.
 
 To connect to the Microsoft 365 Defender:
 1. Fill in the required parameters.
@@ -12,7 +13,8 @@ At the end of the process you'll see a message that you've logged in successfull
 
 #### Cortex XSOAR App
 
-In order to use the Cortex XSOAR application, use the default application ID (9093c354-630a-47f1-b087-6768eb9427e6).
+In order to use the Cortex XSOAR application, use the default application ID.
+```9093c354-630a-47f1-b087-6768eb9427e6```
 
 
 #### Cortex XSOAR Azure App
