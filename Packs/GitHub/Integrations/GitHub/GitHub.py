@@ -916,6 +916,20 @@ def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
     return response
 
 
+def get_team_members(organization: str, team_slug: str) -> dict:
+    page = 1
+    results = []
+    while True:
+        suffix = f'/orgs/{organization}/teams/{team_slug}/members?page={page}'
+        response = http_request('GET', url_suffix=suffix)
+        if not response:
+            break
+        results.extend(response)
+        page += 1
+
+    return results
+
+
 def get_team_membership_command():
     args = demisto.args()
     team_id = args.get('team_id')
