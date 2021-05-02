@@ -105,12 +105,14 @@ notify-slack:
     - |
       if [ -n "${BUCKET_UPLOAD}" ]; then
         ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
-      else
+      elif [ -f $ARTIFACTS_FOLDER/slack_notifier_input.txt ]; then
         cat $ARTIFACTS_FOLDER/slack_notifier_input.txt | while read slack_input_line
         do
-          echo "running ./Tests/scripts/slack_notifier.sh "${slack_input_line}
+          echo "running ./Tests/scripts/slack_notifier.sh ${slack_input_line}"
           ./Tests/scripts/slack_notifier.sh $slack_input_line
         done
+      else
+        echo "Nothing to notify about, skipping."
       fi
 
 create-instances:
