@@ -8,7 +8,7 @@ This integration was integrated and tested with version 1.0 of IPQualityScore
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | API Key |  | True |
+    | API Key | See guide below for getting an API key. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | IP Suspicious Score Threshold | Threshold for fraud score from IP lookup to be marked as suspicious | False |
@@ -26,6 +26,11 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### ip
 ***
 Runs reputation on IPs.
+
+#### Aquiring an API key
+
+1. Go to https://www.ipqualityscore.com/create-account and register for an account.
+2. Once you've registered, login then go to https://www.ipqualityscore.com/documentation/proxy-detection/overview and your API key will be listed under the "Private Key" subheading.
 
 
 #### Base Command
