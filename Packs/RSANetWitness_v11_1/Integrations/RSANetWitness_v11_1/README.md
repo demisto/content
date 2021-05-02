@@ -48,6 +48,7 @@
 <p>By default, the integration will import NetWitness incidents data as Demisto incidents.</p>
 <p>To import related alerts data in addition to the incidents data, select the relevant checkbox in the instance settings.</p>
 <p>All incidents created 24 hours prior to the configuration of <strong>Fetch Incidents</strong> and up to current time will be imported.</p>
+<ul><li>Note - Due to way the API works, the first number of fetches may fail. If the fetch fails, you can either lower the value of the "First fetch timestamp" parameter, or alternatively set the timeout of the fetch incidents command of the integration to an higher value.</li></ul>
 <h2>Commands</h2>
 <hr>
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
