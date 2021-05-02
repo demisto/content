@@ -8,7 +8,7 @@ from dateparser import parse
 from tempfile import mkdtemp
 from zipfile import ZipFile
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MP_LINK = "https://xsoar.pan.dev/marketplace"
@@ -20,13 +20,15 @@ PACK_ID_REGEX = r'\s|-|\.'
 
 
 class IndexPack:
+    """ A class that represents a pack that is created from the index """
+
     def __init__(self, path: str, pack_id: str):
         self.index_path: str = path
         self.id: str = pack_id
         self.metadata_path: str = self.get_metadata_path()
         self.metadata: dict = load_json(self.metadata_path)
-        self.name: str = self.metadata.get('name')
-        self.created: str = self.metadata.get('created')
+        self.name: str = self.metadata.get('name', '')
+        self.created: str = self.metadata.get('created', '')
         self.created_datetime: datetime = datetime.strptime(self.created, DATE_FORMAT).replace(tzinfo=pytz.UTC)
         self.price: int = self.metadata.get('price', 0)
         self._is_private_pack: bool = True if self.metadata.get('partnerId') else False
@@ -44,6 +46,14 @@ class IndexPack:
             return ''
 
     def get_description(self) -> str:
+        """ Parses the description.
+        If description is longer than DESCRIPTION_MAX_LENGTH, detects the last word that fits in DESCRIPTION_MAX_LENGTH
+        and appends "..." at the end.
+
+        Returns:
+            The parsed description
+
+        """
         description = self.metadata.get('description', '')
         description_words = []
         aggregated_length = 0
@@ -62,10 +72,20 @@ class IndexPack:
         return parsed_description
 
     def is_released_after_last_run(self, last_run_datetime: datetime) -> bool:
+        """ Indicates whether the packed was released after the given date.
+
+        Args:
+            last_run_datetime: The last time the script ran.
+
+        Returns:
+            True if the pack was released after the given date, False otherwise.
+
+        """
         demisto.debug(f'{self.id} pack was created at {self.created}')
         return self.created_datetime > last_run_datetime
 
     def to_context(self) -> dict:
+        """ Dumps a pack object into a dict representation to be store in the incident's context """
         return {
             'name': self.name,
             'id': self.id,
@@ -78,6 +98,8 @@ class IndexPack:
 
 
 class Index:
+    """ A class that represents the index """
+
     def __init__(self, index_file_entry_id: str):
         self.index_data: dict = get_file_data(index_file_entry_id)
         self.download_index_path: str = self.index_data['path']
@@ -88,6 +110,7 @@ class Index:
         self.new_packs: List[IndexPack] = []
 
     def extract(self):
+        """ Extract the index from the zip file """
         if os.path.exists(self.download_index_path):
             demisto.debug('Found existing index.zip')
             with ZipFile(self.download_index_path, 'r') as index_zip:
@@ -104,6 +127,7 @@ class Index:
             raise Exception(error_msg)
 
     def get_packs(self) -> List[IndexPack]:
+        """ Build IndexPack object for each pack in the index """
         packs = []
 
         for file in os.scandir(self.index_folder_path):
@@ -114,6 +138,15 @@ class Index:
         return packs
 
     def get_new_packs_from_last_run(self, last_run_str: str) -> List[IndexPack]:
+        """ Creates a list of all packs that were released after the given time.
+
+        Args:
+            last_run_str: The last time the script ran.
+
+        Returns:
+            The list of new packs.
+
+        """
         last_run_datetime = parse(last_run_str).replace(tzinfo=pytz.UTC)
         demisto.debug(f'last message time was: {last_run_str}')
 
@@ -124,7 +157,17 @@ class Index:
 
         return self.new_packs
 
-    def get_latest_new_pack_created_time(self) -> str:
+    def get_latest_new_pack_created_time(self) -> Union[None, str]:
+        """ The new pack with the latest created time is the last new pack that the script has detected,
+        therefore, the next run should start from its created time.
+
+        Returns:
+            The latest created time if exists, else None
+
+        """
+        if not self.new_packs:
+            return None
+
         latest_new_pack_created_datetime = datetime(1970, 1, 1, tzinfo=pytz.utc)
         for new_pack in self.new_packs:
             if new_pack.created_datetime > latest_new_pack_created_datetime:
@@ -134,6 +177,8 @@ class Index:
 
 
 class SlackBlocks:
+    """ A class that builds the Slack Blocks object """
+
     def __init__(self, packs: List[IndexPack]):
         self.packs: List[IndexPack] = sorted(
             packs, key=lambda p: SUPPORT.index(p.support) if p.support in SUPPORT else 3
@@ -154,6 +199,7 @@ class SlackBlocks:
 
             if self._list_packs:
                 blocks.append(self.get_divider_block())
+                blocks.append(self.get_list_packs_header_block())
                 blocks.append(self.build_list_packs_block())
 
             blocks.append(self.get_divider_block())
@@ -164,17 +210,28 @@ class SlackBlocks:
         return "no new packs"
 
     @staticmethod
+    def get_list_packs_header_block():
+        return {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*More new packs that have been released this week:*\n"
+            }
+        }
+
+    @staticmethod
     def get_divider_block() -> dict:
         return {
             "type": "divider"
         }
 
     def build_header_block(self) -> dict:
+        pack_str = "Packs" if len(self.packs) > 1 else "Pack"
         return {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f"We have released *{len(self.packs)} New Packs* this week! :dbot-new:"
+                "text": f"We have released *{len(self.packs)} New {pack_str}* this week! :dbot-new:"
             }
         }
 
@@ -189,20 +246,19 @@ class SlackBlocks:
         }
 
     @staticmethod
+    def get_price_text(price):
+        return "FREE" if str(price) == "0" else f"{price} :cortex-coins:"
+
+    @staticmethod
     def build_pack_context_block(price: int, support: str) -> dict:
-        if support == "xsoar":
-            support_text = ":cortexpeelable: XSOAR Supported"
-        elif support == "partner":
-            support_text = "Partner Supported"
-        else:
-            support_text = "Community Contributed"
+        support_text = SlackBlocks.get_support_text(support)
 
         return {
             "type": "context",
             "elements": [
                 {
                     "type": "mrkdwn",
-                    "text": "FREE" if str(price) == "0" else f"{price} :cortex-coins:"
+                    "text": SlackBlocks.get_price_text(price)
                 },
                 {
                     "type": "mrkdwn",
@@ -211,16 +267,29 @@ class SlackBlocks:
             ]
         }
 
+    @staticmethod
+    def get_support_text(support):
+        if support == "xsoar":
+            return ":cortexpeelable: XSOAR Supported"
+        elif support == "partner":
+            return "Partner Supported"
+        else:
+            return "Community Contributed"
+
     def build_list_packs_block(self) -> dict:
-        text = "*More packs that have been released this week:*\n"
+        packs_str = ""
+
         for pack in self._list_packs:
-            text += f"*<{MP_PACK_LINK}/{pack.pan_dev_mp_id}|{pack.name}>*\n"
+            packs_str += f"*<{MP_PACK_LINK}/{pack.pan_dev_mp_id}|{pack.name}>* | "
+            packs_str += f"By: {pack.author} | "
+            packs_str += f"{self.get_price_text(pack.price)} | "
+            packs_str += f"{self.get_support_text(pack.support)}\n"
 
         return {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": text
+                "text": packs_str
             }
         }
 
@@ -248,6 +317,15 @@ def load_json(file_path: str) -> dict:
 
 
 def get_file_data(file_entry_id: str) -> dict:
+    """ Gets the file data (includes the file path) of the file id
+
+    Args:
+        file_entry_id: The file id
+
+    Returns:
+        The file data
+
+    """
     res = demisto.executeCommand('getFilePath', {'id': file_entry_id})
 
     if res[0]['Type'] == entryTypes['error']:
@@ -257,6 +335,15 @@ def get_file_data(file_entry_id: str) -> dict:
 
 
 def return_results_to_context(new_packs, last_run, blocks, updated_last_run):
+    """ Returns all script's data into context
+
+    Args:
+        new_packs: The list of all new packs
+        last_run: The last run the script worked against
+        blocks: The Slack Blocks object
+        updated_last_run: The updated last run
+
+    """
     return_results([
         CommandResults(
             outputs=new_packs,
@@ -293,11 +380,15 @@ def main():
         args: dict = demisto.args()
         index_file_entry_id: str = args['entry_id']
         last_run: str = args['last_run_str']
+
         index: Index = Index(index_file_entry_id)
         new_packs: List[IndexPack] = index.get_new_packs_from_last_run(last_run)
-        updated_last_run: str = index.get_latest_new_pack_created_time()
+        latest_new_pack_created_time: Union[None, str] = index.get_latest_new_pack_created_time()
+        updated_last_run: str = latest_new_pack_created_time or datetime.utcnow().strftime(DATE_FORMAT)
+
         blocks: str = SlackBlocks(new_packs).build()
-        demisto.debug(blocks)
+        demisto.info(blocks)
+
         return_results_to_context([new_pack.to_context() for new_pack in new_packs], last_run, blocks, updated_last_run)
 
     except Exception as e:

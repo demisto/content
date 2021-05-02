@@ -14,6 +14,31 @@ commonfields:
 dockerimage: demisto/unzip:1.0.0.19258
 enabled: true
 name: BuildSlackBlocksFromIndex
+outputs:
+- contextPath: Pack.name
+  description: The pack's name
+  type: string
+- contextPath: Pack.id
+  description: The pack's id
+  type: string
+- contextPath: Pack.author
+  description: The pack's author
+  type: string
+- contextPath: Pack.description
+  description: The pack's description
+  type: string
+- contextPath: Pack.price
+  description: The pack's price
+  type: string
+- contextPath: Pack.support
+  description: The pack's support
+  type: string
+- contextPath: LastRun
+  description: The last run
+  type: date
+- contextPath: Blocks
+  description: The Slack Blocks json string
+  type: string
 runas: DBotWeakRole
 runonce: false
 script: ''
