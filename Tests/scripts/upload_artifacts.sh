@@ -22,8 +22,8 @@ if [[ "$BRANCH" =~ pull/[0-9]+ ]]; then
     exit 0
 fi
 
-if [[ -z "$CIRCLE_BUILD_NUM" ]]; then
-    echo "CIRCLE_BUILD_NUM not set aborting!"
+if [[ -z "$CI_PIPELINE_ID" ]]; then
+    echo "CI_PIPELINE_ID not set aborting!"
     exit 1
 fi
 
