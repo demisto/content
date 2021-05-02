@@ -1111,7 +1111,7 @@ def search_samples_command():
                                                                   next_run_in_seconds=interval_in_secs,
                                                                   args=polling_args, timeout_in_seconds=600)
             return_results(CommandResults(outputs_prefix=ctx_prefix, outputs_key_field=af_ctx_path,
-                                          outputs=info, readable_output=md, scheduled_command_config=polling_config))
+                                          outputs=info, readable_output=md, scheduled_command=polling_config))
             return
         else:
             # continue search command
@@ -1127,7 +1127,7 @@ def search_samples_command():
         polling_config = Common.ScheduledCommandConfiguration(command='autofocus-search-samples',
                                                               next_run_in_seconds=interval_in_secs,
                                                               args=polling_args, timeout_in_seconds=600)
-        return_results(CommandResults(scheduled_command_config=polling_config))
+        return_results(CommandResults(scheduled_command=polling_config))
 
 
 def search_samples_helper(args):
@@ -1175,7 +1175,7 @@ def search_sessions_command():
                                                                   next_run_in_seconds=interval_in_secs,
                                                                   args=polling_args, timeout_in_seconds=600)
             return_results(CommandResults(outputs_prefix=ctx_prefix, outputs_key_field=af_ctx_path,
-                                          outputs=info, readable_output=md, scheduled_command_config=polling_config))
+                                          outputs=info, readable_output=md, scheduled_command=polling_config))
             return
         else:
             # continue search command
@@ -1191,7 +1191,7 @@ def search_sessions_command():
         polling_config = Common.ScheduledCommandConfiguration(command='autofocus-search-sessions',
                                                               next_run_in_seconds=interval_in_secs,
                                                               args=polling_args, timeout_in_seconds=600)
-        command_results.scheduled_command_config = polling_config
+        command_results.scheduled_command = polling_config
     return_results(command_results)
 
 
