@@ -65,7 +65,7 @@ done
 
 
 if [ -z "$_ci_token" ]; then
-    echo "You must provide a circle token."
+    echo "You must provide a ci token."
     exit 1
 fi
 
