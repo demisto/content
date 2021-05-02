@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Cortex XDR - IOC
+  id: Cortex XDR - IOC test version
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -146,7 +146,6 @@ script:
       isArray: false
       name: firstTime
       predefined:
-      - 'true'
       - 'false'
       required: false
       secret: false

@@ -231,10 +231,12 @@ def sync(client: Client):
 
 
 def iocs_to_keep(client: Client):
-    if not datetime.utcnow().hour in range(1, 3):
-        raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
+    # if not datetime.utcnow().hour in range(1, 3):
+    #     raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
     create_file_iocs_to_keep(temp_file_path)
+    with open(temp_file_path, 'r') as _file:
+        demisto.debug(_file.read())
     requests_kwargs: Dict = get_requests_kwargs(file_path=temp_file_path)
     path = 'iocs_to_keep'
     client.http_request(path, requests_kwargs)
@@ -375,7 +377,8 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
     if first_time or not demisto.getIntegrationContext():
-        sync(client)
+        # sync(client)
+        demisto.debug('skipping sync run')
     else:
         iocs_to_keep(client)
 
@@ -446,7 +449,10 @@ def main():
         elif command in commands:
             commands[command](client)
         elif command == 'xdr-iocs-sync':
-            xdr_iocs_sync_command(client, demisto.args().get('firstTime') == 'true')
+            first_time = demisto.args().get('firstTime')
+            is_true = first_time == 'true'
+            demisto.debug(f'starting xdr-iocs-sync command with firstTime={first_time} so first_time=="true" is {is_true}')
+            xdr_iocs_sync_command(client, is_true)
         else:
             raise NotImplementedError(command)
     except Exception as error:
