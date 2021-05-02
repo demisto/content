@@ -98,6 +98,18 @@ entryTypes = {
     'widget': 17
 }
 
+ENDPOINT_STATUS_OPTIONS = [
+    'Online',
+    'Offline'
+]
+
+ENDPOINT_ISISOLATED_OPTIONS = [
+    'Yes',
+    'No',
+    'Pending isolation',
+    'Pending unisolation'
+]
+
 
 class EntryType(object):
     """
@@ -3024,7 +3036,8 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None, relations=None):
+                     memory=None, processors=None, processor=None, relations=None, vendor=None, status=None,
+                     is_isolated=None):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
@@ -3038,6 +3051,9 @@ class Common(object):
             self.memory = memory
             self.processors = processors
             self.processor = processor
+            self.vendor = vendor
+            self.status = status
+            self.is_isolated = is_isolated
             self.relations = relations
 
         def to_context(self):
@@ -3084,6 +3100,20 @@ class Common(object):
             if self.relations:
                 relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
                 endpoint_context['Relationships'] = relations_context
+
+            if self.vendor:
+                endpoint_context['Vendor'] = self.vendor
+
+            if self.status:
+                if self.status not in ENDPOINT_STATUS_OPTIONS:
+                    raise ValueError('Status does not have a valid value such as: Online or Offline')
+                endpoint_context['Status'] = self.status
+
+            if self.is_isolated:
+                if self.is_isolated not in ENDPOINT_ISISOLATED_OPTIONS:
+                    raise ValueError('Is Isolated does not have a valid value such as: Yes, No, Pending'
+                                     ' isolation or Pending unisolation')
+                endpoint_context['IsIsolated'] = self.is_isolated
 
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
@@ -4604,6 +4634,8 @@ class EntityRelation:
         SENT_TO = 'sent-to'
         SIMILAR_TO = 'similar-to'
         SUB_DOMAIN_OF = 'sub-domain-of'
+        SUB_TECHNIQUE_OF = 'subtechnique-of'
+        PARENT_TECHNIQUE_OF = 'parent-technique-of'
         SUPRA_DOMAIN_OF = 'supra-domain-of'
         TARGETED_BY = 'targeted-by'
         TARGETS = 'targets'
@@ -4674,6 +4706,8 @@ class EntityRelation:
                            'similar-to': 'similar-to',
                            'sub-domain-of': 'supra-domain-of',
                            'supra-domain-of': 'sub-domain-of',
+                           'subtechnique-of': 'parent-technique-of',
+                           'parent-technique-of': 'subtechnique-of',
                            'targeted-by': 'targets',
                            'targets': 'targeted-by',
                            'Types': 'Reverse',
@@ -4748,6 +4782,8 @@ class EntityRelation:
             if not DBotScoreReliability.is_valid_type(source_reliability):
                 raise ValueError("Invalid source reliability value", source_reliability)
             self._source_reliability = source_reliability
+        else:
+            self._source_reliability = ''
 
     def to_entry(self):
         """ Convert object to XSOAR entry
@@ -4768,8 +4804,9 @@ class EntityRelation:
                 "entityBFamily": self._entity_b_family,
                 "entityBType": self._entity_b_type,
                 "fields": self._fields,
-                "reliability": self._source_reliability
             }
+            if self._source_reliability:
+                entry["reliability"] = self._source_reliability
             if self._brand:
                 entry["brand"] = self._brand
         return entry
