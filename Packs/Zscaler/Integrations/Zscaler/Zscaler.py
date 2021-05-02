@@ -712,7 +712,7 @@ def get_categories_command(display_url, custom_only=False):
             'ID': raw_category['id'],
             'CustomCategory': raw_category['customCategory']
         }
-        if raw_category['urls']:
+        if 'urls' in raw_category:
             category['URL'] = raw_category['urls']
         if 'description' in raw_category:
             category['Description'] = raw_category['description']
