@@ -250,8 +250,6 @@ run-unittests-and-lint:
     paths:
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
-  rules:
-    - if: '$BUCKET_UPLOAD == "true"'
   script:
     - echo "====Trigger Private Build===="
     - |
@@ -312,8 +310,6 @@ run-validations:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
-  rules:
-    - if: '$BUCKET_UPLOAD == "true"'
   script:
     - echo "====Look For Secrets===="
     - demisto-sdk secrets --post-commit --ignore-entropy

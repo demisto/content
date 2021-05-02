@@ -34,7 +34,6 @@ def options_handler():
                         required=False)
     parser.add_argument('-sa', '--service_account', help='Path to gcloud service account', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file', required=True)
-    parser.add_argument('-af', '--artifacts_folder', help='Path to artifacts folder')
 
     options = parser.parse_args()
     return options
@@ -227,9 +226,6 @@ def main():
     )
 
     # Get the first host by the ami env
-    if options.artifacts_folder:
-        Build.env_results_path = os.path.join(options.artifacts_folder, Build.env_results_path)
-
     hosts, _ = Build.get_servers(ami_env=options.ami_env)
     internal_ip, tunnel_port = list(hosts.items())[0]
     username, password = extract_credentials_from_secret(options.secret)
