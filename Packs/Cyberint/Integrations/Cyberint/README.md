@@ -571,7 +571,7 @@ List alerts according to parameters
                     "email": "avital@cyberint.com"
                 },
                 "created_date": "2021-04-06T00:01:12",
-                "description": "Cyberint detected payment cards belonging to Joe customers being offered for sale online for 18$. The cards' information, published by a threat actors named Dolly, includes the BIN number of the card, expiration date and CVV digits as well as some PII of the card owner.\nCompromised payment card details, especially when combined with exposed PII, can be purchased and abused by threat actors for illegitimate and fraudulent activities. Those, in turn, will result in chargeback costs for the bank and potential customer churn.",
+                "description": "Cyberint detected payment cards belonging to customers being offered for sale online for 18$. The cards' information, published by a threat actors named Dolly, includes the BIN number of the card, expiration date and CVV digits as well as some PII of the card owner.\nCompromised payment card details, especially when combined with exposed PII, can be purchased and abused by threat actors for illegitimate and fraudulent activities. Those, in turn, will result in chargeback costs for the bank and potential customer churn.",
                 "environment": "Argos Demo",
                 "impacts": [
                     "revenue_loss",
