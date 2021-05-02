@@ -207,6 +207,126 @@ Lists all issues that the user has access to view.
 |110|Git-Integration|demisto|"new issue"|closed|"new information"|2019-06-04T11:53:19Z|2019-06-04T11:53:22Z|2019-06-04T11:53:22Z|newbug|
 
 
+### GitHub-search-code
+***
+Searches for code in repositories that match a given query.
+
+
+#### Base Command
+
+`GitHub-search-code`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The query line for the search. For more information see the GitHub documentation at https://docs.github.com/en/github/searching-for-information-on-github/searching-code. | Required | 
+| page_number | The page number. | Optional | 
+| page_size | The size of the requested page. Maximum is 100. | Optional | 
+| limit | The number of results to return. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.CodeSearchResults.name | String | The file name where the code found. | 
+| GitHub.CodeSearchResults.path | String | The full file path where the code found. | 
+| GitHub.CodeSearchResults.html_url | String | The url to the file. | 
+| GitHub.CodeSearchResults.repository.full_name | String | The repository name. | 
+| GitHub.CodeSearchResults.repository.html_url | String | The url to the repository. | 
+| GitHub.CodeSearchResults.repository.description | String | Repository description. | 
+| GitHub.CodeSearchResults.repository.private | Boolean | True if repository is private. and false if public. | 
+| GitHub.CodeSearchResults.repository.id | String | The ID of the repository. | 
+| GitHub.CodeSearchResults.repository.releases_url | String | The url to the releases of the repository. | 
+| GitHub.CodeSearchResults.repository.branches_url | String | The url to the branches of the repository. | 
+| GitHub.CodeSearchResults.repository.commits_url | String | The url to the commits of the repository. | 
+
+
+#### Command Example
+```!GitHub-search-code query="create_artifacts+repo:demisto/demisto-sdk" page_size="2" limit="5"```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "CodeSearchResults": [
+            {
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/.pre-commit-config.yaml",
+                "name": ".pre-commit-config.yaml",
+                "path": ".pre-commit-config.yaml",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
+            },
+            {
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py",
+                "name": "content_create_artifacts_integration_test.py",
+                "path": "demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
+            },
+            {
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py",
+                "name": "content_artifacts_creator_test.py",
+                "path": "demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
+            },
+            {
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py",
+                "name": "pack_metadata_test.py",
+                "path": "demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Returned 5 out of 6 total results.
+>|Name|Path|Repository Name|Repository Description|Is Repository Private|
+>|---|---|---|---|---|
+>| [.pre-commit-config.yaml](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/.pre-commit-config.yaml) | .pre-commit-config.yaml | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [content_create_artifacts_integration_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py) | demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [content_artifacts_creator_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py) | demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [pack_metadata_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py) | demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [content_artifacts_creator_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py) | demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+
+
 ### GitHub-search-issues
 
 ***
@@ -221,7 +341,7 @@ Searches for and returns issues that match a given query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query line for the search. For more information see the GitHub documentation at https://help.github.com/en/articles/searching-issues-and-pull-requests. | Required | 
-| limit | The number of issues to return. Default is 50. Maximum is 200. Default is 50. | Optional | 
+| limit | The number of issues to return. Default is 50. Maximum is 100. Default is 50. | Optional | 
 
 #### Context Output
 
