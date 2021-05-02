@@ -1,6 +1,6 @@
 ###Microsoft 365 Defender
 
-[Device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+Use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) to...
 
 To connect to the Microsoft 365 Defender:
 1. Fill in the required parameters.
