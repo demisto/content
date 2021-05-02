@@ -131,9 +131,9 @@ class Client:
                             }
 
                             if indicator_obj['fields'].get('tags'):
-                                indicator_obj['fields']['tags'].append(self.tags)
+                                indicator_obj['fields']['tags'].append(self.tags) if self.tags else None
                             else:
-                                indicator_obj['fields'].update({"tags": self.tags})
+                                indicator_obj['fields'].update({"tags": self.tags}) if self.tags else None
 
                             if self.tlp_color:
                                 indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
