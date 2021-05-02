@@ -3,10 +3,9 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import boto3
 from botocore.config import Config
-import Tuple
 
 
-def get_timeout(timeout: str) -> Tuple[int, int]:
+def get_timeout(timeout):
     if not timeout:
         timeout = "60,10"  # default values
     timeout_vals = timeout.split(',')

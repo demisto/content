@@ -1,9 +1,7 @@
 from datetime import date
 
-import boto3
 import demistomock as demisto  # noqa: F401
 import urllib3.util
-from botocore.config import Config
 from botocore.parsers import ResponseParserError
 from CommonServerPython import *  # noqa: F401
 
@@ -2970,7 +2968,7 @@ def main():
         LOG('Command being called is {command}'.format(command=demisto.command()))
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            client = aws_client.aws_session()
+            client = aws_client.aws_session(service='ec2')
             response = client.describe_regions()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 demisto.results('ok')
