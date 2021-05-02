@@ -1264,6 +1264,16 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     return min_from_version.vstring, max_to_version.vstring
 
 
+def is_release_branch():
+    """
+    Checks for the current build's branch
+    Returns:
+
+    """
+    branch_name = os.getenv('CI_COMMIT_BRANCH')
+    return re.match(r'[0-9]{2}\.[0-9]{1,2}\.[0-9]', branch_name)
+
+
 def create_filter_envs_file(from_version: str, to_version: str, documentation_changes_only: bool = False):
     """
     Create a file containing all the envs we need to run for the CI
@@ -1288,6 +1298,11 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 5.0': False,
             'Server 6.0': False,
         }
+    if is_release_branch():
+        marketplace_server_keys = {key for key in envs_to_test.keys() if key not in {'Server 5.5', 'Server 5.0'}}
+        for key in marketplace_server_keys:
+            envs_to_test[key] = False
+
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./artifacts/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
