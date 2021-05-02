@@ -163,11 +163,12 @@ def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
             "type": 'Campaign',
             "rawJSON": campaign,
             "fields": {
+                'stixid': campaign.get('id'),
                 "firstseenbysource": campaign.get('created'),
-                "indicatoridentification": campaign.get('id'),
-                "tags": list((set(campaign.get('labels'))).union(set(feed_tags))),
                 "modified": campaign.get('modified'),
+                'description': campaign.get('description'),
                 "reportedby": 'Unit42',
+                "tags": feed_tags,
             }
         }
 
@@ -205,19 +206,6 @@ def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
         Attack Pattern indicators list.
     """
 
-    relationships = client.objects_data['relationship']
-    courses_of_action = {}
-
-    for relationship in relationships:
-        source = relationship.get('source_ref')
-
-        if source.startswith('course-of-action'):
-            product = relationship.get('x_panw_coa_u42_panw_product', [])
-            if product:
-                courses_of_action[source] = product[0]
-            else:
-                courses_of_action[source] = 'No product'
-
     attack_pattern_indicators = []
     attack_indicator_objects = client.objects_data['attack-pattern']
 
@@ -240,7 +228,6 @@ def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
                 "modified": handle_multiple_dates_in_one_field('modified', attack_indicator.get('modified')),
                 'description': attack_indicator.get('description'),
                 'operatingsystemrefs': attack_indicator.get('x_mitre_platforms'),
-                "mitrecourseofaction": create_course_of_action_field(courses_of_action),
                 "publications": publications,
                 "reportedby": 'Unit42',
                 "tags": feed_tags,
@@ -251,43 +238,6 @@ def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
 
         attack_pattern_indicators.append(indicator)
     return attack_pattern_indicators
-
-
-def create_course_of_action_field(courses_of_action: dict) -> str:
-    """creates a markdown tables from the courses of action data according to the product type.
-
-    Args:
-        courses_of_action: dictionary containing the courses of action data.
-
-    Returns:
-        markdown string with courses of action tables.
-    """
-    if not courses_of_action:
-        return 'No courses of action found.'
-    markdown = ''
-    for relationship_product, courses_list in courses_of_action.items():
-        tmp_table = []
-        for course_of_action in courses_list:
-            row = {}
-            if relationship_product in COURSE_OF_ACTION_U42:
-                row['title'] = course_of_action.get('x_panw_coa_u42_title')
-                row['description'] = course_of_action.get('description')
-
-            if relationship_product in COURSE_OF_ACTION_BP:
-                row['title'] = course_of_action.get('x_panw_coa_bp_title')
-                row['impact statement'] = course_of_action.get('x_panw_coa_bp_impact_statement')
-                row['recommendation number'] = course_of_action.get('x_panw_coa_bp_recommendation_number')
-                row['description'] = course_of_action.get('x_panw_coa_bp_description')
-                row['remediation procedure'] = course_of_action.get('x_panw_coa_bp_remediation_procedure')
-
-            row['name'] = course_of_action.get('name')
-
-            tmp_table.append(row)
-
-        md_table = tableToMarkdown(relationship_product, tmp_table, removeNull=True,
-                                   headerTransform=string_to_table_header, headers=COURSE_OF_ACTION_HEADERS)
-        markdown = f'{markdown}\n{md_table}'
-    return markdown
 
 
 def get_ioc_type(indicator, id_to_object):
@@ -377,7 +327,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     reports = parse_reports(client.objects_data['report'], feed_tags, tlp_color)
     campaigns = parse_campaigns(client.objects_data['campaign'], feed_tags, tlp_color)
-    # attack_pattern_indicators = create_attack_pattern_indicator(client, feed_tags, tlp_color)
+    attack_patterns = create_attack_pattern_indicator(client, feed_tags, tlp_color)
 
     id_to_object = {
         obj.get('id'): obj for obj in
@@ -399,11 +349,11 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         ioc_indicators.append(dummy_indicator)
 
     demisto.debug(f'{len(ioc_indicators)} XSOAR Indicators were created.')
-    demisto.debug(f'{len(reports)} XSOAR STIX Report Indicators were created.')
-    demisto.debug(f'{len(campaigns)} XSOAR STIX Report Indicators were created.')
-    # demisto.debug(f'{len(attack_pattern_indicators)} Attack Pattern Indicators were created.')
+    demisto.debug(f'{len(reports)} XSOAR STIX Reports Indicators were created.')
+    demisto.debug(f'{len(campaigns)} XSOAR campaigns Indicators were created.')
+    demisto.debug(f'{len(attack_patterns)} Attack Patterns Indicators were created.')
 
-    return ioc_indicators + reports + campaigns  # + attack_pattern_indicators
+    return ioc_indicators + reports + campaigns + attack_patterns
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = [],
