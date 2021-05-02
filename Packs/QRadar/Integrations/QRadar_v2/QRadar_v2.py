@@ -2002,31 +2002,37 @@ def fetch_loop_with_events(
     events_limit,
 ):
     while True:
-        is_reset_triggered(client.lock, handle_reset=True)
+        try:
+            is_reset_triggered(client.lock, handle_reset=True)
 
-        print_debug_msg("Starting fetch loop with events.")
-        fetch_incidents_long_running_events(
-            client,
-            incident_type,
-            user_query,
-            ip_enrich,
-            asset_enrich,
-            fetch_mode,
-            events_columns,
-            events_limit,
-        )
-        time.sleep(FETCH_SLEEP)
+            print_debug_msg("Starting fetch loop with events.")
+            fetch_incidents_long_running_events(
+                client,
+                incident_type,
+                user_query,
+                ip_enrich,
+                asset_enrich,
+                fetch_mode,
+                events_columns,
+                events_limit,
+            )
+            time.sleep(FETCH_SLEEP)
+        except Exception as e:
+            demisto.error(str(e))
 
 
 def fetch_loop_no_events(client: QRadarClient, incident_type, user_query, ip_enrich, asset_enrich):
     while True:
-        is_reset_triggered(client.lock, handle_reset=True)
+        try:
+            is_reset_triggered(client.lock, handle_reset=True)
 
-        print_debug_msg("Starting fetch loop with no events.")
-        fetch_incidents_long_running_no_events(
-            client, incident_type, user_query, ip_enrich, asset_enrich
-        )
-        time.sleep(FETCH_SLEEP)
+            print_debug_msg("Starting fetch loop with no events.")
+            fetch_incidents_long_running_no_events(
+                client, incident_type, user_query, ip_enrich, asset_enrich
+            )
+            time.sleep(FETCH_SLEEP)
+        except Exception as e:
+            demisto.error(e)
 
 
 def long_running_main(
