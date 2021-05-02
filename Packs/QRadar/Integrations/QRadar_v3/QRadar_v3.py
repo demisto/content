@@ -315,7 +315,8 @@ class Client(BaseClient):
         else:
             auth = (username, password)
             self.base_headers = {'Version': api_version}
-        super().__init__(base_url=server, verify=verify, proxy=proxy, auth=auth)
+        base_url = urljoin(server, '/api')
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
         self.password = password
         self.server = server
 
@@ -906,11 +907,12 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
     destination_addresses_id_ip_dict = get_offense_addresses(client, offenses, True) if enrich_ip_addresses else dict()
 
     def create_enriched_offense(offense: Dict) -> Dict:
+        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId'\
+                                 f'''={offense.get('id')}'''
         basic_enriches = {
             'offense_type': offense_types_id_name_dict.get(offense.get('offense_type')),
             'closing_reason_id': closing_reasons_id_name_dict.get(offense.get('closing_reason_id')),
-            'LinkToOffense': f'{client.server}/console/do/sem/offensesummary?'
-                             f'''appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}''',
+            'LinkToOffense': urljoin(client.server, link_to_offense_suffix),
         }
 
         domain_enrich = {
@@ -2258,7 +2260,8 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
         else:
             raise e
 
-    indicators = demisto.searchIndicators(query=query, page=page, size=limit).get('iocs', [])
+    search_indicators = IndicatorsSearcher(page=page)
+    indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
     indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
                        for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
     indicator_values: List[Any] = [indicator.get('Indicator Value') for indicator in indicators_data]
@@ -2709,7 +2712,7 @@ def main() -> None:
         except Exception as e:
             raise DemistoException(f'Failed to parse advanced params. Error: {e}')
 
-    server = urljoin(params.get('server'), '/api')
+    server = params.get('server')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_version = params.get('api_version')
