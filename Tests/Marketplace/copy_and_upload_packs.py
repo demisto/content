@@ -9,9 +9,11 @@ from zipfile import ZipFile
 from google.cloud.storage import Blob, Bucket
 
 from Tests.scripts.utils.log_util import install_logging
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, PACKS_FOLDER, BucketUploadFlow, load_json, store_successful_and_failed_packs_in_ci_artifacts, \
+from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
+    load_json, store_successful_and_failed_packs_in_ci_artifacts, \
     get_upload_data
+from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
+    PACKS_FULL_PATH, IGNORED_FILES
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_.]+/\d+\.\d+\.\d+/'
@@ -67,6 +69,9 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         prod_index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
         prod_index_blob = production_bucket.blob(prod_index_storage_path)
         prod_index_blob.cache_control = "no-cache,max-age=0"
+        prod_index_json_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.json")
+        prod_index_json_blob = production_bucket.blob(prod_index_json_storage_path)
+        prod_index_json_blob.cache_control = "no-cache,max-age=0"
 
         if build_current_index_generation == build_index_generation:
             copied_index = build_bucket.copy_blob(
@@ -75,7 +80,18 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
             if copied_index.exists():
                 logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
             else:
-                logging.error("Failed copying index from, build index blob does not exists.")
+                logging.error("Failed copying index.zip from build index - blob does not exist.")
+                sys.exit(1)
+            copied_index_json_blob = build_bucket.blob(
+                os.path.join(GCPConfig.BUILD_BASE_PATH, f"{GCPConfig.INDEX_NAME}.json")
+            )
+            copied_index_json = build_bucket.copy_blob(
+                blob=copied_index_json_blob, destination_bucket=production_bucket, new_name=prod_index_json_storage_path
+            )
+            if copied_index_json.exists():
+                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.json to storage.")
+            else:
+                logging.error("Failed copying index.json from build index - blob does not exist.")
                 sys.exit(1)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
