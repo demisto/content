@@ -61,6 +61,7 @@ AVOID_DOCKER_IMAGE_VALIDATION = {
     'content.validate.docker.images': 'false'
 }
 ID_SET_PATH = './artifacts/id_set.json'
+ENV_RESULTS_PATH = os.path.join(os.getenv('ARTIFACTS_FOLDER'), "env_results.json")
 
 
 class Running(IntEnum):
@@ -123,7 +124,6 @@ class Build:
     test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CIRCLECI_RUN
-    env_results_path = os.path.join(os.getenv('ARTIFACTS_FOLDER'), "env_results.json")
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
@@ -207,8 +207,7 @@ class Build:
         env_conf = get_env_conf()
         server_to_port_mapping = map_server_to_port(env_conf, ami_env)
         if Build.run_environment == Running.CIRCLECI_RUN:
-            server_numeric_version = get_server_numeric_version(ami_env=ami_env,
-                                                                override_env_results_path=Build.env_results_path)
+            server_numeric_version = get_server_numeric_version(ami_env=ami_env)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
         return server_to_port_mapping, server_numeric_version

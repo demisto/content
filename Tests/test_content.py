@@ -18,6 +18,7 @@ from google.api_core.exceptions import PreconditionFailed
 from google.cloud import storage
 
 from Tests.test_dependencies import get_used_integrations
+from Tests.configure_and_test_integration_instances import ENV_RESULTS_PATH
 from demisto_sdk.commands.common.constants import FILTER_CONF
 from demisto_sdk.commands.test_content.ParallelLoggingManager import ParallelLoggingManager
 
@@ -37,7 +38,6 @@ BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
 BUILD_NUM = os.environ.get('CI_BUILD_ID')
 WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
-ENV_RESULTS_PATH = './artifacts/env_results.json'
 
 
 class SettingsTester:
@@ -305,19 +305,15 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def load_env_results_json(override_env_results_path=None):
-    env_results_path = ENV_RESULTS_PATH
-    if override_env_results_path:
-        env_results_path = override_env_results_path
-
-    if not os.path.isfile(env_results_path):
+def load_env_results_json():
+    if not os.path.isfile(ENV_RESULTS_PATH):
         return {}
 
-    with open(env_results_path, 'r') as json_file:
+    with open(ENV_RESULTS_PATH, 'r') as json_file:
         return json.load(json_file)
 
 
-def get_server_numeric_version(ami_env, is_local_run=False, override_env_results_path=None):
+def get_server_numeric_version(ami_env, is_local_run=False):
     """
     Gets the current server version
     Arguments:
@@ -325,8 +321,6 @@ def get_server_numeric_version(ami_env, is_local_run=False, override_env_results
             AMI version name.
         is_local_run: (bool)
             when running locally, assume latest version.
-        override_env_results_path: (str)
-            path to env_results.json file.
 
     Returns:
         (str) Server numeric version
@@ -336,13 +330,9 @@ def get_server_numeric_version(ami_env, is_local_run=False, override_env_results
         logging.info(f'Local run, assuming server version is {default_version}')
         return default_version
 
-    env_results_path = ENV_RESULTS_PATH
-    if override_env_results_path:
-        env_results_path = override_env_results_path
-
-    env_json = load_env_results_json(env_results_path)
+    env_json = load_env_results_json(ENV_RESULTS_PATH)
     if not env_json:
-        logging.warning(f'Did not find {env_results_path} file, assuming server version is {default_version}.')
+        logging.warning(f'Did not find {ENV_RESULTS_PATH} file, assuming server version is {default_version}.')
         return default_version
 
     instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
