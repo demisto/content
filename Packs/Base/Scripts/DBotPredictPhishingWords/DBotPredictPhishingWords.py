@@ -3,6 +3,7 @@
 from CommonServerPython import *
 from string import punctuation
 import demisto_ml
+import numpy as np
 
 FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
 TORCH_TYPE = 'torch'
@@ -119,7 +120,10 @@ def predict_batch_incidents_light_output(email_subject, email_body, phishing_mod
         else:
             pred = phishing_model.predict(input_text)
             incident_res['Label'] = pred[0]
-            incident_res['Probability'] = pred[1]
+            prob = pred[1]
+            if isinstance(prob, np.floating):
+                prob = prob.item()
+            incident_res['Probability'] = prob
         batch_predictions.append(incident_res)
     return {
         'Type': entryTypes['note'],
