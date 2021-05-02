@@ -2717,10 +2717,14 @@ class Common(object):
          Implements Subject ThreatTypes of a indicator
 
         :type threat_category: ``str``
-        :param threat_category:
+        :param threat_category: The threat category associated to this indicator by the source vendor. For example,
+         Phishing, Control, TOR, etc.
 
         :type threat_category_confidence: ``str``
-        :param threat_category_confidence:
+        :param threat_category_confidence: Threat Category Confidence is the confidence level provided by the vendor
+         for the threat type category
+         For example a confidence of 90 for threat type category "malware" means that the vendor rates that this
+         is 90% confidence of being a malware.
 
         :return: None
         :rtype: ``None``
