@@ -1,15 +1,16 @@
 id: 261c457c-b92a-4ad6-8927-2aaa53c28ad3
-version: 1
+version: 3
 vcShouldKeepItemLegacyProdMachine: false
 name: TestIPQualityScorePlaybook
+description: This playbook tests the functionality of the IPQualityScore Integration
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4a202d73-2e51-41ae-8cb9-db8bf7fdfbf1
+    taskid: ca29acc5-6a2a-4111-8a15-c440abb3bacc
     type: start
     task:
-      id: 4a202d73-2e51-41ae-8cb9-db8bf7fdfbf1
+      id: ca29acc5-6a2a-4111-8a15-c440abb3bacc
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 21c863c6-7532-4c7a-8473-ebbdf7ed432a
+    taskid: fe9fec53-0320-4e67-84b2-f0956399ea25
     type: regular
     task:
-      id: 21c863c6-7532-4c7a-8473-ebbdf7ed432a
+      id: fe9fec53-0320-4e67-84b2-f0956399ea25
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -68,10 +69,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 27d34efa-8b59-491f-83dc-6e5031ab8db0
+    taskid: ed2cb426-78b0-4886-83fb-1364e2c909c8
     type: regular
     task:
-      id: 27d34efa-8b59-491f-83dc-6e5031ab8db0
+      id: ed2cb426-78b0-4886-83fb-1364e2c909c8
       version: -1
       name: ip
       description: Runs reputation on IPs.
@@ -99,12 +100,13 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 9e90a9c2-3af3-49a5-8295-448b2d0a7eb2
+    taskid: 34c93603-762f-487d-8a54-0c77117759e2
     type: condition
     task:
-      id: 9e90a9c2-3af3-49a5-8295-448b2d0a7eb2
+      id: 34c93603-762f-487d-8a54-0c77117759e2
       version: -1
       name: Verify Output
+      description: Verify context data set by the previous command.
       type: condition
       iscommand: false
       brand: ""
@@ -134,10 +136,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 7fee2896-568c-4be2-84d1-9b842c7e8bb8
+    taskid: 54bed444-3e47-480a-8c75-082897e1ed13
     type: title
     task:
-      id: 7fee2896-568c-4be2-84d1-9b842c7e8bb8
+      id: 54bed444-3e47-480a-8c75-082897e1ed13
       version: -1
       name: End
       type: title
@@ -158,10 +160,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: d5850fd1-9c66-4183-801d-583352de7379
+    taskid: 8d546a51-f6cf-4b95-8f29-0a9bcb3caa9f
     type: regular
     task:
-      id: d5850fd1-9c66-4183-801d-583352de7379
+      id: 8d546a51-f6cf-4b95-8f29-0a9bcb3caa9f
       version: -1
       name: email
       description: Runs reputation on email addresses.
@@ -189,12 +191,13 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 794d6e22-53bb-464e-8c2a-8de240a50bf4
+    taskid: 58acd708-f4d0-4f01-801a-465433e31b61
     type: condition
     task:
-      id: 794d6e22-53bb-464e-8c2a-8de240a50bf4
+      id: 58acd708-f4d0-4f01-801a-465433e31b61
       version: -1
       name: Verify Output
+      description: Verify context data set by the previous command.
       type: condition
       iscommand: false
       brand: ""
@@ -224,10 +227,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: cb88949c-203b-4855-8d55-3040167b6c3d
+    taskid: 4b317a91-aca6-4226-83b3-3621e646c0dd
     type: regular
     task:
-      id: cb88949c-203b-4855-8d55-3040167b6c3d
+      id: 4b317a91-aca6-4226-83b3-3621e646c0dd
       version: -1
       name: url
       description: Runs reputation on URLs.
@@ -255,12 +258,13 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 888682d2-584f-45f1-8199-6b486ac5730f
+    taskid: 4149de9a-e30f-4c5f-8563-58325063fda7
     type: condition
     task:
-      id: 888682d2-584f-45f1-8199-6b486ac5730f
+      id: 4149de9a-e30f-4c5f-8563-58325063fda7
       version: -1
       name: Verify Output
+      description: Verify context data set by the previous command.
       type: condition
       iscommand: false
       brand: ""
@@ -302,3 +306,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

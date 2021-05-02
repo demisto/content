@@ -422,7 +422,7 @@ script:
     - contextPath: URL.Malicious.Vendor
       description: The vendor reporting the URL as malicious.
       type: String
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
   longRunning: false
