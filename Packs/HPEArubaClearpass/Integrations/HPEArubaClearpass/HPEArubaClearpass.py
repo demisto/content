@@ -1,3 +1,4 @@
+import json
 import sys
 from datetime import datetime, timedelta
 
@@ -57,7 +58,9 @@ class Client(BaseClient):
             access_token_expiration = integration_context.get('expires_in')
             access_token = integration_context.get('access_token')
             is_context_has_access_token = access_token and access_token_expiration
-            if is_context_has_access_token and access_token_expiration > datetime.now():
+            access_token_expiration_datetime = datetime.strptime(access_token_expiration, DATE_FORMAT)
+            if is_context_has_access_token and access_token_expiration_datetime > datetime.now():
+                self.access_token = access_token
                 self.set_request_headers()
                 return
         else:
@@ -106,9 +109,8 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
     try:
-        params = {'filter': {}, 'offset': 0, 'limit': 25}
+        params = {"filter": {}, "offset": 0, "limit": 25}
         client.prepare_request(method='GET', params=params, url_suffix='endpoint')
         message = 'ok'
     except DemistoException as e:
@@ -134,10 +136,10 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     offset = args.get('offset', 0)
     limit = args.get('limit', 25)
     endpoints_filter = {}
-    endpoints_filter.update({'status': status}) if status else None
-    endpoints_filter.update({'mac_address': mac_address}) if mac_address else None
-    params = {'filter': endpoints_filter, 'offset': offset, 'limit': limit}
-
+    endpoints_filter.update({"status": status}) if status else None
+    endpoints_filter.update({"mac_address": mac_address}) if mac_address else None
+    endpoints_filter = json.dumps(endpoints_filter)
+    params = {"filter": endpoints_filter, "limit": limit, "offset": offset}
     res = client.prepare_request(method='GET', params=params, url_suffix='endpoint')
 
     readable_output, outputs = parse_items_response(res, endpoints_response_to_dict)
@@ -175,11 +177,11 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
         attributes_values.update(attribute)
 
     request_body = {}
-    request_body.update({'status': status}) if status else None
-    request_body.update({'mac_address': mac_address}) if mac_address else None
-    request_body.update({'description': description}) if description else None
-    request_body.update({'device_insight_tags': device_insight_tags}) if device_insight_tags else None
-    request_body.update({'attributes': attributes_values}) if attributes else None
+    request_body.update({"status": status}) if status else None
+    request_body.update({"mac_address": mac_address}) if mac_address else None
+    request_body.update({"description": description}) if description else None
+    request_body.update({"device_insight_tags": device_insight_tags}) if device_insight_tags else None
+    request_body.update({"attributes": attributes_values}) if attributes else None
 
     res = client.prepare_request(method='PATCH', params={}, url_suffix=f'endpoint/{endpoint_id}', body=request_body)
     outputs = endpoints_response_to_dict(res)
@@ -207,10 +209,11 @@ def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> Command
     limit = args.get('limit', 25)
 
     attribute_filter = {}
-    attribute_filter.update({'id': attribute_id}) if attribute_id else None
-    attribute_filter.update({'name': name}) if name else None
-    attribute_filter.update({'entity_name': entity_name}) if entity_name else None
-    params = {'filter': attribute_filter, 'offset': offset, 'limit': limit}
+    attribute_filter.update({"id": attribute_id}) if attribute_id else None
+    attribute_filter.update({"name": name}) if name else None
+    attribute_filter.update({"entity_name": entity_name}) if entity_name else None
+    attribute_filter = json.dumps(attribute_filter)
+    params = {"filter": attribute_filter, "offset": offset, "limit": limit}
 
     res = client.prepare_request(method='GET', params=params, url_suffix='attribute')
 
@@ -219,7 +222,41 @@ def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> Command
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.attributes',
+        outputs_prefix='HPEArubaClearpass.attributes.list',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
+def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    name = args.get('name')
+    entity_name = args.get('entity_name')
+    data_type = args.get('data_type')
+    mandatory = args.get('mandatory', False)
+    attribute_default_value = args.get('default_value', "")
+    allow_multiple_data_type_values = args.get('allow_multiple', False)
+    allowed_data_types_value = argToList(args.get('allowed_value', []))
+
+    new_attribute_body = {}
+    new_attribute_body.update({"name": name})
+    new_attribute_body.update({"entity_name": entity_name})
+    new_attribute_body.update({"data_type": data_type})
+    new_attribute_body.update({"mandatory": mandatory}) if mandatory else None
+    new_attribute_body.update({"attribute_default_value": attribute_default_value}) if attribute_default_value else None
+    new_attribute_body.update({
+        "allow_multiple_data_type_values": allow_multiple_data_type_values}) if allow_multiple_data_type_values\
+        else None
+    new_attribute_body.update(
+        {"allowed_data_types_value": allowed_data_types_value}) if allowed_data_types_value else None
+
+    res = client.prepare_request(method='POST', params={}, url_suffix='attribute', body=new_attribute_body)
+
+    outputs = attributes_response_to_dict(res)
+    human_readable = tableToMarkdown('HPE Aruba Clearpass new attribute', outputs, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='HPEArubaClearpass.attributes.create',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -265,6 +302,9 @@ def main() -> None:
 
         elif demisto.command() == 'aruba-clearpass-attributes-list':
             return_results(get_attributes_list_command(client, demisto.args()))
+
+        elif demisto.command() == 'aruba-clearpass-attribute-create':
+            return_results(create_attribute_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

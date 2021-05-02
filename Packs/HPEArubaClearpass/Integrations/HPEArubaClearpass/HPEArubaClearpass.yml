@@ -199,29 +199,29 @@ script:
     execution: false
     name: aruba-clearpass-attributes-list
     outputs:
-    - contextPath: HPEArubaClearpass.attributes.id
+    - contextPath: HPEArubaClearpass.attributes.list.id
       description: The ID of the attribute.
       type: Number
-    - contextPath: HPEArubaClearpass.attributes.name
+    - contextPath: HPEArubaClearpass.attributes.list.name
       description: The name of the attribute.
       type: string
-    - contextPath: HPEArubaClearpass.attributes.entity_name
+    - contextPath: HPEArubaClearpass.attributes.list.entity_name
       description: The entity Name of the attribute.
       type: string
-    - contextPath: HPEArubaClearpass.attributes.data_type
+    - contextPath: HPEArubaClearpass.attributes.list.data_type
       description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
       type: string
-    - contextPath: HPEArubaClearpass.attributes.mandatory
+    - contextPath: HPEArubaClearpass.attributes.list.mandatory
       description: Whether the entity of the attribute is mandatory.
       type: Boolean
-    - contextPath: HPEArubaClearpass.attributes.default_value
+    - contextPath: HPEArubaClearpass.attributes.list.default_value
       description: Default Value of the attribute.
       type: Unknown
-    - contextPath: HPEArubaClearpass.attributes.allow_multiple
+    - contextPath: HPEArubaClearpass.attributes.list.allow_multiple
       description: Whether to allow multiple values of the attribute for data type
         String.
       type: Boolean
-    - contextPath: HPEArubaClearpass.attributes.allowed_value
+    - contextPath: HPEArubaClearpass.attributes.list.allowed_value
       description: The allowed value for data type list (e.g., example1,example2,example3).
       type: Unknown
   dockerimage: demisto/python3:3.9.4.18682
