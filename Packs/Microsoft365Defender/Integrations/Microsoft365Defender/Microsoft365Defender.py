@@ -242,7 +242,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     Returns list of the latest incidents in microsoft 365 defender in readable table.
     The list can be filtered using the following arguments:
         - limit - number of incidents in the list, integer between 0 to 100.
-        - status - fetch only incidents with the given status (
+        - status - fetch only incidents with the given status.
     Args:
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
