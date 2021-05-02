@@ -1,3 +1,5 @@
+from time import sleep
+
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -14,9 +16,9 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 IMPORTANCE_DICTIONARY = {
-    'Low': '1',
-    'Medium': '2',
-    'High': '3'
+    'Low': '0',
+    'Medium': '1',
+    'High': '2'
 }
 ONGOING_DICTIONARY = {
     'Ongoing': 'true',
@@ -76,16 +78,15 @@ class NetscoutClient(BaseClient):
     MAX_ALERTS_FOR_FIRST_FETCH = 10000
 
     def __init__(self, base_url, verify, proxy, first_fetch, headers=None, max_fetch=None, alert_class=None,
-                 alert_type=None,
-                 classification=None, importance=None, importance_operator=None, ongoing=None):
+                 alert_type=None, classification=None, importance=None, ongoing=None):
         self.first_fetch = first_fetch
         self.max_fetch = max_fetch
         self.alert_class = alert_class
         self.alert_type = alert_type
         self.classification = classification
         self.importance = importance
-        self.importance_operator = importance_operator
         self.ongoing = ongoing
+        self.importance_operator = '>'
 
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
@@ -124,29 +125,28 @@ class NetscoutClient(BaseClient):
                 message = error_entry.get('errors', [])[0].get('message')
                 if message:
                     error = f'{error}\n{message}'
-
+            demisto.error(res.text)
             raise DemistoException(error)
 
         except ValueError:
             raise DemistoException(
                 f'Could not parse error returned from Netscout Arbor Sightline server:\n{str(res.content)}')
 
-    def calculate_amount_of_incidents(self, start_time: str) -> int:
+    def calculate_amount_of_incidents(self, start_time: str, params_dict: dict) -> int:
         """
         Perform an API call with page size = 1 (perPage=1) to calculate the amount of incidents (#pages will be equal to
         #incidents).
 
         Arguments:
             start_time (str): Starting time to search by
+            params_dict (dict): The params configured by the user to perform the fetch with.
 
         Returns:
             (int) The amount of pages (incidents) in total in the given query, 0 if none.
         """
-        attributes_dict = assign_params(start_time=start_time, start_time_operator='>', alert_class=self.alert_class,
-                                        alert_type=self.alert_type, classification=self.classification,
-                                        importance=self.importance, importance_operator=self.importance_operator,
-                                        ongoing=self.ongoing)
-        data_attribute_filter = self.build_data_attribute_filter(attributes_dict)
+        time_attributes_dict = assign_params(start_time=start_time, start_time_operator='>')
+        params_dict.update(time_attributes_dict)
+        data_attribute_filter = self.build_data_attribute_filter(params_dict)
         page_size = 1
         results = self.list_alerts(page_size=page_size, search_filter=data_attribute_filter)
         last_page_link = results.get('links', {}).get('last')
@@ -237,7 +237,7 @@ class NetscoutClient(BaseClient):
                 param_list.append(f'/data/attributes/{key + operator + val}')  # type: ignore
         return ' AND '.join(param_list)
 
-    def fetch_incidents(self) -> Tuple[list, str]:
+    def fetch_incidents(self, params_dict: dict) -> Tuple[list, str]:
         """
         Perform fetch incidents process.
         1.  We first save the current time to know what was the time at the beginning of the incidents counting process.
@@ -249,8 +249,9 @@ class NetscoutClient(BaseClient):
             this search will have all of the incidents created after the given start time and only them.
         4.  Finally out of the relevant incidents we take the older ones (from the end of the list) and set the new
             start time to the creation time of the first incidnt in the list.
-
-        Returns
+        Args:
+            params_dict (dict): The params configured by the user to perform the fetch with.
+        Returns:
             (list, str): List of incidents to save and string representing the creation time of the latest incident to
                 be saved.
         """
@@ -261,17 +262,13 @@ class NetscoutClient(BaseClient):
         # We calculate the page size to query, by performing an incidents query with page size = 1, the amount of
         # returned pages will equal to amount of incidents
         now = datetime.now(timezone.utc).isoformat()
-        amount_of_incidents = self.calculate_amount_of_incidents(start_time=last_start_time)
+        amount_of_incidents = self.calculate_amount_of_incidents(start_time=last_start_time, params_dict=params_dict)
         incidents: list = []
 
         if amount_of_incidents:
-            attributes_dict = assign_params(start_time=now, start_time_operator='<', alert_class=self.alert_class,
-                                            alert_type=self.alert_type, importance=self.importance,
-                                            classification=self.classification,
-                                            importance_operator=self.importance_operator,
-                                            ongoing=self.ongoing)
-
-            data_attribute_filter = self.build_data_attribute_filter(attributes_dict)
+            time_attributes_dict = assign_params(start_time=now, start_time_operator='<')
+            params_dict.update(time_attributes_dict)
+            data_attribute_filter = self.build_data_attribute_filter(params_dict)
             demisto.debug(
                 f'NetscoutArborSightline fetch params are: page_size={amount_of_incidents}, '
                 f'search_filter={data_attribute_filter}')
@@ -292,28 +289,59 @@ class NetscoutClient(BaseClient):
                     })
         return incidents, new_last_start_time
 
+    def fetch_incidents_loop(self) -> Tuple[list, str]:
+        """
+        Calls the fetch incidents function to pull incidents with for each alert_type/alert_class separately.
+
+        Returns:
+            (list, str): List of incidents to save and string representing the creation time of the latest incident to
+            be saved.
+        """
+        incidents = []
+        params_dict = assign_params(alert_class=self.alert_class, alert_type=self.alert_type,
+                                    importance=self.importance, classification=self.classification,
+                                    importance_operator=self.importance_operator, ongoing=self.ongoing)
+        if self.alert_type:
+            key = 'alert_type'
+            class_type_list = self.alert_type
+
+        elif self.alert_class:
+            key = 'alert_class'
+            class_type_list = self.alert_class
+
+        if self.alert_class or self.alert_type:
+            for item in class_type_list:
+                params_dict[key] = item
+
+                last_incidents, new_last_start_time = self.fetch_incidents(params_dict)
+                incidents += last_incidents
+                sleep(5)
+        else:
+            incidents, new_last_start_time = self.fetch_incidents(params_dict)
+
+        return incidents, new_last_start_time
+
     def list_alerts(self, page: Optional[int] = None, page_size: Optional[int] = None,
-                    search_filter: Optional[str] = None):
-        demisto.info(search_filter)
+                    search_filter: Optional[str] = None) -> dict:
         return self.http_request(
             method='GET',
             url_suffix='alerts',
             params=assign_params(page=page, perPage=page_size, filter=search_filter)
         )
 
-    def get_alert(self, alert_id: str):
+    def get_alert(self, alert_id: str) -> dict:
         return self.http_request(
             method='GET',
             url_suffix=f'alerts/{alert_id}'
         )
 
-    def get_annotations(self, alert_id: str):
+    def get_annotations(self, alert_id: str) -> dict:
         return self.http_request(
             method='GET',
             url_suffix=f'alerts/{alert_id}/annotations'
         )
 
-    def list_mitigations(self, mitigation_id: str, page: Optional[int] = None, page_size: Optional[int] = None):
+    def list_mitigations(self, mitigation_id: str, page: Optional[int] = None, page_size: Optional[int] = None) -> dict:
         return self.http_request(
             method='GET',
             url_suffix=f'mitigations/{mitigation_id}' if mitigation_id else 'mitigations',
@@ -321,40 +349,40 @@ class NetscoutClient(BaseClient):
 
         )
 
-    def create_mitigation(self, data: dict):
+    def create_mitigation(self, data: dict) -> dict:
         return self.http_request(
             method='POST',
             url_suffix='mitigations/',
             json_data=data
         )
 
-    def delete_mitigation(self, mitigation_id: str):
+    def delete_mitigation(self, mitigation_id: str) -> dict:
         self.http_request(
             method='DELETE',
             url_suffix=f'mitigations/{mitigation_id}',
             return_empty_response=True
         )
 
-    def mitigation_template_list(self):
+    def mitigation_template_list(self) -> dict:
         return self.http_request(
             method='GET',
             url_suffix='mitigation_templates/'
         )
 
-    def router_list(self):
+    def router_list(self) -> dict:
         return self.http_request(
             method='GET',
             url_suffix='routers/'
         )
 
-    def managed_object_list(self, page: Optional[int] = None, page_size: Optional[int] = None):
+    def managed_object_list(self, page: Optional[int] = None, page_size: Optional[int] = None) -> dict:
         return self.http_request(
             method='GET',
             url_suffix='managed_objects/',
             params=assign_params(page=page, perPage=page_size)
         )
 
-    def tms_group_list(self):
+    def tms_group_list(self) -> dict:
         return self.http_request(
             method='GET',
             url_suffix='tms_groups/'
@@ -439,7 +467,8 @@ def build_human_readable(data: dict) -> dict:
 
 
 def build_output(data: dict, extend_data: bool = False, key_to_flat: str = 'attributes',
-                 keys_to_remove: list = ['relationships']) -> dict:
+                 keys_to_remove: list = None) -> dict:
+    keys_to_remove = ['relationships'] if not keys_to_remove else keys_to_remove
     data_copy = deepcopy(data)
     clean_links(data_copy)
     if key_to_flat:
@@ -449,16 +478,36 @@ def build_output(data: dict, extend_data: bool = False, key_to_flat: str = 'attr
     return data_copy
 
 
+def cast_importance_to_minimal(importance: str) -> Optional[str]:
+    """
+    If a minimal importance param was given, cast it to the corresponding minimal value to  be used with the '>'
+    operator.
+    That is:
+        High -> '2' -> '1'
+        Medium -> '1' -> '0'
+        Low -> '0' -> None (so it will be ignored and will not be used as an  importance param)
+    Args:
+         importance (str): The  importance to cast.
+    Returns:
+         (str): The value to be used withh the '>` operator.
+    """
+    str_importance = IMPORTANCE_DICTIONARY.get(importance)
+    if str_importance and str_importance != '0':
+        return str(int(str_importance) - 1)
+    else:
+        return None
+
+
 ''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: NetscoutClient) -> str:
-    client.fetch_incidents()
+    client.fetch_incidents_loop()
     return 'ok'
 
 
 def fetch_incidents_command(client: NetscoutClient):
-    incidents, last_start_time = client.fetch_incidents()
+    incidents, last_start_time = client.fetch_incidents_loop()
     demisto.incidents(incidents)
     demisto.setLastRun({'LastFetchTime': last_start_time})
 
@@ -659,11 +708,14 @@ def main() -> None:
         if first_fetch_dt := arg_to_datetime(params.get('first_fetch', '3 days')):
             first_fetch = first_fetch_dt.isoformat()
         max_fetch = min(arg_to_number(params.get('max_fetch', 50)), 100)
-        alert_class = params.get('alert_class')
-        alert_type = params.get('alert_type')
+        alert_class = argToList(params.get('alert_class'))
+        alert_type = argToList(params.get('alert_type'))
+        if alert_class and alert_type:
+            raise DemistoException(
+                'Cannot filter alerts with both \'Alert Class\' and \'Alert Type\' configured. Either choose '
+                'the entire class you want to fetch or the specific types from within that class.')
         classification = params.get('classification')
-        importance = IMPORTANCE_DICTIONARY.get(params.get('importance'))
-        importance_operator = params.get('importance_operator', '=')
+        importance = cast_importance_to_minimal(params.get('importance'))
         ongoing = ONGOING_DICTIONARY.get(params.get('ongoing'))
 
         demisto.debug(f'Command being called is {demisto.command()}')
@@ -683,7 +735,6 @@ def main() -> None:
             alert_type=alert_type,
             classification=classification,
             importance=importance,
-            importance_operator=importance_operator,
             ongoing=ongoing
         )
         args: dict = demisto.args()

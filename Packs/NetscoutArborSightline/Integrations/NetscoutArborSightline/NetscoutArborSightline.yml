@@ -54,7 +54,7 @@ configuration:
       - tms
       - traffic
     required: false
-    type: 15
+    type: 16
   - additionalinfo: Alert type to filter by. Only one type can be configured at a time.
       If none is chosen, all types will be fetched.
     display: Alert Type
@@ -97,30 +97,15 @@ configuration:
       - tms_fault
       - traffic_auto_mitigation
     required: false
-    type: 15
-  - additionalinfo: Alert importance to filter by. For more complex operations use the
-      'Importance Operator' parameter. If none is chosen, all importances will be fetched.
-    display: Importance
+    type: 16
+  - additionalinfo: Minimal alert importance to filter by. If none or Low is chosen, all importances will be fetched.
+    display: Minimal importance to fetch
     hidden: false
     name: importance
     options:
       - Low
       - Medium
       - High
-    required: false
-    type: 15
-  - additionalinfo: 'The operator to apply on the importance argument (">" is greater
-        than, "<" is less than, "=" is equal to). For example: if the chosen operator
-        is ">" and the chosen importance is "Low", only alerts with and importance greater
-        than Low will be fetched. Default is "=".'
-    defaultvalue: '='
-    display: Importance Operator
-    hidden: false
-    name: importance_operator
-    options:
-      - '='
-      - '>'
-      - '<'
     required: false
     type: 15
   - additionalinfo: Alert status to filter by. If none is chosen, all statuses will

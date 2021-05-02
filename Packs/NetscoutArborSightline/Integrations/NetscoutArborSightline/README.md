@@ -18,8 +18,7 @@ This integration was integrated and tested with version 9.3 of Netscout Arbor Si
     | Use system proxy settings |  | False |
     | Alert Class | Alert class to filter by. Only one class can be configured at a time. If none was chosen, all classes will be fetched. | False |
     | Alert Type | Alert type to filter by. Only one type can be configured at a time. If none was chosen, all types will be fetched. | False |
-    | Importance | Alert importance to filter by. For more complex operations use the 'Importance Operator' parameter. If none was chosen, all importances will be fetched. | False |
-    | Importance Operator | The operator to apply on the 'Importance' parameter. For example: if the chosen operator is '&amp;gt;' and the chosen importance is '1', only alerts with importance grater to 1 will be fetched. Default is '='. | False |
+    | Minimal importance to fetch | Minimal alert importance to filter by. If none or Low is chosen, all importances will be fetched.| False |
     | Event Status | Alert status to filter by. If none was chosen, all statuses will be fetched. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
