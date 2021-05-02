@@ -155,6 +155,30 @@ def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optiona
     return reports
 
 
+def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
+    campaigns_indicators = []
+    for campaign in campaigns_obj:
+        indicator_obj = {
+            "value": campaign.get('name'),
+            "type": 'Campaign',
+            "rawJSON": campaign,
+            "fields": {
+                "firstseenbysource": campaign.get('created'),
+                "indicatoridentification": campaign.get('id'),
+                "tags": list((set(campaign.get('labels'))).union(set(feed_tags))),
+                "modified": campaign.get('modified'),
+                "reportedby": 'Unit42',
+            }
+        }
+
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+        campaigns_indicators.append(indicator_obj)
+
+    return campaigns_indicators
+
+
 def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
     """Parses datetime fields to handle one value or more
 
@@ -268,13 +292,19 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
 
 def get_ioc_type(indicator, id_to_object):
     ioc_type = ''
-    indicator_obj = id_to_object.get(indicator)
-    pattern = indicator_obj.get('pattern')
+    indicator_obj = id_to_object.get(indicator, {})
+    pattern = indicator_obj.get('pattern', '')
     for unit42_type in UNIT42_TYPES_TO_DEMISTO_TYPES:
         if unit42_type in pattern:
             ioc_type = UNIT42_TYPES_TO_DEMISTO_TYPES.get(unit42_type)
             break
     return ioc_type
+
+
+def get_ioc_value(ioc, id_to_obj):
+    ioc_obj = id_to_obj.get(ioc)
+    if ioc_obj:
+        return f"[Unit42 ATOM] {ioc_obj.get('name')}" if ioc_obj.get('type') == 'report' else ioc_obj.get('name')
 
 
 def create_list_relationships(client, id_to_object):
@@ -296,13 +326,20 @@ def create_list_relationships(client, id_to_object):
             'firstseenbysource': relationships_object.get('created')
         }
 
-        entity_relation = EntityRelation(name=relationships_object.get('relationship_type'),
-                                         entity_a=relationships_object.get('source_ref'),
+        entity_a = get_ioc_value(relationships_object.get('source_ref'), id_to_object)
+        entity_b = get_ioc_value(relationships_object.get('target_ref'), id_to_object)
+
+        relationship_type = relationships_object.get('relationship_type')
+        if relationship_type == 'indicates':
+            relationship_type = 'indicated-by'
+
+        entity_relation = EntityRelation(name=relationship_type,
+                                         entity_a=entity_a,
                                          entity_a_type=a_type,
-                                         entity_b=relationships_object.get('target_ref'),
+                                         entity_b=entity_b,
                                          entity_b_type=b_type,
                                          fields=mapping_fields)
-        relationships_list.append(entity_relation)
+        relationships_list.append(entity_relation.to_indicator())
     return relationships_list
 
 
@@ -337,11 +374,10 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     for type_, objects in client.objects_data.items():
         demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
 
-    indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
-
+    ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     reports = parse_reports(client.objects_data['report'], feed_tags, tlp_color)
-
-    attack_pattern_indicators = create_attack_pattern_indicator(client, feed_tags, tlp_color)
+    campaigns = parse_campaigns(client.objects_data['campaign'], feed_tags, tlp_color)
+    # attack_pattern_indicators = create_attack_pattern_indicator(client, feed_tags, tlp_color)
 
     id_to_object = {
         obj.get('id'): obj for obj in
@@ -360,13 +396,14 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         }
 
     if dummy_indicator:
-        indicators.append(dummy_indicator)
+        ioc_indicators.append(dummy_indicator)
 
-    demisto.debug(f'{len(indicators)} XSOAR Indicators were created.')
+    demisto.debug(f'{len(ioc_indicators)} XSOAR Indicators were created.')
     demisto.debug(f'{len(reports)} XSOAR STIX Report Indicators were created.')
-    demisto.debug(f'{len(attack_pattern_indicators)} Attack Pattern Indicators were created.')
+    demisto.debug(f'{len(campaigns)} XSOAR STIX Report Indicators were created.')
+    # demisto.debug(f'{len(attack_pattern_indicators)} Attack Pattern Indicators were created.')
 
-    return indicators + reports + attack_pattern_indicators
+    return ioc_indicators + reports + campaigns  # + attack_pattern_indicators
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = [],
